@@ -12,7 +12,7 @@ import {MatDividerModule} from '@angular/material/divider';
 import {MatButtonModule} from '@angular/material/button';
 
 // Created Components
-import { OfferPreviewCardComponent } from './offer-preview-card/offer-preview-card.component';
+import { OfferPreviewCardComponent } from './offer/offer-preview-card/offer-preview-card.component';
 
 @NgModule({
   declarations: [
