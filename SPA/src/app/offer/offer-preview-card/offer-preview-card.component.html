@@ -1,19 +1,29 @@
 <mat-card class="example-card">
   <mat-card-header>
-    <div mat-card-avatar class="example-header-image"></div>
-    <mat-card-title>Shiba Inu</mat-card-title>
-    <mat-card-subtitle>Dog Breed</mat-card-subtitle>
+    <mat-card-title>Senior SEO Consultant</mat-card-title>
+    <mat-card-subtitle>
+      <app-offerer-name-overview></app-offerer-name-overview>
+    </mat-card-subtitle>
+    <span class="spacer"></span>
+    <app-icon-with-text [icon]="'place'" [text]="'Barcelona'"></app-icon-with-text>
+    <app-icon-with-text [icon]="'access-time'" [text]="'5 days ago'"></app-icon-with-text>
   </mat-card-header>
-  <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">
   <mat-card-content>
+    <img src="https://cdn.vox-cdn.com/thumbor/Pkmq1nm3skO0-j693JTMd7RL0Zk=/0x0:2012x1341/1200x800/filters:focal(0x0:2012x1341)/cdn.vox-cdn.com/uploads/chorus_image/image/47070706/google2.0.0.jpg" alt="Business Logo">
     <p>
-      The Shiba Inu is the smallest of the six original and distinct spitz breeds of dog from Japan.
-      A small, agile dog that copes very well with mountainous terrain, the Shiba Inu was originally
-      bred for hunting.
+      A search engine optimization consultant (or SEO consultant) is a job that analyzes and reviews websites and
+      their incoming links in order to provide expert advice, guidance, and recommendations to business owners
+      seeking to earn more natural search engine traffic and higher ranking positions.
     </p>
   </mat-card-content>
   <mat-card-actions>
-    <button mat-button>LIKE</button>
-    <button mat-button>SHARE</button>
+    <span class="spacer"></span>
+    <app-icon-with-text [icon]="'date-range'" [text]="'Indefinite'"></app-icon-with-text>
+    <app-icon-with-text [icon]="'work'" [text]="'Part-Time'"></app-icon-with-text>
+    <app-icon-with-text [icon]="'local-atm'" [text]="'1.500€/month'"></app-icon-with-text>
+    <button color="accent" mat-button>{{'+ More Info' | uppercase }}</button>
+    <button mat-icon-button>
+      <mat-icon aria-label="Share offer in social networks" color="accent" svgIcon="share"></mat-icon>
+    </button>
   </mat-card-actions>
 </mat-card>

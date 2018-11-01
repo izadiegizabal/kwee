@@ -1,0 +1,16 @@
+@import '~@angular/material/theming';
+
+div {
+  display: flex;
+}
+
+span {
+  background: mat-color($mat-pink, A400);
+  color: white;
+  padding: 3px;
+  border-radius: 3px;
+}
+
+p {
+  margin: 3px 0 0 8px;
+}

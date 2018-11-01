@@ -13,11 +13,15 @@ import {MatButtonModule} from '@angular/material/button';
 
 // Created Components
 import { OfferPreviewCardComponent } from './offer/offer-preview-card/offer-preview-card.component';
+import { OffererNameOverviewComponent } from './offerer/offerer-name-overview/offerer-name-overview.component';
+import { IconWithTextComponent } from './common/icon-with-text/icon-with-text.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    OfferPreviewCardComponent
+    OfferPreviewCardComponent,
+    OffererNameOverviewComponent,
+    IconWithTextComponent
   ],
   imports: [
     HttpClientModule,
