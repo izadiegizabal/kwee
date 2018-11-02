@@ -18,6 +18,11 @@ app-icon-with-text {
   color: mat-color($mat-blue-gray, 700);
 }
 
+mat-card-subtitle {
+  display: flex;
+  color: mat-color($mat-blue-gray, 700);
+}
+
 mat-card-header app-icon-with-text {
   margin-top: 4px;
 }
@@ -75,9 +80,8 @@ mat-card-actions {
   }
 
   .quickInfo {
-    display: block;
-    margin-top: -16px;
-    margin-left: -16px;
-    max-width: 50%;
+    display: flex;
+    max-width: 100%;
+    margin-top: 8px !important;
   }
 }

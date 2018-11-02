@@ -3,11 +3,11 @@ $tablet: 839px;
 $phone: 480px;
 
 .spacer {
-  flex: 1 1 auto;
+  flex: 1 1 auto !important;
 }
 
 .hide{
-  display: none;
+  display: none !important;
 }
 
 // Mixin to change the md-icon
@@ -20,19 +20,19 @@ $phone: 480px;
 
 @media all and (min-width: $tablet) {
   .hideOnDesktop {
-    display: none;
+    display: none !important;
   }
 }
 
 @media all and (min-width: $phone) {
   .hideOnTablet {
-    display: none;
+    display: none !important;
   }
 }
 
 @media all and (max-width: $phone) {
   .hideOnMobile {
-    display: none;
+    display: none !important;
   }
 }
 
