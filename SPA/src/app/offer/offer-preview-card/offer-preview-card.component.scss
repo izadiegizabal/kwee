@@ -1,4 +1,5 @@
 @import "~src/common-utils";
+@import '~@angular/material/theming';
 
 .example-card {
   max-width: 600px;
@@ -14,6 +15,7 @@ mat-card-title {
 
 app-icon-with-text {
   margin-right: 16px;
+  color: mat-color($mat-blue-gray, 700);
 }
 
 mat-card-header app-icon-with-text {
