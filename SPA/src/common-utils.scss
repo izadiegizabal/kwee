@@ -1,0 +1,39 @@
+$desktop: 1024px;
+$tablet: 839px;
+$phone: 480px;
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.hide{
+  display: none;
+}
+
+// Mixin to change the md-icon
+@mixin md-icon-size($size: 24px) {
+  font-size: $size;
+  height: $size;
+  width: $size;
+  line-height: $size;
+}
+
+@media all and (min-width: $tablet) {
+  .hideOnDesktop {
+    display: none;
+  }
+}
+
+@media all and (min-width: $phone) {
+  .hideOnTablet {
+    display: none;
+  }
+}
+
+@media all and (max-width: $phone) {
+  .hideOnMobile {
+    display: none;
+  }
+}
+
+

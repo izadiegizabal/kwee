@@ -1,29 +1,44 @@
 <mat-card class="example-card">
   <mat-card-header>
-    <mat-card-title>Senior SEO Consultant</mat-card-title>
+    <mat-card-title>{{position}}</mat-card-title>
     <mat-card-subtitle>
-      <app-offerer-name-overview></app-offerer-name-overview>
+      <app-offerer-name-overview [name]="'Google'" [index]="82"></app-offerer-name-overview>
     </mat-card-subtitle>
     <span class="spacer"></span>
-    <app-icon-with-text [icon]="'place'" [text]="'Barcelona'"></app-icon-with-text>
-    <app-icon-with-text [icon]="'access-time'" [text]="'5 days ago'"></app-icon-with-text>
+    <div class="quickInfo">
+      <app-icon-with-text [icon]="'place'" [text]="'Barcelona'"></app-icon-with-text>
+      <app-icon-with-text [icon]="'access-time'" [text]="'5 days ago'"></app-icon-with-text>
+    </div>
   </mat-card-header>
+
   <mat-card-content>
-    <img src="https://cdn.vox-cdn.com/thumbor/Pkmq1nm3skO0-j693JTMd7RL0Zk=/0x0:2012x1341/1200x800/filters:focal(0x0:2012x1341)/cdn.vox-cdn.com/uploads/chorus_image/image/47070706/google2.0.0.jpg" alt="Business Logo">
+    <img
+      src="https://cdn.vox-cdn.com/thumbor/Pkmq1nm3skO0-j693JTMd7RL0Zk=/0x0:2012x1341/1200x800/filters:focal(0x0:2012x1341)/cdn.vox-cdn.com/uploads/chorus_image/image/47070706/google2.0.0.jpg"
+      alt="Business Logo">
     <p>
-      A search engine optimization consultant (or SEO consultant) is a job that analyzes and reviews websites and
-      their incoming links in order to provide expert advice, guidance, and recommendations to business owners
-      seeking to earn more natural search engine traffic and higher ranking positions.
+      {{description}}
     </p>
   </mat-card-content>
+
   <mat-card-actions>
     <span class="spacer"></span>
     <app-icon-with-text [icon]="'date-range'" [text]="'Indefinite'"></app-icon-with-text>
     <app-icon-with-text [icon]="'work'" [text]="'Part-Time'"></app-icon-with-text>
     <app-icon-with-text [icon]="'local-atm'" [text]="'1.500€/month'"></app-icon-with-text>
-    <button color="accent" mat-button>{{'+ More Info' | uppercase }}</button>
+    <span class="spacer hideOnTablet"></span>
+    <div class="hideOnMobile">
+      <button color="accent" mat-button>{{'More Info' | uppercase }}</button>
+      <button mat-icon-button>
+        <mat-icon aria-label="Share offer in social networks" color="accent" svgIcon="share"></mat-icon>
+      </button>
+    </div>
+  </mat-card-actions>
+  <mat-card-actions class="hideOnTablet">
+    <span class="spacer"></span>
+    <button color="accent" mat-button>{{'More Info' | uppercase }}</button>
     <button mat-icon-button>
       <mat-icon aria-label="Share offer in social networks" color="accent" svgIcon="share"></mat-icon>
     </button>
   </mat-card-actions>
+
 </mat-card>
