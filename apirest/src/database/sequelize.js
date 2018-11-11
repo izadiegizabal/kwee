@@ -18,7 +18,7 @@ db.users = require('../models/users')(sequelize, Sequelize);
 db.offers = require('../models/offers')(sequelize, Sequelize);
 
 //Relations
-// db.offers.hasMany(db.users);
-db.users.hasMany(db.offers);
+db.offers.belongsToMany(db.users, { through: 'users_offers' });
+db.users.belongsToMany(db.offers, { through: 'users_offers' });
 
 module.exports = db;

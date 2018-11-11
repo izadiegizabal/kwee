@@ -1,6 +1,7 @@
 const routes = [
     require('./routes/users'),
-    require('./routes/offers')
+    require('./routes/offers'),
+    require('./routes/users_offers')
 ];
 
 

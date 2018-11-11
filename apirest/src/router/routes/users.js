@@ -98,8 +98,8 @@ module.exports = (app, db) => {
         db.users.destroy({
                 where: { id: id }
             })
-            .then(deleteduser => {
-                if (deleteduser) {
+            .then(deletedUser => {
+                if (deletedUser) {
                     res.json({
                         ok: true,
                         message: `User with ID ${ id } has beend deleted`
