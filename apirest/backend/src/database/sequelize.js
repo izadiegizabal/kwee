@@ -16,6 +16,7 @@ db.sequelize = sequelize;
 //Models/tables
 db.users = require('../models/users')(sequelize, Sequelize);
 db.offers = require('../models/offers')(sequelize, Sequelize);
+db.users_offers = require('../models/users_offers')(sequelize, Sequelize);
 
 //Relations
 db.offers.belongsToMany(db.users, { through: 'users_offers' });

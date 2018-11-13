@@ -22,7 +22,7 @@ module.exports = (app, db) => {
     });
 
     // GET one user by id
-    app.get('/user/:id', (req, res) => {
+    app.get('/user/:id([0-9]+)', (req, res) => {
         const id = req.params.id;
         db.users.findOne({
                 where: { id }
