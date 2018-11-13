@@ -1,5 +1,3 @@
-const errorHandler = require('../../middlewares/errorHandlet');
-
 // ============================
 // ======== CRUD user =========
 // ============================
@@ -7,7 +5,7 @@ const errorHandler = require('../../middlewares/errorHandlet');
 module.exports = (app, db) => {
 
     // GET all users
-    app.get('/users', async(req, res) => {
+    app.get('/users', async(req, res, next) => {
         try {
             res.status(200).json({
                 ok: true,
@@ -19,10 +17,7 @@ module.exports = (app, db) => {
                 })
             });
         } catch (err) {
-            res.status(400).json({
-                ok: false,
-                err
-            });
+            next({ type: 'error', error: 'Error getting data' });
         }
 
     });
@@ -49,7 +44,7 @@ module.exports = (app, db) => {
     });
 
     // POST single user
-    app.post('/user', async(req, res) => {
+    app.post('/user', async(req, res, next) => {
         const name = req.body.name;
         const password = req.body.password;
         const email = req.body.email;
@@ -67,12 +62,8 @@ module.exports = (app, db) => {
             });
 
         } catch (err) {
-            res.status(400).json({
-                ok: false,
-                error: err.errors[0].message
-            });
+            next({ type: 'error', error: err.errors[0].message });
         };
-
     });
 
     // PUT single user
@@ -81,65 +72,39 @@ module.exports = (app, db) => {
         const updates = req.body;
 
         try {
-            // respuesta 1 actualizado
-            // respuesta 0 no actualizado
             res.status(200).json({
                 ok: true,
                 user: await db.users.update(updates, {
                     where: { id }
                 })
             });
+            // json
+            // user: [1] -> Updated
+            // user: [0] -> Not updated
+            // empty body will change 'updateAt'
         } catch (err) {
-            // res.status(400).json({
-            //     ok: false,
-            //     error: err.errors[0].message
-            // });
-            next({ type: 'error', error: 'Error getting data' });
+            next({ type: 'error', error: err.errors[0].message });
         }
-
-
-
-        // db.users.update(updates, {
-        //         where: { id }
-        //     })
-        //     .then(updatedUser => {
-        //         if (updatedUser[0]) {
-        //             res.json({
-        //                 ok: true,
-        //                 id
-        //             });
-        //         } else {
-        //             res.json({
-        //                 ok: false,
-        //                 error: `This user doesnt exists`
-        //             });
-        //         }
-        //     }).catch((err) => {
-        //         res.status(400).json({
-        //             ok: false,
-        //             error: err.errors[0].message
-        //         });
-        //     });
     });
 
     // DELETE single user
-    app.delete('/user/:id', (req, res) => {
+    // This route will put 'deleteAt' to current timestamp,
+    // never will delete it from database
+    app.delete('/user/:id', async(req, res, next) => {
         const id = req.params.id;
-        db.users.destroy({
-                where: { id: id }
-            })
-            .then(deletedUser => {
-                if (deletedUser) {
-                    res.json({
-                        ok: true,
-                        message: `User with ID ${ id } has beend deleted`
-                    });
-                } else {
-                    res.json({
-                        ok: false,
-                        error: `User with ID ${ id } doesn't exists`
-                    });
-                }
+
+        try {
+            res.json({
+                ok: true,
+                user: await db.users.destroy({
+                    where: { id: id }
+                })
             });
+            // Respuestas en json
+            // user: 1 -> Deleted
+            // user: 0 -> User don't exists
+        } catch (err) {
+            next({ type: 'error', error: 'Error getting data' });
+        }
     });
 }
