@@ -2,7 +2,8 @@ const errorHandler = require('../middlewares/errorHandlet');
 const routes = [
     require('./routes/users'),
     require('./routes/offers'),
-    require('./routes/users_offers')
+    require('./routes/users_offers'),
+    require('./routes/social_networks')
 ];
 
 

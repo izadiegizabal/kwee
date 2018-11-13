@@ -24,8 +24,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             field: 'linkedin',
             allowNull: true
-        }
+        },
 
+    }, {
+        paranoid: true
     });
+
     return Social_Network;
 };
