@@ -1,3 +1,4 @@
+const errorHandler = require('../middlewares/errorHandlet');
 const routes = [
     require('./routes/users'),
     require('./routes/offers'),
@@ -7,7 +8,12 @@ const routes = [
 
 // Add access to the app and db objects to each route
 module.exports = function router(app, db) {
-    return routes.forEach((route) => {
+
+    let rts = routes.forEach((route) => {
         route(app, db);
     });
+
+    app.use(errorHandler);
+
+    return rts;
 };

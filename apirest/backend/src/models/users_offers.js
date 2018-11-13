@@ -3,7 +3,8 @@ module.exports = (sequelize, DataTypes) => {
     const User_Offer = sequelize.define('users_offers', {
 
         status: {
-            type: DataTypes.STRING,
+            type: DataTypes.ENUM,
+            values: ['active', 'pending', 'deleted'],
             field: 'status',
             defaultValue: 'pending',
             allowNull: false,
@@ -11,7 +12,8 @@ module.exports = (sequelize, DataTypes) => {
                 notEmpty: true
             }
         }
-
+    }, {
+        paranoid: true
     });
     return User_Offer;
 };

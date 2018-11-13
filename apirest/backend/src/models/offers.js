@@ -56,6 +56,8 @@ module.exports = (sequelize, DateTypes) => {
                 notEmpty: true
             }
         }
+    }, {
+        paranoid: true
     });
     return Offer;
 };

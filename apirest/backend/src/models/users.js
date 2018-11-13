@@ -24,19 +24,16 @@ module.exports = (sequelize, DataTypes) => {
             }
         },
 
-        // password: {
-        //     type: DataTypes.STRING,
-        //     allowNull: false,
-        //     validate: {
-        //         notEmpty: true
-        //     }
-        // },
-
-        root: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: false
+        password: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                notEmpty: true
+            }
         }
 
+    }, {
+        paranoid: true
     });
     return User;
 };
