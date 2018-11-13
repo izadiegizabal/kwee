@@ -2,6 +2,15 @@ module.exports = (sequelize, DataTypes) => {
 
     const Social_Network = sequelize.define('social_networks', {
 
+        userId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            unique: {
+                args: true,
+                message: 'This social network has user.'
+            }
+        },
+
         twitter: {
             type: DataTypes.STRING,
             field: 'twitter',

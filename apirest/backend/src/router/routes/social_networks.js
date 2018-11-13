@@ -5,109 +5,98 @@
 module.exports = (app, db) => {
 
     // GET all social_networks
-    app.get('/social_networks', (req, res) => {
-        db.social_networks.findAll()
-            .then(social_networks => {
-                res.json({
-                    ok: true,
-                    social_networks
-                });
+    app.get('/social_networks', async(req, res, next) => {
+        try {
+            res.status(200).json({
+                ok: true,
+                social_networks: await db.social_networks.findAll()
             });
+        } catch (err) {
+            next({ type: 'error', error: 'Error getting data' });
+        }
     });
 
     // GET one social_network by id
-    app.get('/social_network/:id', (req, res) => {
+    app.get('/social_network/:id([0-9]+)', async(req, res, next) => {
         const id = req.params.id;
-        db.social_networks.findOne({
-                where: { id }
-            })
-            .then(social_network => {
-                if (social_network) {
-                    res.json({
-                        ok: true,
-                        social_network
-                    });
-                } else {
-                    res.json({
-                        ok: false,
-                        error: 'Social network doesnt exists'
-                    });
-                }
+
+        try {
+            res.status(200).json({
+                ok: true,
+                social_network: await db.social_networks.findOne({ where: { id } })
             });
+
+        } catch (err) {
+            next({ type: 'error', error: 'Error getting data' });
+        }
     });
 
     // POST single social_network
-    app.post('/social_network', (req, res) => {
+    app.post('/social_network', async(req, res, next) => {
+        const userId = req.body.user;
         const twitter = req.body.twitter;
         const instagram = req.body.instagram;
         const telegram = req.body.telegram;
         const linkedin = req.body.linkedin;
-        db.social_networks.create({
+
+        try {
+            let social_network = await db.social_networks.create({
+                userId,
                 twitter,
                 instagram,
                 telegram,
                 linkedin
             })
-            .then(newSocialNetwork => {
-                if (newSocialNetwork) {
-                    res.json({
-                        ok: true,
-                        message: `Social network with id ${newSocialNetwork.id} has been created.`
-                    });
-                }
-            }).catch((err) => {
-                res.status(400).json({
-                    ok: false,
-                    error: err.errors[0].message
-                });
+
+            res.status(201).json({
+                ok: true,
+                message: `Social_networks with id ${social_network.id} has been created.`
             });
+
+        } catch (err) {
+            next({ type: 'error', error: err.errors[0].message });
+        };
+
     });
 
     // PUT single social_network
-    app.put('/social_network/:id', (req, res) => {
+    app.put('/social_network/:id', async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
-        db.social_networks.update(updates, {
-                where: { id }
-            })
-            .then(updatedSocial_network => {
-                if (updatedSocial_network[0]) {
-                    res.json({
-                        ok: true,
-                        id
-                    });
-                } else {
-                    res.json({
-                        ok: false,
-                        error: `This social_network doesnt exists`
-                    });
-                }
-            }).catch((err) => {
-                res.status(400).json({
-                    ok: false,
-                    error: err.errors[0].message
-                });
+
+        try {
+            res.status(200).json({
+                ok: true,
+                social_network: await db.social_networks.update(updates, {
+                    where: { id }
+                })
             });
+            // json
+            // social_network: [1] -> Updated
+            // social_network: [0] -> Not updated
+            // empty body will change 'updateAt'
+        } catch (err) {
+            next({ type: 'error', error: err.errors[0].message });
+        }
+
     });
 
     // DELETE single social_network
-    app.delete('/social_network/:id', (req, res) => {
+    app.delete('/social_network/:id', async(req, res, next) => {
         const id = req.params.id;
-        db.social_networks.destroy({
-                where: { id: id }
-            })
-            .then(deletedSocial_network => {
-                if (deletedSocial_network) {
-                    res.json({
-                        ok: true,
-                        message: `Social network with ID ${ id } has beend deleted`
-                    });
-                } else {
-                    res.json({
-                        ok: false,
-                        error: `Social network with ID ${ id } doesn't exists`
-                    });
-                }
+
+        try {
+            res.json({
+                ok: true,
+                social_network: await db.social_networks.destroy({
+                    where: { id: id }
+                })
             });
+            // Respuestas en json
+            // social_network: 1 -> Deleted
+            // social_network: 0 -> User don't exists
+        } catch (err) {
+            next({ type: 'error', error: 'Error getting data' });
+        }
     });
 }
