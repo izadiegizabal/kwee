@@ -7,7 +7,7 @@ const env = require('../tools/constants');
 const sequelize = new Sequelize(env.DATABASE_NAME, env.DATABASE_USERNAME, env.DATABASE_PASSWORD, {
     host: 'localhost',
     dialect: 'mysql',
-    // logging: false,
+    logging: false,
     operatorsAliases: false,
     pool: {
         max: 25,
