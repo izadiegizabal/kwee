@@ -12,7 +12,7 @@ module.exports = (sequelize, DateTypes) => {
         },
 
         title: {
-            type: DateTypes.STRING,
+            type: DateTypes.STRING(50),
             field: 'title',
             allowNull: false,
             unique: true,
@@ -49,7 +49,7 @@ module.exports = (sequelize, DateTypes) => {
         },
 
         location: {
-            type: DateTypes.STRING,
+            type: DateTypes.STRING(50),
             field: 'location',
             allowNull: false,
             validate: {

@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
     const User = sequelize.define('users', {
 
         name: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(20),
             field: 'name',
             allowNull: false,
             validate: {
@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
         },
 
         email: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(50),
             unique: {
                 args: true,
                 message: 'Username must be unique.'
@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
         },
 
         password: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(50),
             allowNull: false,
             validate: {
                 notEmpty: true

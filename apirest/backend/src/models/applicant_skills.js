@@ -12,7 +12,7 @@ module.exports = (sequelize, DateTypes) => {
         },
 
         level: {
-            type: DateTypes.STRING,
+            type: DateTypes.STRING(50),
             field: 'level',
             allowNull: false,
             validate: {

@@ -8,10 +8,9 @@ module.exports = (sequelize, DateTypes) => {
         },
 
         title: {
-            type: DateTypes.STRING,
+            type: DateTypes.STRING(50),
             field: 'title',
             allowNull: false,
-            unique: true,
             validate: {
                 notEmpty: true
             }

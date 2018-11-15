@@ -33,7 +33,7 @@ module.exports = (sequelize, DateTypes) => {
         },
 
         deleted_reason: {
-            type: DateTypes.TEXT,
+            type: DateTypes.STRING(50),
             field: 'deleted_reason',
             allowNull: false,
             validate: {

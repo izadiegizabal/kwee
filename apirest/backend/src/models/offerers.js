@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
         },
 
         adress: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(50),
             field: 'adress',
             allowNull: false,
             validate: {
@@ -18,17 +18,17 @@ module.exports = (sequelize, DataTypes) => {
         },
 
         phone: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(20),
             field: 'phone'
         },
 
         cif: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(9),
             field: 'cif'
         },
 
         date_verification: {
-            type: DataTypes.STRING,
+            type: DataTypes.DATE,
         },
 
         enterprise: {
