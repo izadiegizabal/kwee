@@ -1,6 +1,21 @@
 module.exports = (sequelize, DataTypes) => {
 
-    const User_Offer = sequelize.define('users_offers', {
+    const Message = sequelize.define('messages', {
+
+        fk_sender: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+
+        fk_receiver: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+
+        message: {
+            type: DataTypes.STRING,
+            field: 'message'
+        },
 
         status: {
             type: DataTypes.ENUM,
@@ -15,5 +30,5 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         paranoid: true
     });
-    return User_Offer;
+    return Message;
 };

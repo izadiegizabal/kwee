@@ -2,8 +2,9 @@ module.exports = (sequelize, DataTypes) => {
 
     const Offerer = sequelize.define('offerers', {
 
-        fk_user: {
+        userId: {
             type: DataTypes.INTEGER,
+            primaryKey: true,
             allowNull: false
         },
 
@@ -17,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
         },
 
         phone: {
-        type: DataTypes.STRING,
+            type: DataTypes.STRING,
             field: 'phone'
         },
 
@@ -35,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: 0
         },
-        
+
         particular: {
             type: DataTypes.BOOLEAN,
             allowNull: false,

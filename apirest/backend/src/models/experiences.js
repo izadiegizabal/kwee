@@ -1,14 +1,10 @@
 module.exports = (sequelize, DateTypes) => {
 
-    const Offer = sequelize.define('offers', {
+    const Experience = sequelize.define('experiences', {
 
-        fk_offerer: {
+        fk_applicant: {
             type: DateTypes.INTEGER,
             allowNull: false,
-            unique: {
-                args: true,
-                message: 'This social network has user.'
-            }
         },
 
         title: {
@@ -47,26 +43,8 @@ module.exports = (sequelize, DateTypes) => {
                 notEmpty: true
             }
         },
-
-        location: {
-            type: DateTypes.STRING,
-            field: 'location',
-            allowNull: false,
-            validate: {
-                notEmpty: true
-            }
-        },
-
-        salary: {
-            type: DateTypes.INTEGER,
-            field: 'salary',
-            allowNull: false,
-            validate: {
-                notEmpty: true
-            }
-        }
     }, {
         paranoid: true
     });
-    return Offer;
+    return Experience;
 };
