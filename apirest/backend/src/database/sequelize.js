@@ -21,8 +21,15 @@ db.users_offers = require('../models/users_offers')(sequelize, Sequelize);
 db.social_networks = require('../models/social_networks')(sequelize, Sequelize);
 
 //Relations
+// 1:N users and offers
+db.users.hasMany(db.offers);
+db.offers.belongsTo(db.users);
+
+// N:M users and offers
 db.offers.belongsToMany(db.users, { through: 'users_offers' });
 db.users.belongsToMany(db.offers, { through: 'users_offers' });
+
+// 1:1 user and social networks
 db.social_networks.belongsTo(db.users);
 
 module.exports = db;

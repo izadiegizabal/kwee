@@ -2,6 +2,15 @@ module.exports = (sequelize, DateTypes) => {
 
     const Offer = sequelize.define('offers', {
 
+        userId: {
+            type: DateTypes.INTEGER,
+            allowNull: false,
+            unique: {
+                args: true,
+                message: 'This social network has user.'
+            }
+        },
+
         title: {
             type: DateTypes.STRING,
             field: 'title',
