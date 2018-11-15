@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt');
+
 module.exports = (sequelize, DataTypes) => {
 
     const User = sequelize.define('users', {
@@ -41,5 +43,17 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         paranoid: true
     });
+
+    User.beforeCreate((user, options) => {
+
+        return bcrypt.hash(user.password, 10)
+            .then(hash => {
+                user.password = hash;
+            })
+            .catch(err => {
+                throw new Error();
+            });
+    });
+
     return User;
 };
