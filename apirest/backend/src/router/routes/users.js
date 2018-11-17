@@ -1,3 +1,6 @@
+const bcrypt = require('bcrypt');
+const { checkToken, checkAdmin } = require('../../middlewares/authentication');
+
 // ============================
 // ======== CRUD user =========
 // ============================
@@ -5,7 +8,7 @@
 module.exports = (app, db) => {
 
     // GET all users
-    app.get('/users', async(req, res, next) => {
+    app.get('/users', checkToken, async(req, res, next) => {
         try {
             res.status(200).json({
                 ok: true,
@@ -23,7 +26,7 @@ module.exports = (app, db) => {
     });
 
     // GET one user by id
-    app.get('/user/:id([0-9]+)', async(req, res, next) => {
+    app.get('/user/:id([0-9]+)', checkToken, async(req, res, next) => {
         const id = req.params.id;
 
         try {
@@ -44,15 +47,15 @@ module.exports = (app, db) => {
     });
 
     // POST single user
-    app.post('/user', async(req, res, next) => {
-        const name = req.body.name;
-        const password = req.body.password;
-        const email = req.body.email;
+    app.post('/user', [checkToken, checkAdmin], async(req, res, next) => {
+        let name = req.body.name;
+        let password = req.body.password;
+        let email = req.body.email;
 
         try {
             let user = await db.users.create({
                 name,
-                password,
+                password: bcrypt.hashSync(password, 10),
                 email
             });
 
@@ -67,7 +70,7 @@ module.exports = (app, db) => {
     });
 
     // PUT single user
-    app.put('/user/:id', async(req, res, next) => {
+    app.put('/user/:id', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
 
@@ -90,7 +93,7 @@ module.exports = (app, db) => {
     // DELETE single user
     // This route will put 'deleteAt' to current timestamp,
     // never will delete it from database
-    app.delete('/user/:id', async(req, res, next) => {
+    app.delete('/user/:id', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
 
         try {

@@ -3,7 +3,8 @@ const routes = [
     require('./routes/users'),
     require('./routes/offers'),
     require('./routes/users_offers'),
-    require('./routes/social_networks')
+    require('./routes/social_networks'),
+    require('./routes/login')
 ];
 
 
