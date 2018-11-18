@@ -1,0 +1,49 @@
+<mat-toolbar>
+
+  <div class="logo">
+    <a routerLink="/">
+      <mat-icon class="hideOnTablet" svgIcon="kwee-icon-light"></mat-icon>
+      <mat-icon class="hideOnMobile" svgIcon="kwee-logo-light"></mat-icon>
+    </a>
+  </div>
+
+  <span class="spacer"></span>
+
+  <!-- This fills the remaining space of the current row -->
+  <span class="fill-remaining-space"></span>
+
+  <button mat-icon-button class="profileLogo">
+    <a [matMenuTriggerFor]="menu">
+      <mat-icon svgIcon="account-circle"></mat-icon>
+      <br>
+      <div>Me<div><mat-icon svgIcon="arrow-drop-down"></mat-icon></div></div>
+    </a>
+  </button>
+
+</mat-toolbar>
+<mat-menu #menu="matMenu">
+  <div class="welcomeMsg">Hi, <strong>Alba</strong>! <br> <a routerLink="/users/:id">View Profile</a></div>
+  <hr>
+  <button mat-menu-item>
+    <mat-icon svgIcon="notifications"></mat-icon>
+    <span>Notifications</span>
+  </button>
+  <button mat-menu-item>
+    <mat-icon svgIcon="chat"></mat-icon>
+    <span>Messages</span>
+  </button>
+  <button mat-menu-item>
+    <mat-icon svgIcon="people"></mat-icon>
+    <span>Manage Users</span>
+  </button>
+  <button mat-menu-item>
+    <mat-icon svgIcon="timeline"></mat-icon>
+    <span>Stats</span>
+  </button>
+  <button mat-menu-item>
+    <mat-icon svgIcon="settings"></mat-icon>
+    <span>Settings</span>
+  </button>
+  <hr>
+  <button mat-menu-item>Sign out</button>
+</mat-menu>

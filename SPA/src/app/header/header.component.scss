@@ -1,0 +1,68 @@
+@import "~src/common-utils";
+@import '~@angular/material/theming';
+
+mat-toolbar {
+  background-color: white;
+  height: 80px;
+}
+
+.logo mat-icon {
+  margin-left: -20px;
+  margin-top: 4px;
+  height: 88px;
+  width: 88px;
+}
+
+.profileLogo {
+  font-size: 1rem;
+  margin-top: -16px;
+  a {
+    div {
+      margin-top: -24px;
+      display: flex;
+      div {
+        margin-top: 8px;
+      }
+      mat-icon {
+        width: 24px;
+        height: 24px;
+      }
+    }
+    mat-icon {
+      margin-right: 8px;
+      height: 40px;
+      width: 40px;
+    }
+  }
+}
+
+hr {
+  opacity: 0.15;
+}
+
+.welcomeMsg {
+  font-family: IBM Plex Sans, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  padding-left: 16px;
+
+  a {
+    color: mat-color($mat-teal, A400);
+  }
+}
+
+
+@media all and (min-width: $phone) {
+  .profileLogo {
+     margin-right: 5%;
+  }
+
+  .logo mat-icon {
+    margin-left: 10%;
+
+    height: 100px;
+    width: 175px;
+  }
+}
+
+

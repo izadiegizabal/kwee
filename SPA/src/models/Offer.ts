@@ -38,8 +38,8 @@ enum OfferStatus {
 enum ContractType {
   FullTime = 0,
   PartTime = 1,
-  Internship = 3,
-  EndOfDegreeProject = 4,
+  Internship = 2,
+  EndOfDegreeProject = 3,
 }
 
 enum SalaryFrecuency {
