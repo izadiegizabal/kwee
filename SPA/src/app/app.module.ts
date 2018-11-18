@@ -18,6 +18,8 @@ import { OffererNameOverviewComponent } from './offerer/offerer-name-overview/of
 import { IconWithTextComponent } from './common/icon-with-text/icon-with-text.component';
 import { HeaderComponent } from './header/header.component';
 import {MatMenuModule, MatToolbarModule} from '@angular/material';
+import { SmallcardComponent } from './smallcard/smallcard.component';
+import { FooterComponent } from './footer/footer.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +27,9 @@ import {MatMenuModule, MatToolbarModule} from '@angular/material';
     OfferPreviewCardComponent,
     OffererNameOverviewComponent,
     IconWithTextComponent,
-    HeaderComponent
+    HeaderComponent,
+    SmallcardComponent,
+    FooterComponent
   ],
   imports: [
     HttpClientModule,
