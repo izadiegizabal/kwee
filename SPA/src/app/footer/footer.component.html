@@ -1,3 +1,54 @@
-<p>
-  footer works!
-</p>
+
+<footer>
+  <div class="content" 
+            fxLayout="row" 
+           fxLayout.xs="column" 
+           fxFlexFill >
+
+
+      <div class="logo" fxFlex="25"  fxFlex.xs="55">
+      <a routerLink="/">
+        <mat-icon  svgIcon="kwee-logo-light"></mat-icon>
+      </a>
+      <span>&copy; <time datetime="2018">2018</time> Watermelon Corp.</span>
+   </div>
+
+
+
+    <div class="block" fxFlex="25"  fxFlex.xs="55">
+      <ul>
+        <li><a routerLink="/">About</a></li>
+        <li><a routerLink="/">Privacy</a></li>
+        <li><a routerLink="/">Kwee Live</a></li>
+      </ul>
+    </div>
+
+
+
+
+    <div class="block" fxFlex="25"  fxFlex.xs="15">
+      <ul>
+        <li><a routerLink="/">Blog</a></li>
+        <li><a routerLink="/">Team</a></li>
+        <li><a routerLink="/">Contact</a></li>
+      </ul>
+    </div>
+
+
+
+
+
+    <div class="social-icons" fxFlex="25"  fxFlex.xs="15">
+        <a href="/">
+        <mat-icon svgIcon="notifications"></mat-icon>
+      </a>
+      <a href="/">
+        <mat-icon svgIcon="chat"></mat-icon>
+      </a>
+      <a href="/">
+        <mat-icon svgIcon="people"></mat-icon>
+      </a>
+    </div>
+
+  </div>
+</footer>

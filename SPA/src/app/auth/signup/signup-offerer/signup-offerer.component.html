@@ -1,3 +1,238 @@
-<p>
-  signup-offerer works!
-</p>
+<mat-horizontal-stepper #stepper linear="true">
+  <mat-step [stepControl]="firstFormGroup">
+    <form [formGroup]="firstFormGroup">
+      <ng-template matStepLabel>Choose sign up method</ng-template>
+
+      <h2>Choose your favourite method to sign up!</h2>
+      <div class="container"
+           fxLayout="column"
+           fxLayoutAlign="center center"
+           fxLayoutGap="8px">
+        <div class="signupButton">
+          <button mat-raised-button color="primary" matStepperNext>
+            <mat-icon class="svg" svgIcon="email"></mat-icon>
+            <span>Continue with email</span>
+          </button>
+        </div>
+        <div class="signupButton">
+          <button mat-raised-button color="primary" matStepperNext id="linkedinBtn">
+            <mat-icon fontSet="fab" fontIcon="fa-linkedin-in"></mat-icon>
+            <span>Continue with LinkedIn</span>
+          </button>
+        </div>
+        <div class="signupButton">
+          <button mat-raised-button color="primary" matStepperNext id="telegramBtn">
+            <mat-icon fontSet="fab" fontIcon="fa-telegram-plane"></mat-icon>
+            <span>Continue with Telegram</span>
+          </button>
+        </div>
+        <div class="signupButton">
+          <button mat-raised-button color="primary" matStepperNext id="twitterBtn">
+            <mat-icon fontSet="fab" fontIcon="fa-twitter"></mat-icon>
+            <span>Continue with Twitter</span>
+          </button>
+        </div>
+        <div class="signupButton">
+          <button mat-raised-button color="primary" matStepperNext id="googleBtn">
+            <mat-icon fontSet="fab" fontIcon="fa-google"></mat-icon>
+            <span>Continue with Google</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </mat-step>
+
+
+
+   <mat-step [stepControl]="secondFormGroup">
+    <form [formGroup]="secondFormGroup">
+      <ng-template matStepLabel>Fill in your info</ng-template>
+
+
+
+        <div class="container"
+           fxLayout="column"
+           fxLayoutAlign="center"
+           fxLayoutGap="8px"
+           fxFlex="grow"
+           fxFlexOffset.xs="0"
+           fxFlexOffset="15%">
+        <div fxLayout="row"><h2>Fill in the information below to be set to go!</h2></div>
+
+
+         <div fxLayout="column">
+	        <h4>Basic info</h4> 
+	      </div>
+
+
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0px" fxLayoutGap="16px">
+          <mat-form-field>
+            <input matInput placeholder="Business name" required>
+            <mat-icon svgIcon="domain" color="primary" matPrefix></mat-icon>
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput placeholder="VAT/CIF" required>
+          </mat-form-field>
+        </div>
+        <br>
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0" fxLayoutGap="16px">
+          <mat-form-field>
+            <input matInput placeholder="Email" required>
+            <mat-icon svgIcon="email" color="primary" matPrefix></mat-icon>
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput placeholder="Confirm Email" required>
+          </mat-form-field>
+        </div>
+        <br>
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0" fxLayoutGap="16px">
+          <mat-form-field>
+            <mat-icon svgIcon="lock" color="primary" matPrefix></mat-icon>
+            <input matInput placeholder="Password" [type]="hide ? 'text' : 'password'" required>
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput placeholder="Confirm Password" [type]="hide ? 'text' : 'password'" required>
+            <mat-icon matSuffix (click)="hide = !hide" [svgIcon]="hide ? 'visibility' : 'visibility-off'"
+                      color="primary"></mat-icon>
+          </mat-form-field>
+        </div>
+
+        <br>
+        <div fxLayout="row" fxLayout.xs="column">
+          <mat-form-field>
+            <mat-select placeholder="Work field" required>
+              <mat-option *ngFor="let workField of workFields" [value]="workField.value">
+                {{workField.viewValue}}
+              </mat-option>
+            </mat-select>
+            <mat-icon svgIcon="work" color="primary" matPrefix></mat-icon>
+          </mat-form-field>
+        </div>
+        <br>
+
+        <div fxLayout="column">
+         <h4>Address</h4>
+     	</div>
+
+		 <div class="line1" fxLayout="column">
+           <mat-form-field>
+            <input matInput placeholder="Address line 1" required>
+            <mat-icon svgIcon="place" color="primary" matPrefix></mat-icon>
+          </mat-form-field>
+        </div>
+        <br>
+
+         <div class="line1" fxLayout="column">
+           <mat-form-field >
+            <input matInput placeholder="Address line 2" required>
+          </mat-form-field>
+        </div>
+
+        <br>
+
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0px" fxLayoutGap="22px">
+          <mat-form-field>
+            <input matInput placeholder="City" required>
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput placeholder="Province" required>
+          </mat-form-field>
+        </div>
+
+
+		<br>
+         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0px" fxLayoutGap="16px">
+          <mat-form-field>
+            <input matInput placeholder="Postal Code" required>
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput placeholder="Country" required>
+          </mat-form-field>
+        </div>
+
+        <br>
+        <div fxLayout="row" fxLayoutAlign="end">
+          <button mat-button matStepperPrevious color="primary">Back</button>
+          <button mat-button matStepperNext color="accent">Sign Up!</button>
+        </div>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step>
+    <ng-template matStepLabel>Your're in!</ng-template>
+    <div class="container"
+         fxLayout="column"
+         fxLayoutAlign="center"
+         fxFlex="grow"
+         fxFlexOffset.xs="0"
+         fxFlexOffset="15%">
+      <div fxLayout="column">
+        <h2 fxLayoutAlign="center center">✨ Welcome to the Kwee family! ✨</h2>
+        <p>While we verify the information provided, please fill the information below to improve your visibility and incrase your trustiness for the applicants.</p>
+      </div>
+      <br>
+
+      <div fxLayout="column">
+        <h4>About us</h4>
+        <mat-form-field>
+          <textarea matInput placeholder="Leave a comment"></textarea>
+        </mat-form-field>
+      </div>
+      <br>
+
+
+      <div fxLayout="column">
+        <h4>Company Details</h4>
+        
+      </div>
+
+
+      <div class="line2" fxLayout="column">
+           <mat-form-field>
+            <input matInput placeholder="Website" >
+            <mat-icon svgIcon="web" color="primary" matPrefix></mat-icon>
+          </mat-form-field>
+        </div>
+
+
+
+		<br>
+       <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0px" fxLayoutGap="16px">
+          <mat-form-field>
+            <mat-select placeholder="Company size" >
+             <mat-option *ngFor="let companySize of companySizes" [value]="companySize.value">
+                {{companySize.viewValue}}
+              </mat-option>
+            </mat-select>
+            <mat-icon svgIcon="domain" color="primary" matPrefix></mat-icon>
+          </mat-form-field>
+
+        </div>
+
+
+        <br>
+         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0px" fxLayoutGap="16px">
+          <mat-form-field>
+            <mat-select placeholder="Company type" >
+              <mat-option *ngFor="let companyType of companyTypes" [value]="companyType.value">
+                {{companyType.viewValue}}
+              </mat-option>
+            </mat-select>
+            <mat-icon svgIcon="work" color="primary" matPrefix></mat-icon>
+          </mat-form-field>
+
+          <mat-form-field>
+            <input matInput placeholder="Year founded" >
+            <mat-icon svgIcon="cake" color="primary" matPrefix></mat-icon>
+          </mat-form-field>
+        </div>
+
+
+      <br>
+      <div fxLayout="row" fxLayoutAlign="end">
+        <button mat-button color="accent" routerLink="/">Done</button>
+      </div>
+    </div>
+
+  </mat-step>
+</mat-horizontal-stepper>

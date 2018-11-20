@@ -97,6 +97,8 @@ export class AppModule {
     matIconRegistry.addSvgIcon('lock', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-lock.svg'));
     matIconRegistry.addSvgIcon('visibility', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-visibility.svg'));
     matIconRegistry.addSvgIcon('visibility-off', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-visibility_off.svg'));
+    matIconRegistry.addSvgIcon('web', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-web.svg'));
+    matIconRegistry.addSvgIcon('cake', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-cake.svg'));
 
     // Branding icons
     matIconRegistry.addSvgIcon('kwee-logo-light', domSanitizer.bypassSecurityTrustResourceUrl('assets/branding/logo-kwee-light.svg'));
