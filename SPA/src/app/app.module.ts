@@ -31,6 +31,8 @@ import {SignupCandidateComponent} from './auth/signup/signup-candidate/signup-ca
 import {SignupOffererComponent} from './auth/signup/signup-offerer/signup-offerer.component';
 import {ReactiveFormsModule} from '@angular/forms';
 import {MatNativeDateModule, MatSelectModule} from '@angular/material';
+import { SignupinSectionComponent } from './header/signupin-section/signupin-section.component';
+import { UserMenuComponent } from './header/user-menu/user-menu.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +46,8 @@ import {MatNativeDateModule, MatSelectModule} from '@angular/material';
     SignupComponent,
     SignupCandidateComponent,
     SignupOffererComponent,
+    SignupinSectionComponent,
+    UserMenuComponent,
   ],
   imports: [
     HttpClientModule,
@@ -102,6 +106,8 @@ export class AppModule {
 
     // Branding icons
     matIconRegistry.addSvgIcon('kwee-logo-light', domSanitizer.bypassSecurityTrustResourceUrl('assets/branding/logo-kwee-light.svg'));
+    matIconRegistry.addSvgIcon('kwee-logo-dark', domSanitizer.bypassSecurityTrustResourceUrl('assets/branding/logo-kwee-dark.svg'));
     matIconRegistry.addSvgIcon('kwee-icon-light', domSanitizer.bypassSecurityTrustResourceUrl('assets/branding/icon.svg'));
+    matIconRegistry.addSvgIcon('kwee-icon-dark', domSanitizer.bypassSecurityTrustResourceUrl('assets/branding/iconBnw.svg'));
   }
 }
