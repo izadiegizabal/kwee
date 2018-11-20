@@ -3,6 +3,7 @@ import {BrowserModule, DomSanitizer} from '@angular/platform-browser';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {HttpClientModule} from '@angular/common/http';
+import {ReactiveFormsModule} from '@angular/forms';
 
 // Angular Material modules
 import {MatCardModule} from '@angular/material/card';
@@ -16,6 +17,8 @@ import {MatStepperModule} from '@angular/material/stepper';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatInputModule} from '@angular/material/input';
 import {MatDatepickerModule} from '@angular/material/datepicker';
+import {SignupOffererComponent} from './auth/signup/signup-offerer/signup-offerer.component';
+import {MatExpansionModule, MatNativeDateModule, MatSelectModule} from '@angular/material';
 
 // Created Components
 import {AppRoutingModule} from './app-routing.module';
@@ -28,11 +31,9 @@ import {SmallcardComponent} from './smallcard/smallcard.component';
 import {FooterComponent} from './footer/footer.component';
 import {SignupComponent} from './auth/signup/signup.component';
 import {SignupCandidateComponent} from './auth/signup/signup-candidate/signup-candidate.component';
-import {SignupOffererComponent} from './auth/signup/signup-offerer/signup-offerer.component';
-import {ReactiveFormsModule} from '@angular/forms';
-import {MatNativeDateModule, MatSelectModule} from '@angular/material';
-import { SignupinSectionComponent } from './header/signupin-section/signupin-section.component';
-import { UserMenuComponent } from './header/user-menu/user-menu.component';
+import {SignupinSectionComponent} from './header/signupin-section/signupin-section.component';
+import {UserMenuComponent} from './header/user-menu/user-menu.component';
+import {SigninComponent} from './auth/signin/signin.component';
 
 @NgModule({
   declarations: [
@@ -48,6 +49,7 @@ import { UserMenuComponent } from './header/user-menu/user-menu.component';
     SignupOffererComponent,
     SignupinSectionComponent,
     UserMenuComponent,
+    SigninComponent,
   ],
   imports: [
     HttpClientModule,
@@ -71,6 +73,7 @@ import { UserMenuComponent } from './header/user-menu/user-menu.component';
     MatDatepickerModule,
     MatNativeDateModule,
     MatSelectModule,
+    MatExpansionModule
   ],
   providers: [MatIconRegistry],
   bootstrap: [AppComponent]
@@ -105,9 +108,9 @@ export class AppModule {
     matIconRegistry.addSvgIcon('cake', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-cake.svg'));
 
     // Branding icons
-    matIconRegistry.addSvgIcon('kwee-logo-light', domSanitizer.bypassSecurityTrustResourceUrl('assets/branding/logo-kwee-light.svg'));
+    matIconRegistry.addSvgIcon('kwee-logo', domSanitizer.bypassSecurityTrustResourceUrl('assets/branding/logo-kwee-light.svg'));
     matIconRegistry.addSvgIcon('kwee-logo-dark', domSanitizer.bypassSecurityTrustResourceUrl('assets/branding/logo-kwee-dark.svg'));
-    matIconRegistry.addSvgIcon('kwee-icon-light', domSanitizer.bypassSecurityTrustResourceUrl('assets/branding/icon.svg'));
+    matIconRegistry.addSvgIcon('kwee-icon', domSanitizer.bypassSecurityTrustResourceUrl('assets/branding/icon.svg'));
     matIconRegistry.addSvgIcon('kwee-icon-dark', domSanitizer.bypassSecurityTrustResourceUrl('assets/branding/iconBnw.svg'));
   }
 }

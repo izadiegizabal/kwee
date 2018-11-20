@@ -1,0 +1,59 @@
+<h2 class="mat-h2">Choose your favourite method to sign in!</h2>
+<div class="container"
+     fxLayout="column"
+     fxLayoutAlign="center center"
+     fxLayoutGap="8px">
+  <mat-accordion>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon class="svg" color="primary" svgIcon="email"></mat-icon>
+        </mat-panel-title>
+        <mat-panel-description>
+          Continue with Email
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div class="container"
+           fxLayout="column"
+           fxLayoutGap="8px">
+        <mat-form-field>
+          <input matInput placeholder="Email" required>
+          <mat-icon svgIcon="email" color="primary" matPrefix></mat-icon>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-icon svgIcon="lock" color="primary" matPrefix></mat-icon>
+          <input matInput placeholder="Password" [type]="hide ? 'text' : 'password'" required>
+        </mat-form-field>
+
+        <div fxLayout="row" fxLayoutAlign="end">
+          <button mat-button color="accent" (click)="signIn()">Sign In</button>
+        </div>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+  <div class="signupButton">
+    <button mat-raised-button color="primary" id="linkedinBtn">
+      <mat-icon fontSet="fab" fontIcon="fa-linkedin-in"></mat-icon>
+      <span>Continue with LinkedIn</span>
+    </button>
+  </div>
+  <div class="signupButton">
+    <button mat-raised-button color="primary" id="telegramBtn">
+      <mat-icon fontSet="fab" fontIcon="fa-telegram-plane"></mat-icon>
+      <span>Continue with Telegram</span>
+    </button>
+  </div>
+  <div class="signupButton">
+    <button mat-raised-button color="primary" id="twitterBtn">
+      <mat-icon fontSet="fab" fontIcon="fa-twitter"></mat-icon>
+      <span>Continue with Twitter</span>
+    </button>
+  </div>
+  <div class="signupButton">
+    <button mat-raised-button color="primary" id="googleBtn">
+      <mat-icon fontSet="fab" fontIcon="fa-google"></mat-icon>
+      <span>Continue with Google</span>
+    </button>
+  </div>
+</div>

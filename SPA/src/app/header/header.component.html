@@ -3,7 +3,7 @@
   <div class="logo">
     <a routerLink="/">
       <mat-icon class="hideOnTablet" svgIcon="kwee-icon-light"></mat-icon>
-      <mat-icon class="hideOnMobile" svgIcon="kwee-logo-light"></mat-icon>
+      <mat-icon class="hideOnMobile" svgIcon="kwee-logo"></mat-icon>
     </a>
   </div>
 
@@ -12,8 +12,8 @@
   <span class="fill-remaining-space"></span>
 
   <div class="user-section">
-    <app-user-menu *ngIf="signedIn"></app-user-menu>
-    <app-signupin-section *ngIf="!signedIn"></app-signupin-section>
+    <app-user-menu *ngIf="isAuthenticated()"></app-user-menu>
+    <app-signupin-section *ngIf="!isAuthenticated()"></app-signupin-section>
   </div>
 
 </mat-toolbar>
