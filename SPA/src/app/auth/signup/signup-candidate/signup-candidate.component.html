@@ -1,0 +1,161 @@
+<mat-horizontal-stepper #stepper linear="true">
+  <mat-step [stepControl]="firstFormGroup">
+    <form [formGroup]="firstFormGroup">
+      <ng-template matStepLabel>Choose sign up method</ng-template>
+      <!--<mat-form-field>-->
+      <!--<input matInput placeholder="Last name, First name" formControlName="firstCtrl" required>-->
+      <!--</mat-form-field>-->
+      <h2>Choose your favourite method to sign up!</h2>
+      <div class="container"
+           fxLayout="column"
+           fxLayoutAlign="center center"
+           fxLayoutGap="8px">
+        <div class="signupButton">
+          <button mat-raised-button color="primary" matStepperNext>
+            <mat-icon class="svg" svgIcon="email"></mat-icon>
+            <span>Continue with email</span>
+          </button>
+        </div>
+        <div class="signupButton">
+          <button mat-raised-button color="primary" matStepperNext id="linkedinBtn">
+            <mat-icon fontSet="fab" fontIcon="fa-linkedin-in"></mat-icon>
+            <span>Continue with LinkedIn</span>
+          </button>
+        </div>
+        <div class="signupButton">
+          <button mat-raised-button color="primary" matStepperNext id="telegramBtn">
+            <mat-icon fontSet="fab" fontIcon="fa-telegram-plane"></mat-icon>
+            <span>Continue with Telegram</span>
+          </button>
+        </div>
+        <div class="signupButton">
+          <button mat-raised-button color="primary" matStepperNext id="twitterBtn">
+            <mat-icon fontSet="fab" fontIcon="fa-twitter"></mat-icon>
+            <span>Continue with Twitter</span>
+          </button>
+        </div>
+        <div class="signupButton">
+          <button mat-raised-button color="primary" matStepperNext id="googleBtn">
+            <mat-icon fontSet="fab" fontIcon="fa-google"></mat-icon>
+            <span>Continue with Google</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="secondFormGroup">
+    <form [formGroup]="secondFormGroup">
+      <ng-template matStepLabel>Fill in your info</ng-template>
+      <!--<mat-form-field>-->
+      <!--<input matInput placeholder="Address" formControlName="secondCtrl" required>-->
+      <!--</mat-form-field>-->
+      <!--<div>-->
+      <!--</div>-->
+      <div class="container"
+           fxLayout="column"
+           fxLayoutAlign="center"
+           fxLayoutGap="8px"
+           fxFlex="grow"
+           fxFlexOffset.xs="0"
+           fxFlexOffset="15%">
+        <div fxLayout="row"><h2>Fill in the information below to be set to go!</h2></div>
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0px" fxLayoutGap="16px">
+          <mat-form-field>
+            <input matInput placeholder="First Name" required>
+            <mat-icon svgIcon="person" color="primary" matPrefix></mat-icon>
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput placeholder="Last Name(s)" required>
+          </mat-form-field>
+        </div>
+        <br>
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0" fxLayoutGap="16px">
+          <mat-form-field>
+            <input matInput placeholder="Email" required>
+            <mat-icon svgIcon="email" color="primary" matPrefix></mat-icon>
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput placeholder="Confirm Email" required>
+          </mat-form-field>
+        </div>
+        <br>
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0" fxLayoutGap="16px">
+          <mat-form-field>
+            <mat-icon svgIcon="lock" color="primary" matPrefix></mat-icon>
+            <input matInput placeholder="Password" [type]="hide ? 'text' : 'password'" required>
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput placeholder="Confirm Password" [type]="hide ? 'text' : 'password'" required>
+            <mat-icon matSuffix (click)="hide = !hide" [svgIcon]="hide ? 'visibility' : 'visibility-off'"
+                      color="primary"></mat-icon>
+          </mat-form-field>
+        </div>
+        <br>
+        <div fxLayout="row" fxLayout.xs="column">
+          <mat-form-field>
+            <input matInput [matDatepicker]="picker" placeholder="Birthday" required>
+            <mat-datepicker-toggle matPrefix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <br>
+        <div fxLayout="row" fxLayout.xs="column">
+          <mat-form-field>
+            <input matInput placeholder="Location" required>
+            <mat-icon svgIcon="place" color="primary" matPrefix></mat-icon>
+          </mat-form-field>
+        </div>
+        <br>
+        <div fxLayout="row" fxLayout.xs="column">
+          <mat-form-field>
+            <mat-select placeholder="Role" required>
+              <mat-option *ngFor="let role of roles" [value]="role.value">
+                {{role.viewValue}}
+              </mat-option>
+            </mat-select>
+            <mat-icon svgIcon="work" color="primary" matPrefix></mat-icon>
+          </mat-form-field>
+        </div>
+        <br>
+        <div fxLayout="row" fxLayoutAlign="end">
+          <button mat-button matStepperPrevious color="primary">Back</button>
+          <button mat-button matStepperNext color="accent">Sign Up!</button>
+        </div>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step>
+    <ng-template matStepLabel>Your're in!</ng-template>
+    <div class="container"
+         fxLayout="column"
+         fxLayoutAlign="center"
+         fxFlex="grow"
+         fxFlexOffset.xs="0"
+         fxFlexOffset="15%">
+      <div fxLayout="column">
+        <h2 fxLayoutAlign="center center">✨ Welcome to the Kwee family! ✨</h2>
+        <p>Complete your profile to increase your visibility and help you find the job you want!</p>
+      </div>
+      <br>
+      <div fxLayout="column">
+        <h4>Bio</h4>
+        <mat-form-field>
+          <textarea matInput placeholder="Leave a comment"></textarea>
+        </mat-form-field>
+      </div>
+      <br>
+      <div fxLayout="column">
+        <h4>Experience</h4>
+        <p>Son las 4:55AM ya lo continuo en otro momento -.-''</p>
+      </div>
+      <br>
+      <div fxLayout="row" fxLayoutAlign="end">
+        <button mat-button color="accent" routerLink="/">Done</button>
+      </div>
+    </div>
+    <!--<div>-->
+    <!--<button mat-button matStepperPrevious>Back</button>-->
+    <!--<button mat-button (click)="stepper.reset()">Reset</button>-->
+    <!--</div>-->
+  </mat-step>
+</mat-horizontal-stepper>
