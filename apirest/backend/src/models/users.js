@@ -32,10 +32,16 @@ module.exports = (sequelize, DataTypes) => {
             }
         },
 
+        google: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
+        },
+
         root: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
-            defaultValue: 0
+            defaultValue: false
         }
 
     }, {
