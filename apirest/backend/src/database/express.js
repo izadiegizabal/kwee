@@ -1,9 +1,9 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const path = require('path');
-const fs = require('fs');
+const express = require('express'),
+    bodyParser = require('body-parser'),
+    path = require('path'),
+    session = require('express-session');
 
-const app = express()
+const app = express();
 
 // Configure the app to use bodyParser()
 // This will let us get the data from post
@@ -19,6 +19,13 @@ app.use((req, res, next) => {
 
     next();
 });
+
+// express-session setup 
+app.use(session({
+    secret: 'sytr456-65tyrd-12wrt',
+    resave: true,
+    saveUninitialized: true
+}));
 
 // enable frontend folder
 app.use(express.static(path.resolve(__dirname, '../../../frontend')));

@@ -2,6 +2,8 @@ const env = require('../../tools/constants');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const passport = require('../../middlewares/passport');
+
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client(env.CLIENT_ID);
 
@@ -27,7 +29,7 @@ module.exports = (app, db) => {
                 return res.status(400).json({
                     ok: false,
                     err: {
-                        message: 'User or (password) incorrect'
+                        message: 'User or password incorrect'
                     }
                 });
             }
@@ -63,7 +65,6 @@ module.exports = (app, db) => {
         return {
             name: payload.name,
             email: payload.email,
-            // img
             // google: true
         }
 
@@ -86,7 +87,7 @@ module.exports = (app, db) => {
         if (!user) {
 
             try {
-                let user = await db.users.create({
+                await db.users.create({
                     name: googleUser.name,
                     email: googleUser.email,
                     google: true,
@@ -126,4 +127,129 @@ module.exports = (app, db) => {
             }
         }
     });
+
+    app.get('/auth/instagram', passport.authenticate('instagram'))
+
+    app.get('/auth/instagram/callback',
+        passport.authenticate('instagram', { failureRedirect: '/login' }),
+
+        async(req, res, next) => {
+            // Authentication with Instagram successful
+            try {
+
+                let user = await db.users.findOne({ where: { email: req.user.username } });
+
+                if (!user) {
+                    // New user
+                    let user = await db.users.create({
+                        name: req.user.displayName,
+                        email: req.user.username,
+                        password: ':)'
+                    });
+
+                    return res.status(200).json({
+                        ok: true,
+                        user: {
+                            name: user.name,
+                            email: user.email
+                        }
+                    });
+
+                } else {
+                    // Existent user
+                    res.redirect('/');
+                }
+            } catch (err) {
+                next({ type: 'error', error: 'Error getting data' });
+            }
+        });
+
+    app.get('/auth/linkedin',
+        passport.authenticate('linkedin'),
+        function(req, res) {
+            // The request will be redirected to LinkedIn for authentication, so this
+            // function will not be called.
+        });
+
+    app.get('/auth/linkedin/callback',
+        passport.authenticate('linkedin', { failureRedirect: '/login' }),
+        async(req, res, next) => {
+            // Authentication with Instagram successful
+            try {
+                console.log('req: ', req);
+
+                let user = await db.users.findOne({ where: { email: req.user.username } });
+
+                if (!user) {
+                    // New user
+
+                    // let user = await db.users.create({
+                    //     name: req.user.displayName,
+                    //     email: req.user.username,
+                    //     password: ':)'
+                    // });
+
+                    return res.status(200).json({
+                        ok: true,
+                        user: {
+                            name: user.name,
+                            email: user.email
+                        }
+                    });
+
+                } else {
+                    // Existent user
+                    res.redirect('/');
+                }
+            } catch (err) {
+                next({ type: 'error', error: 'Error getting data' });
+            }
+        });
+
+    app.get('/auth/telegram',
+        passport.authenticate('telegram'),
+        function(req, res) {
+            // The request will be redirected to telepass.me for authentication,
+            // so this function will not be called.
+        }
+    );
+
+    app.get('/auth/telegram/callback',
+        passport.authenticate('telegram', { failureRedirect: '/login' }),
+        // function(req, res) {
+        //     // Successful authentication, redirect home.
+        //     res.redirect('/');
+        // }
+        async(req, res, next) => {
+            // Authentication with Telegram successful
+            try {
+                console.log('req: ', req);
+
+                //let user = await db.users.findOne({ where: { email: req.user.username } });
+
+                if (!user) {
+                    // New user
+
+                    // let user = await db.users.create({
+                    //     name: req.user.displayName,
+                    //     email: req.user.username,
+                    //     password: ':)'
+                    // });
+
+                    return res.status(200).json({
+                        ok: true,
+                        user: {
+                            name: user.name,
+                            email: user.email
+                        }
+                    });
+
+                } else {
+                    // Existent user
+                    res.redirect('/');
+                }
+            } catch (err) {
+                next({ type: 'error', error: 'Error getting data' });
+            }
+        });
 }
