@@ -8,6 +8,8 @@ const env = {
     JSONWEBTOKEN_ISSUER: "WmelonCorp_Kwee_issuer",
     JSONWEBTOKEN_EXPIRES: "88888h",
 
+    LOGIN_MASTER_PASSWORD: "troglodita",
+
     /*
     Google client id
     */
