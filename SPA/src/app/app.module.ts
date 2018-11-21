@@ -4,7 +4,6 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {HttpClientModule} from '@angular/common/http';
 import {ReactiveFormsModule} from '@angular/forms';
-
 // Angular Material modules
 import {MatCardModule} from '@angular/material/card';
 import {MatIconModule, MatIconRegistry} from '@angular/material/icon';
@@ -19,7 +18,6 @@ import {MatInputModule} from '@angular/material/input';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {SignupOffererComponent} from './auth/signup/signup-offerer/signup-offerer.component';
 import {MatExpansionModule, MatNativeDateModule, MatSelectModule} from '@angular/material';
-
 // Created Components
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
@@ -73,7 +71,8 @@ import {SigninComponent} from './auth/signin/signin.component';
     MatDatepickerModule,
     MatNativeDateModule,
     MatSelectModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatDividerModule
   ],
   providers: [MatIconRegistry],
   bootstrap: [AppComponent]

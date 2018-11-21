@@ -10,7 +10,7 @@
            fxLayoutGap="8px">
         <div class="signupButton">
           <button mat-raised-button matStepperNext>
-            <mat-icon class="svg" svgIcon="email"></mat-icon>
+            <mat-icon color="accent" class="svg" svgIcon="email"></mat-icon>
             <span>Continue with email</span>
           </button>
         </div>
@@ -43,26 +43,25 @@
   </mat-step>
 
 
-
-   <mat-step [stepControl]="secondFormGroup">
+  <mat-step [stepControl]="secondFormGroup">
     <form [formGroup]="secondFormGroup">
       <ng-template matStepLabel>Fill in your info</ng-template>
 
 
-
-        <div class="container"
+      <div class="container"
            fxLayout="column"
            fxLayoutAlign="center"
            fxLayoutGap="8px"
-           fxFlex="grow"
            fxFlexOffset.xs="0"
-           fxFlexOffset="15%">
+           fxFlexOffset="15%"
+           fxFlex="100%"
+           fxFlex.gt-md="60%">
         <div fxLayout="row"><h2>Fill in the information below to be set to go!</h2></div>
 
 
-         <div fxLayout="column">
-	        <h4>Basic info</h4> 
-	      </div>
+        <div fxLayout="column">
+          <h4>Basic info</h4>
+        </div>
 
 
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0px" fxLayoutGap="16px">
@@ -111,19 +110,19 @@
         <br>
 
         <div fxLayout="column">
-         <h4>Address</h4>
-     	</div>
+          <h4>Address</h4>
+        </div>
 
-		 <div class="line1" fxLayout="column">
-           <mat-form-field>
+        <div class="line1" fxLayout="column">
+          <mat-form-field>
             <input matInput placeholder="Address line 1" required>
             <mat-icon svgIcon="place" color="primary" matPrefix></mat-icon>
           </mat-form-field>
         </div>
         <br>
 
-         <div class="line1" fxLayout="column">
-           <mat-form-field >
+        <div class="line1" fxLayout="column">
+          <mat-form-field>
             <input matInput placeholder="Address line 2" required>
           </mat-form-field>
         </div>
@@ -140,8 +139,8 @@
         </div>
 
 
-		<br>
-         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0px" fxLayoutGap="16px">
+        <br>
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0px" fxLayoutGap="16px">
           <mat-form-field>
             <input matInput placeholder="Postal Code" required>
           </mat-form-field>
@@ -163,12 +162,14 @@
     <div class="container"
          fxLayout="column"
          fxLayoutAlign="center"
-         fxFlex="grow"
+         fxFlex="100%"
+         fxFlex.gt-md="60%"
          fxFlexOffset.xs="0"
          fxFlexOffset="15%">
       <div fxLayout="column">
         <h2 fxLayoutAlign="center center">✨ Welcome to the Kwee family! ✨</h2>
-        <p>While we verify the information provided, please fill the information below to improve your visibility and incrase your trustiness for the applicants.</p>
+        <p>While we verify the information provided, please fill the information below to improve your visibility and
+          incrase your trustiness for the applicants.</p>
       </div>
       <br>
 
@@ -183,49 +184,48 @@
 
       <div fxLayout="column">
         <h4>Company Details</h4>
-        
+
       </div>
 
 
       <div class="line2" fxLayout="column">
-           <mat-form-field>
-            <input matInput placeholder="Website" >
-            <mat-icon svgIcon="public" color="primary" matPrefix></mat-icon>
-          </mat-form-field>
-        </div>
+        <mat-form-field>
+          <input matInput placeholder="Website">
+          <mat-icon svgIcon="public" color="primary" matPrefix></mat-icon>
+        </mat-form-field>
+      </div>
 
 
+      <br>
+      <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0px" fxLayoutGap="16px">
+        <mat-form-field>
+          <mat-select placeholder="Company size">
+            <mat-option *ngFor="let companySize of companySizes" [value]="companySize.value">
+              {{companySize.viewValue}}
+            </mat-option>
+          </mat-select>
+          <mat-icon svgIcon="domain" color="primary" matPrefix></mat-icon>
+        </mat-form-field>
 
-		<br>
-       <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0px" fxLayoutGap="16px">
-          <mat-form-field>
-            <mat-select placeholder="Company size" >
-             <mat-option *ngFor="let companySize of companySizes" [value]="companySize.value">
-                {{companySize.viewValue}}
-              </mat-option>
-            </mat-select>
-            <mat-icon svgIcon="domain" color="primary" matPrefix></mat-icon>
-          </mat-form-field>
-
-        </div>
+      </div>
 
 
-        <br>
-         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0px" fxLayoutGap="16px">
-          <mat-form-field>
-            <mat-select placeholder="Company type" >
-              <mat-option *ngFor="let companyType of companyTypes" [value]="companyType.value">
-                {{companyType.viewValue}}
-              </mat-option>
-            </mat-select>
-            <mat-icon svgIcon="work" color="primary" matPrefix></mat-icon>
-          </mat-form-field>
+      <br>
+      <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0px" fxLayoutGap="16px">
+        <mat-form-field>
+          <mat-select placeholder="Work Field">
+            <mat-option *ngFor="let field of workField" [value]="field.value">
+              {{field.viewValue}}
+            </mat-option>
+          </mat-select>
+          <mat-icon svgIcon="work" color="primary" matPrefix></mat-icon>
+        </mat-form-field>
 
-          <mat-form-field>
-            <input matInput placeholder="Year founded" >
-            <mat-icon svgIcon="cake" color="primary" matPrefix></mat-icon>
-          </mat-form-field>
-        </div>
+        <mat-form-field>
+          <input matInput placeholder="Year founded">
+          <mat-icon svgIcon="cake" color="primary" matPrefix></mat-icon>
+        </mat-form-field>
+      </div>
 
 
       <br>

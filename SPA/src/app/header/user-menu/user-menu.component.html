@@ -1,6 +1,6 @@
 <mat-menu #menu="matMenu">
   <div class="welcomeMsg">Hi, <strong>Alba</strong>! <br> <a routerLink="/users/:id">View Profile</a></div>
-  <hr>
+  <mat-divider></mat-divider>
   <button mat-menu-item>
     <mat-icon svgIcon="notifications"></mat-icon>
     <span>Notifications</span>
@@ -21,7 +21,7 @@
     <mat-icon svgIcon="settings"></mat-icon>
     <span>Settings</span>
   </button>
-  <hr>
+    <mat-divider></mat-divider>
   <button mat-menu-item (click)="logOut()">Sign out</button>
 </mat-menu>
 

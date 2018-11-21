@@ -2,9 +2,6 @@
   <mat-step [stepControl]="firstFormGroup">
     <form [formGroup]="firstFormGroup">
       <ng-template matStepLabel>Choose sign up method</ng-template>
-      <!--<mat-form-field>-->
-      <!--<input matInput placeholder="Last name, First name" formControlName="firstCtrl" required>-->
-      <!--</mat-form-field>-->
       <h2>Choose your favourite method to sign up!</h2>
       <div class="container"
            fxLayout="column"
@@ -12,7 +9,7 @@
            fxLayoutGap="8px">
         <div class="signupButton">
           <button mat-raised-button matStepperNext>
-            <mat-icon class="svg" svgIcon="email"></mat-icon>
+            <mat-icon color="accent" class="svg" svgIcon="email"></mat-icon>
             <span>Continue with email</span>
           </button>
         </div>
@@ -46,16 +43,12 @@
   <mat-step [stepControl]="secondFormGroup">
     <form [formGroup]="secondFormGroup">
       <ng-template matStepLabel>Fill in your info</ng-template>
-      <!--<mat-form-field>-->
-      <!--<input matInput placeholder="Address" formControlName="secondCtrl" required>-->
-      <!--</mat-form-field>-->
-      <!--<div>-->
-      <!--</div>-->
       <div class="container"
            fxLayout="column"
            fxLayoutAlign="center"
            fxLayoutGap="8px"
-           fxFlex="grow"
+           fxFlex="100%"
+           fxFlex.gt-md="60%"
            fxFlexOffset.xs="0"
            fxFlexOffset="15%">
         <div fxLayout="row"><h2>Fill in the information below to be set to go!</h2></div>
@@ -129,7 +122,8 @@
     <div class="container"
          fxLayout="column"
          fxLayoutAlign="center"
-         fxFlex="grow"
+         fxFlex="100%"
+         fxFlex.gt-md="60%"
          fxFlexOffset.xs="0"
          fxFlexOffset="15%">
       <div fxLayout="column">
@@ -153,9 +147,5 @@
         <button mat-button color="accent" routerLink="/">Done</button>
       </div>
     </div>
-    <!--<div>-->
-    <!--<button mat-button matStepperPrevious>Back</button>-->
-    <!--<button mat-button (click)="stepper.reset()">Reset</button>-->
-    <!--</div>-->
   </mat-step>
 </mat-horizontal-stepper>
