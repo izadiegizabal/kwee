@@ -23,15 +23,12 @@
   }
 }
 
-hr {
-  opacity: 0.15;
-}
-
 .welcomeMsg {
   font-family: IBM Plex Sans, sans-serif;
   font-size: 16px;
   font-weight: 500;
   padding-left: 16px;
+  padding-bottom: 8px;
 
   a {
     color: mat-color($mat-teal, A400);

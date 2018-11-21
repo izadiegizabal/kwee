@@ -28,7 +28,7 @@ export class SignupOffererComponent implements OnInit {
   ];
 
 
-  companyTypes: { value: number, viewValue: string }[] = [
+  workField: { value: number, viewValue: string }[] = [
     {value: 0, viewValue: 'a'},
     {value: 1, viewValue: 'b'},
     {value: 2, viewValue: 'c'},
