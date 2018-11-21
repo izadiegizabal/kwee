@@ -3,58 +3,63 @@
 @import '~@angular/material/theming';
 
 
-
-
-/*
-.content{
-	text-aling: center;
-}
-*/
 footer {
-  //background-color: #B5B5B5;
+  background-color: #455a64;
   padding-top:40px;
   padding-bottom:40px;
   font-family: IBM Plex Sans, sans-serif;
   font-size: 16px;
   font-weight:500;
   white-space: nowrap;
+  color: #FFF;
+  margin-top:40px;
 
 }
 
 
-.logo mat-icon {
-	margin-left: 15%;
-	height: 88px;
-	width: 88px;
-	margin-bottom:0;
-}
 
-.logo span {
-	margin-left:-140px;
+
+.logo2{
+	text-aling:center;
+	padding-top:20px;
+	margin-bottom:0 !important;
+	
+	
+	img{
+		margin-top:-20px;
+		margin-left:40px;
+		width: 100px;
+	}
 }
 
 ul{
 	margin:0;
+	padding:0;
 }
 
 
 li{
 	list-style:none;
-	padding:10px;
-}
+	padding-top:10px;
+
 
 	a{
-		color: #000;
+		color: #FFF;
 	  	text-decoration: none;
 	}
+}
 
-.social-icons{
-	padding-top:20px;
+.social-icons	mat-icon{
+		color:white;
+		font-size: 1.5rem;
+		padding: 5px;
+		margin-top:20px;
 }
 
 .block-links2{
 	margin-left: -10px;
 }
+
 
 @media all and (min-width: 600PX) {
 	footer{
@@ -65,5 +70,21 @@ li{
 		margin:0;
 	}
 
+	.logo2{
+		padding-top:0;
+	}
 
+	.social-icons{
+		margin-top:0;
+	}
+
+
+}
+
+
+@media all and (min-width: $tablet){
+	footer{
+		padding-left:15%;
+		padding-rigth:10%;
+	}
 }
