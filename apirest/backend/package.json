@@ -20,9 +20,11 @@
         "jsonwebtoken": "^8.4.0",
         "mysql2": "^1.6.2",
         "passport": "^0.4.0",
+        "passport-github2": "^0.1.11",
         "passport-instagram": "^1.0.0",
         "passport-linkedin-oauth2": "^1.5.0",
         "passport-telegram": "^1.0.0",
+        "passport-twitter": "^1.0.4",
         "sequelize": "^4.41.0"
     }
 }
