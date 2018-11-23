@@ -48,25 +48,83 @@ module.exports = (app, db) => {
 
     // POST single user
     app.post('/user', [checkToken, checkAdmin], async(req, res, next) => {
-        let name = req.body.name;
-        let password = req.body.password;
-        let email = req.body.email;
+        let body = req.body;
+        let password = body.password;
 
-        try {
-            let user = await db.users.create({
-                name,
-                password: bcrypt.hashSync(password, 10),
-                email
-            });
+        if (body.name && password && body.email) {
 
-            res.status(201).json({
-                ok: true,
-                message: `User '${user.name}', with id ${user.id} has been created.`
-            });
+            try {
+                let user = await db.users.create({
+                    name: body.name,
+                    password: bcrypt.hashSync(password, 10),
+                    email: body.email
+                });
 
-        } catch (err) {
-            next({ type: 'error', error: err.errors[0].message });
-        };
+                res.status(201).json({
+                    ok: true,
+                    message: `User '${user.name}', with id ${user.id} has been created.`
+                });
+
+                if (user) {
+                    if (body.type) {
+                        switch (body.type) {
+                            case 'a':
+                                if (body.city) {
+
+                                    let applicant = {};
+                                    applicant.userId = user.id;
+                                    applicant.city = body.city; // not saving :S
+                                    if (body.date_born) applicant.date_born = body.date_born;
+                                    if (body.premium) offerer.premium = body.premium;
+
+                                    console.log(applicant);
+
+                                    await db.applicants.create(applicant);
+                                    console.log('Applicant created');
+                                } else {
+                                    await db.users.destroy({
+                                        where: { id: user.id }
+                                    })
+                                    next({ type: 'error', error: 'City required' });
+                                }
+                                break;
+                            case 'o':
+                                if (body.adress) {
+
+                                    let offerer = {};
+                                    offerer.userId = user.id;
+                                    offerer.adress = body.adress;
+                                    if (body.phone) offerer.phone = body.phone;
+                                    if (body.cif) offerer.cif = body.cif;
+                                    if (body.enterprise) offerer.enterprise = body.enterprise;
+                                    if (body.particular) offerer.particular = body.particular;
+                                    if (body.premium) offerer.premium = body.premium;
+
+                                    console.log(offerer);
+
+                                    await db.offerers.create(offerer);
+                                    console.log('Offerer created');
+                                } else {
+                                    await db.users.destroy({
+                                        where: { id: user.id }
+                                    })
+                                    next({ type: 'error', error: 'City required' });
+                                }
+                                break;
+                        }
+                    } else {
+                        await db.users.destroy({
+                            where: { id: user.id }
+                        })
+                        next({ type: 'error', error: 'Must be \'type\' of user, \'a\' (applicant) or \'o\' (offerer)' });
+                    }
+                }
+            } catch (err) {
+                next({ type: 'error', error: err.errors[0].message });
+            };
+        } else {
+            next({ type: 'error', error: 'Name, email and password are required' });
+        }
     });
 
     // PUT single user
