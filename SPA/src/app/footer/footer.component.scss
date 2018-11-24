@@ -3,26 +3,23 @@
 @import '~@angular/material/theming';
 
 
-footer {
-  background-color: #455a64;
-  padding-top:40px;
-  padding-bottom:40px;
+mat-toolbar{
+	padding-top:40px;
   font-family: IBM Plex Sans, sans-serif;
   font-size: 16px;
   font-weight:500;
- // white-space: nowrap;
-  color: #FFF;
   margin-top:40px;
-
+  height: auto;
+  white-space: normal !important;
+ 
 }
-
-
 
 
 .logo2{
 	text-aling:center;
 	padding-top:20px;
 	margin-bottom:0 !important;
+	flex: 1 1 auto;
 	
 	
 	img{
@@ -44,14 +41,14 @@ li{
 
 
 	a{
-		color: #FFF;
+		color: white;
 	  	text-decoration: none;
 	}
 }
 
 .social-icons	mat-icon{
 		color:white;
-		font-size: 1.5rem;
+		font-size: 1.1 rem;
 		padding: 5px;
 		margin-top:20px;
 }
@@ -62,8 +59,10 @@ li{
 
 
 @media all and (min-width: 600PX) {
-	footer{
+	mat-toolbar{
 		padding-left: 10%;
+		padding-bottom:40px;
+
 	}
 	ul{
 		padding:0;
@@ -83,7 +82,7 @@ li{
 
 
 @media all and (min-width: $tablet){
-	footer{
+	mat-toolbar{
 		padding-left:15%;
 		padding-rigth:10%;
 	}
