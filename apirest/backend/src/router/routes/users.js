@@ -66,7 +66,7 @@ module.exports = (app, db) => {
                 });
 
                 if (user) {
-                    if (body.type) {
+                    if (body.type && (body.type === 'a' || body.type === 'o')) {
                         switch (body.type) {
                             case 'a':
                                 createApplicant(body, user);
@@ -77,9 +77,7 @@ module.exports = (app, db) => {
                                 break;
                         }
                     } else {
-                        await db.users.destroy({
-                            where: { id: user.id }
-                        })
+                        await db.users.destroy({ where: { id: user.id } });
                         next({ type: 'error', error: 'Must be \'type\' of user, \'a\' (applicant) or \'o\' (offerer)' });
                     }
                 }
