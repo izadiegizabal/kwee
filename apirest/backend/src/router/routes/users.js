@@ -69,47 +69,11 @@ module.exports = (app, db) => {
                     if (body.type) {
                         switch (body.type) {
                             case 'a':
-                                if (body.city) {
-
-                                    let applicant = {};
-                                    applicant.userId = user.id;
-                                    applicant.city = body.city; // not saving :S
-                                    if (body.date_born) applicant.date_born = body.date_born;
-                                    if (body.premium) offerer.premium = body.premium;
-
-                                    console.log(applicant);
-
-                                    await db.applicants.create(applicant);
-                                    console.log('Applicant created');
-                                } else {
-                                    await db.users.destroy({
-                                        where: { id: user.id }
-                                    })
-                                    next({ type: 'error', error: 'City required' });
-                                }
+                                createApplicant(body, user);
                                 break;
+
                             case 'o':
-                                if (body.adress) {
-
-                                    let offerer = {};
-                                    offerer.userId = user.id;
-                                    offerer.adress = body.adress;
-                                    if (body.phone) offerer.phone = body.phone;
-                                    if (body.cif) offerer.cif = body.cif;
-                                    if (body.enterprise) offerer.enterprise = body.enterprise;
-                                    if (body.particular) offerer.particular = body.particular;
-                                    if (body.premium) offerer.premium = body.premium;
-
-                                    console.log(offerer);
-
-                                    await db.offerers.create(offerer);
-                                    console.log('Offerer created');
-                                } else {
-                                    await db.users.destroy({
-                                        where: { id: user.id }
-                                    })
-                                    next({ type: 'error', error: 'City required' });
-                                }
+                                createOfferer(body, user);
                                 break;
                         }
                     } else {
@@ -168,4 +132,44 @@ module.exports = (app, db) => {
             next({ type: 'error', error: 'Error getting data' });
         }
     });
+
+    async function createApplicant(body, user) {
+        if (body.city) {
+            let applicant = {};
+            applicant.userId = user.id;
+            applicant.city = body.city; // not saving :S
+            if (body.date_born) applicant.date_born = body.date_born;
+            if (body.premium) offerer.premium = body.premium;
+
+            console.log(applicant);
+
+            await db.applicants.create(applicant);
+            console.log('Applicant created');
+        } else {
+            await db.users.destroy({ where: { id: user.id } });
+            next({ type: 'error', error: 'City required' });
+        }
+    }
+
+    async function createOfferer(body, user) {
+        if (body.adress) {
+
+            let offerer = {};
+            offerer.userId = user.id;
+            offerer.adress = body.adress;
+            if (body.phone) offerer.phone = body.phone;
+            if (body.cif) offerer.cif = body.cif;
+            if (body.enterprise) offerer.enterprise = body.enterprise;
+            if (body.particular) offerer.particular = body.particular;
+            if (body.premium) offerer.premium = body.premium;
+
+            console.log(offerer);
+
+            await db.offerers.create(offerer);
+            console.log('Offerer created');
+        } else {
+            await db.users.destroy({ where: { id: user.id } });
+            next({ type: 'error', error: 'Adress required' });
+        }
+    }
 }
