@@ -8,12 +8,6 @@ module.exports = (app, db) => {
     app.get('/auth/github/callback',
         passport.authenticate('github', { failureRedirect: '/login' }),
 
-        // function(req, res) {
-        //     // Successful authentication, redirect home.
-        //     console.log('logged with GitHub !!!!!!');
-        //     res.redirect('/');
-        // });
-
         async(req, res, next) => {
             // Authentication with Instagram successful
             try {
@@ -25,7 +19,8 @@ module.exports = (app, db) => {
                     let user = await db.users.create({
                         name: req.user.displayName,
                         email: req.user._json.email,
-                        password: ':)'
+                        password: ':)',
+                        sn_signin: true
                     });
 
                     return res.status(200).json({

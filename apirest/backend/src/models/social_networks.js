@@ -12,25 +12,25 @@ module.exports = (sequelize, DataTypes) => {
         },
 
         twitter: {
-            type: DataTypes.STRING(30),
+            type: DataTypes.STRING(50),
             field: 'twitter',
             allowNull: true
         },
 
         instagram: {
-            type: DataTypes.STRING(30),
+            type: DataTypes.STRING(50),
             field: 'instagram',
             allowNull: true
         },
 
         telegram: {
-            type: DataTypes.STRING(30),
+            type: DataTypes.STRING(50),
             field: 'telegram',
             allowNull: true
         },
 
         linkedin: {
-            type: DataTypes.STRING(30),
+            type: DataTypes.STRING(50),
             field: 'linkedin',
             allowNull: true
         },

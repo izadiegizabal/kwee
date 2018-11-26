@@ -3,7 +3,7 @@ const pass = require('./passwords');
 const callback_url = 'http://localhost:3000/auth/';
 
 const env = {
-    DATABASE_NAME: 'simple',
+    DATABASE_NAME: 'kweetest',
     DATABASE_USERNAME: 'root',
     DATABASE_PASSWORD: '',
     PORT: 3000,

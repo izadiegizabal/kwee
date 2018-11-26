@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
             }
         },
 
-        google: {
+        sn_signin: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false

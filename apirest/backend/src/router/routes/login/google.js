@@ -44,8 +44,8 @@ module.exports = (app, db) => {
                 await db.users.create({
                     name: googleUser.name,
                     email: googleUser.email,
-                    google: true,
-                    password: ':)'
+                    password: ':)',
+                    sn_signin: true
                 });
 
                 res.status(201).json({

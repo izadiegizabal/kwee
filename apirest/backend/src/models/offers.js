@@ -4,18 +4,13 @@ module.exports = (sequelize, DateTypes) => {
 
         fk_offerer: {
             type: DateTypes.INTEGER,
-            allowNull: false,
-            unique: {
-                args: true,
-                message: 'This social network has user.'
-            }
+            allowNull: false
         },
 
         title: {
             type: DateTypes.STRING(50),
             field: 'title',
             allowNull: false,
-            unique: true,
             validate: {
                 notEmpty: true
             }

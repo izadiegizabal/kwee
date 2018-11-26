@@ -19,7 +19,8 @@ module.exports = (app, db) => {
                     let user = await db.users.create({
                         name: req.user.displayName,
                         email: req.user.username,
-                        password: ':)'
+                        password: ':)',
+                        sn_signin: true
                     });
 
                     return res.status(200).json({
