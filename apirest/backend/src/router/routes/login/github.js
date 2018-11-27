@@ -16,7 +16,7 @@ module.exports = (app, db) => {
 
                 if (!user) {
                     // New user
-                    let user = await db.users.create({
+                    user = await db.users.create({
                         name: req.user.displayName,
                         email: req.user._json.email,
                         password: ':)',

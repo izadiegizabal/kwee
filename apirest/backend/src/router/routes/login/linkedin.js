@@ -12,20 +12,29 @@ module.exports = (app, db) => {
     app.get('/auth/linkedin/callback',
         passport.authenticate('linkedin', { failureRedirect: '/login' }),
         async(req, res, next) => {
-            // Authentication with Instagram successful
-            try {
-                console.log('req: ', req);
+            let email = req.user.emails[0].value;
+            let user;
+            // Authentication with LinkedIn successful
 
-                let user = await db.users.findOne({ where: { email: req.user.username } });
+            try {
+
+                for (let i = 0; i < req.user.emails.length; i++) {
+                    user = await db.users.findOne({ where: { email: req.user.emails[i].value } });
+                    if (user) {
+                        // User in database
+                        res.redirect('/');
+                        break;
+                    }
+                }
 
                 if (!user) {
                     // New user
-
-                    // let user = await db.users.create({
-                    //     name: req.user.displayName,
-                    //     email: req.user.username,
-                    //     password: ':)'
-                    // });
+                    let user = await db.users.create({
+                        name: req.user.displayName,
+                        email,
+                        password: ':)',
+                        sn_signin: true
+                    });
 
                     return res.status(200).json({
                         ok: true,
@@ -34,11 +43,8 @@ module.exports = (app, db) => {
                             email: user.email
                         }
                     });
-
-                } else {
-                    // Existent user
-                    res.redirect('/');
                 }
+
             } catch (err) {
                 next({ type: 'error', error: 'Error getting data' });
             }

@@ -7,10 +7,10 @@ const routes = [
     require('./routes/login'),
     require('./routes/login/github'),
     require('./routes/login/google'),
-    require('./routes/login/instagram'),
     require('./routes/login/linkedin'),
-    require('./routes/login/telegram'),
     require('./routes/login/twitter')
+    // require('./routes/login/instagram'),
+    // require('./routes/login/telegram'),
 ];
 
 // Add access to the app and db objects to each route

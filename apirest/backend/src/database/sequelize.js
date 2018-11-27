@@ -66,8 +66,8 @@ db.rating_applicants.hasMany(db.comments, { foreignKey: 'fk_rating_applicant' })
 db.rating_offerers.hasMany(db.comments, { foreignKey: 'fk_rating_offerer' });
 
 // N:M
-db.offers.belongsToMany(db.applicants, { through: 'applications', foreignKey: 'fk_user' });
-db.applicants.belongsToMany(db.offers, { through: 'applications', foreignKey: 'fk_offer' });
+db.offers.belongsToMany(db.applicants, { through: 'applications', foreignKey: 'fk_offer' });
+db.applicants.belongsToMany(db.offers, { through: 'applications', foreignKey: 'fk_applicant' });
 
 db.users.belongsToMany(db.users, { through: 'messages', as: 'sender', foreignKey: 'fk_sender' });
 db.users.belongsToMany(db.users, { through: 'messages', as: 'receiver', foreignKey: 'fk_receiver' });
