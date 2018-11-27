@@ -1,3 +1,5 @@
+const { checkToken, checkAdmin } = require('../../middlewares/authentication');
+
 // =======================================
 // ======== CRUD social_networks =========
 // =======================================
@@ -5,7 +7,7 @@
 module.exports = (app, db) => {
 
     // GET all social_networks
-    app.get('/social_networks', async(req, res, next) => {
+    app.get('/social_networks', checkToken, async(req, res, next) => {
         try {
             res.status(200).json({
                 ok: true,
@@ -17,7 +19,7 @@ module.exports = (app, db) => {
     });
 
     // GET one social_network by id
-    app.get('/social_network/:id([0-9]+)', async(req, res, next) => {
+    app.get('/social_network/:id([0-9]+)', checkToken, async(req, res, next) => {
         const id = req.params.id;
 
         try {
@@ -32,20 +34,16 @@ module.exports = (app, db) => {
     });
 
     // POST single social_network
-    app.post('/social_network', async(req, res, next) => {
-        const userId = req.body.user;
-        const twitter = req.body.twitter;
-        const instagram = req.body.instagram;
-        const telegram = req.body.telegram;
-        const linkedin = req.body.linkedin;
+    app.post('/social_network', [checkToken, checkAdmin], async(req, res, next) => {
+        const body = req.body;
 
         try {
             let social_network = await db.social_networks.create({
-                userId,
-                twitter,
-                instagram,
-                telegram,
-                linkedin
+                userId: body.userId,
+                twitter: body.twitter ? body.twitter : null,
+                instagram: body.instagram ? body.instagram : null,
+                telegram: body.telegram ? body.telegram : null,
+                linkedin: body.linkedin ? body.linkedin : null
             })
 
             res.status(201).json({
@@ -60,7 +58,7 @@ module.exports = (app, db) => {
     });
 
     // PUT single social_network
-    app.put('/social_network/:id', async(req, res, next) => {
+    app.put('/social_network/:id', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
 
@@ -82,7 +80,7 @@ module.exports = (app, db) => {
     });
 
     // DELETE single social_network
-    app.delete('/social_network/:id', async(req, res, next) => {
+    app.delete('/social_network/:id', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
 
         try {
