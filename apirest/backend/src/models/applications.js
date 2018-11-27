@@ -2,19 +2,17 @@ module.exports = (sequelize, DataTypes) => {
 
     const Application = sequelize.define('applications', {
 
-        id: {
-            type: DataTypes.INTEGER,
-            primaryKey: true
-        },
 
-        fk_user: {
+        fk_applicant: {
             type: DataTypes.INTEGER,
-            allowNull: false
+            allowNull: false,
+            primaryKey: true
         },
 
         fk_offer: {
             type: DataTypes.INTEGER,
-            allowNull: false
+            allowNull: false,
+            primaryKey: true
         },
 
         status: {
