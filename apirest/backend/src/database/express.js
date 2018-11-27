@@ -1,12 +1,15 @@
 const express = require('express'),
     bodyParser = require('body-parser'),
     path = require('path'),
-    session = require('express-session');
+    session = require('express-session'),
+    morgan = require('morgan')
+env = require('../tools/constants');
 
 const app = express();
 
 // Configure the app to use bodyParser()
 // This will let us get the data from post
+app.use(morgan('combined'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -22,7 +25,7 @@ app.use((req, res, next) => {
 
 // express-session setup 
 app.use(session({
-    secret: 'sytr456-65tyrd-12wrt',
+    secret: env.SESSION_SECRET,
     resave: true,
     saveUninitialized: true
 }));

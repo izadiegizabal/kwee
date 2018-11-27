@@ -18,18 +18,18 @@ module.exports = (app, db) => {
     });
 
     // GET one application by id
-    app.get("/applications/:userId/:offerId", checkToken, async(req, res, next) => {
-        const userId = +req.params.userId;
-        const offerId = +req.params.offerId;
+    app.get("/application", checkToken, async(req, res, next) => {
+        const body = req.body;
+
         try {
             res.status(200).json({
                 ok: true,
-                application: await db.users.findOne({
+                application: await db.applications.findOne({
                     include: [{
                         model: db.offers,
-                        where: { id: offerId }
+                        where: { id: body.fk_offer }
                     }],
-                    where: { id: userId }
+                    where: { userId: body.fk_applicant }
                 })
             });
 
@@ -40,12 +40,11 @@ module.exports = (app, db) => {
 
     // POST single application
     app.post("/applications", [checkToken, checkAdmin], async(req, res, next) => {
-        const applicantId = req.body.applicantId;
-        const offerId = req.body.offerId;
+        const body = req.body;
 
         try {
             let applicant = await db.applicants.findOne({
-                where: { userId: applicantId }
+                where: { userId: body.fk_applicant }
             });
 
             if (applicant) {
@@ -54,13 +53,13 @@ module.exports = (app, db) => {
 
                 if (offers.length > 0) {
                     for (let i = 0; i < offers.length; i++) {
-                        offerId.push(offers[i].id);
+                        body.fk_offer.push(offers[i].id);
                     }
                 }
 
                 res.status(201).json({
                     ok: true,
-                    application: await applicant.setOffers(offerId)
+                    application: await applicant.setOffers(body.fk_offer)
                 });
             } else {
                 res.status(400).json({
@@ -76,36 +75,51 @@ module.exports = (app, db) => {
 
     // PUT single application
     app.put("/applications", [checkToken, checkAdmin], async(req, res, next) => {
-        const id = req.body.id;
-        const offer = req.body.offerId;
-        const status = req.body.status;
+        const body = req.body;
 
         try {
-            let user = await db.users.findOne({
-                where: { id }
+            let applicant = await db.applicants.findOne({
+                where: { userId: body.fk_applicant }
             });
 
-            let application = await user.setOffers(offer);
-            await db.sequelize.query({ query: `UPDATE applications SET status=\'${ status }\' WHERE userId = ? AND offerId = ?`, values: [id, offer] });
-            res.json(application);
+            if (applicant) {
+                await db.sequelize.query({ query: `UPDATE applications SET status=\'${ body.status }\' WHERE fk_applicant = ? AND fk_offer = ?`, values: [body.fk_applicant, body.fk_offer] });
+                res.status(200).json({
+                    ok: true,
+                    message: 'Updated'
+                });
+            } else {
+                res.status(400).json({
+                    ok: false,
+                    error: "Applicant doesn't exist"
+                });
+            }
+
         } catch (err) {
             next({ type: 'error', error: err.errors[0].message });
         }
     });
 
     // DELETE single application
-    app.delete("/applications", async(req, res) => {
-        const id = req.body.id;
-        const offer = req.body.offerId;
+    app.delete("/applications", [checkToken, checkAdmin], async(req, res, next) => {
+        const body = req.body;
 
         try {
-            let user = await db.users.findOne({
-                where: { id }
+            let applicant = await db.applicants.findOne({
+                where: { userId: body.fk_applicant }
             });
-            res.json({
-                ok: true,
-                application: await user.destroy(offer)
-            });
+
+            if (applicant) {
+                res.json({
+                    ok: true,
+                    application: await application.destroy(body.fk_offer)
+                });
+            } else {
+                res.status(400).json({
+                    ok: false,
+                    error: "Applicant doesn't exist"
+                });
+            }
         } catch (err) {
             next({ type: 'error', error: 'Error getting data' });
         }
