@@ -72,14 +72,14 @@ db.applicants.belongsToMany(db.offers, { through: 'applications', foreignKey: 'f
 db.users.belongsToMany(db.users, { through: 'messages', as: 'sender', foreignKey: 'fk_sender' });
 db.users.belongsToMany(db.users, { through: 'messages', as: 'receiver', foreignKey: 'fk_receiver' });
 
-db.applicants.belongsToMany(db.educations, { through: 'applicant_educations', as: 'applicant', foreignKey: 'fk_applicant' });
-db.educations.belongsToMany(db.applicants, { through: 'applicant_educations', as: 'education', foreignKey: 'fk_education' });
+db.applicants.belongsToMany(db.educations, { through: 'applicant_educations', foreignKey: 'fk_applicant' });
+db.educations.belongsToMany(db.applicants, { through: 'applicant_educations', foreignKey: 'fk_education' });
 
-db.applicants.belongsToMany(db.skills, { through: 'applicant_skills', as: 'applicant_skill', foreignKey: 'fk_applicant' });
-db.skills.belongsToMany(db.applicants, { through: 'applicant_skills', as: 'skill', foreignKey: 'fk_skill' });
+db.applicants.belongsToMany(db.skills, { through: 'applicant_skills', foreignKey: 'fk_applicant' });
+db.skills.belongsToMany(db.applicants, { through: 'applicant_skills', foreignKey: 'fk_skill' });
 
-db.applicants.belongsToMany(db.languages, { through: 'applicant_languages', as: 'applicant_language', foreignKey: 'fk_applicant' });
-db.languages.belongsToMany(db.applicants, { through: 'applicant_languages', as: 'language', foreignKey: 'fk_language' });
+db.applicants.belongsToMany(db.languages, { through: 'applicant_languages', foreignKey: 'fk_applicant' });
+db.languages.belongsToMany(db.applicants, { through: 'applicant_languages', foreignKey: 'fk_language' });
 
 // 1:1
 db.social_networks.belongsTo(db.users);

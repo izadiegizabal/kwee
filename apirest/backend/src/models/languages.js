@@ -2,7 +2,7 @@ module.exports = (sequelize, DateTypes) => {
 
     const Language = sequelize.define('languages', {
 
-        name: {
+        language: {
             type: DateTypes.STRING(20),
             field: 'language',
             allowNull: false,
