@@ -41,7 +41,7 @@
     </form>
   </mat-step>
   <mat-step [stepControl]="secondFormGroup">
-    <form [formGroup]="secondFormGroup">
+    <form [formGroup]="secondFormGroup" (ngSubmit)="onSubmit()">
       <ng-template matStepLabel>Fill in your info</ng-template>
       <div class="container"
            fxLayout="column"
@@ -54,98 +54,149 @@
         <div fxLayout="row"><h2>Fill in the information below to be set to go!</h2></div>
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0px" fxLayoutGap="16px">
           <mat-form-field>
-            <input matInput placeholder="First Name" required>
+            <input matInput formControlName="firstName" placeholder="First Name" required>
             <mat-icon svgIcon="person" color="primary" matPrefix></mat-icon>
+             <mat-error *ngIf="!secondFormGroup.get('firstName').valid && secondFormGroup.get('firstName').touched">
+              This field is required
+            </mat-error>
           </mat-form-field>
           <mat-form-field>
-            <input matInput placeholder="Last Name(s)" required>
+            <input matInput formControlName="lastName" placeholder="Last Name(s)" required>
+             <mat-error *ngIf="!secondFormGroup.get('lastName').valid && secondFormGroup.get('lastName').touched">
+              This field is required
+            </mat-error>
           </mat-form-field>
         </div>
         <br>
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0" fxLayoutGap="16px">
           <mat-form-field>
-            <input matInput placeholder="Email" required>
+            <input matInput formControlName="email" placeholder="Email" required>
             <mat-icon svgIcon="email" color="primary" matPrefix></mat-icon>
+             <mat-error *ngIf="!secondFormGroup.get('email').valid && secondFormGroup.get('email').touched">
+             Please enter a valid email
+            </mat-error>
           </mat-form-field>
           <mat-form-field>
-            <input matInput placeholder="Confirm Email" required>
+            <input matInput formControlName="confEmail" placeholder="Confirm Email" required>
+             <mat-error *ngIf="!secondFormGroup.get('confEmail').valid && secondFormGroup.get('confEmail').touched">
+               Emails do not match
+            </mat-error>
           </mat-form-field>
         </div>
         <br>
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0" fxLayoutGap="16px">
           <mat-form-field>
             <mat-icon svgIcon="lock" color="primary" matPrefix></mat-icon>
-            <input matInput placeholder="Password" [type]="hide ? 'text' : 'password'" required>
+            <input matInput formControlName="password" placeholder="Password" [type]="hide ? 'text' : 'password'" required>
+             <mat-error *ngIf="!secondFormGroup.get('password').valid && secondFormGroup.get('password').touched">
+              Password must be 6 characters or more
+            </mat-error>
           </mat-form-field>
           <mat-form-field>
-            <input matInput placeholder="Confirm Password" [type]="hide ? 'text' : 'password'" required>
+            <input matInput formControlName="password2" placeholder="Confirm Password" [type]="hide ? 'text' : 'password'" required>
             <mat-icon matSuffix (click)="hide = !hide" [svgIcon]="hide ? 'visibility' : 'visibility-off'"
                       color="primary"></mat-icon>
+            <mat-error *ngIf="!secondFormGroup.get('password2').valid && secondFormGroup.get('password2').touched">
+              Passwords do not match
+            </mat-error>
           </mat-form-field>
         </div>
         <br>
         <div fxLayout="row" fxLayout.xs="column">
           <mat-form-field>
-            <input matInput [matDatepicker]="picker" placeholder="Birthday" required>
+            <input matInput formControlName="birthday" [matDatepicker]="picker" placeholder="Birthday" required>
             <mat-datepicker-toggle matPrefix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
+             <mat-error *ngIf="!secondFormGroup.get('birthday').valid && secondFormGroup.get('birthday').touched">
+              This field is required
+            </mat-error>
           </mat-form-field>
         </div>
         <br>
         <div fxLayout="row" fxLayout.xs="column">
           <mat-form-field>
-            <input matInput placeholder="Location" required>
+            <input matInput formControlName="location" placeholder="Location" required>
             <mat-icon svgIcon="place" color="primary" matPrefix></mat-icon>
+             <mat-error *ngIf="!secondFormGroup.get('location').valid && secondFormGroup.get('location').touched">
+              This field is required
+            </mat-error>
           </mat-form-field>
         </div>
         <br>
         <div fxLayout="row" fxLayout.xs="column">
           <mat-form-field>
-            <mat-select placeholder="Role" required>
+            <mat-select formControlName="role" placeholder="Role" required>
               <mat-option *ngFor="let role of roles" [value]="role.value">
                 {{role.viewValue}}
               </mat-option>
             </mat-select>
             <mat-icon svgIcon="work" color="primary" matPrefix></mat-icon>
+
+             <mat-error *ngIf="!secondFormGroup.get('role').valid && secondFormGroup.get('role').touched">
+              This field is required
+            </mat-error>
+
           </mat-form-field>
         </div>
         <br>
         <div fxLayout="row" fxLayoutAlign="end">
           <button mat-button matStepperPrevious color="primary">Back</button>
-          <button mat-button matStepperNext color="accent">Sign Up!</button>
+          <button mat-button type="submit" (click)="onSubmit()" matStepperNext color="accent">Sign Up!</button>
         </div>
       </div>
     </form>
   </mat-step>
   <mat-step>
-    <ng-template matStepLabel>Your're in!</ng-template>
-    <div class="container"
-         fxLayout="column"
-         fxLayoutAlign="center"
-         fxFlex="100%"
-         fxFlex.gt-md="60%"
-         fxFlexOffset.xs="0"
-         fxFlexOffset="15%">
-      <div fxLayout="column">
-        <h2 fxLayoutAlign="center center">✨ Welcome to the Kwee family! ✨</h2>
-        <p>Complete your profile to increase your visibility and help you find the job you want!</p>
+    <form [formGroup]="thirdFormGroup" (ngSubmit)="onSubmit_form2()">
+      <ng-template matStepLabel>Your're in!</ng-template>
+      <div class="container"
+           fxLayout="column"
+           fxLayoutAlign="center"
+           fxFlex="100%"
+           fxFlex.gt-md="60%"
+           fxFlexOffset.xs="0"
+           fxFlexOffset="15%">
+        <div fxLayout="column">
+          <h2 fxLayoutAlign="center center">✨ Welcome to the Kwee family! ✨</h2>
+          <p>Complete your profile to increase your visibility and help you find the job you want!</p>
+        </div>
+        <br>
+        <div fxLayout="column">
+          <h4>Bio</h4>
+          <mat-form-field>
+            <textarea matInput formControlName="bio" placeholder="Leave a comment"></textarea>
+          </mat-form-field>
+        </div>
+        <br>
+        <div fxLayout="column">
+          <h4>Experience</h4>
+          <p>Son las 4:55AM ya lo continuo en otro momento -.-''</p>
+        </div>
+        <br>
+        <div fxLayout="column">
+          <h4>Skills:</h4>
+            <ul  formArrayName="skills">
+              <li *ngFor="let skill of thirdFormGroup.controls['skills'].controls; let i =index;">
+               <mat-form-field>  
+                  <input matInput 
+                          type="text" 
+                          class="form-control"
+                          id="{{'skill'+i}}"
+                          [formControlName]="i" (keyup.enter)='add_skill()' >
+                </mat-form-field>
+              </li>
+            </ul>
+        
+          <button type="button" class="btn btn-primary" (click)=" add_skill()">
+            Add
+          </button>
+        </div>
+
+        <div fxLayout="row" fxLayoutAlign="end">
+          <button mat-button type="button" color="accent" routerLink="/" >Done</button>
+        </div>
       </div>
-      <br>
-      <div fxLayout="column">
-        <h4>Bio</h4>
-        <mat-form-field>
-          <textarea matInput placeholder="Leave a comment"></textarea>
-        </mat-form-field>
-      </div>
-      <br>
-      <div fxLayout="column">
-        <h4>Experience</h4>
-        <p>Son las 4:55AM ya lo continuo en otro momento -.-''</p>
-      </div>
-      <br>
-      <div fxLayout="row" fxLayoutAlign="end">
-        <button mat-button color="accent" routerLink="/">Done</button>
-      </div>
-    </div>
+    </form>
   </mat-step>
 </mat-horizontal-stepper>
+<!--routerLink="/"-->

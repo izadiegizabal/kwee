@@ -69,14 +69,14 @@
             <input matInput formControlName="businessName" placeholder="Business name" required>
             <mat-icon svgIcon="domain" color="primary" matPrefix></mat-icon>
             <mat-error *ngIf="!secondFormGroup.get('businessName').valid && secondFormGroup.get('businessName').touched">
-              Please enter a valid name
+              This field is required
             </mat-error>
           </mat-form-field>
 
           <mat-form-field>
             <input matInput formControlName="vat" placeholder="VAT/CIF" required>
             <mat-error *ngIf="!secondFormGroup.get('vat').valid && secondFormGroup.get('vat').touched">
-              Please enter a valid VAT
+              This field is required
             </mat-error>
           </mat-form-field>
         </div>
@@ -87,7 +87,7 @@
             <input matInput formControlName="email" placeholder="Email" required>
             <mat-icon svgIcon="email" color="primary" matPrefix></mat-icon>
            <mat-error *ngIf="!secondFormGroup.get('email').valid && secondFormGroup.get('email').touched">
-              Please enter a valid email address
+              Please enter a valid email
             </mat-error>
           </mat-form-field>
           <mat-form-field>
@@ -125,6 +125,9 @@
               </mat-option>
             </mat-select>
             <mat-icon svgIcon="work" color="primary" matPrefix></mat-icon>
+            <mat-error *ngIf="!secondFormGroup.get('workField').valid && secondFormGroup.get('workField').touched">
+              This field is required
+            </mat-error>
           </mat-form-field>
         </div>
         <br>

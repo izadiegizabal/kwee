@@ -54,7 +54,7 @@ export class SignupOffererComponent implements OnInit {
       'vat': new FormControl(null, Validators.required),
       'email': new FormControl(null, [Validators.required, Validators.email]),
       'confEmail':new FormControl(null, [Validators.required, Validators.email]),
-      'password': new FormControl(null, [Validators.required, Validators.pattern("[a-zA-Z0-9_-ñ]{6,19}$")]),
+      'password': new FormControl(null, [Validators.required, Validators.pattern("[a-zA-Z0-9_-ñ]{6,49}$")]),
       'password2': new FormControl(null, Validators.required),
       'workField':new FormControl(null, Validators.required),
       'address1':new FormControl(null, Validators.required),
