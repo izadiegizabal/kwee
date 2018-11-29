@@ -14,14 +14,18 @@ export class SignupCandidateComponent implements OnInit {
   iskill=0;
 
   roles: { value: number, viewValue: string }[] = [
-    {value: 0, viewValue: 'Designer'},
-    {value: 1, viewValue: 'Front-end Developer'},
-    {value: 2, viewValue: 'Back-end Developer'},
-    {value: 3, viewValue: 'Tester'},
-    {value: 4, viewValue: 'Product Manager'},
+    {value: 0, viewValue: 'Software Engineering'},
+    {value: 1, viewValue: 'Engineering Management'},
+    {value: 2, viewValue: 'Design'},
+    {value: 3, viewValue: 'Data Analitycs'},
+    {value: 4, viewValue: 'Developer Operations'},
+    {value: 5, viewValue: 'Quality Assurance'},
+    {value: 6, viewValue: 'Information Technology'},
+    {value: 7, viewValue: 'Project Management'},
+    {value: 9, viewValue: 'Product Management'},
   ];
 
-  constructor(private _formBuilder: FormBuilder) {this.iskill=0; console.log(this.iskill)}
+  constructor(private _formBuilder: FormBuilder) {this.iskill=0;}
 
   ngOnInit() {
 
@@ -29,8 +33,7 @@ export class SignupCandidateComponent implements OnInit {
       // firstCtrl: ['', Validators.required]
     });
     this.secondFormGroup =  this._formBuilder.group({
-      'firstName': new FormControl(null, Validators.required),
-      'lastName': new FormControl(null, Validators.required),
+      'name': new FormControl(null, Validators.required),
       'email': new FormControl(null, [Validators.required, Validators.email]),
       'confEmail':new FormControl(null, [Validators.required, Validators.email]),
       'password': new FormControl(null, [Validators.required, Validators.pattern("[a-zA-Z0-9_-ñ]{6,49}$")]),
@@ -98,7 +101,6 @@ export class SignupCandidateComponent implements OnInit {
   }
 
 
-
   onSubmit(){
     console.log(this.secondFormGroup);
     
@@ -109,14 +111,24 @@ export class SignupCandidateComponent implements OnInit {
   }  
 
 
-   add_skill(){
+  add_skill(){
     (<FormArray>this.thirdFormGroup.controls['skills']).push(new FormControl(null));
     this.iskill++;
-       
+    console.log(this.formSkills.length);
+
     setTimeout(()=>{
             document.getElementById(`skill${this.iskill}`).focus();
-          }, 20);
+          }, 1);
   }
 
+
+  deleteSkill(i){
+    (<FormArray>this.thirdFormGroup.controls['skills']).removeAt(i);
+    this.iskill--;
+  }
+
+  get formSkills(){
+    return <FormArray>this.thirdFormGroup.get('skills');
+  }
 
 }

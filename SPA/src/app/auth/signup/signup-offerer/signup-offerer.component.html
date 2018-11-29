@@ -215,7 +215,7 @@
         <div fxLayout="column">
           <h4>About us</h4>
           <mat-form-field>
-            <textarea formControlName="about" matInput placeholder="Leave a comment"></textarea>
+            <textarea formControlName="about" matInput placeholder="Write a description of your..."></textarea>
           </mat-form-field>
         </div>
         <br>
@@ -236,7 +236,7 @@
 
 
         <br>
-        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0px" fxLayoutGap="16px">
+        <div fxLayout="row">
           <mat-form-field>
             <mat-select placeholder="Company size" formControlName="companySize">
               <mat-option *ngFor="let companySize of companySizes"  [value]="companySize.value">
@@ -250,16 +250,7 @@
 
 
         <br>
-        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0px" fxLayoutGap="16px">
-          <mat-form-field>
-            <mat-select placeholder="Work Field" formControlName="workField2">
-              <mat-option *ngFor="let field of workField"  [value]="field.value">
-                {{field.viewValue}}
-              </mat-option>
-            </mat-select>
-            <mat-icon svgIcon="work" color="primary" matPrefix></mat-icon>
-          </mat-form-field>
-
+        <div fxLayout="row" >
           <mat-form-field>
             <input matInput formControlName="year" placeholder="Year founded">
             <mat-icon svgIcon="cake" color="primary" matPrefix></mat-icon>

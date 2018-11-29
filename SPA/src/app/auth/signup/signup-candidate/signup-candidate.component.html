@@ -52,17 +52,11 @@
            fxFlexOffset.xs="0"
            fxFlexOffset="15%">
         <div fxLayout="row"><h2>Fill in the information below to be set to go!</h2></div>
-        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0px" fxLayoutGap="16px">
+        <div class="line1" fxLayout="column">
           <mat-form-field>
-            <input matInput formControlName="firstName" placeholder="First Name" required>
+            <input matInput formControlName="name" placeholder="Full name" required>
             <mat-icon svgIcon="person" color="primary" matPrefix></mat-icon>
-             <mat-error *ngIf="!secondFormGroup.get('firstName').valid && secondFormGroup.get('firstName').touched">
-              This field is required
-            </mat-error>
-          </mat-form-field>
-          <mat-form-field>
-            <input matInput formControlName="lastName" placeholder="Last Name(s)" required>
-             <mat-error *ngIf="!secondFormGroup.get('lastName').valid && secondFormGroup.get('lastName').touched">
+             <mat-error *ngIf="!secondFormGroup.get('name').valid && secondFormGroup.get('name').touched">
               This field is required
             </mat-error>
           </mat-form-field>
@@ -141,13 +135,13 @@
         <br>
         <div fxLayout="row" fxLayoutAlign="end">
           <button mat-button matStepperPrevious color="primary">Back</button>
-          <button mat-button type="submit" (click)="onSubmit()" matStepperNext color="accent">Sign Up!</button>
+          <button mat-button type="submit" matStepperNext color="accent">Sign Up!</button>
         </div>
       </div>
     </form>
   </mat-step>
   <mat-step>
-    <form [formGroup]="thirdFormGroup" (ngSubmit)="onSubmit_form2()">
+    <form [formGroup]="thirdFormGroup">
       <ng-template matStepLabel>Your're in!</ng-template>
       <div class="container"
            fxLayout="column"
@@ -173,23 +167,29 @@
           <p>Son las 4:55AM ya lo continuo en otro momento -.-''</p>
         </div>
         <br>
-        <div fxLayout="column">
+        
           <h4>Skills:</h4>
-            <ul  formArrayName="skills">
-              <li *ngFor="let skill of thirdFormGroup.controls['skills'].controls; let i =index;">
-               <mat-form-field>  
-                  <input matInput 
+          <div fxLayout="row" fxLayoutGap="16px">
+            <div  formArrayName="skills" fxLayout="column" fxFlex="50%">
+               <mat-form-field *ngFor="let skill of formSkills.controls; let i =index;">  
+                 
+                  <input  matInput 
                           type="text" 
                           class="form-control"
                           id="{{'skill'+i}}"
                           [formControlName]="i" (keyup.enter)='add_skill()' >
+
+
+                  <button type="button" *ngIf="this.formSkills.controls[i].value" mat-button  matSuffix mat-icon-button aria-label="Clear" (click)="deleteSkill(i)">
+                    <mat-icon>close</mat-icon>
+                  </button>
                 </mat-form-field>
-              </li>
-            </ul>
-        
-          <button type="button" class="btn btn-primary" (click)=" add_skill()">
-            Add
-          </button>
+            </div>
+           <div class="divBtn" fxLayout="column" fxLayoutAlign="end"  >
+              <button type="button" mat-button (click)=" add_skill()" >
+                Add
+              </button>
+          </div>
         </div>
 
         <div fxLayout="row" fxLayoutAlign="end">
@@ -199,4 +199,3 @@
     </form>
   </mat-step>
 </mat-horizontal-stepper>
-<!--routerLink="/"-->

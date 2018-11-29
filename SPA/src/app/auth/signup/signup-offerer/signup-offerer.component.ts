@@ -15,11 +15,15 @@ export class SignupOffererComponent implements OnInit {
   thirdFormGroup: FormGroup;
 
   workFields: { value: number, viewValue: string }[] = [
-    {value: 0, viewValue: 'Designer'},
-    {value: 1, viewValue: 'Front-end Developer'},
-    {value: 2, viewValue: 'Back-end Developer'},
-    {value: 3, viewValue: 'Tester'},
-    {value: 4, viewValue: 'Product Manager'},
+    {value: 0, viewValue: 'Software Engineering'},
+    {value: 1, viewValue: 'Engineering Management'},
+    {value: 2, viewValue: 'Design'},
+    {value: 3, viewValue: 'Data Analitycs'},
+    {value: 4, viewValue: 'Developer Operations'},
+    {value: 5, viewValue: 'Quality Assurance'},
+    {value: 6, viewValue: 'Information Technology'},
+    {value: 7, viewValue: 'Project Management'},
+    {value: 9, viewValue: 'Product Management'},
   ];
 
   companySizes: { value: number, viewValue: string }[] = [
@@ -28,15 +32,6 @@ export class SignupOffererComponent implements OnInit {
     {value: 2, viewValue: '3'},
     {value: 3, viewValue: '4'},
     {value: 4, viewValue: '5'},
-  ];
-
-
-  workField: { value: number, viewValue: string }[] = [
-    {value: 0, viewValue: 'a'},
-    {value: 1, viewValue: 'b'},
-    {value: 2, viewValue: 'c'},
-    {value: 3, viewValue: 'd'},
-    {value: 4, viewValue: 'e'},
   ];
 
 
@@ -70,7 +65,6 @@ export class SignupOffererComponent implements OnInit {
       'about': new FormControl(),
       'website': new FormControl(),
       'companySize': new FormControl(),
-      'workField2': new FormControl(),
       'year': new FormControl(),
     });
 
