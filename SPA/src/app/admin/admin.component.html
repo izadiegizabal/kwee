@@ -1,8 +1,10 @@
 <div
   fxLayout="column"
+  fxFlex.gt-sm="80%"
   fxFlex="100%"
   fxFlexOffset="0"
-  fxFlexOffset.gt-sm="15%">
+  fxFlexOffset.gt-sm="5%"
+  fxFlexOffset.gt-md="10%">
 
   <mat-sidenav-container autosize>
     <mat-sidenav #drawer [mode]="media.isActive('gt-sm') ? 'side' : 'over'" [opened]="media.isActive('gt-sm')">
@@ -25,7 +27,7 @@
         <button mat-list-item
                 routerLink="/admin/verify" (click)="closeDrawerIfMobile()">
           <mat-icon matListIcon color="primary" svgIcon="check-circle"
-                    matBadge="40" matBadgeSize="small" matBadgeColor="accent"></mat-icon>
+                    matBadge="40" matBadgeSize="small" matBadgeColor="primary"></mat-icon>
           Verify Profiles
         </button>
         <button mat-list-item

@@ -1,0 +1,31 @@
+<mat-accordion fxFlex="99%">
+  <mat-expansion-panel *ngFor="let user of users">
+    <mat-expansion-panel-header>
+      <mat-panel-title fxLayoutAlign="start center">
+        <app-offerer-name-overview [index]="user.index" [name]="user.fullname"></app-offerer-name-overview>
+      </mat-panel-title>
+      <mat-panel-description
+        fxLayout="row" fxFlex="25%" fxFlex.gt-sm="75%">
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="55%" fxShow.gt-sm fxHide>
+          <mat-icon class="svg" color="primary" svgIcon="email"></mat-icon>
+          <span>{{user.email}}</span>
+        </div>
+        <div fxFlex.gt-sm="2%" fxFlex="0"></div>
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="30%" fxShow.gt-md fxHide>
+          <mat-icon class="svg" color="primary" svgIcon="access-time"></mat-icon>
+          <span>{{user.lastAccess | date:'d/M/y, HH:mm'}}</span>
+        </div>
+        <div fxFlex.gt-sm="5%" fxFlex="0"></div>
+        <mat-chip-list fxLayoutAlign="start center"><mat-chip disabled>{{user.state | titlecase}}</mat-chip></mat-chip-list>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <mat-form-field>
+      <input matInput placeholder="First name">
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput placeholder="Age">
+    </mat-form-field>
+  </mat-expansion-panel>
+</mat-accordion>

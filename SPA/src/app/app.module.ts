@@ -18,7 +18,7 @@ import {MatInputModule} from '@angular/material/input';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {SignupOffererComponent} from './auth/signup/signup-offerer/signup-offerer.component';
 import {
-  MatBadgeModule,
+  MatBadgeModule, MatChipsModule,
   MatExpansionModule,
   MatListModule,
   MatNativeDateModule,
@@ -47,7 +47,7 @@ import {AdminManageBusinessesComponent} from './admin/admin-manage-businesses/ad
 import {AdminVerifyComponent} from './admin/admin-verify/admin-verify.component';
 import {AdminReportsComponent} from './admin/admin-reports/admin-reports.component';
 import {AdminMessagesComponent} from './admin/admin-messages/admin-messages.component';
-import { UserOverviewComponent } from './admin/user-overview/user-overview.component';
+import { CandidateOverviewComponent } from './admin/admin-manage-candidates/candidate-overview/candidate-overview.component';
 
 @NgModule({
   declarations: [
@@ -71,7 +71,7 @@ import { UserOverviewComponent } from './admin/user-overview/user-overview.compo
     AdminVerifyComponent,
     AdminReportsComponent,
     AdminMessagesComponent,
-    UserOverviewComponent,
+    CandidateOverviewComponent,
   ],
   imports: [
     HttpClientModule,
@@ -100,7 +100,8 @@ import { UserOverviewComponent } from './admin/user-overview/user-overview.compo
     MatSidenavModule,
     MatRadioModule,
     MatListModule,
-    MatBadgeModule
+    MatBadgeModule,
+    MatChipsModule
   ],
   providers: [MatIconRegistry],
   bootstrap: [AppComponent]
