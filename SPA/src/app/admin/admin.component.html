@@ -1,6 +1,53 @@
-<app-admin-sidebar
+<div
   fxLayout="column"
   fxFlex="100%"
   fxFlexOffset="0"
-  fxFlexOffset.gt-sm="15%"
-></app-admin-sidebar>
+  fxFlexOffset.gt-sm="15%">
+
+  <mat-sidenav-container autosize>
+    <mat-sidenav #drawer [mode]="media.isActive('gt-sm') ? 'side' : 'over'" [opened]="media.isActive('gt-sm')">
+      <mat-action-list>
+        <button mat-list-item
+                routerLink="/admin/statistics" (click)="closeDrawerIfMobile()">
+          <mat-icon color="primary" matListIcon svgIcon="timeline"></mat-icon>
+          Statistics
+        </button>
+        <button mat-list-item
+                routerLink="/admin/manage-candidates" (click)="closeDrawerIfMobile()">
+          <mat-icon matListIcon color="primary" svgIcon="people"></mat-icon>
+          Manage Candidates
+        </button>
+        <button mat-list-item
+                routerLink="/admin/manage-businesses" (click)="closeDrawerIfMobile()">
+          <mat-icon matListIcon color="primary" svgIcon="domain"></mat-icon>
+          Manage Businesses
+        </button>
+        <button mat-list-item
+                routerLink="/admin/verify" (click)="closeDrawerIfMobile()">
+          <mat-icon matListIcon color="primary" svgIcon="check-circle"
+                    matBadge="40" matBadgeSize="small" matBadgeColor="accent"></mat-icon>
+          Verify Profiles
+        </button>
+        <button mat-list-item
+                routerLink="/admin/reports" (click)="closeDrawerIfMobile()">
+          <mat-icon matListIcon color="primary" svgIcon="report"
+                    matBadge="2" matBadgeSize="small" matBadgeColor="warn"></mat-icon>
+          Reports
+        </button>
+        <button mat-list-item
+                routerLink="/admin/messages" (click)="closeDrawerIfMobile()">
+          <mat-icon matListIcon color="primary" svgIcon="chat"
+                    matBadge="12" matBadgeSize="small" matBadgeColor="primary"></mat-icon>
+          Messages
+        </button>
+      </mat-action-list>
+    </mat-sidenav>
+
+    <mat-sidenav-content>
+      <button mat-icon-button *ngIf="!media.isActive('gt-sm')">
+        <mat-icon aria-label="Open menu button" (click)="drawer.toggle()">menu</mat-icon>
+      </button>
+      <router-outlet></router-outlet>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

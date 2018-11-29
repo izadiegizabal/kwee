@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {ObservableMedia} from '@angular/flex-layout';
+import {MatSidenav} from '@angular/material';
 
 @Component({
   selector: 'app-admin',
@@ -6,10 +8,17 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./admin.component.scss']
 })
 export class AdminComponent implements OnInit {
+  @ViewChild('drawer') drawer: MatSidenav;
 
-  constructor() { }
+  constructor(public media: ObservableMedia) {
+  }
 
   ngOnInit() {
   }
 
+  closeDrawerIfMobile() {
+    if (!this.media.isActive('gt-sm')) {
+      this.drawer.toggle();
+    }
+  }
 }
