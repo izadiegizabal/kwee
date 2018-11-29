@@ -1,35 +1,35 @@
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
 
 // ============================
-// ===== CRUD applicant_skill ======
+// ===== CRUD applicant_education ======
 // ============================
 
 module.exports = (app, db) => {
-    // GET all applicant_skills
-    app.get("/applicant_skills", checkToken, async(req, res, next) => {
+    // GET all applicant_educations
+    app.get("/applicant_educations", checkToken, async(req, res, next) => {
         try {
             res.status(200).json({
                 ok: true,
-                applicant_skills: await db.applicant_skills.findAll()
+                applicant_educations: await db.applicant_educations.findAll()
             });
         } catch (err) {
             next({ type: 'error', error: 'Error getting data' });
         }
     });
 
-    // GET one applicant_skill by two id's
-    app.get("/applicant_skill/:fk_applicant([0-9]+)/:fk_skill([0-9]+)", checkToken, async(req, res, next) => {
+    // GET one applicant_education by two id's
+    app.get("/applicant_education/:fk_applicant([0-9]+)/:fk_education([0-9]+)", checkToken, async(req, res, next) => {
         const params = req.params;
 
         try {
             res.status(200).json({
                 ok: true,
-                applicant_skill: await db.applicant_skills.findOne({
+                applicant_education: await db.applicant_educations.findOne({
                     // include: [{
-                    //     model: db.skills,
-                    //     where: { fk_skill: params.fk_skill }
+                    //     model: db.educations,
+                    //     where: { fk_education: params.fk_education }
                     // }],
-                    where: { fk_applicant: params.fk_applicant, fk_skill: params.fk_skill }
+                    where: { fk_applicant: params.fk_applicant, fk_education: params.fk_education }
                 })
             });
 
@@ -38,14 +38,14 @@ module.exports = (app, db) => {
         }
     });
 
-    // GET one applicant_skill by one id
-    app.get("/applicant_skill/:fk_applicant([0-9]+)", checkToken, async(req, res, next) => {
+    // GET one applicant_education by one id
+    app.get("/applicant_education/:fk_applicant([0-9]+)", checkToken, async(req, res, next) => {
         const params = req.params;
 
         try {
             res.status(200).json({
                 ok: true,
-                applicant_skill: await db.applicant_skills.findAll({
+                applicant_education: await db.applicant_educations.findAll({
                     where: { fk_applicant: params.fk_applicant }
                 })
             });
@@ -55,8 +55,8 @@ module.exports = (app, db) => {
         }
     });
 
-    // POST single applicant_skill
-    app.post("/applicant_skills", [checkToken, checkAdmin], async(req, res, next) => {
+    // POST single applicant_education
+    app.post("/applicant_educations", [checkToken, checkAdmin], async(req, res, next) => {
         const body = req.body;
 
         try {
@@ -66,12 +66,12 @@ module.exports = (app, db) => {
 
             if (applicant) {
 
-                let skills = (await applicant.getSkills());
+                let educations = (await applicant.getEducations());
 
-                if (skills.length > 0) {
-                    for (let i = 0; i < skills.length; i++) {
-                        if (body.fk_skill != skills[i].id) {
-                            body.fk_skill.push(skills[i].id);
+                if (educations.length > 0) {
+                    for (let i = 0; i < educations.length; i++) {
+                        if (body.fk_education != educations[i].id) {
+                            body.fk_education.push(educations[i].id);
                         } else {
                             return res.status(400).json({
                                 ok: false,
@@ -83,16 +83,10 @@ module.exports = (app, db) => {
 
                 res.status(201).json({
                     ok: true,
-                    applicant_skill: await applicant.setSkills(body.fk_skill)
+                    applicant_education: await applicant.setEducations(body.fk_education)
                 });
 
-                await db.sequelize.query({
-                    query: `UPDATE applicant_skills 
-                            SET (level=\'${ body.level }\', description=\'${ body.description }\')
-                            WHERE fk_applicant = ? 
-                            AND fk_skill = ?`,
-                    values: [body.fk_applicant, body.fk_skill]
-                });
+                await db.sequelize.query({ query: `UPDATE applicant_educations SET level=\'${ body.level }\' WHERE fk_applicant = ? AND fk_education = ?`, values: [body.fk_applicant, body.fk_education] });
 
             } else {
                 return res.status(400).json({
@@ -106,8 +100,8 @@ module.exports = (app, db) => {
 
     });
 
-    // PUT single applicant_skill
-    app.put("/applicant_skills", [checkToken, checkAdmin], async(req, res, next) => {
+    // PUT single applicant_education
+    app.put("/applicant_educations", [checkToken, checkAdmin], async(req, res, next) => {
         const body = req.body;
 
         try {
@@ -116,7 +110,7 @@ module.exports = (app, db) => {
             });
 
             if (applicant) {
-                await db.sequelize.query({ query: `UPDATE applicant_skills SET level=\'${ body.level }\' WHERE fk_applicant = ? AND fk_skill = ?`, values: [body.fk_applicant, body.fk_skill] });
+                await db.sequelize.query({ query: `UPDATE applicant_educations SET level=\'${ body.level }\' WHERE fk_applicant = ? AND fk_education = ?`, values: [body.fk_applicant, body.fk_education] });
                 res.status(200).json({
                     ok: true,
                     message: 'Updated'
@@ -133,8 +127,8 @@ module.exports = (app, db) => {
         }
     });
 
-    // DELETE single applicant_skill
-    app.delete("/applicant_skills", [checkToken, checkAdmin], async(req, res, next) => {
+    // DELETE single applicant_education
+    app.delete("/applicant_educations", [checkToken, checkAdmin], async(req, res, next) => {
         const body = req.body;
 
         try {
@@ -143,7 +137,7 @@ module.exports = (app, db) => {
             });
 
             if (applicant) {
-                await applicant.removeSkills(body.fk_skill);
+                await applicant.removeEducations(body.fk_education);
 
                 res.status(201).json({
                     ok: true,

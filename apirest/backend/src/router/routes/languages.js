@@ -48,7 +48,7 @@ module.exports = (app, db) => {
                 message: `Language has been created.`
             });
         } catch (err) {
-            next({ type: 'error', error: err });
+            next({ type: 'error', error: 'Error getting data' });
         }
 
     });
