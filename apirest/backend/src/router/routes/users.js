@@ -30,16 +30,27 @@ module.exports = (app, db) => {
         const id = req.params.id;
 
         try {
-            res.status(200).json({
-                ok: true,
-                user: await db.users.findOne({
-                    attributes: [
-                        'name',
-                        'email'
-                    ],
-                    where: { id }
-                })
+
+            let user = await db.users.findOne({
+                attributes: [
+                    'name',
+                    'email'
+                ],
+                where: { id }
             });
+
+            if (user) {
+                res.status(200).json({
+                    ok: true,
+                    user
+                });
+            } else {
+                res.status(400).json({
+                    ok: false,
+                    message: 'User doesn\'t exist'
+                });
+            }
+
 
         } catch (err) {
             next({ type: 'error', error: 'Error getting data' });
