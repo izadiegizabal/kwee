@@ -47,6 +47,7 @@ import {AdminManageBusinessesComponent} from './admin/admin-manage-businesses/ad
 import {AdminVerifyComponent} from './admin/admin-verify/admin-verify.component';
 import {AdminReportsComponent} from './admin/admin-reports/admin-reports.component';
 import {AdminMessagesComponent} from './admin/admin-messages/admin-messages.component';
+import { UserOverviewComponent } from './admin/user-overview/user-overview.component';
 
 @NgModule({
   declarations: [
@@ -70,6 +71,7 @@ import {AdminMessagesComponent} from './admin/admin-messages/admin-messages.comp
     AdminVerifyComponent,
     AdminReportsComponent,
     AdminMessagesComponent,
+    UserOverviewComponent,
   ],
   imports: [
     HttpClientModule,
