@@ -1,0 +1,40 @@
+<mat-sidenav-container autosize>
+  <mat-sidenav #drawer [mode]="media.isActive('gt-sm') ? 'side' : 'over'" [opened]="media.isActive('gt-sm')">
+    <mat-action-list>
+      <button mat-list-item>
+        <mat-icon color="primary" matListIcon svgIcon="timeline"></mat-icon>
+        Statistics
+      </button>
+      <button mat-list-item>
+        <mat-icon matListIcon color="primary" svgIcon="people"></mat-icon>
+        Manage Candidates
+      </button>
+      <button mat-list-item>
+        <mat-icon matListIcon color="primary" svgIcon="domain"></mat-icon>
+        Manage Businesses
+      </button>
+      <button mat-list-item>
+        <mat-icon matListIcon color="primary" svgIcon="check-circle"
+                  matBadge="40" matBadgeSize="small" matBadgeColor="accent"></mat-icon>
+        Verify
+      </button>
+      <button mat-list-item>
+        <mat-icon matListIcon color="primary" svgIcon="report"
+                  matBadge="2" matBadgeSize="small" matBadgeColor="warn"></mat-icon>
+        Reports
+      </button>
+      <button mat-list-item>
+        <mat-icon matListIcon color="primary" svgIcon="chat"
+                  matBadge="12" matBadgeSize="small" matBadgeColor="primary"></mat-icon>
+        Messages
+      </button>
+    </mat-action-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <button mat-icon-button *ngIf="!media.isActive('gt-sm')">
+      <mat-icon aria-label="Open menu button" (click)="drawer.toggle()">menu</mat-icon>
+    </button>
+    <h2 class="mat-h1">Statistics</h2>
+  </mat-sidenav-content>
+</mat-sidenav-container>
