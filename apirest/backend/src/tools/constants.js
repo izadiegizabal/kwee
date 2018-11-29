@@ -1,6 +1,7 @@
 const pass = require('./passwords');
 
-const callback_url = 'http://localhost:3000/auth/';
+// const callback_url = 'http://localhost:3000/auth/';
+const callback_url = 'http://kwee.ovh/api/auth/';
 
 const env = {
     DATABASE_NAME: 'kweetest',
