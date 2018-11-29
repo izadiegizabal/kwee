@@ -25,16 +25,12 @@ module.exports = (app, db) => {
             res.status(200).json({
                 ok: true,
                 applicant_skill: await db.applicant_skills.findOne({
-                    // include: [{
-                    //     model: db.skills,
-                    //     where: { fk_skill: params.fk_skill }
-                    // }],
                     where: { fk_applicant: params.fk_applicant, fk_skill: params.fk_skill }
                 })
             });
 
         } catch (err) {
-            next({ type: 'error', error: err });
+            next({ type: 'error', error: 'Error getting data' });
         }
     });
 
@@ -51,7 +47,7 @@ module.exports = (app, db) => {
             });
 
         } catch (err) {
-            next({ type: 'error', error: err });
+            next({ type: 'error', error: 'Error getting data' });
         }
     });
 
@@ -75,7 +71,7 @@ module.exports = (app, db) => {
                         } else {
                             return res.status(400).json({
                                 ok: false,
-                                error: "Applicant language already added"
+                                error: "Applicant skill already added"
                             });
                         }
                     }
@@ -88,20 +84,20 @@ module.exports = (app, db) => {
 
                 await db.sequelize.query({
                     query: `UPDATE applicant_skills 
-                            SET (level=\'${ body.level }\', description=\'${ body.description }\')
+                            SET (level = ?, description = ?)
                             WHERE fk_applicant = ? 
                             AND fk_skill = ?`,
-                    values: [body.fk_applicant, body.fk_skill]
+                    values: [body.level, body.description, body.fk_applicant, body.fk_skill]
                 });
 
             } else {
                 return res.status(400).json({
                     ok: false,
-                    error: "Applicant language doesn't exist"
+                    error: "Applicant skill doesn't exist"
                 });
             }
         } catch (err) {
-            next({ type: 'error', error: err });
+            next({ type: 'error', error: err.errors[0].message });
         }
 
     });
@@ -124,7 +120,7 @@ module.exports = (app, db) => {
             } else {
                 return res.status(400).json({
                     ok: false,
-                    error: "Applicant language doesn't exist"
+                    error: "Applicant skill doesn't exist"
                 });
             }
 
@@ -156,7 +152,7 @@ module.exports = (app, db) => {
                 });
             }
         } catch (err) {
-            next({ type: 'error', error: err });
+            next({ type: 'error', error: 'Error getting data' });
         }
 
     });

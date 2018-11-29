@@ -34,7 +34,7 @@ module.exports = (app, db) => {
             });
 
         } catch (err) {
-            next({ type: 'error', error: err });
+            next({ type: 'error', error: 'Error getting data' });
         }
     });
 
@@ -51,13 +51,14 @@ module.exports = (app, db) => {
             });
 
         } catch (err) {
-            next({ type: 'error', error: err });
+            next({ type: 'error', error: 'Error getting data' });
         }
     });
 
     // POST single applicant_language
     app.post("/applicant_languages", [checkToken, checkAdmin], async(req, res, next) => {
         const body = req.body;
+        const fk_language = body.fk_applicant;
 
         try {
             let applicant = await db.applicants.findOne({
@@ -86,7 +87,7 @@ module.exports = (app, db) => {
                     applicant_language: await applicant.setLanguages(body.fk_language)
                 });
 
-                await db.sequelize.query({ query: `UPDATE applicant_languages SET level=\'${ body.level }\' WHERE fk_applicant = ? AND fk_language = ?`, values: [body.fk_applicant, body.fk_language] });
+                await db.sequelize.query({ query: `UPDATE applicant_languages SET level = ? WHERE fk_applicant = ? AND fk_language = ?`, values: [body.level, body.fk_applicant, fk_language] });
 
             } else {
                 return res.status(400).json({
@@ -95,9 +96,8 @@ module.exports = (app, db) => {
                 });
             }
         } catch (err) {
-            next({ type: 'error', error: err });
+            next({ type: 'error', error: err.errors[0].message });
         }
-
     });
 
     // PUT single applicant_language
@@ -110,7 +110,7 @@ module.exports = (app, db) => {
             });
 
             if (applicant) {
-                await db.sequelize.query({ query: `UPDATE applicant_languages SET level=\'${ body.level }\' WHERE fk_applicant = ? AND fk_language = ?`, values: [body.fk_applicant, body.fk_language] });
+                await db.sequelize.query({ query: `UPDATE applicant_languages SET level = ? WHERE fk_applicant = ? AND fk_language = ?`, values: [body.level, body.fk_applicant, fk_language] });
                 res.status(200).json({
                     ok: true,
                     message: 'Updated'
@@ -150,7 +150,7 @@ module.exports = (app, db) => {
                 });
             }
         } catch (err) {
-            next({ type: 'error', error: err });
+            next({ type: 'error', error: 'Error getting data' });
         }
 
     });

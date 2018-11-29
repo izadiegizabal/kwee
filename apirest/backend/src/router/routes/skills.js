@@ -48,7 +48,7 @@ module.exports = (app, db) => {
                 message: `Skill has been created.`
             });
         } catch (err) {
-            next({ type: 'error', error: err });
+            next({ type: 'error', error: err.errors[0].message });
         }
 
     });

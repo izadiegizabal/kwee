@@ -86,7 +86,7 @@ module.exports = (app, db) => {
                     applicant_education: await applicant.setEducations(body.fk_education)
                 });
 
-                await db.sequelize.query({ query: `UPDATE applicant_educations SET level=\'${ body.level }\' WHERE fk_applicant = ? AND fk_education = ?`, values: [body.fk_applicant, body.fk_education] });
+                await db.sequelize.query({ query: `UPDATE applicant_educations SET level = ? WHERE fk_applicant = ? AND fk_education = ?`, values: [body.level, body.fk_applicant, body.fk_education] });
 
             } else {
                 return res.status(400).json({
