@@ -12,6 +12,7 @@ const routes = [
     require('./routes/applicant_skills'),
     require('./routes/experiences'),
     require('./routes/invoices'),
+    require('./routes/messages'),
     require('./routes/login'),
     require('./routes/login/github'),
     require('./routes/login/google'),
