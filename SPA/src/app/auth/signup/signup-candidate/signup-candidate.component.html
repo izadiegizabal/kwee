@@ -170,7 +170,7 @@
         
           <h4>Skills:</h4>
           <div fxLayout="row" fxLayoutGap="16px">
-            <div  formArrayName="skills" fxLayout="column" fxFlex="50%">
+            <div  formArrayName="skills" fxLayout="column" fxFlex="50%" fxLayoutGap="-16px">
                <mat-form-field *ngFor="let skill of formSkills.controls; let i =index;">  
                  
                   <input  matInput 
@@ -180,7 +180,11 @@
                           [formControlName]="i" (keyup.enter)='add_skill()' >
 
 
-                  <button type="button" *ngIf="this.formSkills.controls[i].value" mat-button  matSuffix mat-icon-button aria-label="Clear" (click)="deleteSkill(i)">
+                  <button type="button" *ngIf="this.formSkills.controls[i].value && this.formSkills.length-1!=i" mat-button  matSuffix mat-icon-button aria-label="Clear" (click)="deleteSkill(i)">
+                    <mat-icon>close</mat-icon>
+                  </button>
+
+                  <button type="button" *ngIf="this.formSkills.controls[i].value && this.formSkills.length-1==i" mat-button  matSuffix mat-icon-button aria-label="Clear" (click)="deleteSkill(i); add_skill()">
                     <mat-icon>close</mat-icon>
                   </button>
                 </mat-form-field>

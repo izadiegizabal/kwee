@@ -69,21 +69,17 @@ export class SignupCandidateComponent implements OnInit {
     });
 
 
-    //T
     this.thirdFormGroup= this._formBuilder.group({
       'bio': new FormControl(null),
       'skills': new FormArray([new FormControl(null)])
     });
-
-
-
   }
 
 
 
   samePassword(control:FormControl):{[s:string]:boolean}{
 
-    let secondFormGroup:any =this;
+    const secondFormGroup:any =this;
     if(control.value!==secondFormGroup.controls['password'].value){
       return{same:true};
     }
@@ -93,7 +89,7 @@ export class SignupCandidateComponent implements OnInit {
 
   sameEmail(control:FormControl):{[s:string]:boolean}{
     
-    let secondFormGroup:any =this;
+    const secondFormGroup:any =this;
     if(control.value!==secondFormGroup.controls['email'].value){
       return{same:true};
     }
