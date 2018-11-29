@@ -4,18 +4,21 @@ import {OfferPreviewCardComponent} from './offer/offer-preview-card/offer-previe
 import {SmallcardComponent} from './smallcard/smallcard.component';
 import {SignupComponent} from './auth/signup/signup.component';
 import {SigninComponent} from './auth/signin/signin.component';
+import {AdminComponent} from './admin/admin.component';
 
 const routes: Routes = [
-    {path: '', redirectTo: '/offerpreviewcard', pathMatch: 'full'},
-    {path: 'offerpreviewcard', component: OfferPreviewCardComponent, pathMatch: 'full'},
-    {path: 'smallcard', component: SmallcardComponent},
-    {path: 'signup', component: SignupComponent},
-    {path: 'signin', component: SigninComponent},
-    {path: '**', redirectTo: '/offerpreviewcard'}
-  ];
+  {path: '', redirectTo: '/offerpreviewcard', pathMatch: 'full'},
+  {path: 'offerpreviewcard', component: OfferPreviewCardComponent, pathMatch: 'full'},
+  {path: 'smallcard', component: SmallcardComponent},
+  {path: 'signup', component: SignupComponent},
+  {path: 'signin', component: SigninComponent},
+  {path: 'admin', component: AdminComponent},
+  {path: '**', redirectTo: '/offerpreviewcard'}
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {
+}

@@ -17,7 +17,15 @@ import {MatTabsModule} from '@angular/material/tabs';
 import {MatInputModule} from '@angular/material/input';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {SignupOffererComponent} from './auth/signup/signup-offerer/signup-offerer.component';
-import {MatExpansionModule, MatNativeDateModule, MatSelectModule} from '@angular/material';
+import {
+  MatBadgeModule,
+  MatExpansionModule,
+  MatListModule,
+  MatNativeDateModule,
+  MatRadioModule,
+  MatSelectModule,
+  MatSidenavModule
+} from '@angular/material';
 // Created Components
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
@@ -32,6 +40,8 @@ import {SignupCandidateComponent} from './auth/signup/signup-candidate/signup-ca
 import {SignupinSectionComponent} from './header/signupin-section/signupin-section.component';
 import {UserMenuComponent} from './header/user-menu/user-menu.component';
 import {SigninComponent} from './auth/signin/signin.component';
+import { AdminSidebarComponent } from './admin/admin-sidebar/admin-sidebar.component';
+import { AdminComponent } from './admin/admin.component';
 
 @NgModule({
   declarations: [
@@ -48,6 +58,8 @@ import {SigninComponent} from './auth/signin/signin.component';
     SignupinSectionComponent,
     UserMenuComponent,
     SigninComponent,
+    AdminSidebarComponent,
+    AdminComponent,
   ],
   imports: [
     HttpClientModule,
@@ -72,7 +84,11 @@ import {SigninComponent} from './auth/signin/signin.component';
     MatNativeDateModule,
     MatSelectModule,
     MatExpansionModule,
-    MatDividerModule
+    MatDividerModule,
+    MatSidenavModule,
+    MatRadioModule,
+    MatListModule,
+    MatBadgeModule
   ],
   providers: [MatIconRegistry],
   bootstrap: [AppComponent]
@@ -105,6 +121,8 @@ export class AppModule {
     matIconRegistry.addSvgIcon('visibility-off', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-visibility_off.svg'));
     matIconRegistry.addSvgIcon('public', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-public.svg'));
     matIconRegistry.addSvgIcon('cake', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-cake.svg'));
+    matIconRegistry.addSvgIcon('check-circle', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-check_circle.svg'));
+    matIconRegistry.addSvgIcon('report', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-report.svg'));
 
     // Branding icons
     matIconRegistry.addSvgIcon('kwee-logo', domSanitizer.bypassSecurityTrustResourceUrl('assets/branding/logo-kwee-light.svg'));
