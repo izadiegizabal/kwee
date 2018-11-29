@@ -101,7 +101,7 @@ export class SignupOffererComponent implements OnInit {
 
   samePassword(control:FormControl):{[s:string]:boolean}{
 
-      let secondFormGroup:any =this;
+    const secondFormGroup:any =this;
     if(control.value!==secondFormGroup.controls['password'].value){
       return{same:true};
     }
@@ -112,7 +112,7 @@ export class SignupOffererComponent implements OnInit {
 
   sameEmail(control:FormControl):{[s:string]:boolean}{
 
-      let secondFormGroup:any =this;
+    const secondFormGroup:any =this;
     if(control.value!==secondFormGroup.controls['email'].value){
       return{same:true};
     }
