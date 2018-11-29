@@ -17,9 +17,15 @@ module.exports = (sequelize, DataTypes) => {
             }
         },
 
-        phone: {
-            type: DataTypes.STRING(20),
-            field: 'phone'
+        // phone: {
+        //     type: DataTypes.STRING(20),
+        //     field: 'phone'
+        // },
+
+        work_field: {
+            type: DataTypes.ENUM,
+            values: ['a', 'b'],
+            allowNull: false
         },
 
         cif: {
@@ -31,17 +37,25 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DATE,
         },
 
-        enterprise: {
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: 0
-        },
+        // enterprise: {
+        //     type: DataTypes.BOOLEAN,
+        //     allowNull: false,
+        //     defaultValue: 0
+        // },
 
-        particular: {
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: 0
-        },
+        /*
+        OPCIONALES POR AÑADIR
+        about_us
+        website
+        companysize
+        year
+        */
+
+        // particular: {
+        //     type: DataTypes.BOOLEAN,
+        //     allowNull: false,
+        //     defaultValue: 0
+        // },
 
         premium: {
             type: DataTypes.ENUM,

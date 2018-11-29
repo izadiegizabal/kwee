@@ -18,8 +18,8 @@ module.exports = (app, db) => {
     });
 
     // GET one application by id
-    app.get("/application", checkToken, async(req, res, next) => {
-        const body = req.body;
+    app.get("/application/:fk_applicant/:fk_offer", checkToken, async(req, res, next) => {
+        const params = req.params;
 
         try {
             res.status(200).json({
@@ -27,9 +27,9 @@ module.exports = (app, db) => {
                 application: await db.applications.findOne({
                     include: [{
                         model: db.offers,
-                        where: { id: body.fk_offer }
+                        where: { id: params.fk_offer }
                     }],
-                    where: { userId: body.fk_applicant }
+                    where: { userId: params.fk_applicant }
                 })
             });
 

@@ -6,6 +6,7 @@ const routes = [
     require('./routes/social_networks'),
     require('./routes/languages'),
     require('./routes/applicant_languages'),
+    require('./routes/educations'),
     require('./routes/login'),
     require('./routes/login/github'),
     require('./routes/login/google'),

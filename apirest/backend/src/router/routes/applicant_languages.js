@@ -18,23 +18,40 @@ module.exports = (app, db) => {
     });
 
     // GET one applicant_language by id
-    app.get("/applicant_language", checkToken, async(req, res, next) => {
-        const body = req.body;
+    app.get("/applicant_language/:fk_applicant([0-9]+)/:fk_language([0-9]+)", checkToken, async(req, res, next) => {
+        const params = req.params;
 
         try {
             res.status(200).json({
                 ok: true,
                 applicant_language: await db.applicant_languages.findOne({
-                    include: [{
-                        model: db.offers,
-                        where: { id: body.fk_language }
-                    }],
-                    where: { userId: body.fk_applicant }
+                    // include: [{
+                    //     model: db.languages,
+                    //     where: { fk_language: params.fk_language }
+                    // }],
+                    where: { fk_applicant: params.fk_applicant, fk_language: params.fk_language }
                 })
             });
 
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            next({ type: 'error', error: err });
+        }
+    });
+
+    // GET one applicant_language by id
+    app.get("/applicant_language/:fk_applicant([0-9]+)", checkToken, async(req, res, next) => {
+        const params = req.params;
+
+        try {
+            res.status(200).json({
+                ok: true,
+                applicant_language: await db.applicant_languages.findAll({
+                    where: { fk_applicant: params.fk_applicant }
+                })
+            });
+
+        } catch (err) {
+            next({ type: 'error', error: err });
         }
     });
 
@@ -120,18 +137,20 @@ module.exports = (app, db) => {
             });
 
             if (applicant) {
-                res.json({
+                await applicant.removeLanguages(body.fk_language);
+
+                res.status(201).json({
                     ok: true,
-                    applicant_language: await applicant_language.destroy(body.fk_language)
+                    message: "Deleted"
                 });
             } else {
-                res.status(400).json({
+                return res.status(400).json({
                     ok: false,
-                    error: "Applicant language doesn't exist"
+                    error: "This Applicant doesn't exist"
                 });
             }
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            next({ type: 'error', error: err });
         }
 
     });
