@@ -17,45 +17,40 @@ module.exports = (sequelize, DataTypes) => {
             }
         },
 
-        // phone: {
-        //     type: DataTypes.STRING(20),
-        //     field: 'phone'
-        // },
-
         work_field: {
             type: DataTypes.ENUM,
-            values: ['a', 'b'],
+            values: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'],
             allowNull: false
         },
 
         cif: {
             type: DataTypes.STRING(9),
-            field: 'cif'
+            field: 'cif',
+            allowNull: false
         },
 
         date_verification: {
             type: DataTypes.DATE,
         },
 
-        // enterprise: {
-        //     type: DataTypes.BOOLEAN,
-        //     allowNull: false,
-        //     defaultValue: 0
-        // },
+        about_us: {
+            type: DataTypes.TEXT,
+            field: 'about us'
+        },
 
-        /*
-        OPCIONALES POR AÑADIR
-        about_us
-        website
-        companysize
-        year
-        */
+        website: {
+            type: DataTypes.STRING(50),
+            field: 'website'
+        },
 
-        // particular: {
-        //     type: DataTypes.BOOLEAN,
-        //     allowNull: false,
-        //     defaultValue: 0
-        // },
+        company_size: {
+            type: DataTypes.ENUM,
+            values: ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+        },
+
+        year: {
+            type: DataTypes.DATE,
+        },
 
         premium: {
             type: DataTypes.ENUM,

@@ -150,24 +150,23 @@ module.exports = (app, db) => {
     }
 
     async function createOfferer(body, user) {
-        if (body.adress) {
+        if (body.adress && body.cif && body.work_field) {
 
-            let offerer = {};
-            offerer.userId = user.id;
-            offerer.adress = body.adress;
-            if (body.phone) offerer.phone = body.phone;
-            if (body.cif) offerer.cif = body.cif;
-            if (body.enterprise) offerer.enterprise = body.enterprise;
-            if (body.particular) offerer.particular = body.particular;
-            if (body.premium) offerer.premium = body.premium;
-
-            console.log(offerer);
-
-            await db.offerers.create(offerer);
+            await db.offerers.create({
+                userId: user.id,
+                adress: body.adress,
+                work_field: body.work_field,
+                cif: body.cif,
+                about_us: body.about_us ? body.about_us : null,
+                website: body.website ? body.website : null,
+                company_size: body.company_size ? body.company_size : null,
+                year: body.year ? body.year : null,
+                premium: body.premium ? body.premium : 'basic'
+            });
             console.log('Offerer created');
         } else {
             await db.users.destroy({ where: { id: user.id } });
-            next({ type: 'error', error: 'Adress required' });
+            next({ type: 'error', error: 'Adress, cif and work_field required' });
         }
     }
 }

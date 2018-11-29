@@ -20,7 +20,10 @@ module.exports = (sequelize, DateTypes) => {
             }
         },
 
-        //institution opcional
+        institution: {
+            type: DateTypes.STRING,
+            field: 'institution',
+        },
 
         date_end: {
             type: DateTypes.DATE,

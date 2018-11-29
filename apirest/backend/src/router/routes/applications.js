@@ -18,23 +18,36 @@ module.exports = (app, db) => {
     });
 
     // GET one application by id
-    app.get("/application/:fk_applicant/:fk_offer", checkToken, async(req, res, next) => {
+    app.get("/application/:fk_applicant([0-9]+)/:fk_offer([0-9]+)", checkToken, async(req, res, next) => {
         const params = req.params;
 
         try {
             res.status(200).json({
                 ok: true,
                 application: await db.applications.findOne({
-                    include: [{
-                        model: db.offers,
-                        where: { id: params.fk_offer }
-                    }],
-                    where: { userId: params.fk_applicant }
+                    where: { fk_applicant: params.fk_applicant, fk_offer: params.fk_offer }
                 })
             });
 
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            next({ type: 'error', error: err });
+        }
+    });
+
+    // GET one applicant_language by one id
+    app.get("/application/:fk_applicant([0-9]+)", checkToken, async(req, res, next) => {
+        const params = req.params;
+
+        try {
+            res.status(200).json({
+                ok: true,
+                application: await db.applications.findAll({
+                    where: { fk_applicant: params.fk_applicant }
+                })
+            });
+
+        } catch (err) {
+            next({ type: 'error', error: err });
         }
     });
 
@@ -120,7 +133,7 @@ module.exports = (app, db) => {
             if (applicant) {
                 res.json({
                     ok: true,
-                    application: await application.destroy(body.fk_offer)
+                    application: await applicant.removeOffers(body.fk_offer)
                 });
             } else {
                 return res.status(400).json({
@@ -129,7 +142,7 @@ module.exports = (app, db) => {
                 });
             }
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            next({ type: 'error', error: err });
         }
 
     });

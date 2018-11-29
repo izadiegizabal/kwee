@@ -17,7 +17,7 @@ module.exports = (app, db) => {
         }
     });
 
-    // GET one applicant_language by id
+    // GET one applicant_language by two id's
     app.get("/applicant_language/:fk_applicant([0-9]+)/:fk_language([0-9]+)", checkToken, async(req, res, next) => {
         const params = req.params;
 
@@ -38,7 +38,7 @@ module.exports = (app, db) => {
         }
     });
 
-    // GET one applicant_language by id
+    // GET one applicant_language by one id
     app.get("/applicant_language/:fk_applicant([0-9]+)", checkToken, async(req, res, next) => {
         const params = req.params;
 
