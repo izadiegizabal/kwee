@@ -21,16 +21,19 @@
     <mat-icon svgIcon="settings"></mat-icon>
     <span>Settings</span>
   </button>
-    <mat-divider></mat-divider>
-  <button mat-menu-item (click)="logOut()">Sign out</button>
+  <mat-divider></mat-divider>
+  <button (click)="logOut()" mat-menu-item>Sign out</button>
 </mat-menu>
-
 
 
 <button mat-icon-button class="profileLogo" color="primary">
   <a [matMenuTriggerFor]="menu">
     <mat-icon svgIcon="account-circle"></mat-icon>
     <br>
-    <div>Me<div><mat-icon svgIcon="arrow-drop-down"></mat-icon></div></div>
+    <div>Me
+      <div>
+        <mat-icon svgIcon="arrow-drop-down"></mat-icon>
+      </div>
+    </div>
   </a>
 </button>

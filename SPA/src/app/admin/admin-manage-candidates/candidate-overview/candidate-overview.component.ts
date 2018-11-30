@@ -6,6 +6,8 @@ import {Component, OnInit} from '@angular/core';
   styleUrls: ['./candidate-overview.component.scss']
 })
 export class CandidateOverviewComponent implements OnInit {
+  isInEditMode = false;
+  isPanelOpen = false;
 
   users: {
     fullname: string,
@@ -18,58 +20,59 @@ export class CandidateOverviewComponent implements OnInit {
   }[] = [
     {
       fullname: 'Izadi Egizabal Alkorta',
-      index: 88,
-      email: '64izadi.egizabal@gmail.com',
+      index: 64,
+      email: 'hello@izadi.xyz',
+      state: 'active',
+      subscription: 'Premium',
+      lastAccess: new Date('2018-11-29T21:24:00'),
+      signupDate: new Date('2017-02-01T15:30:00')
+    },
+    {
+      fullname: 'Alba González Aller',
+      index: 92,
+      email: 'alba.g.aller@gmail.com',
       state: 'active',
       subscription: 'free',
       lastAccess: new Date('2018-11-29T21:24:00'),
       signupDate: new Date('2017-02-01T15:30:00')
     },
     {
-      fullname: 'Izadi Egizabal Alkorta',
+      fullname: 'Carlos Aldaravi Coll',
       index: 88,
-      email: '64izadi@gmail.com',
+      email: 'caldaravi@gmail.com',
       state: 'active',
       subscription: 'free',
       lastAccess: new Date('2018-11-29T21:24:00'),
       signupDate: new Date('2017-02-01T15:30:00')
     },
     {
-      fullname: 'Izadi Egizabal Alkorta',
-      index: 88,
-      email: '64izadi@gmail.com',
+      fullname: 'Marcos Urios Gómez',
+      index: 95,
+      email: 'marcosaurios@gmail.com',
       state: 'active',
       subscription: 'free',
       lastAccess: new Date('2018-11-29T21:24:00'),
       signupDate: new Date('2017-02-01T15:30:00')
     },
     {
-      fullname: 'Izadi Egizabal Alkorta',
-      index: 88,
-      email: '64izadi@gmail.com',
+      fullname: 'Flaviu Lucian Georgiu',
+      index: 82,
+      email: 'flaviu.georgiu97@gmail.com',
       state: 'active',
       subscription: 'free',
       lastAccess: new Date('2018-11-29T21:24:00'),
       signupDate: new Date('2017-02-01T15:30:00')
     },
-    {
-      fullname: 'Izadi Egizabal Alkorta',
-      index: 88,
-      email: '64izadi@gmail.com',
-      state: 'active',
-      subscription: 'free',
-      lastAccess: new Date('2018-11-29T21:24:00'),
-      signupDate: new Date('2017-02-01T15:30:00')
-    },
-    {
-      fullname: 'Izadi Egizabal Alkorta',
-      index: 88,
-      email: '64izadi@gmail.com',
-      state: 'active',
-      subscription: 'free',
-      lastAccess: new Date('2018-11-29T21:24:00'),
-      signupDate: new Date('2017-02-01T15:30:00')
-    },
+  ];
+  states: { value: string, viewValue: string }[] = [
+    {value: 'active', viewValue: 'Active'},
+    {value: 'temporalBlocked', viewValue: 'Temporally blocked'},
+    {value: 'permBlocked', viewValue: 'Permanently Blocked'},
+    {value: 'verPending', viewValue: 'Verification Pending'},
+  ];
+  subscriptions: { value: string, viewValue: string }[] = [
+    {value: 'free', viewValue: 'Free'},
+    {value: 'premium', viewValue: 'Premium'},
   ];
 
   constructor() {

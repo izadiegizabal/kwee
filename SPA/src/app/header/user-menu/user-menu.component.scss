@@ -3,18 +3,22 @@
 .profileLogo {
   font-size: 1rem;
   margin-top: -16px;
+
   a {
     div {
       margin-top: -24px;
       display: flex;
+
       div {
         margin-top: 8px;
       }
+
       mat-icon {
         width: 24px;
         height: 24px;
       }
     }
+
     mat-icon {
       margin-right: 8px;
       height: 40px;

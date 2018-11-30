@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { SignupOffererComponent } from './signup-offerer.component';
+import {SignupOffererComponent} from './signup-offerer.component';
 
 describe('SignupOffererComponent', () => {
   let component: SignupOffererComponent;
@@ -8,9 +8,9 @@ describe('SignupOffererComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SignupOffererComponent ]
+      declarations: [SignupOffererComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

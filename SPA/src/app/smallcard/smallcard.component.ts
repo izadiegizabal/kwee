@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import {IconWithTextComponent} from '../common/icon-with-text/icon-with-text.component';
+import {Component, OnInit} from '@angular/core';
 
 
 @Component({
@@ -9,11 +8,12 @@ import {IconWithTextComponent} from '../common/icon-with-text/icon-with-text.com
 })
 export class SmallcardComponent implements OnInit {
 
-	name:string='Abogados Manolo Rodriguez e hijos';
-	index:number=96;
-	description = 'Internet services';
+  name: string = 'Abogados Manolo Rodriguez e hijos';
+  index: number = 96;
+  description = 'Internet services';
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit() {
   }

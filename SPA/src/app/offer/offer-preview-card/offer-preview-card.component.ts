@@ -1,6 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {Offer} from '../../../models/Offer';
-import {IconWithTextComponent} from '../../common/icon-with-text/icon-with-text.component';
 
 @Component({
   selector: 'app-offer-preview-card',

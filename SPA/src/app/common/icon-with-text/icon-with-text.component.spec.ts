@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { IconWithTextComponent } from './icon-with-text.component';
+import {IconWithTextComponent} from './icon-with-text.component';
 
 describe('IconWithTextComponent', () => {
   let component: IconWithTextComponent;
@@ -8,9 +8,9 @@ describe('IconWithTextComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ IconWithTextComponent ]
+      declarations: [IconWithTextComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

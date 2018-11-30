@@ -18,7 +18,8 @@ const routes: Routes = [
   {path: 'smallcard', component: SmallcardComponent},
   {path: 'signup', component: SignupComponent},
   {path: 'signin', component: SigninComponent},
-  {path: 'admin', component: AdminComponent, children: [
+  {
+    path: 'admin', component: AdminComponent, children: [
       {path: '', redirectTo: 'statistics', pathMatch: 'full'},
       {path: 'statistics', component: AdminStatisticsComponent},
       {path: 'manage-candidates', component: AdminManageCandidatesComponent},
@@ -27,7 +28,8 @@ const routes: Routes = [
       {path: 'reports', component: AdminReportsComponent},
       {path: 'messages', component: AdminMessagesComponent},
       {path: '**', redirectTo: 'statistics'}
-    ]},
+    ]
+  },
   {path: '**', redirectTo: '/offerpreviewcard'}
 ];
 

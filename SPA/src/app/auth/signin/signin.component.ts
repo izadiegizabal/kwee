@@ -9,6 +9,7 @@ import {Router} from '@angular/router';
     '../signup/signup-candidate/signup-candidate.component.scss']
 })
 export class SigninComponent implements OnInit {
+  hide = false;
 
   constructor(private authService: AuthService, private router: Router) {
   }

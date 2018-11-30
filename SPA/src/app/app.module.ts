@@ -18,7 +18,8 @@ import {MatInputModule} from '@angular/material/input';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {SignupOffererComponent} from './auth/signup/signup-offerer/signup-offerer.component';
 import {
-  MatBadgeModule, MatChipsModule,
+  MatBadgeModule,
+  MatChipsModule,
   MatExpansionModule,
   MatListModule,
   MatNativeDateModule,
@@ -47,7 +48,7 @@ import {AdminManageBusinessesComponent} from './admin/admin-manage-businesses/ad
 import {AdminVerifyComponent} from './admin/admin-verify/admin-verify.component';
 import {AdminReportsComponent} from './admin/admin-reports/admin-reports.component';
 import {AdminMessagesComponent} from './admin/admin-messages/admin-messages.component';
-import { CandidateOverviewComponent } from './admin/admin-manage-candidates/candidate-overview/candidate-overview.component';
+import {CandidateOverviewComponent} from './admin/admin-manage-candidates/candidate-overview/candidate-overview.component';
 
 @NgModule({
   declarations: [

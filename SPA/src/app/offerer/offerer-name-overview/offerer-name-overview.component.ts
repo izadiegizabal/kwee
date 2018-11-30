@@ -9,7 +9,8 @@ export class OffererNameOverviewComponent implements OnInit {
   @Input() index: number;
   @Input() name: string;
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit() {
   }

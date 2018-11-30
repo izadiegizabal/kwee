@@ -10,31 +10,31 @@
            fxLayoutGap="8px">
         <div class="signupButton">
           <button mat-raised-button matStepperNext>
-            <mat-icon color="accent" class="svg" svgIcon="email"></mat-icon>
+            <mat-icon class="svg" color="accent" svgIcon="email"></mat-icon>
             <span>Continue with email</span>
           </button>
         </div>
         <div class="signupButton">
-          <button mat-raised-button color="primary" matStepperNext>
-            <mat-icon fontSet="fab" fontIcon="fa-github"></mat-icon>
+          <button color="primary" mat-raised-button matStepperNext>
+            <mat-icon fontIcon="fa-github" fontSet="fab"></mat-icon>
             <span>Continue with GitHub</span>
           </button>
         </div>
         <div class="signupButton">
-          <button mat-raised-button color="primary" matStepperNext id="linkedinBtn">
-            <mat-icon fontSet="fab" fontIcon="fa-linkedin-in"></mat-icon>
+          <button color="primary" id="linkedinBtn" mat-raised-button matStepperNext>
+            <mat-icon fontIcon="fa-linkedin-in" fontSet="fab"></mat-icon>
             <span>Continue with LinkedIn</span>
           </button>
         </div>
         <div class="signupButton">
-          <button mat-raised-button color="primary" matStepperNext id="googleBtn">
-            <mat-icon fontSet="fab" fontIcon="fa-google"></mat-icon>
+          <button color="primary" id="googleBtn" mat-raised-button matStepperNext>
+            <mat-icon fontIcon="fa-google" fontSet="fab"></mat-icon>
             <span>Continue with Google</span>
           </button>
         </div>
         <div class="signupButton">
-          <button mat-raised-button color="primary" matStepperNext id="twitterBtn">
-            <mat-icon fontSet="fab" fontIcon="fa-twitter"></mat-icon>
+          <button color="primary" id="twitterBtn" mat-raised-button matStepperNext>
+            <mat-icon fontIcon="fa-twitter" fontSet="fab"></mat-icon>
             <span>Continue with Twitter</span>
           </button>
         </div>
@@ -44,18 +44,18 @@
 
 
   <mat-step [stepControl]="secondFormGroup">
-    <form [formGroup]="secondFormGroup" (ngSubmit)="onSubmit()">
+    <form (ngSubmit)="onSubmit()" [formGroup]="secondFormGroup">
       <ng-template matStepLabel>Fill in your info</ng-template>
 
 
       <div class="container"
+           fxFlex="100%"
+           fxFlex.gt-md="60%"
+           fxFlexOffset="15%"
+           fxFlexOffset.xs="0"
            fxLayout="column"
            fxLayoutAlign="center"
-           fxLayoutGap="8px"
-           fxFlexOffset.xs="0"
-           fxFlexOffset="15%"
-           fxFlex="100%"
-           fxFlex.gt-md="60%">
+           fxLayoutGap="8px">
         <div fxLayout="row"><h2>Fill in the information below to be set to go!</h2></div>
 
 
@@ -64,17 +64,18 @@
         </div>
 
 
-        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0px" fxLayoutGap="16px">
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0px">
           <mat-form-field>
-            <input matInput formControlName="businessName" placeholder="Business name" required>
-            <mat-icon svgIcon="domain" color="primary" matPrefix></mat-icon>
-            <mat-error *ngIf="!secondFormGroup.get('businessName').valid && secondFormGroup.get('businessName').touched">
+            <input formControlName="businessName" matInput placeholder="Business name" required>
+            <mat-icon color="primary" matPrefix svgIcon="domain"></mat-icon>
+            <mat-error
+              *ngIf="!secondFormGroup.get('businessName').valid && secondFormGroup.get('businessName').touched">
               This field is required
             </mat-error>
           </mat-form-field>
 
           <mat-form-field>
-            <input matInput formControlName="vat" placeholder="VAT/CIF" required>
+            <input formControlName="vat" matInput placeholder="VAT/CIF" required>
             <mat-error *ngIf="!secondFormGroup.get('vat').valid && secondFormGroup.get('vat').touched">
               This field is required
             </mat-error>
@@ -82,33 +83,36 @@
         </div>
 
         <br>
-        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0" fxLayoutGap="16px">
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
           <mat-form-field>
-            <input matInput formControlName="email" placeholder="Email" required>
-            <mat-icon svgIcon="email" color="primary" matPrefix></mat-icon>
-           <mat-error *ngIf="!secondFormGroup.get('email').valid && secondFormGroup.get('email').touched">
+            <input formControlName="email" matInput placeholder="Email" required>
+            <mat-icon color="primary" matPrefix svgIcon="email"></mat-icon>
+            <mat-error *ngIf="!secondFormGroup.get('email').valid && secondFormGroup.get('email').touched">
               Please enter a valid email
             </mat-error>
           </mat-form-field>
           <mat-form-field>
-            <input matInput formControlName="confEmail" placeholder="Confirm Email" required>
-           <mat-error *ngIf="!secondFormGroup.get('confEmail').valid && secondFormGroup.get('confEmail').touched">
+            <input formControlName="confEmail" matInput placeholder="Confirm Email" required>
+            <mat-error *ngIf="!secondFormGroup.get('confEmail').valid && secondFormGroup.get('confEmail').touched">
               Emails do not match
             </mat-error>
           </mat-form-field>
         </div>
         <br>
-        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0" fxLayoutGap="16px">
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
           <mat-form-field>
-            <mat-icon svgIcon="lock" color="primary" matPrefix></mat-icon>
-            <input matInput formControlName="password" placeholder="Password" [type]="hide ? 'text' : 'password'" required>
-             <mat-error *ngIf="!secondFormGroup.get('password').valid && secondFormGroup.get('password').touched">
+            <mat-icon color="primary" matPrefix svgIcon="lock"></mat-icon>
+            <input [type]="hide ? 'text' : 'password'" formControlName="password" matInput placeholder="Password"
+                   required>
+            <mat-error *ngIf="!secondFormGroup.get('password').valid && secondFormGroup.get('password').touched">
               Password must be 6 characters or more
             </mat-error>
           </mat-form-field>
           <mat-form-field>
-            <input matInput formControlName="password2" placeholder="Confirm Password" [type]="hide ? 'text' : 'password'" required>
-            <mat-icon matSuffix (click)="hide = !hide" [svgIcon]="hide ? 'visibility' : 'visibility-off'"  color="primary"></mat-icon>
+            <input [type]="hide ? 'text' : 'password'" formControlName="password2" matInput
+                   placeholder="Confirm Password" required>
+            <mat-icon (click)="hide = !hide" [svgIcon]="hide ? 'visibility' : 'visibility-off'" color="primary"
+                      matSuffix></mat-icon>
 
             <mat-error *ngIf="!secondFormGroup.get('password2').valid && secondFormGroup.get('password2').touched">
               Passwords do not match
@@ -119,12 +123,12 @@
         <br>
         <div fxLayout="row" fxLayout.xs="column">
           <mat-form-field>
-            <mat-select placeholder="Work field" formControlName="workField" required>
+            <mat-select formControlName="workField" placeholder="Work field" required>
               <mat-option *ngFor="let workField of workFields" [value]="workField.value">
                 {{workField.viewValue}}
               </mat-option>
             </mat-select>
-            <mat-icon svgIcon="work" color="primary" matPrefix></mat-icon>
+            <mat-icon color="primary" matPrefix svgIcon="work"></mat-icon>
             <mat-error *ngIf="!secondFormGroup.get('workField').valid && secondFormGroup.get('workField').touched">
               This field is required
             </mat-error>
@@ -138,8 +142,8 @@
 
         <div class="line1" fxLayout="column">
           <mat-form-field>
-            <input matInput formControlName="address1" placeholder="Address line 1" required>
-            <mat-icon svgIcon="place" color="primary" matPrefix></mat-icon>
+            <input formControlName="address1" matInput placeholder="Address line 1" required>
+            <mat-icon color="primary" matPrefix svgIcon="place"></mat-icon>
             <mat-error *ngIf="!secondFormGroup.get('address1').valid && secondFormGroup.get('address1').touched">
               Please enter a valid address
             </mat-error>
@@ -149,22 +153,22 @@
 
         <div class="line1" fxLayout="column">
           <mat-form-field>
-            <input matInput formControlName="address2" placeholder="Address line 2">
+            <input formControlName="address2" matInput placeholder="Address line 2">
           </mat-form-field>
         </div>
 
         <br>
 
-        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0px" fxLayoutGap="22px">
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="22px" fxLayoutGap.xs="0px">
           <mat-form-field>
-            <input matInput formControlName="city" placeholder="City" required>
-             <mat-error *ngIf="!secondFormGroup.get('city').valid && secondFormGroup.get('city').touched">
+            <input formControlName="city" matInput placeholder="City" required>
+            <mat-error *ngIf="!secondFormGroup.get('city').valid && secondFormGroup.get('city').touched">
               Please enter a valid city
             </mat-error>
           </mat-form-field>
           <mat-form-field>
-            <input matInput formControlName="province" placeholder="Province" required>
-             <mat-error *ngIf="!secondFormGroup.get('province').valid && secondFormGroup.get('province').touched">
+            <input formControlName="province" matInput placeholder="Province" required>
+            <mat-error *ngIf="!secondFormGroup.get('province').valid && secondFormGroup.get('province').touched">
               Please enter a valid province
             </mat-error>
           </mat-form-field>
@@ -172,16 +176,16 @@
 
 
         <br>
-        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0px" fxLayoutGap="16px">
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0px">
           <mat-form-field>
-            <input matInput formControlName="postalCode" placeholder="Postal Code" required>
-             <mat-error *ngIf="!secondFormGroup.get('postalCode').valid && secondFormGroup.get('postalCode').touched">
+            <input formControlName="postalCode" matInput placeholder="Postal Code" required>
+            <mat-error *ngIf="!secondFormGroup.get('postalCode').valid && secondFormGroup.get('postalCode').touched">
               Please enter a valid postal code
             </mat-error>
           </mat-form-field>
           <mat-form-field>
-            <input matInput formControlName="country" placeholder="Country" required>
-             <mat-error *ngIf="!secondFormGroup.get('country').valid && secondFormGroup.get('country').touched">
+            <input formControlName="country" matInput placeholder="Country" required>
+            <mat-error *ngIf="!secondFormGroup.get('country').valid && secondFormGroup.get('country').touched">
               Please enter a valid country
             </mat-error>
           </mat-form-field>
@@ -189,22 +193,22 @@
 
         <br>
         <div fxLayout="row" fxLayoutAlign="end">
-          <button mat-button matStepperPrevious color="primary">Back</button>
-          <button type="submit" mat-button matStepperNext color="accent">Sign Up!</button>
+          <button color="primary" mat-button matStepperPrevious>Back</button>
+          <button color="accent" mat-button matStepperNext type="submit">Sign Up!</button>
         </div>
       </div>
     </form>
   </mat-step>
   <mat-step>
-     <form [formGroup]="thirdFormGroup" (ngSubmit)="onSubmit()">
+    <form (ngSubmit)="onSubmit()" [formGroup]="thirdFormGroup">
       <ng-template matStepLabel>Your're in!</ng-template>
       <div class="container"
-           fxLayout="column"
-           fxLayoutAlign="center"
            fxFlex="100%"
            fxFlex.gt-md="60%"
+           fxFlexOffset="15%"
            fxFlexOffset.xs="0"
-           fxFlexOffset="15%">
+           fxLayout="column"
+           fxLayoutAlign="center">
         <div fxLayout="column">
           <h2 fxLayoutAlign="center center">✨ Welcome to the Kwee family! ✨</h2>
           <p>While we verify the information provided, please fill the information below to improve your visibility and
@@ -229,8 +233,8 @@
 
         <div class="line2" fxLayout="column">
           <mat-form-field>
-            <input matInput formControlName="website" placeholder="Website">
-            <mat-icon svgIcon="public" color="primary" matPrefix></mat-icon>
+            <input formControlName="website" matInput placeholder="Website">
+            <mat-icon color="primary" matPrefix svgIcon="public"></mat-icon>
           </mat-form-field>
         </div>
 
@@ -238,29 +242,29 @@
         <br>
         <div fxLayout="row">
           <mat-form-field>
-            <mat-select placeholder="Company size" formControlName="companySize">
-              <mat-option *ngFor="let companySize of companySizes"  [value]="companySize.value">
+            <mat-select formControlName="companySize" placeholder="Company size">
+              <mat-option *ngFor="let companySize of companySizes" [value]="companySize.value">
                 {{companySize.viewValue}}
               </mat-option>
             </mat-select>
-            <mat-icon svgIcon="domain" color="primary" matPrefix></mat-icon>
+            <mat-icon color="primary" matPrefix svgIcon="domain"></mat-icon>
           </mat-form-field>
 
         </div>
 
 
         <br>
-        <div fxLayout="row" >
+        <div fxLayout="row">
           <mat-form-field>
-            <input matInput formControlName="year" placeholder="Year founded">
-            <mat-icon svgIcon="cake" color="primary" matPrefix></mat-icon>
+            <input formControlName="year" matInput placeholder="Year founded">
+            <mat-icon color="primary" matPrefix svgIcon="cake"></mat-icon>
           </mat-form-field>
         </div>
 
 
         <br>
         <div fxLayout="row" fxLayoutAlign="end">
-          <button mat-button color="accent" routerLink="/">Done</button>
+          <button color="accent" mat-button routerLink="/">Done</button>
         </div>
       </div>
     </form>

@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { SignupinSectionComponent } from './signupin-section.component';
+import {SignupinSectionComponent} from './signupin-section.component';
 
 describe('SignupinSectionComponent', () => {
   let component: SignupinSectionComponent;
@@ -8,9 +8,9 @@ describe('SignupinSectionComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SignupinSectionComponent ]
+      declarations: [SignupinSectionComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

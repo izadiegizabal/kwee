@@ -1,54 +1,54 @@
 <div
-  fxLayout="column"
-  fxFlex.gt-sm="90%"
-  fxFlex.gt-md="80%"
   fxFlex="100%"
+  fxFlex.gt-md="80%"
+  fxFlex.gt-sm="90%"
   fxFlexOffset="0"
+  fxFlexOffset.gt-md="10%"
   fxFlexOffset.gt-sm="5%"
-  fxFlexOffset.gt-md="10%">
+  fxLayout="column">
 
   <mat-sidenav-container>
     <mat-sidenav #drawer [mode]="media.isActive('gt-sm') ? 'side' : 'over'" [opened]="media.isActive('gt-sm')">
       <mat-action-list>
-        <button mat-list-item
-                routerLink="/admin/statistics" (click)="closeDrawerIfMobile()">
+        <button (click)="closeDrawerIfMobile()"
+                mat-list-item routerLink="/admin/statistics">
           <mat-icon color="primary" matListIcon svgIcon="timeline"></mat-icon>
           Statistics
         </button>
-        <button mat-list-item
-                routerLink="/admin/manage-candidates" (click)="closeDrawerIfMobile()">
-          <mat-icon matListIcon color="primary" svgIcon="people"></mat-icon>
+        <button (click)="closeDrawerIfMobile()"
+                mat-list-item routerLink="/admin/manage-candidates">
+          <mat-icon color="primary" matListIcon svgIcon="people"></mat-icon>
           Manage Candidates
         </button>
-        <button mat-list-item
-                routerLink="/admin/manage-businesses" (click)="closeDrawerIfMobile()">
-          <mat-icon matListIcon color="primary" svgIcon="domain"></mat-icon>
+        <button (click)="closeDrawerIfMobile()"
+                mat-list-item routerLink="/admin/manage-businesses">
+          <mat-icon color="primary" matListIcon svgIcon="domain"></mat-icon>
           Manage Businesses
         </button>
-        <button mat-list-item
-                routerLink="/admin/verify" (click)="closeDrawerIfMobile()">
-          <mat-icon matListIcon color="primary" svgIcon="check-circle"
-                    matBadge="40" matBadgeSize="small" matBadgeColor="primary"></mat-icon>
+        <button (click)="closeDrawerIfMobile()"
+                mat-list-item routerLink="/admin/verify">
+          <mat-icon color="primary" matBadge="40" matBadgeColor="primary"
+                    matBadgeSize="small" matListIcon svgIcon="check-circle"></mat-icon>
           Verify Profiles
         </button>
-        <button mat-list-item
-                routerLink="/admin/reports" (click)="closeDrawerIfMobile()">
-          <mat-icon matListIcon color="primary" svgIcon="report"
-                    matBadge="2" matBadgeSize="small" matBadgeColor="warn"></mat-icon>
+        <button (click)="closeDrawerIfMobile()"
+                mat-list-item routerLink="/admin/reports">
+          <mat-icon color="primary" matBadge="2" matBadgeColor="warn"
+                    matBadgeSize="small" matListIcon svgIcon="report"></mat-icon>
           Reports
         </button>
-        <button mat-list-item
-                routerLink="/admin/messages" (click)="closeDrawerIfMobile()">
-          <mat-icon matListIcon color="primary" svgIcon="chat"
-                    matBadge="12" matBadgeSize="small" matBadgeColor="primary"></mat-icon>
+        <button (click)="closeDrawerIfMobile()"
+                mat-list-item routerLink="/admin/messages">
+          <mat-icon color="primary" matBadge="12" matBadgeColor="primary"
+                    matBadgeSize="small" matListIcon svgIcon="chat"></mat-icon>
           Messages
         </button>
       </mat-action-list>
     </mat-sidenav>
 
     <mat-sidenav-content>
-      <button mat-icon-button *ngIf="!media.isActive('gt-sm')">
-        <mat-icon aria-label="Open menu button" (click)="drawer.toggle()">menu</mat-icon>
+      <button *ngIf="!media.isActive('gt-sm')" mat-icon-button>
+        <mat-icon (click)="drawer.toggle()" aria-label="Open menu button">menu</mat-icon>
       </button>
       <router-outlet></router-outlet>
     </mat-sidenav-content>
