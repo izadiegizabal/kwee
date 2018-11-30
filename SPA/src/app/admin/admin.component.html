@@ -1,12 +1,13 @@
 <div
   fxLayout="column"
-  fxFlex.gt-sm="80%"
+  fxFlex.gt-sm="90%"
+  fxFlex.gt-md="80%"
   fxFlex="100%"
   fxFlexOffset="0"
   fxFlexOffset.gt-sm="5%"
   fxFlexOffset.gt-md="10%">
 
-  <mat-sidenav-container autosize>
+  <mat-sidenav-container>
     <mat-sidenav #drawer [mode]="media.isActive('gt-sm') ? 'side' : 'over'" [opened]="media.isActive('gt-sm')">
       <mat-action-list>
         <button mat-list-item
