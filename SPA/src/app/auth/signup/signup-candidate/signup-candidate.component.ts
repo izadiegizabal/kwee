@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {CandidateService} from './candidate.service';
 
 @Component({
   selector: 'app-signup-candidate',
@@ -10,6 +11,8 @@ export class SignupCandidateComponent implements OnInit {
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
   thirdFormGroup: FormGroup;
+
+  candidate:any;
 
   hide = false;
   iskill = 0;
@@ -26,13 +29,10 @@ export class SignupCandidateComponent implements OnInit {
     {value: 9, viewValue: 'Product Management'},
   ];
 
-  constructor(private _formBuilder: FormBuilder) {
+  constructor(private _formBuilder: FormBuilder, private _candidateservice: CandidateService) {
     this.iskill = 0;
   }
 
-  get formSkills() {
-    return <FormArray>this.thirdFormGroup.get('skills');
-  }
 
   ngOnInit() {
 
@@ -100,9 +100,25 @@ export class SignupCandidateComponent implements OnInit {
     return null;
   }
 
-  onSubmit() {
+  onSave() {
     console.log(this.secondFormGroup);
+    console.log(this.secondFormGroup.value);
 
+    this.candidate ={
+      'name' : this.secondFormGroup.controls['name'].value,
+      'password': this.secondFormGroup.controls['password'].value,
+      'email': this.secondFormGroup.controls['email'].value,
+      'city': this.secondFormGroup.controls['location'].value,
+      'date_born': this.secondFormGroup.controls['birthday'].value,
+      'type': 'a'
+    }
+
+    console.log(this.candidate);
+   /*this._candidateservice.PostCandidate(this.candidate)
+      .subscribe(
+        (response)=> console.log(response),
+        (error)=> console.log(error)
+      );*/
   }
 
   onSubmit_form2() {
@@ -122,6 +138,10 @@ export class SignupCandidateComponent implements OnInit {
   deleteSkill(i) {
     (<FormArray>this.thirdFormGroup.controls['skills']).removeAt(i);
     this.iskill--;
+  }
+
+  get formSkills() {
+    return <FormArray>this.thirdFormGroup.get('skills');
   }
 
 }
