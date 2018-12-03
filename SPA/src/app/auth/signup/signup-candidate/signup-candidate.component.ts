@@ -105,7 +105,8 @@ export class SignupCandidateComponent implements OnInit {
   }
 
   minDate(control: FormControl): { [s: string]: boolean } {
-    const mdate = new Date('2003/1/1');
+    const today = new Date();
+    const mdate = new Date(`${today.getFullYear() - 16}/${today.getMonth()}/${today.getDay()}`);
 
     if (control.value > mdate) {
       return {ok: true};
