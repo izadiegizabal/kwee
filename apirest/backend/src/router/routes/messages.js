@@ -54,7 +54,7 @@ module.exports = (app, db) => {
     // POST single message
     app.post("/messages", [checkToken, checkAdmin], async(req, res, next) => {
         const body = req.body;
-        const fk_receiver = body.fk_sender;
+        const fk_receiver = body.fk_receiver;
 
         try {
             let sender = await db.users.findOne({
