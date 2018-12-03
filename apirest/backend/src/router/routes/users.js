@@ -1,6 +1,8 @@
 const bcrypt = require('bcrypt');
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
 
+const { checks } = require('../../middlewares/validations')
+const { check, validationResult, checkSchema } = require('express-validator/check')
 // ============================
 // ======== CRUD user =========
 // ============================
@@ -26,7 +28,10 @@ module.exports = (app, db) => {
     });
 
     // GET one user by id
-    app.get('/user/:id([0-9]+)', checkToken, async(req, res, next) => {
+    app.get('/user/:id([0-9]+)',
+        checkToken,
+        async(req, res, next) => {
+
         const id = req.params.id;
 
         try {
@@ -58,52 +63,104 @@ module.exports = (app, db) => {
     });
 
     // POST single user
-    app.post('/user', [checkToken, checkAdmin], async(req, res, next) => {
-        let body = req.body;
-        let password = body.password;
+    app.post('/user',
+        [
+            checkToken, 
+            checkAdmin,
+            checks['Register'],
+            checks['ExtraStuff'],
+            checkSchema({
+                premium: {
+                    optional: true,
+                    matches: {
+                        // to do !
+                        options: [ '(?:^|\W.)premium|basic(?:$|\W.)','g' ]
+                    }
+                }
+            })
+        ], async(req, res, next) => {
 
-        if (body.name && password && body.email) {
+            const errors = validationResult(req);
+            
+            if(!errors.isEmpty())
+                return res.status(422).json(errors.array());
 
+            const body = req.body;
+            const password = body.password;
             try {
                 let user = await db.users.create({
                     name: body.name,
                     password: bcrypt.hashSync(password, 10),
                     email: body.email
                 });
-
-                res.status(201).json({
-                    ok: true,
-                    message: `User '${user.name}', with id ${user.id} has been created.`
-                });
-
-                if (user) {
-                    if (body.type && (body.type === 'a' || body.type === 'o')) {
-                        switch (body.type) {
-                            case 'a':
-                                createApplicant(body, user);
-                                break;
-
-                            case 'o':
-                                createOfferer(body, user);
-                                break;
-                        }
-                    } else {
-                        await db.users.destroy({ where: { id: user.id } });
-                        next({ type: 'error', error: 'Must be \'type\' of user, \'a\' (applicant) or \'o\' (offerer)' });
-                    }
+                if( !body.type ) {
+                    // User created
+                    return res.status(201).json({
+                        ok: true,
+                        message: `User '${user.name}' with id ${user.id} has been created.`
+                    });
                 }
-            } catch (err) {
+                else{
+                    let msg = '';
+                    switch (body.type) {
+                        case 'a':
+                            msg = 'Applicant';
+                            createApplicant(body, user);
+                            break;
+                        
+                        case 'o':
+                            msg = 'Offerer';
+                            createOfferer(body, user);
+                            break;
+                        
+                        default:
+                            await db.users.destroy({ where: { id: user.id } });
+                            next({ type: 'error', error: 'Must be \'type\' of user, \'a\' (applicant) or \'o\' (offerer)' });
+                            break;
+                    }
+                    // Applicant / offerer created
+                    return res.status(201).json({
+                        ok: true,
+                        message: `${ msg } '${user.name}' with id ${user.id} has been created.`
+                    });
+                }
+                
+            }
+            catch ( err ){
                 next({ type: 'error', error: err.errors[0].message });
-            };
-        } else {
-            next({ type: 'error', error: 'Name, email and password are required' });
-        }
+            }
+
     });
+    
 
     // PUT single user
-    app.put('/user/:id', [checkToken, checkAdmin], async(req, res, next) => {
+    // actualiza db users !!!! hay que actualizar TABLAS applicants y/o offerers ( siwtch (type) ) 
+    app.put('/user/:id([0-9]+)',
+        [
+            checkToken,
+            checkAdmin,
+            checks['UpdateUser'],
+            checks['ExtraStuff'],
+            checkSchema({
+                premium: {
+                    optional: true,
+                    matches: {
+                        // to do !
+                        options: [ '(?:^|\W.)premium|basic(?:$|\W.)','g' ]
+                    }
+                }
+            })
+        ], async(req, res, next) => {
         const id = req.params.id;
+        
         const updates = req.body;
+        if( updates.password )
+            updates.password = bcrypt.hashSync(req.body.password, 10);
+
+        const errors = validationResult(req);
+
+        if(!errors.isEmpty())
+            return res.status(400).json( errors.array() );
 
         try {
             res.status(200).json({
@@ -124,7 +181,7 @@ module.exports = (app, db) => {
     // DELETE single user
     // This route will put 'deleteAt' to current timestamp,
     // never will delete it from database
-    app.delete('/user/:id', [checkToken, checkAdmin], async(req, res, next) => {
+    app.delete('/user/:id([0-9]+)', [checkToken, checkAdmin, check], async(req, res, next) => {
         const id = req.params.id;
 
         try {
@@ -148,7 +205,7 @@ module.exports = (app, db) => {
             applicant.userId = user.id;
             applicant.city = body.city; // not saving :S
             if (body.date_born) applicant.date_born = body.date_born;
-            if (body.premium) offerer.premium = body.premium;
+            if (body.premium) applicant.premium = body.premium;
 
             console.log(applicant);
 
