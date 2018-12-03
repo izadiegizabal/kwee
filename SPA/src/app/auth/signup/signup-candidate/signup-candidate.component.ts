@@ -102,23 +102,25 @@ export class SignupCandidateComponent implements OnInit {
 
   onSave() {
     console.log(this.secondFormGroup);
-    console.log(this.secondFormGroup.value);
 
-    this.candidate ={
-      'name' : this.secondFormGroup.controls['name'].value,
-      'password': this.secondFormGroup.controls['password'].value,
-      'email': this.secondFormGroup.controls['email'].value,
-      'city': this.secondFormGroup.controls['location'].value,
-      'date_born': this.secondFormGroup.controls['birthday'].value,
-      'type': 'a'
+    if(this.secondFormGroup.status=="VALID"){
+
+      this.candidate ={
+        'name' : this.secondFormGroup.controls['name'].value,
+        'password': this.secondFormGroup.controls['password'].value,
+        'email': this.secondFormGroup.controls['email'].value,
+        'city': this.secondFormGroup.controls['location'].value,
+        'date_born': this.secondFormGroup.controls['birthday'].value,
+        'type': 'a'
+      }
+
+     console.log(this.candidate);
+     this._candidateservice.PostCandidate(this.candidate)
+        .subscribe(
+          (response)=> console.log(response),
+          (error)=> console.log(error)
+        );
     }
-
-    console.log(this.candidate);
-   /*this._candidateservice.PostCandidate(this.candidate)
-      .subscribe(
-        (response)=> console.log(response),
-        (error)=> console.log(error)
-      );*/
   }
 
   onSubmit_form2() {

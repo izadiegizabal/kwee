@@ -15,6 +15,7 @@ export class SignupOffererComponent implements OnInit {
   thirdFormGroup: FormGroup;
 
   hide = false;
+  offerer:any;
 
   workFields: { value: number, viewValue: string }[] = [
     {value: 0, viewValue: 'Software Engineering'},
@@ -121,6 +122,23 @@ export class SignupOffererComponent implements OnInit {
   onSubmit() {
     console.log(this.secondFormGroup);
 
+    if(this.secondFormGroup.status=="VALID"){
+
+     this.offerer ={
+        'name' : this.secondFormGroup.controls['businessName'].value,
+        'password': this.secondFormGroup.controls['password'].value,
+        'email': this.secondFormGroup.controls['email'].value,
+        'address': this.secondFormGroup.controls['address1'].value,
+        'cif': this.secondFormGroup.controls['vat'].value,
+        'work_field': this.secondFormGroup.controls['workField'].value,
+        'type': 'o'
+      }
+
+      console.log(this.offerer);
+
+
+      //POST new offerer
+    }
   }
 
 
