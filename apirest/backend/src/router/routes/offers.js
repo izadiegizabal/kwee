@@ -1,5 +1,8 @@
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
 
+//const { checks } = require('../../middlewares/validations')
+//const { check, validationResult, checkSchema } = require('express-validator/check')
+
 // ============================
 // ======== CRUD offers =========
 // ============================
@@ -19,7 +22,7 @@ module.exports = (app, db) => {
     });
 
     // GET one offer by id
-    app.get('/offer/:id', checkToken, async(req, res, next) => {
+    app.get('/offer/:id([0-9]+)', checkToken, async(req, res, next) => {
         const id = req.params.id;
 
         try {
@@ -36,7 +39,13 @@ module.exports = (app, db) => {
     });
 
     // POST single offer
-    app.post('/offer', [checkToken, checkAdmin], async(req, res, next) => {
+    app.post('/offer',
+        [
+            checkToken,
+            checkAdmin/*,
+            checks['Offer']*/
+        ], async(req, res, next) => {
+        
         let body = req.body
 
         try {
@@ -56,13 +65,15 @@ module.exports = (app, db) => {
             });
 
         } catch (err) {
-            next({ type: 'error', error: err });
+            // error: si INVALIDA FK_OFFERER --> err
+            // error: si alguna validación --> errors[0].message
+            next({ type: 'error', error: err/*.errors[0].message*/ });
         }
 
     });
 
     // PUT single offer
-    app.put('/offer/:id', [checkToken, checkAdmin], async(req, res, next) => {
+    app.put('/offer/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
 

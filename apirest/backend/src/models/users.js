@@ -7,7 +7,14 @@ module.exports = (sequelize, DataTypes) => {
             field: 'name',
             allowNull: false,
             validate: {
-                notEmpty: true
+                notEmpty: {
+                    "args": true,
+                    "msg": "Name should be filled."
+                },
+                isAlphanumeric: {
+                    "args": true,
+                    "msg": "Name should contain only letters and numbers."
+                }
             }
         },
 
@@ -20,7 +27,14 @@ module.exports = (sequelize, DataTypes) => {
             field: 'email',
             allowNull: false,
             validate: {
-                notEmpty: true
+                notEmpty: {
+                    "args": true,
+                    "msg": "Email should be filled."
+                },
+                isEmail: {
+                    "args": true,
+                    "msg": "Invalid email."
+                }
             }
         },
 
@@ -28,7 +42,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
-                notEmpty: true
+                notEmpty: true,
+                /*is: {
+                    "args": /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,16}$/g,
+                    "msg": "Invalid password. Should be 8-16 length and contain at least 1 letter and at 1 number."
+                },*/
             }
         },
 
@@ -41,7 +59,8 @@ module.exports = (sequelize, DataTypes) => {
         root: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
-            defaultValue: false
+            defaultValue: false,
+            
         }
 
     }, {

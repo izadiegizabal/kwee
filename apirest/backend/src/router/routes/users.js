@@ -1,8 +1,8 @@
 const bcrypt = require('bcrypt');
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
 
-const { checks } = require('../../middlewares/validations')
-const { check, validationResult, checkSchema } = require('express-validator/check')
+//const { checks } = require('../../middlewares/validations')
+//const { check, validationResult, checkSchema } = require('express-validator/check')
 // ============================
 // ======== CRUD user =========
 // ============================
@@ -66,27 +66,30 @@ module.exports = (app, db) => {
     app.post('/user',
         [
             checkToken, 
-            checkAdmin,
-            checks['Register'],
-            checks['ExtraStuff'],
-            checkSchema({
-                premium: {
-                    optional: true,
-                    matches: {
-                        // to do !
-                        options: [ '(?:^|\W.)premium|basic(?:$|\W.)','g' ]
-                    }
-                }
-            })
+            checkAdmin
+            // ,
+            // checks['Register'],
+            // checks['ExtraStuff'],
+            // checkSchema({
+            //     premium: {
+            //         optional: true,
+            //         matches: {
+            //             // to do !
+            //             options: [ '(?:^|\W.)premium|basic(?:$|\W.)','g' ]
+            //         }
+            //     }
+            // }
+            //)
         ], async(req, res, next) => {
 
-            const errors = validationResult(req);
-            
-            if(!errors.isEmpty())
-                return res.status(422).json(errors.array());
-
+           
             const body = req.body;
             const password = body.password;
+
+            // validar password si queremos especificar un tipo de pass concreto (sólo letras y numeros )
+            console.log(password);
+
+
             try {
                 let user = await db.users.create({
                     name: body.name,
@@ -138,18 +141,19 @@ module.exports = (app, db) => {
     app.put('/user/:id([0-9]+)',
         [
             checkToken,
-            checkAdmin,
-            checks['UpdateUser'],
-            checks['ExtraStuff'],
-            checkSchema({
-                premium: {
-                    optional: true,
-                    matches: {
-                        // to do !
-                        options: [ '(?:^|\W.)premium|basic(?:$|\W.)','g' ]
-                    }
-                }
-            })
+            checkAdmin
+            // ,
+            // checks['UpdateUser'],
+            // checks['ExtraStuff'],
+            // checkSchema({
+            //     premium: {
+            //         optional: true,
+            //         matches: {
+            //             // to do !
+            //             options: [ '(?:^|\W.)premium|basic(?:$|\W.)','g' ]
+            //         }
+            //     }
+            // })
         ], async(req, res, next) => {
         const id = req.params.id;
         
@@ -157,11 +161,7 @@ module.exports = (app, db) => {
         if( updates.password )
             updates.password = bcrypt.hashSync(req.body.password, 10);
 
-        const errors = validationResult(req);
-
-        if(!errors.isEmpty())
-            return res.status(400).json( errors.array() );
-
+       
         try {
             res.status(200).json({
                 ok: true,
@@ -181,7 +181,7 @@ module.exports = (app, db) => {
     // DELETE single user
     // This route will put 'deleteAt' to current timestamp,
     // never will delete it from database
-    app.delete('/user/:id([0-9]+)', [checkToken, checkAdmin, check], async(req, res, next) => {
+    app.delete('/user/:id([0-9]+)', [checkToken, checkAdmin/*, check*/], async(req, res, next) => {
         const id = req.params.id;
 
         try {

@@ -12,7 +12,10 @@ module.exports = (sequelize, DateTypes) => {
             field: 'title',
             allowNull: false,
             validate: {
-                notEmpty: true
+                notEmpty: {
+                    "args": true,
+                    "msg": "Title should be filled."
+                }
             }
         },
 
@@ -21,7 +24,14 @@ module.exports = (sequelize, DateTypes) => {
             field: 'description',
             allowNull: false,
             validate: {
-                notEmpty: true
+                notEmpty: {
+                    "args": true,
+                    "msg": "Description should be filled."
+                },
+                len: {
+                    "args": [140,500],
+                    "msg": "Description sohuld be 140-500 length."
+                }
             }
         },
 
@@ -30,7 +40,14 @@ module.exports = (sequelize, DateTypes) => {
             field: 'date_start',
             allowNull: false,
             validate: {
-                notEmpty: true
+                notEmpty: {
+                    "args": true,
+                    "msg": "Starting date should be filled."
+                },
+                isDate: {
+                    "args": true,
+                    "msg": "Starting date should be a date."
+                }
             }
         },
 
@@ -39,7 +56,24 @@ module.exports = (sequelize, DateTypes) => {
             field: 'date_end',
             allowNull: false,
             validate: {
-                notEmpty: true
+                notEmpty: {
+                    "args": true,
+                    "msg": "Starting date should be filled."
+                },
+                isDate: {
+                    "args": true,
+                    "msg": "Starting date should be a date."
+                },
+                startDateAfterEndDate() {
+                    const today = new Date();
+                    if (this.date_start >= this.date_end ) {
+                        throw new Error('Start date must be before the end date.');
+                    }
+                    else if( this.date_start <= today) {
+                        throw new Error('Start date must be after today\'s date.');
+                    }
+                }
+                
             }
         },
 
@@ -48,7 +82,14 @@ module.exports = (sequelize, DateTypes) => {
             field: 'location',
             allowNull: false,
             validate: {
-                notEmpty: true
+                notEmpty: {
+                    "args": true,
+                    "msg": "Location should be filled."
+                },
+                len: {
+                    "args": [5,50],
+                    "msg": "Description sohuld be 5-20 length."
+                }
             }
         },
 
@@ -57,11 +98,23 @@ module.exports = (sequelize, DateTypes) => {
             field: 'salary',
             allowNull: false,
             validate: {
-                notEmpty: true
+                notEmpty: {
+                    "args": true,
+                    "msg": "Salary should be filled."
+                },
+                isNumeric: {
+                    "args": true,
+                    "msg": "Salary should be a number."
+                }
             }
         }
-    }, {
+    },
+    {
         paranoid: true
-    });
+    }
+      
+    /*,{
+        paranoid: true
+    }*/);
     return Offer;
 };

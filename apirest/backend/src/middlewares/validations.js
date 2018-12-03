@@ -1,6 +1,10 @@
 const check = require('express-validator/check');
 
 const checks = {
+
+    // ============
+    // Users
+    // ============
     Register: [
         check.check('email')
             .isEmail().withMessage('Invalid email.'),
@@ -30,7 +34,7 @@ const checks = {
             .isAlphanumeric().withMessage('Invalid address value.')
             
         // work field
-
+        // to do !
     ],
     ExtraStuff: [
         check.check('website').optional()
@@ -44,7 +48,18 @@ const checks = {
 
         check.check('year').optional()
             .toDate().withMessage('Invalid year value.'),     
-    ]  
+    ],
+    
+    // ============
+    //     Offers
+    // ============
+    Offer: [
+        check.check('fk_offerer')
+            .isInt().withMessage('Invalid ID value'),
+        check.check('titles')
+            .isEmpty().isAlpha().withMessage('Title should only contain letters.')
+        //check.check('description')
+    ]
 }
 
 

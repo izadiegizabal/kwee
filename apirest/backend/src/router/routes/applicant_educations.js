@@ -6,7 +6,9 @@ const { checkToken, checkAdmin } = require('../../middlewares/authentication');
 
 module.exports = (app, db) => {
     // GET all applicant_educations
-    app.get("/applicant_educations", checkToken, async(req, res, next) => {
+    app.get("/applicant_educations",
+        checkToken,
+        async(req, res, next) => {
         try {
             res.status(200).json({
                 ok: true,
@@ -18,7 +20,9 @@ module.exports = (app, db) => {
     });
 
     // GET one applicant_education by two id's
-    app.get("/applicant_education/:fk_applicant([0-9]+)/:fk_education([0-9]+)", checkToken, async(req, res, next) => {
+    app.get("/applicant_education/:fk_applicant([0-9]+)/:fk_education([0-9]+)",
+        checkToken,
+        async(req, res, next) => {
         const params = req.params;
 
         try {
@@ -56,7 +60,12 @@ module.exports = (app, db) => {
     });
 
     // POST single applicant_education
-    app.post("/applicant_educations", [checkToken, checkAdmin], async(req, res, next) => {
+    app.post("/applicant_educations",
+        [
+            checkToken,
+            checkAdmin
+        ],
+        async(req, res, next) => {
         const body = req.body;
 
         try {
