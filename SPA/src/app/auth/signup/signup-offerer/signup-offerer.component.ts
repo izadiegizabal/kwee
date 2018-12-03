@@ -1,5 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {SingupService} from '../signup.service';
+
 
 
 @Component({
@@ -15,13 +17,13 @@ export class SignupOffererComponent implements OnInit {
   thirdFormGroup: FormGroup;
 
   hide = false;
-  offerer:any;
+  offerer: any;
 
   workFields: { value: number, viewValue: string }[] = [
     {value: 0, viewValue: 'Software Engineering'},
     {value: 1, viewValue: 'Engineering Management'},
     {value: 2, viewValue: 'Design'},
-    {value: 3, viewValue: 'Data Analitycs'},
+    {value: 3, viewValue: 'Data Analytics'},
     {value: 4, viewValue: 'Developer Operations'},
     {value: 5, viewValue: 'Quality Assurance'},
     {value: 6, viewValue: 'Information Technology'},
@@ -38,7 +40,7 @@ export class SignupOffererComponent implements OnInit {
   ];
 
 
-  constructor(private _formBuilder: FormBuilder) {
+  constructor(private _formBuilder: FormBuilder, private _singupService: SingupService) {
   }
 
   ngOnInit() {
@@ -122,24 +124,26 @@ export class SignupOffererComponent implements OnInit {
   onSubmit() {
     console.log(this.secondFormGroup);
 
-    if(this.secondFormGroup.status=="VALID"){
+    if (this.secondFormGroup.status === 'VALID') {
 
-     this.offerer ={
-        'name' : this.secondFormGroup.controls['businessName'].value,
+      this.offerer = {
+        'name': this.secondFormGroup.controls['businessName'].value,
         'password': this.secondFormGroup.controls['password'].value,
         'email': this.secondFormGroup.controls['email'].value,
         'address': this.secondFormGroup.controls['address1'].value,
         'cif': this.secondFormGroup.controls['vat'].value,
         'work_field': this.secondFormGroup.controls['workField'].value,
         'type': 'o'
-      }
+      };
 
-      console.log(this.offerer);
+      // console.log(this.offerer);
 
-
-      //POST new offerer
+      // POST new offerer
+      this._singupService.newUser(this.offerer)
+        .subscribe(
+          (response) => console.log(response),
+          (error) => console.log(error)
+        );
     }
   }
-
-
 }

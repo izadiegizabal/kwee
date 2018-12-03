@@ -103,8 +103,11 @@
             <input [matDatepicker]="picker" formControlName="birthday" matInput placeholder="Birthday" required>
             <mat-datepicker-toggle [for]="picker" matPrefix></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
-            <mat-error *ngIf="!secondFormGroup.get('birthday').valid && secondFormGroup.get('birthday').touched">
+            <mat-error *ngIf="secondFormGroup.get('birthday').errors?.required && secondFormGroup.get('birthday').touched">
               This field is required
+            </mat-error>
+            <mat-error *ngIf="!secondFormGroup.get('birthday').valid && secondFormGroup.get('birthday').touched && !secondFormGroup.get('birthday').errors.required">
+              Please enter a valid date<!--You must be over 16 years old-->
             </mat-error>
           </mat-form-field>
         </div>

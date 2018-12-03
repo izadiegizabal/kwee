@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {CandidateService} from './candidate.service';
+import {SingupService} from '../signup.service';
 
 @Component({
   selector: 'app-signup-candidate',
@@ -12,7 +12,7 @@ export class SignupCandidateComponent implements OnInit {
   secondFormGroup: FormGroup;
   thirdFormGroup: FormGroup;
 
-  candidate:any;
+  candidate: any;
 
   hide = false;
   iskill = 0;
@@ -21,7 +21,7 @@ export class SignupCandidateComponent implements OnInit {
     {value: 0, viewValue: 'Software Engineering'},
     {value: 1, viewValue: 'Engineering Management'},
     {value: 2, viewValue: 'Design'},
-    {value: 3, viewValue: 'Data Analitycs'},
+    {value: 3, viewValue: 'Data Analytics'},
     {value: 4, viewValue: 'Developer Operations'},
     {value: 5, viewValue: 'Quality Assurance'},
     {value: 6, viewValue: 'Information Technology'},
@@ -29,7 +29,7 @@ export class SignupCandidateComponent implements OnInit {
     {value: 9, viewValue: 'Product Management'},
   ];
 
-  constructor(private _formBuilder: FormBuilder, private _candidateservice: CandidateService) {
+  constructor(private _formBuilder: FormBuilder, private _singupService: SingupService) {
     this.iskill = 0;
   }
 
@@ -48,7 +48,6 @@ export class SignupCandidateComponent implements OnInit {
       'birthday': new FormControl(null, Validators.required),
       'location': new FormControl(null, Validators.required),
       'role': new FormControl(null, Validators.required),
-
     });
 
     this.secondFormGroup.controls['password2'].setValidators([
@@ -59,6 +58,11 @@ export class SignupCandidateComponent implements OnInit {
     this.secondFormGroup.controls['confEmail'].setValidators([
       Validators.required,
       this.sameEmail.bind(this.secondFormGroup),
+    ]);
+
+    this.secondFormGroup.controls['birthday'].setValidators([
+      Validators.required,
+      this.minDate.bind(this.secondFormGroup),
     ]);
 
 
@@ -100,25 +104,34 @@ export class SignupCandidateComponent implements OnInit {
     return null;
   }
 
+  minDate(control: FormControl): { [s: string]: boolean } {
+    const mdate = new Date('2003/1/1');
+
+    if (control.value > mdate) {
+      return {ok: true};
+    }
+    return null;
+  }
+
   onSave() {
     console.log(this.secondFormGroup);
 
-    if(this.secondFormGroup.status=="VALID"){
+    if ( this.secondFormGroup.status === 'VALID' ) {
 
-      this.candidate ={
+      this.candidate = {
         'name' : this.secondFormGroup.controls['name'].value,
         'password': this.secondFormGroup.controls['password'].value,
         'email': this.secondFormGroup.controls['email'].value,
         'city': this.secondFormGroup.controls['location'].value,
         'date_born': this.secondFormGroup.controls['birthday'].value,
         'type': 'a'
-      }
+      };
 
      console.log(this.candidate);
-     this._candidateservice.PostCandidate(this.candidate)
+     this._singupService.newUser(this.candidate)
         .subscribe(
-          (response)=> console.log(response),
-          (error)=> console.log(error)
+          (response) => console.log(response),
+          (error) => console.log(error)
         );
     }
   }

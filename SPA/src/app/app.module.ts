@@ -50,11 +50,6 @@ import {AdminReportsComponent} from './admin/admin-reports/admin-reports.compone
 import {AdminMessagesComponent} from './admin/admin-messages/admin-messages.component';
 import {CandidateOverviewComponent} from './admin/admin-manage-candidates/candidate-overview/candidate-overview.component';
 
-
-//services
-import { CandidateService } from './auth/signup/signup-candidate/candidate.service';
-
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -86,7 +81,6 @@ import { CandidateService } from './auth/signup/signup-candidate/candidate.servi
     AppRoutingModule,
     FlexLayoutModule,
     ReactiveFormsModule,
-    
     // Angular Material modules
     MatCardModule,
     MatIconModule,
@@ -109,7 +103,7 @@ import { CandidateService } from './auth/signup/signup-candidate/candidate.servi
     MatBadgeModule,
     MatChipsModule
   ],
-  providers: [MatIconRegistry, CandidateService],
+  providers: [MatIconRegistry],
   bootstrap: [AppComponent]
 })
 export class AppModule {
