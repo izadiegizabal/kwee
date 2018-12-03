@@ -5,24 +5,47 @@ module.exports = (sequelize, DataTypes) => {
 
         fk_applicant: {
             type: DataTypes.INTEGER,
-            allowNull: false,
-            primaryKey: true
+            allowNull: { 
+                "args": false,
+                "msg": "fk_applicant should point to a valid foreign_key of an applicant id."},
+            primaryKey: true,
+            validate: {
+                isInt: {
+                    "args": true,
+                    "msg": "fk_applicant should be an int."
+                }
+            }
         },
 
         fk_offer: {
             type: DataTypes.INTEGER,
-            allowNull: false,
-            primaryKey: true
+            allowNull: { 
+                "args": false,
+                "msg": "fk_offerer should point to a valid foreign_key of an offer id."},
+            primaryKey: true,
+            validate: {
+                isInt: {
+                    "args": true,
+                    "msg": "fk_offerer should be an int."
+                }
+            }
         },
 
         status: {
-            type: DataTypes.ENUM,
+            type: DataTypes.ENUM(['active', 'pending', 'deleted']),
             field: 'status',
             values: ['active', 'pending', 'deleted'],
             defaultValue: 'pending',
             allowNull: false,
             validate: {
-                notEmpty: true
+                notEmpty: {
+                    "args": true,
+                    "msg": "status shouldn't be empty."
+                },
+                isIn: {
+                    "args": [[ 'active', 'pending', 'deleted' ]],
+                    "msg": "status value should be a valid one: 'active', 'pending' or 'deleted'."
+                }
             }
         }
     }, {

@@ -4,7 +4,7 @@ const callback_url = 'http://localhost:3000/auth/';
 // const callback_url = 'https://kwee.ovh/api/auth/';
 
 const env = {
-    DATABASE_NAME: 'kweetest',
+    DATABASE_NAME: 'kwee',
     DATABASE_USERNAME: 'root',
     DATABASE_PASSWORD: '',
     PORT: 3000,
