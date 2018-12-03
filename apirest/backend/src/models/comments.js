@@ -4,12 +4,10 @@ module.exports = (sequelize, DateTypes) => {
 
         fk_rating_applicant: {
             type: DateTypes.INTEGER,
-            allowNull: false,
         },
 
         fk_rating_offerer: {
             type: DateTypes.INTEGER,
-            allowNull: false,
         },
 
         description: {
@@ -24,7 +22,7 @@ module.exports = (sequelize, DateTypes) => {
         status: {
             type: DateTypes.ENUM,
             field: 'status',
-            values: ['active', 'pending', 'deleted'],
+            values: ['pending', 'active', 'deleted'],
             defaultValue: 'pending',
             allowNull: false,
             validate: {
@@ -33,12 +31,8 @@ module.exports = (sequelize, DateTypes) => {
         },
 
         deleted_reason: {
-            type: DateTypes.STRING(50),
+            type: DateTypes.STRING,
             field: 'deleted_reason',
-            allowNull: false,
-            validate: {
-                notEmpty: true
-            }
         },
 
     }, {

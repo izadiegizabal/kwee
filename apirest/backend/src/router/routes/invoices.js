@@ -39,13 +39,16 @@ module.exports = (app, db) => {
 
         try {
             let invoice = await db.invoices.create({
-                fk_application: body.fk_application
-            })
-
-            res.status(201).json({
-                ok: true,
-                message: `Social_networks with id ${invoice.id} has been created.`
+                fk_applicant: body.fk_applicant,
+                fk_offer: body.fk_offer
             });
+
+            if (invoice) {
+                res.status(201).json({
+                    ok: true,
+                    message: `Invoice with id ${invoice.id} has been created.`
+                });
+            }
 
         } catch (err) {
             next({ type: 'error', error: err.errors[0].message });

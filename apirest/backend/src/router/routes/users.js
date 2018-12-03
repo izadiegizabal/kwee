@@ -80,11 +80,11 @@ module.exports = (app, db) => {
                     if (body.type && (body.type === 'a' || body.type === 'o')) {
                         switch (body.type) {
                             case 'a':
-                                createApplicant(body, user);
+                                createApplicant(body, user, next);
                                 break;
 
                             case 'o':
-                                createOfferer(body, user);
+                                createOfferer(body, user, next);
                                 break;
                         }
                     } else {
@@ -142,7 +142,7 @@ module.exports = (app, db) => {
         }
     });
 
-    async function createApplicant(body, user) {
+    async function createApplicant(body, user, next) {
         if (body.city) {
             let applicant = {};
             applicant.userId = user.id;
@@ -160,7 +160,7 @@ module.exports = (app, db) => {
         }
     }
 
-    async function createOfferer(body, user) {
+    async function createOfferer(body, user, next) {
         if (body.adress && body.cif && body.work_field) {
 
             await db.offerers.create({

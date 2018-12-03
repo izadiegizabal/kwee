@@ -2,10 +2,14 @@ module.exports = (sequelize, DataTypes) => {
 
     const Rating = sequelize.define('ratings', {
 
-        fk_application: {
+        fk_applicant: {
             type: DataTypes.INTEGER,
-            allowNull: false,
-            unique: true
+            allowNull: false
+        },
+
+        fk_offer: {
+            type: DataTypes.INTEGER,
+            allowNull: false
         },
 
         overall: {
