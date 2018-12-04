@@ -14,6 +14,7 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatStepperModule} from '@angular/material/stepper';
 import {MatTabsModule} from '@angular/material/tabs';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatInputModule} from '@angular/material/input';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {SignupOffererComponent} from './auth/signup/signup-offerer/signup-offerer.component';
@@ -90,6 +91,7 @@ import {CandidateOverviewComponent} from './admin/admin-manage-candidates/candid
     MatToolbarModule,
     MatMenuModule,
     MatTabsModule,
+    MatCheckboxModule,
     MatStepperModule,
     MatFormFieldModule,
     MatInputModule,
