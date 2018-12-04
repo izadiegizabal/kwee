@@ -1,4 +1,6 @@
 import {Component, OnInit} from '@angular/core';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+
 
 @Component({
   selector: 'app-candidate-overview',
@@ -23,7 +25,7 @@ export class CandidateOverviewComponent implements OnInit {
       index: 64,
       email: 'hello@izadi.xyz',
       state: 'active',
-      subscription: 'Premium',
+      subscription: 'premium',
       lastAccess: new Date('2018-11-29T21:24:00'),
       signupDate: new Date('2017-02-01T15:30:00')
     },
@@ -31,7 +33,7 @@ export class CandidateOverviewComponent implements OnInit {
       fullname: 'Alba González Aller',
       index: 92,
       email: 'alba.g.aller@gmail.com',
-      state: 'active',
+      state: 'temporalBlocked',
       subscription: 'free',
       lastAccess: new Date('2018-11-29T21:24:00'),
       signupDate: new Date('2017-02-01T15:30:00')
@@ -41,7 +43,7 @@ export class CandidateOverviewComponent implements OnInit {
       index: 88,
       email: 'caldaravi@gmail.com',
       state: 'active',
-      subscription: 'free',
+      subscription: 'premium',
       lastAccess: new Date('2018-11-29T21:24:00'),
       signupDate: new Date('2017-02-01T15:30:00')
     },
@@ -49,7 +51,7 @@ export class CandidateOverviewComponent implements OnInit {
       fullname: 'Marcos Urios Gómez',
       index: 95,
       email: 'marcosaurios@gmail.com',
-      state: 'active',
+      state: 'verPending',
       subscription: 'free',
       lastAccess: new Date('2018-11-29T21:24:00'),
       signupDate: new Date('2017-02-01T15:30:00')
@@ -75,10 +77,48 @@ export class CandidateOverviewComponent implements OnInit {
     {value: 'premium', viewValue: 'Premium'},
   ];
 
-  constructor() {
+  userForm: FormGroup;
+
+
+  constructor(private _formBuilder: FormBuilder) {
   }
 
   ngOnInit() {
+
+    this.userForm = this._formBuilder.group({
+      'name': new FormControl(null, Validators.required),
+      'email': new FormControl(null, [Validators.required, Validators.email]),
+      'password': new FormControl(null, Validators.pattern('[a-zA-Z0-9_-ñ]{6,49}$')),
+      'password2': new FormControl(null),
+      'accountState': new FormControl(null, Validators.required),
+      'subscription': new FormControl(null, Validators.required),
+    });
+
+    this.userForm.controls['password2'].setValidators([
+      Validators.required,
+      this.samePassword.bind(this.userForm),
+    ]);
+
+    this.userForm.controls['password'].valueChanges.subscribe(value => {
+      if (this.userForm.controls['password'].value != null && this.userForm.controls['password2'].value != null) {
+        this.userForm.controls['password2'].updateValueAndValidity();
+      }
+    });
+  }
+
+
+  samePassword(control: FormControl): { [s: string]: boolean } {
+    const userForm: any = this;
+    if (control.value !== userForm.controls['password'].value) {
+      return {same: true};
+    }
+    return null;
+  }
+
+  edit(user) {
+    this.isInEditMode = true;
+    this.userForm.controls['accountState'].setValue(user.state);
+    this.userForm.controls['subscription'].setValue(user.subscription);
   }
 
 }

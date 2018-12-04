@@ -87,7 +87,6 @@ export class SignupCandidateComponent implements OnInit {
   }
 
   samePassword(control: FormControl): { [s: string]: boolean } {
-
     const secondFormGroup: any = this;
     if (control.value !== secondFormGroup.controls['password'].value) {
       return {same: true};
@@ -96,7 +95,6 @@ export class SignupCandidateComponent implements OnInit {
   }
 
   sameEmail(control: FormControl): { [s: string]: boolean } {
-
     const secondFormGroup: any = this;
     if (control.value !== secondFormGroup.controls['email'].value) {
       return {same: true};

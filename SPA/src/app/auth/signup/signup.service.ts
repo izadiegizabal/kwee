@@ -15,15 +15,15 @@ export class SingupService {
 
   newUser(candidate: any) {
     const body = JSON.stringify(candidate);
-    // let headers=new HttpHeaders().set('token','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxOSwibmFtZSI6InBydWViYTIiLCJlbWFpbCI6InBydWViYTJAYWEuYSIsInJvb3QiOnRydWUsImNyZWF0ZWRBdCI6IjIwMTgtMTEtMTdUMTg6MzQ6NDIuMDAwWiIsInVwZGF0ZWRBdCI6IjIwMTgtMTEtMTdUMTg6MzQ6NDIuMDAwWiIsImRlbGV0ZWRBdCI6bnVsbH0sImlhdCI6MTU0MjQ4ODE4NCwiZXhwIjoxODYyNDg0OTg0fQ.id5OUQjtLqbHIhnwKeSLwW0l2ZeLlC-cdrXvJH-9w54');
+
     let headers = new HttpHeaders().set('Content-Type', 'application/json');
     headers = headers.set('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxOSwibmFtZSI6InBydWViYTIiLCJlbWFpbCI6InBydWViYTJAYWEuYSIsInJvb3QiOnRydWUsImNyZWF0ZWRBdCI6IjIwMTgtMTEtMTdUMTg6MzQ6NDIuMDAwWiIsInVwZGF0ZWRBdCI6IjIwMTgtMTEtMTdUMTg6MzQ6NDIuMDAwWiIsImRlbGV0ZWRBdCI6bnVsbH0sImlhdCI6MTU0MjQ4ODE4NCwiZXhwIjoxODYyNDg0OTg0fQ.id5OUQjtLqbHIhnwKeSLwW0l2ZeLlC-cdrXvJH-9w54');
 
-    console.log(body);
-    console.log(headers);
+    // console.log(body);
+    // console.log(headers);
     return this.http.post(this.candidateURL, body, {headers: headers}).pipe(
       map(res => {
-        console.log(res);
+        // console.log(res);
         return res;
       }),
       catchError(this.handleError('PostCandidate', []))
