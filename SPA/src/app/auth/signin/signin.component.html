@@ -15,20 +15,21 @@
       </mat-expansion-panel-header>
       <div class="container"
            fxLayout="column"
-           fxLayoutGap="8px">
-        <mat-form-field>
-          <input matInput placeholder="Email" required>
-          <mat-icon svgIcon="email" color="primary" matPrefix></mat-icon>
-        </mat-form-field>
+           fxLayoutGap="8px"
+           [formGroup]="user">
+          <mat-form-field>
+            <input matInput formControlName="email" placeholder="Email" required>
+            <mat-icon svgIcon="email" color="primary" matPrefix></mat-icon>
+          </mat-form-field>
 
-        <mat-form-field>
-          <mat-icon svgIcon="lock" color="primary" matPrefix></mat-icon>
-          <input matInput placeholder="Password" [type]="hide ? 'text' : 'password'" required>
-        </mat-form-field>
+          <mat-form-field>
+            <mat-icon svgIcon="lock" color="primary" matPrefix></mat-icon>
+            <input matInput formControlName="password" placeholder="Password" [type]="hide ? 'text' : 'password'" required>
+          </mat-form-field>
 
-        <div fxLayout="row" fxLayoutAlign="end">
-          <button mat-button color="accent" (click)="signIn()">Sign In</button>
-        </div>
+          <div fxLayout="row" fxLayoutAlign="end">
+            <button mat-button color="accent" (click)="signIn()">Sign In</button>
+          </div>
       </div>
     </mat-expansion-panel>
   </mat-accordion>

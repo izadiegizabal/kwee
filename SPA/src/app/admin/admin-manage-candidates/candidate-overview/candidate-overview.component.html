@@ -2,7 +2,7 @@
   <mat-expansion-panel
     (closed)="isPanelOpen = !isPanelOpen; isInEditMode = false"
     (opened)="isPanelOpen = !isPanelOpen; isInEditMode = false"
-    *ngFor="let user of users;">
+    *ngFor="let user of users;" [formGroup]="userForm">
     <mat-expansion-panel-header>
       <mat-panel-title fxFlex="75%"
                        fxFlex.gt-lg="30%" fxFlex.gt-md="35%" fxFlex.gt-sm="40%" fxLayoutAlign="start center">
@@ -43,7 +43,7 @@
         <div *ngIf="isInEditMode && isPanelOpen">
           <mat-form-field>
             <label>
-              <input [value]="user.fullname" matInput>
+              <input formControlName="name" [value]="user.fullname" matInput>
             </label>
           </mat-form-field>
         </div>
@@ -57,7 +57,7 @@
         <div *ngIf="isInEditMode && isPanelOpen">
           <mat-form-field>
             <label>
-              <input [value]="user.email" matInput>
+              <input formControlName="email" [value]="user.email" matInput>
             </label>
           </mat-form-field>
         </div>
@@ -71,7 +71,7 @@
         <br>
         <mat-form-field>
           <label>
-            <input matInput type="password">
+            <input formControlName="password" matInput type="password">
           </label>
         </mat-form-field>
       </div>
@@ -80,7 +80,7 @@
         <br>
         <mat-form-field>
           <label>
-            <input matInput type="password">
+            <input formControlName="password2" matInput type="password">
           </label>
         </mat-form-field>
       </div>
@@ -99,8 +99,8 @@
           </div>
           <div *ngIf="isInEditMode && isPanelOpen">
             <mat-form-field>
-              <mat-select [(value)]="user.state">
-                <mat-option *ngFor="let state of states" [value]="user.state">
+              <mat-select [(value)]="user.state" formControlName="accountState">
+                <mat-option *ngFor="let state of states" [value]="state.value">
                   {{state.viewValue}}
                 </mat-option>
               </mat-select>
@@ -115,8 +115,8 @@
           </div>
           <div *ngIf="isInEditMode && isPanelOpen">
             <mat-form-field>
-              <mat-select [(value)]="user.subscription">
-                <mat-option *ngFor="let subscription of subscriptions" [value]="user.subscription">
+              <mat-select [(value)]="user.subscription" formControlName="subscription">
+                <mat-option *ngFor="let subscription of subscriptions" [value]="subscription.value">
                   {{subscription.viewValue}}
                 </mat-option>
               </mat-select>
@@ -148,7 +148,7 @@
       <button color="primary" mat-button>More Info</button>
       <button color="primary" mat-button>View Log</button>
       <div *ngIf="!isInEditMode || !isPanelOpen">
-        <button (click)="isInEditMode = true" color="accent" mat-button>Edit</button>
+        <button (click)="edit(user)" color="accent" mat-button>Edit</button>
       </div>
       <div *ngIf="isInEditMode && isPanelOpen">
         <button (click)="isInEditMode = false" color="accent" mat-button>Done</button>

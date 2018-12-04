@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {SingupService} from '../signup.service';
 
 @Component({
   selector: 'app-signup-candidate',
@@ -11,6 +12,8 @@ export class SignupCandidateComponent implements OnInit {
   secondFormGroup: FormGroup;
   thirdFormGroup: FormGroup;
 
+  candidate: any;
+
   hide = false;
   iskill = 0;
   iskillang = 0;
@@ -21,7 +24,7 @@ export class SignupCandidateComponent implements OnInit {
     {value: 0, viewValue: 'Software Engineering'},
     {value: 1, viewValue: 'Engineering Management'},
     {value: 2, viewValue: 'Design'},
-    {value: 3, viewValue: 'Data Analitycs'},
+    {value: 3, viewValue: 'Data Analytics'},
     {value: 4, viewValue: 'Developer Operations'},
     {value: 5, viewValue: 'Quality Assurance'},
     {value: 6, viewValue: 'Information Technology'},
@@ -44,7 +47,7 @@ export class SignupCandidateComponent implements OnInit {
     return this.proficiencies[n].viewValue;
   }
 
-  constructor(private _formBuilder: FormBuilder) {
+  constructor(private _formBuilder: FormBuilder, private _singupService: SingupService) {
     this.iskill = 0;
     this.iskillang = 0;
     this.iskilex = 0;
@@ -54,6 +57,7 @@ export class SignupCandidateComponent implements OnInit {
   get formSkills() {
     return <FormArray>this.thirdFormGroup.get('skills');
   }
+
 
   get formLanguages() {
     return <FormArray>this.thirdFormGroup.get('languages');
@@ -81,7 +85,6 @@ export class SignupCandidateComponent implements OnInit {
       'birthday': new FormControl(null, Validators.required),
       'location': new FormControl(null, Validators.required),
       'role': new FormControl(null, Validators.required),
-
     });
 
     this.secondFormGroup.controls['password2'].setValidators([
@@ -92,6 +95,11 @@ export class SignupCandidateComponent implements OnInit {
     this.secondFormGroup.controls['confEmail'].setValidators([
       Validators.required,
       this.sameEmail.bind(this.secondFormGroup),
+    ]);
+
+    this.secondFormGroup.controls['birthday'].setValidators([
+      Validators.required,
+      this.minDate.bind(this.secondFormGroup),
     ]);
 
 
@@ -155,7 +163,6 @@ export class SignupCandidateComponent implements OnInit {
   }
 
   samePassword(control: FormControl): { [s: string]: boolean } {
-
     const secondFormGroup: any = this;
     if (control.value !== secondFormGroup.controls['password'].value) {
       return {same: true};
@@ -164,7 +171,6 @@ export class SignupCandidateComponent implements OnInit {
   }
 
   sameEmail(control: FormControl): { [s: string]: boolean } {
-
     const secondFormGroup: any = this;
     if (control.value !== secondFormGroup.controls['email'].value) {
       return {same: true};
@@ -172,9 +178,37 @@ export class SignupCandidateComponent implements OnInit {
     return null;
   }
 
-  onSubmit() {
+  minDate(control: FormControl): { [s: string]: boolean } {
+    const today = new Date();
+    const mdate = new Date(`${today.getFullYear() - 16}/${today.getMonth()}/${today.getDay()}`);
+
+    if (control.value > mdate) {
+      return {ok: true};
+    }
+    return null;
+  }
+
+  onSave() {
     console.log(this.secondFormGroup);
 
+    if ( this.secondFormGroup.status === 'VALID' ) {
+
+      this.candidate = {
+        'name' : this.secondFormGroup.controls['name'].value,
+        'password': this.secondFormGroup.controls['password'].value,
+        'email': this.secondFormGroup.controls['email'].value,
+        'city': this.secondFormGroup.controls['location'].value,
+        'date_born': this.secondFormGroup.controls['birthday'].value,
+        'type': 'a'
+      };
+
+     console.log(this.candidate);
+     this._singupService.newUser(this.candidate)
+        .subscribe(
+          (response) => console.log(response),
+          (error) => console.log(error)
+        );
+    }
   }
 
   onSubmit_form2() {
@@ -249,6 +283,7 @@ export class SignupCandidateComponent implements OnInit {
    else{
      document.getElementById(`toEd${s}`).removeAttribute("disabled");
    }
+
   }
 
 }

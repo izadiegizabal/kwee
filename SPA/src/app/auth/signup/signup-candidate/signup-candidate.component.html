@@ -41,7 +41,7 @@
     </form>
   </mat-step>
   <mat-step [stepControl]="secondFormGroup">
-    <form (ngSubmit)="onSubmit()" [formGroup]="secondFormGroup">
+    <form [formGroup]="secondFormGroup">
       <ng-template matStepLabel>Fill in your info</ng-template>
       <div class="container"
            fxFlex="100%"
@@ -103,8 +103,11 @@
             <input [matDatepicker]="picker" formControlName="birthday" matInput placeholder="Birthday" required>
             <mat-datepicker-toggle [for]="picker" matPrefix></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
-            <mat-error *ngIf="!secondFormGroup.get('birthday').valid && secondFormGroup.get('birthday').touched">
+            <mat-error *ngIf="secondFormGroup.get('birthday').errors?.required && secondFormGroup.get('birthday').touched">
               This field is required
+            </mat-error>
+            <mat-error *ngIf="!secondFormGroup.get('birthday').valid && secondFormGroup.get('birthday').touched && !secondFormGroup.get('birthday').errors.required">
+              Please enter a valid date<!--You must be over 16 years old-->
             </mat-error>
           </mat-form-field>
         </div>
@@ -137,7 +140,7 @@
         <br>
         <div fxLayout="row" fxLayoutAlign="end">
           <button color="primary" mat-button matStepperPrevious>Back</button>
-          <button color="accent" mat-button matStepperNext type="submit">Sign Up!</button>
+          <button color="accent" mat-button matStepperNext type="button" (click)="onSave();">Sign Up!</button>
         </div>
       </div>
     </form>

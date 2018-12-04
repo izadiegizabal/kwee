@@ -82,7 +82,6 @@ import {CandidateOverviewComponent} from './admin/admin-manage-candidates/candid
     AppRoutingModule,
     FlexLayoutModule,
     ReactiveFormsModule,
-
     // Angular Material modules
     MatCardModule,
     MatIconModule,
