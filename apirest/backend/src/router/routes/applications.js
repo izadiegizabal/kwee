@@ -47,7 +47,7 @@ module.exports = (app, db) => {
             });
 
         } catch (err) {
-            next({ type: 'error', error: err });
+            next({ type: 'error', error: err.message });
         }
     });
 
@@ -64,6 +64,9 @@ module.exports = (app, db) => {
 
                 let offers = (await applicant.getOffers());
 
+                console.log('TAMAÑO OFFERS: ', offers.length);
+                console.log('TAMAÑO BODY.FK_OFFER: ', body.fk_offer.length);
+
                 if (offers.length > 0) {
                     for (let i = 0; i < offers.length; i++) {
                         if (body.fk_offer != offers[i].id) {
@@ -77,6 +80,8 @@ module.exports = (app, db) => {
                     }
                 }
 
+                console.log(body.fk_offer);
+
                 res.status(201).json({
                     ok: true,
                     application: await applicant.setOffers(body.fk_offer)
@@ -89,7 +94,7 @@ module.exports = (app, db) => {
                 });
             }
         } catch (err) {
-            next({ type: 'error', error: err });
+            next({ type: 'error', error: 'nope' });
         }
 
     });
@@ -117,7 +122,7 @@ module.exports = (app, db) => {
             }
 
         } catch (err) {
-            next({ type: 'error', error: err.errors[0].message });
+            next({ type: 'error', error: err.message });
         }
     });
 
@@ -142,7 +147,7 @@ module.exports = (app, db) => {
                 });
             }
         } catch (err) {
-            next({ type: 'error', error: err });
+            next({ type: 'error', error: err.message });
         }
 
     });

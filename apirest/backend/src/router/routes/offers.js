@@ -39,13 +39,13 @@ module.exports = (app, db) => {
     });
 
     // POST single offer
-    app.post('/offer',
-        [
-            checkToken,
-            checkAdmin/*,
-            checks['Offer']*/
-        ], async(req, res, next) => {
-        
+    app.post('/offer', [
+        checkToken,
+        checkAdmin
+        /*,
+                    checks['Offer']*/
+    ], async(req, res, next) => {
+
         let body = req.body
 
         try {
@@ -67,7 +67,7 @@ module.exports = (app, db) => {
         } catch (err) {
             // error: si INVALIDA FK_OFFERER --> err
             // error: si alguna validación --> errors[0].message
-            next({ type: 'error', error: err/*.errors[0].message*/ });
+            next({ type: 'error', error: err.message });
         }
 
     });
@@ -89,7 +89,7 @@ module.exports = (app, db) => {
             // offer: [0] -> Not updated
             // empty body will change 'updateAt'
         } catch (err) {
-            next({ type: 'error', error: err.errors[0].message });
+            next({ type: 'error', error: err.message });
         }
     });
 

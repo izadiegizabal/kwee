@@ -35,8 +35,8 @@ module.exports = (app, db) => {
             let applicants = await db.applicants.findAll();
             let applicantsView = [];
 
-            for (let i = 0; i < users.length; i++) {
-                for (let j = 0; j < applicants.length; j++) {
+            for (let i = 0; i < users.length - 1; i++) {
+                for (let j = 0; j < applicants.length - 1; j++) {
                     if (users[i].id === applicants[j].userId) {
                         applicantsView[j] = {
                             id: applicants[j].userId,
