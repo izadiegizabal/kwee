@@ -11,9 +11,11 @@ import {AdminManageBusinessesComponent} from './admin/admin-manage-businesses/ad
 import {AdminVerifyComponent} from './admin/admin-verify/admin-verify.component';
 import {AdminReportsComponent} from './admin/admin-reports/admin-reports.component';
 import {AdminMessagesComponent} from './admin/admin-messages/admin-messages.component';
+import {CandidateHomeComponent} from './candidate-home/candidate-home.component';
 
 const routes: Routes = [
-  {path: '', redirectTo: '/offerpreviewcard', pathMatch: 'full'},
+  {path: '', redirectTo: '/candidate-home', pathMatch: 'full'},
+  {path: 'candidate-home', component: CandidateHomeComponent},
   {path: 'offerpreviewcard', component: OfferPreviewCardComponent, pathMatch: 'full'},
   {path: 'smallcard', component: SmallcardComponent},
   {path: 'signup', component: SignupComponent},
@@ -30,7 +32,7 @@ const routes: Routes = [
       {path: '**', redirectTo: 'statistics'}
     ]
   },
-  {path: '**', redirectTo: '/offerpreviewcard'}
+  {path: '**', redirectTo: '/candidate-home'}
 ];
 
 @NgModule({

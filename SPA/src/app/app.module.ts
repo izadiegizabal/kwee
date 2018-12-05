@@ -3,7 +3,7 @@ import {BrowserModule, DomSanitizer} from '@angular/platform-browser';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {HttpClientModule} from '@angular/common/http';
-import {ReactiveFormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 // Angular Material modules
 import {MatCardModule} from '@angular/material/card';
 import {MatIconModule, MatIconRegistry} from '@angular/material/icon';
@@ -19,6 +19,7 @@ import {MatInputModule} from '@angular/material/input';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {SignupOffererComponent} from './auth/signup/signup-offerer/signup-offerer.component';
 import {
+  MatAutocompleteModule,
   MatBadgeModule,
   MatChipsModule,
   MatExpansionModule,
@@ -51,6 +52,8 @@ import {AdminReportsComponent} from './admin/admin-reports/admin-reports.compone
 import {AdminMessagesComponent} from './admin/admin-messages/admin-messages.component';
 import {CandidateOverviewComponent} from './admin/admin-manage-candidates/candidate-overview/candidate-overview.component';
 import { BusinessOverviewComponent } from './admin/admin-manage-businesses/business-overview/business-overview.component';
+import { SearchbarComponent } from './common/searchbar/searchbar.component';
+import { CandidateHomeComponent } from './candidate-home/candidate-home.component';
 
 @NgModule({
   declarations: [
@@ -76,6 +79,8 @@ import { BusinessOverviewComponent } from './admin/admin-manage-businesses/busin
     AdminMessagesComponent,
     CandidateOverviewComponent,
     BusinessOverviewComponent,
+    SearchbarComponent,
+    CandidateHomeComponent,
   ],
   imports: [
     HttpClientModule,
@@ -84,6 +89,7 @@ import { BusinessOverviewComponent } from './admin/admin-manage-businesses/busin
     AppRoutingModule,
     FlexLayoutModule,
     ReactiveFormsModule,
+    FormsModule,
     // Angular Material modules
     MatCardModule,
     MatIconModule,
@@ -105,7 +111,8 @@ import { BusinessOverviewComponent } from './admin/admin-manage-businesses/busin
     MatRadioModule,
     MatListModule,
     MatBadgeModule,
-    MatChipsModule
+    MatChipsModule,
+    MatAutocompleteModule
   ],
   providers: [MatIconRegistry],
   bootstrap: [AppComponent]
