@@ -56,7 +56,7 @@
           <mat-form-field>
             <input formControlName="name" matInput placeholder="Full name" required>
             <mat-icon color="primary" matPrefix svgIcon="person"></mat-icon>
-            <mat-error *ngIf="!secondFormGroup.get('name').valid && secondFormGroup.get('name').touched">
+            <mat-error *ngIf="!secondFormGroup.get('name').valid ">
               This field is required
             </mat-error>
           </mat-form-field>
@@ -66,13 +66,13 @@
           <mat-form-field>
             <input formControlName="email" matInput placeholder="Email" required>
             <mat-icon color="primary" matPrefix svgIcon="email"></mat-icon>
-            <mat-error *ngIf="!secondFormGroup.get('email').valid && secondFormGroup.get('email').touched">
+            <mat-error *ngIf="!secondFormGroup.get('email').valid ">
               Please enter a valid email
             </mat-error>
           </mat-form-field>
           <mat-form-field>
             <input formControlName="confEmail" matInput placeholder="Confirm Email" required>
-            <mat-error *ngIf="!secondFormGroup.get('confEmail').valid && secondFormGroup.get('confEmail').touched">
+            <mat-error *ngIf="!secondFormGroup.get('confEmail').valid ">
               Emails do not match
             </mat-error>
           </mat-form-field>
@@ -83,7 +83,7 @@
             <mat-icon color="primary" matPrefix svgIcon="lock"></mat-icon>
             <input [type]="hide ? 'text' : 'password'" formControlName="password" matInput placeholder="Password"
                    required>
-            <mat-error *ngIf="!secondFormGroup.get('password').valid && secondFormGroup.get('password').touched">
+            <mat-error *ngIf="!secondFormGroup.get('password').valid ">
               Password must be 6 characters or more
             </mat-error>
           </mat-form-field>
@@ -92,7 +92,7 @@
                    placeholder="Confirm Password" required>
             <mat-icon (click)="hide = !hide" [svgIcon]="hide ? 'visibility' : 'visibility-off'" color="primary"
                       matSuffix></mat-icon>
-            <mat-error *ngIf="!secondFormGroup.get('password2').valid && secondFormGroup.get('password2').touched">
+            <mat-error *ngIf="!secondFormGroup.get('password2').valid">
               Passwords do not match
             </mat-error>
           </mat-form-field>
@@ -103,10 +103,10 @@
             <input [matDatepicker]="picker" formControlName="birthday" matInput placeholder="Birthday" required>
             <mat-datepicker-toggle [for]="picker" matPrefix></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
-            <mat-error *ngIf="secondFormGroup.get('birthday').errors?.required && secondFormGroup.get('birthday').touched">
+            <mat-error *ngIf="secondFormGroup.get('birthday').errors?.required ">
               This field is required
             </mat-error>
-            <mat-error *ngIf="!secondFormGroup.get('birthday').valid && secondFormGroup.get('birthday').touched && !secondFormGroup.get('birthday').errors.required">
+            <mat-error *ngIf="!secondFormGroup.get('birthday').valid && !secondFormGroup.get('birthday').errors.required">
               Please enter a valid date<!--You must be over 16 years old-->
             </mat-error>
           </mat-form-field>
@@ -116,7 +116,7 @@
           <mat-form-field>
             <input formControlName="location" matInput placeholder="Location" required>
             <mat-icon color="primary" matPrefix svgIcon="place"></mat-icon>
-            <mat-error *ngIf="!secondFormGroup.get('location').valid && secondFormGroup.get('location').touched">
+            <mat-error *ngIf="!secondFormGroup.get('location').valid ">
               This field is required
             </mat-error>
           </mat-form-field>
@@ -131,7 +131,7 @@
             </mat-select>
             <mat-icon color="primary" matPrefix svgIcon="work"></mat-icon>
 
-            <mat-error *ngIf="!secondFormGroup.get('role').valid && secondFormGroup.get('role').touched">
+            <mat-error *ngIf="!secondFormGroup.get('role').valid ">
               This field is required
             </mat-error>
 

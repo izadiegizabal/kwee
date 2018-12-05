@@ -67,30 +67,28 @@ export class BusinessOverviewComponent implements OnInit {
     this.userForm = this._formBuilder.group({
       'name': new FormControl(null, Validators.required),
       'email': new FormControl(null, [Validators.required, Validators.email]),
-      'vat': new FormControl(null),
-      'workField': new FormControl(null),
+      'vat': new FormControl(null, Validators.required),
+      'workField': new FormControl(null, Validators.required),
       'password': new FormControl(null, Validators.pattern('[a-zA-Z0-9_-ñ]{6,49}$')),
-      'password2': new FormControl(null),
+      'password2': new FormControl(''),
       'accountState': new FormControl(null, Validators.required),
       'subscription': new FormControl(null, Validators.required),
     });
 
-    this.userForm.controls['password2'].setValidators([
-      Validators.required,
+     this.userForm.controls['password2'].setValidators(
       this.samePassword.bind(this.userForm),
-    ]);
+    );
 
     this.userForm.controls['password'].valueChanges.subscribe(value => {
-      if (this.userForm.controls['password'].value != null && this.userForm.controls['password2'].value != null) {
         this.userForm.controls['password2'].updateValueAndValidity();
-      }
+        console.log( this.userForm.controls['password2']);
     });
   }
 
-  samePassword(control: FormControl): { [s: string]: boolean } {
+  samePassword(control: FormControl) {
     const userForm: any = this;
     if (control.value !== userForm.controls['password'].value) {
-      return {same: true};
+      return {diferent: true};
     }
     return null;
   }
@@ -107,11 +105,25 @@ export class BusinessOverviewComponent implements OnInit {
     signupDate: Date
   }) {
     this.isInEditMode = true;
+    this.userForm.controls['name'].setValue(user.name);
+    this.userForm.controls['email'].setValue(user.email);
+    this.userForm.controls['vat'].setValue(user.vat);
     this.userForm.controls['accountState'].setValue(user.state);
     this.userForm.controls['subscription'].setValue(user.subscription);
+    this.userForm.controls['workField'].setValue(user.workField);
   }
 
   getWorkField(workField: number) {
     return this.workFields.find(o => o.value === workField).viewValue;
+  }
+
+
+  done() {
+    console.log(this.userForm);
+    console.log(this.userForm.controls['password2'].valid);
+
+    if (this.userForm.valid) {
+      this.isInEditMode = false;
+    }
   }
 }

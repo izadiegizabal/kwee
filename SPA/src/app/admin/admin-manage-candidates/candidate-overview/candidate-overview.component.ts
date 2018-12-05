@@ -87,8 +87,8 @@ export class CandidateOverviewComponent implements OnInit {
     this.userForm = this._formBuilder.group({
       'name': new FormControl(null, Validators.required),
       'email': new FormControl(null, [Validators.required, Validators.email]),
-      'password': new FormControl(null, Validators.pattern('[a-zA-Z0-9_-ñ]{6,49}$')),
-      'password2': new FormControl(null),
+      'password': new FormControl('', Validators.pattern('[a-zA-Z0-9_-ñ]{6,49}$')),
+      'password2': new FormControl(''),
       'accountState': new FormControl(null, Validators.required),
       'subscription': new FormControl(null, Validators.required),
     });
@@ -99,7 +99,7 @@ export class CandidateOverviewComponent implements OnInit {
     ]);
 
     this.userForm.controls['password'].valueChanges.subscribe(value => {
-      if (this.userForm.controls['password'].value != null && this.userForm.controls['password2'].value != null) {
+      if (this.userForm.controls['password'].value != null) {
         this.userForm.controls['password2'].updateValueAndValidity();
       }
     });
@@ -116,6 +116,8 @@ export class CandidateOverviewComponent implements OnInit {
 
   edit(user) {
     this.isInEditMode = true;
+    this.userForm.controls['name'].setValue(user.name);
+    this.userForm.controls['email'].setValue(user.email);
     this.userForm.controls['accountState'].setValue(user.state);
     this.userForm.controls['subscription'].setValue(user.subscription);
   }

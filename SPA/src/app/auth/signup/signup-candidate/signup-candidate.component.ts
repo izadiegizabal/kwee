@@ -43,7 +43,7 @@ export class SignupCandidateComponent implements OnInit {
     {value: 7, viewValue: 'Native'},
   ];
 
-  getProf(n: number){
+  getProf(n: number) {
     return this.proficiencies[n].viewValue;
   }
 
@@ -104,9 +104,7 @@ export class SignupCandidateComponent implements OnInit {
 
 
     this.secondFormGroup.controls['password'].valueChanges.subscribe(value => {
-      if (this.secondFormGroup.controls['password'].value != null && this.secondFormGroup.controls['password2'].value != null) {
-        this.secondFormGroup.controls['password2'].updateValueAndValidity();
-      }
+      this.secondFormGroup.controls['password2'].updateValueAndValidity();
     });
 
 
@@ -120,10 +118,10 @@ export class SignupCandidateComponent implements OnInit {
     this.thirdFormGroup = this._formBuilder.group({
       'bio': new FormControl(null),
       'skills': new FormArray([new FormControl(null)]),
-      'languages': this._formBuilder.array([//new FormGroup({
-        //'language': new FormControl(null),
-        //'proficiency': new FormControl(null)
-      //})
+      'languages': this._formBuilder.array([// new FormGroup({
+        // 'language': new FormControl(null),
+        // 'proficiency': new FormControl(null)
+        // })
         this.addLanguageGroup()
       ]),
       'experience': this._formBuilder.array([
@@ -137,29 +135,29 @@ export class SignupCandidateComponent implements OnInit {
 
   addLanguageGroup(): FormGroup {
     return this._formBuilder.group({
-        'language': new FormControl(null),
-        'proficiency': new FormControl(null)
-      });
+      'language': new FormControl(null),
+      'proficiency': new FormControl(null)
+    });
   }
 
   addExperienceGroup(): FormGroup {
     return this._formBuilder.group({
-        'title': new FormControl(null),
-        'company': new FormControl(null),
-        'start': new FormControl(null),
-        'end': new FormControl(null),
-        'description': new FormControl(null)
-      });
+      'title': new FormControl(null),
+      'company': new FormControl(null),
+      'start': new FormControl(null),
+      'end': new FormControl(null),
+      'description': new FormControl(null)
+    });
   }
 
   addEducationGroup(): FormGroup {
     return this._formBuilder.group({
-        'title': new FormControl(null),
-        'institution': new FormControl(null),
-        'start': new FormControl(null),
-        'end': new FormControl(null),
-        'description': new FormControl(null)
-      });
+      'title': new FormControl(null),
+      'institution': new FormControl(null),
+      'start': new FormControl(null),
+      'end': new FormControl(null),
+      'description': new FormControl(null)
+    });
   }
 
   samePassword(control: FormControl): { [s: string]: boolean } {
@@ -191,10 +189,10 @@ export class SignupCandidateComponent implements OnInit {
   onSave() {
     console.log(this.secondFormGroup);
 
-    if ( this.secondFormGroup.status === 'VALID' ) {
+    if (this.secondFormGroup.status === 'VALID') {
 
       this.candidate = {
-        'name' : this.secondFormGroup.controls['name'].value,
+        'name': this.secondFormGroup.controls['name'].value,
         'password': this.secondFormGroup.controls['password'].value,
         'email': this.secondFormGroup.controls['email'].value,
         'city': this.secondFormGroup.controls['location'].value,
@@ -202,8 +200,8 @@ export class SignupCandidateComponent implements OnInit {
         'type': 'a'
       };
 
-     console.log(this.candidate);
-     this._singupService.newUser(this.candidate)
+      console.log(this.candidate);
+      this._singupService.newUser(this.candidate)
         .subscribe(
           (response) => console.log(response),
           (error) => console.log(error)
@@ -230,9 +228,9 @@ export class SignupCandidateComponent implements OnInit {
     this.iskillang++;
     console.log(this.formLanguages);
 
-    //setTimeout(() => {
-      //document.getElementById(`language${this.iskillang}`).focus();
-    //}, 1);
+    // setTimeout(() => {
+    // document.getElementById(`language${this.iskillang}`).focus();
+    // }, 1);
   }
 
   addExperience() {
@@ -268,21 +266,20 @@ export class SignupCandidateComponent implements OnInit {
     this.iskiled--;
   }
 
-  onChange(e,s) {
-   if(e.checked){   
-     document.getElementById(`toEx${s}`).setAttribute("disabled","true");
-   }
-   else{
-     document.getElementById(`toEx${s}`).removeAttribute("disabled");
-   }
+  onChange(e, s) {
+    if (e.checked) {
+      document.getElementById(`toEx${s}`).setAttribute('disabled', 'true');
+    } else {
+      document.getElementById(`toEx${s}`).removeAttribute('disabled');
+    }
   }
-  onChangeEd(e,s) {
-   if(e.checked){   
-     document.getElementById(`toEd${s}`).setAttribute("disabled","true");
-   }
-   else{
-     document.getElementById(`toEd${s}`).removeAttribute("disabled");
-   }
+
+  onChangeEd(e, s) {
+    if (e.checked) {
+      document.getElementById(`toEd${s}`).setAttribute('disabled', 'true');
+    } else {
+      document.getElementById(`toEd${s}`).removeAttribute('disabled');
+    }
 
   }
 

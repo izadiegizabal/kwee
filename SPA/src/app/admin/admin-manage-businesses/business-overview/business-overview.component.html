@@ -47,6 +47,9 @@
             <label>
               <input formControlName="name" [value]="user.name" matInput>
             </label>
+            <mat-error *ngIf="!userForm.get('name').valid">
+              This field is required
+            </mat-error>
           </mat-form-field>
         </div>
       </div>
@@ -61,6 +64,9 @@
             <label>
               <input formControlName="email" [value]="user.email" matInput>
             </label>
+            <mat-error *ngIf="!userForm.get('email').valid">
+              Please enter a valid email
+            </mat-error>
           </mat-form-field>
         </div>
       </div>
@@ -76,6 +82,9 @@
           <label>
             <input formControlName="password" matInput type="password">
           </label>
+          <mat-error *ngIf="!userForm.get('password').valid">
+            Password must be 6 characters or more
+          </mat-error>
         </mat-form-field>
       </div>
       <div class="mat-body">
@@ -85,6 +94,9 @@
           <label>
             <input formControlName="password2" matInput type="password">
           </label>
+          <mat-error *ngIf="!userForm.controls['password2'].valid">
+            Passwords do not match
+          </mat-error>
         </mat-form-field>
       </div>
     </div>
@@ -105,6 +117,9 @@
               <label>
                 <input formControlName="vat" [value]="user.vat" matInput>
               </label>
+              <mat-error *ngIf="!userForm.get('vat').valid">
+                This field is required
+              </mat-error>
             </mat-form-field>
           </div>
         </div>
@@ -194,7 +209,7 @@
         <button (click)="edit(user)" color="accent" mat-button>Edit</button>
       </div>
       <div *ngIf="isInEditMode && isPanelOpen">
-        <button (click)="isInEditMode = false" color="accent" mat-button>Done</button>
+        <button (click)="done()" color="accent" mat-button>Done</button>
       </div>
       <button color="warn" mat-button>Delete</button>
     </div>

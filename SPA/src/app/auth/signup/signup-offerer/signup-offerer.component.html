@@ -69,14 +69,14 @@
             <input formControlName="businessName" matInput placeholder="Business name" required>
             <mat-icon color="primary" matPrefix svgIcon="domain"></mat-icon>
             <mat-error
-              *ngIf="!secondFormGroup.get('businessName').valid && secondFormGroup.get('businessName').touched">
+              *ngIf="!secondFormGroup.get('businessName').valid ">
               This field is required
             </mat-error>
           </mat-form-field>
 
           <mat-form-field>
             <input formControlName="vat" matInput placeholder="VAT/CIF" required>
-            <mat-error *ngIf="!secondFormGroup.get('vat').valid && secondFormGroup.get('vat').touched">
+            <mat-error *ngIf="!secondFormGroup.get('vat').valid">
               This field is required
             </mat-error>
           </mat-form-field>
@@ -87,13 +87,13 @@
           <mat-form-field>
             <input formControlName="email" matInput placeholder="Email" required>
             <mat-icon color="primary" matPrefix svgIcon="email"></mat-icon>
-            <mat-error *ngIf="!secondFormGroup.get('email').valid && secondFormGroup.get('email').touched">
+            <mat-error *ngIf="!secondFormGroup.get('email').valid ">
               Please enter a valid email
             </mat-error>
           </mat-form-field>
           <mat-form-field>
             <input formControlName="confEmail" matInput placeholder="Confirm Email" required>
-            <mat-error *ngIf="!secondFormGroup.get('confEmail').valid && secondFormGroup.get('confEmail').touched">
+            <mat-error *ngIf="!secondFormGroup.get('confEmail').valid">
               Emails do not match
             </mat-error>
           </mat-form-field>
@@ -104,7 +104,7 @@
             <mat-icon color="primary" matPrefix svgIcon="lock"></mat-icon>
             <input [type]="hide ? 'text' : 'password'" formControlName="password" matInput placeholder="Password"
                    required>
-            <mat-error *ngIf="!secondFormGroup.get('password').valid && secondFormGroup.get('password').touched">
+            <mat-error *ngIf="!secondFormGroup.get('password').valid">
               Password must be 6 characters or more
             </mat-error>
           </mat-form-field>
@@ -114,7 +114,7 @@
             <mat-icon (click)="hide = !hide" [svgIcon]="hide ? 'visibility' : 'visibility-off'" color="primary"
                       matSuffix></mat-icon>
 
-            <mat-error *ngIf="!secondFormGroup.get('password2').valid && secondFormGroup.get('password2').touched">
+            <mat-error *ngIf="!secondFormGroup.get('password2').valid ">
               Passwords do not match
             </mat-error>
           </mat-form-field>
@@ -129,7 +129,7 @@
               </mat-option>
             </mat-select>
             <mat-icon color="primary" matPrefix svgIcon="work"></mat-icon>
-            <mat-error *ngIf="!secondFormGroup.get('workField').valid && secondFormGroup.get('workField').touched">
+            <mat-error *ngIf="!secondFormGroup.get('workField').valid">
               This field is required
             </mat-error>
           </mat-form-field>
@@ -144,7 +144,7 @@
           <mat-form-field>
             <input formControlName="address1" matInput placeholder="Address line 1" required>
             <mat-icon color="primary" matPrefix svgIcon="place"></mat-icon>
-            <mat-error *ngIf="!secondFormGroup.get('address1').valid && secondFormGroup.get('address1').touched">
+            <mat-error *ngIf="!secondFormGroup.get('address1').valid ">
               Please enter a valid address
             </mat-error>
           </mat-form-field>
@@ -162,13 +162,13 @@
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="22px" fxLayoutGap.xs="0px">
           <mat-form-field>
             <input formControlName="city" matInput placeholder="City" required>
-            <mat-error *ngIf="!secondFormGroup.get('city').valid && secondFormGroup.get('city').touched">
+            <mat-error *ngIf="!secondFormGroup.get('city').valid">
               Please enter a valid city
             </mat-error>
           </mat-form-field>
           <mat-form-field>
             <input formControlName="province" matInput placeholder="Province" required>
-            <mat-error *ngIf="!secondFormGroup.get('province').valid && secondFormGroup.get('province').touched">
+            <mat-error *ngIf="!secondFormGroup.get('province').valid">
               Please enter a valid province
             </mat-error>
           </mat-form-field>
@@ -179,13 +179,13 @@
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0px">
           <mat-form-field>
             <input formControlName="postalCode" matInput placeholder="Postal Code" required>
-            <mat-error *ngIf="!secondFormGroup.get('postalCode').valid && secondFormGroup.get('postalCode').touched">
+            <mat-error *ngIf="!secondFormGroup.get('postalCode').valid">
               Please enter a valid postal code
             </mat-error>
           </mat-form-field>
           <mat-form-field>
             <input formControlName="country" matInput placeholder="Country" required>
-            <mat-error *ngIf="!secondFormGroup.get('country').valid && secondFormGroup.get('country').touched">
+            <mat-error *ngIf="!secondFormGroup.get('country').valid ">
               Please enter a valid country
             </mat-error>
           </mat-form-field>
