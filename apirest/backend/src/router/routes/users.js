@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
+const { validationResult } = require('../../middlewares/validations');
 
 //const { checks } = require('../../middlewares/validations')
 //const { check, validationResult, checkSchema } = require('express-validator/check')
@@ -54,7 +55,7 @@ module.exports = (app, db) => {
                 applicants: applicantsView
             });
         } catch (err) {
-            next({ type: 'error', error: err.message });
+            next({ type: 'error', error: validationResult(err) });
         }
 
     });
@@ -133,75 +134,121 @@ module.exports = (app, db) => {
             }
         });
 
-    // POST single user
-    app.post('/user', [
-        checkToken,
-        checkAdmin
-        // ,
-        // checks['Register'],
-        // checks['ExtraStuff'],
-        // checkSchema({
-        //     premium: {
-        //         optional: true,
-        //         matches: {
-        //             // to do !
-        //             options: [ '(?:^|\W.)premium|basic(?:$|\W.)','g' ]
-        //         }
-        //     }
-        // }
-        //)
-    ], async(req, res, next) => {
 
+    app.post('/user', [checkToken, checkAdmin], async(req, res, next) => {
         const body = req.body;
-
         const password = bcrypt.hashSync(body.password, 10);
 
-        console.log("después: ", password);
+        let msg;
+        let user;
 
-        try {
-            let user = await db.users.create({
+        let transaction;
+
+        try{
+            // get transaction
+            transaction = await db.sequelize.transaction();
+
+            // step 1
+            let _user = await db.users.create({
                 name: body.name,
                 password,
                 email: body.email
-            });
-            if (user) {
-                if (!body.type) {
-                    // User created
-                    return res.status(201).json({
-                        ok: true,
-                        message: `User '${user.name}' with id ${user.id} has been created.`
-                    });
-                } else {
-                    let msg = '';
-                    switch (body.type) {
-                        case 'a':
-                            msg = 'Applicant';
-                            createApplicant(body, user);
-                            break;
+            }, {transaction: transaction});
 
-                        case 'o':
-                            msg = 'Offerer';
-                            createOfferer(body, user);
-                            break;
+            // step 2
+            switch (body.type) {
+                case 'a':
+                        await createApplicant(body, _user, next, transaction);
+                        msg = "Applicant";
+                    break;
 
-                        default:
-                            await db.users.destroy({ where: { id: user.id } });
-                            next({ type: 'error', error: 'Must be \'type\' of user, \'a\' (applicant) or \'o\' (offerer)' });
-                            break;
-                    }
-                    // Applicant / offerer created
-                    return res.status(201).json({
-                        ok: true,
-                        message: `${ msg } '${user.name}' with id ${user.id} has been created.`
-                    });
-                }
+                case 'o':
+                        await createOfferer(body, _user, next, transaction);
+                        msg = "Offerer";                
+                    break;
+
+                default:
+                    console.log("rolling back on switch");
+
+                        await transaction.rollback();                    
+                        next({ type: 'error', error: "Type of user is wrong. Only 'a' (applicant) or 'o' (offerer)." });
+                    break;
             }
 
-        } catch (err) {
-            next({ type: 'error', error: err.message });
-        }
+            // commit
+            await transaction.commit();
 
+            return res.status(201).json({
+                ok: true,
+                message: `${ msg } '${_user.name}' with id ${_user.id} has been created.`
+            });
+        }
+        catch(err){
+            console.log("rolling back on main");
+            //await transaction.rollback();
+            next({ type: 'error', error: validationResult(err) });
+        }
     });
+
+    // POST single user
+    // app.post('/user', [checkToken, checkAdmin], async(req, res, next) => {
+
+    //     const body = req.body;
+
+    //     const password = bcrypt.hashSync(body.password, 10);
+
+    //     console.log("después: ", password);
+
+    //     try {
+    //         let user = await db.users.create({
+    //             name: body.name,
+    //             password,
+    //             email: body.email
+    //         });
+    //         if (user) {
+                
+    //             if (!body.type) {
+    //                 // User not created
+    //                 await db.users.destroy({ where: { id: user.id } });
+
+    //                 return res.status(400).json({
+    //                     ok: false,
+    //                     message: `User not created.`
+    //                 });
+    //             } else {
+    //                 let msg = '';
+    //                 switch (body.type) {
+    //                     case 'a':
+    //                         msg = 'Applicant';
+    //                         createApplicant(body, user, next);
+    //                         break;
+
+    //                     case 'o':
+    //                         msg = 'Offerer';
+    //                         createOfferer(body, user, next);
+    //                         break;
+
+    //                     default:
+    //                         await db.users.destroy({ where: { id: user.id } });
+    //                         next({ type: 'error', error: 'Must be \'type\' of user, \'a\' (applicant) or \'o\' (offerer)' });
+    //                         break;
+    //                 }
+    //                 // Applicant / offerer created
+    //                 console.log("mando return");
+    //                 // return res.status(201).json({
+    //                 //     ok: true,
+    //                 //     message: `${ msg } '${user.name}' with id ${user.id} has been created.`
+    //                 // });
+    //             }
+    //         }
+
+
+
+    //     } catch (err) {
+    //         next({ type: 'error', error: validationResult(err) });            
+    //     }
+
+    // });
 
 
     // PUT single user
@@ -298,25 +345,37 @@ module.exports = (app, db) => {
         }
     });
 
-    async function createApplicant(body, user, next) {
-        if (body.city) {
-            let applicant = {};
-            applicant.userId = user.id;
-            applicant.city = body.city; // not saving :S
-            if (body.date_born) applicant.date_born = body.date_born;
-            if (body.premium) applicant.premium = body.premium;
-
-            console.log(applicant);
-
-            await db.applicants.create(applicant);
-            console.log('Applicant created');
-        } else {
-            await db.users.destroy({ where: { id: user.id } });
-            next({ type: 'error', error: 'City required' });
+    async function createApplicant(body, user, next, transaction) {
+        try{
+            //if (body.city) {
+                let applicant = {};
+                applicant.userId = user.id;
+                if (body.city) applicant.city = body.city;
+                if (body.date_born) applicant.date_born = body.date_born;
+                if (body.premium) applicant.premium = body.premium;
+    
+                console.log(applicant);
+                let newapplicant = await db.applicants.create(applicant, {transaction: transaction});
+                // if(newapplicant){
+                //     console.log('Applicant created');
+                // return newapplicant;
+                // }
+                // else{
+                //     console.log("errorrr");
+                // }
+                return newapplicant;
+           /* } else {
+                await transaction.rollback();                    
+                next({ type: 'error', error: 'City required' });
+            }*/
+        }
+        catch(err){
+            await transaction.rollback();                    
+            next({ type: 'error', error: validationResult(err) });
         }
     }
 
-    async function createOfferer(body, user, next) {
+    async function createOfferer(body, user, next, transaction) {
         if (body.adress && body.cif && body.work_field) {
 
             await db.offerers.create({
@@ -329,11 +388,11 @@ module.exports = (app, db) => {
                 company_size: body.company_size ? body.company_size : null,
                 year: body.year ? body.year : null,
                 premium: body.premium ? body.premium : 'basic'
-            });
+            }, {transaction: transaction});
             console.log('Offerer created');
         } else {
-            await db.users.destroy({ where: { id: user.id } });
-            next({ type: 'error', error: 'Adress, cif and work_field required' });
+            await transaction.rollback();                    
+            next({ type: 'error', error: validationResult(err) });
         }
     }
 }

@@ -14,6 +14,22 @@ module.exports = (sequelize, DataTypes) => {
                     "args": true,
                     "msg": "fk_applicant should be an int."
                 }
+                // ,
+                // custom() {
+                //     console.log("fk_applicant " + this.fk_applicant);
+                //     console.log("fk_offer " + this.fk_offer);
+
+                //     let user = sequelize.models.applications.findOne(
+                //         {
+                //             where: {
+                //                 fk_applicant: this.fk_applicant,
+                //                 fk_offer: this.fk_offer
+                //             }
+                //         }).then( u => {
+                //             if(u)
+                //                 throw new Error('Application already exists.');
+                //         });
+                // }
             }
         },
 
@@ -32,7 +48,7 @@ module.exports = (sequelize, DataTypes) => {
         },
 
         status: {
-            type: DataTypes.ENUM(['active', 'pending', 'deleted']),
+            type: DataTypes.ENUM('active', 'pending', 'deleted'),
             field: 'status',
             values: ['active', 'pending', 'deleted'],
             defaultValue: 'pending',
@@ -43,8 +59,8 @@ module.exports = (sequelize, DataTypes) => {
                     "msg": "status shouldn't be empty."
                 },
                 isIn: {
-                    "args": [[ 'active', 'pending', 'deleted' ]],
-                    "msg": "status value should be a valid one: 'active', 'pending' or 'deleted'."
+                    args: [ 'active', 'pending', 'deleted' ],
+                    msg: "status value should be a valid one: 'active', 'pending' or 'deleted'."
                 }
             }
         }
