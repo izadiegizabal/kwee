@@ -4,7 +4,26 @@ module.exports = (sequelize, DateTypes) => {
 
         fk_offerer: {
             type: DateTypes.INTEGER,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                notEmpty: {
+                    "args": true,
+                    "msg": "fk_offerer should not be empty."
+                },
+                isInt: {
+                    "args": true,
+                    "msg": "fk_offerer invalid type."
+                }/*,
+                custom() {
+                    console.log("fk_offerer:" + this.fk_offerer);
+                    const user = sequelize.models.offerers.findOne({where: {userId: this.fk_offerer}})
+                        .then( u => {
+                            if( u == null ){
+                                throw new sequelize.ValidationError("fk_offerer is not pointing to an offerer.");
+                            }
+                        })
+                }*/
+            }
         },
 
         title: {
@@ -15,6 +34,10 @@ module.exports = (sequelize, DateTypes) => {
                 notEmpty: {
                     "args": true,
                     "msg": "Title should be filled."
+                },
+                len: {
+                    args: [5,50],
+                    msg: "Title should be 5-50 characters long."
                 }
             }
         },
@@ -29,9 +52,9 @@ module.exports = (sequelize, DateTypes) => {
                     "msg": "Description should be filled."
                 },
                 len: {
-                    "args": [140,500],
-                    "msg": "Description sohuld be 140-500 length."
-                }
+                    args: [40, 140],
+                    msg: 'Description must be [40, 140] characters.'
+                  }
             }
         },
 
@@ -88,7 +111,7 @@ module.exports = (sequelize, DateTypes) => {
                 },
                 len: {
                     "args": [5,50],
-                    "msg": "Description sohuld be 5-20 length."
+                    "msg": "Location sohuld be 5-20 length."
                 }
             }
         },

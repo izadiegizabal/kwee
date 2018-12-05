@@ -62,8 +62,17 @@ const checks = {
     ]
 }
 
+const validationResult = ( errors ) => {
+    if( errors.errors && errors.errors[0].message )
+        return "_validations_1: " + errors.errors[0].message;
+    else if( errors.message )
+        return "_validations_2: " + errors.message;
+    
+}
+
 
 
 module.exports = {
-    checks
+    checks,
+    validationResult
 }
