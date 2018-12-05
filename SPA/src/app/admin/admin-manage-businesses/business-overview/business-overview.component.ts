@@ -69,7 +69,7 @@ export class BusinessOverviewComponent implements OnInit {
       'email': new FormControl(null, [Validators.required, Validators.email]),
       'vat': new FormControl(null, Validators.required),
       'workField': new FormControl(null, Validators.required),
-      'password': new FormControl(null, Validators.pattern('[a-zA-Z0-9_-ñ]{6,49}$')),
+      'password': new FormControl('', Validators.pattern('[a-zA-Z0-9_-ñ]{6,49}$')),
       'password2': new FormControl(''),
       'accountState': new FormControl(null, Validators.required),
       'subscription': new FormControl(null, Validators.required),
