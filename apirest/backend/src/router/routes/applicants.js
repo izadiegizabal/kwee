@@ -17,13 +17,14 @@ module.exports = (app, db) => {
             let applicants = await db.applicants.findAll();
             let applicantsView = [];
 
-            for (let i = 0; i < users.length - 1; i++) {
-                for (let j = 0; j < applicants.length - 1; j++) {
+            for (let i = 0; i < users.length; i++) {
+                for (let j = 0; j < applicants.length; j++) {
                     if (users[i].id === applicants[j].userId) {
                         applicantsView[j] = {
                             id: applicants[j].userId,
                             name: users[i].name,
                             email: users[i].email,
+                            city: applicants[j].city,
                             date_born: applicants[j].date_born,
                             premium: applicants[j].premium,
                             createdAt: applicants[j].createdAt
@@ -41,17 +42,60 @@ module.exports = (app, db) => {
 
     });
 
+    // GET one applicant by id
+    app.get('/applicant/:id([0-9]+)', checkToken, async(req, res, next) => {
+        const id = req.params.id;
+
+        try {
+            let user = await db.users.findOne({
+                attributes: [
+                    'name',
+                    'email'
+                ],
+                where: { id }
+            });
+
+            let applicant = await db.applicants.findOne({
+                where: { userId: id }
+            });
+
+            if (user && applicant) {
+                const userApplicant = {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    city: applicant.city,
+                    date_born: applicant.date_born,
+                    premium: applicant.premium,
+                    createdAt: applicant.createdAt
+                };
+
+                res.status(200).json({
+                    ok: true,
+                    userApplicant
+                });
+            } else {
+                res.status(400).json({
+                    ok: false,
+                    message: 'Applicant doesn\'t exist'
+                });
+            }
+        } catch (err) {
+            next({ type: 'error', error: err.message });
+        }
+    });
+
     // POST single applicant
     app.post('/applicant', [checkToken, checkAdmin], async(req, res, next) => {
         let transaction;
-        
-        try{
+
+        try {
             const body = req.body;
             const password = body.password ? bcrypt.hashSync(body.password, 10) : null;
-    
+
             let msg;
             let user;
-    
+
 
             // get transaction
             transaction = await db.sequelize.transaction();
@@ -63,21 +107,21 @@ module.exports = (app, db) => {
                 password,
                 email: body.email,
 
-            }, {transaction: transaction});
-            
-            if(!_user){
+            }, { transaction: transaction });
+
+            if (!_user) {
                 await transaction.rollback();
             }
 
             // step 2
             let applicant = await createApplicant(body, _user, next, transaction);
-            
-            if(!applicant){
+
+            if (!applicant) {
                 console.log("no");
 
                 await transaction.rollback();
             }
-            
+
             // commit
             await transaction.commit();
 
@@ -85,8 +129,7 @@ module.exports = (app, db) => {
                 ok: true,
                 message: `Applicant '${_user.name}' with id ${_user.id} has been created.`
             });
-        }
-        catch(err){
+        } catch (err) {
             //await transaction.rollback();
             next({ type: 'error', error: err.message });
         }
@@ -116,24 +159,45 @@ module.exports = (app, db) => {
         }
     });
 
-    async function createApplicant(body, user, next, transaction) {
-        try{
-                let applicant = {};
+    // DELETE
+    app.delete('/applicant/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
+        const id = req.params.id;
 
-                applicant.userId = user.id;
-                applicant.city = body.city ? body.city : null;
-                applicant.date_born = body.date_born ? body.date_born : null;
-                applicant.premium = body.premium ? body.premium : null;
-    
-                console.log(applicant);
-
-                let newapplicant = await db.applicants.create(applicant, {transaction: transaction});
-
-                return newapplicant;
-                
+        try {
+            res.json({
+                ok: true,
+                applicant: await db.applicants.destroy({
+                    where: { id: id }
+                }),
+                user: await db.users.destroy({
+                    where: { id: id }
+                })
+            });
+            // Respuestas en json
+            // applicant: 1 -> Deleted
+            // applicant: 0 -> User don't exists
+        } catch (err) {
+            next({ type: 'error', error: 'Error getting data' });
         }
-        catch(err){
-            await transaction.rollback();                    
+    });
+
+    async function createApplicant(body, user, next, transaction) {
+        try {
+            let applicant = {};
+
+            applicant.userId = user.id;
+            applicant.city = body.city ? body.city : null;
+            applicant.date_born = body.date_born ? body.date_born : null;
+            applicant.premium = body.premium ? body.premium : null;
+
+            console.log(applicant);
+
+            let newapplicant = await db.applicants.create(applicant, { transaction: transaction });
+
+            return newapplicant;
+
+        } catch (err) {
+            await transaction.rollback();
             next({ type: 'error', error: err.message });
         }
     }
