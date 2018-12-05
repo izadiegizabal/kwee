@@ -9,38 +9,38 @@ module.exports = (app, db) => {
     app.get("/applicant_educations",
         checkToken,
         async(req, res, next) => {
-        try {
-            res.status(200).json({
-                ok: true,
-                applicant_educations: await db.applicant_educations.findAll()
-            });
-        } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
-        }
-    });
+            try {
+                res.status(200).json({
+                    ok: true,
+                    applicant_educations: await db.applicant_educations.findAll()
+                });
+            } catch (err) {
+                next({ type: 'error', error: 'Error getting data' });
+            }
+        });
 
     // GET one applicant_education by two id's
     app.get("/applicant_education/:fk_applicant([0-9]+)/:fk_education([0-9]+)",
         checkToken,
         async(req, res, next) => {
-        const params = req.params;
+            const params = req.params;
 
-        try {
-            res.status(200).json({
-                ok: true,
-                applicant_education: await db.applicant_educations.findOne({
-                    // include: [{
-                    //     model: db.educations,
-                    //     where: { fk_education: params.fk_education }
-                    // }],
-                    where: { fk_applicant: params.fk_applicant, fk_education: params.fk_education }
-                })
-            });
+            try {
+                res.status(200).json({
+                    ok: true,
+                    applicant_education: await db.applicant_educations.findOne({
+                        // include: [{
+                        //     model: db.educations,
+                        //     where: { fk_education: params.fk_education }
+                        // }],
+                        where: { fk_applicant: params.fk_applicant, fk_education: params.fk_education }
+                    })
+                });
 
-        } catch (err) {
-            next({ type: 'error', error: err });
-        }
-    });
+            } catch (err) {
+                next({ type: 'error', error: err });
+            }
+        });
 
     // GET one applicant_education by one id
     app.get("/applicant_education/:fk_applicant([0-9]+)", checkToken, async(req, res, next) => {
@@ -60,57 +60,56 @@ module.exports = (app, db) => {
     });
 
     // POST single applicant_education
-    app.post("/applicant_educations",
-        [
+    app.post("/applicant_education", [
             checkToken,
             checkAdmin
         ],
         async(req, res, next) => {
-        const body = req.body;
+            const body = req.body;
 
-        try {
-            let applicant = await db.applicants.findOne({
-                where: { userId: body.fk_applicant }
-            });
+            try {
+                let applicant = await db.applicants.findOne({
+                    where: { userId: body.fk_applicant }
+                });
 
-            if (applicant) {
+                if (applicant) {
 
-                let educations = (await applicant.getEducations());
+                    let educations = (await applicant.getEducations());
 
-                if (educations.length > 0) {
-                    for (let i = 0; i < educations.length; i++) {
-                        if (body.fk_education != educations[i].id) {
-                            body.fk_education.push(educations[i].id);
-                        } else {
-                            return res.status(400).json({
-                                ok: false,
-                                error: "Applicant language already added"
-                            });
+                    if (educations.length > 0) {
+                        for (let i = 0; i < educations.length; i++) {
+                            if (body.fk_education != educations[i].id) {
+                                body.fk_education.push(educations[i].id);
+                            } else {
+                                return res.status(400).json({
+                                    ok: false,
+                                    error: "Applicant language already added"
+                                });
+                            }
                         }
                     }
+
+                    res.status(201).json({
+                        ok: true,
+                        applicant_education: await applicant.setEducations(body.fk_education)
+                    });
+
+                    await db.sequelize.query({ query: `UPDATE applicant_educations SET level = ? WHERE fk_applicant = ? AND fk_education = ?`, values: [body.level, body.fk_applicant, body.fk_education] });
+
+                } else {
+                    return res.status(400).json({
+                        ok: false,
+                        error: "Applicant language doesn't exist"
+                    });
                 }
-
-                res.status(201).json({
-                    ok: true,
-                    applicant_education: await applicant.setEducations(body.fk_education)
-                });
-
-                await db.sequelize.query({ query: `UPDATE applicant_educations SET level = ? WHERE fk_applicant = ? AND fk_education = ?`, values: [body.level, body.fk_applicant, body.fk_education] });
-
-            } else {
-                return res.status(400).json({
-                    ok: false,
-                    error: "Applicant language doesn't exist"
-                });
+            } catch (err) {
+                next({ type: 'error', error: err });
             }
-        } catch (err) {
-            next({ type: 'error', error: err });
-        }
 
-    });
+        });
 
     // PUT single applicant_education
-    app.put("/applicant_educations", [checkToken, checkAdmin], async(req, res, next) => {
+    app.put("/applicant_education", [checkToken, checkAdmin], async(req, res, next) => {
         const body = req.body;
 
         try {
@@ -137,7 +136,7 @@ module.exports = (app, db) => {
     });
 
     // DELETE single applicant_education
-    app.delete("/applicant_educations", [checkToken, checkAdmin], async(req, res, next) => {
+    app.delete("/applicant_education", [checkToken, checkAdmin], async(req, res, next) => {
         const body = req.body;
 
         try {

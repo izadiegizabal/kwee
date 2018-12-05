@@ -1,9 +1,6 @@
 const bcrypt = require('bcrypt');
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
-const { validationResult } = require('../../middlewares/validations');
 
-//const { checks } = require('../../middlewares/validations')
-//const { check, validationResult, checkSchema } = require('express-validator/check')
 // ============================
 // ======== CRUD user =========
 // ============================
@@ -144,7 +141,7 @@ module.exports = (app, db) => {
 
         let transaction;
 
-        try{
+        try {
             // get transaction
             transaction = await db.sequelize.transaction();
 
@@ -153,25 +150,25 @@ module.exports = (app, db) => {
                 name: body.name,
                 password,
                 email: body.email
-            }, {transaction: transaction});
+            }, { transaction: transaction });
 
             // step 2
             switch (body.type) {
                 case 'a':
-                        await createApplicant(body, _user, next, transaction);
-                        msg = "Applicant";
+                    await createApplicant(body, _user, next, transaction);
+                    msg = "Applicant";
                     break;
 
                 case 'o':
-                        await createOfferer(body, _user, next, transaction);
-                        msg = "Offerer";                
+                    await createOfferer(body, _user, next, transaction);
+                    msg = "Offerer";
                     break;
 
                 default:
                     console.log("rolling back on switch");
 
-                        await transaction.rollback();                    
-                        next({ type: 'error', error: "Type of user is wrong. Only 'a' (applicant) or 'o' (offerer)." });
+                    await transaction.rollback();
+                    next({ type: 'error', error: "Type of user is wrong. Only 'a' (applicant) or 'o' (offerer)." });
                     break;
             }
 
@@ -182,8 +179,7 @@ module.exports = (app, db) => {
                 ok: true,
                 message: `${ msg } '${_user.name}' with id ${_user.id} has been created.`
             });
-        }
-        catch(err){
+        } catch (err) {
             console.log("rolling back on main");
             //await transaction.rollback();
             next({ type: 'error', error: validationResult(err) });
@@ -206,7 +202,7 @@ module.exports = (app, db) => {
     //             email: body.email
     //         });
     //         if (user) {
-                
+
     //             if (!body.type) {
     //                 // User not created
     //                 await db.users.destroy({ where: { id: user.id } });
@@ -346,31 +342,30 @@ module.exports = (app, db) => {
     });
 
     async function createApplicant(body, user, next, transaction) {
-        try{
+        try {
             //if (body.city) {
-                let applicant = {};
-                applicant.userId = user.id;
-                if (body.city) applicant.city = body.city;
-                if (body.date_born) applicant.date_born = body.date_born;
-                if (body.premium) applicant.premium = body.premium;
-    
-                console.log(applicant);
-                let newapplicant = await db.applicants.create(applicant, {transaction: transaction});
-                // if(newapplicant){
-                //     console.log('Applicant created');
-                // return newapplicant;
-                // }
-                // else{
-                //     console.log("errorrr");
-                // }
-                return newapplicant;
-           /* } else {
-                await transaction.rollback();                    
-                next({ type: 'error', error: 'City required' });
-            }*/
-        }
-        catch(err){
-            await transaction.rollback();                    
+            let applicant = {};
+            applicant.userId = user.id;
+            if (body.city) applicant.city = body.city;
+            if (body.date_born) applicant.date_born = body.date_born;
+            if (body.premium) applicant.premium = body.premium;
+
+            console.log(applicant);
+            let newapplicant = await db.applicants.create(applicant, { transaction: transaction });
+            // if(newapplicant){
+            //     console.log('Applicant created');
+            // return newapplicant;
+            // }
+            // else{
+            //     console.log("errorrr");
+            // }
+            return newapplicant;
+            /* } else {
+                 await transaction.rollback();                    
+                 next({ type: 'error', error: 'City required' });
+             }*/
+        } catch (err) {
+            await transaction.rollback();
             next({ type: 'error', error: validationResult(err) });
         }
     }
@@ -388,10 +383,10 @@ module.exports = (app, db) => {
                 company_size: body.company_size ? body.company_size : null,
                 year: body.year ? body.year : null,
                 premium: body.premium ? body.premium : 'basic'
-            }, {transaction: transaction});
+            }, { transaction: transaction });
             console.log('Offerer created');
         } else {
-            await transaction.rollback();                    
+            await transaction.rollback();
             next({ type: 'error', error: validationResult(err) });
         }
     }

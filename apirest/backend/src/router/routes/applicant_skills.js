@@ -52,7 +52,7 @@ module.exports = (app, db) => {
     });
 
     // POST single applicant_skill
-    app.post("/applicant_skills", [checkToken, checkAdmin], async(req, res, next) => {
+    app.post("/applicant_skill", [checkToken, checkAdmin], async(req, res, next) => {
         const body = req.body;
 
         try {
@@ -103,7 +103,7 @@ module.exports = (app, db) => {
     });
 
     // PUT single applicant_skill
-    app.put("/applicant_skills", [checkToken, checkAdmin], async(req, res, next) => {
+    app.put("/applicant_skill", [checkToken, checkAdmin], async(req, res, next) => {
         const body = req.body;
 
         try {
@@ -130,7 +130,7 @@ module.exports = (app, db) => {
     });
 
     // DELETE single applicant_skill
-    app.delete("/applicant_skills", [checkToken, checkAdmin], async(req, res, next) => {
+    app.delete("/applicant_skill", [checkToken, checkAdmin], async(req, res, next) => {
         const body = req.body;
 
         try {
