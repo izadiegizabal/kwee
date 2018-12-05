@@ -1,0 +1,203 @@
+<mat-accordion fxFlex="99%">
+  <mat-expansion-panel
+    (closed)="isPanelOpen = !isPanelOpen; isInEditMode = false"
+    (opened)="isPanelOpen = !isPanelOpen; isInEditMode = false"
+    *ngFor="let user of users;" [formGroup]="userForm">
+    <mat-expansion-panel-header>
+      <mat-panel-title fxFlex="75%"
+                       fxFlex.gt-lg="30%" fxFlex.gt-md="35%" fxFlex.gt-sm="40%" fxLayoutAlign="start center"
+                       fxLayoutGap="8px">
+        <app-offerer-name-overview [index]="user.index" [name]="user.name"></app-offerer-name-overview>
+      </mat-panel-title>
+      <mat-panel-description
+        fxFlex="25%"
+        fxFlex.gt-sm="75%" fxLayout="row"
+        fxLayoutAlign="space-between center">
+        <div fxFlex="60%"
+             fxFlex.md="75%"
+             fxHide fxLayout="row"
+             fxLayoutAlign="start center" fxShow.gt-sm>
+          <mat-icon class="svg" color="primary" svgIcon="email"></mat-icon>
+          <span>{{user.email}}</span>
+        </div>
+        <div fxFlex="40%"
+             fxHide
+             fxLayout="row"
+             fxLayoutAlign="start center" fxShow.gt-lg>
+          <mat-icon class="svg" color="primary" svgIcon="access-time"></mat-icon>
+          <span>{{user.lastAccess | date:'d/M/y, HH:mm'}}</span>
+        </div>
+        <mat-chip-list fxHide fxShow.gt-sm>
+          <mat-chip color="primary" selected style="pointer-events: none">{{ user.state | titlecase}}</mat-chip>
+        </mat-chip-list>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <!-- NAME / EMAIL-->
+    <div fxLayout="column" fxLayout.gt-sm="row"
+         fxLayoutGap="0" fxLayoutGap.gt-sm="24px">
+      <div class="mat-body" fxFlex="50%">
+        <span class="mat-small">{{'Name' | uppercase}}</span>
+        <br>
+        <div *ngIf="!isInEditMode || !isPanelOpen">
+          {{user.name}}
+        </div>
+        <div *ngIf="isInEditMode && isPanelOpen">
+          <mat-form-field>
+            <label>
+              <input formControlName="name" [value]="user.name" matInput>
+            </label>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="mat-body" fxFlex="50%">
+        <span class="mat-small">{{'Email' | uppercase}}</span>
+        <br>
+        <div *ngIf="!isInEditMode || !isPanelOpen">
+          {{user.email}}
+        </div>
+        <div *ngIf="isInEditMode && isPanelOpen">
+          <mat-form-field>
+            <label>
+              <input formControlName="email" [value]="user.email" matInput>
+            </label>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+    <!-- PASS -->
+    <div *ngIf="isInEditMode && isPanelOpen"
+         fxLayout="column" fxLayout.gt-sm="row"
+         fxLayoutGap="0" fxLayoutGap.gt-sm="24px">
+      <div class="mat-body">
+        <span class="mat-small">{{'Password' | uppercase}}</span>
+        <br>
+        <mat-form-field>
+          <label>
+            <input formControlName="password" matInput type="password">
+          </label>
+        </mat-form-field>
+      </div>
+      <div class="mat-body">
+        <span class="mat-small">{{'Repeat Password' | uppercase}}</span>
+        <br>
+        <mat-form-field>
+          <label>
+            <input formControlName="password2" matInput type="password">
+          </label>
+        </mat-form-field>
+      </div>
+    </div>
+    <!--VAT / WORK FIELD / STATE / SUBSCRIPTION -->
+    <div fxLayout="column" fxLayout.gt-sm="row"
+         fxLayoutGap="0" fxLayoutGap.gt-sm="24px">
+      <div fxFlex="100%" fxFlex.gt-sm="50%"
+           fxLayout="column" fxLayout.gt-md="row"
+           fxLayoutGap="0" fxLayoutGap.gt-sm="16px">
+        <div class="mat-body">
+          <span class="mat-small">{{'VAT / CIF' | uppercase}}</span>
+          <br>
+          <div *ngIf="!isInEditMode || !isPanelOpen">
+            {{user.vat}}
+          </div>
+          <div *ngIf="isInEditMode && isPanelOpen">
+            <mat-form-field>
+              <label>
+                <input formControlName="vat" [value]="user.vat" matInput>
+              </label>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="mat-body">
+          <span class="mat-small">{{'Work Field' | uppercase}}</span>
+          <br>
+          <div *ngIf="!isInEditMode || !isPanelOpen">
+            {{ getWorkField(user.workField) | titlecase }}
+          </div>
+          <div *ngIf="isInEditMode && isPanelOpen">
+            <mat-form-field>
+              <mat-select [(value)]="user.workField" formControlName="workField">
+                <mat-option *ngFor="let field of workFields" [value]="field.value">
+                  {{field.viewValue}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+      <div [fxLayout]="(isInEditMode && isPanelOpen) ? 'column': 'row'"
+           class="mat-body" fxFlex="100%"
+           fxFlex.gt-sm="50%"
+           fxLayout.gt-sm="row" fxLayoutGap="24px">
+        <div>
+          <span class="mat-small">{{'Account State' | uppercase}}</span>
+          <br>
+          <div *ngIf="!isInEditMode || !isPanelOpen">
+            {{user.state | titlecase }}
+          </div>
+          <div *ngIf="isInEditMode && isPanelOpen">
+            <mat-form-field>
+              <mat-select [(value)]="user.state" formControlName="accountState">
+                <mat-option *ngFor="let state of states" [value]="state.value">
+                  {{state.viewValue}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+        <div>
+          <span class="mat-small">{{'Subscription' | uppercase}}</span>
+          <br>
+          <div *ngIf="!isInEditMode || !isPanelOpen">
+            {{user.subscription | titlecase }}
+          </div>
+          <div *ngIf="isInEditMode && isPanelOpen">
+            <mat-form-field>
+              <mat-select [(value)]="user.subscription" formControlName="subscription">
+                <mat-option *ngFor="let subscription of subscriptions" [value]="subscription.value">
+                  {{subscription.viewValue}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- TIMES -->
+    <div *ngIf="!isInEditMode || !isPanelOpen"
+         fxLayout="row">
+      <div class="mat-body"
+           fxFlex="100%"
+           fxFlex.gt-sm="50%"
+           fxLayout="row" fxLayoutGap="24px">
+        <p>
+          <span class="mat-small">{{'Last Access Time' | uppercase}}</span>
+          <br>
+          {{user.lastAccess | date:'d/M/y, HH:mm' | titlecase}}
+        </p>
+        <p>
+          <span class="mat-small">{{'Sign Up time' | uppercase}}</span>
+          <br>
+          {{user.signupDate | date:'d/M/y, HH:mm' | titlecase}}
+        </p>
+      </div>
+    </div>
+    <!-- ACTIONS -->
+    <br>
+    <div fxLayout="row"
+         fxLayoutAlign="end" fxLayoutGap="0"
+         fxLayoutGap.gt-sm="8px">
+      <button color="primary" mat-button>More Info</button>
+      <button color="primary" mat-button>View Log</button>
+      <div *ngIf="!isInEditMode || !isPanelOpen">
+        <button (click)="edit(user)" color="accent" mat-button>Edit</button>
+      </div>
+      <div *ngIf="isInEditMode && isPanelOpen">
+        <button (click)="isInEditMode = false" color="accent" mat-button>Done</button>
+      </div>
+      <button color="warn" mat-button>Delete</button>
+    </div>
+  </mat-expansion-panel>
+</mat-accordion>
+

@@ -50,6 +50,7 @@ import {AdminVerifyComponent} from './admin/admin-verify/admin-verify.component'
 import {AdminReportsComponent} from './admin/admin-reports/admin-reports.component';
 import {AdminMessagesComponent} from './admin/admin-messages/admin-messages.component';
 import {CandidateOverviewComponent} from './admin/admin-manage-candidates/candidate-overview/candidate-overview.component';
+import { BusinessOverviewComponent } from './admin/admin-manage-businesses/business-overview/business-overview.component';
 
 @NgModule({
   declarations: [
@@ -74,6 +75,7 @@ import {CandidateOverviewComponent} from './admin/admin-manage-candidates/candid
     AdminReportsComponent,
     AdminMessagesComponent,
     CandidateOverviewComponent,
+    BusinessOverviewComponent,
   ],
   imports: [
     HttpClientModule,
