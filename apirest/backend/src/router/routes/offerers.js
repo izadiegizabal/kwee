@@ -123,7 +123,8 @@ module.exports = (app, db) => {
         }
     });
 
-    async function createOfferer(body, user, next) {
+    
+    async function createOfferer(body, user, next, transaction) {
         if (body.adress && body.cif && body.work_field) {
 
             await db.offerers.create({
@@ -136,11 +137,11 @@ module.exports = (app, db) => {
                 company_size: body.company_size ? body.company_size : null,
                 year: body.year ? body.year : null,
                 premium: body.premium ? body.premium : 'basic'
-            });
+            }, {transaction: transaction});
             console.log('Offerer created');
         } else {
-            await db.users.destroy({ where: { id: user.id } });
-            next({ type: 'error', error: 'Adress, cif and work_field required' });
+            await transaction.rollback();                    
+            next({ type: 'error', error: validationResult(err) });
         }
     }
 }

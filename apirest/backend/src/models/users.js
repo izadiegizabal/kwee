@@ -42,7 +42,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
-                notEmpty: true,
+                notEmpty: {
+                    args: true,
+                    "msg": "Password should be filled"
+                }
                 /*is: {
                     "args": /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,16}$/g,
                     "msg": "Invalid password. Should be 8-16 length and contain at least 1 letter and at 1 number."

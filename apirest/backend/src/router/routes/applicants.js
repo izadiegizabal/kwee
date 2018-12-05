@@ -43,53 +43,53 @@ module.exports = (app, db) => {
 
     // POST single applicant
     app.post('/applicant', [checkToken, checkAdmin], async(req, res, next) => {
+        let transaction;
+        
+        try{
+            const body = req.body;
+            const password = body.password ? bcrypt.hashSync(body.password, 10) : null;
+    
+            let msg;
+            let user;
+    
 
-        const body = req.body;
-        const password = bcrypt.hashSync(body.password, 10);
+            // get transaction
+            transaction = await db.sequelize.transaction();
 
-        try {
-            let user = await db.users.create({
+
+            // step 1
+            let _user = await db.users.create({
                 name: body.name,
                 password,
-                email: body.email
-            });
-            if (user) {
-                if (!body.type) {
-                    // User created
-                    return res.status(201).json({
-                        ok: true,
-                        message: `User '${user.name}' with id ${user.id} has been created.`
-                    });
-                } else {
-                    let msg = '';
-                    switch (body.type) {
-                        case 'a':
-                            msg = 'Applicant';
-                            createApplicant(body, user);
-                            break;
+                email: body.email,
 
-                        case 'o':
-                            msg = 'Offerer';
-                            createOfferer(body, user);
-                            break;
-
-                        default:
-                            await db.users.destroy({ where: { id: user.id } });
-                            next({ type: 'error', error: 'Must be \'type\' of user, \'a\' (applicant) or \'o\' (offerer)' });
-                            break;
-                    }
-                    // Applicant / offerer created
-                    return res.status(201).json({
-                        ok: true,
-                        message: `${ msg } '${user.name}' with id ${user.id} has been created.`
-                    });
-                }
+            }, {transaction: transaction});
+            
+            if(!_user){
+                await transaction.rollback();
             }
 
-        } catch (err) {
+            // step 2
+            let applicant = await createApplicant(body, _user, next, transaction);
+            
+            if(!applicant){
+                console.log("no");
+
+                await transaction.rollback();
+            }
+            
+            // commit
+            await transaction.commit();
+
+            return res.status(201).json({
+                ok: true,
+                message: `Applicant '${_user.name}' with id ${_user.id} has been created.`
+            });
+        }
+        catch(err){
+            //await transaction.rollback();
             next({ type: 'error', error: err.message });
         }
-
     });
 
     // PUT single applicant
@@ -116,21 +116,25 @@ module.exports = (app, db) => {
         }
     });
 
-    async function createApplicant(body, user, next) {
-        if (body.city) {
-            let applicant = {};
-            applicant.userId = user.id;
-            applicant.city = body.city; // not saving :S
-            if (body.date_born) applicant.date_born = body.date_born;
-            if (body.premium) applicant.premium = body.premium;
+    async function createApplicant(body, user, next, transaction) {
+        try{
+                let applicant = {};
 
-            console.log(applicant);
+                applicant.userId = user.id;
+                applicant.city = body.city ? body.city : null;
+                applicant.date_born = body.date_born ? body.date_born : null;
+                applicant.premium = body.premium ? body.premium : null;
+    
+                console.log(applicant);
 
-            await db.applicants.create(applicant);
-            console.log('Applicant created');
-        } else {
-            await db.users.destroy({ where: { id: user.id } });
-            next({ type: 'error', error: 'City required' });
+                let newapplicant = await db.applicants.create(applicant, {transaction: transaction});
+
+                return newapplicant;
+                
+        }
+        catch(err){
+            await transaction.rollback();                    
+            next({ type: 'error', error: err.message });
         }
     }
 }
