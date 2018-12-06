@@ -58,6 +58,7 @@ module.exports = (app, db) => {
     // POST single applicant_language
     app.post("/applicant_language", [checkToken, checkAdmin], async(req, res, next) => {
         const body = req.body;
+        let fk_language = body.fk_language;
 
         try {
             let applicant = await db.applicants.findOne({
@@ -66,32 +67,56 @@ module.exports = (app, db) => {
 
             if (applicant) {
 
-                let languages = (await applicant.getLanguages());
+                // Obtain what languages were known by the applicant previously
+                let languagesPrevious = (await applicant.getLanguages());
 
-                if (languages.length > 0) {
-                    for (let i = 0; i < languages.length; i++) {
-                        if (body.fk_language != languages[i].id) {
-                            body.fk_language.push(languages[i].id);
+                let languages = [];
+
+                // Add 'id' of languages that the applicant knew
+
+                if (languagesPrevious.length > 0) {
+                    for (let i = 0; i < languagesPrevious.length; i++) {
+                        if (fk_language != languagesPrevious[i].id) {
+                            languages.push(languagesPrevious[i].id);
                         } else {
                             return res.status(400).json({
                                 ok: false,
-                                error: "Applicant language already added"
+                                message: "This applicant already knows this language"
                             });
                         }
                     }
                 }
 
-                res.status(201).json({
-                    ok: true,
-                    applicant_language: await applicant.setLanguages(body.fk_language)
-                });
+                // Now add the new language id to previous languages id's
+                for (let i = 0; i < fk_language.length; i++) {
+                    languages.push(fk_language[i]);
+                }
 
-                await db.sequelize.query({ query: `UPDATE applicant_languages SET level = ? WHERE fk_applicant = ? AND fk_language = ?`, values: [body.level, body.fk_applicant, fk_language] });
+                // And add the array of id's to applicant_languages
+                let applicantLanguageCreated = await applicant.setLanguages(languages);
+
+                if (applicantLanguageCreated) {
+                    // Last step
+                    // It is necessary to update the level after setLanguages
+                    // because is added as null
+                    await db.sequelize.query({ query: `UPDATE applicant_languages SET level = ? WHERE fk_applicant = ? AND fk_language = ?`, values: [body.level, body.fk_applicant, body.fk_language] });
+
+                    return res.status(201).json({
+                        ok: true,
+                        message: "Added language to applicant"
+                    });
+
+                } else {
+                    return res.status(400).json({
+                        ok: false,
+                        error: "Applicant language can't be created"
+                    });
+                }
 
             } else {
                 return res.status(400).json({
                     ok: false,
-                    error: "Applicant language doesn't exist"
+                    error: "Applicant doesn't exist"
                 });
             }
         } catch (err) {

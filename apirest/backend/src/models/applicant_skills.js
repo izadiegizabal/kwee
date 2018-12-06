@@ -4,24 +4,14 @@ module.exports = (sequelize, DateTypes) => {
 
         description: {
             type: DateTypes.TEXT,
-            field: 'description',
-            // allowNull: false,
-            // validate: {
-            //     notEmpty: true
-            // }
+            field: 'description'
         },
 
         level: {
             type: DateTypes.STRING(50),
-            field: 'level',
-            // allowNull: false,
-            // validate: {
-            //     notEmpty: true
-            // }
-        },
+            field: 'level'
+        }
 
-    }, {
-        paranoid: true
     });
     return Applicant_Skill;
 };

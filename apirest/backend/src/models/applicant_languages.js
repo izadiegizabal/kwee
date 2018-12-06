@@ -7,8 +7,7 @@ module.exports = (sequelize, DataTypes) => {
             field: 'level'
         }
 
-    }, {
-        paranoid: true
     });
+
     return Applicant_Language;
 };

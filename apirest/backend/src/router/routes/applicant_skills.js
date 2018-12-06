@@ -54,6 +54,7 @@ module.exports = (app, db) => {
     // POST single applicant_skill
     app.post("/applicant_skill", [checkToken, checkAdmin], async(req, res, next) => {
         const body = req.body;
+        let fk_skill = body.fk_skill;
 
         try {
             let applicant = await db.applicants.findOne({
@@ -62,42 +63,60 @@ module.exports = (app, db) => {
 
             if (applicant) {
 
-                let skills = (await applicant.getSkills());
+                // Obtain what skills were known by the applicant previously
+                let skillsPrevious = (await applicant.getSkills());
 
-                if (skills.length > 0) {
-                    for (let i = 0; i < skills.length; i++) {
-                        if (body.fk_skill != skills[i].id) {
-                            body.fk_skill.push(skills[i].id);
+                let skills = [];
+
+                // Add 'id' of skills that the applicant knew
+
+                if (skillsPrevious.length > 0) {
+                    for (let i = 0; i < skillsPrevious.length; i++) {
+                        if (fk_skill != skillsPrevious[i].id) {
+                            skills.push(skillsPrevious[i].id);
                         } else {
                             return res.status(400).json({
                                 ok: false,
-                                error: "Applicant skill already added"
+                                message: "This applicant already knows this skill"
                             });
                         }
                     }
                 }
 
-                res.status(201).json({
-                    ok: true,
-                    applicant_skill: await applicant.setSkills(body.fk_skill)
-                });
+                // Now add the new skill id to previous skills id's
+                for (let i = 0; i < fk_skill.length; i++) {
+                    skills.push(fk_skill[i]);
+                }
 
-                await db.sequelize.query({
-                    query: `UPDATE applicant_skills 
-                            SET (level = ?, description = ?)
-                            WHERE fk_applicant = ? 
-                            AND fk_skill = ?`,
-                    values: [body.level, body.description, body.fk_applicant, body.fk_skill]
-                });
+                // And add the array of id's to applicant_skills
+                let applicantSkillCreated = await applicant.setSkills(skills);
+
+                if (applicantSkillCreated) {
+                    // Last step
+                    // It is necessary to update the level and description after setSkills
+                    // because is added as null
+                    await db.sequelize.query({ query: `UPDATE applicant_skills SET level = ?, description = ? WHERE fk_applicant = ? AND fk_skill = ?`, values: [body.level, body.description, body.fk_applicant, body.fk_skill] });
+
+                    return res.status(201).json({
+                        ok: true,
+                        message: "Added skill to applicant"
+                    });
+
+                } else {
+                    return res.status(400).json({
+                        ok: false,
+                        error: "Applicant skill can't be created"
+                    });
+                }
 
             } else {
                 return res.status(400).json({
                     ok: false,
-                    error: "Applicant skill doesn't exist"
+                    error: "Applicant doesn't exist"
                 });
             }
         } catch (err) {
-            next({ type: 'error', error: err.errors[0].message });
+            next({ type: 'error', error: err.message });
         }
 
     });

@@ -62,6 +62,7 @@ module.exports = (app, db) => {
     // POST single applicant_education
     app.post("/applicant_education", [checkToken, checkAdmin], async(req, res, next) => {
         const body = req.body;
+        let fk_education = body.fk_education;
 
         try {
             let applicant = await db.applicants.findOne({
@@ -70,33 +71,56 @@ module.exports = (app, db) => {
 
             if (applicant) {
 
-                let educations = (await applicant.getEducations());
+                // Obtain what educations were known by the applicant previously
+                let educationsPrevious = (await applicant.getEducations());
 
-                if (educations.length > 0) {
-                    for (let i = 0; i < educations.length; i++) {
-                        if (body.fk_education != educations[i].id) {
-                            body.fk_education.push(educations[i].id);
+                let educations = [];
+
+                // Add 'id' of educations that the applicant knew
+
+                if (educationsPrevious.length > 0) {
+                    for (let i = 0; i < educationsPrevious.length; i++) {
+                        if (fk_education != educationsPrevious[i].id) {
+                            educations.push(educationsPrevious[i].id);
                         } else {
                             return res.status(400).json({
                                 ok: false,
-                                error: "Applicant education already added"
+                                message: "This applicant already knows this education"
                             });
                         }
                     }
                 }
 
-                res.status(201).json({
-                    ok: true,
-                    applicant_education: await applicant.setEducations(body.fk_education)
-                });
-                console.log("aqui ya no");
+                // Now add the new education id to previous educations id's
+                for (let i = 0; i < fk_education.length; i++) {
+                    educations.push(fk_education[i]);
+                }
 
-                await db.sequelize.query({ query: `UPDATE applicant_educations SET description = ? WHERE fk_applicant = ? AND fk_education = ?`, values: [body.description, body.fk_applicant, body.fk_education] });
+                // And add the array of id's to applicant_educations
+                let applicantEducationCreated = await applicant.setEducations(educations);
+
+                if (applicantEducationCreated) {
+                    // Last step
+                    // It is necessary to update the level and description after setEducations
+                    // because is added as null
+                    await db.sequelize.query({ query: `UPDATE applicant_educations SET date_start = ?, date_end = ?, institution = ?, description = ? WHERE fk_applicant = ? AND fk_education = ?`, values: [body.date_start, body.date_end, body.institution, body.description, body.fk_applicant, body.fk_education] });
+
+                    return res.status(201).json({
+                        ok: true,
+                        message: "Added education to applicant"
+                    });
+
+                } else {
+                    return res.status(400).json({
+                        ok: false,
+                        error: "Applicant education can't be created"
+                    });
+                }
 
             } else {
                 return res.status(400).json({
                     ok: false,
-                    error: "Applicant education doesn't exist"
+                    error: "Applicant doesn't exist"
                 });
             }
         } catch (err) {

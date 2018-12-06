@@ -12,8 +12,7 @@ module.exports = (sequelize, DateTypes) => {
             }
         }
 
-    }, {
-        paranoid: true
     });
+
     return Skill;
 };

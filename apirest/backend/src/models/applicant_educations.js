@@ -4,37 +4,25 @@ module.exports = (sequelize, DateTypes) => {
 
         description: {
             type: DateTypes.TEXT,
-            field: 'description',
-            allowNull: false,
-            validate: {
-                notEmpty: true
-            }
+            field: 'description'
         },
 
         date_start: {
             type: DateTypes.DATE,
-            field: 'date_start',
-            allowNull: false,
-            validate: {
-                notEmpty: true
-            }
-        },
-
-        institution: {
-            type: DateTypes.STRING,
-            field: 'institution',
+            field: 'date_start'
         },
 
         date_end: {
             type: DateTypes.DATE,
-            field: 'date_end',
-            allowNull: false,
-            validate: {
-                notEmpty: true
-            }
+            field: 'date_end'
         },
-    }, {
-        paranoid: true
+
+        institution: {
+            type: DateTypes.STRING,
+            field: 'institution'
+        },
+
     });
+
     return Applicant_Education;
 };
