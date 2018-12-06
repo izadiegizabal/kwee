@@ -86,7 +86,7 @@ module.exports = (app, db) => {
     });
 
     // POST single applicant
-    app.post('/applicant', [checkToken, checkAdmin], async(req, res, next) => {
+    app.post('/applicant', async(req, res, next) => {
         let transaction;
 
         try {

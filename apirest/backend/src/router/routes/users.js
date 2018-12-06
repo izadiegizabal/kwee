@@ -61,9 +61,9 @@ module.exports = (app, db) => {
         });
 
 
-    app.post('/user', [checkToken, checkAdmin], async(req, res, next) => {
-        
-        try{
+    app.post('/user', async(req, res, next) => {
+
+        try {
 
             const body = req.body;
 
@@ -72,8 +72,8 @@ module.exports = (app, db) => {
                 password: body.password ? bcrypt.hashSync(body.password, 10) : null,
                 email: body.email ? body.email : null
             });
-            
-            if(user){                
+
+            if (user) {
                 return res.status(201).json({
                     ok: true,
                     message: `User '${user.name}' with id ${user.id} has been created.`
@@ -82,8 +82,7 @@ module.exports = (app, db) => {
                 next({ type: 'error', error: 'Error creating user' });
             }
 
-        }
-        catch(err){
+        } catch (err) {
             next({ type: 'error', error: err.errors[0].message });
         }
     });

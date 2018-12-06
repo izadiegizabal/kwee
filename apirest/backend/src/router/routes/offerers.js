@@ -98,7 +98,7 @@ module.exports = (app, db) => {
     });
 
     // POST single offerer
-    app.post('/offerer', [checkToken, checkAdmin], async(req, res, next) => {
+    app.post('/offerer', async(req, res, next) => {
         let transaction;
 
         try {
