@@ -1,13 +1,13 @@
-<div fxLayout="row" fxLayoutGap="8px" fxLayout.gt-sm="16px">
-  <mat-card fxFlexOffset="16dp" fxFlex="60%" fxLayout="row" fxLayoutGap="8px">
+<div fxLayout="row" fxLayout.gt-sm="16px" fxLayoutGap="8px">
+  <mat-card fxFlex="60%" fxFlexOffset="16dp" fxLayout="row" fxLayoutGap="8px">
     <form fxFlex="80%" fxFlex.gt-sm="95%">
       <mat-form-field fxFlex="100%">
         <input
-          type="text"
+          [formControl]="myControl"
+          [matAutocomplete]="auto"
           aria-label="Number"
           matInput
-          [formControl]="myControl"
-          [matAutocomplete]="auto">
+          type="text">
         <mat-autocomplete #auto="matAutocomplete">
           <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
             {{option}}
@@ -15,8 +15,8 @@
         </mat-autocomplete>
       </mat-form-field>
     </form>
-    <button mat-icon-button color="primary">
-      <mat-icon svgIcon="search" matSuffix></mat-icon>
+    <button color="primary" mat-icon-button>
+      <mat-icon matSuffix svgIcon="search"></mat-icon>
     </button>
   </mat-card>
   <button color="primary" mat-raised-button>
@@ -24,7 +24,7 @@
     <span fxHide.lt-sm>Filter</span>
   </button>
   <button mat-raised-button>
-    <mat-icon color="primary" class="fa-rotate-90">arrow_right_alt</mat-icon>
+    <mat-icon class="fa-rotate-90" color="primary">arrow_right_alt</mat-icon>
     <span fxHide.lt-sm>Relevance</span>
   </button>
 </div>

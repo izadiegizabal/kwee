@@ -13,10 +13,11 @@
           Continue with Email
         </mat-panel-description>
       </mat-expansion-panel-header>
-      <div class="container"
-           fxLayout="column"
-           fxLayoutGap="8px"
-           [formGroup]="user">
+      <form>
+        <div class="container"
+             fxLayout="column"
+             fxLayoutGap="8px"
+             [formGroup]="user">
           <mat-form-field>
             <input matInput formControlName="email" placeholder="Email" required>
             <mat-icon svgIcon="email" color="primary" matPrefix></mat-icon>
@@ -24,13 +25,18 @@
 
           <mat-form-field>
             <mat-icon svgIcon="lock" color="primary" matPrefix></mat-icon>
-            <input matInput formControlName="password" placeholder="Password" [type]="hide ? 'text' : 'password'" required>
+            <input matInput formControlName="password" placeholder="Password" [type]="hide ? 'text' : 'password'"
+                   required>
+            <mat-error *ngIf="user.get('password').invalid">The email and password you entered did not match our
+              records. Please double-check and try again.
+            </mat-error>
           </mat-form-field>
-
+          <br *ngIf="user.get('password').invalid">
           <div fxLayout="row" fxLayoutAlign="end">
-            <button mat-button color="accent" (click)="signIn()">Sign In</button>
+            <button mat-button type="submit" color="accent" (click)="signIn()">Sign In</button>
           </div>
-      </div>
+        </div>
+      </form>
     </mat-expansion-panel>
   </mat-accordion>
   <div class="signupButton">

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {map, catchError} from 'rxjs/operators';
-import {Observable, of} from 'rxjs';
+import {catchError, map} from 'rxjs/operators';
+import {Observable, of, throwError} from 'rxjs';
 
 
 @Injectable({providedIn: 'root'})
@@ -21,14 +21,14 @@ export class AuthService {
     const body = JSON.stringify(user);
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
 
-    // console.log(body);
+    console.log(body);
     return this.httpClient.post(this.loginURL, body, {headers: headers}).pipe(
       map(res => {
         // console.log(res);
         this.signedIn = true;
         return res;
       }),
-      catchError(this.handleError('signIn', []))
+      catchError(err => throwError(this.handleError('signIn', err)))
     );
   }
 
@@ -46,7 +46,7 @@ export class AuthService {
     return (error: any): Observable<T> => {
 
       // send the error to remote logging infrastructure
-      console.error(error); // log to console instead
+      // console.error(error); // log to console instead
 
       // better job of transforming error for user consumption
       console.log(`${operation} failed: ${error.message}`);

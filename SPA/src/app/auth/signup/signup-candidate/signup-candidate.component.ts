@@ -43,10 +43,6 @@ export class SignupCandidateComponent implements OnInit {
     {value: 7, viewValue: 'Native'},
   ];
 
-  getProf(n: number) {
-    return this.proficiencies[n].viewValue;
-  }
-
   constructor(private _formBuilder: FormBuilder, private _singupService: SingupService) {
     this.iskill = 0;
     this.iskillang = 0;
@@ -58,7 +54,6 @@ export class SignupCandidateComponent implements OnInit {
     return <FormArray>this.thirdFormGroup.get('skills');
   }
 
-
   get formLanguages() {
     return <FormArray>this.thirdFormGroup.get('languages');
   }
@@ -69,6 +64,10 @@ export class SignupCandidateComponent implements OnInit {
 
   get formEducation() {
     return <FormArray>this.thirdFormGroup.get('education');
+  }
+
+  getProf(n: number) {
+    return this.proficiencies[n].viewValue;
   }
 
   ngOnInit() {

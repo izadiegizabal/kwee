@@ -43,7 +43,7 @@
         <div *ngIf="isInEditMode && isPanelOpen">
           <mat-form-field>
             <label>
-              <input formControlName="name" [value]="user.fullname" matInput>
+              <input [value]="user.fullname" formControlName="name" matInput>
             </label>
             <mat-error *ngIf="!userForm.get('name').valid">
               This field is required
@@ -60,7 +60,7 @@
         <div *ngIf="isInEditMode && isPanelOpen">
           <mat-form-field>
             <label>
-              <input formControlName="email" [value]="user.email" matInput>
+              <input [value]="user.email" formControlName="email" matInput>
             </label>
             <mat-error *ngIf="!userForm.get('email').valid">
               Please enter a valid email

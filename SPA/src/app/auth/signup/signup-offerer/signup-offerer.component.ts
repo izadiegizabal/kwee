@@ -3,7 +3,6 @@ import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {SingupService} from '../signup.service';
 
 
-
 @Component({
   selector: 'app-signup-offerer',
   templateUrl: './signup-offerer.component.html',

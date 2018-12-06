@@ -51,9 +51,9 @@ import {AdminVerifyComponent} from './admin/admin-verify/admin-verify.component'
 import {AdminReportsComponent} from './admin/admin-reports/admin-reports.component';
 import {AdminMessagesComponent} from './admin/admin-messages/admin-messages.component';
 import {CandidateOverviewComponent} from './admin/admin-manage-candidates/candidate-overview/candidate-overview.component';
-import { BusinessOverviewComponent } from './admin/admin-manage-businesses/business-overview/business-overview.component';
-import { SearchbarComponent } from './common/searchbar/searchbar.component';
-import { CandidateHomeComponent } from './candidate-home/candidate-home.component';
+import {BusinessOverviewComponent} from './admin/admin-manage-businesses/business-overview/business-overview.component';
+import {SearchbarComponent} from './common/searchbar/searchbar.component';
+import {CandidateHomeComponent} from './candidate-home/candidate-home.component';
 
 @NgModule({
   declarations: [

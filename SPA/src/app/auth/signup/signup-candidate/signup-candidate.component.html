@@ -106,7 +106,8 @@
             <mat-error *ngIf="secondFormGroup.get('birthday').errors?.required ">
               This field is required
             </mat-error>
-            <mat-error *ngIf="!secondFormGroup.get('birthday').valid && !secondFormGroup.get('birthday').errors.required">
+            <mat-error
+              *ngIf="!secondFormGroup.get('birthday').valid && !secondFormGroup.get('birthday').errors.required">
               Please enter a valid date<!--You must be over 16 years old-->
             </mat-error>
           </mat-form-field>
@@ -140,7 +141,7 @@
         <br>
         <div fxLayout="row" fxLayoutAlign="end">
           <button color="primary" mat-button matStepperPrevious>Back</button>
-          <button color="accent" mat-button matStepperNext type="button" (click)="onSave();">Sign Up!</button>
+          <button (click)="onSave();" color="accent" mat-button matStepperNext type="button">Sign Up!</button>
         </div>
       </div>
     </form>
@@ -170,17 +171,17 @@
         <!--------------------------------------------------->
         <h4>Experience</h4>
         <div fxLayout="column" fxLayoutGap="16px">
-          <div formArrayName="experience" fxLayout="column" fxLayoutGap="16px"
-          *ngFor="let ex of this.formExperience.controls; let s =index;">
-            <div fxFlex=80%; fxLayout="column" [formGroupName]="s">
-            <mat-accordion id="{{'accordion'+s}}">
-              <mat-expansion-panel expanded>
-                <mat-expansion-panel-header>
-                  <mat-panel-title>
-                    <span *ngIf="title.value; else titled">{{title.value}}</span>
-                    <ng-template #titled><span>Title</span></ng-template>
-                  </mat-panel-title>
-                  <mat-panel-description fxHide fxShow.gt-xs>
+          <div *ngFor="let ex of this.formExperience.controls; let s =index;" formArrayName="experience" fxLayout="column"
+               fxLayoutGap="16px">
+            <div [formGroupName]="s" fxFlex=80%; fxLayout="column">
+              <mat-accordion id="{{'accordion'+s}}">
+                <mat-expansion-panel expanded>
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      <span *ngIf="title.value; else titled">{{title.value}}</span>
+                      <ng-template #titled><span>Title</span></ng-template>
+                    </mat-panel-title>
+                    <mat-panel-description fxHide fxShow.gt-xs>
                     <span *ngIf="(iend.value && !iend.disabled && istart.value) ||
                     (iend.disabled && istart.value)
                     ; else date">
@@ -191,79 +192,81 @@
                     current</span>
                   </span>
 
-                    <ng-template #date><span>Date</span></ng-template>
-                    
-                    
-                  </mat-panel-description>
-                </mat-expansion-panel-header>
+                      <ng-template #date><span>Date</span></ng-template>
 
 
-              <div fxLayout="column" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
-                <mat-form-field >
-                  <input 
-                  #title
-                  id="{{'titlex'+s}}"
-                   placeholder="Title"
-                   formControlName="title"
-                   class="form-control"
-                   matInput type="text">
-                </mat-form-field>
-              </div>
-              <!--------------------------------------------------->
-              <div fxLayout="column" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
-                <mat-form-field>
-                  <input 
-                   placeholder="Company"
-                   formControlName="company"
-                   class="form-control"
-                   matInput type="text">
-                </mat-form-field>
-              </div>
-              <!--------------------------------------------------->
-              <div fxLayout="row" 
-              fxLayout.xs="column" 
-              fxLayoutGap="16px" 
-              fxLayoutGap.xs="0px"
-              fxLayoutAlign.xs="center start">
-              <mat-form-field fxFlex="30%">
-                <input #istart [matDatepicker]="start" formControlName="start" matInput placeholder="Start" >
-                <mat-datepicker-toggle [for]="start" matPrefix></mat-datepicker-toggle>
-                <mat-datepicker #start ></mat-datepicker>
-              </mat-form-field>
-              
-              <!--------------------------------------------------->
-              <p> To: </p>
-              <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" >
-              <mat-form-field fxFlex="50%" fxFlex.xs="70%">
-                <input id="{{'toEx'+s}}" #iend [matDatepicker]="end" formControlName="end" matInput placeholder="End">
-                <mat-datepicker-toggle [for]="end" matPrefix></mat-datepicker-toggle>
-                <mat-datepicker #end 
-                [disabled]="current.checked"
-                ></mat-datepicker>
-              </mat-form-field>
-              
-              <mat-checkbox #current (change)="onChange($event, s)">current</mat-checkbox>
-              </div>
-              </div>
-              <!--------------------------------------------------->
-              <div fxLayout="column" fxLayout.xs="column">
-                <mat-form-field >
-                  <textarea formControlName="description" matInput placeholder="Description"></textarea>
-                </mat-form-field>
-              </div>
-              <div fxLayout="row"
-                   fxLayoutAlign="end" fxLayoutGap="0"
-                   fxLayoutGap.gt-sm="8px">
-                <div >
-                  <button (click)="deleteExperience(s)" color="warn" mat-button>Delete</button>
-                </div>
-                <div>
-                  <button color="accent" mat-button>Done</button>
-                </div>
-                
-              </div>
-            </mat-expansion-panel></mat-accordion> 
-            </div>        
+                    </mat-panel-description>
+                  </mat-expansion-panel-header>
+
+
+                  <div fxLayout="column" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
+                    <mat-form-field>
+                      <input
+                        #title
+                        class="form-control"
+                        formControlName="title"
+                        id="{{'titlex'+s}}"
+                        matInput
+                        placeholder="Title" type="text">
+                    </mat-form-field>
+                  </div>
+                  <!--------------------------------------------------->
+                  <div fxLayout="column" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
+                    <mat-form-field>
+                      <input
+                        class="form-control"
+                        formControlName="company"
+                        matInput
+                        placeholder="Company" type="text">
+                    </mat-form-field>
+                  </div>
+                  <!--------------------------------------------------->
+                  <div fxLayout="row"
+                       fxLayout.xs="column"
+                       fxLayoutAlign.xs="center start"
+                       fxLayoutGap="16px"
+                       fxLayoutGap.xs="0px">
+                    <mat-form-field fxFlex="30%">
+                      <input #istart [matDatepicker]="start" formControlName="start" matInput placeholder="Start">
+                      <mat-datepicker-toggle [for]="start" matPrefix></mat-datepicker-toggle>
+                      <mat-datepicker #start></mat-datepicker>
+                    </mat-form-field>
+
+                    <!--------------------------------------------------->
+                    <p> To: </p>
+                    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
+                      <mat-form-field fxFlex="50%" fxFlex.xs="70%">
+                        <input #iend [matDatepicker]="end" formControlName="end" id="{{'toEx'+s}}" matInput
+                               placeholder="End">
+                        <mat-datepicker-toggle [for]="end" matPrefix></mat-datepicker-toggle>
+                        <mat-datepicker #end
+                                        [disabled]="current.checked"
+                        ></mat-datepicker>
+                      </mat-form-field>
+
+                      <mat-checkbox #current (change)="onChange($event, s)">current</mat-checkbox>
+                    </div>
+                  </div>
+                  <!--------------------------------------------------->
+                  <div fxLayout="column" fxLayout.xs="column">
+                    <mat-form-field>
+                      <textarea formControlName="description" matInput placeholder="Description"></textarea>
+                    </mat-form-field>
+                  </div>
+                  <div fxLayout="row"
+                       fxLayoutAlign="end" fxLayoutGap="0"
+                       fxLayoutGap.gt-sm="8px">
+                    <div>
+                      <button (click)="deleteExperience(s)" color="warn" mat-button>Delete</button>
+                    </div>
+                    <div>
+                      <button color="accent" mat-button>Done</button>
+                    </div>
+
+                  </div>
+                </mat-expansion-panel>
+              </mat-accordion>
+            </div>
           </div>
           <div class="divBtn" fxLayout="column" fxLayoutAlign="end">
             <button (click)=" addExperience()" mat-button type="button">
@@ -275,17 +278,17 @@
         <!--------------------------------------------------->
         <h4>Education</h4>
         <div fxLayout="column" fxLayoutGap="16px">
-          <div formArrayName="education" fxLayout="column" fxLayoutGap="16px"
-          *ngFor="let ed of this.formEducation.controls; let a =index;">
-            <div fxFlex=80%; fxLayout="column" [formGroupName]="a">
-            <mat-accordion id="{{'accordion'+a}}">
-              <mat-expansion-panel expanded>
-                <mat-expansion-panel-header>
-                  <mat-panel-title>
-                    <span *ngIf="title.value; else titled">{{title.value}}</span>
-                    <ng-template #titled><span>Title</span></ng-template>
-                  </mat-panel-title>
-                  <mat-panel-description fxHide fxShow.gt-xs>
+          <div *ngFor="let ed of this.formEducation.controls; let a =index;" formArrayName="education" fxLayout="column"
+               fxLayoutGap="16px">
+            <div [formGroupName]="a" fxFlex=80%; fxLayout="column">
+              <mat-accordion id="{{'accordion'+a}}">
+                <mat-expansion-panel expanded>
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      <span *ngIf="title.value; else titled">{{title.value}}</span>
+                      <ng-template #titled><span>Title</span></ng-template>
+                    </mat-panel-title>
+                    <mat-panel-description fxHide fxShow.gt-xs>
                     <span *ngIf="(iend.value && !iend.disabled && istart.value) ||
                     (iend.disabled && istart.value)
                     ; else date">
@@ -296,79 +299,81 @@
                     current</span>
                   </span>
 
-                    <ng-template #date><span>Date</span></ng-template>
-                    
-                    
-                  </mat-panel-description>
-                </mat-expansion-panel-header>
+                      <ng-template #date><span>Date</span></ng-template>
 
 
-              <div fxLayout="column" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
-                <mat-form-field >
-                  <input 
-                  #title
-                  id="{{'titled'+a}}"
-                   placeholder="Title"
-                   formControlName="title"
-                   class="form-control"
-                   matInput type="text">
-                </mat-form-field>
-              </div>
-              <!--------------------------------------------------->
-              <div fxLayout="column" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
-                <mat-form-field>
-                  <input 
-                   placeholder="Institution"
-                   formControlName="institution"
-                   class="form-control"
-                   matInput type="text">
-                </mat-form-field>
-              </div>
-              <!--------------------------------------------------->
-              <div fxLayout="row" 
-              fxLayout.xs="column" 
-              fxLayoutGap="16px" 
-              fxLayoutGap.xs="0px"
-              fxLayoutAlign.xs="center start">
-              <mat-form-field fxFlex="30%">
-                <input #istart [matDatepicker]="start" formControlName="start" matInput placeholder="Start" >
-                <mat-datepicker-toggle [for]="start" matPrefix></mat-datepicker-toggle>
-                <mat-datepicker #start ></mat-datepicker>
-              </mat-form-field>
-              
-              <!--------------------------------------------------->
-              <p> To: </p>
-              <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" >
-              <mat-form-field fxFlex="50%" fxFlex.xs="70%">
-                <input id="{{'toEd'+a}}" #iend [matDatepicker]="end" formControlName="end" matInput placeholder="End">
-                <mat-datepicker-toggle [for]="end" matPrefix></mat-datepicker-toggle>
-                <mat-datepicker #end 
-                [disabled]="current.checked"
-                ></mat-datepicker>
-              </mat-form-field>
-              
-              <mat-checkbox #current (change)="onChangeEd($event, a)">current</mat-checkbox>
-              </div>
-              </div>
-              <!--------------------------------------------------->
-              <div fxLayout="column" fxLayout.xs="column">
-                <mat-form-field >
-                  <textarea formControlName="description" matInput placeholder="Description"></textarea>
-                </mat-form-field>
-              </div>
-              <div fxLayout="row"
-                   fxLayoutAlign="end" fxLayoutGap="0"
-                   fxLayoutGap.gt-sm="8px">
-                <div >
-                  <button (click)="deleteEducation(a)" color="warn" mat-button>Delete</button>
-                </div>
-                <div>
-                  <button color="accent" mat-button>Done</button>
-                </div>
-                
-              </div>
-            </mat-expansion-panel></mat-accordion> 
-            </div>        
+                    </mat-panel-description>
+                  </mat-expansion-panel-header>
+
+
+                  <div fxLayout="column" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
+                    <mat-form-field>
+                      <input
+                        #title
+                        class="form-control"
+                        formControlName="title"
+                        id="{{'titled'+a}}"
+                        matInput
+                        placeholder="Title" type="text">
+                    </mat-form-field>
+                  </div>
+                  <!--------------------------------------------------->
+                  <div fxLayout="column" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
+                    <mat-form-field>
+                      <input
+                        class="form-control"
+                        formControlName="institution"
+                        matInput
+                        placeholder="Institution" type="text">
+                    </mat-form-field>
+                  </div>
+                  <!--------------------------------------------------->
+                  <div fxLayout="row"
+                       fxLayout.xs="column"
+                       fxLayoutAlign.xs="center start"
+                       fxLayoutGap="16px"
+                       fxLayoutGap.xs="0px">
+                    <mat-form-field fxFlex="30%">
+                      <input #istart [matDatepicker]="start" formControlName="start" matInput placeholder="Start">
+                      <mat-datepicker-toggle [for]="start" matPrefix></mat-datepicker-toggle>
+                      <mat-datepicker #start></mat-datepicker>
+                    </mat-form-field>
+
+                    <!--------------------------------------------------->
+                    <p> To: </p>
+                    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
+                      <mat-form-field fxFlex="50%" fxFlex.xs="70%">
+                        <input #iend [matDatepicker]="end" formControlName="end" id="{{'toEd'+a}}" matInput
+                               placeholder="End">
+                        <mat-datepicker-toggle [for]="end" matPrefix></mat-datepicker-toggle>
+                        <mat-datepicker #end
+                                        [disabled]="current.checked"
+                        ></mat-datepicker>
+                      </mat-form-field>
+
+                      <mat-checkbox #current (change)="onChangeEd($event, a)">current</mat-checkbox>
+                    </div>
+                  </div>
+                  <!--------------------------------------------------->
+                  <div fxLayout="column" fxLayout.xs="column">
+                    <mat-form-field>
+                      <textarea formControlName="description" matInput placeholder="Description"></textarea>
+                    </mat-form-field>
+                  </div>
+                  <div fxLayout="row"
+                       fxLayoutAlign="end" fxLayoutGap="0"
+                       fxLayoutGap.gt-sm="8px">
+                    <div>
+                      <button (click)="deleteEducation(a)" color="warn" mat-button>Delete</button>
+                    </div>
+                    <div>
+                      <button color="accent" mat-button>Done</button>
+                    </div>
+
+                  </div>
+                </mat-expansion-panel>
+              </mat-accordion>
+            </div>
           </div>
           <div class="divBtn" fxLayout="column" fxLayoutAlign="end">
             <button (click)=" addEducation()" mat-button type="button">
@@ -389,12 +394,14 @@
                      matInput type="text">
 
 
-              <button (click)="deleteSkill(i)" *ngIf="this.formSkills.controls[i].value && this.formSkills.length-1!=i" aria-label="Clear"
+              <button (click)="deleteSkill(i)" *ngIf="this.formSkills.controls[i].value && this.formSkills.length-1!=i"
+                      aria-label="Clear"
                       mat-button mat-icon-button matSuffix type="button">
                 <mat-icon>close</mat-icon>
               </button>
 
-              <button (click)="deleteSkill(i); add_skill()" *ngIf="this.formSkills.controls[i].value && this.formSkills.length-1==i" aria-label="Clear"
+              <button (click)="deleteSkill(i); add_skill()"
+                      *ngIf="this.formSkills.controls[i].value && this.formSkills.length-1==i" aria-label="Clear"
                       mat-button mat-icon-button matSuffix type="button">
                 <mat-icon>close</mat-icon>
               </button>
@@ -408,59 +415,61 @@
         </div>
         <!----------------------------------------->
         <h4>Languages:</h4>
-         <div fxLayout="column" fxLayoutGap="16px">
-          <div formArrayName="languages" fxLayout="column" fxLayoutGap="16px"
-          *ngFor="let language of formLanguages.controls; let j =index;">
-            <div fxFlex=80%; fxLayout="column" [formGroupName]="j">
-            <mat-accordion>
-              <mat-expansion-panel expanded>
-                <mat-expansion-panel-header>
-                  <mat-panel-title>
-                    <span *ngIf="language.value; else l">{{language.value}}</span>
-                    <ng-template #l><span>Language</span></ng-template>
-                  </mat-panel-title>
-                  <mat-panel-description fxHide fxShow.gt-xs>
-                    <span *ngIf="proficiency.value; else p">{{getProf(proficiency.value)}}</span>
-                    <ng-template #p><span>Proficiency</span></ng-template>
-                  </mat-panel-description>
-                </mat-expansion-panel-header>
-              <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
-              <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
+        <div fxLayout="column" fxLayoutGap="16px">
+          <div *ngFor="let language of formLanguages.controls; let j =index;" formArrayName="languages" fxLayout="column"
+               fxLayoutGap="16px">
+            <div [formGroupName]="j" fxFlex=80%; fxLayout="column">
+              <mat-accordion>
+                <mat-expansion-panel expanded>
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      <span *ngIf="language.value; else l">{{language.value}}</span>
+                      <ng-template #l><span>Language</span></ng-template>
+                    </mat-panel-title>
+                    <mat-panel-description fxHide fxShow.gt-xs>
+                      <span *ngIf="proficiency.value; else p">{{getProf(proficiency.value)}}</span>
+                      <ng-template #p><span>Proficiency</span></ng-template>
+                    </mat-panel-description>
+                  </mat-expansion-panel-header>
+                  <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
+                    <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
 
-               <mat-form-field>
-              <input 
-              #language
-               placeholder="Language"
-               formControlName="language"
-               class="form-control"
-               
-               matInput type="text">
-              </mat-form-field>
-              </div>
-              <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
-              <mat-form-field>
-                <mat-select #proficiency formControlName="proficiency" placeholder="Proficiency">
-                  <mat-option *ngFor="let proficiency of proficiencies" [value]="proficiency.value">
-                    {{proficiency.viewValue}}
-                  </mat-option>
-                </mat-select>
-                
-              </mat-form-field>
-            </div></div>
-              <!--------------------------------------------------->
-              <div fxLayout="row"
-                   fxLayoutAlign="end" fxLayoutGap="0"
-                   fxLayoutGap.gt-sm="8px">
-                <div >
-                  <button (click)="deleteLanguage(s)" color="warn" mat-button>Delete</button>
-                </div>
-                <div>
-                  <button color="accent" mat-button>Done</button>
-                </div>
-                
-              </div>
-            </mat-expansion-panel></mat-accordion> 
-            </div>        
+                      <mat-form-field>
+                        <input
+                          #language
+                          class="form-control"
+                          formControlName="language"
+                          matInput
+
+                          placeholder="Language" type="text">
+                      </mat-form-field>
+                    </div>
+                    <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
+                      <mat-form-field>
+                        <mat-select #proficiency formControlName="proficiency" placeholder="Proficiency">
+                          <mat-option *ngFor="let proficiency of proficiencies" [value]="proficiency.value">
+                            {{proficiency.viewValue}}
+                          </mat-option>
+                        </mat-select>
+
+                      </mat-form-field>
+                    </div>
+                  </div>
+                  <!--------------------------------------------------->
+                  <div fxLayout="row"
+                       fxLayoutAlign="end" fxLayoutGap="0"
+                       fxLayoutGap.gt-sm="8px">
+                    <div>
+                      <button (click)="deleteLanguage(s)" color="warn" mat-button>Delete</button>
+                    </div>
+                    <div>
+                      <button color="accent" mat-button>Done</button>
+                    </div>
+
+                  </div>
+                </mat-expansion-panel>
+              </mat-accordion>
+            </div>
           </div>
           <div class="divBtn" fxLayout="column" fxLayoutAlign="end">
             <button (click)=" addLanguage()" mat-button type="button">

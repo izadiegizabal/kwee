@@ -18,23 +18,27 @@ export class SigninComponent implements OnInit {
   }
 
   ngOnInit() {
-  
+
 
     this.user = this._formBuilder.group({
-        'email': new FormControl(null, [Validators.required,  Validators.email]),
-        'password': new FormControl(null, Validators.required),
+      'email': new FormControl(null, [Validators.required, Validators.email]),
+      'password': new FormControl(null, Validators.required),
     });
   }
 
-  signIn() {    
+  signIn() {
     this.authService.signIn(this.user.value)
       .subscribe(
-        (response)=> {
-              this.router.navigate(['/']); 
-              console.log(response)
+        (response) => {
+          this.router.navigate(['/']);
+          // TODO: save token, meanwhile console it
+          console.log(response);
         },
-        (error)=> console.log(error)
-    )
+        (error) => {
+          this.user.controls['email'].setErrors({'incorrect': true});
+          this.user.controls['password'].setErrors({'incorrect': true});
+        }
+      );
 
   }
 

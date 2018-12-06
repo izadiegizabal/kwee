@@ -75,13 +75,13 @@ export class BusinessOverviewComponent implements OnInit {
       'subscription': new FormControl(null, Validators.required),
     });
 
-     this.userForm.controls['password2'].setValidators(
+    this.userForm.controls['password2'].setValidators(
       this.samePassword.bind(this.userForm),
     );
 
     this.userForm.controls['password'].valueChanges.subscribe(value => {
-        this.userForm.controls['password2'].updateValueAndValidity();
-        console.log( this.userForm.controls['password2']);
+      this.userForm.controls['password2'].updateValueAndValidity();
+      console.log(this.userForm.controls['password2']);
     });
   }
 
