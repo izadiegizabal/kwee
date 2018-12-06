@@ -41,22 +41,20 @@ module.exports = (app, db) => {
 
         try {
 
-            if (body.type) {
-                res.status(201).json({
-                    ok: true,
-                    comment: await db.comments.create({
-                        fk_rating_applicant: body.type === 'a' ? body.id : null,
-                        fk_rating_offer: body.type === 'o' ? body.id : null,
-                        description: body.description,
-                    }),
-                    message: `Comment has been created.`
-                });
-            } else {
-                next({ type: 'error', error: 'Type is mandatory' });
-            }
+
+            res.status(201).json({
+                ok: true,
+                comment: await db.comments.create({
+                    fk_user: body.fk_user,
+                    fk_rating_applicant: body.fk_rating_applicant ? body.fk_rating_applicant : null,
+                    fk_rating_offerer: body.fk_rating_offerer ? body.fk_rating_offerer : null,
+                    description: body.description
+                }),
+                message: `Comment has been created.`
+            });
 
         } catch (err) {
-            next({ type: 'error', error: err.errors[0].message });
+            next({ type: 'error', error: err.message });
         }
 
     });

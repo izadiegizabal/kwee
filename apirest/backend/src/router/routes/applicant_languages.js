@@ -58,7 +58,6 @@ module.exports = (app, db) => {
     // POST single applicant_language
     app.post("/applicant_language", [checkToken, checkAdmin], async(req, res, next) => {
         const body = req.body;
-        const fk_language = body.fk_applicant;
 
         try {
             let applicant = await db.applicants.findOne({
@@ -96,7 +95,7 @@ module.exports = (app, db) => {
                 });
             }
         } catch (err) {
-            next({ type: 'error', error: err.errors[0].message });
+            next({ type: 'error', error: err.message });
         }
     });
 

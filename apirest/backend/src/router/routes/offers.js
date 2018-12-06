@@ -39,12 +39,7 @@ module.exports = (app, db) => {
     });
 
     // POST single offer
-    app.post('/offer', [
-        checkToken,
-        checkAdmin
-        /*,
-                    checks['Offer']*/
-    ], async(req, res, next) => {
+    app.post('/offer', [checkToken, checkAdmin], async(req, res, next) => {
 
         let body = req.body
 

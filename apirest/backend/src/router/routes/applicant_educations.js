@@ -60,53 +60,49 @@ module.exports = (app, db) => {
     });
 
     // POST single applicant_education
-    app.post("/applicant_education", [
-            checkToken,
-            checkAdmin
-        ],
-        async(req, res, next) => {
-            const body = req.body;
+    app.post("/applicant_education", [checkToken, checkAdmin], async(req, res, next) => {
+        const body = req.body;
 
-            try {
-                let applicant = await db.applicants.findOne({
-                    where: { userId: body.fk_applicant }
-                });
+        try {
+            let applicant = await db.applicants.findOne({
+                where: { userId: body.fk_applicant }
+            });
 
-                if (applicant) {
+            if (applicant) {
 
-                    let educations = (await applicant.getEducations());
+                let educations = (await applicant.getEducations());
 
-                    if (educations.length > 0) {
-                        for (let i = 0; i < educations.length; i++) {
-                            if (body.fk_education != educations[i].id) {
-                                body.fk_education.push(educations[i].id);
-                            } else {
-                                return res.status(400).json({
-                                    ok: false,
-                                    error: "Applicant language already added"
-                                });
-                            }
+                if (educations.length > 0) {
+                    for (let i = 0; i < educations.length; i++) {
+                        if (body.fk_education != educations[i].id) {
+                            body.fk_education.push(educations[i].id);
+                        } else {
+                            return res.status(400).json({
+                                ok: false,
+                                error: "Applicant education already added"
+                            });
                         }
                     }
-
-                    res.status(201).json({
-                        ok: true,
-                        applicant_education: await applicant.setEducations(body.fk_education)
-                    });
-
-                    await db.sequelize.query({ query: `UPDATE applicant_educations SET level = ? WHERE fk_applicant = ? AND fk_education = ?`, values: [body.level, body.fk_applicant, body.fk_education] });
-
-                } else {
-                    return res.status(400).json({
-                        ok: false,
-                        error: "Applicant language doesn't exist"
-                    });
                 }
-            } catch (err) {
-                next({ type: 'error', error: err });
-            }
 
-        });
+                res.status(201).json({
+                    ok: true,
+                    applicant_education: await applicant.setEducations(body.fk_education)
+                });
+                console.log("aqui ya no");
+
+                await db.sequelize.query({ query: `UPDATE applicant_educations SET description = ? WHERE fk_applicant = ? AND fk_education = ?`, values: [body.description, body.fk_applicant, body.fk_education] });
+
+            } else {
+                return res.status(400).json({
+                    ok: false,
+                    error: "Applicant education doesn't exist"
+                });
+            }
+        } catch (err) {
+            next({ type: 'error', error: err.message });
+        }
+    });
 
     // PUT single applicant_education
     app.put("/applicant_education", [checkToken, checkAdmin], async(req, res, next) => {
@@ -126,7 +122,7 @@ module.exports = (app, db) => {
             } else {
                 return res.status(400).json({
                     ok: false,
-                    error: "Applicant language doesn't exist"
+                    error: "Applicant education doesn't exist"
                 });
             }
 

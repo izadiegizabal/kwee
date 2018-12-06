@@ -51,36 +51,37 @@ module.exports = (app, db) => {
         }
     });
 
-// POST single application
-app.post("/applications", [checkToken, checkAdmin], async(req, res, next) => {
-    const body = req.body;
+    // POST single application
+    app.post("/application", [checkToken, checkAdmin], async(req, res, next) => {
+        const body = req.body;
 
-    try {
-        let applicant = await db.applicants.findOne({
-            where: { userId: body.fk_applicant }
-        });
+        try {
+            let applicant = await db.applicants.findOne({
+                where: { userId: body.fk_applicant }
+            });
 
-        if (applicant) {
+            if (applicant) {
+                console.log("encontrado");
+                let offers = (await applicant.getOffers());
 
-            let offers = (await applicant.getOffers());
-
-            if (offers.length > 0) {
-                for (let i = 0; i < offers.length; i++) {
-                    if (body.fk_offer != offers[i].id) {
-                        body.fk_offer.push(offers[i].id);
-                    } else {
-                        return res.status(400).json({
-                            ok: false,
-                            error: "Application already added"
-                        });
+                if (offers.length > 0) {
+                    console.log("mayor a 0");
+                    for (let i = 0; i < offers.length; i++) {
+                        if (body.fk_offer != offers[i].id) {
+                            body.fk_offer.push(offers[i].id);
+                        } else {
+                            return res.status(400).json({
+                                ok: false,
+                                error: "Application already added"
+                            });
+                        }
                     }
                 }
-            }
 
-            res.status(201).json({
-                ok: true,
-                application: await applicant.setOffers(body.fk_offer)
-            });
+                res.status(201).json({
+                    ok: true,
+                    application: await applicant.setOffers(body.fk_offer)
+                });
 
             } else {
                 return res.status(400).json({
@@ -88,14 +89,14 @@ app.post("/applications", [checkToken, checkAdmin], async(req, res, next) => {
                     error: "Applicant doesn't exist"
                 });
             }
-    } catch (err) {
-        next({ type: 'error', error: err.message });
-    }
+        } catch (err) {
+            next({ type: 'error', error: err.message });
+        }
 
-});
+    });
 
     // PUT single application
-    app.put("/applications", [checkToken, checkAdmin], async(req, res, next) => {
+    app.put("/application", [checkToken, checkAdmin], async(req, res, next) => {
         const body = req.body;
 
         try {
@@ -122,7 +123,7 @@ app.post("/applications", [checkToken, checkAdmin], async(req, res, next) => {
     });
 
     // DELETE single application
-    app.delete("/applications", [checkToken, checkAdmin], async(req, res, next) => {
+    app.delete("/application", [checkToken, checkAdmin], async(req, res, next) => {
         const body = req.body;
 
         try {

@@ -15,6 +15,8 @@ const routes = [
     require('./routes/experiences'),
     require('./routes/invoices'),
     require('./routes/ratings'),
+    require('./routes/rating_applicants'),
+    require('./routes/rating_offerers'),
     require('./routes/messages'),
     require('./routes/comments'),
     require('./routes/login'),

@@ -39,8 +39,7 @@ module.exports = (app, db) => {
 
         try {
             let invoice = await db.invoices.create({
-                fk_applicant: body.fk_applicant,
-                fk_offer: body.fk_offer
+                fk_application: body.fk_application,
             });
 
             if (invoice) {
@@ -51,7 +50,7 @@ module.exports = (app, db) => {
             }
 
         } catch (err) {
-            next({ type: 'error', error: err.errors[0].message });
+            next({ type: 'error', error: err.message });
         };
 
     });

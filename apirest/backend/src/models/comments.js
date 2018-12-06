@@ -2,6 +2,11 @@ module.exports = (sequelize, DateTypes) => {
 
     const Comment = sequelize.define('comments', {
 
+        fk_user: {
+            type: DateTypes.INTEGER,
+            allowNull: false
+        },
+
         fk_rating_applicant: {
             type: DateTypes.INTEGER,
         },

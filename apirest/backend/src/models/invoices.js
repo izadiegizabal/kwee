@@ -2,15 +2,13 @@ module.exports = (sequelize, DataTypes) => {
 
     const Invoice = sequelize.define('invoices', {
 
-        fk_applicant: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
-
-        fk_offer: {
+        fk_application: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            unique: true
+            unique: {
+                args: true,
+                message: 'Application must be unique.'
+            }
         }
 
     }, {
