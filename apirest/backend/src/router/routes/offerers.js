@@ -48,55 +48,101 @@ module.exports = (app, db) => {
 
     });
 
-    // POST single user
-    app.post('/offerer', [checkToken, checkAdmin], async(req, res, next) => {
-
-        const body = req.body;
-        const password = bcrypt.hashSync(body.password, 10);
+    // GET one offerer by id
+    app.get('/offerer/:id([0-9]+)', checkToken, async(req, res, next) => {
+        const id = req.params.id;
 
         try {
-            let user = await db.users.create({
+            let user = await db.users.findOne({
+                attributes: [
+                    'name',
+                    'email'
+                ],
+                where: { id }
+            });
+
+            let offerer = await db.offerers.findOne({
+                where: { userId: id }
+            });
+
+            if (user && offerer) {
+                const userOfferer = {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    adress: offerer.adress,
+                    work_field: offerer.work_field,
+                    cif: offerer.cif,
+                    date_verification: offerer.date_verification,
+                    about_us: offerer.about_us,
+                    website: offerer.website,
+                    company_size: offerer.company_size,
+                    year: offerer.year,
+                    premium: offerer.premium,
+                    createdAt: offerer.createdAt
+                };
+
+                res.status(200).json({
+                    ok: true,
+                    userOfferer
+                });
+            } else {
+                res.status(400).json({
+                    ok: false,
+                    message: 'Offerer doesn\'t exist'
+                });
+            }
+        } catch (err) {
+            next({ type: 'error', error: 'Error getting data' });
+        }
+    });
+
+    // POST single offerer
+    app.post('/offerer', [checkToken, checkAdmin], async(req, res, next) => {
+        let transaction;
+
+        try {
+            const body = req.body;
+            const password = body.password ? bcrypt.hashSync(body.password, 10) : null;
+
+            let msg;
+            let user;
+
+
+            // get transaction
+            transaction = await db.sequelize.transaction();
+
+
+            // step 1
+            let _user = await db.users.create({
                 name: body.name,
                 password,
-                email: body.email
-            });
-            if (user) {
-                if (!body.type) {
-                    // User created
-                    return res.status(201).json({
-                        ok: true,
-                        message: `User '${user.name}' with id ${user.id} has been created.`
-                    });
-                } else {
-                    let msg = '';
-                    switch (body.type) {
-                        case 'a':
-                            msg = 'Applicant';
-                            createApplicant(body, user);
-                            break;
+                email: body.email,
 
-                        case 'o':
-                            msg = 'Offerer';
-                            createOfferer(body, user);
-                            break;
+            }, { transaction: transaction });
 
-                        default:
-                            await db.users.destroy({ where: { id: user.id } });
-                            next({ type: 'error', error: 'Must be \'type\' of user, \'a\' (applicant) or \'o\' (offerer)' });
-                            break;
-                    }
-                    // Applicant / offerer created
-                    return res.status(201).json({
-                        ok: true,
-                        message: `${ msg } '${user.name}' with id ${user.id} has been created.`
-                    });
-                }
+            if (!_user) {
+                await transaction.rollback();
             }
 
+            // step 2
+            let offerer = await createOfferer(body, _user, next, transaction);
+
+            if (!offerer) {
+                await transaction.rollback();
+            }
+
+            // commit
+            await transaction.commit();
+
+            return res.status(201).json({
+                ok: true,
+                message: `Offerer '${_user.name}' with id ${_user.id} has been created.`
+            });
         } catch (err) {
+            //await transaction.rollback();
             next({ type: 'error', error: err.message });
         }
-
     });
 
     // PUT single offerer
@@ -108,14 +154,24 @@ module.exports = (app, db) => {
             updates.password = bcrypt.hashSync(req.body.password, 10);
 
         try {
-            let updated = await db.offerers.update(updates, {
+            let offerer = await db.offerers.findOne({
                 where: { userId: id }
             });
-            if (updated) {
-                res.status(200).json({
-                    ok: true,
-                    message: updates
-                })
+
+            if (offerer) {
+                let updated = await db.offerers.update(updates, {
+                    where: { userId: id }
+                });
+                if (updated) {
+                    res.status(200).json({
+                        ok: true,
+                        message: updates
+                    })
+                } else {
+                    return next({ type: 'error', error: 'Can\'t update offerer' });
+                }
+            } else {
+                return next({ type: 'error', error: 'Offerer doesn\'t exist' });
             }
 
         } catch (err) {
@@ -123,11 +179,42 @@ module.exports = (app, db) => {
         }
     });
 
-    
-    async function createOfferer(body, user, next, transaction) {
-        if (body.adress && body.cif && body.work_field) {
+    // DELETE
+    app.delete('/offerer/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
+        const id = req.params.id;
 
-            await db.offerers.create({
+        try {
+            let offerer = await db.offerers.findOne({
+                where: { userId: id }
+            });
+
+            if (offerer) {
+                let offererToDelete = await db.offerers.destroy({
+                    where: { userId: id }
+                });
+                let user = await db.users.destroy({
+                    where: { id }
+                });
+                if (offererToDelete && user) {
+                    res.json({
+                        ok: true,
+                        message: 'Offerer deleted'
+                    });
+                }
+            } else {
+                next({ type: 'error', error: 'Offerer doesn\'t exist' });
+            }
+            // Respuestas en json
+            // offerer: 1 -> Deleted
+            // offerer: 0 -> User don't exists
+        } catch (err) {
+            next({ type: 'error', error: 'Error getting data' });
+        }
+    });
+
+    async function createOfferer(body, user, next, transaction) {
+        try {
+            let offerer = {
                 userId: user.id,
                 adress: body.adress,
                 work_field: body.work_field,
@@ -137,11 +224,15 @@ module.exports = (app, db) => {
                 company_size: body.company_size ? body.company_size : null,
                 year: body.year ? body.year : null,
                 premium: body.premium ? body.premium : 'basic'
-            }, {transaction: transaction});
-            console.log('Offerer created');
-        } else {
-            await transaction.rollback();                    
-            next({ type: 'error', error: validationResult(err) });
+            }
+
+            let newOfferer = await db.offerers.create(offerer, { transaction: transaction });
+
+            return newOfferer;
+
+        } catch (err) {
+            await transaction.rollback();
+            next({ type: 'error', error: err.message });
         }
     }
 }

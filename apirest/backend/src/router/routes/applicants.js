@@ -81,7 +81,7 @@ module.exports = (app, db) => {
                 });
             }
         } catch (err) {
-            next({ type: 'error', error: err.message });
+            next({ type: 'error', error: 'Error getting data' });
         }
     });
 
@@ -117,8 +117,6 @@ module.exports = (app, db) => {
             let applicant = await createApplicant(body, _user, next, transaction);
 
             if (!applicant) {
-                console.log("no");
-
                 await transaction.rollback();
             }
 
@@ -144,14 +142,24 @@ module.exports = (app, db) => {
             updates.password = bcrypt.hashSync(req.body.password, 10);
 
         try {
-            let updated = await db.applicants.update(updates, {
+            let applicant = await db.applicants.findOne({
                 where: { userId: id }
             });
-            if (updated) {
-                res.status(200).json({
-                    ok: true,
-                    message: updates
-                })
+
+            if (applicant) {
+                let updated = await db.applicants.update(updates, {
+                    where: { userId: id }
+                });
+                if (updated) {
+                    res.status(200).json({
+                        ok: true,
+                        message: updates
+                    })
+                } else {
+                    return next({ type: 'error', error: 'Can\'t update Applicant' });
+                }
+            } else {
+                return next({ type: 'error', error: 'Applicant doesn\'t exist' });
             }
 
         } catch (err) {
@@ -164,15 +172,26 @@ module.exports = (app, db) => {
         const id = req.params.id;
 
         try {
-            res.json({
-                ok: true,
-                applicant: await db.applicants.destroy({
-                    where: { id: id }
-                }),
-                user: await db.users.destroy({
-                    where: { id: id }
-                })
+            let applicant = await db.applicants.findOne({
+                where: { userId: id }
             });
+
+            if (applicant) {
+                let applicantToDelete = await db.applicants.destroy({
+                    where: { userId: id }
+                });
+                let user = await db.users.destroy({
+                    where: { id }
+                });
+                if (applicant && user) {
+                    res.json({
+                        ok: true,
+                        message: 'Applicant deleted'
+                    });
+                }
+            } else {
+                next({ type: 'error', error: 'Applicant doesn\'t exist' });
+            }
             // Respuestas en json
             // applicant: 1 -> Deleted
             // applicant: 0 -> User don't exists
