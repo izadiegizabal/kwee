@@ -18,6 +18,7 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatInputModule} from '@angular/material/input';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {SignupOffererComponent} from './auth/signup/signup-offerer/signup-offerer.component';
+import {MatDialogModule} from '@angular/material/dialog';
 import {
   MatAutocompleteModule,
   MatBadgeModule,
@@ -54,6 +55,7 @@ import {CandidateOverviewComponent} from './admin/admin-manage-candidates/candid
 import {BusinessOverviewComponent} from './admin/admin-manage-businesses/business-overview/business-overview.component';
 import {SearchbarComponent} from './common/searchbar/searchbar.component';
 import {CandidateHomeComponent} from './candidate-home/candidate-home.component';
+import {DialogErrorComponent} from './auth/signup/dialog-error/dialog-error.component';
 
 @NgModule({
   declarations: [
@@ -81,6 +83,7 @@ import {CandidateHomeComponent} from './candidate-home/candidate-home.component'
     BusinessOverviewComponent,
     SearchbarComponent,
     CandidateHomeComponent,
+    DialogErrorComponent,
   ],
   imports: [
     HttpClientModule,
@@ -112,7 +115,11 @@ import {CandidateHomeComponent} from './candidate-home/candidate-home.component'
     MatListModule,
     MatBadgeModule,
     MatChipsModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatDialogModule
+  ],
+  entryComponents: [
+    DialogErrorComponent
   ],
   providers: [MatIconRegistry],
   bootstrap: [AppComponent]

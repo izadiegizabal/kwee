@@ -1,6 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {SingupService} from '../signup.service';
+import {MatDialog} from '@angular/material';
+import {DialogErrorComponent} from '../dialog-error/dialog-error.component';
+import { MatStepper } from '@angular/material';
 
 @Component({
   selector: 'app-signup-candidate',
@@ -43,7 +46,7 @@ export class SignupCandidateComponent implements OnInit {
     {value: 7, viewValue: 'Native'},
   ];
 
-  constructor(private _formBuilder: FormBuilder, private _singupService: SingupService) {
+  constructor(private _formBuilder: FormBuilder, private _singupService: SingupService, public dialog: MatDialog) {
     this.iskill = 0;
     this.iskillang = 0;
     this.iskilex = 0;
@@ -185,8 +188,8 @@ export class SignupCandidateComponent implements OnInit {
     return null;
   }
 
-  onSave() {
-    console.log(this.secondFormGroup);
+  onSave(stepper: MatStepper) {
+    // console.log(this.secondFormGroup);
 
     if (this.secondFormGroup.status === 'VALID') {
 
@@ -199,11 +202,17 @@ export class SignupCandidateComponent implements OnInit {
         'type': 'a'
       };
 
-      console.log(this.candidate);
+     // console.log(this.candidate);
       this._singupService.newUser(this.candidate)
         .subscribe(
-          (response) => console.log(response),
-          (error) => console.log(error)
+          (response) => {
+            console.log(response);
+            stepper.next();
+          },
+          (error) => {
+            // console.log(error);
+            const dialogRef = this.dialog.open(DialogErrorComponent);
+          }
         );
     }
   }

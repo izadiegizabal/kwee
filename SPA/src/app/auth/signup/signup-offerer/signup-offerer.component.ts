@@ -1,6 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {SingupService} from '../signup.service';
+import {DialogErrorComponent} from '../dialog-error/dialog-error.component';
+import {MatDialog} from '@angular/material';
+import { MatStepper } from '@angular/material';
+
 
 
 @Component({
@@ -39,7 +43,7 @@ export class SignupOffererComponent implements OnInit {
   ];
 
 
-  constructor(private _formBuilder: FormBuilder, private _singupService: SingupService) {
+  constructor(private _formBuilder: FormBuilder, private _singupService: SingupService,  public dialog: MatDialog) {
   }
 
   ngOnInit() {
@@ -120,8 +124,8 @@ export class SignupOffererComponent implements OnInit {
   }
 
 
-  onSubmit() {
-    console.log(this.secondFormGroup);
+  onSubmit(stepper: MatStepper) {
+   // console.log(this.secondFormGroup);
 
     if (this.secondFormGroup.status === 'VALID') {
 
@@ -140,8 +144,14 @@ export class SignupOffererComponent implements OnInit {
       // POST new offerer
       this._singupService.newUser(this.offerer)
         .subscribe(
-          (response) => console.log(response),
-          (error) => console.log(error)
+          (response) => {
+            console.log(response);
+            stepper.next();
+          },
+          (error) => {
+            const dialogRef = this.dialog.open(DialogErrorComponent);
+            // console.log(error);
+          }
         );
     }
   }

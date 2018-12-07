@@ -1,5 +1,5 @@
 <mat-horizontal-stepper #stepper linear="true">
-  <mat-step [stepControl]="firstFormGroup">
+  <mat-step [stepControl]="firstFormGroup" >
     <form [formGroup]="firstFormGroup">
       <ng-template matStepLabel>Choose sign up method</ng-template>
 
@@ -43,7 +43,7 @@
   </mat-step>
 
 
-  <mat-step [stepControl]="secondFormGroup">
+  <mat-step [stepControl]="secondFormGroup" editable="false">
     <form (ngSubmit)="onSubmit()" [formGroup]="secondFormGroup">
       <ng-template matStepLabel>Fill in your info</ng-template>
 
@@ -194,13 +194,13 @@
         <br>
         <div fxLayout="row" fxLayoutAlign="end">
           <button color="primary" mat-button matStepperPrevious>Back</button>
-          <button color="accent" mat-button matStepperNext type="submit">Sign Up!</button>
+          <button color="accent" mat-button (click)="onSubmit(stepper);" type="submit">Sign Up!</button>
         </div>
       </div>
     </form>
   </mat-step>
   <mat-step>
-    <form (ngSubmit)="onSubmit()" [formGroup]="thirdFormGroup">
+    <form [formGroup]="thirdFormGroup">
       <ng-template matStepLabel>Your're in!</ng-template>
       <div class="container"
            fxFlex="100%"
