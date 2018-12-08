@@ -44,7 +44,7 @@
 
 
   <mat-step [stepControl]="secondFormGroup" editable="false">
-    <form (ngSubmit)="onSubmit()" [formGroup]="secondFormGroup">
+    <form (ngSubmit)="onSubmit(stepper)" [formGroup]="secondFormGroup">
       <ng-template matStepLabel>Fill in your info</ng-template>
 
 

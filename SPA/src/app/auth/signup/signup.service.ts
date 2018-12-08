@@ -8,7 +8,8 @@ import {Observable, of, throwError} from 'rxjs';
   providedIn: 'root'
 })
 export class SingupService {
-  candidateURL = 'https://kwee.ovh/api/user';
+  // candidateURL = 'https://kwee.ovh/api/user';
+  candidateURL = 'http://h203.eps.ua.es/api/user';
 
   constructor(private http: HttpClient) {
   }
