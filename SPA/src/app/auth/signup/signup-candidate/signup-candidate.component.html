@@ -8,31 +8,31 @@
            fxLayoutAlign="center center"
            fxLayoutGap="8px">
         <div class="signupButton">
-          <button mat-raised-button matStepperNext>
+          <button mat-raised-button matStepperNext type="button">
             <mat-icon class="svg" color="accent" svgIcon="email"></mat-icon>
             <span>Continue with email</span>
           </button>
         </div>
         <div class="signupButton">
-          <button color="primary" mat-raised-button matStepperNext>
+          <button color="primary" mat-raised-button matStepperNext type="button">
             <mat-icon fontIcon="fa-github" fontSet="fab"></mat-icon>
             <span>Continue with GitHub</span>
           </button>
         </div>
         <div class="signupButton">
-          <button color="primary" id="linkedinBtn" mat-raised-button matStepperNext>
+          <button color="primary" id="linkedinBtn" mat-raised-button matStepperNext type="button">
             <mat-icon fontIcon="fa-linkedin-in" fontSet="fab"></mat-icon>
             <span>Continue with LinkedIn</span>
           </button>
         </div>
         <div class="signupButton">
-          <button color="primary" id="googleBtn" mat-raised-button matStepperNext>
+          <button color="primary" id="googleBtn" mat-raised-button matStepperNext type="button">
             <mat-icon fontIcon="fa-google" fontSet="fab"></mat-icon>
             <span>Continue with Google</span>
           </button>
         </div>
         <div class="signupButton">
-          <button color="primary" id="twitterBtn" mat-raised-button matStepperNext>
+          <button color="primary" id="twitterBtn" mat-raised-button matStepperNext type="button">
             <mat-icon fontIcon="fa-twitter" fontSet="fab"></mat-icon>
             <span>Continue with Twitter</span>
           </button>
@@ -140,7 +140,7 @@
         </div>
         <br>
         <div fxLayout="row" fxLayoutAlign="end">
-          <button color="primary" mat-button matStepperPrevious>Back</button>
+          <button color="primary" mat-button matStepperPrevious type="button">Back</button>
           <button (click)="onSave(stepper);" color="accent" mat-button  type="button">Sign Up!</button>
         </div>
       </div>
@@ -257,10 +257,10 @@
                        fxLayoutAlign="end" fxLayoutGap="0"
                        fxLayoutGap.gt-sm="8px">
                     <div>
-                      <button (click)="deleteExperience(s)" color="warn" mat-button>Delete</button>
+                      <button (click)="deleteExperience(s)" color="warn" mat-button type="button">Delete</button>
                     </div>
                     <div>
-                      <button color="accent" mat-button>Done</button>
+                      <button color="accent" mat-button type="button">Done</button>
                     </div>
 
                   </div>
@@ -364,10 +364,10 @@
                        fxLayoutAlign="end" fxLayoutGap="0"
                        fxLayoutGap.gt-sm="8px">
                     <div>
-                      <button (click)="deleteEducation(a)" color="warn" mat-button>Delete</button>
+                      <button (click)="deleteEducation(a)" color="warn" mat-button type="button">Delete</button>
                     </div>
                     <div>
-                      <button color="accent" mat-button>Done</button>
+                      <button color="accent" mat-button type="button">Done</button>
                     </div>
 
                   </div>
@@ -460,10 +460,10 @@
                        fxLayoutAlign="end" fxLayoutGap="0"
                        fxLayoutGap.gt-sm="8px">
                     <div>
-                      <button (click)="deleteLanguage(s)" color="warn" mat-button>Delete</button>
+                      <button (click)="deleteLanguage(s)" color="warn" mat-button type="button">Delete</button>
                     </div>
                     <div>
-                      <button color="accent" mat-button>Done</button>
+                      <button color="accent" mat-button type="button">Done</button>
                     </div>
 
                   </div>
