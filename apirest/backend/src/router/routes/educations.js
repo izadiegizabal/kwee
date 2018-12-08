@@ -9,12 +9,12 @@ module.exports = (app, db) => {
     // GET all educations
     app.get('/educations', checkToken, async(req, res, next) => {
         try {
-            res.status(200).json({
+            return res.status(200).json({
                 ok: true,
                 educations: await db.educations.findAll()
             });
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            return next({ type: 'error', error: 'Error getting data' });
         }
     });
 
@@ -23,7 +23,7 @@ module.exports = (app, db) => {
         const id = req.params.id;
 
         try {
-            res.status(200).json({
+            return res.status(200).json({
                 ok: true,
                 education: await db.educations.findOne({
                     where: { id }
@@ -31,7 +31,7 @@ module.exports = (app, db) => {
             });
 
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            return next({ type: 'error', error: 'Error getting data' });
         }
     });
 
@@ -40,7 +40,7 @@ module.exports = (app, db) => {
         let body = req.body;
 
         try {
-            res.status(201).json({
+            return res.status(201).json({
                 ok: true,
                 education: await db.educations.create({
                     title: body.title,
@@ -48,7 +48,7 @@ module.exports = (app, db) => {
                 message: `Education has been created.`
             });
         } catch (err) {
-            next({ type: 'error', error: err.errors[0].message });
+            return next({ type: 'error', error: err.errors[0].message });
         }
 
     });
@@ -59,7 +59,7 @@ module.exports = (app, db) => {
         const updates = req.body;
 
         try {
-            res.status(200).json({
+            return res.status(200).json({
                 ok: true,
                 education: await db.educations.update(updates, {
                     where: { id }
@@ -70,7 +70,7 @@ module.exports = (app, db) => {
             // education: [0] -> Not updated
             // empty body will change 'updateAt'
         } catch (err) {
-            next({ type: 'error', error: err.errors[0].message });
+            return next({ type: 'error', error: err.errors[0].message });
         }
     });
 
@@ -79,7 +79,7 @@ module.exports = (app, db) => {
         const id = req.params.id;
 
         try {
-            res.json({
+            return res.json({
                 ok: true,
                 education: await db.educations.destroy({
                     where: { id: id }
@@ -89,7 +89,7 @@ module.exports = (app, db) => {
             // education: 1 -> Deleted
             // education: 0 -> Education doesn't exists
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            return next({ type: 'error', error: 'Error getting data' });
         }
     });
 }

@@ -88,7 +88,6 @@ module.exports = (app, db) => {
     });
 
     // PUT single user
-    // actualiza db users !!!! hay que actualizar TABLAS applicants y/o offerers ( siwtch (type) )
     app.put('/user/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         try {
             const id = req.params.id;
@@ -100,10 +99,18 @@ module.exports = (app, db) => {
             let updated = await db.users.update(updates, {
                 where: { id }
             });
-            if (updated) {
-                res.status(200).json({
+            
+            if (updated > 0) {
+                return res.status(200).json({
                     ok: true,
-                    message: updates
+                    result: `Updated ${updated} rows. New values showing in message.`,
+                    message: await db.users.findOne( { where: { id }})
+                })
+            }
+            else{
+                return res.status(400).json({
+                    ok: false,
+                    message: "No updates were done."
                 })
             }
 
@@ -116,21 +123,31 @@ module.exports = (app, db) => {
     // DELETE single user
     // This route will put 'deleteAt' to current timestamp,
     // never will delete it from database
-    app.delete('/user/:id([0-9]+)', [checkToken, checkAdmin /*, check*/ ], async(req, res, next) => {
+    app.delete('/user/:id([0-9]+)', [checkToken, checkAdmin ], async(req, res, next) => {
         const id = req.params.id;
 
         try {
-            res.json({
-                ok: true,
-                user: await db.users.destroy({
-                    where: { id: id }
-                })
+            let result = await db.users.destroy({
+                where: { id: id }
             });
+            
+            if( result>0 ){
+                return res.status(200).json({
+                    ok: true,
+                    user: result
+                });
+            }
+            else{
+                return res.status(204).json({
+                    // ok: true,
+                    // message: "No deletes were done."
+                })
+            }
             // Respuestas en json
             // user: 1 -> Deleted
             // user: 0 -> User don't exists
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            next({ type: 'error', error: 'Error deleting user.' });
         }
     });
 

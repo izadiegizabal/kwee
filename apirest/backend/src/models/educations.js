@@ -8,7 +8,11 @@ module.exports = (sequelize, DateTypes) => {
             allowNull: false,
             unique: true,
             validate: {
-                notEmpty: true
+                notEmpty: true,
+                is: {
+                    args: /^[A-Za-zÀ-ÖØ-öø-ÿ ]+$/,
+                    msg: "Title should be letters only (accented letters admitted)."
+                }
             }
         }
 

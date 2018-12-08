@@ -11,9 +11,9 @@ module.exports = (sequelize, DataTypes) => {
                     "args": true,
                     "msg": "Name should be filled."
                 },
-                isAlphanumeric: {
-                    "args": true,
-                    "msg": "Name should contain only letters and numbers."
+                is: {
+                    args: /^[A-Za-zÀ-ÖØ-öø-ÿ ]+$/,
+                    msg: "Name should be letters only (accented letters admitted)."
                 }
             }
         },

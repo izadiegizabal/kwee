@@ -70,12 +70,12 @@ module.exports = (app, db) => {
                     createdAt: applicant.createdAt
                 };
 
-                res.status(200).json({
+                return res.status(200).json({
                     ok: true,
                     userApplicant
                 });
             } else {
-                res.status(400).json({
+                return res.status(400).json({
                     ok: false,
                     message: 'Applicant doesn\'t exist'
                 });
@@ -93,13 +93,8 @@ module.exports = (app, db) => {
             const body = req.body;
             const password = body.password ? bcrypt.hashSync(body.password, 10) : null;
 
-            let msg;
-            let user;
-
-
             // get transaction
             transaction = await db.sequelize.transaction();
-
 
             // step 1
             let _user = await db.users.create({
@@ -129,7 +124,7 @@ module.exports = (app, db) => {
             });
         } catch (err) {
             //await transaction.rollback();
-            next({ type: 'error', error: err.message });
+            return next({ type: 'error', error: (err.errors?err.errors[0].message:err.message) });
         }
     });
 
@@ -138,20 +133,23 @@ module.exports = (app, db) => {
         const id = req.params.id;
         const updates = req.body;
 
-        if (updates.password)
-            updates.password = bcrypt.hashSync(req.body.password, 10);
+        // let transaction; for updating users table ???
 
         try {
+    
+            if (updates.password)
+                updates.password = bcrypt.hashSync(req.body.password, 10);
+
             let applicant = await db.applicants.findOne({
                 where: { userId: id }
             });
-
+            
             if (applicant) {
                 let updated = await db.applicants.update(updates, {
                     where: { userId: id }
                 });
                 if (updated) {
-                    res.status(200).json({
+                    return res.status(200).json({
                         ok: true,
                         message: updates
                     })
@@ -163,7 +161,7 @@ module.exports = (app, db) => {
             }
 
         } catch (err) {
-            next({ type: 'error', error: err.message });
+            return next({ type: 'error', error: err.message });
         }
     });
 
@@ -184,19 +182,19 @@ module.exports = (app, db) => {
                     where: { id }
                 });
                 if (applicant && user) {
-                    res.json({
+                    return res.json({
                         ok: true,
                         message: 'Applicant deleted'
                     });
                 }
             } else {
-                next({ type: 'error', error: 'Applicant doesn\'t exist' });
+                return next({ type: 'error', error: 'Applicant doesn\'t exist' });
             }
             // Respuestas en json
             // applicant: 1 -> Deleted
             // applicant: 0 -> User don't exists
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            return next({ type: 'error', error: 'Error getting data' });
         }
     });
 
@@ -209,15 +207,13 @@ module.exports = (app, db) => {
             applicant.date_born = body.date_born ? body.date_born : null;
             applicant.premium = body.premium ? body.premium : null;
 
-            console.log(applicant);
-
             let newapplicant = await db.applicants.create(applicant, { transaction: transaction });
 
             return newapplicant;
 
         } catch (err) {
             await transaction.rollback();
-            next({ type: 'error', error: err.message });
+            return next({ type: 'error', error: err.message });
         }
     }
 }

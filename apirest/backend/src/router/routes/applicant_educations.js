@@ -10,12 +10,12 @@ module.exports = (app, db) => {
         checkToken,
         async(req, res, next) => {
             try {
-                res.status(200).json({
+                return res.status(200).json({
                     ok: true,
                     applicant_educations: await db.applicant_educations.findAll()
                 });
             } catch (err) {
-                next({ type: 'error', error: 'Error getting data' });
+                return next({ type: 'error', error: 'Error getting data' });
             }
         });
 
@@ -26,7 +26,7 @@ module.exports = (app, db) => {
             const params = req.params;
 
             try {
-                res.status(200).json({
+                return res.status(200).json({
                     ok: true,
                     applicant_education: await db.applicant_educations.findOne({
                         // include: [{
@@ -38,7 +38,7 @@ module.exports = (app, db) => {
                 });
 
             } catch (err) {
-                next({ type: 'error', error: err });
+                return next({ type: 'error', error: err });
             }
         });
 
@@ -47,7 +47,7 @@ module.exports = (app, db) => {
         const params = req.params;
 
         try {
-            res.status(200).json({
+            return res.status(200).json({
                 ok: true,
                 applicant_education: await db.applicant_educations.findAll({
                     where: { fk_applicant: params.fk_applicant }
@@ -55,7 +55,7 @@ module.exports = (app, db) => {
             });
 
         } catch (err) {
-            next({ type: 'error', error: err });
+            return next({ type: 'error', error: err });
         }
     });
 
@@ -63,21 +63,22 @@ module.exports = (app, db) => {
     app.post("/applicant_education", [checkToken, checkAdmin], async(req, res, next) => {
         const body = req.body;
         let fk_education = body.fk_education;
-
+        let applicantEducationCreated = null;
         try {
             let applicant = await db.applicants.findOne({
                 where: { userId: body.fk_applicant }
             });
-
+            console.log("applicant id: " + applicant.userId);
             if (applicant) {
 
                 // Obtain what educations were known by the applicant previously
                 let educationsPrevious = (await applicant.getEducations());
-
+                console.log("educations previous: ");
+                console.log(educationsPrevious);
                 let educations = [];
 
                 // Add 'id' of educations that the applicant knew
-
+                console.log("educations length: " + educationsPrevious.length);
                 if (educationsPrevious.length > 0) {
                     for (let i = 0; i < educationsPrevious.length; i++) {
                         if (fk_education != educationsPrevious[i].id) {
@@ -95,10 +96,13 @@ module.exports = (app, db) => {
                 for (let i = 0; i < fk_education.length; i++) {
                     educations.push(fk_education[i]);
                 }
+                console.log("educations a añadir: " + educations);
 
                 // And add the array of id's to applicant_educations
-                let applicantEducationCreated = await applicant.setEducations(educations);
-
+                applicantEducationCreated = await applicant.setEducations(educations);
+                
+                console.log(applicantEducationCreated);
+                
                 if (applicantEducationCreated) {
                     // Last step
                     // It is necessary to update the level and description after setEducations
@@ -124,7 +128,9 @@ module.exports = (app, db) => {
                 });
             }
         } catch (err) {
-            next({ type: 'error', error: err.message });
+            console.log(err.toString());
+            return next({ type: "error", error: err.errors?err.errors[0].message:err.message});
+            //return next({ type: 'error', error: err.errors?err.errors[0].message:err.message });
         }
     });
 
@@ -139,7 +145,7 @@ module.exports = (app, db) => {
 
             if (applicant) {
                 await db.sequelize.query({ query: `UPDATE applicant_educations SET level=\'${ body.level }\' WHERE fk_applicant = ? AND fk_education = ?`, values: [body.fk_applicant, body.fk_education] });
-                res.status(200).json({
+                return res.status(200).json({
                     ok: true,
                     message: 'Updated'
                 });
@@ -151,7 +157,7 @@ module.exports = (app, db) => {
             }
 
         } catch (err) {
-            next({ type: 'error', error: err.errors[0].message });
+            return next({ type: 'error', error: err.errors[0].message });
         }
     });
 
@@ -167,7 +173,7 @@ module.exports = (app, db) => {
             if (applicant) {
                 await applicant.removeEducations(body.fk_education);
 
-                res.status(201).json({
+                return res.status(201).json({
                     ok: true,
                     message: "Deleted"
                 });
@@ -178,7 +184,7 @@ module.exports = (app, db) => {
                 });
             }
         } catch (err) {
-            next({ type: 'error', error: err });
+            return next({ type: 'error', error: err });
         }
 
     });

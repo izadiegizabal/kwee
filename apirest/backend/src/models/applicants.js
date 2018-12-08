@@ -23,15 +23,18 @@ module.exports = (sequelize, DataTypes) => {
         },
 
         date_born: {
-            type: DataTypes.DATE,
+            type: DataTypes.DATEONLY,
             allowNull: false,
             validate: {
                 isDate: {
-                    msg: "Date_born should be a valid date."
+                    args: true,
+                    msg: "Date_born should be a date."
                 },
-                notEmpty: {
-                    "args": true,
-                    "msg": "date_born should be filled."
+                toDate(){
+                    let newdate = sequelize.Validator.isISO8601(this.date_born);
+                    if( !newdate ){
+                        throw new Error('date_born is an invalid date.');
+                    }
                 }
             }
         },
@@ -45,9 +48,6 @@ module.exports = (sequelize, DataTypes) => {
                 isIn: {
                     args: [['basic','premium']],
                     msg: "Invalid premium type. Only valid 'basic' and 'premium'."
-                },
-                notEmpty: {
-                    "msg": "Premium should be filled."
                 }
             }
         },

@@ -82,12 +82,12 @@ module.exports = (app, db) => {
                     createdAt: offerer.createdAt
                 };
 
-                res.status(200).json({
+                return res.status(200).json({
                     ok: true,
                     userOfferer
                 });
             } else {
-                res.status(400).json({
+                return res.status(400).json({
                     ok: false,
                     message: 'Offerer doesn\'t exist'
                 });
@@ -108,10 +108,8 @@ module.exports = (app, db) => {
             let msg;
             let user;
 
-
             // get transaction
             transaction = await db.sequelize.transaction();
-
 
             // step 1
             let _user = await db.users.create({
@@ -141,7 +139,7 @@ module.exports = (app, db) => {
             });
         } catch (err) {
             //await transaction.rollback();
-            next({ type: 'error', error: err.message });
+            next({ type: 'error', error: (err.errors?err.errors[0].message:err.message) });
         }
     });
 
@@ -150,10 +148,10 @@ module.exports = (app, db) => {
         const id = req.params.id;
         const updates = req.body;
 
-        if (updates.password)
-            updates.password = bcrypt.hashSync(req.body.password, 10);
-
         try {
+            if (updates.password)
+                updates.password = bcrypt.hashSync(req.body.password, 10);
+
             let offerer = await db.offerers.findOne({
                 where: { userId: id }
             });
@@ -163,7 +161,7 @@ module.exports = (app, db) => {
                     where: { userId: id }
                 });
                 if (updated) {
-                    res.status(200).json({
+                    return res.status(200).json({
                         ok: true,
                         message: updates
                     })
