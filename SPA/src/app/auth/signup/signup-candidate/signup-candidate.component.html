@@ -1,5 +1,5 @@
 <mat-horizontal-stepper #stepper linear="true">
-  <mat-step [stepControl]="firstFormGroup" >
+  <mat-step [stepControl]="firstFormGroup">
     <form [formGroup]="firstFormGroup">
       <ng-template matStepLabel>Choose sign up method</ng-template>
       <h2>Choose your favourite method to sign up!</h2>
@@ -141,7 +141,7 @@
         <br>
         <div fxLayout="row" fxLayoutAlign="end">
           <button color="primary" mat-button matStepperPrevious type="button">Back</button>
-          <button (click)="onSave(stepper);" color="accent" mat-button  type="button">Sign Up!</button>
+          <button (click)="onSave(stepper);" color="accent" mat-button type="button">Sign Up!</button>
         </div>
       </div>
     </form>
@@ -171,7 +171,8 @@
         <!--------------------------------------------------->
         <h4>Experience</h4>
         <div fxLayout="column" fxLayoutGap="16px">
-          <div *ngFor="let ex of this.formExperience.controls; let s =index;" formArrayName="experience" fxLayout="column"
+          <div *ngFor="let ex of this.formExperience.controls; let s =index;" formArrayName="experience"
+               fxLayout="column"
                fxLayoutGap="16px">
             <div [formGroupName]="s" fxFlex=80%; fxLayout="column">
               <mat-accordion id="{{'accordion'+s}}">
@@ -416,7 +417,8 @@
         <!----------------------------------------->
         <h4>Languages:</h4>
         <div fxLayout="column" fxLayoutGap="16px">
-          <div *ngFor="let language of formLanguages.controls; let j =index;" formArrayName="languages" fxLayout="column"
+          <div *ngFor="let language of formLanguages.controls; let j =index;" formArrayName="languages"
+               fxLayout="column"
                fxLayoutGap="16px">
             <div [formGroupName]="j" fxFlex=80%; fxLayout="column">
               <mat-accordion>

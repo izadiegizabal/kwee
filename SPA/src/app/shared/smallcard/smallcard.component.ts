@@ -8,8 +8,8 @@ import {Component, OnInit} from '@angular/core';
 })
 export class SmallcardComponent implements OnInit {
 
-  name: string = 'Abogados Manolo Rodriguez e hijos';
-  index: number = 96;
+  name = 'Abogados Manolo Rodriguez e hijos';
+  index = 96;
   description = 'Internet services';
 
   constructor() {

@@ -1,9 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {SingupService} from '../signup.service';
-import {MatDialog} from '@angular/material';
+import {MatDialog, MatStepper} from '@angular/material';
 import {DialogErrorComponent} from '../dialog-error/dialog-error.component';
-import { MatStepper } from '@angular/material';
 
 @Component({
   selector: 'app-signup-candidate',
@@ -201,7 +200,7 @@ export class SignupCandidateComponent implements OnInit {
         'date_born': this.secondFormGroup.controls['birthday'].value
       };
 
-     // console.log(this.candidate);
+      // console.log(this.candidate);
       this._singupService.newUser(this.candidate)
         .subscribe(
           (response) => {
