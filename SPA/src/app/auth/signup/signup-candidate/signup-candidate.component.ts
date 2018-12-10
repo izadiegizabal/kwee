@@ -198,8 +198,7 @@ export class SignupCandidateComponent implements OnInit {
         'password': this.secondFormGroup.controls['password'].value,
         'email': this.secondFormGroup.controls['email'].value,
         'city': this.secondFormGroup.controls['location'].value,
-        'date_born': this.secondFormGroup.controls['birthday'].value,
-        'type': 'a'
+        'date_born': this.secondFormGroup.controls['birthday'].value
       };
 
      // console.log(this.candidate);

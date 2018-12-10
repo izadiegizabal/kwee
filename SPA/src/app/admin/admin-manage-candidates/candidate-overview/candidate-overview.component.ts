@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-
+import {AdminService} from '../../admin.service';
 
 @Component({
   selector: 'app-candidate-overview',
@@ -79,10 +79,22 @@ export class CandidateOverviewComponent implements OnInit {
   userForm: FormGroup;
 
 
-  constructor(private _formBuilder: FormBuilder) {
+  constructor(private _formBuilder: FormBuilder, private _adminService: AdminService) {
   }
 
   ngOnInit() {
+
+    /*this._adminService.getApplicants()
+      .subscribe(
+        (users: any) => {
+          console.log(users);
+          this.users = users;
+        },
+        (error) => {
+           console.log(error);
+        }
+      );*/
+
 
     this.userForm = this._formBuilder.group({
       'name': new FormControl(null, Validators.required),
