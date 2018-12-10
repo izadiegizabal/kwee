@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {RouterModule, Routes} from '@angular/router';
+import {PreloadAllModules, RouterModule, Routes} from '@angular/router';
 import {OfferPreviewCardComponent} from './offer/offer-preview-card/offer-preview-card.component';
 import {SmallcardComponent} from './smallcard/smallcard.component';
 import {SignupComponent} from './auth/signup/signup.component';
@@ -16,27 +16,16 @@ import {CandidateHomeComponent} from './candidate-home/candidate-home.component'
 const routes: Routes = [
   {path: '', redirectTo: '/candidate-home', pathMatch: 'full'},
   {path: 'candidate-home', component: CandidateHomeComponent},
-  {path: 'offerpreviewcard', component: OfferPreviewCardComponent, pathMatch: 'full'},
+  {path: 'offerpreviewcard', component: OfferPreviewCardComponent},
   {path: 'smallcard', component: SmallcardComponent},
-  {path: 'signup', component: SignupComponent},
+  {path: 'admin', loadChildren: './admin/admin.module#AdminModule'},
+  {path: 'signup', loadChildren: './auth/signup/signup.module#SignupModule'},
   {path: 'signin', component: SigninComponent},
-  {
-    path: 'admin', component: AdminComponent, children: [
-      {path: '', redirectTo: 'statistics', pathMatch: 'full'},
-      {path: 'statistics', component: AdminStatisticsComponent},
-      {path: 'manage-candidates', component: AdminManageCandidatesComponent},
-      {path: 'manage-businesses', component: AdminManageBusinessesComponent},
-      {path: 'verify', component: AdminVerifyComponent},
-      {path: 'reports', component: AdminReportsComponent},
-      {path: 'messages', component: AdminMessagesComponent},
-      {path: '**', redirectTo: 'statistics'}
-    ]
-  },
   {path: '**', redirectTo: '/candidate-home'}
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, {preloadingStrategy: PreloadAllModules})],
   exports: [RouterModule]
 })
 export class AppRoutingModule {
