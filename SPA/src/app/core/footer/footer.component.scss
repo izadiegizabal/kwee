@@ -1,11 +1,11 @@
-@import "../../../common-utils";
-@import '../../../../node_modules/@angular/material/theming';
+@import "~src/common-utils";
+@import '~@angular/material/theming';
 
 
 mat-toolbar {
   padding-top: 40px;
   font-family: IBM Plex Sans, sans-serif;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 500;
   margin-top: 40px;
   height: auto;
@@ -15,7 +15,7 @@ mat-toolbar {
 
 
 .logo2 {
-  text-aling: center;
+  text-align: center;
   padding-top: 20px;
   margin-bottom: 0 !important;
   flex: 1 1 auto;
@@ -23,7 +23,6 @@ mat-toolbar {
 
   img {
     margin-top: -20px;
-    margin-left: 40px;
     width: 100px;
   }
 }
@@ -56,8 +55,12 @@ li {
   margin-left: -10px;
 }
 
+.center-mobile {
+  text-align: center;
+}
 
-@media all and (min-width: 600PX) {
+
+@media all and (min-width: $phone) {
   mat-toolbar {
     padding-left: 10%;
     padding-bottom: 40px;
@@ -76,6 +79,10 @@ li {
     margin-top: 0;
   }
 
+  .center-mobile {
+    text-align: left;
+  }
+
 
 }
 
@@ -83,6 +90,5 @@ li {
 @media all and (min-width: $tablet) {
   mat-toolbar {
     padding-left: 15%;
-    padding-rigth: 10%;
   }
 }

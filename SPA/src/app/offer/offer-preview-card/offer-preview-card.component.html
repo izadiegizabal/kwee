@@ -1,10 +1,9 @@
 <mat-card class="example-card">
-  <mat-card-header>
+  <mat-card-header fxLayoutAlign="space-between">
     <mat-card-title>{{position}}</mat-card-title>
     <mat-card-subtitle>
       <app-offerer-name-overview [index]="82" [name]="'Google'"></app-offerer-name-overview>
     </mat-card-subtitle>
-    <span class="spacer"></span>
     <div
       fxHide.lt-sm
       fxLayoutGap="16px"
@@ -49,7 +48,6 @@
       </div>
     </div>
     <div fxHide.gt-xs fxLayout="row">
-      <span class="spacer"></span>
       <button color="accent" mat-button>{{'More Info' | uppercase }}</button>
       <button mat-icon-button>
         <mat-icon aria-label="Share offer in social networks" color="accent" svgIcon="share"></mat-icon>

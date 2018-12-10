@@ -1,10 +1,6 @@
-$desktop: 1024px;
-$tablet: 839px;
-$phone: 481px;
-
-.spacer {
-  flex: 1 1 auto !important;
-}
+$desktop: 1280px;
+$tablet: 960px;
+$phone: 600px;
 
 // Mixin to change the md-icon
 @mixin md-icon-size($size: 24px) {
@@ -12,24 +8,6 @@ $phone: 481px;
   height: $size;
   width: $size;
   line-height: $size;
-}
-
-@media all and (min-width: $tablet) {
-  .hideOnDesktop {
-    display: none !important;
-  }
-}
-
-@media all and (min-width: $phone) {
-  .hideOnTablet {
-    display: none !important;
-  }
-}
-
-@media all and (max-width: $phone) {
-  .hideOnMobile {
-    display: none !important;
-  }
 }
 
 
