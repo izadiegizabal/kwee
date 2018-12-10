@@ -44,25 +44,33 @@ module.exports = (app, db) => {
         let body = req.body
 
         try {
-
-            res.status(201).json({
-                ok: true,
-                offer: await db.offers.create({
-                    fk_offerer: body.fk_offerer,
-                    title: body.title,
-                    description: body.description,
-                    date_start: body.date_start,
-                    date_end: body.date_end,
-                    location: body.location,
-                    salary: body.salary
-                }),
-                message: `Offer has been created.`
+            let offerDetails = await db.offers.create({
+                fk_offerer: body.fk_offerer,
+                title: body.title,
+                description: body.description,
+                date_start: body.date_start,
+                date_end: body.date_end,
+                location: body.location,
+                salary: body.salary
+            }).then( result => {
+                return res.status(201).json({
+                    ok: true,
+                    offer: result,
+                    message: `Offer has been created.`
+                }); 
             });
 
         } catch (err) {
             // error: si INVALIDA FK_OFFERER --> err
             // error: si alguna validación --> errors[0].message
-            next({ type: 'error', error: err.message });
+            // switch(err){
+            //     case (err instanceof db.models.offers.ForeignKeyConstraintError): 
+            //         console.log("HELOOOOOO----------");
+            //         next({ type: 'error', error: "ForeignKeyConstraintError" });
+
+            //     break;
+            // }
+            return next({ type: 'error', error: err.message });
         }
 
     });
@@ -73,18 +81,20 @@ module.exports = (app, db) => {
         const updates = req.body;
 
         try {
-            res.status(200).json({
-                ok: true,
-                offer: await db.offers.update(updates, {
-                    where: { id }
-                })
-            });
+            let offerUpdate = await db.offers.update(updates, {
+                where: { id }
+            }).then( result => {
+                return res.status(200).json({
+                    ok: true,
+                    offer: result
+                });
+            })
             // json
             // offer: [1] -> Updated
             // offer: [0] -> Not updated
             // empty body will change 'updateAt'
         } catch (err) {
-            next({ type: 'error', error: err.message });
+            return next({ type: 'error', error: err.message });
         }
     });
 

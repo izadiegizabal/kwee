@@ -59,31 +59,40 @@ module.exports = (app, db) => {
         }
     });
 
-    // POST single applicant_education
-    app.post("/applicant_education", [checkToken, checkAdmin], async(req, res, next) => {
+     // POST single applicant_education
+     app.post("/applicant_education", [checkToken, checkAdmin], async(req, res, next) => {
+
         const body = req.body;
         let fk_education = body.fk_education;
+
+        if( fk_education.length > 1 ){
+            return res.status(400).json({
+                ok: false,
+                message: "Invalid fk_education value (string instead integer)."
+            });
+        }
+
         let applicantEducationCreated = null;
+
         try {
+            // Find USER if exists
             let applicant = await db.applicants.findOne({
                 where: { userId: body.fk_applicant }
             });
-            console.log("applicant id: " + applicant.userId);
+
+            // Set educations and so
             if (applicant) {
 
                 // Obtain what educations were known by the applicant previously
                 let educationsPrevious = (await applicant.getEducations());
-                console.log("educations previous: ");
-                console.log(educationsPrevious);
-                let educations = [];
+            
 
-                // Add 'id' of educations that the applicant knew
-                console.log("educations length: " + educationsPrevious.length);
+                //let educations;
+
+                // Add 'id' of educations that the applicant know
                 if (educationsPrevious.length > 0) {
                     for (let i = 0; i < educationsPrevious.length; i++) {
-                        if (fk_education != educationsPrevious[i].id) {
-                            educations.push(educationsPrevious[i].id);
-                        } else {
+                        if (fk_education == educationsPrevious[i].id) {
                             return res.status(400).json({
                                 ok: false,
                                 message: "This applicant already knows this education"
@@ -93,33 +102,38 @@ module.exports = (app, db) => {
                 }
 
                 // Now add the new education id to previous educations id's
-                for (let i = 0; i < fk_education.length; i++) {
-                    educations.push(fk_education[i]);
-                }
-                console.log("educations a añadir: " + educations);
+                // for (let i = 0; i < fk_education.length; i++) {
+                //     educations.push(fk_education[i]);
+                // }
+                console.log("education_id a añadir: " + fk_education);
 
-                // And add the array of id's to applicant_educations
-                applicantEducationCreated = await applicant.setEducations(educations);
-                
-                console.log(applicantEducationCreated);
-                
-                if (applicantEducationCreated) {
-                    // Last step
-                    // It is necessary to update the level and description after setEducations
-                    // because is added as null
-                    await db.sequelize.query({ query: `UPDATE applicant_educations SET date_start = ?, date_end = ?, institution = ?, description = ? WHERE fk_applicant = ? AND fk_education = ?`, values: [body.date_start, body.date_end, body.institution, body.description, body.fk_applicant, body.fk_education] });
-
-                    return res.status(201).json({
+                // And add the array of id's to applicant_educations AND REMAINING FIELDS ON EACH EDUCATION
+                //applicantEducationCreated = await applicant.setEducations(educations);
+                await applicant.addEducation( fk_education,
+                    {
+                        through: 
+                        {
+                            description: body.description,
+                            date_start: body.date_start,
+                            date_end: body.date_end,
+                            institution: body.institution
+                        }
+                    }
+                ).then( result => {
+                    if(result){
+                        return res.status(201).json({
                         ok: true,
                         message: "Added education to applicant"
-                    });
+                        });
+                    }
+                    else{
+                        return res.status(400).json({
+                            ok: false,
+                            error: "Applicant education can't be created"
+                        });
+                    }
+                });
 
-                } else {
-                    return res.status(400).json({
-                        ok: false,
-                        error: "Applicant education can't be created"
-                    });
-                }
 
             } else {
                 return res.status(400).json({
@@ -128,8 +142,9 @@ module.exports = (app, db) => {
                 });
             }
         } catch (err) {
-            console.log(err.toString());
-            return next({ type: "error", error: err.errors?err.errors[0].message:err.message});
+            //console.log(err.toString());
+            return next({ type: "error", error: err.toString()/*err.errors?err.errors[0].message:err.message*/});
+            //return "EEERRROOOOOOOR";
             //return next({ type: 'error', error: err.errors?err.errors[0].message:err.message });
         }
     });
@@ -141,23 +156,45 @@ module.exports = (app, db) => {
         try {
             let applicant = await db.applicants.findOne({
                 where: { userId: body.fk_applicant }
+            }).then( async _applicant => {
+                
+                if(_applicant){
+                    _applicant.hasEducation( body.fk_education )
+                    .then( exists => {
+                        if(exists){
+                            _applicant.getEducations({where: { id: body.fk_education } } )
+                            .then( education => {
+                                console.log("education: ");
+                                
+                                let edu = education[0];
+                                
+                                if(body.description) edu.applicant_educations.description = body.description;
+                                if(body.date_end) edu.applicant_educations.date_end = body.date_end;
+                                if(body.date_start) edu.applicant_educations.date_start = body.date_start;
+                                if(body.institution) edu.applicant_educations.institution = body.institution;
+                                
+                                return res.status(200).json({
+                                    ok: true,
+                                    msg: edu.applicant_educations.save()
+                                });
+                            })
+                            .catch(err => {
+                                return next({ type: 'error', error: err.message });
+                            })
+                        }
+                        else{
+                            return next({ type: 'error', error: "User don't know this education (¿fk_education wrong maybe?)" });
+                        }
+                    })
+                }
+                else{
+                    return next({ type: 'error', error: "User not found (fk_applicant unknown)" });
+                }
+
             });
-
-            if (applicant) {
-                await db.sequelize.query({ query: `UPDATE applicant_educations SET level=\'${ body.level }\' WHERE fk_applicant = ? AND fk_education = ?`, values: [body.fk_applicant, body.fk_education] });
-                return res.status(200).json({
-                    ok: true,
-                    message: 'Updated'
-                });
-            } else {
-                return res.status(400).json({
-                    ok: false,
-                    error: "Applicant education doesn't exist"
-                });
-            }
-
         } catch (err) {
-            return next({ type: 'error', error: err.errors[0].message });
+            // More generic errors
+            return next({ type: 'error', error: err.message });
         }
     });
 

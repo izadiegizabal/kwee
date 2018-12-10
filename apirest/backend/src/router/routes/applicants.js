@@ -161,7 +161,7 @@ module.exports = (app, db) => {
             }
 
         } catch (err) {
-            return next({ type: 'error', error: err.message });
+            return next({ type: 'error', error: err.errors?err.errors[0].message:err.message });
         }
     });
 
@@ -213,7 +213,7 @@ module.exports = (app, db) => {
 
         } catch (err) {
             await transaction.rollback();
-            return next({ type: 'error', error: err.message });
+            return next({ type: 'error', error: err.errors?err.errors[0].message:err.message });
         }
     }
 }
