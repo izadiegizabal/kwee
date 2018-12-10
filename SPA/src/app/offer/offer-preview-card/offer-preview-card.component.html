@@ -5,11 +5,17 @@
       <app-offerer-name-overview [index]="82" [name]="'Google'"></app-offerer-name-overview>
     </mat-card-subtitle>
     <span class="spacer"></span>
-    <div class="quickInfo hideOnMobile">
+    <div
+      fxHide.lt-sm
+      fxLayoutGap="16px"
+      class="quickInfo">
       <app-icon-with-text [icon]="'place'" [text]="'Barcelona'"></app-icon-with-text>
       <app-icon-with-text [icon]="'access-time'" [text]="'5 days ago'"></app-icon-with-text>
     </div>
-    <mat-card-subtitle class="quickInfo hideOnTablet">
+    <mat-card-subtitle
+      fxHide.gt-xs
+      fxLayoutGap="16px"
+      class="quickInfo">
       <app-icon-with-text [icon]="'place'" [text]="'Barcelona'"></app-icon-with-text>
       <app-icon-with-text [icon]="'access-time'" [text]="'5 days ago'"></app-icon-with-text>
     </mat-card-subtitle>
@@ -20,29 +26,35 @@
       alt="Business Logo"
       src="https://cdn.vox-cdn.com/thumbor/Pkmq1nm3skO0-j693JTMd7RL0Zk=/0x0:2012x1341/1200x800/filters:focal(0x0:2012x1341)/cdn.vox-cdn.com/uploads/chorus_image/image/47070706/google2.0.0.jpg">
     <p>
-      {{description}}
+      {{ (description | slice:0:280) + "..." }}
     </p>
   </mat-card-content>
 
-  <mat-card-actions>
-    <span class="spacer"></span>
-    <app-icon-with-text [icon]="'date-range'" [text]="'Indefinite'"></app-icon-with-text>
-    <app-icon-with-text [icon]="'work'" [text]="'Part-Time'"></app-icon-with-text>
-    <app-icon-with-text [icon]="'local-atm'" [text]="'1.500€/month'"></app-icon-with-text>
-    <span class="spacer hideOnTablet"></span>
-    <div class="hideOnMobile">
+  <mat-card-actions
+    fxLayout="row" fxLayout.lt-sm="column"
+    fxLayoutAlign="end center"
+    fxLayoutGap="24px" fxLayoutGap.lt-sm="16px">
+    <div
+      fxLayout="row"
+      fxLayoutAlign="center center"
+      fxLayoutGap="16px">
+      <app-icon-with-text [icon]="'date-range'" [text]="'Indefinite'"></app-icon-with-text>
+      <app-icon-with-text [icon]="'work'" [text]="'Part-Time'"></app-icon-with-text>
+      <app-icon-with-text [icon]="'local-atm'" [text]="'1.500€/month'"></app-icon-with-text>
+      <div fxHide.lt-sm>
+        <button color="accent" mat-button>{{'More Info' | uppercase }}</button>
+        <button mat-icon-button>
+          <mat-icon aria-label="Share offer in social networks" color="accent" svgIcon="share"></mat-icon>
+        </button>
+      </div>
+    </div>
+    <div fxHide.gt-xs fxLayout="row">
+      <span class="spacer"></span>
       <button color="accent" mat-button>{{'More Info' | uppercase }}</button>
       <button mat-icon-button>
         <mat-icon aria-label="Share offer in social networks" color="accent" svgIcon="share"></mat-icon>
       </button>
     </div>
-  </mat-card-actions>
-  <mat-card-actions class="hideOnTablet">
-    <span class="spacer"></span>
-    <button color="accent" mat-button>{{'More Info' | uppercase }}</button>
-    <button mat-icon-button>
-      <mat-icon aria-label="Share offer in social networks" color="accent" svgIcon="share"></mat-icon>
-    </button>
   </mat-card-actions>
 
 </mat-card>

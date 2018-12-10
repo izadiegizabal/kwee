@@ -6,10 +6,6 @@ $phone: 481px;
   flex: 1 1 auto !important;
 }
 
-.hide {
-  display: none !important;
-}
-
 // Mixin to change the md-icon
 @mixin md-icon-size($size: 24px) {
   font-size: $size;

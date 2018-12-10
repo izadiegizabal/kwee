@@ -18,9 +18,6 @@ export class OfferPreviewCardComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.description.length > 280) {
-      this.description = this.description.substr(0, 280) + '...';
-    }
   }
 
 }

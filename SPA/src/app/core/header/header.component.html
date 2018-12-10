@@ -1,16 +1,11 @@
-<mat-toolbar>
-
+<mat-toolbar fxLayout="row">
   <div class="logo">
     <a routerLink="/">
-      <mat-icon class="hideOnTablet" svgIcon="kwee-icon"></mat-icon>
-      <mat-icon class="hideOnMobile" svgIcon="kwee-logo"></mat-icon>
+      <mat-icon fxHide.gt-xs svgIcon="kwee-icon"></mat-icon>
+      <mat-icon fxHide.lt-sm svgIcon="kwee-logo"></mat-icon>
     </a>
   </div>
-
-  <span class="spacer"></span>
-
-  <span class="fill-remaining-space"></span>
-
+  <div fxFlex="grow"></div>
   <div class="user-section">
     <app-user-menu *ngIf="isAuthenticated()"></app-user-menu>
     <app-signupin-section *ngIf="!isAuthenticated()"></app-signupin-section>
