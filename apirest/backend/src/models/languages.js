@@ -8,7 +8,10 @@ module.exports = (sequelize, DateTypes) => {
             allowNull: false,
             unique: true,
             validate: {
-                notEmpty: true
+                notEmpty: {
+                    args: true,
+                    msg: "Language should not be empty."
+                } 
             }
         }
     });

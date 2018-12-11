@@ -66,48 +66,41 @@ module.exports = (app, db) => {
                 // Obtain what skills were known by the applicant previously
                 let skillsPrevious = (await applicant.getSkills());
 
-                let skills = [];
-
-                // Add 'id' of skills that the applicant knew
-
                 if (skillsPrevious.length > 0) {
                     for (let i = 0; i < skillsPrevious.length; i++) {
-                        if (fk_skill != skillsPrevious[i].id) {
-                            skills.push(skillsPrevious[i].id);
-                        } else {
+                        if (fk_skill == skillsPrevious[i].id) {
                             return res.status(400).json({
                                 ok: false,
                                 message: "This applicant already knows this skill"
                             });
-                        }
+                        } 
                     }
                 }
 
-                // Now add the new skill id to previous skills id's
-                for (let i = 0; i < fk_skill.length; i++) {
-                    skills.push(fk_skill[i]);
-                }
-
                 // And add the array of id's to applicant_skills
-                let applicantSkillCreated = await applicant.setSkills(skills);
-
-                if (applicantSkillCreated) {
-                    // Last step
-                    // It is necessary to update the level and description after setSkills
-                    // because is added as null
-                    await db.sequelize.query({ query: `UPDATE applicant_skills SET level = ?, description = ? WHERE fk_applicant = ? AND fk_skill = ?`, values: [body.level, body.description, body.fk_applicant, body.fk_skill] });
-
-                    return res.status(201).json({
-                        ok: true,
-                        message: "Added skill to applicant"
-                    });
-
-                } else {
-                    return res.status(400).json({
-                        ok: false,
-                        error: "Applicant skill can't be created"
-                    });
-                }
+                await applicant.addSkill( fk_skill,
+                    {
+                        through:
+                        {
+                            description: body.description,
+                            level: body.level
+                        }
+                    }
+                )
+                .then( created => {
+                    if( created ){
+                        return res.status(201).json({
+                            ok: true,
+                            message: "Added skill to applicant"
+                        });                        
+                    }
+                    else{
+                        return res.status(400).json({
+                            ok: false,
+                            error: "Applicant skill can't be created"
+                        });
+                    }
+                });
 
             } else {
                 return res.status(400).json({
@@ -128,23 +121,46 @@ module.exports = (app, db) => {
         try {
             let applicant = await db.applicants.findOne({
                 where: { userId: body.fk_applicant }
-            });
+            }).then( async _applicant => {
+                if(_applicant){
+                    _applicant.hasSkill( body.fk_skill )
+                    .then( exists => {
+                        if(exists){
+                            _applicant.getSkills( { where: { id: body.fk_skill } } )
+                            .then( skills => {
+                                let skill = skills[0];
 
-            if (applicant) {
-                await db.sequelize.query({ query: `UPDATE applicant_skills SET level=\'${ body.level }\' WHERE fk_applicant = ? AND fk_skill = ?`, values: [body.fk_applicant, body.fk_skill] });
-                res.status(200).json({
-                    ok: true,
-                    message: 'Updated'
-                });
-            } else {
-                return res.status(400).json({
-                    ok: false,
-                    error: "Applicant skill doesn't exist"
-                });
-            }
+                                skill.applicant_skills.level = body.level;
+                                if(body.description) skill.applicant_skills.description = body.description;
 
+                                skill.applicant_skills.save()
+                                .then( rest => {
+                                    if(rest.isReject){
+                                        return res.status(400).json({
+                                            ok: false,
+                                            msg: "Skill not updated."
+                                        });
+                                    }
+                                    else{
+                                        return res.status(200).json({
+                                            ok: false,
+                                            msg: "Skill updated with level " +body.level
+                                        });
+                                    }
+                                })
+                            })
+                        }
+                        else{
+                            next({ type: 'error', error: "Skill not found for applicant " +body.fk_applicant });
+                        }
+                    })
+                }
+                else{
+                    next({ type: 'error', error: "Applicant not found (¿fk_applicant wrong?)" });
+                }
+            })
         } catch (err) {
-            next({ type: 'error', error: err.errors[0].message });
+            next({ type: 'error', error: err.message });
         }
     });
 
@@ -155,21 +171,43 @@ module.exports = (app, db) => {
         try {
             let applicant = await db.applicants.findOne({
                 where: { userId: body.fk_applicant }
-            });
+            })
+            .then( u => {
+                if(u){
+                    u.hasSkill( body.fk_skill )
+                    .then( success => {
+                        if(success){
+                            u.removeSkills(body.fk_skill)
+                            .then( ok => {
+                                return res.status(201).json({
+                                    ok: true,
+                                    message: "Deleted"
+                                });
+                            })
+                        }  
+                        else{
+                            return res.status(400).json({
+                                ok: false,
+                                error: "This applicant don't know this skill"
+                            });
+                        }
+                    })
+                    .catch( err => {
+                        return res.status(400).json({
+                            ok: false,
+                            error: "Skill not deleted"
+                        });
 
-            if (applicant) {
-                await applicant.removeSkills(body.fk_skill);
+                    })
+                }
+                else{
+                    return res.status(400).json({
+                        ok: false,
+                        error: "This Applicant doesn't exist"
+                    });
+                }
+            })
 
-                res.status(201).json({
-                    ok: true,
-                    message: "Deleted"
-                });
-            } else {
-                return res.status(400).json({
-                    ok: false,
-                    error: "This Applicant doesn't exist"
-                });
-            }
         } catch (err) {
             next({ type: 'error', error: 'Error getting data' });
         }

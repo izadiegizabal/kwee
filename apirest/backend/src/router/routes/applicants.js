@@ -93,37 +93,28 @@ module.exports = (app, db) => {
             const body = req.body;
             const password = body.password ? bcrypt.hashSync(body.password, 10) : null;
 
-            // get transaction
-            transaction = await db.sequelize.transaction();
+            return db.sequelize.transaction( transaction => {
+                return db.users.create({
+                    name: body.name,
+                    password,
+                    email: body.email,
+    
+                }, { transaction: transaction })
+                .then( async user => {
+                    return createApplicant(body, user, next, transaction);
+                })
+                .then( ending => {
+                    return res.status(201).json({
+                        ok: true,
+                        message: `Applicant with id ${ending.userId} has been created.`
+                    });
+                })
+            })
+            .catch( err => {
+                return next({ type: 'error', error: err.errors?err.errors[0].message:err.message });
+            })
 
-            // step 1
-            let _user = await db.users.create({
-                name: body.name,
-                password,
-                email: body.email,
-
-            }, { transaction: transaction });
-
-            if (!_user) {
-                await transaction.rollback();
-            }
-
-            // step 2
-            let applicant = await createApplicant(body, _user, next, transaction);
-
-            if (!applicant) {
-                await transaction.rollback();
-            }
-
-            // commit
-            await transaction.commit();
-
-            return res.status(201).json({
-                ok: true,
-                message: `Applicant '${_user.name}' with id ${_user.id} has been created.`
-            });
         } catch (err) {
-            //await transaction.rollback();
             return next({ type: 'error', error: (err.errors?err.errors[0].message:err.message) });
         }
     });
@@ -206,10 +197,11 @@ module.exports = (app, db) => {
             applicant.city = body.city ? body.city : null;
             applicant.date_born = body.date_born ? body.date_born : null;
             applicant.premium = body.premium ? body.premium : null;
-
-            let newapplicant = await db.applicants.create(applicant, { transaction: transaction });
-
-            return newapplicant;
+            
+            return db.applicants.create(applicant, { transaction: transaction })
+            .catch( err => {
+                return next({ type: 'error', error: err.message });
+            });
 
         } catch (err) {
             await transaction.rollback();

@@ -105,38 +105,27 @@ module.exports = (app, db) => {
             const body = req.body;
             const password = body.password ? bcrypt.hashSync(body.password, 10) : null;
 
-            let msg;
-            let user;
+            return db.sequelize.transaction( transaction => {
+                return db.users.create({
+                    name: body.name,
+                    password,
+                    email: body.email,
+    
+                }, { transaction: transaction })
+                .then( _user => {
+                    return createOfferer(body, _user, next, transaction);
+                })
+                .then( ending => {
+                    return res.status(201).json({
+                        ok: true,
+                        message: `Offerer with id ${ending.userId} has been created.`
+                    });
+                })
+            })
+            .catch( err => {
+                return next({ type: 'error', error: err.errors?err.errors[0].message:err.message });
+            })
 
-            // get transaction
-            transaction = await db.sequelize.transaction();
-
-            // step 1
-            let _user = await db.users.create({
-                name: body.name,
-                password,
-                email: body.email,
-
-            }, { transaction: transaction });
-
-            if (!_user) {
-                await transaction.rollback();
-            }
-
-            // step 2
-            let offerer = await createOfferer(body, _user, next, transaction);
-
-            if (!offerer) {
-                await transaction.rollback();
-            }
-
-            // commit
-            await transaction.commit();
-
-            return res.status(201).json({
-                ok: true,
-                message: `Offerer '${_user.name}' with id ${_user.id} has been created.`
-            });
         } catch (err) {
             //await transaction.rollback();
             next({ type: 'error', error: (err.errors?err.errors[0].message:err.message) });
@@ -224,9 +213,11 @@ module.exports = (app, db) => {
                 premium: body.premium ? body.premium : 'basic'
             }
 
-            let newOfferer = await db.offerers.create(offerer, { transaction: transaction });
+            return db.offerers.create(offerer, { transaction: transaction })
+            .catch( err => {
+                return next({ type: 'error', error: err.message });                 
+            });
 
-            return newOfferer;
 
         } catch (err) {
             await transaction.rollback();

@@ -68,7 +68,7 @@ module.exports = (app, db) => {
         if( fk_education.length > 1 ){
             return res.status(400).json({
                 ok: false,
-                message: "Invalid fk_education value (string instead integer)."
+                message: "Invalid fk_education value (array instead integer)."
             });
         }
 
@@ -85,8 +85,6 @@ module.exports = (app, db) => {
 
                 // Obtain what educations were known by the applicant previously
                 let educationsPrevious = (await applicant.getEducations());
-            
-
                 //let educations;
 
                 // Add 'id' of educations that the applicant know
@@ -100,12 +98,6 @@ module.exports = (app, db) => {
                         }
                     }
                 }
-
-                // Now add the new education id to previous educations id's
-                // for (let i = 0; i < fk_education.length; i++) {
-                //     educations.push(fk_education[i]);
-                // }
-                console.log("education_id a añadir: " + fk_education);
 
                 // And add the array of id's to applicant_educations AND REMAINING FIELDS ON EACH EDUCATION
                 //applicantEducationCreated = await applicant.setEducations(educations);
@@ -122,8 +114,8 @@ module.exports = (app, db) => {
                 ).then( result => {
                     if(result){
                         return res.status(201).json({
-                        ok: true,
-                        message: "Added education to applicant"
+                            ok: true,
+                            message: "Added education to applicant"
                         });
                     }
                     else{
@@ -161,11 +153,11 @@ module.exports = (app, db) => {
                 if(_applicant){
                     _applicant.hasEducation( body.fk_education )
                     .then( exists => {
+
                         if(exists){
                             _applicant.getEducations({where: { id: body.fk_education } } )
                             .then( education => {
-                                console.log("education: ");
-                                
+
                                 let edu = education[0];
                                 
                                 if(body.description) edu.applicant_educations.description = body.description;
@@ -173,10 +165,24 @@ module.exports = (app, db) => {
                                 if(body.date_start) edu.applicant_educations.date_start = body.date_start;
                                 if(body.institution) edu.applicant_educations.institution = body.institution;
                                 
-                                return res.status(200).json({
-                                    ok: true,
-                                    msg: edu.applicant_educations.save()
-                                });
+                                edu.applicant_educations.save()
+                                .then( rest => {
+                                    
+                                    if( rest.isRejected ){
+                                        // Problems
+                                        return res.status(400).json({
+                                            ok: false,
+                                            msg: "Education not updated."
+                                        });
+                                    }
+                                    else{
+                                        // Everything ok
+                                        return res.status(201).json({
+                                            ok: true,
+                                            msg: "Education updated"
+                                        });
+                                    }
+                                })
                             })
                             .catch(err => {
                                 return next({ type: 'error', error: err.message });
