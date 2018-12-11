@@ -3,6 +3,10 @@ import {SigninComponent} from './signin.component';
 import {SharedModule} from '../../shared/shared.module';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {SigninRoutingModule} from './signin-routing.module';
+import {StoreModule} from '@ngrx/store';
+import {authReducer} from '../store/auth.reducers';
+import {EffectsModule} from '@ngrx/effects';
+import {AuthEffects} from '../store/auth.effects';
 
 @NgModule({
   declarations: [
@@ -12,7 +16,9 @@ import {SigninRoutingModule} from './signin-routing.module';
     SharedModule,
     SigninRoutingModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    StoreModule.forFeature('auth', authReducer),
+    EffectsModule.forFeature([AuthEffects])
   ]
 })
 export class SigninModule {

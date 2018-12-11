@@ -9,6 +9,8 @@ import {AppComponent} from './app.component';
 import {SharedModule} from './shared/shared.module';
 import {CoreModule} from './core/core.module';
 import {CandidateHomeModule} from './candidate-home/candidate-home.module';
+import {StoreModule} from '@ngrx/store';
+import {reducers} from './store/app.reducers';
 
 @NgModule({
   declarations: [
@@ -24,6 +26,7 @@ import {CandidateHomeModule} from './candidate-home/candidate-home.module';
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
+    StoreModule.forRoot(reducers),
   ],
   bootstrap: [AppComponent]
 })
