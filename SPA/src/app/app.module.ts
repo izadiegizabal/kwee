@@ -11,6 +11,9 @@ import {CoreModule} from './core/core.module';
 import {CandidateHomeModule} from './candidate-home/candidate-home.module';
 import {StoreModule} from '@ngrx/store';
 import {reducers} from './store/app.reducers';
+import {EffectsModule} from '@ngrx/effects';
+import {environment} from '../environments/environment';
+import {StoreDevtoolsModule} from '@ngrx/store-devtools';
 
 @NgModule({
   declarations: [
@@ -27,6 +30,8 @@ import {reducers} from './store/app.reducers';
     FormsModule,
     ReactiveFormsModule,
     StoreModule.forRoot(reducers),
+    EffectsModule.forRoot([]),
+    !environment.production ? StoreDevtoolsModule.instrument() : []
   ],
   bootstrap: [AppComponent]
 })

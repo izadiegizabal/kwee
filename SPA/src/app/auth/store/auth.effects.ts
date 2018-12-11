@@ -7,7 +7,7 @@ import {Observable, of, throwError} from 'rxjs';
 import {HttpHeaders} from '@angular/common/http';
 import {HttpClient} from '@angular/common/http';
 
-const apiLocation = 'h203.eps.ua.es/api/';
+const apiLocation = 'http://h203.eps.ua.es/api/';
 
 @Injectable()
 export class AuthEffects {
@@ -18,8 +18,8 @@ export class AuthEffects {
       return action.payload;
     }),
     switchMap(
-      (authData: { userName: string, password: string }) => {
-        const body = JSON.stringify({'email': authData.userName, 'password': authData.password});
+      (authData: { email: string, password: string }) => {
+        const body = JSON.stringify({email: authData.email, password: authData.password});
         const headers = new HttpHeaders().set('Content-Type', 'application/json');
 
         console.log(body);

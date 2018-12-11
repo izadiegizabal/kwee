@@ -6,6 +6,7 @@ import {SharedModule} from '../../shared/shared.module';
 import {ReactiveFormsModule} from '@angular/forms';
 import {SignupRoutingModule} from './signup-routing.module';
 import {DialogErrorComponent} from './dialog-error/dialog-error.component';
+import {HttpClientModule} from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import {DialogErrorComponent} from './dialog-error/dialog-error.component';
   ],
   imports: [
     SharedModule,
+    HttpClientModule,
     SignupRoutingModule,
     ReactiveFormsModule,
   ],

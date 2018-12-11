@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {AuthService} from '../auth.service';
 import {Router} from '@angular/router';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Store} from '@ngrx/store';
@@ -17,7 +16,7 @@ export class SigninComponent implements OnInit {
   user: FormGroup;
   hide = false;
 
-  constructor(private _formBuilder: FormBuilder, private store: Store<fromApp.AppState>, private authService: AuthService, private router: Router) {
+  constructor(private _formBuilder: FormBuilder, private store: Store<fromApp.AppState>, private router: Router) {
   }
 
   ngOnInit() {

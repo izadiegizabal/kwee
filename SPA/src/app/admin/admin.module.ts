@@ -11,6 +11,7 @@ import {BusinessOverviewComponent} from './admin-manage-businesses/business-over
 import {AdminRoutingModule} from './admin-routing.module';
 import {ReactiveFormsModule} from '@angular/forms';
 import {SharedModule} from '../shared/shared.module';
+import {OffererNameOverviewModule} from '../shared/offerer-name-overview/offerer-name-overview.module';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import {SharedModule} from '../shared/shared.module';
     AdminRoutingModule,
     ReactiveFormsModule,
     SharedModule,
+    OffererNameOverviewModule
   ],
 })
 export class AdminModule {

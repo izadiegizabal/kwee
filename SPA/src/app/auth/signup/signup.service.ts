@@ -17,12 +17,7 @@ export class SingupService {
   newUser(candidate: any) {
     const body = JSON.stringify(candidate);
 
-    let headers = new HttpHeaders().set('Content-Type', 'application/json');
-    headers = headers.set('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2Vy' +
-      'Ijp7ImlkIjoxOSwibmFtZSI6InBydWViYTIiLCJlbWFpbCI6InBydWViYTJAYWEuYSIsInJvb3' +
-      'QiOnRydWUsImNyZWF0ZWRBdCI6IjIwMTgtMTEtMTdUMTg6MzQ6NDIuMDAwWiIsInVwZGF0ZWRB' +
-      'dCI6IjIwMTgtMTEtMTdUMTg6MzQ6NDIuMDAwWiIsImRlbGV0ZWRBdCI6bnVsbH0sImlhdCI6MT' +
-      'U0MjQ4ODE4NCwiZXhwIjoxODYyNDg0OTg0fQ.id5OUQjtLqbHIhnwKeSLwW0l2ZeLlC-cdrXvJH-9w54');
+    const headers = new HttpHeaders().set('Content-Type', 'application/json');
 
     // console.log(body);
     // console.log(headers);

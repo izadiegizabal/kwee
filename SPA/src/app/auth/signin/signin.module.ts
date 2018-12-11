@@ -7,6 +7,7 @@ import {StoreModule} from '@ngrx/store';
 import {authReducer} from '../store/auth.reducers';
 import {EffectsModule} from '@ngrx/effects';
 import {AuthEffects} from '../store/auth.effects';
+import {HttpClientModule} from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -14,6 +15,7 @@ import {AuthEffects} from '../store/auth.effects';
   ],
   imports: [
     SharedModule,
+    HttpClientModule,
     SigninRoutingModule,
     ReactiveFormsModule,
     FormsModule,
