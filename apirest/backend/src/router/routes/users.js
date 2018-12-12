@@ -70,7 +70,11 @@ module.exports = (app, db) => {
             let user = await db.users.create({
                 name: body.name ? body.name : null,
                 password: body.password ? bcrypt.hashSync(body.password, 10) : null,
-                email: body.email ? body.email : null
+                email: body.email ? body.email : null,
+
+                photo: body.photo?body.photo:null,
+                bio: body.bio?body.bio:null
+
             });
 
             if (user) {
@@ -83,7 +87,7 @@ module.exports = (app, db) => {
             }
 
         } catch (err) {
-            next({ type: 'error', error: err.errors[0].message });
+            next({ type: 'error', error: (err.errors?err.errors[0].message:err.message) });
         }
     });
 
@@ -115,7 +119,7 @@ module.exports = (app, db) => {
             }
 
         } catch (err) {
-            next({ type: 'error', error: err.errors[0].message });
+            next({ type: 'error', error: (err.errors?err.errors[0].message:err.message)});
         }
     });
 

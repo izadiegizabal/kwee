@@ -25,12 +25,11 @@ module.exports = (app, db) => {
                             name: users[i].name,
                             email: users[i].email,
                             adress: offerers[j].adress,
-                            work_field: offerers[j].work_field,
+                            workField: offerers[j].workField,
                             cif: offerers[j].cif,
-                            date_verification: offerers[j].date_verification,
-                            about_us: offerers[j].about_us,
+                            dateVerification: offerers[j].dateVerification,
                             website: offerers[j].website,
-                            company_size: offerers[j].company_size,
+                            companySize: offerers[j].companySize,
                             year: offerers[j].year,
                             premium: offerers[j].premium,
                             createdAt: offerers[j].createdAt
@@ -67,19 +66,18 @@ module.exports = (app, db) => {
 
             if (user && offerer) {
                 const userOfferer = {
-                    id: user.id,
-                    name: user.name,
-                    email: user.email,
-                    adress: offerer.adress,
-                    work_field: offerer.work_field,
-                    cif: offerer.cif,
-                    date_verification: offerer.date_verification,
-                    about_us: offerer.about_us,
-                    website: offerer.website,
-                    company_size: offerer.company_size,
-                    year: offerer.year,
-                    premium: offerer.premium,
-                    createdAt: offerer.createdAt
+                    id: offerers[j].userId,
+                    name: users[i].name,
+                    email: users[i].email,
+                    adress: offerers[j].adress,
+                    workField: offerers[j].workField,
+                    cif: offerers[j].cif,
+                    dateVerification: offerers[j].dateVerification,
+                    website: offerers[j].website,
+                    companySize: offerers[j].companySize,
+                    year: offerers[j].year,
+                    premium: offerers[j].premium,
+                    createdAt: offerers[j].createdAt
                 };
 
                 return res.status(200).json({
@@ -110,6 +108,9 @@ module.exports = (app, db) => {
                     name: body.name,
                     password,
                     email: body.email,
+                    
+                    photo: body.photo?body.photo:null,
+                    bio: body.bio?body.bio:null,
     
                 }, { transaction: transaction })
                 .then( _user => {
@@ -204,11 +205,10 @@ module.exports = (app, db) => {
             let offerer = {
                 userId: user.id,
                 adress: body.adress,
-                work_field: body.work_field,
+                workField: body.workField,
                 cif: body.cif,
-                about_us: body.about_us ? body.about_us : null,
                 website: body.website ? body.website : null,
-                company_size: body.company_size ? body.company_size : null,
+                companySize: body.companySize ? body.companySize : null,
                 year: body.year ? body.year : null,
                 premium: body.premium ? body.premium : 'basic'
             }

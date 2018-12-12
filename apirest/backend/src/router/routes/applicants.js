@@ -25,7 +25,7 @@ module.exports = (app, db) => {
                             name: users[i].name,
                             email: users[i].email,
                             city: applicants[j].city,
-                            date_born: applicants[j].date_born,
+                            dateBorn: applicants[j].dateBorn,
                             premium: applicants[j].premium,
                             createdAt: applicants[j].createdAt
                         }
@@ -65,7 +65,7 @@ module.exports = (app, db) => {
                     name: user.name,
                     email: user.email,
                     city: applicant.city,
-                    date_born: applicant.date_born,
+                    dateBorn: applicant.dateBorn,
                     premium: applicant.premium,
                     createdAt: applicant.createdAt
                 };
@@ -92,13 +92,16 @@ module.exports = (app, db) => {
         try {
             const body = req.body;
             const password = body.password ? bcrypt.hashSync(body.password, 10) : null;
-
+            
             return db.sequelize.transaction( transaction => {
                 return db.users.create({
                     name: body.name,
-                    password,
+                    password: password,
                     email: body.email,
-    
+
+                    photo: body.photo?body.photo:null,
+                    bio: body.bio
+
                 }, { transaction: transaction })
                 .then( async user => {
                     return createApplicant(body, user, next, transaction);
@@ -123,7 +126,7 @@ module.exports = (app, db) => {
     app.put('/applicant/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
-
+        console.log(updates);
         // let transaction; for updating users table ???
 
         try {
@@ -195,8 +198,9 @@ module.exports = (app, db) => {
 
             applicant.userId = user.id;
             applicant.city = body.city ? body.city : null;
-            applicant.date_born = body.date_born ? body.date_born : null;
+            applicant.dateBorn = body.dateBorn ? body.dateBorn : null;
             applicant.premium = body.premium ? body.premium : null;
+            applicant.rol = body.rol ? body.rol : null;
             
             return db.applicants.create(applicant, { transaction: transaction })
             .catch( err => {

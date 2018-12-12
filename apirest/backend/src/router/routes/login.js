@@ -34,8 +34,12 @@ module.exports = (app, db) => {
             let token = jwt.sign({
                 user
             }, env.JSONWEBTOKEN_SECRET, { expiresIn: env.JSONWEBTOKEN_EXPIRES });
-
-            res.json({
+            
+            // await db.users.update( { where: { email: body.email} }, {
+            //     lastAccess: new Date()
+            // } )
+            
+            return res.json({
                 ok: true,
                 user,
                 token

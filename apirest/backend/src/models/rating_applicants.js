@@ -33,6 +33,8 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
 
+        // overall satisfaction --> FLOAT
+
     }, {
         paranoid: true
     });

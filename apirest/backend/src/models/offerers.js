@@ -20,10 +20,16 @@ module.exports = (sequelize, DataTypes) => {
             }
         },
 
-        work_field: {
-            type: DataTypes.ENUM,
-            values: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'],
-            allowNull: false
+        workField: {
+            type: DataTypes.INTEGER(),
+            allowNull: false,
+            field: 'workField',
+            validate: {
+                isIn: {
+                    args: [[0,1,2,3,4,5,6,7,8]],
+                    msg: "Unknown workField value."
+                }
+            }
         },
 
         cif: {
@@ -34,27 +40,10 @@ module.exports = (sequelize, DataTypes) => {
                 notEmpty: {
                     args: true,
                     msg: "CIF should not be empty."
-                }
-            }
-        },
-
-        date_verification: {
-            type: DataTypes.DATE,
-            validate: {
-                isDate: {
-                    args: true,
-                    msg: "date_verification is not a valid date"
-                }
-            }
-        },
-
-        about_us: {
-            type: DataTypes.TEXT,
-            field: 'about us',
-            validate: {
-                is: {
-                    args: /^[A-Za-zÀ-ÖØ-öø-ÿ0-9,-. ]+$/,
-                    msg: "About us should be a text."
+                },
+                len: {
+                    args: [9,9],
+                    msg: "Invalid CIF length."
                 }
             }
         },
@@ -73,12 +62,18 @@ module.exports = (sequelize, DataTypes) => {
                 }
             }
         },
-
-        company_size: {
-            type: DataTypes.ENUM,
-            values: ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+        
+        companySize: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            validate: {
+                isIn: {
+                    args: [[10,50,100,1000]],
+                    msg: "Invalid companySize value. Only valid 10, 50, 100, or 1.000"
+                }
+            }
         },
-
+        
         year: {
             type: DataTypes.DATE,
             validate: {
@@ -88,19 +83,33 @@ module.exports = (sequelize, DataTypes) => {
                 }
             }
         },
-
+        
         premium: {
-            type: DataTypes.ENUM,
-            values: ['basic', 'premium', 'elite', 'pay as you go'],
-            defaultValue: 'basic',
+            type: DataTypes.INTEGER,
+            defaultValue: 0,
             validate: {
                 isIn: {
-                    args: [["basic","premium", "elite", "pay as you go"]],
-                    msg: "Invalid premium type. Only valid 'basic', 'premium', 'elite' or 'pay as you go'."
+                    args: [[0,1,2]],
+                    msg: "Invalid premium type. Only valid 'basic' (0), 'premium' (1) or 'elite' (2)."
+                }
+            }
+        },
+
+        dateVerification: {
+            type: DataTypes.DATE,
+
+            // allowing nulls for testing
+            allowNull: true,
+            //
+            
+            validate: {
+                isDate: {
+                    args: true,
+                    msg: "dateVerification is not a valid date"
                 }
             }
         }
-
+        
     }, {
         paranoid: true
     });

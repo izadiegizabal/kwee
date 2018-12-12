@@ -42,6 +42,8 @@ module.exports = (sequelize, DateTypes) => {
                 notEmpty: true
             }
         },
+
+        // company (FK DE MOMENTO NO) --> string
     }, {
         paranoid: true
     });

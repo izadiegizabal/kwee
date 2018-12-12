@@ -108,10 +108,6 @@ module.exports = (sequelize, DateTypes) => {
                 notEmpty: {
                     "args": true,
                     "msg": "Location should be filled."
-                },
-                len: {
-                    "args": [5,50],
-                    "msg": "Location sohuld be 5-20 length."
                 }
             }
         },
@@ -130,7 +126,35 @@ module.exports = (sequelize, DateTypes) => {
                     "msg": "Salary should be a number."
                 }
             }
-        }
+        },
+
+
+        /////////////////
+
+        // status --> open, closed, draft, selection (INTs)
+
+        // datePublished
+
+        // * duration --> int
+        // * durationUnit --> enum 0,1,2
+        // * indefinite --> boolean
+
+        // salaryFrecuency --> enum 0,1,2,3
+
+        // salaryCurrency --> string
+
+        // workLocationType --> enum 0,1,2
+
+        // seniority --> enum 0,1,2,3
+
+        // responsabilities --> text 
+
+        // requirements
+
+        // skills --> array strings
+
+
+
     },
     {
         paranoid: true
