@@ -6,6 +6,7 @@ export const TRY_SIGNIN = 'TRY_SIGNIN';
 export const SIGNIN = 'SIGNIN';
 export const LOGOUT = 'LOGOUT';
 export const SET_TOKEN = 'SET_TOKEN';
+export const AUTH_ERROR = 'AUTH_ERROR';
 
 export class TrySignup implements Action {
   readonly type = TRY_SIGNUP;
@@ -40,4 +41,8 @@ export class SetToken implements Action {
   }
 }
 
-export type AuthActions = TrySignup | Signup | TrySignin | Signin | Logout | SetToken;
+export class AuthError implements Action {
+  readonly type = AUTH_ERROR;
+}
+
+export type AuthActions = TrySignup | Signup | TrySignin | Signin | Logout | SetToken | AuthError;

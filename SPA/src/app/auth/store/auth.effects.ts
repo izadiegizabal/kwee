@@ -1,11 +1,10 @@
 import {Injectable} from '@angular/core';
 import * as AuthActions from './auth.actions';
-import {catchError, map, mergeMap, switchMap, tap} from 'rxjs/operators';
+import {catchError, map, mergeMap, share, switchMap, tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {Actions, Effect, ofType} from '@ngrx/effects';
-import {Observable, of, throwError} from 'rxjs';
-import {HttpHeaders} from '@angular/common/http';
-import {HttpClient} from '@angular/common/http';
+import {Observable, of} from 'rxjs';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 
 const apiLocation = 'http://h203.eps.ua.es/api/';
 
@@ -40,10 +39,18 @@ export class AuthEffects {
               }
             ];
           }),
-          catchError(err => throwError(this.handleError('signIn', err)))
+          catchError(err => {
+            return [
+              {
+                type: AuthActions.AUTH_ERROR
+              }
+            ];
+            // throwError(this.handleError('signIn', err));
+          })
         );
       }
-    )
+    ),
+    share()
   );
 
   @Effect({dispatch: false})
