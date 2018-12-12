@@ -108,9 +108,9 @@ module.exports = (app, db) => {
                     name: body.name,
                     password,
                     email: body.email,
-                    
-                    photo: body.photo?body.photo:null,
-                    bio: body.bio?body.bio:null,
+
+                    photo: body.photo,
+                    bio: body.bio,
     
                 }, { transaction: transaction })
                 .then( _user => {
@@ -147,10 +147,25 @@ module.exports = (app, db) => {
             });
 
             if (offerer) {
+
+                let offereruser = true;
+
+                if( updates.password || updates.email || updates.name || updates.snSignIn || updates.root || updates.photo || updates.bio ){
+                    // Update user values
+    
+                    if (updates.password)
+                        updates.password = bcrypt.hashSync(req.body.password, 10);
+    
+                    offereruser = await db.users.update( updates, {
+                        where: { id: id}
+                    })
+                }
+
                 let updated = await db.offerers.update(updates, {
                     where: { userId: id }
                 });
-                if (updated) {
+
+                if (updated && offereruser) {
                     return res.status(200).json({
                         ok: true,
                         message: updates

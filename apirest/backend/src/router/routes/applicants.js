@@ -99,7 +99,7 @@ module.exports = (app, db) => {
                     password: password,
                     email: body.email,
 
-                    photo: body.photo?body.photo:null,
+                    photo: body.photo,
                     bio: body.bio
 
                 }, { transaction: transaction })
@@ -127,22 +127,35 @@ module.exports = (app, db) => {
         const id = req.params.id;
         const updates = req.body;
         console.log(updates);
-        // let transaction; for updating users table ???
 
+        
+        // let transaction; for updating users table ???
+        
         try {
-    
-            if (updates.password)
-                updates.password = bcrypt.hashSync(req.body.password, 10);
 
             let applicant = await db.applicants.findOne({
                 where: { userId: id }
             });
             
             if (applicant) {
+
+                let applicantuser = true;
+
+                if( updates.password || updates.email || updates.name || updates.snSignIn || updates.root || updates.photo || updates.bio ){
+                    // Update user values
+    
+                    if (updates.password)
+                        updates.password = bcrypt.hashSync(req.body.password, 10);
+    
+                    applicantuser = await db.users.update( updates, {
+                        where: { id: id}
+                    })
+                }
+
                 let updated = await db.applicants.update(updates, {
                     where: { userId: id }
                 });
-                if (updated) {
+                if (updated && applicantuser) {
                     return res.status(200).json({
                         ok: true,
                         message: updates
