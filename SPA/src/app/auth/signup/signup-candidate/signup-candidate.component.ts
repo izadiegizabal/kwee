@@ -31,7 +31,7 @@ export class SignupCandidateComponent implements OnInit {
     {value: 5, viewValue: 'Quality Assurance'},
     {value: 6, viewValue: 'Information Technology'},
     {value: 7, viewValue: 'Project Management'},
-    {value: 9, viewValue: 'Product Management'},
+    {value: 8, viewValue: 'Product Management'},
   ];
 
   proficiencies: { value: number, viewValue: string }[] = [
