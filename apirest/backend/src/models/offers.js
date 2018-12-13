@@ -58,7 +58,7 @@ module.exports = (sequelize, DateTypes) => {
             }
         },
 
-        date_start: {
+        dateStart: {
             type: DateTypes.DATE,
             field: 'date_start',
             allowNull: false,
@@ -74,7 +74,7 @@ module.exports = (sequelize, DateTypes) => {
             }
         },
 
-        date_end: {
+        dateEnd: {
             type: DateTypes.DATE,
             field: 'date_end',
             allowNull: false,
@@ -89,10 +89,10 @@ module.exports = (sequelize, DateTypes) => {
                 },
                 startDateAfterEndDate() {
                     const today = new Date();
-                    if (this.date_start >= this.date_end ) {
+                    if (this.dateStart >= this.dateEnd ) {
                         throw new Error('Start date must be before the end date.');
                     }
-                    else if( this.date_start <= today) {
+                    else if( this.dateStart <= today) {
                         throw new Error('Start date must be after today\'s date.');
                     }
                 }
@@ -135,11 +135,12 @@ module.exports = (sequelize, DateTypes) => {
 
         // datePublished
 
-        // * duration --> int
-        // * durationUnit --> enum 0,1,2
+        // @todo and @tocheck
+        // * duration --> int (1,2,3...)
+        // * durationUnit --> enum 0,1,2 = (semana / mes / año)
         // * indefinite --> boolean
 
-        // salaryFrecuency --> enum 0,1,2,3
+        // salaryFrecuency --> enum 0,1,2,3 = (mes / proyecto / ?? )
 
         // salaryCurrency --> string
 

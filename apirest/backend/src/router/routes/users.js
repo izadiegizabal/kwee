@@ -43,12 +43,12 @@ module.exports = (app, db) => {
                 });
 
                 if (user) {
-                    res.status(200).json({
+                    return res.status(200).json({
                         ok: true,
                         user
                     });
                 } else {
-                    res.status(400).json({
+                    return res.status(400).json({
                         ok: false,
                         message: 'User doesn\'t exist'
                     });

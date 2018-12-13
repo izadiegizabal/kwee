@@ -48,8 +48,8 @@ module.exports = (app, db) => {
                 fk_offerer: body.fk_offerer,
                 title: body.title,
                 description: body.description,
-                date_start: body.date_start,
-                date_end: body.date_end,
+                dateStart: body.dateStart,
+                dateEnd: body.dateEnd,
                 location: body.location,
                 salary: body.salary
             }).then( result => {
@@ -61,15 +61,6 @@ module.exports = (app, db) => {
             });
 
         } catch (err) {
-            // error: si INVALIDA FK_OFFERER --> err
-            // error: si alguna validación --> errors[0].message
-            // switch(err){
-            //     case (err instanceof db.models.offers.ForeignKeyConstraintError): 
-            //         console.log("HELOOOOOO----------");
-            //         next({ type: 'error', error: "ForeignKeyConstraintError" });
-
-            //     break;
-            // }
             return next({ type: 'error', error: err.message });
         }
 
