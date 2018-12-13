@@ -8,8 +8,8 @@ import {Observable, of, throwError} from 'rxjs';
 export class AuthService {
 
 
-  // loginURL = 'https://kwee.ovh/api/login';
-  loginURL = 'http://h203.eps.ua.es/api/login';
+   loginURL = 'https://kwee.ovh/api/login';
+ // loginURL = 'http://h203.eps.ua.es/api/login';
   signedIn = false;
 
   constructor(private httpClient: HttpClient) {
@@ -22,6 +22,7 @@ export class AuthService {
     const body = JSON.stringify(user);
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
 
+      console.log(headers);
     console.log(body);
     return this.httpClient.post(this.loginURL, body, {headers: headers}).pipe(
       map(res => {

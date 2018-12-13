@@ -201,7 +201,7 @@ export class SignupCandidateComponent implements OnInit {
       };
 
       // console.log(this.candidate);
-      this._singupService.newUser(this.candidate)
+      this._singupService.newApplicant(this.candidate)
         .subscribe(
           (response) => {
             console.log(response);
