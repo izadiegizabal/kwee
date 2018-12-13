@@ -8,11 +8,11 @@ import {Observable, of, throwError} from 'rxjs';
   providedIn: 'root'
 })
 export class SingupService {
-   candidateURL = 'https://kwee.ovh/api/applicant';
-   offererURL = 'https://kwee.ovh/api/offerer';
+  // candidateURL = 'https://kwee.ovh/api/applicant';
+  // offererURL = 'https://kwee.ovh/api/offerer';
   // candidateURL = 'http://h203.eps.ua.es/api/user';
- // candidateURL = 'localhost:3000/applicant';
-  //offererURL = 'localhost:3000/offerer';
+  candidateURL = 'localhost:3000/applicant';
+  offererURL = 'localhost:3000/offerer';
 
   constructor(private http: HttpClient) {
   }
@@ -20,7 +20,7 @@ export class SingupService {
   newApplicant(candidate: any) {
     const body = JSON.stringify(candidate);
 
-    let headers = new HttpHeaders().set('Content-Type', 'application/json');
+    const headers = new HttpHeaders().set('Content-Type', 'application/json');
     /* headers = headers.set('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2Vy' +
       'Ijp7ImlkIjoxOSwibmFtZSI6InBydWViYTIiLCJlbWFpbCI6InBydWViYTJAYWEuYSIsInJvb3' +
       'QiOnRydWUsImNyZWF0ZWRBdCI6IjIwMTgtMTEtMTdUMTg6MzQ6NDIuMDAwWiIsInVwZGF0ZWRB' +
@@ -42,7 +42,7 @@ export class SingupService {
   newOfferer(offerer: any) {
     const body = JSON.stringify(offerer);
 
-    let headers = new HttpHeaders().set('Content-Type', 'application/json');
+    const headers = new HttpHeaders().set('Content-Type', 'application/json');
 
     // console.log(body);
     // console.log(headers);

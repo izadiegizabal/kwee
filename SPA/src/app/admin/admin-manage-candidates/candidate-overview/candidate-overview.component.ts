@@ -12,56 +12,62 @@ export class CandidateOverviewComponent implements OnInit {
   isPanelOpen = false;
 
   users: {
-    fullname: string,
+    id: number,
+    name: string,
     index: number,
     email: string,
     state: string,
-    subscription: string,
+    premium: string,
     lastAccess: Date,
     signupDate: Date
   }[] = [
     {
-      fullname: 'Izadi Egizabal Alkorta',
+      id: 0,
+      name: 'Izadi Egizabal Alkorta',
       index: 64,
       email: 'hello@izadi.xyz',
       state: 'active',
-      subscription: 'premium',
+      premium: 'premium',
       lastAccess: new Date('2018-11-29T21:24:00'),
       signupDate: new Date('2017-02-01T15:30:00')
     },
     {
-      fullname: 'Alba González Aller',
+      id: 1,
+      name: 'Alba González Aller',
       index: 92,
       email: 'alba.g.aller@gmail.com',
       state: 'temporalBlocked',
-      subscription: 'free',
+      premium: 'free',
       lastAccess: new Date('2018-11-29T21:24:00'),
       signupDate: new Date('2017-02-01T15:30:00')
     },
     {
-      fullname: 'Carlos Aldaravi Coll',
+      id: 2,
+      name: 'Carlos Aldaravi Coll',
       index: 88,
       email: 'caldaravi@gmail.com',
       state: 'active',
-      subscription: 'premium',
+      premium: 'premium',
       lastAccess: new Date('2018-11-29T21:24:00'),
       signupDate: new Date('2017-02-01T15:30:00')
     },
     {
-      fullname: 'Marcos Urios Gómez',
+      id: 3,
+      name: 'Marcos Urios Gómez',
       index: 95,
       email: 'marcosaurios@gmail.com',
       state: 'verPending',
-      subscription: 'free',
+      premium: 'free',
       lastAccess: new Date('2018-11-29T21:24:00'),
       signupDate: new Date('2017-02-01T15:30:00')
     },
     {
-      fullname: 'Flaviu Lucian Georgiu',
+      id: 4,
+      name: 'Flaviu Lucian Georgiu',
       index: 82,
       email: 'flaviu.georgiu97@gmail.com',
       state: 'active',
-      subscription: 'free',
+      premium: 'free',
       lastAccess: new Date('2018-11-29T21:24:00'),
       signupDate: new Date('2017-02-01T15:30:00')
     },
@@ -84,16 +90,16 @@ export class CandidateOverviewComponent implements OnInit {
 
   ngOnInit() {
 
-    /*this._adminService.getApplicants()
+    this._adminService.getUser(0)
       .subscribe(
         (users: any) => {
           console.log(users);
           this.users = users;
         },
         (error) => {
-           console.log(error);
+          console.log(error);
         }
-      );*/
+      );
 
 
     this.userForm = this._formBuilder.group({
@@ -102,7 +108,7 @@ export class CandidateOverviewComponent implements OnInit {
       'password': new FormControl('', Validators.pattern('[a-zA-Z0-9_-ñ]{6,49}$')),
       'password2': new FormControl(''),
       'accountState': new FormControl(null, Validators.required),
-      'subscription': new FormControl(null, Validators.required),
+      'premium': new FormControl(null, Validators.required),
     });
 
     this.userForm.controls['password2'].setValidators([
@@ -131,7 +137,24 @@ export class CandidateOverviewComponent implements OnInit {
     this.userForm.controls['name'].setValue(user.name);
     this.userForm.controls['email'].setValue(user.email);
     this.userForm.controls['accountState'].setValue(user.state);
-    this.userForm.controls['subscription'].setValue(user.subscription);
+    this.userForm.controls['premium'].setValue(user.premium);
+  }
+
+
+  updateApplicant(id) {
+    this.isInEditMode = false;
+    console.log(id);
+
+    /*QUITAR los campos null del formulario*/
+    this._adminService.updateUser(0, id, this.userForm.value)
+      .subscribe(
+        (res) => {
+          console.log(res);
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
   }
 
 }

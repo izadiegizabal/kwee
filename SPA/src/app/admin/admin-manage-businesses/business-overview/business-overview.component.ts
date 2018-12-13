@@ -12,24 +12,26 @@ export class BusinessOverviewComponent implements OnInit {
   isInEditMode = false;
 
   users: {
+    id: number,
     name: string,
     index: number,
     email: string,
     vat: string,
     workField: number,
     state: string,
-    subscription: string,
+    premium: string,
     lastAccess: Date,
     signupDate: Date
   }[] = [
     {
+      id: 0,
       name: 'Google',
       index: 96,
       email: 'hello@google.com',
       vat: '25478963U',
       workField: 5,
       state: 'active',
-      subscription: 'elite',
+      premium: 'elite',
       lastAccess: new Date('2018-11-29T21:24:00'),
       signupDate: new Date('2017-02-01T15:30:00')
     }
@@ -65,7 +67,7 @@ export class BusinessOverviewComponent implements OnInit {
 
   ngOnInit() {
 
-    /*his._adminService.getOfferers()
+    this._adminService.getUser(1)
       .subscribe(
         (users: any) => {
           console.log(users);
@@ -74,7 +76,7 @@ export class BusinessOverviewComponent implements OnInit {
         (error) => {
            console.log(error);
         }
-      );*/
+      );
 
 
     this.userForm = this._formBuilder.group({
@@ -85,7 +87,7 @@ export class BusinessOverviewComponent implements OnInit {
       'password': new FormControl('', Validators.pattern('[a-zA-Z0-9_-ñ]{6,49}$')),
       'password2': new FormControl(''),
       'accountState': new FormControl(null, Validators.required),
-      'subscription': new FormControl(null, Validators.required),
+      'premium': new FormControl(null, Validators.required),
     });
 
     this.userForm.controls['password2'].setValidators(
@@ -113,7 +115,7 @@ export class BusinessOverviewComponent implements OnInit {
     vat: string;
     workField: string;
     state: string;
-    subscription: string;
+    premium: string;
     lastAccess: Date;
     signupDate: Date
   }) {
@@ -122,7 +124,7 @@ export class BusinessOverviewComponent implements OnInit {
     this.userForm.controls['email'].setValue(user.email);
     this.userForm.controls['vat'].setValue(user.vat);
     this.userForm.controls['accountState'].setValue(user.state);
-    this.userForm.controls['subscription'].setValue(user.subscription);
+    this.userForm.controls['premium'].setValue(user.premium);
     this.userForm.controls['workField'].setValue(user.workField);
   }
 
@@ -131,12 +133,19 @@ export class BusinessOverviewComponent implements OnInit {
   }
 
 
-  done() {
-    console.log(this.userForm);
-    console.log(this.userForm.controls['password2'].valid);
+  updateOfferer(id) {
+    this.isInEditMode = false;
+    console.log(id);
 
-    if (this.userForm.valid) {
-      this.isInEditMode = false;
-    }
+    /*QUITAR los campos null del formulario*/
+    this._adminService.updateUser(1, id, this.userForm.value)
+      .subscribe(
+        (res) => {
+          console.log(res);
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
   }
 }

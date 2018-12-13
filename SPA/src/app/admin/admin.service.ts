@@ -8,25 +8,31 @@ import {Observable, of, throwError} from 'rxjs';
   providedIn: 'root'
 })
 export class AdminService {
-  /* applicantURL = 'https://kwee.ovh/api/applicants';
-   offererURL = 'https://kwee.ovh/api/offerers';*/
-  applicantURL = 'http://h203.eps.ua.es/api/applicants';
-  offererURL = 'http://h203.eps.ua.es/api/offerers';
+  url = 'https://kwee.ovh/api';
+
+  // url = 'http://h203.eps.ua.es/api';
 
 
   constructor(private http: HttpClient) {
   }
 
-  getApplicants() {
+  getUser(type: number) {
+
+    let getURL = this.url + '/applicants';
+
+    if (type !== 0) {
+      getURL = this.url + '/offerers';
+    }
+
     const headers = new HttpHeaders().set('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2Vy' +
-      'Ijp7ImlkIjoxOSwibmFtZSI6InBydWViYTIiLCJlbWFpbCI6InBydWViYTJAYWEuYSIsInJvb3' +
-      'QiOnRydWUsImNyZWF0ZWRBdCI6IjIwMTgtMTEtMTdUMTg6MzQ6NDIuMDAwWiIsInVwZGF0ZWRB' +
-      'dCI6IjIwMTgtMTEtMTdUMTg6MzQ6NDIuMDAwWiIsImRlbGV0ZWRBdCI6bnVsbH0sImlhdCI6MT' +
-      'U0MjQ4ODE4NCwiZXhwIjoxODYyNDg0OTg0fQ.id5OUQjtLqbHIhnwKeSLwW0l2ZeLlC-cdrXvJH-9w54');
+      'Ijp7ImlkIjo0LCJuYW1lIjoiQWxiYSIsImVtYWlsIjoiYWxiYTJAZ21haWwuY29tIiwic25fc2lnbmluIjpmYWxzZS' +
+      'wicm9vdCI6ZmFsc2UsImNyZWF0ZWRBdCI6IjIwMTgtMTItMTJUMTI6Mjk6NDQuMDAwWiIsInVwZGF0ZWRBdCI6IjIw' +
+      'MTgtMTItMTJUMTI6Mjk6NDQuMDAwWiIsImRlbGV0ZWRBdCI6bnVsbH0sImlhdCI6MTU0NDYxNzgwNiwiZXhwIjoxOD' +
+      'Y0NjE0NjA2fQ.GNkWHTHXizvW0L3Q9WYbwg6717lmUBP9hmW0MaVwWgo');
 
     // console.log(body);
     // console.log(headers);
-    return this.http.get(this.applicantURL, {headers: headers}).pipe(
+    return this.http.get(getURL, {headers: headers}).pipe(
       map(res => {
         // console.log(res);
         return res;
@@ -35,22 +41,29 @@ export class AdminService {
     );
   }
 
+  updateUser(type: number, id: number, form: any) {
+    let updateURL = this.url + '/applicant';
 
-  getOfferers() {
+    if (type !== 0) {
+      updateURL = this.url + '/offerer';
+    }
+    const body = JSON.stringify(form);
+
     const headers = new HttpHeaders().set('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2Vy' +
-      'Ijp7ImlkIjoxOSwibmFtZSI6InBydWViYTIiLCJlbWFpbCI6InBydWViYTJAYWEuYSIsInJvb3' +
-      'QiOnRydWUsImNyZWF0ZWRBdCI6IjIwMTgtMTEtMTdUMTg6MzQ6NDIuMDAwWiIsInVwZGF0ZWRB' +
-      'dCI6IjIwMTgtMTEtMTdUMTg6MzQ6NDIuMDAwWiIsImRlbGV0ZWRBdCI6bnVsbH0sImlhdCI6MT' +
-      'U0MjQ4ODE4NCwiZXhwIjoxODYyNDg0OTg0fQ.id5OUQjtLqbHIhnwKeSLwW0l2ZeLlC-cdrXvJH-9w54');
+      'Ijp7ImlkIjo0LCJuYW1lIjoiQWxiYSIsImVtYWlsIjoiYWxiYTJAZ21haWwuY29tIiwic25fc2lnbmluIjpmYWxzZS' +
+      'wicm9vdCI6ZmFsc2UsImNyZWF0ZWRBdCI6IjIwMTgtMTItMTJUMTI6Mjk6NDQuMDAwWiIsInVwZGF0ZWRBdCI6IjIw' +
+      'MTgtMTItMTJUMTI6Mjk6NDQuMDAwWiIsImRlbGV0ZWRBdCI6bnVsbH0sImlhdCI6MTU0NDYxNzgwNiwiZXhwIjoxOD' +
+      'Y0NjE0NjA2fQ.GNkWHTHXizvW0L3Q9WYbwg6717lmUBP9hmW0MaVwWgo');
 
-    // console.log(body);
+    console.log(body);
     // console.log(headers);
-    return this.http.get(this.offererURL, {headers: headers}).pipe(
+    console.log(updateURL + '/' + id);
+    return this.http.put(updateURL + '/' + id, body, {headers: headers}).pipe(
       map(res => {
         // console.log(res);
         return res;
       }),
-      catchError(err => throwError(this.handleError('getOfferers', err)))
+      catchError(err => throwError(this.handleError('updateUser', err)))
     );
   }
 

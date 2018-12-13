@@ -165,11 +165,11 @@
           <span class="mat-small">{{'Subscription' | uppercase}}</span>
           <br>
           <div *ngIf="!isInEditMode || !isPanelOpen">
-            {{user.subscription | titlecase }}
+            {{user.premium | titlecase }}
           </div>
           <div *ngIf="isInEditMode && isPanelOpen">
             <mat-form-field>
-              <mat-select [(value)]="user.subscription" formControlName="subscription">
+              <mat-select [(value)]="user.premium" formControlName="premium">
                 <mat-option *ngFor="let subscription of subscriptions" [value]="subscription.value">
                   {{subscription.viewValue}}
                 </mat-option>
@@ -209,7 +209,7 @@
         <button (click)="edit(user)" color="accent" mat-button>Edit</button>
       </div>
       <div *ngIf="isInEditMode && isPanelOpen">
-        <button (click)="done()" color="accent" mat-button>Done</button>
+        <button (click)="updateOfferer(user.id)" color="accent" mat-button>Done</button>
       </div>
       <button color="warn" mat-button>Delete</button>
     </div>
