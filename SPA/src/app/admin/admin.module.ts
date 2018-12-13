@@ -29,7 +29,7 @@ import {OffererNameOverviewModule} from '../shared/offerer-name-overview/offerer
     AdminRoutingModule,
     ReactiveFormsModule,
     SharedModule,
-    OffererNameOverviewModule
+    OffererNameOverviewModule,
   ],
 })
 export class AdminModule {

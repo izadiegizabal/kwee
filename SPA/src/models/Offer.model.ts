@@ -1,19 +1,19 @@
-export class Offer {
+export class OfferModel {
   // Basic info
   id: number;
   title: string;
   companyId: number;
   companyName: string;
   companyIndex: number;
-  companyPhotoUri: string;
+  photoUrl: string;
   status: OfferStatus;
   description: string;
   publishDate: Date;
   selectionStartDate: Date;
 
   // Details
-  startDate: Date;
-  endDate?: Date;
+  duration: number;
+  durationUnit: JobDurationUnit;
   isIndefinite: boolean;
   contractType: ContractType;
   salaryAmount?: number;
@@ -43,9 +43,10 @@ enum ContractType {
 }
 
 enum SalaryFrecuency {
-  PerMonth = 0,
-  PerHour = 1,
-  ForProject = 2,
+  PerHour = 0,
+  PerMonth = 1,
+  PerYear = 2,
+  PerProject = 3,
 }
 
 enum WorkLocationType {
@@ -59,4 +60,10 @@ enum SeniorityLevel {
   Intermediate = 1,
   Senior = 2,
   Lead = 3,
+}
+
+enum JobDurationUnit {
+  Days = 0,
+  Months = 1,
+  Years = 3
 }

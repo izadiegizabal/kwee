@@ -140,7 +140,7 @@ export class SignupOffererComponent implements OnInit {
       // console.log(this.offerer);
 
       // POST new offerer
-      this._singupService.newUser(this.offerer)
+      this._singupService.newOfferer(this.offerer)
         .subscribe(
           (response) => {
             console.log(response);
