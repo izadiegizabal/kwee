@@ -2,6 +2,11 @@ import {Component, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {SingupService} from '../signup.service';
 import {MatDialog, MatStepper} from '@angular/material';
+import {Action, Store} from '@ngrx/store';
+import * as fromApp from '../../../store/app.reducers';
+import * as AuthActions from '../../store/auth.actions';
+import {AuthEffects} from '../../store/auth.effects';
+import {filter} from 'rxjs/operators';
 import {DialogErrorComponent} from '../dialog-error/dialog-error.component';
 
 @Component({
@@ -45,7 +50,10 @@ export class SignupCandidateComponent implements OnInit {
     {value: 7, viewValue: 'Native'},
   ];
 
-  constructor(private _formBuilder: FormBuilder, private _singupService: SingupService, public dialog: MatDialog) {
+  constructor(private _formBuilder: FormBuilder,
+              private _singupService: SingupService,
+              public dialog: MatDialog,
+              private store: Store<fromApp.AppState>, private authEffects: AuthEffects) {
     this.iskill = 0;
     this.iskillang = 0;
     this.iskilex = 0;
@@ -73,7 +81,6 @@ export class SignupCandidateComponent implements OnInit {
   }
 
   ngOnInit() {
-
     this.firstFormGroup = this._formBuilder.group({
       // firstCtrl: ['', Validators.required]
     });
@@ -197,21 +204,36 @@ export class SignupCandidateComponent implements OnInit {
         'password': this.secondFormGroup.controls['password'].value,
         'email': this.secondFormGroup.controls['email'].value,
         'city': this.secondFormGroup.controls['location'].value,
-        'date_born': this.secondFormGroup.controls['birthday'].value
+        'dateBorn': this.secondFormGroup.controls['birthday'].value,
+        'premium': '0',
+        'rol': '0',
       };
 
       // console.log(this.candidate);
-      this._singupService.newApplicant(this.candidate)
-        .subscribe(
-          (response) => {
-            console.log(response);
-            stepper.next();
-          },
-          (error) => {
-            // console.log(error);
-            const dialogRef = this.dialog.open(DialogErrorComponent);
-          }
-        );
+      this.store.dispatch(new AuthActions.TrySignupCandidate(this.candidate));
+      this.authEffects.authSignin.pipe(
+        filter((action: Action) => action.type === AuthActions.SIGNIN)
+      ).subscribe(() => {
+        stepper.next();
+      });
+      this.authEffects.authSignupCandidate.pipe(
+        filter((action: Action) => action.type === AuthActions.AUTH_ERROR)
+      ).subscribe((error: { payload: any, type: string }) => {
+        console.log(error.payload);
+        this.dialog.open(DialogErrorComponent);
+      });
+
+      // this._singupService.newApplicant(this.candidate)
+      //   .subscribe(
+      //     (response) => {
+      //       console.log(response);
+      //       stepper.next();
+      //     },
+      //     (error) => {
+      //       // console.log(error);
+      //       const dialogRef = this.dialog.open(DialogErrorComponent);
+      //     }
+      //   );
     }
   }
 

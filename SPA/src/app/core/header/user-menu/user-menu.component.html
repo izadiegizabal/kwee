@@ -1,8 +1,8 @@
 <mat-menu #menu="matMenu">
   <div class="welcomeMsg">
-    Hi, <strong>{{(authState | async).user.name}}</strong>!
+    Hi, <strong>{{username}}</strong>!
     <br>
-    <a [routerLink]="'/users/' + (authState | async).user.id">View Profile</a>
+    <a [routerLink]="'/users/' + userId">View Profile</a>
   </div>
   <mat-divider></mat-divider>
   <button mat-menu-item>

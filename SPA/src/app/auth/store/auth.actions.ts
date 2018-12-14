@@ -1,8 +1,8 @@
 import {Action} from '@ngrx/store';
 
 
-
-export const TRY_SIGNUP = 'TRY_SIGNUP';
+export const TRY_SIGNUP_CANDIDATE = 'TRY_SIGNUP_CANDIDATE';
+export const TRY_SIGNUP_BUSINESS = 'TRY_SIGNUP_BUSINESS';
 export const SIGNUP = 'SIGNUP';
 export const TRY_SIGNIN = 'TRY_SIGNIN';
 export const SIGNIN = 'SIGNIN';
@@ -11,8 +11,23 @@ export const AUTH_ERROR = 'AUTH_ERROR';
 export const SET_TOKEN = 'SET_TOKEN';
 export const SET_USER = 'SET_USER';
 
-export class TrySignup implements Action {
-  readonly type = TRY_SIGNUP;
+export class TrySignupCandidate implements Action {
+  readonly type = TRY_SIGNUP_CANDIDATE;
+
+  constructor(public payload: {
+    name: string,
+    password: string,
+    email: string,
+    city: string,
+    dateBorn: Date,
+    premium: string,
+    rol: string
+  }) {
+  }
+}
+
+export class TrySignupBusiness implements Action {
+  readonly type = TRY_SIGNUP_BUSINESS;
 
   constructor(public payload: { email: string, password: string }) {
   }
@@ -51,7 +66,15 @@ export class SetUser implements Action {
     email: string,
     id: number,
     name: string
-  }) {}
+  }) {
+  }
 }
 
-export type AuthActions = TrySignup | Signup | TrySignin | Signin | Logout | SetToken | SetUser;
+export class AuthError implements Action {
+  readonly type = AUTH_ERROR;
+
+  constructor(public payload: any) {
+  }
+}
+
+export type AuthActions = TrySignupCandidate | TrySignupBusiness | Signup | TrySignin | Signin | Logout | SetToken | SetUser | AuthError;

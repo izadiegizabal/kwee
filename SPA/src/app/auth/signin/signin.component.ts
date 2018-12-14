@@ -5,6 +5,7 @@ import * as fromApp from '../../store/app.reducers';
 import {AuthEffects} from '../store/auth.effects';
 import * as AuthActions from '../store/auth.actions';
 import {filter} from 'rxjs/operators';
+import {Router} from '@angular/router';
 
 
 @Component({
@@ -17,7 +18,9 @@ export class SigninComponent implements OnInit {
   user: FormGroup;
   hide = false;
 
-  constructor(private _formBuilder: FormBuilder, private store: Store<fromApp.AppState>, private authEffects: AuthEffects) {
+  constructor(private _formBuilder: FormBuilder,
+              private store: Store<fromApp.AppState>, private authEffects: AuthEffects,
+              private router: Router) {
   }
 
   ngOnInit() {
@@ -31,9 +34,15 @@ export class SigninComponent implements OnInit {
     this.store.dispatch(new AuthActions.TrySignin(this.user.value));
     this.authEffects.authSignin.pipe(
       filter((action: Action) => action.type === AuthActions.AUTH_ERROR)
-    ).subscribe(() => {
+    ).subscribe((error: {payload: any, type: string}) => {
+      console.log(error.payload);
       this.user.controls['email'].setErrors({'incorrect': true});
       this.user.controls['password'].setErrors({'incorrect': true});
+    });
+    this.authEffects.authSignin.pipe(
+      filter((action: Action) => action.type === AuthActions.SIGNIN)
+    ).subscribe(() => {
+      this.router.navigate(['/']);
     });
   }
 

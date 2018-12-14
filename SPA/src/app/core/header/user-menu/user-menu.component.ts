@@ -12,12 +12,24 @@ import * as fromAuth from '../../../auth/store/auth.reducers';
 })
 export class UserMenuComponent implements OnInit {
   authState: Observable<fromAuth.State>;
+  username = '';
+  userId = '';
 
   constructor(private store: Store<fromApp.AppState>) {
   }
 
   ngOnInit() {
     this.authState = this.store.pipe(select('auth'));
+    // Listen to changes on store
+    this.authState.pipe(
+      select(s => s.user)
+    ).subscribe(
+      (user) => {
+        if (user && user.name && user.id) {
+          this.username = user.name;
+          this.userId = '' + user.id;
+        }
+      });
   }
 
   logOut() {

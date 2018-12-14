@@ -4,7 +4,7 @@ import {catchError, map, mergeMap, share, switchMap, tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {Actions, Effect, ofType} from '@ngrx/effects';
 import {Observable, of, throwError} from 'rxjs';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class AuthEffects {
   @Effect()
   authSignin = this.actions$.pipe(
     ofType(AuthActions.TRY_SIGNIN),
-    map((action: AuthActions.TrySignup) => {
+    map((action: AuthActions.TrySignin) => {
       return action.payload;
     }),
     switchMap(
@@ -34,7 +34,6 @@ export class AuthEffects {
               updatedAt: Date
             }
           }) => {
-            this.router.navigate(['/']);
             return [
               {
                 type: AuthActions.SIGNIN
@@ -53,14 +52,63 @@ export class AuthEffects {
               }
             ];
           }),
-          catchError(err => {
+          catchError((err: HttpErrorResponse) => {
             throwError(this.handleError('signIn', err));
             return [
               {
-                type: AuthActions.AUTH_ERROR
+                type: AuthActions.AUTH_ERROR,
+                payload: err.error.err.message
               }
             ];
           })
+        );
+      }
+    ),
+    share()
+  );
+
+  @Effect()
+  authSignupCandidate = this.actions$.pipe(
+    ofType(AuthActions.TRY_SIGNUP_CANDIDATE),
+    map((action: AuthActions.TrySignupCandidate) => {
+      return action.payload;
+    }),
+    switchMap(
+      (authData: {
+        name: string,
+        password: string,
+        email: string,
+        city: string,
+        dateBorn: Date,
+        premium: string,
+        rol: string
+      }) => {
+        const body = JSON.stringify(authData);
+        const headers = new HttpHeaders().set('Content-Type', 'application/json');
+        return this.httpClient.post(environment.apiUrl + 'applicant', body, {headers: headers}).pipe(
+          mergeMap((res: {
+            message: string,
+            ok: boolean,
+          }) => {
+            return [
+              {
+                type: AuthActions.SIGNUP,
+              },
+              {
+                type: AuthActions.TRY_SIGNIN,
+                payload: {email: authData.email, password: authData.password}
+              }
+            ];
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('signUp', err));
+            return [
+              {
+                type: AuthActions.AUTH_ERROR,
+                payload: err.error.error
+              }
+            ];
+          }),
         );
       }
     ),
