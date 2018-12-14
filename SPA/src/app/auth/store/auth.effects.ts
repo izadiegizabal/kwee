@@ -115,6 +115,56 @@ export class AuthEffects {
     share()
   );
 
+  @Effect()
+  authSignupBusiness = this.actions$.pipe(
+    ofType(AuthActions.TRY_SIGNUP_BUSINESS),
+    map((action: AuthActions.TrySignupBusiness) => {
+      return action.payload;
+    }),
+    switchMap(
+      (authData: {
+        name: string,
+        password: string,
+        email: string,
+        adress: string,
+        cif: string,
+        workField: string,
+        year: Date,
+        premium: string,
+        companySize: string
+      }) => {
+        const body = JSON.stringify(authData);
+        const headers = new HttpHeaders().set('Content-Type', 'application/json');
+        return this.httpClient.post(environment.apiUrl + 'offerer', body, {headers: headers}).pipe(
+          mergeMap((res: {
+            message: string,
+            ok: boolean,
+          }) => {
+            return [
+              {
+                type: AuthActions.SIGNUP,
+              },
+              {
+                type: AuthActions.TRY_SIGNIN,
+                payload: {email: authData.email, password: authData.password}
+              }
+            ];
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('signUp', err));
+            return [
+              {
+                type: AuthActions.AUTH_ERROR,
+                payload: err.error.error
+              }
+            ];
+          }),
+        );
+      }
+    ),
+    share()
+  );
+
   @Effect({dispatch: false})
   authLogout = this.actions$.pipe(
     ofType(AuthActions.LOGOUT),

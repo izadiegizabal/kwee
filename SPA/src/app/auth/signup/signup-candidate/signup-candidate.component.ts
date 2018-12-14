@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {SingupService} from '../signup.service';
 import {MatDialog, MatStepper} from '@angular/material';
 import {Action, Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
@@ -51,7 +50,6 @@ export class SignupCandidateComponent implements OnInit {
   ];
 
   constructor(private _formBuilder: FormBuilder,
-              private _singupService: SingupService,
               public dialog: MatDialog,
               private store: Store<fromApp.AppState>, private authEffects: AuthEffects) {
     this.iskill = 0;
@@ -222,18 +220,6 @@ export class SignupCandidateComponent implements OnInit {
         console.log(error.payload);
         this.dialog.open(DialogErrorComponent);
       });
-
-      // this._singupService.newApplicant(this.candidate)
-      //   .subscribe(
-      //     (response) => {
-      //       console.log(response);
-      //       stepper.next();
-      //     },
-      //     (error) => {
-      //       // console.log(error);
-      //       const dialogRef = this.dialog.open(DialogErrorComponent);
-      //     }
-      //   );
     }
   }
 
