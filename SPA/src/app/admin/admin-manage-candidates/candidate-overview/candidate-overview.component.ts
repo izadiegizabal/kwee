@@ -16,74 +16,73 @@ export class CandidateOverviewComponent implements OnInit {
     name: string,
     index: number,
     email: string,
-    state: string,
-    premium: string,
+    state: number,
+    premium: number,
     lastAccess: Date,
-    signupDate: Date
+    createdAt: Date
   }[] = [
-    {
+   /* {
       id: 0,
       name: 'Izadi Egizabal Alkorta',
       index: 64,
       email: 'hello@izadi.xyz',
-      state: 'active',
-      premium: 'premium',
+      state: 0,
+      premium: 0,
       lastAccess: new Date('2018-11-29T21:24:00'),
-      signupDate: new Date('2017-02-01T15:30:00')
+      createdAt: new Date('2017-02-01T15:30:00')
     },
     {
       id: 1,
       name: 'Alba González Aller',
       index: 92,
       email: 'alba.g.aller@gmail.com',
-      state: 'temporalBlocked',
-      premium: 'free',
+      state: 1,
+      premium: 1,
       lastAccess: new Date('2018-11-29T21:24:00'),
-      signupDate: new Date('2017-02-01T15:30:00')
+      createdAt: new Date('2017-02-01T15:30:00')
     },
     {
       id: 2,
       name: 'Carlos Aldaravi Coll',
       index: 88,
       email: 'caldaravi@gmail.com',
-      state: 'active',
-      premium: 'premium',
+      state: 0,
+      premium: 0,
       lastAccess: new Date('2018-11-29T21:24:00'),
-      signupDate: new Date('2017-02-01T15:30:00')
+      createdAt: new Date('2017-02-01T15:30:00')
     },
     {
       id: 3,
       name: 'Marcos Urios Gómez',
       index: 95,
       email: 'marcosaurios@gmail.com',
-      state: 'verPending',
-      premium: 'free',
+      state: 2,
+      premium: 0,
       lastAccess: new Date('2018-11-29T21:24:00'),
-      signupDate: new Date('2017-02-01T15:30:00')
+      createdAt: new Date('2017-02-01T15:30:00')
     },
     {
       id: 4,
       name: 'Flaviu Lucian Georgiu',
       index: 82,
       email: 'flaviu.georgiu97@gmail.com',
-      state: 'active',
-      premium: 'free',
+      state: 2,
+      premium: 0,
       lastAccess: new Date('2018-11-29T21:24:00'),
-      signupDate: new Date('2017-02-01T15:30:00')
-    },
+      createdAt: new Date('2017-02-01T15:30:00')
+    },*/
   ];
-  states: { value: string, viewValue: string }[] = [
-    {value: 'active', viewValue: 'Active'},
-    {value: 'blocked', viewValue: 'Blocked'},
-    {value: 'verPending', viewValue: 'Verification Pending'},
+  states: { value: number, viewValue: string }[] = [
+    {value: 0, viewValue: 'Active'},
+    {value: 1, viewValue: 'Blocked'},
+    {value: 2, viewValue: 'Verification Pending'},
   ];
-  subscriptions: { value: string, viewValue: string }[] = [
-    {value: 'free', viewValue: 'Free'},
-    {value: 'premium', viewValue: 'Premium'},
+  subscriptions: { value: number, viewValue: string }[] = [
+    {value: 0, viewValue: 'Free'},
+    {value: 1, viewValue: 'Premium'},
   ];
 
   userForm: FormGroup;
-
 
   constructor(private _formBuilder: FormBuilder, private _adminService: AdminService) {
   }
@@ -93,8 +92,9 @@ export class CandidateOverviewComponent implements OnInit {
     this._adminService.getUser(0)
       .subscribe(
         (users: any) => {
-          console.log(users);
-          this.users = users;
+         // console.log(users);
+          this.users = users.applicants;
+          console.log(this.users);
         },
         (error) => {
           console.log(error);
@@ -146,7 +146,7 @@ export class CandidateOverviewComponent implements OnInit {
     console.log(id);
 
     /*QUITAR los campos null del formulario*/
-    this._adminService.updateUser(0, id, this.userForm.value)
+    /*this._adminService.updateUser(0, id, this.userForm.value)
       .subscribe(
         (res) => {
           console.log(res);
@@ -154,7 +154,7 @@ export class CandidateOverviewComponent implements OnInit {
         (error) => {
           console.log(error);
         }
-      );
+      );*/
   }
 
 }
