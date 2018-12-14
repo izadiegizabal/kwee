@@ -29,7 +29,7 @@ export class SignupOffererComponent implements OnInit {
     {value: 5, viewValue: 'Quality Assurance'},
     {value: 6, viewValue: 'Information Technology'},
     {value: 7, viewValue: 'Project Management'},
-    {value: 9, viewValue: 'Product Management'},
+    {value: 8, viewValue: 'Product Management'},
   ];
 
   companySizes: { value: number, viewValue: string }[] = [
@@ -122,7 +122,7 @@ export class SignupOffererComponent implements OnInit {
   }
 
 
-  onSubmit(stepper: MatStepper) {
+  onSave(stepper: MatStepper) {
     // console.log(this.secondFormGroup);
 
     if (this.secondFormGroup.status === 'VALID') {
@@ -131,13 +131,15 @@ export class SignupOffererComponent implements OnInit {
         'name': this.secondFormGroup.controls['businessName'].value,
         'password': this.secondFormGroup.controls['password'].value,
         'email': this.secondFormGroup.controls['email'].value,
-        'address': this.secondFormGroup.controls['address1'].value,
+        'adress': this.secondFormGroup.controls['address1'].value,
         'cif': this.secondFormGroup.controls['vat'].value,
-        'work_field': this.secondFormGroup.controls['workField'].value,
-        'type': 'o'
+        'workField': this.secondFormGroup.controls['workField'].value,
+        'year': '1997-03-17',
+        'premium': '0',
+        'companySize': '50'
       };
 
-      // console.log(this.offerer);
+       // console.log(this.offerer);
 
       // POST new offerer
       this._singupService.newOfferer(this.offerer)

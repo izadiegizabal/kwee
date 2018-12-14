@@ -11,8 +11,8 @@ export class SingupService {
   // candidateURL = 'https://kwee.ovh/api/applicant';
   // offererURL = 'https://kwee.ovh/api/offerer';
   // candidateURL = 'http://h203.eps.ua.es/api/user';
-  candidateURL = 'localhost:3000/applicant';
-  offererURL = 'localhost:3000/offerer';
+  candidateURL = 'http://h203.eps.ua.es/api/applicant';
+  offererURL = 'http://h203.eps.ua.es/api/offerer';
 
   constructor(private http: HttpClient) {
   }
@@ -27,7 +27,7 @@ export class SingupService {
       'dCI6IjIwMTgtMTEtMTdUMTg6MzQ6NDIuMDAwWiIsImRlbGV0ZWRBdCI6bnVsbH0sImlhdCI6MT' +
       'U0MjQ4ODE4NCwiZXhwIjoxODYyNDg0OTg0fQ.id5OUQjtLqbHIhnwKeSLwW0l2ZeLlC-cdrXvJH-9w54');
     */
-    // console.log(body);
+    //  console.log(body);
     // console.log(headers);
     return this.http.post(this.candidateURL, body, {headers: headers}).pipe(
       map(res => {

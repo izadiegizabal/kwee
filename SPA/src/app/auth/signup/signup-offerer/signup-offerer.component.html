@@ -44,7 +44,7 @@
 
 
   <mat-step [stepControl]="secondFormGroup" editable="false">
-    <form (ngSubmit)="onSubmit(stepper)" [formGroup]="secondFormGroup">
+    <form [formGroup]="secondFormGroup">
       <ng-template matStepLabel>Fill in your info</ng-template>
 
 
@@ -194,7 +194,7 @@
         <br>
         <div fxLayout="row" fxLayoutAlign="end">
           <button color="primary" mat-button matStepperPrevious>Back</button>
-          <button (click)="onSubmit(stepper);" color="accent" mat-button type="submit">Sign Up!</button>
+          <button (click)="onSave(stepper);" color="accent" mat-button type="submit">Sign Up!</button>
         </div>
       </div>
     </form>

@@ -197,7 +197,9 @@ export class SignupCandidateComponent implements OnInit {
         'password': this.secondFormGroup.controls['password'].value,
         'email': this.secondFormGroup.controls['email'].value,
         'city': this.secondFormGroup.controls['location'].value,
-        'date_born': this.secondFormGroup.controls['birthday'].value
+        'dateBorn': this.secondFormGroup.controls['birthday'].value,
+        'premium': '0',
+        'rol': this.secondFormGroup.controls['role'].value
       };
 
       // console.log(this.candidate);
@@ -208,7 +210,7 @@ export class SignupCandidateComponent implements OnInit {
             stepper.next();
           },
           (error) => {
-            // console.log(error);
+             // console.log(error);
             const dialogRef = this.dialog.open(DialogErrorComponent);
           }
         );
