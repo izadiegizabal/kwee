@@ -10,9 +10,9 @@ import {Observable, of, throwError} from 'rxjs';
 export class SingupService {
   // candidateURL = 'https://kwee.ovh/api/applicant';
   // offererURL = 'https://kwee.ovh/api/offerer';
-  candidateURL = 'http://h203.eps.ua.es/api/user';
-  // candidateURL = 'localhost:3000/applicant';
-  offererURL = 'localhost:3000/offerer';
+  // candidateURL = 'http://h203.eps.ua.es/api/user';
+  candidateURL = 'http://h203.eps.ua.es/api/applicant';
+  offererURL = 'http://h203.eps.ua.es/api/offerer';
 
   constructor(private http: HttpClient) {
   }

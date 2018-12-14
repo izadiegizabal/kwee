@@ -8,7 +8,7 @@ import {Observable, of, throwError} from 'rxjs';
   providedIn: 'root'
 })
 export class AdminService {
-  url = 'https://kwee.ovh/api';
+  url = 'http://h203.eps.ua.es/api';
 
   // url = 'http://h203.eps.ua.es/api';
 

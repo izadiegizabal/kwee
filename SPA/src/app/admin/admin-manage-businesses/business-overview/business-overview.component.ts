@@ -16,25 +16,25 @@ export class BusinessOverviewComponent implements OnInit {
     name: string,
     index: number,
     email: string,
-    vat: string,
+    cif: string,
     workField: number,
-    state: string,
-    premium: string,
+    state: number,
+    premium: number,
     lastAccess: Date,
-    signupDate: Date
+    createdAt: Date
   }[] = [
-    {
+    /*{
       id: 0,
       name: 'Google',
       index: 96,
       email: 'hello@google.com',
-      vat: '25478963U',
+      cif: '25478963U',
       workField: 5,
       state: 'active',
       premium: 'elite',
       lastAccess: new Date('2018-11-29T21:24:00'),
-      signupDate: new Date('2017-02-01T15:30:00')
-    }
+      createdAt: new Date('2017-02-01T15:30:00')
+    }*/
   ];
 
   workFields: { value: number, viewValue: string }[] = [
@@ -48,16 +48,16 @@ export class BusinessOverviewComponent implements OnInit {
     {value: 7, viewValue: 'Project Management'},
     {value: 9, viewValue: 'Product Management'},
   ];
-  states: { value: string, viewValue: string }[] = [
-    {value: 'active', viewValue: 'Active'},
-    {value: 'verPending', viewValue: 'Verification Pending'},
-    {value: 'valPending', viewValue: 'Validation Pending'},
-    {value: 'blocked', viewValue: 'Blocked'},
+  states: { value: number, viewValue: string }[] = [
+    {value: 0, viewValue: 'Active'},
+    {value: 1, viewValue: 'Verification Pending'},
+    {value: 2, viewValue: 'Validation Pending'},
+    {value: 3, viewValue: 'Blocked'},
   ];
-  subscriptions: { value: string, viewValue: string }[] = [
-    {value: 'free', viewValue: 'Free / Pay-as-you-go'},
-    {value: 'premium', viewValue: 'Premium'},
-    {value: 'elite', viewValue: 'Elite'},
+  subscriptions: { value: number, viewValue: string }[] = [
+    {value: 0, viewValue: 'Free / Pay-as-you-go'},
+    {value: 1, viewValue: 'Premium'},
+    {value: 2, viewValue: 'Elite'},
   ];
 
   userForm: FormGroup;
@@ -71,7 +71,9 @@ export class BusinessOverviewComponent implements OnInit {
       .subscribe(
         (users: any) => {
           console.log(users);
-          this.users = users;
+          this.users = users.offerers;
+          console.log(this.users);
+
         },
         (error) => {
            console.log(error);
@@ -138,7 +140,7 @@ export class BusinessOverviewComponent implements OnInit {
     console.log(id);
 
     /*QUITAR los campos null del formulario*/
-    this._adminService.updateUser(1, id, this.userForm.value)
+    /*this._adminService.updateUser(1, id, this.userForm.value)
       .subscribe(
         (res) => {
           console.log(res);
@@ -146,6 +148,6 @@ export class BusinessOverviewComponent implements OnInit {
         (error) => {
           console.log(error);
         }
-      );
+      );*/
   }
 }

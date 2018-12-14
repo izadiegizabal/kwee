@@ -206,7 +206,7 @@ export class SignupCandidateComponent implements OnInit {
         'city': this.secondFormGroup.controls['location'].value,
         'dateBorn': this.secondFormGroup.controls['birthday'].value,
         'premium': '0',
-        'rol': '0',
+        'rol': this.secondFormGroup.controls['role'].value
       };
 
       // console.log(this.candidate);

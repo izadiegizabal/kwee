@@ -107,7 +107,7 @@
           <span class="mat-small">{{'Account State' | uppercase}}</span>
           <br>
           <div *ngIf="!isInEditMode || !isPanelOpen">
-            {{user.state | titlecase}}
+            Active<!--{{ states[user.status].viewValue| titlecase}}-->
           </div>
           <div *ngIf="isInEditMode && isPanelOpen">
             <mat-form-field>
@@ -123,7 +123,7 @@
           <span class="mat-small">{{'Subscription' | uppercase}}</span>
           <br>
           <div *ngIf="!isInEditMode || !isPanelOpen">
-            {{user.premium | titlecase}}
+            {{subscriptions[user.premium].viewValue | titlecase}}
           </div>
           <div *ngIf="isInEditMode && isPanelOpen">
             <mat-form-field>
@@ -149,7 +149,7 @@
         <p>
           <span class="mat-small">{{'Sign Up time' | uppercase}}</span>
           <br>
-          {{user.signupDate | date:'d/M/y, HH:mm' | titlecase}}
+          {{user.createdAt | date:'d/M/y, HH:mm' | titlecase}}
         </p>
       </div>
     </div>
