@@ -3,10 +3,9 @@ import * as AuthActions from './auth.actions';
 import {catchError, map, mergeMap, share, switchMap, tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {Actions, Effect, ofType} from '@ngrx/effects';
-import {Observable, of} from 'rxjs';
+import {Observable, of, throwError} from 'rxjs';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-
-const apiLocation = 'http://h203.eps.ua.es/api/';
+import {environment} from '../../../environments/environment';
 
 @Injectable()
 export class AuthEffects {
@@ -20,13 +19,20 @@ export class AuthEffects {
       (authData: { email: string, password: string }) => {
         const body = JSON.stringify({email: authData.email, password: authData.password});
         const headers = new HttpHeaders().set('Content-Type', 'application/json');
-
-        console.log(body);
-        return this.httpClient.post(apiLocation + 'login', body, {headers: headers}).pipe(
+        return this.httpClient.post(environment.apiUrl + 'login', body, {headers: headers}).pipe(
           mergeMap((res: {
             ok: string,
             token: string,
-            user: {}
+            user: {
+              createdAt: Date
+              deletedAt: Date
+              email: string
+              id: number
+              name: string
+              root: boolean
+              sn_signin: boolean
+              updatedAt: Date
+            }
           }) => {
             this.router.navigate(['/']);
             return [
@@ -36,16 +42,24 @@ export class AuthEffects {
               {
                 type: AuthActions.SET_TOKEN,
                 payload: res.token
+              },
+              {
+                type: AuthActions.SET_USER,
+                payload: {
+                  email: res.user.email,
+                  id: res.user.id,
+                  name: res.user.name
+                }
               }
             ];
           }),
           catchError(err => {
+            throwError(this.handleError('signIn', err));
             return [
               {
                 type: AuthActions.AUTH_ERROR
               }
             ];
-            // throwError(this.handleError('signIn', err));
           })
         );
       }

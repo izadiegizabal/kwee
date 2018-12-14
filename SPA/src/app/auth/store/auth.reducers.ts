@@ -3,11 +3,17 @@ import * as AuthActions from './auth.actions';
 export interface State {
   token: string;
   authenticated: boolean;
+  user: {
+    email: string,
+    id: number,
+    name: string
+  };
 }
 
 const initialState: State = {
   token: null,
-  authenticated: false
+  authenticated: false,
+  user: null
 };
 
 export function authReducer(state = initialState, action: AuthActions.AuthActions) {
@@ -22,12 +28,18 @@ export function authReducer(state = initialState, action: AuthActions.AuthAction
       return {
         ...state,
         token: null,
-        authenticated: false
+        authenticated: false,
+        user: null,
       };
     case AuthActions.SET_TOKEN:
       return {
         ...state,
         token: action.payload
+      };
+    case AuthActions.SET_USER:
+      return {
+        ...state,
+        user: action.payload
       };
     default:
       return state;
