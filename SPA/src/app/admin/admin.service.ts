@@ -70,6 +70,31 @@ export class AdminService {
   }
 
 
+  deleteUser(type: number, id: number) {
+    let updateURL = this.url + '/applicant';
+
+    if (type !== 0) {
+      updateURL = this.url + '/offerer';
+    }
+
+    let headers = new HttpHeaders().set('Content-Type', 'application/json');
+    headers = headers.set('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjo' +
+      '5LCJuYW1lIjoiQWxiYSBHb256w6FsZXogQWxsZXIiLCJlbWFpbCI6ImFsYmFAZ21haWwuY29tIiwic25TaWduSW4iOmZhbHNlLCJy' +
+      'b290Ijp0cnVlLCJwaG90byI6bnVsbCwiYmlvIjoiSGVyZSB5b3UgaGF2ZSBhIHBsYWNlIHRvIGRlZmluZSB5b3Vyc2VsZiIsImxhc' +
+      '3RBY2Nlc3MiOiIyMDE4LTEyLTE0VDE4OjQ0OjAzLjAwMFoiLCJpbmRleCI6MCwic3RhdHVzIjowLCJjcmVhdGVkQXQiOiIyMDE4LT' +
+      'EyLTE0VDE4OjQ0OjAzLjAwMFoiLCJ1cGRhdGVkQXQiOiIyMDE4LTEyLTE0VDE4OjQ0OjAzLjAwMFoiLCJkZWxldGVkQXQiOm51bGx' +
+      '9LCJpYXQiOjE1NDQ4MjM1ODAsImV4cCI6MTg2NDgyMDM4MH0.PilcT7-QCL8drV3xB1yqgtCLgDE80rkIL6j-tlOmqk8');
+
+    return this.http.delete(updateURL + '/' + id, {headers: headers}).pipe(
+      map(res => {
+        // console.log(res);
+        return res;
+      }),
+      catchError(err => throwError(this.handleError('deleteUser', err)))
+    );
+  }
+
+
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
 

@@ -179,4 +179,18 @@ export class CandidateOverviewComponent implements OnInit {
     }
   }
 
+
+  deleteApplicant(id) {
+    this._adminService.deleteUser(0, id)
+      .subscribe(
+        (res) => {
+          console.log(res);
+          this.ngOnInit();
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+  }
+
 }

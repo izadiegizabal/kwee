@@ -211,7 +211,7 @@
       <div *ngIf="isInEditMode && isPanelOpen">
         <button (click)="updateOfferer(user.id)" color="accent" mat-button>Done</button>
       </div>
-      <button color="warn" mat-button>Delete</button>
+      <button (click)="deleteOfferer(user.id)" color="warn" mat-button>Delete</button>
     </div>
   </mat-expansion-panel>
 </mat-accordion>

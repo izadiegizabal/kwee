@@ -176,4 +176,18 @@ export class BusinessOverviewComponent implements OnInit {
       console.log(this.userForm);
     }
   }
+
+
+  deleteOfferer(id) {
+    this._adminService.deleteUser(1, id)
+      .subscribe(
+        (res) => {
+          console.log(res);
+          this.ngOnInit();
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+  }
 }
