@@ -1,6 +1,6 @@
 <mat-accordion fxFlex="99%">
   <mat-expansion-panel
-    (closed)="isPanelOpen = !isPanelOpen; isInEditMode = false"
+    (closed)="isPanelOpen = !isPanelOpen; isInEditMode = false; userForm.reset()"
     (opened)="isPanelOpen = !isPanelOpen; isInEditMode = false"
     *ngFor="let user of users;" [formGroup]="userForm">
     <mat-expansion-panel-header>
@@ -163,7 +163,7 @@
         <button (click)="edit(user)" color="accent" mat-button>Edit</button>
       </div>
       <div *ngIf="isInEditMode && isPanelOpen">
-        <button (click)="updateApplicant(user.id)" color="accent" mat-button>Done</button>
+        <button (click)="updateApplicant(user.id)" color="accent" mat-button type="submit">Done</button>
       </div>
       <button color="warn" mat-button>Delete</button>
     </div>

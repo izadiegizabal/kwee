@@ -49,15 +49,17 @@ export class AdminService {
     }
     const body = JSON.stringify(form);
 
-    const headers = new HttpHeaders().set('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2Vy' +
-      'Ijp7ImlkIjo0LCJuYW1lIjoiQWxiYSIsImVtYWlsIjoiYWxiYTJAZ21haWwuY29tIiwic25fc2lnbmluIjpmYWxzZS' +
-      'wicm9vdCI6ZmFsc2UsImNyZWF0ZWRBdCI6IjIwMTgtMTItMTJUMTI6Mjk6NDQuMDAwWiIsInVwZGF0ZWRBdCI6IjIw' +
-      'MTgtMTItMTJUMTI6Mjk6NDQuMDAwWiIsImRlbGV0ZWRBdCI6bnVsbH0sImlhdCI6MTU0NDYxNzgwNiwiZXhwIjoxOD' +
-      'Y0NjE0NjA2fQ.GNkWHTHXizvW0L3Q9WYbwg6717lmUBP9hmW0MaVwWgo');
+    let headers = new HttpHeaders().set('Content-Type', 'application/json');
+    headers = headers.set('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjo' +
+      '5LCJuYW1lIjoiQWxiYSBHb256w6FsZXogQWxsZXIiLCJlbWFpbCI6ImFsYmFAZ21haWwuY29tIiwic25TaWduSW4iOmZhbHNlLCJy' +
+      'b290Ijp0cnVlLCJwaG90byI6bnVsbCwiYmlvIjoiSGVyZSB5b3UgaGF2ZSBhIHBsYWNlIHRvIGRlZmluZSB5b3Vyc2VsZiIsImxhc' +
+      '3RBY2Nlc3MiOiIyMDE4LTEyLTE0VDE4OjQ0OjAzLjAwMFoiLCJpbmRleCI6MCwic3RhdHVzIjowLCJjcmVhdGVkQXQiOiIyMDE4LT' +
+      'EyLTE0VDE4OjQ0OjAzLjAwMFoiLCJ1cGRhdGVkQXQiOiIyMDE4LTEyLTE0VDE4OjQ0OjAzLjAwMFoiLCJkZWxldGVkQXQiOm51bGx' +
+      '9LCJpYXQiOjE1NDQ4MjM1ODAsImV4cCI6MTg2NDgyMDM4MH0.PilcT7-QCL8drV3xB1yqgtCLgDE80rkIL6j-tlOmqk8');
 
-    console.log(body);
+    // console.log(body);
     // console.log(headers);
-    console.log(updateURL + '/' + id);
+    // console.log(updateURL + '/' + id);
     return this.http.put(updateURL + '/' + id, body, {headers: headers}).pipe(
       map(res => {
         // console.log(res);

@@ -10,6 +10,8 @@ import {AdminService} from '../../admin.service';
 export class BusinessOverviewComponent implements OnInit {
   isPanelOpen = false;
   isInEditMode = false;
+  updateuser: any;
+
 
   users: {
     id: number,
@@ -66,39 +68,27 @@ export class BusinessOverviewComponent implements OnInit {
   }
 
   ngOnInit() {
-
-    this._adminService.getUser(1)
-      .subscribe(
-        (users: any) => {
-          console.log(users);
-          this.users = users.offerers;
-          console.log(this.users);
-
-        },
-        (error) => {
-           console.log(error);
-        }
-      );
-
+    this.getUsers();
 
     this.userForm = this._formBuilder.group({
       'name': new FormControl(null, Validators.required),
       'email': new FormControl(null, [Validators.required, Validators.email]),
       'vat': new FormControl(null, Validators.required),
-      'workField': new FormControl(null, Validators.required),
+      'workField': new FormControl(0, Validators.required),
       'password': new FormControl('', Validators.pattern('[a-zA-Z0-9_-ñ]{6,49}$')),
       'password2': new FormControl(''),
-      'accountState': new FormControl(null, Validators.required),
-      'premium': new FormControl(null, Validators.required),
+      'accountState': new FormControl(0, Validators.required),
+      'premium': new FormControl(0, Validators.required),
     });
 
-    this.userForm.controls['password2'].setValidators(
+    this.userForm.controls['password2'].setValidators([
       this.samePassword.bind(this.userForm),
-    );
+    ]);
 
     this.userForm.controls['password'].valueChanges.subscribe(value => {
-      this.userForm.controls['password2'].updateValueAndValidity();
-      console.log(this.userForm.controls['password2']);
+      if (this.userForm.controls['password'].value !== null && this.userForm.controls['password'].value !== '') {
+        this.userForm.controls['password2'].updateValueAndValidity();
+      }
     });
   }
 
@@ -110,22 +100,22 @@ export class BusinessOverviewComponent implements OnInit {
     return null;
   }
 
-  edit(user: {
+  edit(user/*: {
     name: string;
     index: number;
     email: string;
-    vat: string;
+    cif: string;
     workField: string;
     state: string;
     premium: string;
     lastAccess: Date;
     signupDate: Date
-  }) {
+  }*/) {
     this.isInEditMode = true;
     this.userForm.controls['name'].setValue(user.name);
     this.userForm.controls['email'].setValue(user.email);
-    this.userForm.controls['vat'].setValue(user.vat);
-    this.userForm.controls['accountState'].setValue(user.state);
+    this.userForm.controls['vat'].setValue(user.cif);
+    // this.userForm.controls['accountState'].setValue(user.status);
     this.userForm.controls['premium'].setValue(user.premium);
     this.userForm.controls['workField'].setValue(user.workField);
   }
@@ -135,19 +125,55 @@ export class BusinessOverviewComponent implements OnInit {
   }
 
 
-  updateOfferer(id) {
-    this.isInEditMode = false;
-    console.log(id);
-
-    /*QUITAR los campos null del formulario*/
-    /*this._adminService.updateUser(1, id, this.userForm.value)
+  getUsers() {
+    this._adminService.getUser(1)
       .subscribe(
-        (res) => {
-          console.log(res);
+        (users: any) => {
+          console.log(users);
+          this.users = users.offerers;
+          // console.log(this.users);
+
         },
         (error) => {
           console.log(error);
         }
-      );*/
+      );
+  }
+
+  updateOfferer(id) {
+
+    if (this.userForm.status === 'VALID') {
+      this.isInEditMode = false;
+      this.isPanelOpen = !this.isPanelOpen;
+
+      this.updateuser = {
+        'name': this.userForm.controls['name'].value,
+        'email': this.userForm.controls['email'].value,
+        'cif': this.userForm.controls['vat'].value,
+        'workField': this.userForm.controls['workField'].value,
+        // 'status': this.userForm.controls['accountState'].value,
+        'premium': this.userForm.controls['premium'].value,
+      };
+
+      if (this.userForm.controls['password'].value !== null && this.userForm.controls['password'].value !== '') {
+        this.updateuser['password'] = this.userForm.controls['password'].value;
+      }
+
+      // console.log(this.updateuser);
+
+      this._adminService.updateUser(1, id, this.updateuser)
+        .subscribe(
+          (res) => {
+            console.log(res);
+            this.ngOnInit();
+          },
+          (error) => {
+            console.log(error);
+            this.ngOnInit();
+          }
+        );
+    } else {
+      console.log(this.userForm);
+    }
   }
 }
