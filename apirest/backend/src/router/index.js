@@ -20,6 +20,7 @@ const routes = [
     require('./routes/messages'),
     require('./routes/comments'),
     require('./routes/login'),
+    require('./routes/verifyEmail'),
     require('./routes/login/github'),
     require('./routes/login/google'),
     require('./routes/login/linkedin'),

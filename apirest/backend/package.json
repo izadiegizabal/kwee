@@ -20,6 +20,7 @@
         "jsonwebtoken": "^8.4.0",
         "morgan": "^1.9.1",
         "mysql2": "^1.6.2",
+        "nodemailer": "^4.7.0",
         "passport": "^0.4.0",
         "passport-github2": "^0.1.11",
         "passport-instagram": "^1.0.0",
