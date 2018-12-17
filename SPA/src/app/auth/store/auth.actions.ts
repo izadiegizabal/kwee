@@ -65,7 +65,8 @@ export class SetUser implements Action {
   constructor(public payload: {
     email: string,
     id: number,
-    name: string
+    name: string,
+    root: boolean
   }) {
   }
 }

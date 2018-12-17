@@ -6,7 +6,8 @@ export interface State {
   user: {
     email: string,
     id: number,
-    name: string
+    name: string,
+    root: boolean
   };
 }
 

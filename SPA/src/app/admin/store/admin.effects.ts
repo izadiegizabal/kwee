@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Actions, Effect, ofType} from '@ngrx/effects';
-import {catchError, map, mergeMap, share, withLatestFrom} from 'rxjs/operators';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {catchError, map, share, switchMap, withLatestFrom} from 'rxjs/operators';
+import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {Observable, of, throwError} from 'rxjs';
 import * as AdminActions from './admin.actions';
@@ -15,11 +15,11 @@ export class AdminEffects {
   adminGetCandidates = this.actions$.pipe(
     ofType(AdminActions.TRY_GET_CANDIDATES),
     withLatestFrom(this.store$.pipe(select(state => state.auth))),
-    mergeMap(([action, authState]) => {
-        const getUrl = environment.apiUrl + 'applicants';
+    switchMap(([payload, authState]) => {
+        const apiEndpointUrl = environment.apiUrl + 'applicants';
         const token = authState.token;
         const headers = new HttpHeaders().set('token', token);
-        return this.httpClient.get(getUrl, {headers: headers}).pipe(
+        return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
           map((res: {
             ok: boolean,
             applicants: any[]
@@ -29,7 +29,184 @@ export class AdminEffects {
               payload: res.applicants
             };
           }),
-          catchError(err => throwError(this.handleError('getApplicants', err)))
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('getCandidates', err));
+            return [
+              {
+                type: AdminActions.OPERATION_ERROR,
+                payload: err.error.error
+              }
+            ];
+          })
+        );
+      }
+    ),
+    share()
+  );
+
+  @Effect()
+  adminGetBusinesses = this.actions$.pipe(
+    ofType(AdminActions.TRY_GET_BUSINESSES),
+    withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    switchMap(([payload, authState]) => {
+        const apiEndpointUrl = environment.apiUrl + 'offerers';
+        const token = authState.token;
+        const headers = new HttpHeaders().set('token', token);
+        return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
+          map((res: {
+            ok: boolean,
+            offerers: any[]
+          }) => {
+            return {
+              type: AdminActions.SET_BUSINESSES,
+              payload: res.offerers
+            };
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('getBusinesses', err));
+            return [
+              {
+                type: AdminActions.OPERATION_ERROR,
+                payload: err.error.error
+              }
+            ];
+          })
+        );
+      }
+    ),
+    share()
+  );
+
+  @Effect()
+  adminUpdateCandidate = this.actions$.pipe(
+    ofType(AdminActions.TRY_UPDATE_CANDIDATE),
+    map((action: AdminActions.TryUpdateCandidate) => {
+      return action.payload;
+    }),
+    withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    switchMap(([payload, authState]) => {
+        const apiEndpointUrl = environment.apiUrl + 'applicant/' + payload.id;
+        const token = authState.token;
+        const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+        const body = JSON.stringify(payload.updatedCandidate);
+
+        return this.httpClient.put(apiEndpointUrl, body, {headers: headers}).pipe(
+          map(() => {
+            return {
+              type: AdminActions.UPDATE_CANDIDATE,
+              payload: {id: payload.id, updatedCandidate: payload.updatedCandidate}
+            };
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('updateCandidate', err));
+            return [
+              {
+                type: AdminActions.OPERATION_ERROR,
+                payload: err.error.error
+              }
+            ];
+          })
+        );
+      }
+    ),
+    share()
+  );
+
+  @Effect()
+  adminUpdateBusiness = this.actions$.pipe(
+    ofType(AdminActions.TRY_UPDATE_BUSINESS),
+    map((action: AdminActions.TryUpdateBusiness) => {
+      return action.payload;
+    }),
+    withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    switchMap(([payload, authState]) => {
+        const apiEndpointUrl = environment.apiUrl + 'offerer/' + payload.id;
+        const token = authState.token;
+        const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+        const body = JSON.stringify(payload.updatedBusiness);
+
+        return this.httpClient.put(apiEndpointUrl, body, {headers: headers}).pipe(
+          map(() => {
+            return {
+              type: AdminActions.UPDATE_BUSINESS,
+              payload: {id: payload.id, updatedBusiness: payload.updatedBusiness}
+            };
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('updateBusiness', err));
+            return [
+              {
+                type: AdminActions.OPERATION_ERROR,
+                payload: err.error.error
+              }
+            ];
+          })
+        );
+      }
+    ),
+    share()
+  );
+
+  @Effect()
+  adminDeleteCandidate = this.actions$.pipe(
+    ofType(AdminActions.TRY_DELETE_CANDIDATE),
+    map((action: AdminActions.TryDeleteCandidate) => {
+      return action.payload;
+    }),
+    withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    switchMap(([payload, authState]) => {
+        const apiEndpointUrl = environment.apiUrl + 'applicant/' + payload;
+        const token = authState.token;
+        const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+        return this.httpClient.delete(apiEndpointUrl, {headers: headers}).pipe(
+          map(() => {
+            return {
+              type: AdminActions.DELETE_CANDIDATE,
+              payload: payload
+            };
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('deleteCandidate', err));
+            return [
+              {
+                type: AdminActions.OPERATION_ERROR,
+                payload: err.error.err.message
+              }
+            ];
+          })
+        );
+      }
+    ),
+    share()
+  );
+
+  @Effect()
+  adminDeleteBusiness = this.actions$.pipe(
+    ofType(AdminActions.TRY_DELETE_BUSINESS),
+    map((action: AdminActions.TryDeleteBusiness) => {
+      return action.payload;
+    }),
+    withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    switchMap(([payload, authState]) => {
+        const apiEndpointUrl = environment.apiUrl + 'offerer/' + payload;
+        const token = authState.token;
+        const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+        return this.httpClient.delete(apiEndpointUrl, {headers: headers}).pipe(
+          map(() => {
+            return {
+              type: AdminActions.DELETE_BUSINESS,
+              payload: payload
+            };
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('deleteBusiness', err));
+            return [
+              {
+                type: AdminActions.OPERATION_ERROR,
+                payload: err.error.err.message
+              }
+            ];
+          })
         );
       }
     ),

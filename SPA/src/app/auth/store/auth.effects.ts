@@ -47,7 +47,8 @@ export class AuthEffects {
                 payload: {
                   email: res.user.email,
                   id: res.user.id,
-                  name: res.user.name
+                  name: res.user.name,
+                  root: res.user.root
                 }
               }
             ];

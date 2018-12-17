@@ -2,11 +2,11 @@
   <mat-expansion-panel
     (closed)="isPanelOpen = !isPanelOpen; isInEditMode = false; userForm.reset()"
     (opened)="isPanelOpen = !isPanelOpen; isInEditMode = false"
-    *ngFor="let user of (candidateState | async).candidates;" [formGroup]="userForm">
+    *ngFor="let user of (adminState | async).candidates;" [formGroup]="userForm">
     <mat-expansion-panel-header>
       <mat-panel-title fxFlex="75%"
                        fxFlex.gt-lg="30%" fxFlex.gt-md="35%" fxFlex.gt-sm="40%" fxLayoutAlign="start center">
-        <app-offerer-name-overview [index]="user.index" [name]="user.name"></app-offerer-name-overview>
+        <app-offerer-name-overview [index]="user.index? user.index: 88" [name]="user.name"></app-offerer-name-overview>
       </mat-panel-title>
       <mat-panel-description
         fxFlex="25%"
@@ -24,7 +24,7 @@
              fxLayout="row"
              fxLayoutAlign="start center" fxShow.gt-lg>
           <mat-icon class="svg" color="primary" svgIcon="access-time"></mat-icon>
-          <span>{{user.lastAccess | date:'d/M/y, HH:mm'}}</span>
+          <span>{{user.lastAccess| date:'d/M/y, HH:mm'}}</span>
         </div>
         <mat-chip-list fxHide fxShow.gt-sm>
           <mat-chip color="primary" selected style="pointer-events: none">{{user.state | titlecase}}</mat-chip>

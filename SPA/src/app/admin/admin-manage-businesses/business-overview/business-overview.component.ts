@@ -1,6 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {AdminService} from '../../admin.service';
+import {Action, select, Store} from '@ngrx/store';
+import * as fromApp from '../../../store/app.reducers';
+import * as AdminActions from '../../store/admin.actions';
+import {Observable} from 'rxjs';
+import * as fromAdmin from '../../store/admin.reducers';
+import {filter} from 'rxjs/operators';
+import {AdminEffects} from '../../store/admin.effects';
 
 @Component({
   selector: 'app-business-overview',
@@ -11,33 +17,6 @@ export class BusinessOverviewComponent implements OnInit {
   isPanelOpen = false;
   isInEditMode = false;
   updateuser: any;
-
-
-  users: {
-    id: number,
-    name: string,
-    index: number,
-    email: string,
-    cif: string,
-    workField: number,
-    state: number,
-    premium: number,
-    lastAccess: Date,
-    createdAt: Date
-  }[] = [
-    /*{
-      id: 0,
-      name: 'Google',
-      index: 96,
-      email: 'hello@google.com',
-      cif: '25478963U',
-      workField: 5,
-      state: 'active',
-      premium: 'elite',
-      lastAccess: new Date('2018-11-29T21:24:00'),
-      createdAt: new Date('2017-02-01T15:30:00')
-    }*/
-  ];
 
   workFields: { value: number, viewValue: string }[] = [
     {value: 0, viewValue: 'Software Engineering'},
@@ -64,11 +43,16 @@ export class BusinessOverviewComponent implements OnInit {
 
   userForm: FormGroup;
 
-  constructor(private _formBuilder: FormBuilder, private _adminService: AdminService) {
+  adminState: Observable<fromAdmin.State>;
+
+  constructor(
+    private _formBuilder: FormBuilder,
+    private store$: Store<fromApp.AppState>, private adminEffects$: AdminEffects) {
   }
 
   ngOnInit() {
-    this.getUsers();
+    this.store$.dispatch(new AdminActions.TryGetBusinesses());
+    this.adminState = this.store$.pipe(select(s => s.admin));
 
     this.userForm = this._formBuilder.group({
       'name': new FormControl(null, Validators.required),
@@ -86,7 +70,7 @@ export class BusinessOverviewComponent implements OnInit {
     ]);
 
     this.userForm.controls['password'].valueChanges.subscribe(value => {
-      if (this.userForm.controls['password'].value !== null && this.userForm.controls['password'].value !== '') {
+      if (this.userForm.controls['password'].value !== null) {
         this.userForm.controls['password2'].updateValueAndValidity();
       }
     });
@@ -95,22 +79,12 @@ export class BusinessOverviewComponent implements OnInit {
   samePassword(control: FormControl) {
     const userForm: any = this;
     if (control.value !== userForm.controls['password'].value) {
-      return {diferent: true};
+      return {different: true};
     }
     return null;
   }
 
-  edit(user/*: {
-    name: string;
-    index: number;
-    email: string;
-    cif: string;
-    workField: string;
-    state: string;
-    premium: string;
-    lastAccess: Date;
-    signupDate: Date
-  }*/) {
+  edit(user) {
     this.isInEditMode = true;
     this.userForm.controls['name'].setValue(user.name);
     this.userForm.controls['email'].setValue(user.email);
@@ -124,27 +98,11 @@ export class BusinessOverviewComponent implements OnInit {
     return this.workFields.find(o => o.value === workField).viewValue;
   }
 
-
-  getUsers() {
-    this._adminService.getUser(1)
-      .subscribe(
-        (users: any) => {
-          console.log(users);
-          this.users = users.offerers;
-          // console.log(this.users);
-
-        },
-        (error) => {
-          console.log(error);
-        }
-      );
-  }
-
   updateOfferer(id) {
 
     if (this.userForm.status === 'VALID') {
       this.isInEditMode = false;
-      this.isPanelOpen = !this.isPanelOpen;
+      this.isPanelOpen = false;
 
       this.updateuser = {
         'name': this.userForm.controls['name'].value,
@@ -161,17 +119,7 @@ export class BusinessOverviewComponent implements OnInit {
 
       // console.log(this.updateuser);
 
-      this._adminService.updateUser(1, id, this.updateuser)
-        .subscribe(
-          (res) => {
-            console.log(res);
-            this.ngOnInit();
-          },
-          (error) => {
-            console.log(error);
-            this.ngOnInit();
-          }
-        );
+      this.store$.dispatch(new AdminActions.TryUpdateBusiness({id: id, updatedBusiness: this.updateuser}));
     } else {
       console.log(this.userForm);
     }
@@ -179,15 +127,11 @@ export class BusinessOverviewComponent implements OnInit {
 
 
   deleteOfferer(id) {
-    this._adminService.deleteUser(1, id)
-      .subscribe(
-        (res) => {
-          console.log(res);
-          this.ngOnInit();
-        },
-        (error) => {
-          console.log(error);
-        }
-      );
+    this.store$.dispatch(new AdminActions.TryDeleteBusiness(id));
+    this.adminEffects$.adminDeleteBusiness.pipe(
+      filter((action: Action) => action.type === AdminActions.OPERATION_ERROR)
+    ).subscribe((error: { payload: any, type: string }) => {
+      console.log(error.payload);
+    });
   }
 }

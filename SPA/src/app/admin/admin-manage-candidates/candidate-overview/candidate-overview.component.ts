@@ -1,11 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {AdminService} from '../../admin.service';
-import {select, Store} from '@ngrx/store';
+import {Action, select, Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
 import * as fromAdmin from '../../store/admin.reducers';
 import * as AdminActions from '../../store/admin.actions';
 import {Observable} from 'rxjs';
+import {filter} from 'rxjs/operators';
+import {AdminEffects} from '../../store/admin.effects';
 
 @Component({
   selector: 'app-candidate-overview',
@@ -17,7 +18,7 @@ export class CandidateOverviewComponent implements OnInit {
   isPanelOpen = false;
   updateuser: any;
 
-  candidateState: Observable<fromAdmin.State>;
+  adminState: Observable<fromAdmin.State>;
 
   states: { value: number, viewValue: string }[] = [
     {value: 0, viewValue: 'Active'},
@@ -33,15 +34,12 @@ export class CandidateOverviewComponent implements OnInit {
 
   constructor(
     private _formBuilder: FormBuilder,
-    private store$: Store<fromApp.AppState>,
-    private _adminService: AdminService) {
+    private store$: Store<fromApp.AppState>, private adminEffects$: AdminEffects) {
   }
 
   ngOnInit() {
-
-
     this.store$.dispatch(new AdminActions.TryGetCandidates());
-    this.candidateState = this.store$.pipe(select(state => state.admin));
+    this.adminState = this.store$.pipe(select(state => state.admin));
 
     this.userForm = this._formBuilder.group({
       'name': new FormControl(null, Validators.required),
@@ -57,7 +55,7 @@ export class CandidateOverviewComponent implements OnInit {
     ]);
 
     this.userForm.controls['password'].valueChanges.subscribe(value => {
-      if (this.userForm.controls['password'].value !== null && this.userForm.controls['password'].value !== '') {
+      if (this.userForm.controls['password'].value !== null) {
         this.userForm.controls['password2'].updateValueAndValidity();
       }
     });
@@ -67,7 +65,7 @@ export class CandidateOverviewComponent implements OnInit {
   samePassword(control: FormControl): { [s: string]: boolean } {
     const userForm: any = this;
     if (control.value !== userForm.controls['password'].value) {
-      return {same: true};
+      return {different: true};
     }
     return null;
   }
@@ -82,10 +80,9 @@ export class CandidateOverviewComponent implements OnInit {
 
 
   updateApplicant(id) {
-
-    if (this.userForm.status === 'VALID') {
+    if (this.userForm.status === 'VALID' && id) {
       this.isInEditMode = false;
-      this.isPanelOpen = !this.isPanelOpen;
+      this.isPanelOpen = false;
 
       this.updateuser = {
         'name': this.userForm.controls['name'].value,
@@ -100,17 +97,7 @@ export class CandidateOverviewComponent implements OnInit {
 
       // console.log(this.updateuser);
 
-      this._adminService.updateUser(0, id, this.updateuser)
-        .subscribe(
-          (res) => {
-            console.log(res);
-            this.ngOnInit();
-          },
-          (error) => {
-            console.log(error);
-            this.ngOnInit();
-          }
-        );
+      this.store$.dispatch(new AdminActions.TryUpdateCandidate({id: id, updatedCandidate: this.updateuser}));
     } else {
       console.log(this.userForm);
     }
@@ -118,16 +105,12 @@ export class CandidateOverviewComponent implements OnInit {
 
 
   deleteApplicant(id) {
-    this._adminService.deleteUser(0, id)
-      .subscribe(
-        (res) => {
-          console.log(res);
-          this.ngOnInit();
-        },
-        (error) => {
-          console.log(error);
-        }
-      );
+    this.store$.dispatch(new AdminActions.TryDeleteCandidate(id));
+    this.adminEffects$.adminDeleteCandidate.pipe(
+      filter((action: Action) => action.type === AdminActions.OPERATION_ERROR)
+    ).subscribe((error: { payload: any, type: string }) => {
+      console.log(error.payload);
+    });
   }
 
 }
