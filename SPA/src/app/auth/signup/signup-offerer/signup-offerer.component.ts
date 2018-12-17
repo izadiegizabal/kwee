@@ -1,8 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {SingupService} from '../signup.service';
 import {DialogErrorComponent} from '../dialog-error/dialog-error.component';
 import {MatDialog, MatStepper} from '@angular/material';
+import * as AuthActions from '../../store/auth.actions';
+import {filter} from 'rxjs/operators';
+import {Action, Store} from '@ngrx/store';
+import * as fromApp from '../../../store/app.reducers';
+import {AuthEffects} from '../../store/auth.effects';
 
 
 @Component({
@@ -41,7 +45,9 @@ export class SignupOffererComponent implements OnInit {
   ];
 
 
-  constructor(private _formBuilder: FormBuilder, private _singupService: SingupService, public dialog: MatDialog) {
+  constructor(private _formBuilder: FormBuilder,
+              public dialog: MatDialog,
+              private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects) {
   }
 
   ngOnInit() {
@@ -139,20 +145,21 @@ export class SignupOffererComponent implements OnInit {
         'companySize': '50'
       };
 
-       // console.log(this.offerer);
+      // console.log(this.offerer);
 
       // POST new offerer
-      this._singupService.newOfferer(this.offerer)
-        .subscribe(
-          (response) => {
-            console.log(response);
-            stepper.next();
-          },
-          (error) => {
-            const dialogRef = this.dialog.open(DialogErrorComponent);
-            // console.log(error);
-          }
-        );
+      this.store$.dispatch(new AuthActions.TrySignupBusiness(this.offerer));
+      this.authEffects$.authSignin.pipe(
+        filter((action: Action) => action.type === AuthActions.SIGNIN)
+      ).subscribe(() => {
+        stepper.next();
+      });
+      this.authEffects$.authSignupBusiness.pipe(
+        filter((action: Action) => action.type === AuthActions.AUTH_ERROR)
+      ).subscribe((error: { payload: any, type: string }) => {
+        console.log(error.payload);
+        this.dialog.open(DialogErrorComponent);
+      });
     }
   }
 }

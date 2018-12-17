@@ -1,6 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {AdminService} from '../../admin.service';
+import {Action, select, Store} from '@ngrx/store';
+import * as fromApp from '../../../store/app.reducers';
+import * as fromAdmin from '../../store/admin.reducers';
+import * as AdminActions from '../../store/admin.actions';
+import {Observable} from 'rxjs';
+import {filter} from 'rxjs/operators';
+import {AdminEffects} from '../../store/admin.effects';
 
 @Component({
   selector: 'app-candidate-overview',
@@ -12,67 +18,8 @@ export class CandidateOverviewComponent implements OnInit {
   isPanelOpen = false;
   updateuser: any;
 
-  users: {
-    id: number,
-    name: string,
-    index: number,
-    email: string,
-    state: number,
-    premium: number,
-    lastAccess: Date,
-    createdAt: Date
-  }[] = [
-    /* {
-       id: 0,
-       name: 'Izadi Egizabal Alkorta',
-       index: 64,
-       email: 'hello@izadi.xyz',
-       state: 0,
-       premium: 0,
-       lastAccess: new Date('2018-11-29T21:24:00'),
-       createdAt: new Date('2017-02-01T15:30:00')
-     },
-     {
-       id: 1,
-       name: 'Alba González Aller',
-       index: 92,
-       email: 'alba.g.aller@gmail.com',
-       state: 1,
-       premium: 1,
-       lastAccess: new Date('2018-11-29T21:24:00'),
-       createdAt: new Date('2017-02-01T15:30:00')
-     },
-     {
-       id: 2,
-       name: 'Carlos Aldaravi Coll',
-       index: 88,
-       email: 'caldaravi@gmail.com',
-       state: 0,
-       premium: 0,
-       lastAccess: new Date('2018-11-29T21:24:00'),
-       createdAt: new Date('2017-02-01T15:30:00')
-     },
-     {
-       id: 3,
-       name: 'Marcos Urios Gómez',
-       index: 95,
-       email: 'marcosaurios@gmail.com',
-       state: 2,
-       premium: 0,
-       lastAccess: new Date('2018-11-29T21:24:00'),
-       createdAt: new Date('2017-02-01T15:30:00')
-     },
-     {
-       id: 4,
-       name: 'Flaviu Lucian Georgiu',
-       index: 82,
-       email: 'flaviu.georgiu97@gmail.com',
-       state: 2,
-       premium: 0,
-       lastAccess: new Date('2018-11-29T21:24:00'),
-       createdAt: new Date('2017-02-01T15:30:00')
-     },*/
-  ];
+  adminState: Observable<fromAdmin.State>;
+
   states: { value: number, viewValue: string }[] = [
     {value: 0, viewValue: 'Active'},
     {value: 1, viewValue: 'Blocked'},
@@ -85,12 +32,14 @@ export class CandidateOverviewComponent implements OnInit {
 
   userForm: FormGroup;
 
-  constructor(private _formBuilder: FormBuilder, private _adminService: AdminService) {
+  constructor(
+    private _formBuilder: FormBuilder,
+    private store$: Store<fromApp.AppState>, private adminEffects$: AdminEffects) {
   }
 
   ngOnInit() {
-
-    this.getUsers();
+    this.store$.dispatch(new AdminActions.TryGetCandidates());
+    this.adminState = this.store$.pipe(select(state => state.admin));
 
     this.userForm = this._formBuilder.group({
       'name': new FormControl(null, Validators.required),
@@ -106,7 +55,7 @@ export class CandidateOverviewComponent implements OnInit {
     ]);
 
     this.userForm.controls['password'].valueChanges.subscribe(value => {
-      if (this.userForm.controls['password'].value !== null && this.userForm.controls['password'].value !== '') {
+      if (this.userForm.controls['password'].value !== null) {
         this.userForm.controls['password2'].updateValueAndValidity();
       }
     });
@@ -116,23 +65,9 @@ export class CandidateOverviewComponent implements OnInit {
   samePassword(control: FormControl): { [s: string]: boolean } {
     const userForm: any = this;
     if (control.value !== userForm.controls['password'].value) {
-      return {same: true};
+      return {different: true};
     }
     return null;
-  }
-
-  getUsers() {
-    this._adminService.getUser(0)
-      .subscribe(
-        (users: any) => {
-          console.log(users);
-          this.users = users.applicants;
-          // console.log(this.users);
-        },
-        (error) => {
-          console.log(error);
-        }
-      );
   }
 
   edit(user) {
@@ -145,10 +80,9 @@ export class CandidateOverviewComponent implements OnInit {
 
 
   updateApplicant(id) {
-
-    if (this.userForm.status === 'VALID') {
+    if (this.userForm.status === 'VALID' && id) {
       this.isInEditMode = false;
-      this.isPanelOpen = !this.isPanelOpen;
+      this.isPanelOpen = false;
 
       this.updateuser = {
         'name': this.userForm.controls['name'].value,
@@ -163,17 +97,7 @@ export class CandidateOverviewComponent implements OnInit {
 
       // console.log(this.updateuser);
 
-      this._adminService.updateUser(0, id, this.updateuser)
-        .subscribe(
-          (res) => {
-            console.log(res);
-            this.ngOnInit();
-          },
-          (error) => {
-            console.log(error);
-            this.ngOnInit();
-          }
-        );
+      this.store$.dispatch(new AdminActions.TryUpdateCandidate({id: id, updatedCandidate: this.updateuser}));
     } else {
       console.log(this.userForm);
     }
@@ -181,16 +105,12 @@ export class CandidateOverviewComponent implements OnInit {
 
 
   deleteApplicant(id) {
-    this._adminService.deleteUser(0, id)
-      .subscribe(
-        (res) => {
-          console.log(res);
-          this.ngOnInit();
-        },
-        (error) => {
-          console.log(error);
-        }
-      );
+    this.store$.dispatch(new AdminActions.TryDeleteCandidate(id));
+    this.adminEffects$.adminDeleteCandidate.pipe(
+      filter((action: Action) => action.type === AdminActions.OPERATION_ERROR)
+    ).subscribe((error: { payload: any, type: string }) => {
+      console.log(error.payload);
+    });
   }
 
 }

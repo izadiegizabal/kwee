@@ -1,5 +1,9 @@
 <mat-menu #menu="matMenu">
-  <div class="welcomeMsg">Hi, <strong>Alba</strong>! <br> <a routerLink="/users/:id">View Profile</a></div>
+  <div class="welcomeMsg">
+    Hi, <strong>{{username}}</strong>!
+    <br>
+    <a [routerLink]="'/users/' + userId">View Profile</a>
+  </div>
   <mat-divider></mat-divider>
   <button mat-menu-item>
     <mat-icon svgIcon="notifications"></mat-icon>

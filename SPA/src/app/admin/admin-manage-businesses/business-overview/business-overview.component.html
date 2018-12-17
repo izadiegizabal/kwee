@@ -2,7 +2,7 @@
   <mat-expansion-panel
     (closed)="isPanelOpen = !isPanelOpen; isInEditMode = false; userForm.reset()"
     (opened)="isPanelOpen = !isPanelOpen; isInEditMode = false"
-    *ngFor="let user of users;" [formGroup]="userForm">
+    *ngFor="let user of (adminState | async).businesses;" [formGroup]="userForm">
     <mat-expansion-panel-header>
       <mat-panel-title fxFlex="75%"
                        fxFlex.gt-lg="30%" fxFlex.gt-md="35%" fxFlex.gt-sm="40%" fxLayoutAlign="start center"

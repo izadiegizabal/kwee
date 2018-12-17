@@ -25,7 +25,9 @@
 
           <mat-form-field>
             <mat-icon svgIcon="lock" color="primary" matPrefix></mat-icon>
-            <input matInput formControlName="password" placeholder="Password" [type]="hide ? 'text' : 'password'"
+            <input matInput
+                   formControlName="password"
+                   placeholder="Password" [type]="hide ? 'text' : 'password'"
                    required>
             <mat-error *ngIf="user.get('password').invalid">The email and password you entered did not match our
               records. Please double-check and try again.

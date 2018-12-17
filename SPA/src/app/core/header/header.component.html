@@ -7,8 +7,8 @@
   </div>
   <div fxFlex="grow"></div>
   <div class="user-section">
-    <app-user-menu *ngIf="isAuthenticated()"></app-user-menu>
-    <app-signupin-section *ngIf="!isAuthenticated()"></app-signupin-section>
+    <app-user-menu *ngIf="(authState | async).authenticated"></app-user-menu>
+    <app-signupin-section *ngIf="!(authState | async).authenticated"></app-signupin-section>
   </div>
 
 </mat-toolbar>

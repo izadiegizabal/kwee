@@ -6,6 +6,11 @@ import {SharedModule} from '../../shared/shared.module';
 import {ReactiveFormsModule} from '@angular/forms';
 import {SignupRoutingModule} from './signup-routing.module';
 import {DialogErrorComponent} from './dialog-error/dialog-error.component';
+import {HttpClientModule} from '@angular/common/http';
+import {StoreModule} from '@ngrx/store';
+import {authReducer} from '../store/auth.reducers';
+import {EffectsModule} from '@ngrx/effects';
+import {AuthEffects} from '../store/auth.effects';
 
 @NgModule({
   declarations: [
@@ -16,8 +21,11 @@ import {DialogErrorComponent} from './dialog-error/dialog-error.component';
   ],
   imports: [
     SharedModule,
+    HttpClientModule,
     SignupRoutingModule,
     ReactiveFormsModule,
+    StoreModule.forFeature('auth', authReducer),
+    EffectsModule.forFeature([AuthEffects])
   ],
   entryComponents: [
     DialogErrorComponent
