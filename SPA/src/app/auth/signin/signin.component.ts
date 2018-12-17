@@ -19,7 +19,7 @@ export class SigninComponent implements OnInit {
   hide = false;
 
   constructor(private _formBuilder: FormBuilder,
-              private store: Store<fromApp.AppState>, private authEffects: AuthEffects,
+              private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects,
               private router: Router) {
   }
 
@@ -31,15 +31,15 @@ export class SigninComponent implements OnInit {
   }
 
   signIn() {
-    this.store.dispatch(new AuthActions.TrySignin(this.user.value));
-    this.authEffects.authSignin.pipe(
+    this.store$.dispatch(new AuthActions.TrySignin(this.user.value));
+    this.authEffects$.authSignin.pipe(
       filter((action: Action) => action.type === AuthActions.AUTH_ERROR)
-    ).subscribe((error: {payload: any, type: string}) => {
+    ).subscribe((error: { payload: any, type: string }) => {
       console.log(error.payload);
       this.user.controls['email'].setErrors({'incorrect': true});
       this.user.controls['password'].setErrors({'incorrect': true});
     });
-    this.authEffects.authSignin.pipe(
+    this.authEffects$.authSignin.pipe(
       filter((action: Action) => action.type === AuthActions.SIGNIN)
     ).subscribe(() => {
       this.router.navigate(['/']);

@@ -12,10 +12,10 @@ import {Observable} from 'rxjs';
 export class HeaderComponent implements OnInit {
   authState: Observable<fromAuth.State>;
 
-  constructor(private store: Store<fromApp.AppState>) {
+  constructor(private store$: Store<fromApp.AppState>) {
   }
 
   ngOnInit() {
-    this.authState = this.store.pipe(select('auth'));
+    this.authState = this.store$.pipe(select('auth'));
   }
 }

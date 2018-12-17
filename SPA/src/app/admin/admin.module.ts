@@ -12,6 +12,10 @@ import {AdminRoutingModule} from './admin-routing.module';
 import {ReactiveFormsModule} from '@angular/forms';
 import {SharedModule} from '../shared/shared.module';
 import {OffererNameOverviewModule} from '../shared/offerer-name-overview/offerer-name-overview.module';
+import {StoreModule} from '@ngrx/store';
+import {adminReducer} from './store/admin.reducers';
+import {EffectsModule} from '@ngrx/effects';
+import {AdminEffects} from './store/admin.effects';
 
 @NgModule({
   declarations: [
@@ -30,6 +34,8 @@ import {OffererNameOverviewModule} from '../shared/offerer-name-overview/offerer
     ReactiveFormsModule,
     SharedModule,
     OffererNameOverviewModule,
+    StoreModule.forFeature('admin', adminReducer),
+    EffectsModule.forFeature([AdminEffects])
   ],
 })
 export class AdminModule {

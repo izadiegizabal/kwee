@@ -51,7 +51,7 @@ export class SignupCandidateComponent implements OnInit {
 
   constructor(private _formBuilder: FormBuilder,
               public dialog: MatDialog,
-              private store: Store<fromApp.AppState>, private authEffects: AuthEffects) {
+              private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects) {
     this.iskill = 0;
     this.iskillang = 0;
     this.iskilex = 0;
@@ -208,13 +208,13 @@ export class SignupCandidateComponent implements OnInit {
       };
 
       // console.log(this.candidate);
-      this.store.dispatch(new AuthActions.TrySignupCandidate(this.candidate));
-      this.authEffects.authSignin.pipe(
+      this.store$.dispatch(new AuthActions.TrySignupCandidate(this.candidate));
+      this.authEffects$.authSignin.pipe(
         filter((action: Action) => action.type === AuthActions.SIGNIN)
       ).subscribe(() => {
         stepper.next();
       });
-      this.authEffects.authSignupCandidate.pipe(
+      this.authEffects$.authSignupCandidate.pipe(
         filter((action: Action) => action.type === AuthActions.AUTH_ERROR)
       ).subscribe((error: { payload: any, type: string }) => {
         console.log(error.payload);

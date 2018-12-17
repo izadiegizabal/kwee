@@ -47,7 +47,7 @@ export class SignupOffererComponent implements OnInit {
 
   constructor(private _formBuilder: FormBuilder,
               public dialog: MatDialog,
-              private store: Store<fromApp.AppState>, private authEffects: AuthEffects) {
+              private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects) {
   }
 
   ngOnInit() {
@@ -148,13 +148,13 @@ export class SignupOffererComponent implements OnInit {
       // console.log(this.offerer);
 
       // POST new offerer
-      this.store.dispatch(new AuthActions.TrySignupBusiness(this.offerer));
-      this.authEffects.authSignin.pipe(
+      this.store$.dispatch(new AuthActions.TrySignupBusiness(this.offerer));
+      this.authEffects$.authSignin.pipe(
         filter((action: Action) => action.type === AuthActions.SIGNIN)
       ).subscribe(() => {
         stepper.next();
       });
-      this.authEffects.authSignupBusiness.pipe(
+      this.authEffects$.authSignupBusiness.pipe(
         filter((action: Action) => action.type === AuthActions.AUTH_ERROR)
       ).subscribe((error: { payload: any, type: string }) => {
         console.log(error.payload);

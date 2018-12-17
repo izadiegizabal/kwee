@@ -173,6 +173,9 @@ export class AuthEffects {
     )
   );
 
+  constructor(private actions$: Actions, private router: Router, private httpClient: HttpClient) {
+  }
+
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
 
@@ -185,8 +188,5 @@ export class AuthEffects {
       // Let the app keep running by returning an empty result.
       return of(result as T);
     };
-  }
-
-  constructor(private actions$: Actions, private router: Router, private httpClient: HttpClient) {
   }
 }

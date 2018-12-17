@@ -9,11 +9,18 @@ import {AppComponent} from './app.component';
 import {SharedModule} from './shared/shared.module';
 import {CoreModule} from './core/core.module';
 import {CandidateHomeModule} from './candidate-home/candidate-home.module';
-import {StoreModule} from '@ngrx/store';
+import {ActionReducer, MetaReducer, StoreModule} from '@ngrx/store';
 import {reducers} from './store/app.reducers';
 import {EffectsModule} from '@ngrx/effects';
 import {environment} from '../environments/environment';
 import {StoreDevtoolsModule} from '@ngrx/store-devtools';
+import {localStorageSync} from 'ngrx-store-localstorage';
+
+export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {
+  return localStorageSync({keys: ['auth', 'admin'], rehydrate: true})(reducer);
+}
+
+const metaReducers: Array<MetaReducer<any, any>> = [localStorageSyncReducer];
 
 @NgModule({
   declarations: [
@@ -29,7 +36,7 @@ import {StoreDevtoolsModule} from '@ngrx/store-devtools';
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    StoreModule.forRoot(reducers),
+    StoreModule.forRoot(reducers, {metaReducers}),
     EffectsModule.forRoot([]),
     !environment.production ? StoreDevtoolsModule.instrument() : []
   ],

@@ -15,11 +15,11 @@ export class UserMenuComponent implements OnInit {
   username = '';
   userId = '';
 
-  constructor(private store: Store<fromApp.AppState>) {
+  constructor(private store$: Store<fromApp.AppState>) {
   }
 
   ngOnInit() {
-    this.authState = this.store.pipe(select('auth'));
+    this.authState = this.store$.pipe(select('auth'));
     // Listen to changes on store
     this.authState.pipe(
       select(s => s.user)
@@ -33,7 +33,7 @@ export class UserMenuComponent implements OnInit {
   }
 
   logOut() {
-    this.store.dispatch(new AuthActions.Logout());
+    this.store$.dispatch(new AuthActions.Logout());
   }
 
 }
