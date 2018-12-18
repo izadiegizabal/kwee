@@ -41,16 +41,25 @@ module.exports = (app, db) => {
         if (!user) {
 
             try {
-                await db.users.create({
+                let user = await db.users.create({
                     name: googleUser.name,
                     email: googleUser.email,
                     password: ':)',
-                    sn_signin: true
+                    snSignIn: true,
+                    status: 4
                 });
 
-                res.status(201).json({
+                await db.social_networks.create({
+                    userId: user.id,
+                    google: user.email
+                });
+
+                return res.status(201).json({
                     ok: true,
-                    message: 'Created'
+                    user: {
+                        id: user.id,
+                        name: user.name
+                    }
                 });
 
             } catch (err) {

@@ -31,45 +31,38 @@ module.exports = (app, db) => {
     });
 
     // GET one user by id
-    app.get('/user/:id([0-9]+)',
-        checkToken,
-        async(req, res, next) => {
+    app.get('/user/:id([0-9]+)', checkToken, async(req, res, next) => {
+        const id = req.params.id;
 
-            const id = req.params.id;
+        try {
 
-            try {
+            let user = await db.users.findOne({
+                attributes: [
+                    'name',
+                    'email'
+                ],
+                where: { id }
+            });
 
-                let user = await db.users.findOne({
-                    attributes: [
-                        'name',
-                        'email'
-                    ],
-                    where: { id }
+            if (user) {
+                return res.status(200).json({
+                    ok: true,
+                    user
                 });
-
-                if (user) {
-                    return res.status(200).json({
-                        ok: true,
-                        user
-                    });
-                } else {
-                    return res.status(400).json({
-                        ok: false,
-                        message: 'User doesn\'t exist'
-                    });
-                }
-
-
-            } catch (err) {
-                next({ type: 'error', error: 'Error getting data' });
+            } else {
+                return res.status(400).json({
+                    ok: false,
+                    message: 'User doesn\'t exist'
+                });
             }
-        });
-
+        } catch (err) {
+            next({ type: 'error', error: 'Error getting data' });
+        }
+    });
 
     app.post('/user', async(req, res, next) => {
 
         try {
-
             const body = req.body;
 
             let user = await db.users.create({
@@ -83,9 +76,7 @@ module.exports = (app, db) => {
             });
 
             if (user) {
-
                 sendVerificationEmail(body, user);
-
 
                 return res.status(201).json({
                     ok: true,
@@ -130,7 +121,6 @@ module.exports = (app, db) => {
             next({ type: 'error', error: (err.errors ? err.errors[0].message : err.message) });
         }
     });
-
 
     // DELETE single user
     // This route will put 'deleteAt' to current timestamp,

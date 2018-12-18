@@ -29,14 +29,20 @@ module.exports = (app, db) => {
                     // let user = await db.users.create({
                     //     name: req.user.displayName,
                     //     email: req.user.username,
-                    //     password: ':)'
+                    //     password: ':)',
+                    //     status: 4
+                    // });
+
+                    // await db.social_networks.create({
+                    //     userId: user.id,
+                    //     telegram: user.email
                     // });
 
                     return res.status(200).json({
                         ok: true,
                         user: {
-                            name: user.name,
-                            email: user.email
+                            id: user.id,
+                            name: user.name
                         }
                     });
 

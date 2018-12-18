@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
                     "msg": "Invalid email."
                 },
                 len: {
-                    "args": [0,100],
+                    "args": [0, 100],
                     "msg": "Email too long."
                 }
             }
@@ -52,35 +52,35 @@ module.exports = (sequelize, DataTypes) => {
                 },*/
             }
         },
-        
+
         snSignIn: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false
         },
-        
+
         root: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false
-            
+
         },
-        
+
         /////////////////
-        
+
         photo: {
             type: DataTypes.STRING,
             allowNull: true,
             defaultValue: null,
         },
-        
+
         bio: {
             type: DataTypes.TEXT(),
             allowNull: false,
             defaultValue: "Here you have a place to define yourself",
             validate: {
                 len: {
-                    args: [0,500],
+                    args: [0, 500],
                     msg: "Bio length should be max 500 long."
                 }
             }
@@ -119,8 +119,10 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 0,
             validate: {
                 isIn: {
-                    args: [[0,1,2,3]],
-                    msg: "Invalid status type. Only valid 'verification pending' (0), 'active' (1), 'validation pending' (2) or 'blocked' (3)."
+                    args: [
+                        [0, 1, 2, 3, 4]
+                    ],
+                    msg: "Invalid status type. Only valid 'verification pending' (0), 'active' (1), 'validation pending' (2), 'blocked' (3) or social network verification pending(4)."
                 }
             }
         }

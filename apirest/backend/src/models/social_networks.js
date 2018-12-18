@@ -11,6 +11,12 @@ module.exports = (sequelize, DataTypes) => {
             }
         },
 
+        google: {
+            type: DataTypes.STRING(50),
+            field: 'google',
+            allowNull: true
+        },
+
         twitter: {
             type: DataTypes.STRING(50),
             field: 'twitter',

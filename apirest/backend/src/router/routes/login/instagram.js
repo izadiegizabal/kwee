@@ -20,14 +20,20 @@ module.exports = (app, db) => {
                         name: req.user.displayName,
                         email: req.user.username,
                         password: ':)',
-                        sn_signin: true
+                        snSignIn: true,
+                        status: 4
+                    });
+
+                    await db.social_networks.create({
+                        userId: user.id,
+                        instagram: user.email
                     });
 
                     return res.status(200).json({
                         ok: true,
                         user: {
-                            name: user.name,
-                            email: user.email
+                            id: user.id,
+                            name: user.name
                         }
                     });
 
