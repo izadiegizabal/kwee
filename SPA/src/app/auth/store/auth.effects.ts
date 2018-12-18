@@ -127,7 +127,7 @@ export class AuthEffects {
         name: string,
         password: string,
         email: string,
-        adress: string,
+        address: string,
         cif: string,
         workField: string,
         year: Date,

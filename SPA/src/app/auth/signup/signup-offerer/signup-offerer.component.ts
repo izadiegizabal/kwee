@@ -137,7 +137,7 @@ export class SignupOffererComponent implements OnInit {
         'name': this.secondFormGroup.controls['businessName'].value,
         'password': this.secondFormGroup.controls['password'].value,
         'email': this.secondFormGroup.controls['email'].value,
-        'adress': this.secondFormGroup.controls['address1'].value,
+        'address': this.secondFormGroup.controls['address1'].value,
         'cif': this.secondFormGroup.controls['vat'].value,
         'workField': this.secondFormGroup.controls['workField'].value,
         'year': '1997-03-17',
