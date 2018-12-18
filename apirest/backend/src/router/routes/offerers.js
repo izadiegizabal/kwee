@@ -10,7 +10,7 @@ const { checkToken, checkAdmin } = require('../../middlewares/authentication');
 module.exports = (app, db) => {
 
     // GET all users offerers
-    app.get('/offerers', checkToken, async(req, res, next) => {
+    app.get('/offerers', async(req, res, next) => {
 
         try {
             let users = await db.users.findAll();
@@ -22,9 +22,10 @@ module.exports = (app, db) => {
                     if (users[i].id === offerers[j].userId) {
                         offerersView[j] = {
                             id: offerers[j].userId,
+                            index: users[i].index,
                             name: users[i].name,
                             email: users[i].email,
-                            adress: offerers[j].adress,
+                            address: offerers[j].address,
                             workField: offerers[j].workField,
                             cif: offerers[j].cif,
                             dateVerification: offerers[j].dateVerification,
@@ -32,7 +33,9 @@ module.exports = (app, db) => {
                             companySize: offerers[j].companySize,
                             year: offerers[j].year,
                             premium: offerers[j].premium,
-                            createdAt: offerers[j].createdAt
+                            createdAt: offerers[j].createdAt,
+                            lastAccess: users[i].lastAccess,
+                            status: users[i].status
                         }
                     }
                 }
@@ -48,36 +51,36 @@ module.exports = (app, db) => {
     });
 
     // GET one offerer by id
-    app.get('/offerer/:id([0-9]+)', checkToken, async(req, res, next) => {
+    app.get('/offerer/:id([0-9]+)', async(req, res, next) => {
         const id = req.params.id;
-
+        console.log("id" + id);
         try {
-            let user = await db.users.findOne({
-                attributes: [
-                    'name',
-                    'email'
-                ],
+            let users = await db.users.findOne({
                 where: { id }
             });
-
-            let offerer = await db.offerers.findOne({
+            
+            let offerers = await db.offerers.findOne({
                 where: { userId: id }
             });
-
-            if (user && offerer) {
+            
+            console.log("fdasfdsa");
+            if (users && offerers) {
                 const userOfferer = {
-                    id: offerers[j].userId,
-                    name: users[i].name,
-                    email: users[i].email,
-                    adress: offerers[j].adress,
-                    workField: offerers[j].workField,
-                    cif: offerers[j].cif,
-                    dateVerification: offerers[j].dateVerification,
-                    website: offerers[j].website,
-                    companySize: offerers[j].companySize,
-                    year: offerers[j].year,
-                    premium: offerers[j].premium,
-                    createdAt: offerers[j].createdAt
+                    id: offerers.userId,
+                    index: users.index,
+                    name: users.name,
+                    email: users.email,
+                    address: offerers.address,
+                    workField: offerers.workField,
+                    cif: offerers.cif,
+                    dateVerification: offerers.dateVerification,
+                    website: offerers.website,
+                    companySize: offerers.companySize,
+                    year: offerers.year,
+                    premium: offerers.premium,
+                    createdAt: offerers.createdAt,
+                    lastAccess: users.lastAccess,
+                    status: users.status
                 };
 
                 return res.status(200).json({
@@ -219,7 +222,7 @@ module.exports = (app, db) => {
         try {
             let offerer = {
                 userId: user.id,
-                adress: body.adress,
+                address: body.address,
                 workField: body.workField,
                 cif: body.cif,
                 website: body.website ? body.website : null,

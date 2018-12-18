@@ -52,8 +52,8 @@ module.exports = (sequelize, DateTypes) => {
                     "msg": "Description should be filled."
                 },
                 len: {
-                    args: [40, 140],
-                    msg: 'Description must be [40, 140] characters.'
+                    args: [0, 140],
+                    msg: 'Description must be [0, 140] characters.'
                   }
             }
         },
@@ -101,7 +101,7 @@ module.exports = (sequelize, DateTypes) => {
         },
 
         location: {
-            type: DateTypes.STRING(50),
+            type: DateTypes.STRING(),
             field: 'location',
             allowNull: false,
             validate: {

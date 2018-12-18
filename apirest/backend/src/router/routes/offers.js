@@ -10,7 +10,7 @@ const { checkToken, checkAdmin } = require('../../middlewares/authentication');
 module.exports = (app, db) => {
 
     // GET all offers
-    app.get('/offers', checkToken, async(req, res, next) => {
+    app.get('/offers', async(req, res, next) => {
         try {
             res.status(200).json({
                 ok: true,
@@ -22,7 +22,7 @@ module.exports = (app, db) => {
     });
 
     // GET one offer by id
-    app.get('/offer/:id([0-9]+)', checkToken, async(req, res, next) => {
+    app.get('/offer/:id([0-9]+)', async(req, res, next) => {
         const id = req.params.id;
 
         try {

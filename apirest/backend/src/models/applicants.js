@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
       },
 
       city: {
-        type: DataTypes.STRING(20),
+        type: DataTypes.STRING(),
         allowNull: false,
         validate: {
           notEmpty: {

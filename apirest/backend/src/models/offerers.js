@@ -8,14 +8,14 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
 
-        adress: {
+        address: {
             type: DataTypes.STRING(50),
-            field: 'adress',
+            field: 'address',
             allowNull: false,
             validate: {
                 notEmpty: {
                     args: true,
-                    msg: "Addres should not be empty."
+                    msg: "Address should not be empty."
                 }
             }
         },
@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
         },
 
         cif: {
-            type: DataTypes.STRING(9),
+            type: DataTypes.STRING(11),
             field: 'cif',
             allowNull: false,
             validate: {
@@ -42,14 +42,14 @@ module.exports = (sequelize, DataTypes) => {
                     msg: "CIF should not be empty."
                 },
                 len: {
-                    args: [9,9],
+                    args: [11,13],
                     msg: "Invalid CIF length."
                 }
             }
         },
 
         website: {
-            type: DataTypes.STRING(50),
+            type: DataTypes.STRING(),
             field: 'website',
             validate: {
                 isUrl: {

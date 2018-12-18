@@ -10,7 +10,7 @@ const { checkToken, checkAdmin } = require('../../middlewares/authentication');
 module.exports = (app, db) => {
 
     // GET all users applicants
-    app.get('/applicants', checkToken, async(req, res, next) => {
+    app.get('/applicants', async(req, res, next) => {
 
         try {
             let users = await db.users.findAll();
@@ -22,12 +22,15 @@ module.exports = (app, db) => {
                     if (users[i].id === applicants[j].userId) {
                         applicantsView[j] = {
                             id: applicants[j].userId,
+                            index: users[i].index,
                             name: users[i].name,
                             email: users[i].email,
                             city: applicants[j].city,
                             dateBorn: applicants[j].dateBorn,
                             premium: applicants[j].premium,
-                            createdAt: applicants[j].createdAt
+                            createdAt: applicants[j].createdAt,
+                            lastAccess: users[i].lastAccess,
+                            status: users[i].status
                         }
                     }
                 }
@@ -43,7 +46,7 @@ module.exports = (app, db) => {
     });
 
     // GET one applicant by id
-    app.get('/applicant/:id([0-9]+)', checkToken, async(req, res, next) => {
+    app.get('/applicant/:id([0-9]+)', async(req, res, next) => {
         const id = req.params.id;
 
         try {
@@ -62,12 +65,15 @@ module.exports = (app, db) => {
             if (user && applicant) {
                 const userApplicant = {
                     id: user.id,
+                    index: user.index,
                     name: user.name,
                     email: user.email,
                     city: applicant.city,
                     dateBorn: applicant.dateBorn,
                     premium: applicant.premium,
-                    createdAt: applicant.createdAt
+                    createdAt: applicant.createdAt,
+                    status: user.status,
+                    lastAccess: user.lastAccess
                 };
 
                 return res.status(200).json({

@@ -3,23 +3,19 @@ module.exports = (sequelize, DataTypes) => {
     const User = sequelize.define('users', {
 
         name: {
-            type: DataTypes.STRING(20),
+            type: DataTypes.STRING(),
             field: 'name',
             allowNull: false,
             validate: {
                 notEmpty: {
                     "args": true,
                     "msg": "Name should be filled."
-                },
-                is: {
-                    args: /^[A-Za-zÀ-ÖØ-öø-ÿ ]+$/,
-                    msg: "Name should be letters only (accented letters admitted)."
                 }
             }
         },
 
         email: {
-            type: DataTypes.STRING(50),
+            type: DataTypes.STRING(100),
             unique: {
                 args: true,
                 message: 'Email must be unique.'
@@ -34,6 +30,10 @@ module.exports = (sequelize, DataTypes) => {
                 isEmail: {
                     "args": true,
                     "msg": "Invalid email."
+                },
+                len: {
+                    "args": [0,100],
+                    "msg": "Email too long."
                 }
             }
         },
@@ -80,12 +80,8 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: "Here you have a place to define yourself",
             validate: {
                 len: {
-                    args: [15,500],
-                    msg: "Bio length should be min 15 max 500"
-                },
-                is: {
-                    args: /^[A-Za-zÀ-ÖØ-öø-ÿ0-9,-. ]+$/,
-                    msg: "Bio should be a text."
+                    args: [0,500],
+                    msg: "Bio length should be max 500 long."
                 }
             }
         },
@@ -108,7 +104,7 @@ module.exports = (sequelize, DataTypes) => {
         index: {
             type: DataTypes.INTEGER,
             allowNull: true,
-            defaultValue: 0,
+            defaultValue: 50,
             validate: {
                 isInt: {
                     args: true,
