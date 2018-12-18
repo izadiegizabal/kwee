@@ -6,7 +6,7 @@ const callback_url = 'http://localhost:3000/auth/';
 const env = {
     DATABASE_NAME: 'kweetest',
     DATABASE_USERNAME: 'root',
-    DATABASE_PASSWORD: '',
+    DATABASE_PASSWORD: 'Watr_Kwee_bd_2018_mysql',
     PORT: 3000,
 
     JSONWEBTOKEN_SECRET: pass.JSONWEBTOKEN_SECRET,
