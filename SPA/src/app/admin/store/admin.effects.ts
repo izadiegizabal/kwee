@@ -34,7 +34,7 @@ export class AdminEffects {
             return [
               {
                 type: AdminActions.OPERATION_ERROR,
-                payload: err.error.error
+                // payload: err.error.error
               }
             ];
           })

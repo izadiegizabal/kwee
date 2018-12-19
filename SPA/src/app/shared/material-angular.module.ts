@@ -111,6 +111,7 @@ export class MaterialAngularModule {
     matIconRegistry.addSvgIcon('cake', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-cake.svg'));
     matIconRegistry.addSvgIcon('check-circle', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-check_circle.svg'));
     matIconRegistry.addSvgIcon('report', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-report.svg'));
+    matIconRegistry.addSvgIcon('alarm', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-alarm.svg'));
 
     // Branding icons
     matIconRegistry.addSvgIcon('kwee-logo', domSanitizer.bypassSecurityTrustResourceUrl('assets/branding/logo-kwee-light.svg'));

@@ -15,6 +15,7 @@ import {EffectsModule} from '@ngrx/effects';
 import {environment} from '../environments/environment';
 import {StoreDevtoolsModule} from '@ngrx/store-devtools';
 import {localStorageSync} from 'ngrx-store-localstorage';
+import {OfferDetailModule} from './shared/offer-detail/offer-detail.module';
 
 export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {
   return localStorageSync({keys: ['auth', 'admin'], rehydrate: true})(reducer);
@@ -33,6 +34,7 @@ const metaReducers: Array<MetaReducer<any, any>> = [localStorageSyncReducer];
     SharedModule,
     CoreModule,
     CandidateHomeModule,
+    OfferDetailModule,
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
