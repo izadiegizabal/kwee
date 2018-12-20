@@ -1,6 +1,6 @@
 <mat-card class="example-card">
   <mat-card-header fxLayoutAlign="space-between">
-    <mat-card-title>{{position}}</mat-card-title>
+    <mat-card-title [routerLink]="offerUrl" style="cursor: pointer">{{offer.title}}</mat-card-title>
     <mat-card-subtitle>
       <app-offerer-name-overview [index]="82" [name]="'Google'"></app-offerer-name-overview>
     </mat-card-subtitle>
@@ -8,15 +8,15 @@
       class="quickInfo"
       fxHide.lt-sm
       fxLayoutGap="16px">
-      <app-icon-with-text [icon]="'place'" [text]="'Barcelona'"></app-icon-with-text>
-      <app-icon-with-text [icon]="'access-time'" [text]="'5 days ago'"></app-icon-with-text>
+      <app-icon-with-text icon="place" [text]="offer.location"></app-icon-with-text>
+      <app-icon-with-text icon="access-time" [text]="offer.publishDate"></app-icon-with-text>
     </div>
     <mat-card-subtitle
       class="quickInfo"
       fxHide.gt-xs
       fxLayoutGap="16px">
-      <app-icon-with-text [icon]="'place'" [text]="'Barcelona'"></app-icon-with-text>
-      <app-icon-with-text [icon]="'access-time'" [text]="'5 days ago'"></app-icon-with-text>
+      <app-icon-with-text icon="place" [text]="offer.location"></app-icon-with-text>
+      <app-icon-with-text icon="access-time" [text]="offer.publishDate"></app-icon-with-text>
     </mat-card-subtitle>
   </mat-card-header>
 
@@ -25,7 +25,7 @@
       alt="Business Logo"
       src="https://cdn.vox-cdn.com/thumbor/Pkmq1nm3skO0-j693JTMd7RL0Zk=/0x0:2012x1341/1200x800/filters:focal(0x0:2012x1341)/cdn.vox-cdn.com/uploads/chorus_image/image/47070706/google2.0.0.jpg">
     <p>
-      {{ (description | slice:0:280) + "..." }}
+      {{ (offer.description | slice:0:280) + "..." }}
     </p>
   </mat-card-content>
 
@@ -37,18 +37,18 @@
       fxLayout="row"
       fxLayoutAlign="center center"
       fxLayoutGap="16px">
-      <app-icon-with-text [icon]="'date-range'" [text]="'Indefinite'"></app-icon-with-text>
-      <app-icon-with-text [icon]="'work'" [text]="'Part-Time'"></app-icon-with-text>
-      <app-icon-with-text [icon]="'local-atm'" [text]="'1.500€/month'"></app-icon-with-text>
+      <app-icon-with-text icon="date-range" text="3 months"></app-icon-with-text>
+      <app-icon-with-text icon="work" text="Full-Time"></app-icon-with-text>
+      <app-icon-with-text icon="local-atm" text="2.500€/month"></app-icon-with-text>
       <div fxHide.lt-sm>
-        <button color="accent" mat-button>{{'More Info' | uppercase }}</button>
+        <button [routerLink]="offerUrl" color="accent" mat-button>{{'More Info' | uppercase }}</button>
         <button mat-icon-button>
           <mat-icon aria-label="Share offer in social networks" color="accent" svgIcon="share"></mat-icon>
         </button>
       </div>
     </div>
     <div fxHide.gt-xs fxLayout="row">
-      <button color="accent" mat-button>{{'More Info' | uppercase }}</button>
+      <button [routerLink]="offerUrl" color="accent" mat-button>{{'More Info' | uppercase }}</button>
       <button mat-icon-button>
         <mat-icon aria-label="Share offer in social networks" color="accent" svgIcon="share"></mat-icon>
       </button>
