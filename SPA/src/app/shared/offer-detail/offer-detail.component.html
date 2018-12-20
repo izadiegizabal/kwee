@@ -1,6 +1,7 @@
 <div fxLayout="row"
      fxLayoutAlign="center center">
-  <mat-card fxLayout="column" fxFlex="75%" fxFlex.lt-sm="95%">
+  <mat-card fxLayout="column"
+            fxFlex="95%" fxFlex.gt-sm="75%" fxFlex.gt-md="60%" fxFlex.gt-lg="50%">
     <mat-card-header fxLayoutAlign="space-between">
       <mat-card-title fxLayout="row" fxLayoutGap="16px">
         <span>{{offer.title}}</span>
@@ -37,7 +38,7 @@
       </mat-card-subtitle>
     </mat-card-header>
 
-    <mat-card-content>
+    <mat-card-content fxLayout="column" style="margin-left: 16px" fxLayoutGap="24px">
       <div
         fxLayoutGap="16px"
         fxLayout="row" fxLayout.lt-sm="column">
@@ -51,19 +52,98 @@
         </p>
       </div>
 
-      <h2 class="mat-h2">Details</h2>
-      <div
-        fxLayout="row" fxLayout.lt-sm="column"
-        fxLayoutAlign="start start">
-        <div fxFlex="50%" fxFlex.lt-sm="100%"
-             fxLayoutAlign="start start"
-             fxLayout="column"
-             fxLayoutGap="8px">
-          <app-icon-with-text icon="date-range" [text]="getOfferDuration() | lowercase"></app-icon-with-text>
-          <app-icon-with-text icon="work" [text]="getContractType()"></app-icon-with-text>
+      <div fxLayout="column">
+        <h2 class="mat-h2">Details</h2>
+        <div
+          fxLayout="row"
+          fxLayoutGap="8px"
+          fxLayoutAlign="start start"
+          style="margin-bottom: 16px">
+          <div fxFlex="33%" fxFlex.lt-sm="100%"
+               fxLayoutAlign="start start"
+               fxLayout="column"
+               fxLayoutGap="8px">
+            <app-icon-with-text icon="date-range" [text]="getOfferDuration() | lowercase"></app-icon-with-text>
+            <app-icon-with-text icon="local-atm" [text]="getOfferSalary()"></app-icon-with-text>
+            <app-icon-with-text icon="face" [text]="getOfferSeniorityLevel()"></app-icon-with-text>
+          </div>
+          <div fxFlex="33%" fxFlex.lt-sm="100%"
+               fxLayoutAlign="start start"
+               fxLayout="column"
+               fxLayoutGap="8px">
+            <app-icon-with-text icon="work" [text]="getOfferContractType()"></app-icon-with-text>
+            <app-icon-with-text icon="place" [text]="getOfferLocation()"></app-icon-with-text>
+            <app-icon-with-text icon="people" [text]="getOfferApplications()"></app-icon-with-text>
+          </div>
+          <div fxHide.lt-sm
+               fxFlex="33%"
+               fxLayoutGap="8px">
+            <button color="primary" mat-raised-button>{{'Apply Now!' | uppercase }}</button>
+            <button mat-icon-button>
+              <mat-icon aria-label="Share offer in social networks" color="accent" svgIcon="share"></mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div fxHide.gt-xs
+           fxFlex="100%"
+           fxLayoutGap="8px"
+           fxLayoutAlign="center"
+           style="padding-bottom: 16px">
+        <button color="primary" mat-raised-button>{{'Apply Now!' | uppercase }}</button>
+        <button mat-icon-button>
+          <mat-icon aria-label="Share offer in social networks" color="accent" svgIcon="share"></mat-icon>
+        </button>
+      </div>
+
+      <div fxLayout="column">
+        <h2 class="mat-h2">Responsibilities</h2>
+        <div
+          fxLayout="row"
+          style="white-space: pre-wrap; margin-bottom: 16px">
+          {{offer.responsibilities}}
         </div>
       </div>
 
+      <div fxLayout="column">
+        <h2 class="mat-h2">Requirements</h2>
+        <div
+          fxLayout="row"
+          style="white-space: pre-wrap; margin-bottom: 16px">
+          {{offer.requirements}}
+        </div>
+      </div>
+
+      <div fxLayout="column">
+        <h2 class="mat-h2">Skills</h2>
+        <div
+          fxLayout="row"
+          fxLayout.lt-sm="column">
+          <mat-list
+            fxFlex.lt-sm="100%" fxFlex="50%"
+            style="padding-top: 0">
+            <div
+              style="margin-left: -20px"
+              *ngFor="let skill of offer.skills; let i = index">
+              <mat-list-item
+                *ngIf="i % 2 === 0">
+                <mat-icon color="primary">chevron_right</mat-icon>
+                {{' ' + skill}}</mat-list-item>
+            </div>
+          </mat-list>
+          <mat-list
+            fxFlex.lt-sm="100%" fxFlex="50%"
+            style="padding-top: 0">
+            <div
+              style="margin-left: -20px"
+              *ngFor="let skill of offer.skills; let i = index">
+              <mat-list-item *ngIf="i % 2 !== 0">
+                <mat-icon color="primary">chevron_right</mat-icon>
+                {{' ' + skill}}</mat-list-item>
+            </div>
+          </mat-list>
+        </div>
+      </div>
     </mat-card-content>
   </mat-card>
 </div>

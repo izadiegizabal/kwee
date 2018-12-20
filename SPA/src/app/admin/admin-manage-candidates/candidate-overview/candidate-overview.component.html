@@ -27,7 +27,7 @@
           <span>{{user.lastAccess| date:'d/M/y, HH:mm'}}</span>
         </div>
         <mat-chip-list fxHide fxShow.gt-sm>
-          <mat-chip color="primary" selected style="pointer-events: none">{{user.state | titlecase}}</mat-chip>
+          <mat-chip color="primary" selected style="pointer-events: none">{{user.state + '' | titlecase}}</mat-chip>
         </mat-chip-list>
       </mat-panel-description>
     </mat-expansion-panel-header>

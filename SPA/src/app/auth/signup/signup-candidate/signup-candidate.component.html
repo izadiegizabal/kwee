@@ -175,8 +175,8 @@
                fxLayout="column"
                fxLayoutGap="16px">
             <div [formGroupName]="s" fxFlex=80%; fxLayout="column">
-              <mat-accordion id="{{'accordion'+s}}">
-                <mat-expansion-panel expanded>
+              <mat-accordion>
+                <mat-expansion-panel expanded id="{{'accordion'+s}}">
                   <mat-expansion-panel-header>
                     <mat-panel-title>
                       <span *ngIf="title.value; else titled">{{title.value}}</span>
@@ -191,15 +191,10 @@
                     {{iend.value}} </span>
                     <span *ngIf="current.checked">
                     current</span>
-                  </span>
-
-                      <ng-template #date><span>Date</span></ng-template>
-
-
+                    </span>
+                    <ng-template #date><span>Date</span></ng-template>
                     </mat-panel-description>
                   </mat-expansion-panel-header>
-
-
                   <div fxLayout="column" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
                     <mat-form-field>
                       <input
@@ -209,7 +204,13 @@
                         id="{{'titlex'+s}}"
                         matInput
                         placeholder="Title" type="text">
+                        <mat-error
+                        *ngIf="!thirdFormGroup.get('experience').controls[s].controls.title.valid &&
+                        thirdFormGroup.get('experience').controls[s].controls.title.touched">
+                        Please enter a title
+                      </mat-error>
                     </mat-form-field>
+                    
                   </div>
                   <!--------------------------------------------------->
                   <div fxLayout="column" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
@@ -231,6 +232,11 @@
                       <input #istart [matDatepicker]="start" formControlName="start" matInput placeholder="Start">
                       <mat-datepicker-toggle [for]="start" matPrefix></mat-datepicker-toggle>
                       <mat-datepicker #start></mat-datepicker>
+                      <span *ngIf="onWhatExS(s,istart)"></span>
+                      <mat-error
+                        *ngIf="!thirdFormGroup.get('experience').controls[s].controls.start.valid">
+                        Please enter a valid date
+                      </mat-error>
                     </mat-form-field>
 
                     <!--------------------------------------------------->
@@ -243,9 +249,14 @@
                         <mat-datepicker #end
                                         [disabled]="current.checked"
                         ></mat-datepicker>
+                        <span *ngIf="onWhatExE(s,iend)"></span>
+                        <mat-error
+                        *ngIf="!thirdFormGroup.get('experience').controls[s].controls.end.valid && thirdFormGroup.get('experience').controls[s].controls.end.touched && !current.checked">
+                        Please enter a valid date
+                      </mat-error>
                       </mat-form-field>
 
-                      <mat-checkbox #current (change)="onChange($event, s)">current</mat-checkbox>
+                      <mat-checkbox #current (change)="onChange($event, s)">Current</mat-checkbox>
                     </div>
                   </div>
                   <!--------------------------------------------------->
@@ -261,7 +272,9 @@
                       <button (click)="deleteExperience(s)" color="warn" mat-button type="button">Delete</button>
                     </div>
                     <div>
-                      <button color="accent" mat-button type="button">Done</button>
+                      <button color="accent" 
+                      (click)="onDoneEx(s)" 
+                      mat-button type="button">Done</button>
                     </div>
 
                   </div>
@@ -352,7 +365,7 @@
                         ></mat-datepicker>
                       </mat-form-field>
 
-                      <mat-checkbox #current (change)="onChangeEd($event, a)">current</mat-checkbox>
+                      <mat-checkbox #current (change)="onChangeEd($event, a)">Current</mat-checkbox>
                     </div>
                   </div>
                   <!--------------------------------------------------->
@@ -368,7 +381,10 @@
                       <button (click)="deleteEducation(a)" color="warn" mat-button type="button">Delete</button>
                     </div>
                     <div>
-                      <button color="accent" mat-button type="button">Done</button>
+                      <button color="accent" 
+                      mat-button 
+                      (click)="onDoneEd(a)" 
+                      type="button">Done</button>
                     </div>
 
                   </div>
@@ -444,6 +460,10 @@
                           matInput
 
                           placeholder="Language" type="text">
+                          <mat-error
+                        *ngIf="!thirdFormGroup.get('languages').controls[j].controls.language.valid">
+                        Please enter a value
+                      </mat-error>
                       </mat-form-field>
                     </div>
                     <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
@@ -453,7 +473,10 @@
                             {{proficiency.viewValue}}
                           </mat-option>
                         </mat-select>
-
+                        <mat-error
+                        *ngIf="!thirdFormGroup.get('languages').controls[j].controls.language.valid">
+                        Please select a value
+                      </mat-error>
                       </mat-form-field>
                     </div>
                   </div>
@@ -465,7 +488,10 @@
                       <button (click)="deleteLanguage(s)" color="warn" mat-button type="button">Delete</button>
                     </div>
                     <div>
-                      <button color="accent" mat-button type="button">Done</button>
+                      <button color="accent" 
+                      mat-button 
+                      type="button"
+                      (click)="onDoneLang(j)">Done</button>
                     </div>
 
                   </div>

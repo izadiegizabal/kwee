@@ -67,7 +67,7 @@ export class AdminEffects {
             return [
               {
                 type: AdminActions.OPERATION_ERROR,
-                payload: err.error.error
+                // payload: err.error.error
               }
             ];
           })
@@ -102,7 +102,7 @@ export class AdminEffects {
             return [
               {
                 type: AdminActions.OPERATION_ERROR,
-                payload: err.error.error
+                // payload: err.error.error
               }
             ];
           })
@@ -137,7 +137,7 @@ export class AdminEffects {
             return [
               {
                 type: AdminActions.OPERATION_ERROR,
-                payload: err.error.error
+                // payload: err.error.error
               }
             ];
           })
@@ -170,7 +170,7 @@ export class AdminEffects {
             return [
               {
                 type: AdminActions.OPERATION_ERROR,
-                payload: err.error.err.message
+                // payload: err.error.err.message
               }
             ];
           })
@@ -203,7 +203,7 @@ export class AdminEffects {
             return [
               {
                 type: AdminActions.OPERATION_ERROR,
-                payload: err.error.err.message
+                // payload: err.error.err.message
               }
             ];
           })

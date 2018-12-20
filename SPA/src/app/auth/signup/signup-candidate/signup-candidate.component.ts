@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {MatDialog, MatStepper} from '@angular/material';
+import {MatDialog, MatStepper, MatAccordion} from '@angular/material';
 import {Action, Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
 import * as AuthActions from '../../store/auth.actions';
@@ -25,6 +25,9 @@ export class SignupCandidateComponent implements OnInit {
   iskillang = 0;
   iskilex = 0;
   iskiled = 0;
+
+
+
 
   roles: { value: number, viewValue: string }[] = [
     {value: 0, viewValue: 'Software Engineering'},
@@ -137,20 +140,39 @@ export class SignupCandidateComponent implements OnInit {
         this.addEducationGroup()
       ])
     });
+
+
+    (<FormGroup>(<FormArray>this.thirdFormGroup.get('experience')).controls[0]).controls.start.setValidators([
+      this.maxMinDate.bind(this.thirdFormGroup),
+      this.maxDate.bind(this.thirdFormGroup),
+    ]);
+
+    (<FormGroup>(<FormArray>this.thirdFormGroup.get('experience')).controls[0]).controls.end.setValidators([
+      this.maxMinDate.bind(this.thirdFormGroup),
+      this.maxDate.bind(this.thirdFormGroup),
+    ]);
+
+    (<FormGroup>(<FormArray>this.thirdFormGroup.get('education')).controls[0]).controls.start.setValidators([
+      this.maxMinDate.bind(this.thirdFormGroup),
+    ]);
+
+    (<FormGroup>(<FormArray>this.thirdFormGroup.get('education')).controls[0]).controls.end.setValidators([
+      this.maxMinDate.bind(this.thirdFormGroup),
+    ]);
   }
 
   addLanguageGroup(): FormGroup {
     return this._formBuilder.group({
-      'language': new FormControl(null),
-      'proficiency': new FormControl(null)
+      'language': new FormControl(null, Validators.required),
+      'proficiency': new FormControl(null, Validators.required)
     });
   }
 
   addExperienceGroup(): FormGroup {
     return this._formBuilder.group({
-      'title': new FormControl(null),
+      'title': new FormControl(null, Validators.required),
       'company': new FormControl(null),
-      'start': new FormControl(null),
+      'start': new FormControl(''),
       'end': new FormControl(null),
       'description': new FormControl(null)
     });
@@ -158,13 +180,15 @@ export class SignupCandidateComponent implements OnInit {
 
   addEducationGroup(): FormGroup {
     return this._formBuilder.group({
-      'title': new FormControl(null),
+      'title': new FormControl(null, Validators.required),
       'institution': new FormControl(null),
       'start': new FormControl(null),
       'end': new FormControl(null),
       'description': new FormControl(null)
     });
   }
+
+
 
   samePassword(control: FormControl): { [s: string]: boolean } {
     const secondFormGroup: any = this;
@@ -190,6 +214,26 @@ export class SignupCandidateComponent implements OnInit {
       return {ok: true};
     }
     return null;
+  }
+
+  maxMinDate(control: FormControl): { [s: string]: boolean } {
+    const today = new Date();
+    const mdate = new Date(`${today.getFullYear() - 100}/${today.getMonth()}/${today.getDay()}`);
+    const aux = (new Date(control.value));
+
+    if (control.value < mdate) {
+      return {ok: true};
+    }
+    return null;
+  }
+
+  maxDate(control: FormControl): { [s: string]: boolean } {
+    const today = new Date();
+
+    if (control.value < today) {
+      return null;
+    }
+    return {ok: true};
   }
 
   onSave(stepper: MatStepper) {
@@ -251,12 +295,26 @@ export class SignupCandidateComponent implements OnInit {
     (<FormArray>this.thirdFormGroup.controls['experience']).push(this.addExperienceGroup());
     this.iskilex++;
     console.log(this.formExperience.value);
+    (<FormGroup>(<FormArray>this.thirdFormGroup.get('experience')).controls[this.iskilex]).controls.start.setValidators([
+      this.maxMinDate.bind(this.thirdFormGroup),
+      this.maxDate.bind(this.thirdFormGroup),
+    ]);
+    (<FormGroup>(<FormArray>this.thirdFormGroup.get('experience')).controls[this.iskilex]).controls.end.setValidators([
+      this.maxMinDate.bind(this.thirdFormGroup),
+      this.maxDate.bind(this.thirdFormGroup),
+    ]);
   }
 
   addEducation() {
     (<FormArray>this.thirdFormGroup.controls['education']).push(this.addEducationGroup());
     this.iskiled++;
     console.log(this.formEducation.value);
+    (<FormGroup>(<FormArray>this.thirdFormGroup.get('education')).controls[this.iskiled]).controls.start.setValidators([
+      this.maxMinDate.bind(this.thirdFormGroup),
+    ]);
+    (<FormGroup>(<FormArray>this.thirdFormGroup.get('education')).controls[this.iskiled]).controls.end.setValidators([
+      this.maxMinDate.bind(this.thirdFormGroup),
+    ]);
   }
 
 
@@ -273,6 +331,7 @@ export class SignupCandidateComponent implements OnInit {
   deleteExperience(i) {
     (<FormArray>this.thirdFormGroup.controls['experience']).removeAt(i);
     this.iskilex--;
+
   }
 
   deleteEducation(i) {
@@ -295,6 +354,62 @@ export class SignupCandidateComponent implements OnInit {
       document.getElementById(`toEd${s}`).removeAttribute('disabled');
     }
 
+  }
+
+  getEx(n : number){
+    return (<FormGroup>(<FormArray>this.thirdFormGroup.get('experience')).controls[n]).controls;
+  }
+  getEd(n : number){
+    return (<FormGroup>(<FormArray>this.thirdFormGroup.get('education')).controls[n]).controls;
+  }
+
+
+  onWhatExS(index: number, obj: any){
+    if(isNaN(obj.value)&&(this.getEx(index).start.valid)){
+      this.getEx(index).start.setErrors({'notDate':true});}
+    else{this.getEx(index).start.updateValueAndValidity();}
+    return (isNaN(obj.value)&&(this.getEx(index).start.valid));
+  }
+
+  onWhatExE(index: number, obj: any){
+    if(isNaN(obj.value)&&(this.getEx(index).end.valid)){
+      this.getEx(index).end.setErrors({'notDate':true});}
+    else{this.getEx(index).end.updateValueAndValidity();}
+    return (isNaN(obj.value)&&(this.getEx(index).end.valid));
+  }
+
+  onWhatEdS(index: number, obj: any){
+    if(isNaN(obj.value)&&(this.getEd(index).start.valid)){
+      this.getEd(index).start.setErrors({'notDate':true});}
+    else{this.getEd(index).start.updateValueAndValidity();}
+    return (isNaN(obj.value)&&(this.getEd(index).start.valid));
+  }
+
+  onWhatEdE(index: number, obj: any){
+    if(isNaN(obj.value)&&(this.getEd(index).end.valid)){
+      this.getEd(index).end.setErrors({'notDate':true});}
+    else{this.getEd(index).end.updateValueAndValidity();}
+    return (isNaN(obj.value)&&(this.getEd(index).end.valid));
+  }
+
+  onDoneEx(index: number){
+    if(!(<FormArray>this.thirdFormGroup.controls['experience']).controls[index].valid){
+      (<FormGroup>(<FormArray>this.thirdFormGroup.get('experience')).controls[index]).controls.title.markAsTouched();
+    }
+    return false;
+  }
+
+  onDoneEd(index: number){
+    if(!(<FormArray>this.thirdFormGroup.controls['education']).controls[index].valid){
+      (<FormGroup>(<FormArray>this.thirdFormGroup.get('education')).controls[index]).controls.title.markAsTouched();
+    }
+  }
+
+  onDoneLang(index: number){
+    if(!(<FormArray>this.thirdFormGroup.controls['languages']).controls[index].valid){
+      (<FormGroup>(<FormArray>this.thirdFormGroup.get('languages')).controls[index]).controls.language.markAsTouched();
+      (<FormGroup>(<FormArray>this.thirdFormGroup.get('languages')).controls[index]).controls.proficiency.markAsTouched();
+    }
   }
 
 }

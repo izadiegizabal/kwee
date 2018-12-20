@@ -17,9 +17,10 @@ export class Offer {
   contractType: ContractType;
   salaryAmount?: number;
   salaryCurrency?: string;
-  salaryFrequency?: SalaryFrecuency;
+  salaryFrequency?: SalaryFrequency;
   location?: string;
   workLocation: WorkLocationType;
+  applications: number;
   seniority?: SeniorityLevel;
   responsibilities?: string;
   requirements?: string;
@@ -41,11 +42,11 @@ export enum ContractType {
   'End of Degree Project' = 3,
 }
 
-export enum SalaryFrecuency {
-  PerHour = 0,
-  PerMonth = 1,
-  PerYear = 2,
-  PerProject = 3,
+export enum SalaryFrequency {
+  'per hour' = 0,
+  'per month' = 1,
+  'per year' = 2,
+  'for the project' = 3,
 }
 
 export enum WorkLocationType {
