@@ -9,14 +9,14 @@
       fxHide.lt-sm
       fxLayoutGap="16px">
       <app-icon-with-text icon="place" [text]="offer.location"></app-icon-with-text>
-      <app-icon-with-text icon="access-time" [text]="offer.createdAt"></app-icon-with-text>
+      <app-icon-with-text icon="access-time" [text]="getPublishedDate()"></app-icon-with-text>
     </div>
     <mat-card-subtitle
       class="quickInfo"
       fxHide.gt-xs
       fxLayoutGap="16px">
       <app-icon-with-text icon="place" [text]="offer.location"></app-icon-with-text>
-      <app-icon-with-text icon="access-time" [text]="offer.createdAt"></app-icon-with-text>
+      <app-icon-with-text icon="access-time" [text]="getPublishedDate()"></app-icon-with-text>
     </mat-card-subtitle>
   </mat-card-header>
 
