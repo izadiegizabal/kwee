@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-offer-preview-card',
@@ -27,6 +27,7 @@ export class OfferPreviewCardComponent implements OnInit {
 
   offerUrl: string;
 
+  @Input() offer: any;
   constructor() {
   }
 

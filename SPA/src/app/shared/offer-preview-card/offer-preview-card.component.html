@@ -2,21 +2,21 @@
   <mat-card-header fxLayoutAlign="space-between">
     <mat-card-title [routerLink]="offerUrl" style="cursor: pointer">{{offer.title}}</mat-card-title>
     <mat-card-subtitle>
-      <app-offerer-name-overview [index]="82" [name]="'Google'"></app-offerer-name-overview>
+      <app-offerer-name-overview [index]="82" [name]="offer.fk_offerer"></app-offerer-name-overview>
     </mat-card-subtitle>
     <div
       class="quickInfo"
       fxHide.lt-sm
       fxLayoutGap="16px">
       <app-icon-with-text icon="place" [text]="offer.location"></app-icon-with-text>
-      <app-icon-with-text icon="access-time" [text]="offer.publishDate"></app-icon-with-text>
+      <app-icon-with-text icon="access-time" [text]="offer.createdAt"></app-icon-with-text>
     </div>
     <mat-card-subtitle
       class="quickInfo"
       fxHide.gt-xs
       fxLayoutGap="16px">
       <app-icon-with-text icon="place" [text]="offer.location"></app-icon-with-text>
-      <app-icon-with-text icon="access-time" [text]="offer.publishDate"></app-icon-with-text>
+      <app-icon-with-text icon="access-time" [text]="offer.createdAt"></app-icon-with-text>
     </mat-card-subtitle>
   </mat-card-header>
 
@@ -37,9 +37,9 @@
       fxLayout="row"
       fxLayoutAlign="center center"
       fxLayoutGap="16px">
-      <app-icon-with-text icon="date-range" text="3 months"></app-icon-with-text>
-      <app-icon-with-text icon="work" text="Full-Time"></app-icon-with-text>
-      <app-icon-with-text icon="local-atm" text="2.500€/month"></app-icon-with-text>
+      <app-icon-with-text icon="date-range" [text]="'Indefinite'"></app-icon-with-text>
+      <app-icon-with-text icon="work" [text]="'Part-Time'"></app-icon-with-text>
+      <app-icon-with-text icon="local-atm" [text]="offer.salary + '€/month'"></app-icon-with-text>
       <div fxHide.lt-sm>
         <button [routerLink]="offerUrl" color="accent" mat-button>{{'More Info' | uppercase }}</button>
         <button mat-icon-button>
