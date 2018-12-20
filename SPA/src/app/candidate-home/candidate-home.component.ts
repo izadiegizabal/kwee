@@ -19,7 +19,6 @@ export class CandidateHomeComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('entra');
     this.store$.dispatch(new OffersActions.TryGetOffers());
     this.offersState = this.store$.pipe(select(state => state.offers));
   }

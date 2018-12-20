@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Actions, Effect, ofType} from '@ngrx/effects';
-import {catchError, map, share, switchMap, withLatestFrom} from 'rxjs/operators';
-import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
+import {catchError, map, share, switchMap} from 'rxjs/operators';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {Observable, of, throwError} from 'rxjs';
 import * as OffersActions from './offers.actions';
@@ -14,8 +14,7 @@ export class OffersEffects {
   @Effect()
   offersGetoffers = this.actions$.pipe(
     ofType(OffersActions.TRY_GET_OFFERS),
-    // withLatestFrom(this.store$.pipe(select(state => state.auth))),
-    switchMap((payload) => {
+    switchMap(() => {
         const apiEndpointUrl = environment.apiUrl + 'offers';
         // const token = authState.token;
         // const headers = new HttpHeaders().set('token', token);
