@@ -17,7 +17,7 @@ import {StoreDevtoolsModule} from '@ngrx/store-devtools';
 import {localStorageSync} from 'ngrx-store-localstorage';
 
 export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {
-  return localStorageSync({keys: ['auth', 'admin'], rehydrate: true})(reducer);
+  return localStorageSync({keys: ['auth', 'admin', 'offers'], rehydrate: true})(reducer);
 }
 
 const metaReducers: Array<MetaReducer<any, any>> = [localStorageSyncReducer];
