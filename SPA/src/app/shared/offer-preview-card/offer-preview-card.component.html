@@ -1,22 +1,22 @@
 <mat-card class="example-card">
   <mat-card-header fxLayoutAlign="space-between">
-    <mat-card-title>{{position}}</mat-card-title>
+    <mat-card-title>{{offer.title}}</mat-card-title>
     <mat-card-subtitle>
-      <app-offerer-name-overview [index]="82" [name]="'Google'"></app-offerer-name-overview>
+      <app-offerer-name-overview [index]="82" [name]="offer.fk_offerer"></app-offerer-name-overview>
     </mat-card-subtitle>
     <div
       class="quickInfo"
       fxHide.lt-sm
       fxLayoutGap="16px">
-      <app-icon-with-text [icon]="'place'" [text]="'Barcelona'"></app-icon-with-text>
-      <app-icon-with-text [icon]="'access-time'" [text]="'5 days ago'"></app-icon-with-text>
+      <app-icon-with-text [icon]="'place'" [text]="offer.location"></app-icon-with-text>
+      <app-icon-with-text [icon]="'access-time'" [text]="offer.createdAt"></app-icon-with-text>
     </div>
     <mat-card-subtitle
       class="quickInfo"
       fxHide.gt-xs
       fxLayoutGap="16px">
-      <app-icon-with-text [icon]="'place'" [text]="'Barcelona'"></app-icon-with-text>
-      <app-icon-with-text [icon]="'access-time'" [text]="'5 days ago'"></app-icon-with-text>
+      <app-icon-with-text [icon]="'place'" [text]="offer.location"></app-icon-with-text>
+      <app-icon-with-text [icon]="'access-time'" [text]="offer.createdAt"></app-icon-with-text>
     </mat-card-subtitle>
   </mat-card-header>
 
@@ -25,7 +25,7 @@
       alt="Business Logo"
       src="https://cdn.vox-cdn.com/thumbor/Pkmq1nm3skO0-j693JTMd7RL0Zk=/0x0:2012x1341/1200x800/filters:focal(0x0:2012x1341)/cdn.vox-cdn.com/uploads/chorus_image/image/47070706/google2.0.0.jpg">
     <p>
-      {{ (description | slice:0:280) + "..." }}
+      {{ (offer.description | slice:0:280) + "..." }}
     </p>
   </mat-card-content>
 
@@ -39,7 +39,7 @@
       fxLayoutGap="16px">
       <app-icon-with-text [icon]="'date-range'" [text]="'Indefinite'"></app-icon-with-text>
       <app-icon-with-text [icon]="'work'" [text]="'Part-Time'"></app-icon-with-text>
-      <app-icon-with-text [icon]="'local-atm'" [text]="'1.500€/month'"></app-icon-with-text>
+      <app-icon-with-text [icon]="'local-atm'" [text]="offer.salary + '€/month'"></app-icon-with-text>
       <div fxHide.lt-sm>
         <button color="accent" mat-button>{{'More Info' | uppercase }}</button>
         <button mat-icon-button>

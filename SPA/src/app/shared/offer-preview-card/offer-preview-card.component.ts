@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-offer-preview-card',
@@ -14,6 +14,7 @@ export class OfferPreviewCardComponent implements OnInit {
     '      their incoming links in order to provide expert advice, guidance, and recommendations to business owners\n' +
     '      seeking to earn more natural search engine traffic and higher ranking positions.';
 
+  @Input() offer: any;
   constructor() {
   }
 
