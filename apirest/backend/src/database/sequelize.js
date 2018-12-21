@@ -9,6 +9,7 @@ const sequelize = new Sequelize(env.DATABASE_NAME, env.DATABASE_USERNAME, env.DA
     dialect: 'mysql',
     logging: false,
     operatorsAliases: false,
+    timezone: '+01:00',
     pool: {
         max: 25,
         min: 1,

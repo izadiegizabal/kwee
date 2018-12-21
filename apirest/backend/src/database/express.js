@@ -2,14 +2,17 @@ const express = require('express'),
     bodyParser = require('body-parser'),
     path = require('path'),
     session = require('express-session'),
-    morgan = require('morgan')
-env = require('../tools/constants');
+    env = require('../tools/constants'),
+    moment = require('moment');
 
 const app = express();
 
 // Configure the app to use bodyParser()
 // This will let us get the data from post
-app.use(morgan('combined'));
+app.use((req, res, next) => {
+    console.log(`${moment().format('HH:mm:ss')} [${req.method}]: ${req.url}`);
+    next();
+});
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
