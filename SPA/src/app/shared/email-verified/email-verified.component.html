@@ -1,28 +1,28 @@
 <div fxLayout="row"
      fxLayoutAlign="center center">
-  <mat-card fxLayout="column"
-            fxFlex="95%" fxFlex.gt-sm="75%" fxFlex.gt-md="60%" fxFlex.gt-lg="50%">
+  <mat-card fxFlex="95%"
+            fxFlex.gt-lg="50%" fxFlex.gt-md="60%" fxFlex.gt-sm="75%" fxLayout="column">
     <mat-card-header>
-      <mat-card-title fxLayout="row" class="mat-h2" fxLayoutGap="16px">
+      <mat-card-title class="mat-h2" fxLayout="row" fxLayoutGap="16px">
         Email Verified!
       </mat-card-title>
     </mat-card-header>
     <mat-card-content>
       <p>
         Congratulation! After having verified your email correctly you're set to go to start applying to any job offers.
-        We're sure that you'll be able to find the ideal position or project to work in. It's essential to find something
-        that pushes you every day to work hard and pursue greatness. Thank you for believing in us and giving us a chance
-        to help you with that.
+        We're sure that you'll be able to find the ideal position or project to work in. It's essential to find
+        something that pushes you every day to work hard and pursue greatness. Thank you for believing in us and giving
+        us a chance to help you with that.
         <br>
         <br>
-        Feel free to explore our <a routerLink="/candidate-home">job offers</a> as and in case you have any issues,
-        be sure to <a routerLink="/contact"> contact</a> us. Remember to also complete <a [routerLink]="">
-        your profile</a> to increase your chances of being successfully selected by the businesses.
+        Feel free to explore our <a routerLink="/candidate-home">job offers</a> as and in case you have any issues, be
+        sure to <a routerLink="/contact"> contact</a> us. Remember to also complete <a [routerLink]=""> your profile</a>
+        to increase your chances of being successfully selected by the businesses.
       </p>
     </mat-card-content>
     <mat-card-actions fxLayoutAlign="end">
-      <button mat-raised-button type="submit" color="primary" routerLink="/candidate-home">Explore Offers</button>
-      <button mat-button type="submit" color="accent" routerLink="/">Complete Profile</button>
+      <button color="primary" mat-raised-button routerLink="/candidate-home" type="submit">Explore Offers</button>
+      <button color="accent" mat-button routerLink="/" type="submit">Complete Profile</button>
     </mat-card-actions>
   </mat-card>
 </div>

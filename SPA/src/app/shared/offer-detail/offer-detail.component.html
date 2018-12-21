@@ -1,7 +1,7 @@
 <div fxLayout="row"
      fxLayoutAlign="center center">
-  <mat-card fxLayout="column"
-            fxFlex="95%" fxFlex.gt-sm="75%" fxFlex.gt-md="60%" fxFlex.gt-lg="50%">
+  <mat-card fxFlex="95%"
+            fxFlex.gt-lg="50%" fxFlex.gt-md="60%" fxFlex.gt-sm="75%" fxLayout="column">
     <mat-card-header fxLayoutAlign="space-between">
       <mat-card-title fxLayout="row" fxLayoutGap="16px">
         <span>{{offer.title}}</span>
@@ -10,43 +10,43 @@
         </mat-chip-list>
       </mat-card-title>
       <mat-card-subtitle>
-        <span style="cursor: pointer" [routerLink]="'/business/' + offer.companyId + '/' + offer.companyName + '/'">
+        <span [routerLink]="'/business/' + offer.companyId + '/' + offer.companyName + '/'" style="cursor: pointer">
           <app-offerer-name-overview [index]="offer.companyIndex"
                                      [name]="offer.companyName"></app-offerer-name-overview>
         </span>
       </mat-card-subtitle>
       <div
         class="quickInfo"
+        fxHide.lt-sm
         fxLayout="row"
         fxLayout.lt-md="column"
         fxLayoutAlign="end start"
-        fxHide.lt-sm
         fxLayoutGap="16px">
-        <app-icon-with-text icon="access-time" [text]="getTimePassed()"></app-icon-with-text>
-        <app-icon-with-text icon="alarm" [text]="offer.selectionStartDate | date"></app-icon-with-text>
+        <app-icon-with-text [text]="getTimePassed()" icon="access-time"></app-icon-with-text>
+        <app-icon-with-text [text]="offer.selectionStartDate | date" icon="alarm"></app-icon-with-text>
       </div>
       <mat-card-subtitle
-        fxLayout="row"
         class="quickInfo"
         fxHide.gt-xs
+        fxLayout="row"
         fxLayoutGap="16px">
-        <app-icon-with-text icon="access-time" [text]="getTimePassed()"></app-icon-with-text>
-        <app-icon-with-text icon="alarm" [text]="offer.selectionStartDate | date"></app-icon-with-text>
+        <app-icon-with-text [text]="getTimePassed()" icon="access-time"></app-icon-with-text>
+        <app-icon-with-text [text]="offer.selectionStartDate | date" icon="alarm"></app-icon-with-text>
         <mat-chip-list>
           <mat-chip color="primary" selected style="pointer-events: none">{{ getOfferStatus() | titlecase}}</mat-chip>
         </mat-chip-list>
       </mat-card-subtitle>
     </mat-card-header>
 
-    <mat-card-content fxLayout="column" style="margin-left: 16px" fxLayoutGap="24px">
+    <mat-card-content fxLayout="column" fxLayoutGap="24px" style="margin-left: 16px">
       <div
-        fxLayoutGap="16px"
-        fxLayout="row" fxLayout.lt-sm="column">
-        <img fxFlex="25%" fxFlex.lt-sm="100%"
+        fxLayout="row"
+        fxLayout.lt-sm="column" fxLayoutGap="16px">
+        <img alt="Business Logo" fxFlex="25%"
+             fxFlex.lt-sm="100%"
              fxLayoutAlign="center center"
-             alt="Business Logo"
-             style="object-fit: cover; height: 150px;"
-             src="https://cdn.vox-cdn.com/thumbor/Pkmq1nm3skO0-j693JTMd7RL0Zk=/0x0:2012x1341/1200x800/filters:focal(0x0:2012x1341)/cdn.vox-cdn.com/uploads/chorus_image/image/47070706/google2.0.0.jpg">
+             src="https://cdn.vox-cdn.com/thumbor/Pkmq1nm3skO0-j693JTMd7RL0Zk=/0x0:2012x1341/1200x800/filters:focal(0x0:2012x1341)/cdn.vox-cdn.com/uploads/chorus_image/image/47070706/google2.0.0.jpg"
+             style="object-fit: cover; height: 150px;">
         <p>
           {{ offer.description }}
         </p>
@@ -56,27 +56,27 @@
         <h2 class="mat-h2">Details</h2>
         <div
           fxLayout="row"
-          fxLayoutGap="8px"
           fxLayoutAlign="start start"
+          fxLayoutGap="8px"
           style="margin-bottom: 16px">
           <div fxFlex="33%" fxFlex.lt-sm="100%"
-               fxLayoutAlign="start start"
                fxLayout="column"
+               fxLayoutAlign="start start"
                fxLayoutGap="8px">
-            <app-icon-with-text icon="date-range" [text]="getOfferDuration() | lowercase"></app-icon-with-text>
-            <app-icon-with-text icon="local-atm" [text]="getOfferSalary()"></app-icon-with-text>
-            <app-icon-with-text icon="face" [text]="getOfferSeniorityLevel()"></app-icon-with-text>
+            <app-icon-with-text [text]="getOfferDuration() | lowercase" icon="date-range"></app-icon-with-text>
+            <app-icon-with-text [text]="getOfferSalary()" icon="local-atm"></app-icon-with-text>
+            <app-icon-with-text [text]="getOfferSeniorityLevel()" icon="face"></app-icon-with-text>
           </div>
           <div fxFlex="33%" fxFlex.lt-sm="100%"
-               fxLayoutAlign="start start"
                fxLayout="column"
+               fxLayoutAlign="start start"
                fxLayoutGap="8px">
-            <app-icon-with-text icon="work" [text]="getOfferContractType()"></app-icon-with-text>
-            <app-icon-with-text icon="place" [text]="getOfferLocation()"></app-icon-with-text>
-            <app-icon-with-text icon="people" [text]="getOfferApplications()"></app-icon-with-text>
+            <app-icon-with-text [text]="getOfferContractType()" icon="work"></app-icon-with-text>
+            <app-icon-with-text [text]="getOfferLocation()" icon="place"></app-icon-with-text>
+            <app-icon-with-text [text]="getOfferApplications()" icon="people"></app-icon-with-text>
           </div>
-          <div fxHide.lt-sm
-               fxFlex="33%"
+          <div fxFlex="33%"
+               fxHide.lt-sm
                fxLayoutGap="8px">
             <button color="primary" mat-raised-button>{{'Apply Now!' | uppercase }}</button>
             <button mat-icon-button>
@@ -85,10 +85,10 @@
           </div>
         </div>
       </div>
-      <div fxHide.gt-xs
-           fxFlex="100%"
-           fxLayoutGap="8px"
+      <div fxFlex="100%"
+           fxHide.gt-xs
            fxLayoutAlign="center"
+           fxLayoutGap="8px"
            style="padding-bottom: 16px">
         <button color="primary" mat-raised-button>{{'Apply Now!' | uppercase }}</button>
         <button mat-icon-button>
@@ -120,11 +120,11 @@
           fxLayout="row"
           fxLayout.lt-sm="column">
           <mat-list
-            fxFlex.lt-sm="100%" fxFlex="50%"
+            fxFlex="50%" fxFlex.lt-sm="100%"
             style="padding-top: 0">
             <div
-              style="margin-left: -20px"
-              *ngFor="let skill of offer.skills; let i = index">
+              *ngFor="let skill of offer.skills; let i = index"
+              style="margin-left: -20px">
               <mat-list-item
                 *ngIf="i % 2 === 0">
                 <mat-icon color="primary">chevron_right</mat-icon>
@@ -132,11 +132,11 @@
             </div>
           </mat-list>
           <mat-list
-            fxFlex.lt-sm="100%" fxFlex="50%"
+            fxFlex="50%" fxFlex.lt-sm="100%"
             style="padding-top: 0">
             <div
-              style="margin-left: -20px"
-              *ngFor="let skill of offer.skills; let i = index">
+              *ngFor="let skill of offer.skills; let i = index"
+              style="margin-left: -20px">
               <mat-list-item *ngIf="i % 2 !== 0">
                 <mat-icon color="primary">chevron_right</mat-icon>
                 {{' ' + skill}}</mat-list-item>

@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {MatDialog, MatStepper, MatAccordion} from '@angular/material';
+import {MatDialog, MatStepper} from '@angular/material';
 import {Action, Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
 import * as AuthActions from '../../store/auth.actions';
@@ -25,8 +25,6 @@ export class SignupCandidateComponent implements OnInit {
   iskillang = 0;
   iskilex = 0;
   iskiled = 0;
-
-
 
 
   roles: { value: number, viewValue: string }[] = [
@@ -187,7 +185,6 @@ export class SignupCandidateComponent implements OnInit {
       'description': new FormControl(null)
     });
   }
-
 
 
   samePassword(control: FormControl): { [s: string]: boolean } {
@@ -356,57 +353,66 @@ export class SignupCandidateComponent implements OnInit {
 
   }
 
-  getEx(n : number){
+  getEx(n: number) {
     return (<FormGroup>(<FormArray>this.thirdFormGroup.get('experience')).controls[n]).controls;
   }
-  getEd(n : number){
+
+  getEd(n: number) {
     return (<FormGroup>(<FormArray>this.thirdFormGroup.get('education')).controls[n]).controls;
   }
 
 
-  onWhatExS(index: number, obj: any){
-    if(isNaN(obj.value)&&(this.getEx(index).start.valid)){
-      this.getEx(index).start.setErrors({'notDate':true});}
-    else{this.getEx(index).start.updateValueAndValidity();}
-    return (isNaN(obj.value)&&(this.getEx(index).start.valid));
+  onWhatExS(index: number, obj: any) {
+    if (isNaN(obj.value) && (this.getEx(index).start.valid)) {
+      this.getEx(index).start.setErrors({'notDate': true});
+    } else {
+      this.getEx(index).start.updateValueAndValidity();
+    }
+    return (isNaN(obj.value) && (this.getEx(index).start.valid));
   }
 
-  onWhatExE(index: number, obj: any){
-    if(isNaN(obj.value)&&(this.getEx(index).end.valid)){
-      this.getEx(index).end.setErrors({'notDate':true});}
-    else{this.getEx(index).end.updateValueAndValidity();}
-    return (isNaN(obj.value)&&(this.getEx(index).end.valid));
+  onWhatExE(index: number, obj: any) {
+    if (isNaN(obj.value) && (this.getEx(index).end.valid)) {
+      this.getEx(index).end.setErrors({'notDate': true});
+    } else {
+      this.getEx(index).end.updateValueAndValidity();
+    }
+    return (isNaN(obj.value) && (this.getEx(index).end.valid));
   }
 
-  onWhatEdS(index: number, obj: any){
-    if(isNaN(obj.value)&&(this.getEd(index).start.valid)){
-      this.getEd(index).start.setErrors({'notDate':true});}
-    else{this.getEd(index).start.updateValueAndValidity();}
-    return (isNaN(obj.value)&&(this.getEd(index).start.valid));
+  onWhatEdS(index: number, obj: any) {
+    if (isNaN(obj.value) && (this.getEd(index).start.valid)) {
+      this.getEd(index).start.setErrors({'notDate': true});
+    } else {
+      this.getEd(index).start.updateValueAndValidity();
+    }
+    return (isNaN(obj.value) && (this.getEd(index).start.valid));
   }
 
-  onWhatEdE(index: number, obj: any){
-    if(isNaN(obj.value)&&(this.getEd(index).end.valid)){
-      this.getEd(index).end.setErrors({'notDate':true});}
-    else{this.getEd(index).end.updateValueAndValidity();}
-    return (isNaN(obj.value)&&(this.getEd(index).end.valid));
+  onWhatEdE(index: number, obj: any) {
+    if (isNaN(obj.value) && (this.getEd(index).end.valid)) {
+      this.getEd(index).end.setErrors({'notDate': true});
+    } else {
+      this.getEd(index).end.updateValueAndValidity();
+    }
+    return (isNaN(obj.value) && (this.getEd(index).end.valid));
   }
 
-  onDoneEx(index: number){
-    if(!(<FormArray>this.thirdFormGroup.controls['experience']).controls[index].valid){
+  onDoneEx(index: number) {
+    if (!(<FormArray>this.thirdFormGroup.controls['experience']).controls[index].valid) {
       (<FormGroup>(<FormArray>this.thirdFormGroup.get('experience')).controls[index]).controls.title.markAsTouched();
     }
     return false;
   }
 
-  onDoneEd(index: number){
-    if(!(<FormArray>this.thirdFormGroup.controls['education']).controls[index].valid){
+  onDoneEd(index: number) {
+    if (!(<FormArray>this.thirdFormGroup.controls['education']).controls[index].valid) {
       (<FormGroup>(<FormArray>this.thirdFormGroup.get('education')).controls[index]).controls.title.markAsTouched();
     }
   }
 
-  onDoneLang(index: number){
-    if(!(<FormArray>this.thirdFormGroup.controls['languages']).controls[index].valid){
+  onDoneLang(index: number) {
+    if (!(<FormArray>this.thirdFormGroup.controls['languages']).controls[index].valid) {
       (<FormGroup>(<FormArray>this.thirdFormGroup.get('languages')).controls[index]).controls.language.markAsTouched();
       (<FormGroup>(<FormArray>this.thirdFormGroup.get('languages')).controls[index]).controls.proficiency.markAsTouched();
     }

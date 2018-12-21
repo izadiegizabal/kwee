@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {Store, select} from '@ngrx/store';
+import {select, Store} from '@ngrx/store';
 import * as fromApp from '../store/app.reducers';
-import {OffersEffects} from './store/offers.effects';
 import * as OffersActions from './store/offers.actions';
 import * as fromOffers from './store/offers.reducers';
 import {Observable} from 'rxjs';
@@ -13,7 +12,7 @@ import {Observable} from 'rxjs';
   styleUrls: ['./candidate-home.component.scss']
 })
 export class CandidateHomeComponent implements OnInit {
-   offersState: Observable<fromOffers.State>;
+  offersState: Observable<fromOffers.State>;
 
   constructor(private store$: Store<fromApp.AppState>) {
   }

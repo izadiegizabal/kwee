@@ -192,7 +192,7 @@
                     <span *ngIf="current.checked">
                     current</span>
                     </span>
-                    <ng-template #date><span>Date</span></ng-template>
+                      <ng-template #date><span>Date</span></ng-template>
                     </mat-panel-description>
                   </mat-expansion-panel-header>
                   <div fxLayout="column" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
@@ -204,13 +204,13 @@
                         id="{{'titlex'+s}}"
                         matInput
                         placeholder="Title" type="text">
-                        <mat-error
+                      <mat-error
                         *ngIf="!thirdFormGroup.get('experience').controls[s].controls.title.valid &&
                         thirdFormGroup.get('experience').controls[s].controls.title.touched">
                         Please enter a title
                       </mat-error>
                     </mat-form-field>
-                    
+
                   </div>
                   <!--------------------------------------------------->
                   <div fxLayout="column" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
@@ -251,9 +251,9 @@
                         ></mat-datepicker>
                         <span *ngIf="onWhatExE(s,iend)"></span>
                         <mat-error
-                        *ngIf="!thirdFormGroup.get('experience').controls[s].controls.end.valid && thirdFormGroup.get('experience').controls[s].controls.end.touched && !current.checked">
-                        Please enter a valid date
-                      </mat-error>
+                          *ngIf="!thirdFormGroup.get('experience').controls[s].controls.end.valid && thirdFormGroup.get('experience').controls[s].controls.end.touched && !current.checked">
+                          Please enter a valid date
+                        </mat-error>
                       </mat-form-field>
 
                       <mat-checkbox #current (change)="onChange($event, s)">Current</mat-checkbox>
@@ -272,9 +272,10 @@
                       <button (click)="deleteExperience(s)" color="warn" mat-button type="button">Delete</button>
                     </div>
                     <div>
-                      <button color="accent" 
-                      (click)="onDoneEx(s)" 
-                      mat-button type="button">Done</button>
+                      <button (click)="onDoneEx(s)"
+                              color="accent"
+                              mat-button type="button">Done
+                      </button>
                     </div>
 
                   </div>
@@ -381,10 +382,11 @@
                       <button (click)="deleteEducation(a)" color="warn" mat-button type="button">Delete</button>
                     </div>
                     <div>
-                      <button color="accent" 
-                      mat-button 
-                      (click)="onDoneEd(a)" 
-                      type="button">Done</button>
+                      <button (click)="onDoneEd(a)"
+                              color="accent"
+                              mat-button
+                              type="button">Done
+                      </button>
                     </div>
 
                   </div>
@@ -460,10 +462,10 @@
                           matInput
 
                           placeholder="Language" type="text">
-                          <mat-error
-                        *ngIf="!thirdFormGroup.get('languages').controls[j].controls.language.valid">
-                        Please enter a value
-                      </mat-error>
+                        <mat-error
+                          *ngIf="!thirdFormGroup.get('languages').controls[j].controls.language.valid">
+                          Please enter a value
+                        </mat-error>
                       </mat-form-field>
                     </div>
                     <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
@@ -474,9 +476,9 @@
                           </mat-option>
                         </mat-select>
                         <mat-error
-                        *ngIf="!thirdFormGroup.get('languages').controls[j].controls.language.valid">
-                        Please select a value
-                      </mat-error>
+                          *ngIf="!thirdFormGroup.get('languages').controls[j].controls.language.valid">
+                          Please select a value
+                        </mat-error>
                       </mat-form-field>
                     </div>
                   </div>
@@ -488,10 +490,11 @@
                       <button (click)="deleteLanguage(s)" color="warn" mat-button type="button">Delete</button>
                     </div>
                     <div>
-                      <button color="accent" 
-                      mat-button 
-                      type="button"
-                      (click)="onDoneLang(j)">Done</button>
+                      <button (click)="onDoneLang(j)"
+                              color="accent"
+                              mat-button
+                              type="button">Done
+                      </button>
                     </div>
 
                   </div>

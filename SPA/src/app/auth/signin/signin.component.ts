@@ -1,11 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {Action, Store} from '@ngrx/store';
+import {Action, select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
 import {AuthEffects} from '../store/auth.effects';
 import * as AuthActions from '../store/auth.actions';
 import {filter} from 'rxjs/operators';
 import {Router} from '@angular/router';
+import {Observable} from 'rxjs';
+import * as fromAuth from '../store/auth.reducers';
 
 
 @Component({
@@ -17,6 +19,7 @@ import {Router} from '@angular/router';
 export class SigninComponent implements OnInit {
   user: FormGroup;
   hide = false;
+  authState: Observable<fromAuth.State>;
 
   constructor(private _formBuilder: FormBuilder,
               private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects,
@@ -28,6 +31,8 @@ export class SigninComponent implements OnInit {
       'email': new FormControl(null, [Validators.required, Validators.email]),
       'password': new FormControl(null, Validators.required),
     });
+
+    this.authState = this.store$.pipe(select('auth'));
   }
 
   signIn() {
@@ -39,11 +44,22 @@ export class SigninComponent implements OnInit {
       this.user.controls['email'].setErrors({'incorrect': true});
       this.user.controls['password'].setErrors({'incorrect': true});
     });
+
     this.authEffects$.authSignin.pipe(
-      filter((action: Action) => action.type === AuthActions.SIGNIN)
-    ).subscribe(() => {
-      this.router.navigate(['/']);
-    });
+      filter((action: Action) => action.type === AuthActions.SET_USER)
+    ).subscribe((res: {
+        payload: {
+          root: boolean
+        },
+        type: string
+      }) => {
+        if (res.payload.root) {
+          this.router.navigate(['/admin']);
+        } else {
+          this.router.navigate(['/']);
+        }
+      }
+    );
   }
 
 }

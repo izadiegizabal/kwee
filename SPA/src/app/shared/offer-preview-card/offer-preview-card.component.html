@@ -8,16 +8,16 @@
       class="quickInfo"
       fxHide.lt-sm
       fxLayoutGap="16px">
-      <app-icon-with-text icon="place" [text]="offer.location"></app-icon-with-text>
-      <app-icon-with-text icon="access-time" [text]="getPublishedDate()"></app-icon-with-text>
+      <app-icon-with-text [text]="offer.location" icon="place"></app-icon-with-text>
+      <app-icon-with-text [text]="getPublishedDate()" icon="access-time"></app-icon-with-text>
 
     </div>
     <mat-card-subtitle
       class="quickInfo"
       fxHide.gt-xs
       fxLayoutGap="16px">
-      <app-icon-with-text icon="place" [text]="offer.location"></app-icon-with-text>
-      <app-icon-with-text icon="access-time" [text]="getPublishedDate()"></app-icon-with-text>
+      <app-icon-with-text [text]="offer.location" icon="place"></app-icon-with-text>
+      <app-icon-with-text [text]="getPublishedDate()" icon="access-time"></app-icon-with-text>
 
     </mat-card-subtitle>
   </mat-card-header>
@@ -39,9 +39,9 @@
       fxLayout="row"
       fxLayoutAlign="center center"
       fxLayoutGap="16px">
-      <app-icon-with-text icon="date-range" [text]="'Indefinite'"></app-icon-with-text>
-      <app-icon-with-text icon="work" [text]="'Part-Time'"></app-icon-with-text>
-      <app-icon-with-text icon="local-atm" [text]="offer.salary + '€/month'"></app-icon-with-text>
+      <app-icon-with-text [text]="'Indefinite'" icon="date-range"></app-icon-with-text>
+      <app-icon-with-text [text]="'Part-Time'" icon="work"></app-icon-with-text>
+      <app-icon-with-text [text]="offer.salary + '€/month'" icon="local-atm"></app-icon-with-text>
       <div fxHide.lt-sm>
         <button [routerLink]="offerUrl" color="accent" mat-button>{{'More Info' | uppercase }}</button>
         <button mat-icon-button>
