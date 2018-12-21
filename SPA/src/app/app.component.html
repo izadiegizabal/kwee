@@ -1,7 +1,15 @@
-<div fxLayout="column" fxLayoutGap="8px">
-  <app-header></app-header>
+<div class="container"
+     fxLayoutGap="8px"
+     fxLayout="column">
+  <header>
+    <app-header></app-header>
+  </header>
 
-  <router-outlet></router-outlet>
+  <div class="content">
+    <router-outlet class="HolyGrail-content"></router-outlet>
+  </div>
 
-  <app-footer></app-footer>
+  <footer>
+    <app-footer></app-footer>
+  </footer>
 </div>

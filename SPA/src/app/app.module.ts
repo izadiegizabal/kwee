@@ -25,7 +25,7 @@ const metaReducers: Array<MetaReducer<any, any>> = [localStorageSyncReducer];
 
 @NgModule({
   declarations: [
-    AppComponent,
+    AppComponent
   ],
   imports: [
     BrowserModule,

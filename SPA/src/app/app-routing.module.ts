@@ -10,7 +10,7 @@ const routes: Routes = [
   {path: 'admin', loadChildren: './admin/admin.module#AdminModule'},
   {path: 'signup', loadChildren: './auth/signup/signup.module#SignupModule'},
   {path: 'signin', loadChildren: './auth/signin/signin.module#SigninModule'},
-  {path: 'email-verified/:token', loadChildren: './shared/email-verified/email-verified.module#EmailVerifiedModule'},
+  {path: 'email-verified', loadChildren: './shared/email-verified/email-verified.module#EmailVerifiedModule'},
   {path: '**', redirectTo: '/candidate-home'}
 ];
 
