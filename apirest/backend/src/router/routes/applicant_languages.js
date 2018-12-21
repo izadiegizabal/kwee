@@ -1,4 +1,4 @@
-const { checkToken, checkAdmin } = require('../../middlewares/authentication');
+const { checkToken } = require('../../middlewares/authentication');
 
 // ============================
 // ===== CRUD applicant_language ======
@@ -56,7 +56,7 @@ module.exports = (app, db) => {
     });
 
     // POST single applicant_language
-    app.post("/applicant_language", [checkToken, checkAdmin], async(req, res, next) => {
+    app.post("/applicant_language", checkToken, async(req, res, next) => {
         const body = req.body;
         let fk_language = body.fk_language;
 
@@ -82,20 +82,17 @@ module.exports = (app, db) => {
                     }
                 }
 
-                await applicant.addLanguage( body.fk_language,
-                    {
-                        through: {
-                            level: body.level
-                        }
+                await applicant.addLanguage(body.fk_language, {
+                    through: {
+                        level: body.level
                     }
-                ).then( result => {
-                    if(result){
+                }).then(result => {
+                    if (result) {
                         return res.status(201).json({
                             ok: true,
                             message: "Added language to applicant"
                         });
-                    }
-                    else{
+                    } else {
                         return res.status(400).json({
                             ok: false,
                             error: "Applicant language can't be created"
@@ -115,55 +112,53 @@ module.exports = (app, db) => {
     });
 
     // PUT single applicant_language
-    app.put("/applicant_language", [checkToken, checkAdmin], async(req, res, next) => {
+    app.put("/applicant_language", checkToken, async(req, res, next) => {
         const body = req.body;
 
         try {
             let applicant = await db.applicants.findOne({
-                where: { userId: body.fk_applicant }
-            })
-            .then( async applicant => {
-                if (applicant) {
-                    applicant.hasLanguage( body.fk_language )
-                    .then( success => {
-                        if(success){
-                            applicant.getLanguages( { where: { id: body.fk_language } } )
-                            .then( languages => {
-                                let language = languages[0];
+                    where: { userId: body.fk_applicant }
+                })
+                .then(async applicant => {
+                    if (applicant) {
+                        applicant.hasLanguage(body.fk_language)
+                            .then(success => {
+                                if (success) {
+                                    applicant.getLanguages({ where: { id: body.fk_language } })
+                                        .then(languages => {
+                                            let language = languages[0];
 
-                                language.applicant_languages.level = body.level;
-        
-                                language.applicant_languages.save()
-                                .then( rest => {
-                                    if( rest.isRejected ){
-                                        // Problems
-                                        return res.status(400).json({
-                                            ok: false,
-                                            msg: "Language not updated."
-                                        });
-                                    }
-                                    else{
-                                        // Everything ok
-                                        return res.status(201).json({
-                                            ok: true,
-                                            msg: "Language updated"
-                                        });
-                                    }
-                                })
-                            } )
+                                            language.applicant_languages.level = body.level;
 
-                        }
-                        else{
+                                            language.applicant_languages.save()
+                                                .then(rest => {
+                                                    if (rest.isRejected) {
+                                                        // Problems
+                                                        return res.status(400).json({
+                                                            ok: false,
+                                                            msg: "Language not updated."
+                                                        });
+                                                    } else {
+                                                        // Everything ok
+                                                        return res.status(201).json({
+                                                            ok: true,
+                                                            msg: "Language updated"
+                                                        });
+                                                    }
+                                                })
+                                        })
 
-                        }
-                    })
-                } else {
-                    return res.status(400).json({
-                        ok: false,
-                        error: "Applicant language doesn't exist"
-                    });
-                }
-            });
+                                } else {
+
+                                }
+                            })
+                    } else {
+                        return res.status(400).json({
+                            ok: false,
+                            error: "Applicant language doesn't exist"
+                        });
+                    }
+                });
 
 
         } catch (err) {
@@ -172,7 +167,7 @@ module.exports = (app, db) => {
     });
 
     // DELETE single applicant_language
-    app.delete("/applicant_language", [checkToken, checkAdmin], async(req, res, next) => {
+    app.delete("/applicant_language", checkToken, async(req, res, next) => {
         const body = req.body;
 
         try {

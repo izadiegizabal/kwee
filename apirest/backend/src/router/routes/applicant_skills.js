@@ -1,4 +1,4 @@
-const { checkToken, checkAdmin } = require('../../middlewares/authentication');
+const { checkToken } = require('../../middlewares/authentication');
 
 // ============================
 // ===== CRUD applicant_skill ======
@@ -52,7 +52,7 @@ module.exports = (app, db) => {
     });
 
     // POST single applicant_skill
-    app.post("/applicant_skill", [checkToken, checkAdmin], async(req, res, next) => {
+    app.post("/applicant_skill", checkToken, async(req, res, next) => {
         const body = req.body;
         let fk_skill = body.fk_skill;
 
@@ -73,34 +73,30 @@ module.exports = (app, db) => {
                                 ok: false,
                                 message: "This applicant already knows this skill"
                             });
-                        } 
+                        }
                     }
                 }
 
                 // And add the array of id's to applicant_skills
-                await applicant.addSkill( fk_skill,
-                    {
-                        through:
-                        {
+                await applicant.addSkill(fk_skill, {
+                        through: {
                             description: body.description,
                             level: body.level
                         }
-                    }
-                )
-                .then( created => {
-                    if( created ){
-                        return res.status(201).json({
-                            ok: true,
-                            message: "Added skill to applicant"
-                        });                        
-                    }
-                    else{
-                        return res.status(400).json({
-                            ok: false,
-                            error: "Applicant skill can't be created"
-                        });
-                    }
-                });
+                    })
+                    .then(created => {
+                        if (created) {
+                            return res.status(201).json({
+                                ok: true,
+                                message: "Added skill to applicant"
+                            });
+                        } else {
+                            return res.status(400).json({
+                                ok: false,
+                                error: "Applicant skill can't be created"
+                            });
+                        }
+                    });
 
             } else {
                 return res.status(400).json({
@@ -115,47 +111,44 @@ module.exports = (app, db) => {
     });
 
     // PUT single applicant_skill
-    app.put("/applicant_skill", [checkToken, checkAdmin], async(req, res, next) => {
+    app.put("/applicant_skill", checkToken, async(req, res, next) => {
         const body = req.body;
 
         try {
             let applicant = await db.applicants.findOne({
                 where: { userId: body.fk_applicant }
-            }).then( async _applicant => {
-                if(_applicant){
-                    _applicant.hasSkill( body.fk_skill )
-                    .then( exists => {
-                        if(exists){
-                            _applicant.getSkills( { where: { id: body.fk_skill } } )
-                            .then( skills => {
-                                let skill = skills[0];
+            }).then(async _applicant => {
+                if (_applicant) {
+                    _applicant.hasSkill(body.fk_skill)
+                        .then(exists => {
+                            if (exists) {
+                                _applicant.getSkills({ where: { id: body.fk_skill } })
+                                    .then(skills => {
+                                        let skill = skills[0];
 
-                                skill.applicant_skills.level = body.level;
-                                if(body.description) skill.applicant_skills.description = body.description;
+                                        skill.applicant_skills.level = body.level;
+                                        if (body.description) skill.applicant_skills.description = body.description;
 
-                                skill.applicant_skills.save()
-                                .then( rest => {
-                                    if(rest.isReject){
-                                        return res.status(400).json({
-                                            ok: false,
-                                            msg: "Skill not updated."
-                                        });
-                                    }
-                                    else{
-                                        return res.status(200).json({
-                                            ok: false,
-                                            msg: "Skill updated with level " +body.level
-                                        });
-                                    }
-                                })
-                            })
-                        }
-                        else{
-                            next({ type: 'error', error: "Skill not found for applicant " +body.fk_applicant });
-                        }
-                    })
-                }
-                else{
+                                        skill.applicant_skills.save()
+                                            .then(rest => {
+                                                if (rest.isReject) {
+                                                    return res.status(400).json({
+                                                        ok: false,
+                                                        msg: "Skill not updated."
+                                                    });
+                                                } else {
+                                                    return res.status(200).json({
+                                                        ok: false,
+                                                        msg: "Skill updated with level " + body.level
+                                                    });
+                                                }
+                                            })
+                                    })
+                            } else {
+                                next({ type: 'error', error: "Skill not found for applicant " + body.fk_applicant });
+                            }
+                        })
+                } else {
                     next({ type: 'error', error: "Applicant not found (¿fk_applicant wrong?)" });
                 }
             })
@@ -165,48 +158,46 @@ module.exports = (app, db) => {
     });
 
     // DELETE single applicant_skill
-    app.delete("/applicant_skill", [checkToken, checkAdmin], async(req, res, next) => {
+    app.delete("/applicant_skill", checkToken, async(req, res, next) => {
         const body = req.body;
 
         try {
             let applicant = await db.applicants.findOne({
-                where: { userId: body.fk_applicant }
-            })
-            .then( u => {
-                if(u){
-                    u.hasSkill( body.fk_skill )
-                    .then( success => {
-                        if(success){
-                            u.removeSkills(body.fk_skill)
-                            .then( ok => {
-                                return res.status(201).json({
-                                    ok: true,
-                                    message: "Deleted"
-                                });
+                    where: { userId: body.fk_applicant }
+                })
+                .then(u => {
+                    if (u) {
+                        u.hasSkill(body.fk_skill)
+                            .then(success => {
+                                if (success) {
+                                    u.removeSkills(body.fk_skill)
+                                        .then(ok => {
+                                            return res.status(201).json({
+                                                ok: true,
+                                                message: "Deleted"
+                                            });
+                                        })
+                                } else {
+                                    return res.status(400).json({
+                                        ok: false,
+                                        error: "This applicant don't know this skill"
+                                    });
+                                }
                             })
-                        }  
-                        else{
-                            return res.status(400).json({
-                                ok: false,
-                                error: "This applicant don't know this skill"
-                            });
-                        }
-                    })
-                    .catch( err => {
+                            .catch(err => {
+                                return res.status(400).json({
+                                    ok: false,
+                                    error: "Skill not deleted"
+                                });
+
+                            })
+                    } else {
                         return res.status(400).json({
                             ok: false,
-                            error: "Skill not deleted"
+                            error: "This Applicant doesn't exist"
                         });
-
-                    })
-                }
-                else{
-                    return res.status(400).json({
-                        ok: false,
-                        error: "This Applicant doesn't exist"
-                    });
-                }
-            })
+                    }
+                })
 
         } catch (err) {
             next({ type: 'error', error: 'Error getting data' });

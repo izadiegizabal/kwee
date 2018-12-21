@@ -1,4 +1,4 @@
-const { checkToken, checkAdmin } = require('../../middlewares/authentication');
+const { checkToken } = require('../../middlewares/authentication');
 
 //const { checks } = require('../../middlewares/validations')
 //const { check, validationResult, checkSchema } = require('express-validator/check')
@@ -39,7 +39,7 @@ module.exports = (app, db) => {
     });
 
     // POST single offer
-    app.post('/offer', [checkToken, checkAdmin], async(req, res, next) => {
+    app.post('/offer', checkToken, async(req, res, next) => {
 
         let body = req.body
 
@@ -52,12 +52,12 @@ module.exports = (app, db) => {
                 dateEnd: body.dateEnd,
                 location: body.location,
                 salary: body.salary
-            }).then( result => {
+            }).then(result => {
                 return res.status(201).json({
                     ok: true,
                     offer: result,
                     message: `Offer has been created.`
-                }); 
+                });
             });
 
         } catch (err) {
@@ -67,30 +67,30 @@ module.exports = (app, db) => {
     });
 
     // PUT single offer
-    app.put('/offer/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
+    app.put('/offer/:id([0-9]+)', checkToken, async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
 
         try {
             let offerUpdate = await db.offers.update(updates, {
-                where: { id }
-            }).then( result => {
-                return res.status(200).json({
-                    ok: true,
-                    offer: result
-                });
-            })
-            // json
-            // offer: [1] -> Updated
-            // offer: [0] -> Not updated
-            // empty body will change 'updateAt'
+                    where: { id }
+                }).then(result => {
+                    return res.status(200).json({
+                        ok: true,
+                        offer: result
+                    });
+                })
+                // json
+                // offer: [1] -> Updated
+                // offer: [0] -> Not updated
+                // empty body will change 'updateAt'
         } catch (err) {
             return next({ type: 'error', error: err.message });
         }
     });
 
     // DELETE single offer
-    app.delete('/offer/:id', [checkToken, checkAdmin], async(req, res, next) => {
+    app.delete('/offer/:id', checkToken, async(req, res, next) => {
         const id = req.params.id;
 
         try {

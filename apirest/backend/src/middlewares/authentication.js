@@ -1,41 +1,43 @@
 const jwt = require('jsonwebtoken');
 const env = require('../tools/constants');
-
+const auth = require('../middlewares/auth/auth');
+const db = require('../database/sequelize');
 
 // ==============================
 // ===== Token Verification =====
 // ==============================
 
-let checkToken = ( req, res, next ) =>{
+let checkToken = async(req, res, next) => {
 
     let token = req.get('token');
 
-    jwt.verify( token, env.JSONWEBTOKEN_SECRET, (err, decoded) => {
+    let decoded = await auth.auth.decode(token);
 
-        if ( err ){
-            return res.status(401).json({
-                ok: false,
-                err: {
-                    message: 'Invalid token'
-                }
-            })
-        }
-
-        req.user = decoded.user;
+    if (typeof decoded === "number") {
+        req.user = decoded;
         next();
+    } else {
+        return res.status(401).json(decoded);
+    }
 
-    })
 };
 
 // ==============================
 // ===== Admin Verification =====
 // ==============================
 
-let checkAdmin = ( req, res, next ) =>{
+let checkAdmin = async(req, res, next) => {
 
-    let user = req.user;
+    console.log("req: ", req.user);
 
-    if(user.root){
+    let user = await db.users.findOne({
+        attributes: [
+            'root'
+        ],
+        where: { id: req.user }
+    });
+
+    if (user.root) {
         next();
     } else {
         return res.status(401).json({

@@ -1,6 +1,8 @@
 const env = require('../../tools/constants');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const moment = require('moment');
+const auth = require('../../middlewares/auth/auth');
 
 module.exports = (app, db) => {
 
@@ -29,19 +31,22 @@ module.exports = (app, db) => {
                 });
             }
 
-            delete user.dataValues.password;
+            let id = user.id;
+            let dateNow = moment().format();
 
-            let token = jwt.sign({
-                user
-            }, env.JSONWEBTOKEN_SECRET, { expiresIn: env.JSONWEBTOKEN_EXPIRES });
-            
-            // await db.users.update( { where: { email: body.email} }, {
-            //     lastAccess: new Date()
-            // } )
-            
+            await db.users.update({ lastAccess: dateNow }, {
+                where: { id }
+            });
+
+            let userUpdated = await db.users.findOne({ where: { id } })
+
+            delete userUpdated.dataValues.password;
+
+            let token = auth.auth.encode(userUpdated);
+
             return res.json({
                 ok: true,
-                user,
+                user: userUpdated,
                 token
             });
 

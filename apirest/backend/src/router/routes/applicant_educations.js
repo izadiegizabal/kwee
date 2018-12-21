@@ -1,4 +1,4 @@
-const { checkToken, checkAdmin } = require('../../middlewares/authentication');
+const { checkToken } = require('../../middlewares/authentication');
 
 // ============================
 // ===== CRUD applicant_education ======
@@ -59,13 +59,13 @@ module.exports = (app, db) => {
         }
     });
 
-     // POST single applicant_education
-     app.post("/applicant_education", [checkToken, checkAdmin], async(req, res, next) => {
+    // POST single applicant_education
+    app.post("/applicant_education", checkToken, async(req, res, next) => {
 
         const body = req.body;
         let fk_education = body.fk_education;
 
-        if( fk_education.length > 1 ){
+        if (fk_education.length > 1) {
             return res.status(400).json({
                 ok: false,
                 message: "Invalid fk_education value (array instead integer)."
@@ -101,24 +101,20 @@ module.exports = (app, db) => {
 
                 // And add the array of id's to applicant_educations AND REMAINING FIELDS ON EACH EDUCATION
                 //applicantEducationCreated = await applicant.setEducations(educations);
-                await applicant.addEducation( fk_education,
-                    {
-                        through: 
-                        {
-                            description: body.description,
-                            date_start: body.date_start,
-                            date_end: body.date_end,
-                            institution: body.institution
-                        }
+                await applicant.addEducation(fk_education, {
+                    through: {
+                        description: body.description,
+                        date_start: body.date_start,
+                        date_end: body.date_end,
+                        institution: body.institution
                     }
-                ).then( result => {
-                    if(result){
+                }).then(result => {
+                    if (result) {
                         return res.status(201).json({
                             ok: true,
                             message: "Added education to applicant"
                         });
-                    }
-                    else{
+                    } else {
                         return res.status(400).json({
                             ok: false,
                             error: "Applicant education can't be created"
@@ -135,65 +131,62 @@ module.exports = (app, db) => {
             }
         } catch (err) {
             //console.log(err.toString());
-            return next({ type: "error", error: err.toString()/*err.errors?err.errors[0].message:err.message*/});
+            return next({ type: "error", error: err.toString() /*err.errors?err.errors[0].message:err.message*/ });
             //return "EEERRROOOOOOOR";
             //return next({ type: 'error', error: err.errors?err.errors[0].message:err.message });
         }
     });
 
     // PUT single applicant_education
-    app.put("/applicant_education", [checkToken, checkAdmin], async(req, res, next) => {
+    app.put("/applicant_education", checkToken, async(req, res, next) => {
         const body = req.body;
 
         try {
             let applicant = await db.applicants.findOne({
                 where: { userId: body.fk_applicant }
-            }).then( async _applicant => {
-                
-                if(_applicant){
-                    _applicant.hasEducation( body.fk_education )
-                    .then( exists => {
+            }).then(async _applicant => {
 
-                        if(exists){
-                            _applicant.getEducations({where: { id: body.fk_education } } )
-                            .then( education => {
+                if (_applicant) {
+                    _applicant.hasEducation(body.fk_education)
+                        .then(exists => {
 
-                                let edu = education[0];
-                                
-                                if(body.description) edu.applicant_educations.description = body.description;
-                                if(body.date_end) edu.applicant_educations.date_end = body.date_end;
-                                if(body.date_start) edu.applicant_educations.date_start = body.date_start;
-                                if(body.institution) edu.applicant_educations.institution = body.institution;
-                                
-                                edu.applicant_educations.save()
-                                .then( rest => {
-                                    
-                                    if( rest.isRejected ){
-                                        // Problems
-                                        return res.status(400).json({
-                                            ok: false,
-                                            msg: "Education not updated."
-                                        });
-                                    }
-                                    else{
-                                        // Everything ok
-                                        return res.status(201).json({
-                                            ok: true,
-                                            msg: "Education updated"
-                                        });
-                                    }
-                                })
-                            })
-                            .catch(err => {
-                                return next({ type: 'error', error: err.message });
-                            })
-                        }
-                        else{
-                            return next({ type: 'error', error: "User don't know this education (¿fk_education wrong maybe?)" });
-                        }
-                    })
-                }
-                else{
+                            if (exists) {
+                                _applicant.getEducations({ where: { id: body.fk_education } })
+                                    .then(education => {
+
+                                        let edu = education[0];
+
+                                        if (body.description) edu.applicant_educations.description = body.description;
+                                        if (body.date_end) edu.applicant_educations.date_end = body.date_end;
+                                        if (body.date_start) edu.applicant_educations.date_start = body.date_start;
+                                        if (body.institution) edu.applicant_educations.institution = body.institution;
+
+                                        edu.applicant_educations.save()
+                                            .then(rest => {
+
+                                                if (rest.isRejected) {
+                                                    // Problems
+                                                    return res.status(400).json({
+                                                        ok: false,
+                                                        msg: "Education not updated."
+                                                    });
+                                                } else {
+                                                    // Everything ok
+                                                    return res.status(201).json({
+                                                        ok: true,
+                                                        msg: "Education updated"
+                                                    });
+                                                }
+                                            })
+                                    })
+                                    .catch(err => {
+                                        return next({ type: 'error', error: err.message });
+                                    })
+                            } else {
+                                return next({ type: 'error', error: "User don't know this education (¿fk_education wrong maybe?)" });
+                            }
+                        })
+                } else {
                     return next({ type: 'error', error: "User not found (fk_applicant unknown)" });
                 }
 
@@ -205,7 +198,7 @@ module.exports = (app, db) => {
     });
 
     // DELETE single applicant_education
-    app.delete("/applicant_education", [checkToken, checkAdmin], async(req, res, next) => {
+    app.delete("/applicant_education", checkToken, async(req, res, next) => {
         const body = req.body;
 
         try {

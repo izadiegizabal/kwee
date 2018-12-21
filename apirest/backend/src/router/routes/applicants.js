@@ -98,33 +98,33 @@ module.exports = (app, db) => {
         try {
             const body = req.body;
             const password = body.password ? bcrypt.hashSync(body.password, 10) : null;
-            
-            return db.sequelize.transaction( transaction => {
-                return db.users.create({
-                    name: body.name,
-                    password: password,
-                    email: body.email,
 
-                    photo: body.photo,
-                    bio: body.bio
+            return db.sequelize.transaction(transaction => {
+                    return db.users.create({
+                            name: body.name,
+                            password: password,
+                            email: body.email,
 
-                }, { transaction: transaction })
-                .then( async user => {
-                    return createApplicant(body, user, next, transaction);
+                            photo: body.photo,
+                            bio: body.bio
+
+                        }, { transaction: transaction })
+                        .then(async user => {
+                            return createApplicant(body, user, next, transaction);
+                        })
+                        .then(ending => {
+                            return res.status(201).json({
+                                ok: true,
+                                message: `Applicant with id ${ending.userId} has been created.`
+                            });
+                        })
                 })
-                .then( ending => {
-                    return res.status(201).json({
-                        ok: true,
-                        message: `Applicant with id ${ending.userId} has been created.`
-                    });
+                .catch(err => {
+                    return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
                 })
-            })
-            .catch( err => {
-                return next({ type: 'error', error: err.errors?err.errors[0].message:err.message });
-            })
 
         } catch (err) {
-            return next({ type: 'error', error: (err.errors?err.errors[0].message:err.message) });
+            return next({ type: 'error', error: (err.errors ? err.errors[0].message : err.message) });
         }
     });
 
@@ -132,29 +132,27 @@ module.exports = (app, db) => {
     app.put('/applicant/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
-        console.log(updates);
 
-        
         // let transaction; for updating users table ???
-        
+
         try {
 
             let applicant = await db.applicants.findOne({
                 where: { userId: id }
             });
-            
+
             if (applicant) {
 
                 let applicantuser = true;
 
-                if( updates.password || updates.email || updates.name || updates.snSignIn || updates.root || updates.photo || updates.bio ){
+                if (updates.password || updates.email || updates.name || updates.snSignIn || updates.root || updates.photo || updates.bio) {
                     // Update user values
-    
+
                     if (updates.password)
                         updates.password = bcrypt.hashSync(req.body.password, 10);
-    
-                    applicantuser = await db.users.update( updates, {
-                        where: { id: id}
+
+                    applicantuser = await db.users.update(updates, {
+                        where: { id: id }
                     })
                 }
 
@@ -174,7 +172,7 @@ module.exports = (app, db) => {
             }
 
         } catch (err) {
-            return next({ type: 'error', error: err.errors?err.errors[0].message:err.message });
+            return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
         }
     });
 
@@ -220,15 +218,15 @@ module.exports = (app, db) => {
             applicant.dateBorn = body.dateBorn ? body.dateBorn : null;
             applicant.premium = body.premium ? body.premium : null;
             applicant.rol = body.rol ? body.rol : null;
-            
+
             return db.applicants.create(applicant, { transaction: transaction })
-            .catch( err => {
-                return next({ type: 'error', error: err.message });
-            });
+                .catch(err => {
+                    return next({ type: 'error', error: err.message });
+                });
 
         } catch (err) {
             await transaction.rollback();
-            return next({ type: 'error', error: err.errors?err.errors[0].message:err.message });
+            return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
         }
     }
 }
