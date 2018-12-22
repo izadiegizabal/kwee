@@ -14,7 +14,7 @@ const auth = require('../../../middlewares/auth/auth');
 module.exports = (app, db) => {
 
     // GET all users
-    app.get('/users', checkToken, async(req, res, next) => {
+    app.get('/users', async(req, res, next) => {
         try {
             res.status(200).json({
                 ok: true,
@@ -32,7 +32,7 @@ module.exports = (app, db) => {
     });
 
     // GET one user by id
-    app.get('/user/:id([0-9]+)', checkToken, async(req, res, next) => {
+    app.get('/user/:id([0-9]+)', async(req, res, next) => {
         const id = req.params.id;
 
         try {
@@ -117,25 +117,7 @@ module.exports = (app, db) => {
             const id = req.params.id;
             const updates = req.body;
 
-            if (updates.password)
-                updates.password = bcrypt.hashSync(req.body.password, 10);
-
-            let updated = await db.users.update(updates, {
-                where: { id }
-            });
-
-            if (updated > 0) {
-                return res.status(200).json({
-                    ok: true,
-                    result: `Updated ${updated} rows. New values showing in message.`,
-                    message: await db.users.findOne({ where: { id } })
-                })
-            } else {
-                return res.status(400).json({
-                    ok: false,
-                    message: "No updates were done."
-                })
-            }
+            updateUser(id, updates, res);
 
         } catch (err) {
             next({ type: 'error', error: (err.errors ? err.errors[0].message : err.message) });
