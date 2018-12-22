@@ -25,9 +25,9 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 //Models/tables
-db.users = require('../models/users')(sequelize, Sequelize);
-db.offerers = require('../models/offerers')(sequelize, Sequelize);
-db.applicants = require('../models/applicants')(sequelize, Sequelize);
+db.users = require('../models/users/users')(sequelize, Sequelize);
+db.offerers = require('../models/users/offerers/offerers')(sequelize, Sequelize);
+db.applicants = require('../models/users/applicants/applicants')(sequelize, Sequelize);
 db.offers = require('../models/offers')(sequelize, Sequelize);
 db.users_offers = require('../models/applications')(sequelize, Sequelize);
 db.social_networks = require('../models/social_networks')(sequelize, Sequelize);
@@ -36,13 +36,13 @@ db.experiences = require('../models/experiences')(sequelize, Sequelize);
 db.educations = require('../models/educations')(sequelize, Sequelize);
 db.skills = require('../models/skills')(sequelize, Sequelize);
 db.languages = require('../models/languages')(sequelize, Sequelize);
-db.applicant_educations = require('../models/applicant_educations')(sequelize, Sequelize);
-db.applicant_skills = require('../models/applicant_skills')(sequelize, Sequelize);
-db.applicant_languages = require('../models/applicant_languages')(sequelize, Sequelize);
-db.ratings = require('../models/ratings')(sequelize, Sequelize);
+db.applicant_educations = require('../models/users/applicants/applicant_educations')(sequelize, Sequelize);
+db.applicant_skills = require('../models/users/applicants/applicant_skills')(sequelize, Sequelize);
+db.applicant_languages = require('../models/users/applicants/applicant_languages')(sequelize, Sequelize);
+db.ratings = require('../models/ratings/ratings')(sequelize, Sequelize);
 db.invoices = require('../models/invoices')(sequelize, Sequelize);
-db.rating_applicants = require('../models/rating_applicants')(sequelize, Sequelize);
-db.rating_offerers = require('../models/rating_offerers')(sequelize, Sequelize);
+db.rating_applicants = require('../models/ratings/rating_applicants')(sequelize, Sequelize);
+db.rating_offerers = require('../models/ratings/rating_offerers')(sequelize, Sequelize);
 db.comments = require('../models/comments')(sequelize, Sequelize);
 db.applications = require('../models/applications')(sequelize, Sequelize);
 

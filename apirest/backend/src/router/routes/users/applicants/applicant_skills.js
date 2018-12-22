@@ -1,4 +1,4 @@
-const { checkToken } = require('../../middlewares/authentication');
+const { checkToken } = require('../../../../middlewares/authentication');
 
 // ============================
 // ===== CRUD applicant_skill ======

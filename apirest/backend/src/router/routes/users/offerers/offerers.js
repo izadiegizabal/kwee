@@ -1,8 +1,6 @@
 const bcrypt = require('bcrypt');
-const { checkToken, checkAdmin } = require('../../middlewares/authentication');
+const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
 
-//const { checks } = require('../../middlewares/validations')
-//const { check, validationResult, checkSchema } = require('express-validator/check')
 // ============================
 // ======== CRUD user =========
 // ============================
@@ -58,11 +56,11 @@ module.exports = (app, db) => {
             let users = await db.users.findOne({
                 where: { id }
             });
-            
+
             let offerers = await db.offerers.findOne({
                 where: { userId: id }
             });
-            
+
             console.log("fdasfdsa");
             if (users && offerers) {
                 const userOfferer = {
@@ -106,33 +104,33 @@ module.exports = (app, db) => {
             const body = req.body;
             const password = body.password ? bcrypt.hashSync(body.password, 10) : null;
 
-            return db.sequelize.transaction( transaction => {
-                return db.users.create({
-                    name: body.name,
-                    password,
-                    email: body.email,
+            return db.sequelize.transaction(transaction => {
+                    return db.users.create({
+                            name: body.name,
+                            password,
+                            email: body.email,
 
-                    photo: body.photo,
-                    bio: body.bio,
-    
-                }, { transaction: transaction })
-                .then( _user => {
-                    return createOfferer(body, _user, next, transaction);
+                            photo: body.photo,
+                            bio: body.bio,
+
+                        }, { transaction: transaction })
+                        .then(_user => {
+                            return createOfferer(body, _user, next, transaction);
+                        })
+                        .then(ending => {
+                            return res.status(201).json({
+                                ok: true,
+                                message: `Offerer with id ${ending.userId} has been created.`
+                            });
+                        })
                 })
-                .then( ending => {
-                    return res.status(201).json({
-                        ok: true,
-                        message: `Offerer with id ${ending.userId} has been created.`
-                    });
+                .catch(err => {
+                    return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
                 })
-            })
-            .catch( err => {
-                return next({ type: 'error', error: err.errors?err.errors[0].message:err.message });
-            })
 
         } catch (err) {
             //await transaction.rollback();
-            next({ type: 'error', error: (err.errors?err.errors[0].message:err.message) });
+            next({ type: 'error', error: (err.errors ? err.errors[0].message : err.message) });
         }
     });
 
@@ -153,14 +151,14 @@ module.exports = (app, db) => {
 
                 let offereruser = true;
 
-                if( updates.password || updates.email || updates.name || updates.snSignIn || updates.root || updates.photo || updates.bio ){
+                if (updates.password || updates.email || updates.name || updates.snSignIn || updates.root || updates.photo || updates.bio) {
                     // Update user values
-    
+
                     if (updates.password)
                         updates.password = bcrypt.hashSync(req.body.password, 10);
-    
-                    offereruser = await db.users.update( updates, {
-                        where: { id: id}
+
+                    offereruser = await db.users.update(updates, {
+                        where: { id: id }
                     })
                 }
 
@@ -232,9 +230,9 @@ module.exports = (app, db) => {
             }
 
             return db.offerers.create(offerer, { transaction: transaction })
-            .catch( err => {
-                return next({ type: 'error', error: err.message });                 
-            });
+                .catch(err => {
+                    return next({ type: 'error', error: err.message });
+                });
 
 
         } catch (err) {

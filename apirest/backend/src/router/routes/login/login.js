@@ -1,8 +1,8 @@
-const env = require('../../tools/constants');
+const env = require('../../../tools/constants');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
-const auth = require('../../middlewares/auth/auth');
+const auth = require('../../../middlewares/auth/auth');
 
 module.exports = (app, db) => {
 

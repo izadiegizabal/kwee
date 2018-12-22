@@ -1,8 +1,6 @@
 const bcrypt = require('bcrypt');
-const { checkToken, checkAdmin } = require('../../middlewares/authentication');
+const { checkToken, checkAdmin } = require('../../../middlewares/authentication');
 
-//const { checks } = require('../../middlewares/validations')
-//const { check, validationResult, checkSchema } = require('express-validator/check')
 // ============================
 // ======== CRUD rating =========
 // ============================

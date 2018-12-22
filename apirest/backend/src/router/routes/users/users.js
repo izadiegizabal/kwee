@@ -1,11 +1,11 @@
-const env = require('../../tools/constants');
+const env = require('../../../tools/constants');
 const bcrypt = require('bcrypt');
-const { checkToken, checkAdmin } = require('../../middlewares/authentication');
+const { checkToken, checkAdmin } = require('../../../middlewares/authentication');
 const nodemailer = require('nodemailer');
 const fs = require('fs');
 let path = require('path');
 const jwt = require('jsonwebtoken');
-const auth = require('../../middlewares/auth/auth');
+const auth = require('../../../middlewares/auth/auth');
 
 // ============================
 // ======== CRUD user =========
