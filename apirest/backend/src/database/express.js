@@ -3,16 +3,14 @@ const express = require('express'),
     path = require('path'),
     session = require('express-session'),
     env = require('../tools/constants'),
-    moment = require('moment');
+    moment = require('moment'),
+    logger = require('../middlewares/logger');
 
 const app = express();
 
+app.use(logger);
 // Configure the app to use bodyParser()
 // This will let us get the data from post
-app.use((req, res, next) => {
-    console.log(`${moment().format('HH:mm:ss')} [${req.method}]: ${req.url}`);
-    next();
-});
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 

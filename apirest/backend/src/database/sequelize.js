@@ -1,13 +1,10 @@
 const Sequelize = require('sequelize');
 const env = require('../tools/constants');
 
-// console.log("Sequelize.Op: ");
-// console.log(Sequelize.Op);
-
 const sequelize = new Sequelize(env.DATABASE_NAME, env.DATABASE_USERNAME, env.DATABASE_PASSWORD, {
     host: 'localhost',
     dialect: 'mysql',
-    logging: false,
+    logging: env.PROD ? true : false,
     operatorsAliases: false,
     timezone: '+01:00',
     pool: {
