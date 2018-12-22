@@ -1,4 +1,5 @@
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
+const getTokenId = require('../../shared/functions');
 
 // ============================
 // ===== CRUD application ======
@@ -52,12 +53,14 @@ module.exports = (app, db) => {
     });
 
     // POST single application
-    app.post("/application", [checkToken, checkAdmin], async(req, res, next) => {
+    app.post("/application", async(req, res, next) => {
         const body = req.body;
 
         try {
+            let id = getTokenId.tokenId.getTokenId(req.get('token'));
+
             let applicant = await db.applicants.findOne({
-                where: { userId: body.fk_applicant }
+                where: { userId: id }
             });
 
             if (applicant) {
@@ -70,23 +73,21 @@ module.exports = (app, db) => {
                                 ok: false,
                                 error: "Application already added"
                             });
-                        } 
+                        }
                     }
                 }
 
-                await applicant.addOffer(body.fk_offer,
-                {
+                await applicant.addOffer(body.fk_offer, {
                     through: {
                         status: body.status
                     }
-                }
-                ).then( result => {
-                    if(result){
+                }).then(result => {
+                    if (result) {
                         return res.status(201).json({
                             ok: true,
                             application: result
                         });
-                    }else{
+                    } else {
                         return res.status(400).json({
                             ok: false,
                             application: "Application not added."
@@ -98,7 +99,7 @@ module.exports = (app, db) => {
             } else {
                 return res.status(400).json({
                     ok: false,
-                    error: "Applicant doesn't exist"
+                    error: "Sorry, you are not applicant"
                 });
             }
         } catch (err) {
@@ -108,62 +109,63 @@ module.exports = (app, db) => {
     });
 
     // PUT single application
-    app.put("/application", [checkToken, checkAdmin], async(req, res, next) => {
+    app.put("/application", async(req, res, next) => {
         const body = req.body;
 
         try {
-            let applicant = await db.applicants.findOne({
-                where: { userId: body.fk_applicant }
-            })
-            .then( _applicant => {
-                if (_applicant) {
-                    _applicant.getOffers({where: { id: body.fk_offer } } )
-                    .then( offers => {
-                        if(offers){
-                            let offer = offers[0];
-                            
-                            if(body.status){
-                                offer.applications.status = body.status;
 
-                                offer.applications.save()
-                                .then( ret => {
-                                    if(ret.isRejected){
-                                        // Problems
+            let token = req.get('token');
+            let id = auth.auth.decode(token);
+
+            let applicant = await db.applicants.findOne({
+                    where: { userId: body.fk_applicant }
+                })
+                .then(_applicant => {
+                    if (_applicant) {
+                        _applicant.getOffers({ where: { id: body.fk_offer } })
+                            .then(offers => {
+                                if (offers) {
+                                    let offer = offers[0];
+
+                                    if (body.status) {
+                                        offer.applications.status = body.status;
+
+                                        offer.applications.save()
+                                            .then(ret => {
+                                                if (ret.isRejected) {
+                                                    // Problems
+                                                    return res.status(400).json({
+                                                        ok: false,
+                                                        error: "Update REJECTED."
+                                                    });
+                                                } else {
+                                                    // Everything ok
+                                                    return res.status(201).json({
+                                                        ok: true,
+                                                        error: "Application updated to " + body.status
+                                                    });
+                                                }
+                                            })
+                                    } else {
                                         return res.status(400).json({
                                             ok: false,
-                                            error: "Update REJECTED."
+                                            error: "Updating an application requires a status value."
                                         });
                                     }
-                                    else{
-                                        // Everything ok
-                                        return res.status(201).json({
-                                            ok: true,
-                                            error: "Application updated to " + body.status
-                                        });
-                                    }
-                                })
-                            }
-                            else{
-                                return res.status(400).json({
-                                    ok: false,
-                                    error: "Updating an application requires a status value."
-                                });
-                            }
-                        }
-                        else{
-                            return res.status(400).json({
-                                ok: false,
-                                error: "Application with OfferId " + body.fk_offer + " on ApplicantId " + body.fk_applicant + " doesn't exist."
-                            });    
-                        }
-                    })
-                } else {
-                    return res.status(400).json({
-                        ok: false,
-                        error: "Applicant doesn't exist"
-                    });
-                }
-            })
+                                } else {
+                                    return res.status(400).json({
+                                        ok: false,
+                                        error: "Application with OfferId " + body.fk_offer + " on ApplicantId " + body.fk_applicant + " doesn't exist."
+                                    });
+                                }
+                            })
+                    } else {
+                        return res.status(400).json({
+                            ok: false,
+                            error: "Applicant doesn't exist"
+                        });
+                    }
+                })
         } catch (err) {
             next({ type: 'error', error: err.toString() });
         }

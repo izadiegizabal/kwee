@@ -178,7 +178,7 @@ module.exports = (app, db) => {
 
     function sendVerificationEmail(body, user) {
         // Generate test SMTP service account from gmail
-        let data = fs.readFileSync(path.join(__dirname, '../../templates/email.html'), 'utf-8');
+        let data = fs.readFileSync(path.join(__dirname, '../../../templates/email.html'), 'utf-8');
 
         let token = jwt.sign({
             id: user.id

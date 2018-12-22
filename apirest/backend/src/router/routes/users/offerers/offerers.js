@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
-const auth = require('../../../middlewares/auth/auth');
+const auth = require('../../../../middlewares/auth/auth');
 
 // ============================
 // ======== CRUD user =========
