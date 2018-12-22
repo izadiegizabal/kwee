@@ -1,5 +1,5 @@
-const bcrypt = require('bcrypt');
 const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
+const bcrypt = require('bcrypt');
 
 // ============================
 // ======== CRUD user =========
@@ -91,7 +91,6 @@ module.exports = (app, db) => {
 
     // POST single applicant
     app.post('/applicant', async(req, res, next) => {
-        let transaction;
 
         try {
             const body = req.body;
@@ -126,49 +125,25 @@ module.exports = (app, db) => {
         }
     });
 
-    // PUT single applicant
+    // Update applicant by themself
+    app.put('/applicant', async(req, res, next) => {
+        const updates = req.body;
+
+        try {
+            let id = getTokenId.tokenId.getTokenId(req.get('token'));
+            updateApplicant(id, updates, res);
+        } catch (err) {
+            return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
+        }
+    });
+
+    // Update applicant by admin
     app.put('/applicant/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
 
-        // let transaction; for updating users table ???
-
         try {
-
-            let applicant = await db.applicants.findOne({
-                where: { userId: id }
-            });
-
-            if (applicant) {
-
-                let applicantuser = true;
-
-                if (updates.password || updates.email || updates.name || updates.snSignIn || updates.root || updates.photo || updates.bio) {
-                    // Update user values
-
-                    if (updates.password)
-                        updates.password = bcrypt.hashSync(req.body.password, 10);
-
-                    applicantuser = await db.users.update(updates, {
-                        where: { id: id }
-                    })
-                }
-
-                let updated = await db.applicants.update(updates, {
-                    where: { userId: id }
-                });
-                if (updated && applicantuser) {
-                    return res.status(200).json({
-                        ok: true,
-                        message: updates
-                    })
-                } else {
-                    return next({ type: 'error', error: 'Can\'t update Applicant' });
-                }
-            } else {
-                return next({ type: 'error', error: 'Applicant doesn\'t exist' });
-            }
-
+            updateApplicant(id, updates, res);
         } catch (err) {
             return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
         }
@@ -206,6 +181,42 @@ module.exports = (app, db) => {
             return next({ type: 'error', error: 'Error getting data' });
         }
     });
+
+    async function updateApplicant(id, updates, res) {
+        let applicant = await db.applicants.findOne({
+            where: { userId: id }
+        });
+
+        if (applicant) {
+
+            let applicantuser = true;
+
+            if (updates.password || updates.email || updates.name || updates.snSignIn || updates.root || updates.photo || updates.bio) {
+                // Update user values
+
+                if (updates.password)
+                    updates.password = bcrypt.hashSync(updates.password, 10);
+
+                applicantuser = await db.users.update(updates, {
+                    where: { id: id }
+                })
+            }
+
+            let updated = await db.applicants.update(updates, {
+                where: { userId: id }
+            });
+            if (updated && applicantuser) {
+                return res.status(200).json({
+                    ok: true,
+                    message: updates
+                })
+            } else {
+                return next({ type: 'error', error: 'Can\'t update Applicant' });
+            }
+        } else {
+            return next({ type: 'error', error: 'Sorry, you are not applicant' });
+        }
+    }
 
     async function createApplicant(body, user, next, transaction) {
         try {

@@ -1,11 +1,11 @@
-const env = require('../../../tools/constants');
-const bcrypt = require('bcrypt');
 const { checkToken, checkAdmin } = require('../../../middlewares/authentication');
+const getTokenId = require('../../../shared/functions');
+const env = require('../../../tools/constants');
 const nodemailer = require('nodemailer');
-const fs = require('fs');
-let path = require('path');
 const jwt = require('jsonwebtoken');
-const auth = require('../../../middlewares/auth/auth');
+const bcrypt = require('bcrypt');
+const path = require('path');
+const fs = require('fs');
 
 // ============================
 // ======== CRUD user =========
@@ -95,8 +95,7 @@ module.exports = (app, db) => {
     // Update user by themself
     app.put('/user', async(req, res, next) => {
         try {
-            let token = req.get('token');
-            let id = auth.auth.decode(token);
+            let id = getTokenId.tokenId.getTokenId(req.get('token'));
 
             const updates = req.body;
 

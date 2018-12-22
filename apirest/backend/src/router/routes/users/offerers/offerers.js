@@ -1,6 +1,6 @@
-const bcrypt = require('bcrypt');
 const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
-const auth = require('../../../../middlewares/auth/auth');
+const getTokenId = require('../../../../shared/functions');
+const bcrypt = require('bcrypt');
 
 // ============================
 // ======== CRUD user =========
@@ -135,22 +135,19 @@ module.exports = (app, db) => {
         }
     });
 
-    // PUT single offerer
+    // Update offerer by themself
     app.put('/offerer', async(req, res, next) => {
         const updates = req.body;
 
         try {
-            let token = req.get('token');
-            let id = auth.auth.decode(token);
-
+            let id = getTokenId.tokenId.getTokenId(req.get('token'));
             updateOfferer(id, updates, res);
-
         } catch (err) {
             next({ type: 'error', error: err.message });
         }
     });
 
-    // PUT single offerer
+    // Update offerer by admin
     app.put('/offerer/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
