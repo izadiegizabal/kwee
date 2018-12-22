@@ -1,4 +1,5 @@
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
+const auth = require('../../shared/functions');
 
 // =======================================
 // ======== CRUD social_networks =========
@@ -34,12 +35,14 @@ module.exports = (app, db) => {
     });
 
     // POST single social_network
-    app.post('/social_network', [checkToken, checkAdmin], async(req, res, next) => {
+    app.post('/social_network', async(req, res, next) => {
         const body = req.body;
 
         try {
+            let id = getTokenId.tokenId.getTokenId(req.get('token'));
+
             let social_network = await db.social_networks.create({
-                userId: body.userId,
+                userId: id,
                 twitter: body.twitter ? body.twitter : null,
                 instagram: body.instagram ? body.instagram : null,
                 telegram: body.telegram ? body.telegram : null,
@@ -58,15 +61,15 @@ module.exports = (app, db) => {
     });
 
     // PUT single social_network
-    app.put('/social_network/:id', [checkToken, checkAdmin], async(req, res, next) => {
-        const id = req.params.id;
+    app.put('/social_network', async(req, res, next) => {
         const updates = req.body;
 
         try {
+            let id = getTokenId.tokenId.getTokenId(req.get('token'));
             res.status(200).json({
                 ok: true,
                 social_network: await db.social_networks.update(updates, {
-                    where: { id }
+                    where: { userId: id }
                 })
             });
             // json
