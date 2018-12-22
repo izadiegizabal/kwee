@@ -39,13 +39,15 @@ module.exports = (app, db) => {
     });
 
     // POST single offer
-    app.post('/offer', checkToken, async(req, res, next) => {
+    app.post('/offer', async(req, res, next) => {
 
         let body = req.body
 
         try {
-            let offerDetails = await db.offers.create({
-                fk_offerer: body.fk_offerer,
+            let id = getTokenId.tokenId.getTokenId(req.get('token'));
+
+            await db.offers.create({
+                fk_offerer: id,
                 title: body.title,
                 description: body.description,
                 dateStart: body.dateStart,
@@ -67,13 +69,14 @@ module.exports = (app, db) => {
     });
 
     // PUT single offer
-    app.put('/offer/:id([0-9]+)', checkToken, async(req, res, next) => {
+    app.put('/offer/:id([0-9]+)', async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
 
         try {
+            let fk_offerer = getTokenId.tokenId.getTokenId(req.get('token'));
             let offerUpdate = await db.offers.update(updates, {
-                    where: { id }
+                    where: { id, fk_offerer }
                 }).then(result => {
                     return res.status(200).json({
                         ok: true,
@@ -94,10 +97,11 @@ module.exports = (app, db) => {
         const id = req.params.id;
 
         try {
+            let fk_offerer = getTokenId.tokenId.getTokenId(req.get('token'));
             res.json({
                 ok: true,
                 offer: await db.offers.destroy({
-                    where: { id: id }
+                    where: { id, fk_offerer }
                 })
             });
             // Respuestas en json
