@@ -36,7 +36,7 @@ module.exports = (app, db) => {
     });
 
     // POST single comment
-    app.post('/comment', [checkToken, checkAdmin], async(req, res, next) => {
+    app.post('/comment', checkToken, async(req, res, next) => {
         let body = req.body;
 
         try {
@@ -60,7 +60,7 @@ module.exports = (app, db) => {
     });
 
     // PUT single comment
-    app.put('/comment/:id', [checkToken, checkAdmin], async(req, res, next) => {
+    app.put('/comment/:id', checkToken, async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
 
@@ -81,7 +81,7 @@ module.exports = (app, db) => {
     });
 
     // DELETE single comment
-    app.delete('/comment/:id', [checkToken, checkAdmin], async(req, res, next) => {
+    app.delete('/comment/:id', checkToken, async(req, res, next) => {
         const id = req.params.id;
 
         try {

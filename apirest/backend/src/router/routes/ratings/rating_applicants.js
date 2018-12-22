@@ -1,5 +1,5 @@
-const bcrypt = require('bcrypt');
 const { checkToken, checkAdmin } = require('../../../middlewares/authentication');
+const bcrypt = require('bcrypt');
 
 // ============================
 // ======== CRUD rating =========
@@ -93,7 +93,6 @@ module.exports = (app, db) => {
 
             // get transaction
             transaction = await db.sequelize.transaction();
-
 
             // step 1
             // Have to be ratings from offerers and applicant both, so first,
