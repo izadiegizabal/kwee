@@ -113,12 +113,10 @@ module.exports = (app, db) => {
         const body = req.body;
 
         try {
-
-            let token = req.get('token');
-            let id = auth.auth.decode(token);
+            let id = getTokenId.tokenId.getTokenId(req.get('token'));
 
             let applicant = await db.applicants.findOne({
-                    where: { userId: body.fk_applicant }
+                    where: { userId: id }
                 })
                 .then(_applicant => {
                     if (_applicant) {
@@ -162,7 +160,7 @@ module.exports = (app, db) => {
                     } else {
                         return res.status(400).json({
                             ok: false,
-                            error: "Applicant doesn't exist"
+                            error: "Sorry, you are not applicant"
                         });
                     }
                 })
@@ -172,12 +170,14 @@ module.exports = (app, db) => {
     });
 
     // DELETE single application
-    app.delete("/application", [checkToken, checkAdmin], async(req, res, next) => {
+    app.delete("/application", async(req, res, next) => {
         const body = req.body;
 
         try {
+            let id = getTokenId.tokenId.getTokenId(req.get('token'));
+
             let applicant = await db.applicants.findOne({
-                where: { userId: body.fk_applicant }
+                where: { userId: id }
             });
 
             if (applicant) {
@@ -188,7 +188,7 @@ module.exports = (app, db) => {
             } else {
                 return res.status(400).json({
                     ok: false,
-                    error: "Applicant doesn't exist"
+                    error: "Sorry, you are not applicant"
                 });
             }
         } catch (err) {
