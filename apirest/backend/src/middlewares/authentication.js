@@ -28,8 +28,6 @@ let checkToken = async(req, res, next) => {
 
 let checkAdmin = async(req, res, next) => {
 
-    console.log("req: ", req.user);
-
     let user = await db.users.findOne({
         attributes: [
             'root'
@@ -49,7 +47,45 @@ let checkAdmin = async(req, res, next) => {
     }
 };
 
+let checkApplicant = async(req, res, next) => {
+
+    let user = await db.applicants.findOne({
+        where: { userId: req.user }
+    });
+
+    if (user) {
+        next();
+    } else {
+        return res.status(401).json({
+            ok: false,
+            err: {
+                message: 'User not applicant'
+            }
+        });
+    }
+};
+
+let checkOfferer = async(req, res, next) => {
+
+    let user = await db.offerers.findOne({
+        where: { userId: req.user }
+    });
+
+    if (user) {
+        next();
+    } else {
+        return res.status(401).json({
+            ok: false,
+            err: {
+                message: 'User not offerer'
+            }
+        });
+    }
+};
+
 module.exports = {
     checkToken,
-    checkAdmin
+    checkAdmin,
+    checkApplicant,
+    checkOfferer
 }
