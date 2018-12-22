@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
+const auth = require('../../../middlewares/auth/auth');
 
 // ============================
 // ======== CRUD user =========
@@ -135,49 +136,27 @@ module.exports = (app, db) => {
     });
 
     // PUT single offerer
+    app.put('/offerer', async(req, res, next) => {
+        const updates = req.body;
+
+        try {
+            let token = req.get('token');
+            let id = auth.auth.decode(token);
+
+            updateOfferer(id, updates, res);
+
+        } catch (err) {
+            next({ type: 'error', error: err.message });
+        }
+    });
+
+    // PUT single offerer
     app.put('/offerer/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
 
         try {
-            if (updates.password)
-                updates.password = bcrypt.hashSync(req.body.password, 10);
-
-            let offerer = await db.offerers.findOne({
-                where: { userId: id }
-            });
-
-            if (offerer) {
-
-                let offereruser = true;
-
-                if (updates.password || updates.email || updates.name || updates.snSignIn || updates.root || updates.photo || updates.bio) {
-                    // Update user values
-
-                    if (updates.password)
-                        updates.password = bcrypt.hashSync(req.body.password, 10);
-
-                    offereruser = await db.users.update(updates, {
-                        where: { id: id }
-                    })
-                }
-
-                let updated = await db.offerers.update(updates, {
-                    where: { userId: id }
-                });
-
-                if (updated && offereruser) {
-                    return res.status(200).json({
-                        ok: true,
-                        message: updates
-                    })
-                } else {
-                    return next({ type: 'error', error: 'Can\'t update offerer' });
-                }
-            } else {
-                return next({ type: 'error', error: 'Offerer doesn\'t exist' });
-            }
-
+            updateOfferer(id, updates, res);
         } catch (err) {
             next({ type: 'error', error: err.message });
         }
@@ -215,6 +194,43 @@ module.exports = (app, db) => {
             next({ type: 'error', error: 'Error getting data' });
         }
     });
+
+    async function updateOfferer(id, updates, res) {
+
+        const offerer = await db.offerers.findOne({
+            where: { userId: id }
+        });
+
+        if (offerer) {
+
+            let offereruser = true;
+
+            if (updates.password || updates.email || updates.name || updates.snSignIn || updates.root || updates.photo || updates.bio) {
+                // Update user values
+                if (updates.password)
+                    updates.password = bcrypt.hashSync(updates.password, 10);
+
+                offereruser = await db.users.update(updates, {
+                    where: { id: id }
+                })
+            }
+
+            let updated = await db.offerers.update(updates, {
+                where: { userId: id }
+            });
+
+            if (updated && offereruser) {
+                return res.status(200).json({
+                    ok: true,
+                    message: updates
+                })
+            } else {
+                return next({ type: 'error', error: 'Can\'t update offerer' });
+            }
+        } else {
+            return next({ type: 'error', error: 'Offerer doesn\'t exist' });
+        }
+    }
 
     async function createOfferer(body, user, next, transaction) {
         try {
