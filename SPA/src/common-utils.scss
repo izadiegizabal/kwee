@@ -1,0 +1,13 @@
+$desktop: 1280px;
+$tablet: 960px;
+$phone: 600px;
+
+// Mixin to change the md-icon
+@mixin md-icon-size($size: 24px) {
+  font-size: $size;
+  height: $size;
+  width: $size;
+  line-height: $size;
+}
+
+

@@ -1,0 +1,43 @@
+<mat-menu #menu="matMenu">
+  <div class="welcomeMsg">
+    Hi, <strong>{{username}}</strong>!
+    <br>
+    <a [routerLink]="'/users/' + userId">View Profile</a>
+  </div>
+  <mat-divider></mat-divider>
+  <button mat-menu-item>
+    <mat-icon svgIcon="notifications"></mat-icon>
+    <span>Notifications</span>
+  </button>
+  <button mat-menu-item>
+    <mat-icon svgIcon="chat"></mat-icon>
+    <span>Messages</span>
+  </button>
+  <button mat-menu-item>
+    <mat-icon svgIcon="people"></mat-icon>
+    <span>Manage Users</span>
+  </button>
+  <button mat-menu-item>
+    <mat-icon svgIcon="timeline"></mat-icon>
+    <span>Stats</span>
+  </button>
+  <button mat-menu-item>
+    <mat-icon svgIcon="settings"></mat-icon>
+    <span>Settings</span>
+  </button>
+  <mat-divider></mat-divider>
+  <button (click)="logOut()" mat-menu-item>Sign out</button>
+</mat-menu>
+
+
+<button mat-icon-button class="profileLogo" color="primary">
+  <a [matMenuTriggerFor]="menu">
+    <mat-icon svgIcon="account-circle"></mat-icon>
+    <br>
+    <div>Me
+      <div>
+        <mat-icon svgIcon="arrow-drop-down"></mat-icon>
+      </div>
+    </div>
+  </a>
+</button>

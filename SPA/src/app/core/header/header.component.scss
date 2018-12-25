@@ -1,0 +1,29 @@
+@import "~src/common-utils";
+
+mat-toolbar {
+  background-color: white;
+  height: 80px;
+}
+
+.logo mat-icon {
+  margin-left: -20px;
+  margin-top: 4px;
+  height: 88px;
+  width: 88px;
+}
+
+
+@media all and (min-width: $phone) {
+  .logo mat-icon {
+    margin-left: 10%;
+
+    height: 100px;
+    width: 175px;
+  }
+
+  .user-section {
+    margin-right: 5%;
+  }
+}
+
+
