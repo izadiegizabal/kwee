@@ -1,7 +1,5 @@
 const { checkToken } = require('../../middlewares/authentication');
-
-//const { checks } = require('../../middlewares/validations')
-//const { check, validationResult, checkSchema } = require('express-validator/check')
+const getTokenId = require('../../shared/functions');
 
 // ============================
 // ======== CRUD offers =========

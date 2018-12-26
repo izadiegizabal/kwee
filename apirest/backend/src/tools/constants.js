@@ -1,18 +1,22 @@
 const pass = require('./passwords');
 
-const callback_url = 'http://localhost:3000/auth/';
+const callback_url = 'http://localhost:5000/auth/';
 // const callback_url = 'https://kwee.ovh/api/auth/';
+let PROD = pass.PROD;
 
 const env = {
-    DATABASE_NAME: 'kweetest',
+
+    PROD,
+
+    DATABASE_NAME: PROD ? 'kwee' : 'kweetest',
     DATABASE_USERNAME: 'root',
-    DATABASE_PASSWORD: 'Watr_Kwee_bd_2018_mysql',
-    PORT: 3000,
+    DATABASE_PASSWORD: PROD ? pass.MYSQL_PASSWORD : '',
+    PORT: PROD ? 5000 : 3000,
 
     JSONWEBTOKEN_SECRET: pass.JSONWEBTOKEN_SECRET,
     JSONWEBTOKEN_ISSUER: pass.JSONWEBTOKEN_ISSUER,
     JSONWEBTOKEN_EXPIRES: '88888h',
-
+    // sería bueno que caducara por sesión y si el usuario sigue logueado hacer un proceso de renovación automática de token
     SESSION_SECRET: pass.SESSION_SECRET,
     LOGIN_MASTER_PASSWORD: pass.LOGIN_MASTER_PASSWORD,
 
