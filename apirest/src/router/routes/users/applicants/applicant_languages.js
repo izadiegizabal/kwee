@@ -116,10 +116,12 @@ module.exports = (app, db) => {
     // PUT single applicant_language
     app.put("/applicant_language", checkToken, async(req, res, next) => {
         const body = req.body;
-
+        
         try {
+            let id = getTokenId.tokenId.getTokenId(req.get('token'));
+
             let applicant = await db.applicants.findOne({
-                    where: { userId: body.fk_applicant }
+                    where: { userId: id }
                 })
                 .then(async applicant => {
                     if (applicant) {
@@ -173,8 +175,11 @@ module.exports = (app, db) => {
         const body = req.body;
 
         try {
+
+            let id = getTokenId.tokenId.getTokenId(req.get('token'));
+
             let applicant = await db.applicants.findOne({
-                where: { userId: body.fk_applicant }
+                where: { userId: id }
             });
 
             if (applicant) {

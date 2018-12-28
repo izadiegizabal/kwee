@@ -1,4 +1,5 @@
 const { checkToken } = require('../../../../middlewares/authentication');
+const getTokenId = require('../../../../shared/functions');
 
 // ============================
 // ===== CRUD applicant_education ======
@@ -64,6 +65,8 @@ module.exports = (app, db) => {
 
         const body = req.body;
         let fk_education = body.fk_education;
+        let id = getTokenId.tokenId.getTokenId(req.get('token'));
+
 
         if (fk_education.length > 1) {
             return res.status(400).json({
@@ -77,7 +80,7 @@ module.exports = (app, db) => {
         try {
             // Find USER if exists
             let applicant = await db.applicants.findOne({
-                where: { userId: body.fk_applicant }
+                where: { userId: id }
             });
 
             // Set educations and so
@@ -141,9 +144,11 @@ module.exports = (app, db) => {
     app.put("/applicant_education", checkToken, async(req, res, next) => {
         const body = req.body;
 
+        let id = getTokenId.tokenId.getTokenId(req.get('token'));
+
         try {
             let applicant = await db.applicants.findOne({
-                where: { userId: body.fk_applicant }
+                where: { userId: id }
             }).then(async _applicant => {
 
                 if (_applicant) {
@@ -201,9 +206,11 @@ module.exports = (app, db) => {
     app.delete("/applicant_education", checkToken, async(req, res, next) => {
         const body = req.body;
 
+        let id = getTokenId.tokenId.getTokenId(req.get('token'));
+
         try {
             let applicant = await db.applicants.findOne({
-                where: { userId: body.fk_applicant }
+                where: { userId: id }
             });
 
             if (applicant) {

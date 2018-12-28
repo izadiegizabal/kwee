@@ -1,4 +1,5 @@
 const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
+const getTokenId = require('../../../../shared/functions');
 const bcrypt = require('bcrypt');
 
 // ============================
@@ -103,7 +104,8 @@ module.exports = (app, db) => {
                             email: body.email,
 
                             photo: body.photo,
-                            bio: body.bio
+                            bio: body.bio,
+                            //root: body.root
 
                         }, { transaction: transaction })
                         .then(async user => {

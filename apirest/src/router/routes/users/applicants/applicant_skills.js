@@ -1,4 +1,5 @@
 const { checkToken } = require('../../../../middlewares/authentication');
+const getTokenId = require('../../../../shared/functions');
 
 // ============================
 // ===== CRUD applicant_skill ======
@@ -39,7 +40,7 @@ module.exports = (app, db) => {
         const params = req.params;
 
         try {
-            res.status(200).json({
+            return res.status(200).json({
                 ok: true,
                 applicant_skill: await db.applicant_skills.findAll({
                     where: { fk_applicant: params.fk_applicant }
@@ -56,9 +57,11 @@ module.exports = (app, db) => {
         const body = req.body;
         let fk_skill = body.fk_skill;
 
+        let id = getTokenId.tokenId.getTokenId(req.get('token'));
+
         try {
             let applicant = await db.applicants.findOne({
-                where: { userId: body.fk_applicant }
+                where: { userId: id }
             });
 
             if (applicant) {
@@ -114,9 +117,11 @@ module.exports = (app, db) => {
     app.put("/applicant_skill", checkToken, async(req, res, next) => {
         const body = req.body;
 
+        let id = getTokenId.tokenId.getTokenId(req.get('token'));
+
         try {
             let applicant = await db.applicants.findOne({
-                where: { userId: body.fk_applicant }
+                where: { userId: id }
             }).then(async _applicant => {
                 if (_applicant) {
                     _applicant.hasSkill(body.fk_skill)
@@ -161,9 +166,11 @@ module.exports = (app, db) => {
     app.delete("/applicant_skill", checkToken, async(req, res, next) => {
         const body = req.body;
 
+        let id = getTokenId.tokenId.getTokenId(req.get('token'));
+
         try {
             let applicant = await db.applicants.findOne({
-                    where: { userId: body.fk_applicant }
+                    where: { userId: id }
                 })
                 .then(u => {
                     if (u) {
