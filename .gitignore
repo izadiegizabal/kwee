@@ -20,3 +20,4 @@ passwords.js
 # System Files
 .DS_Store
 Thumbs.db
+apirest/\.idea/

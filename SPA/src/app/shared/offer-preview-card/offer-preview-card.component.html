@@ -44,7 +44,7 @@
       <app-icon-with-text [text]="offer.salary + '€/month'" icon="local-atm"></app-icon-with-text>
       <div fxHide.lt-sm>
         <button [routerLink]="offerUrl" color="accent" mat-button>{{'More Info' | uppercase }}</button>
-        <button mat-icon-button>
+        <button mat-icon-button (click)="openShareDialog()">
           <mat-icon aria-label="Share offer in social networks" color="accent" svgIcon="share"></mat-icon>
         </button>
       </div>

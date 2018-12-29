@@ -1,5 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {UtilsService} from '../utils.service';
+import {MatDialog} from '@angular/material';
+import {SnsShareDialogComponent} from '../sns-share/sns-share-dialog/sns-share-dialog.component';
 
 
 @Component({
@@ -9,32 +11,12 @@ import {UtilsService} from '../utils.service';
 })
 export class OfferPreviewCardComponent implements OnInit {
 
-  // offer: {
-  //   title: string,
-  //   description: string,
-  //   id: number,
-  //   location: string,
-  //   publishDate: string,
-  // } = {
-  //   title: 'Senior SEO Consultant',
-  //   description: 'A search engine optimization consultant (or SEO consultant) is a job that analyzes and reviews websites and\n' +
-  //     '      their incoming links in order to provide expert advice, guidance, and recommendations to business owners\n' +
-  //     '      seeking to earn more natural search engine traffic and higher ranking positions.A search engine optimization consultant ' +
-  //     '(or SEO consultant) is a job that analyzes and reviews websites and\n' +
-  //     '      their incoming links in order to provide expert advice, guidance, and recommendations to business owners\n' +
-  //     '      seeking to earn more natural search engine traffic and higher ranking positions.',
-  //   id: 5,
-  //   location: 'Remote',
-  //   publishDate: '3 weeks ago'
-  // };
-
-
   offerUrl: string;
 
   @Input() offer: any;
 
 
-  constructor(private _utils: UtilsService) {
+  constructor(private _utils: UtilsService, public dialog: MatDialog) {
 
   }
 
@@ -53,4 +35,11 @@ export class OfferPreviewCardComponent implements OnInit {
     }
   }
 
+  openShareDialog() {
+    this.dialog.open(SnsShareDialogComponent, {
+      data: {
+        offer: {title: this.offer.title, url: location.hostname + this.urlfyPosition()}
+      }
+    });
+  }
 }

@@ -7,7 +7,18 @@ import {MatSnackBar} from '@angular/material';
   styleUrls: ['./sns-share.component.scss']
 })
 export class SnsShareComponent implements OnInit {
+  modal = false;
   @Input() offer: { title: string, url: string };
+
+  @Input()
+  public set isModal(value: boolean) {
+    if (value) {
+      this.modal = true;
+    } else {
+      this.modal = false;
+    }
+  }
+
   text = '';
   hashtags = 'kwee, joboffer, devjob, newjob';
 
@@ -33,7 +44,7 @@ export class SnsShareComponent implements OnInit {
 
     // Show snackbar
     this.snackBar.open(
-      'Offer copied to clipboard!',
+      'Link copied to clipboard!',
       'Dismiss',
       {
         duration: 2000
