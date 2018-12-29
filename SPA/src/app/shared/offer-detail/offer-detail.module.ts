@@ -4,6 +4,7 @@ import {SharedModule} from '../shared.module';
 import {OffererNameOverviewModule} from '../offerer-name-overview/offerer-name-overview.module';
 import {IconWithTextModule} from '../icon-with-text/icon-with-text.module';
 import {RouterModule} from '@angular/router';
+import {SnsShareModule} from '../sns-share/sns-share.module';
 
 @NgModule({
   declarations: [
@@ -13,7 +14,8 @@ import {RouterModule} from '@angular/router';
     SharedModule,
     RouterModule,
     OffererNameOverviewModule,
-    IconWithTextModule
+    IconWithTextModule,
+    SnsShareModule
   ],
   exports: [
     OfferDetailComponent
