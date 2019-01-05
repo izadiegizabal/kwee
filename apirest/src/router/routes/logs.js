@@ -1,29 +1,64 @@
 const Log = require('../../models/logs');
 
 module.exports = (app, db) => {
-    // POST new log
-    app.post("/log", async(req, res, next) => {
+    // GET all logs
+    app.get("/logs", async(req, res, next) => {
 
-        let body = req.body;
+        let from = req.query.from || 0;
+        from = Number(from);
 
-        let log = new Log({
-            action: body.action
-        });
+        let to = req.query.to || 10;
+        to = Number(to);
 
-        log.save((err, logDB) => {
+        Log.find({}, 'action actionToRoute')
+            .skip(from)
+            .limit(to)
+            .exec((err, logs) => {
+                if (err) {
+                    return res.status(400).json({
+                        ok: false,
+                        err
+                    });
+                }
+
+                Log.count({}, (err, count) => {
+                    res.json({
+                        ok: true,
+                        logs,
+                        total: count
+                    });
+                });
+
+            });
+    });
+
+    app.delete('/log/:id', async(req, res, next) => {
+
+        let id = req.params.id;
+
+        Log.findByIdAndRemove(id, (err, logDeleted) => {
 
             if (err) {
                 return res.status(400).json({
                     ok: false,
-                    error: "Log not create"
+                    err
                 });
             }
 
-            // Not necessary status(200) it's implicit
+            if (!logDeleted) {
+                return res.status(400).json({
+                    ok: false,
+                    error: {
+                        message: 'Log not found'
+                    }
+                });
+            }
+
+
             res.json({
                 ok: true,
-                log: logDB
-            });
+                log: logDeleted
+            })
 
         });
 
