@@ -1,5 +1,5 @@
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
-const tokenId = require('../../shared/functions');
+const { tokenId } = require('../../shared/functions');
 
 // ============================
 // ===== CRUD application ======

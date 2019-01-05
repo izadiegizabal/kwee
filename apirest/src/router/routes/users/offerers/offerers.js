@@ -1,5 +1,5 @@
 const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
-const tokenId = require('../../../../shared/functions');
+const { tokenId, logger } = require('../../../../shared/functions');
 const bcrypt = require('bcrypt');
 
 // ============================
