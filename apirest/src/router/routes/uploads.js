@@ -1,6 +1,9 @@
 const { tokenId, logger } = require('../../shared/functions');
 const fileUpload = require('express-fileupload');
 
+const fs = require('fs');
+const path = require('path');
+
 
 module.exports = (app, db) => {
 
@@ -84,6 +87,12 @@ module.exports = (app, db) => {
 
     async function saveUserImg(id, res, fileName) {
 
+        let user = await db.users.findOne({
+            where: { id }
+        });
+
+        deleteFile(user.img, 'users');
+
         let updated = await db.users.update({ img: fileName }, {
             where: { id }
         });
@@ -100,6 +109,14 @@ module.exports = (app, db) => {
             })
         }
 
+    }
+
+    function deleteFile(fileName, type) {
+        let pathImage = path.resolve(__dirname, `../../../uploads/${ type }/${ fileName }`);
+
+        if (fs.existsSync(pathImage)) {
+            fs.unlinkSync(pathImage);
+        }
     }
 
 }
