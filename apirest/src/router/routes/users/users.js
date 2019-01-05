@@ -74,7 +74,7 @@ module.exports = (app, db) => {
                 password: body.password ? bcrypt.hashSync(body.password, 10) : null,
                 email: body.email ? body.email : null,
 
-                photo: body.photo ? body.photo : null,
+                img: body.img ? body.img : null,
                 bio: body.bio ? body.bio : null
 
             });

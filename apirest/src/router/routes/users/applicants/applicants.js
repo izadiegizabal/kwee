@@ -106,7 +106,7 @@ module.exports = (app, db) => {
                             password: password,
                             email: body.email,
 
-                            photo: body.photo,
+                            img: body.img,
                             bio: body.bio,
                             //root: body.root
 
@@ -200,7 +200,7 @@ module.exports = (app, db) => {
 
             let applicantuser = true;
 
-            if (updates.password || updates.email || updates.name || updates.snSignIn || updates.root || updates.photo || updates.bio) {
+            if (updates.password || updates.email || updates.name || updates.snSignIn || updates.root || updates.img || updates.bio) {
                 // Update user values
 
                 if (updates.password)

@@ -112,7 +112,7 @@ module.exports = (app, db) => {
                             password,
                             email: body.email,
 
-                            photo: body.photo,
+                            img: body.img,
                             bio: body.bio,
 
                         }, { transaction: transaction })
@@ -207,7 +207,7 @@ module.exports = (app, db) => {
 
             let offereruser = true;
 
-            if (updates.password || updates.email || updates.name || updates.snSignIn || updates.root || updates.photo || updates.bio) {
+            if (updates.password || updates.email || updates.name || updates.snSignIn || updates.root || updates.img || updates.bio) {
                 // Update user values
                 if (updates.password)
                     updates.password = bcrypt.hashSync(updates.password, 10);
