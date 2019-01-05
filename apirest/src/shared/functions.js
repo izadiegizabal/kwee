@@ -9,7 +9,7 @@ class TokenId {
 }
 
 class Logger {
-    async saveLog(action, actionToRoute, actionToId, res) {
+    async saveLog(action, actionToRoute, actionToId, res, email) {
         let toLog = {
             action,
             actionToRoute,
@@ -18,6 +18,7 @@ class Logger {
         };
 
         actionToId ? toLog.actionToId = actionToId : null;
+        email ? toLog.email = email : null;
 
         let log = new Log(toLog);
 
