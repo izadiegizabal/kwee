@@ -26,6 +26,7 @@ const routes = [
     require('./routes/login/linkedin'),
     require('./routes/login/twitter'),
     require('./routes/logs'),
+    require('./routes/uploads'),
     // require('./routes/login/instagram'),
     // require('./routes/login/telegram'),
 ];
