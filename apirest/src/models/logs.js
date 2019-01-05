@@ -8,7 +8,8 @@ let logSchema = new Schema({
     actionToRoute: { type: String },
     actionToId: { type: Number },
     date: { type: String },
-    hour: { type: String }
+    hour: { type: String },
+    email: { type: String }
 });
 
 
