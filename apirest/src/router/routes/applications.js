@@ -1,5 +1,5 @@
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
-const getTokenId = require('../../shared/functions');
+const tokenId = require('../../shared/functions');
 
 // ============================
 // ===== CRUD application ======
@@ -57,7 +57,7 @@ module.exports = (app, db) => {
         const body = req.body;
 
         try {
-            let id = getTokenId.tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'));
 
             let applicant = await db.applicants.findOne({
                 where: { userId: id }
@@ -113,7 +113,7 @@ module.exports = (app, db) => {
         const body = req.body;
 
         try {
-            let id = getTokenId.tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'));
 
             let applicant = await db.applicants.findOne({
                     where: { userId: id }
@@ -174,7 +174,7 @@ module.exports = (app, db) => {
         const body = req.body;
 
         try {
-            let id = getTokenId.tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'));
 
             let applicant = await db.applicants.findOne({
                 where: { userId: id }

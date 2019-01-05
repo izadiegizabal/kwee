@@ -1,5 +1,5 @@
 const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
-const getTokenId = require('../../../../shared/functions');
+const tokenId = require('../../../../shared/functions');
 const bcrypt = require('bcrypt');
 
 // ============================
@@ -132,7 +132,7 @@ module.exports = (app, db) => {
         const updates = req.body;
 
         try {
-            let id = getTokenId.tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'));
             updateApplicant(id, updates, res);
         } catch (err) {
             return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });

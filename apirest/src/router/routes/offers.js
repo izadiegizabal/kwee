@@ -1,5 +1,5 @@
 const { checkToken } = require('../../middlewares/authentication');
-const getTokenId = require('../../shared/functions');
+const tokenId = require('../../shared/functions');
 
 // ============================
 // ======== CRUD offers =========
@@ -42,7 +42,7 @@ module.exports = (app, db) => {
         let body = req.body
 
         try {
-            let id = getTokenId.tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'));
 
             await db.offers.create({
                 fk_offerer: id,
@@ -72,7 +72,7 @@ module.exports = (app, db) => {
         const updates = req.body;
 
         try {
-            let fk_offerer = getTokenId.tokenId.getTokenId(req.get('token'));
+            let fk_offerer = tokenId.getTokenId(req.get('token'));
             let offerUpdate = await db.offers.update(updates, {
                     where: { id, fk_offerer }
                 }).then(result => {
@@ -95,7 +95,7 @@ module.exports = (app, db) => {
         const id = req.params.id;
 
         try {
-            let fk_offerer = getTokenId.tokenId.getTokenId(req.get('token'));
+            let fk_offerer = tokenId.getTokenId(req.get('token'));
             res.json({
                 ok: true,
                 offer: await db.offers.destroy({

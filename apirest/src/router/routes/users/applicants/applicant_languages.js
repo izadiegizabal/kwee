@@ -1,5 +1,5 @@
 const { checkToken } = require('../../../../middlewares/authentication');
-const getTokenId = require('../../../../shared/functions');
+const tokenId = require('../../../../shared/functions');
 
 // ============================
 // ===== CRUD applicant_language ======
@@ -62,7 +62,7 @@ module.exports = (app, db) => {
         let fk_language = body.fk_language;
 
         try {
-            let id = getTokenId.tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'));
 
             let applicant = await db.applicants.findOne({
                 where: { userId: id }
@@ -116,9 +116,9 @@ module.exports = (app, db) => {
     // PUT single applicant_language
     app.put("/applicant_language", checkToken, async(req, res, next) => {
         const body = req.body;
-        
+
         try {
-            let id = getTokenId.tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'));
 
             let applicant = await db.applicants.findOne({
                     where: { userId: id }
@@ -176,7 +176,7 @@ module.exports = (app, db) => {
 
         try {
 
-            let id = getTokenId.tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'));
 
             let applicant = await db.applicants.findOne({
                 where: { userId: id }

@@ -1,5 +1,5 @@
 const { checkToken } = require('../../../../middlewares/authentication');
-const getTokenId = require('../../../../shared/functions');
+const tokenId = require('../../../../shared/functions');
 
 // ============================
 // ===== CRUD applicant_skill ======
@@ -57,7 +57,7 @@ module.exports = (app, db) => {
         const body = req.body;
         let fk_skill = body.fk_skill;
 
-        let id = getTokenId.tokenId.getTokenId(req.get('token'));
+        let id = tokenId.getTokenId(req.get('token'));
 
         try {
             let applicant = await db.applicants.findOne({
@@ -117,7 +117,7 @@ module.exports = (app, db) => {
     app.put("/applicant_skill", checkToken, async(req, res, next) => {
         const body = req.body;
 
-        let id = getTokenId.tokenId.getTokenId(req.get('token'));
+        let id = tokenId.getTokenId(req.get('token'));
 
         try {
             let applicant = await db.applicants.findOne({
@@ -166,7 +166,7 @@ module.exports = (app, db) => {
     app.delete("/applicant_skill", checkToken, async(req, res, next) => {
         const body = req.body;
 
-        let id = getTokenId.tokenId.getTokenId(req.get('token'));
+        let id = tokenId.getTokenId(req.get('token'));
 
         try {
             let applicant = await db.applicants.findOne({
