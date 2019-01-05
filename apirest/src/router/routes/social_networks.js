@@ -83,7 +83,7 @@ module.exports = (app, db) => {
     });
 
     // DELETE single social_network
-    app.delete('/social_network/:id', [checkToken, checkAdmin], async(req, res, next) => {
+    app.delete('/social_network/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
 
         try {

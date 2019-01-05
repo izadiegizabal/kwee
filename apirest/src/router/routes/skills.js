@@ -19,7 +19,7 @@ module.exports = (app, db) => {
     });
 
     // GET one skill by id
-    app.get('/skill/:id', checkToken, async(req, res, next) => {
+    app.get('/skill/:id([0-9]+)', checkToken, async(req, res, next) => {
         const id = req.params.id;
 
         try {
@@ -54,7 +54,7 @@ module.exports = (app, db) => {
     });
 
     // PUT single skill
-    app.put('/skill/:id', [checkToken, checkAdmin], async(req, res, next) => {
+    app.put('/skill/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
 
@@ -75,7 +75,7 @@ module.exports = (app, db) => {
     });
 
     // DELETE single skill
-    app.delete('/skill/:id', [checkToken, checkAdmin], async(req, res, next) => {
+    app.delete('/skill/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
 
         try {

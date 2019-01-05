@@ -91,7 +91,7 @@ module.exports = (app, db) => {
     });
 
     // DELETE single offer
-    app.delete('/offer/:id', checkToken, async(req, res, next) => {
+    app.delete('/offer/:id([0-9]+)', checkToken, async(req, res, next) => {
         const id = req.params.id;
 
         try {
