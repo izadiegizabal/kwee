@@ -19,7 +19,7 @@ module.exports = (app, db) => {
     });
 
     // GET one language by id
-    app.get('/language/:id', checkToken, async(req, res, next) => {
+    app.get('/language/:id([0-9]+)', checkToken, async(req, res, next) => {
         const id = req.params.id;
 
         try {
@@ -54,7 +54,7 @@ module.exports = (app, db) => {
     });
 
     // PUT single language
-    app.put('/language/:id', [checkToken, checkAdmin], async(req, res, next) => {
+    app.put('/language/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
 
@@ -75,7 +75,7 @@ module.exports = (app, db) => {
     });
 
     // DELETE single language
-    app.delete('/language/:id', [checkToken, checkAdmin], async(req, res, next) => {
+    app.delete('/language/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
 
         try {

@@ -3,10 +3,12 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
 const auth = require('../../../middlewares/auth/auth');
+const { logger } = require('../../../shared/functions');
 
 module.exports = (app, db) => {
 
     app.post('/login', async(req, res, next) => {
+        await logger.saveLog('POST', 'login', null, res, req.body.email);
 
         let body = req.body;
 

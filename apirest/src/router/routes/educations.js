@@ -19,7 +19,7 @@ module.exports = (app, db) => {
     });
 
     // GET one education by id
-    app.get('/education/:id', checkToken, async(req, res, next) => {
+    app.get('/education/:id([0-9]+)', checkToken, async(req, res, next) => {
         const id = req.params.id;
 
         try {
@@ -54,7 +54,7 @@ module.exports = (app, db) => {
     });
 
     // PUT single education
-    app.put('/education/:id', [checkToken, checkAdmin], async(req, res, next) => {
+    app.put('/education/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
 
@@ -75,7 +75,7 @@ module.exports = (app, db) => {
     });
 
     // DELETE single education
-    app.delete('/education/:id', [checkToken, checkAdmin], async(req, res, next) => {
+    app.delete('/education/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
 
         try {

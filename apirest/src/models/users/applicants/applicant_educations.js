@@ -60,6 +60,15 @@ module.exports = (sequelize, DateTypes) => {
                 isDate: {
                     "args": true,
                     "msg": "Starting date should be a date."
+                },
+                startDateAfterEndDate() {
+                    const today = new Date();
+                    if (this.date_start >= this.date_end ) {
+                        throw new Error('Start date must be before the end date.');
+                    }
+                    else if( this.date_start >= today) {
+                        throw new Error('Start date must be before today\'s date.');
+                    }
                 }
                 
             }
@@ -77,15 +86,6 @@ module.exports = (sequelize, DateTypes) => {
                 isDate: {
                     "args": true,
                     "msg": "Starting date should be a date."
-                },
-                startDateAfterEndDate() {
-                    const today = new Date();
-                    if (this.date_start >= this.date_end ) {
-                        throw new Error('Start date must be before the end date.');
-                    }
-                    else if( this.date_start <= today) {
-                        throw new Error('Start date must be after today\'s date.');
-                    }
                 }
                 
             }
