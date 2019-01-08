@@ -4,6 +4,7 @@ import {OfferPreviewCardComponent} from './offer-preview-card.component';
 import {IconWithTextModule} from '../icon-with-text/icon-with-text.module';
 import {OffererNameOverviewModule} from '../offerer-name-overview/offerer-name-overview.module';
 import {RouterModule} from '@angular/router';
+import {SnsShareModule} from '../sns-share/sns-share.module';
 
 @NgModule({
   declarations: [
@@ -13,7 +14,8 @@ import {RouterModule} from '@angular/router';
     SharedModule,
     RouterModule,
     IconWithTextModule,
-    OffererNameOverviewModule
+    OffererNameOverviewModule,
+    SnsShareModule
   ],
   exports: [
     OfferPreviewCardComponent

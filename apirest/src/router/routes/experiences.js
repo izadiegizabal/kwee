@@ -19,7 +19,7 @@ module.exports = (app, db) => {
     });
 
     // GET one experience by id
-    app.get('/experience/:id', checkToken, async(req, res, next) => {
+    app.get('/experience/:id([0-9]+)', checkToken, async(req, res, next) => {
         const id = req.params.id;
 
         try {
@@ -60,7 +60,7 @@ module.exports = (app, db) => {
     });
 
     // PUT single experience
-    app.put('/experience/:id', [checkToken, checkAdmin], async(req, res, next) => {
+    app.put('/experience/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
 
@@ -81,7 +81,7 @@ module.exports = (app, db) => {
     });
 
     // DELETE single experience
-    app.delete('/experience/:id', [checkToken, checkAdmin], async(req, res, next) => {
+    app.delete('/experience/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
 
         try {

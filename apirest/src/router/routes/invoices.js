@@ -56,7 +56,7 @@ module.exports = (app, db) => {
     });
 
     // PUT single invoice
-    app.put('/invoice/:id', [checkToken, checkAdmin], async(req, res, next) => {
+    app.put('/invoice/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
 
@@ -78,7 +78,7 @@ module.exports = (app, db) => {
     });
 
     // DELETE single invoice
-    app.delete('/invoice/:id', [checkToken, checkAdmin], async(req, res, next) => {
+    app.delete('/invoice/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
 
         try {

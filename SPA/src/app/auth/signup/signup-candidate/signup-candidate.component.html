@@ -107,8 +107,20 @@
               This field is required
             </mat-error>
             <mat-error
-              *ngIf="!secondFormGroup.get('birthday').valid && !secondFormGroup.get('birthday').errors.required">
+              *ngIf="!secondFormGroup.get('birthday').valid && !secondFormGroup.get('birthday').errors.required &&
+              !secondFormGroup.get('birthday').hasError('min16years')
+              && !secondFormGroup.get('birthday').hasError('tooOld')">
               Please enter a valid date<!--You must be over 16 years old-->
+            </mat-error>
+            <mat-error
+              *ngIf="secondFormGroup.get('birthday').hasError('min16years')"
+              >
+              You must be at least 16 years old 
+            </mat-error>
+            <mat-error
+              *ngIf="secondFormGroup.get('birthday').hasError('tooOld')"
+              >
+              Your date is too old
             </mat-error>
           </mat-form-field>
         </div>
@@ -170,239 +182,17 @@
         <br>
         <!--------------------------------------------------->
         <h4>Experience</h4>
-        <div fxLayout="column" fxLayoutGap="16px">
-          <div *ngFor="let ex of this.formExperience.controls; let s =index;" formArrayName="experience"
-               fxLayout="column"
-               fxLayoutGap="16px">
-            <div [formGroupName]="s" fxFlex=80%; fxLayout="column">
-              <mat-accordion>
-                <mat-expansion-panel expanded id="{{'accordion'+s}}">
-                  <mat-expansion-panel-header>
-                    <mat-panel-title>
-                      <span *ngIf="title.value; else titled">{{title.value}}</span>
-                      <ng-template #titled><span>Title</span></ng-template>
-                    </mat-panel-title>
-                    <mat-panel-description fxHide fxShow.gt-xs>
-                    <span *ngIf="(iend.value && !iend.disabled && istart.value) ||
-                    (iend.disabled && istart.value)
-                    ; else date">
-                    From: {{istart.value}} to: 
-                    <span *ngIf="iend.value && !iend.disabled">
-                    {{iend.value}} </span>
-                    <span *ngIf="current.checked">
-                    current</span>
-                    </span>
-                      <ng-template #date><span>Date</span></ng-template>
-                    </mat-panel-description>
-                  </mat-expansion-panel-header>
-                  <div fxLayout="column" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
-                    <mat-form-field>
-                      <input
-                        #title
-                        class="form-control"
-                        formControlName="title"
-                        id="{{'titlex'+s}}"
-                        matInput
-                        placeholder="Title" type="text">
-                      <mat-error
-                        *ngIf="!thirdFormGroup.get('experience').controls[s].controls.title.valid &&
-                        thirdFormGroup.get('experience').controls[s].controls.title.touched">
-                        Please enter a title
-                      </mat-error>
-                    </mat-form-field>
-
-                  </div>
-                  <!--------------------------------------------------->
-                  <div fxLayout="column" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
-                    <mat-form-field>
-                      <input
-                        class="form-control"
-                        formControlName="company"
-                        matInput
-                        placeholder="Company" type="text">
-                    </mat-form-field>
-                  </div>
-                  <!--------------------------------------------------->
-                  <div fxLayout="row"
-                       fxLayout.xs="column"
-                       fxLayoutAlign.xs="center start"
-                       fxLayoutGap="16px"
-                       fxLayoutGap.xs="0px">
-                    <mat-form-field fxFlex="30%">
-                      <input #istart [matDatepicker]="start" formControlName="start" matInput placeholder="Start">
-                      <mat-datepicker-toggle [for]="start" matPrefix></mat-datepicker-toggle>
-                      <mat-datepicker #start></mat-datepicker>
-                      <span *ngIf="onWhatExS(s,istart)"></span>
-                      <mat-error
-                        *ngIf="!thirdFormGroup.get('experience').controls[s].controls.start.valid">
-                        Please enter a valid date
-                      </mat-error>
-                    </mat-form-field>
-
-                    <!--------------------------------------------------->
-                    <p> To: </p>
-                    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
-                      <mat-form-field fxFlex="50%" fxFlex.xs="70%">
-                        <input #iend [matDatepicker]="end" formControlName="end" id="{{'toEx'+s}}" matInput
-                               placeholder="End">
-                        <mat-datepicker-toggle [for]="end" matPrefix></mat-datepicker-toggle>
-                        <mat-datepicker #end
-                                        [disabled]="current.checked"
-                        ></mat-datepicker>
-                        <span *ngIf="onWhatExE(s,iend)"></span>
-                        <mat-error
-                          *ngIf="!thirdFormGroup.get('experience').controls[s].controls.end.valid && thirdFormGroup.get('experience').controls[s].controls.end.touched && !current.checked">
-                          Please enter a valid date
-                        </mat-error>
-                      </mat-form-field>
-
-                      <mat-checkbox #current (change)="onChange($event, s)">Current</mat-checkbox>
-                    </div>
-                  </div>
-                  <!--------------------------------------------------->
-                  <div fxLayout="column" fxLayout.xs="column">
-                    <mat-form-field>
-                      <textarea formControlName="description" matInput placeholder="Description"></textarea>
-                    </mat-form-field>
-                  </div>
-                  <div fxLayout="row"
-                       fxLayoutAlign="end" fxLayoutGap="0"
-                       fxLayoutGap.gt-sm="8px">
-                    <div>
-                      <button (click)="deleteExperience(s)" color="warn" mat-button type="button">Delete</button>
-                    </div>
-                    <div>
-                      <button (click)="onDoneEx(s)"
-                              color="accent"
-                              mat-button type="button">Done
-                      </button>
-                    </div>
-
-                  </div>
-                </mat-expansion-panel>
-              </mat-accordion>
-            </div>
-          </div>
-          <div class="divBtn" fxLayout="column" fxLayoutAlign="end">
-            <button (click)=" addExperience()" mat-button type="button">
-              Add
-            </button>
-          </div>
-        </div>
+        <p>If you want to add an experience card, click on the "Add" button</p>
+        <app-experience-forms (formReady)="formInitialized('experience', $event)"></app-experience-forms>
         <br>
         <!--------------------------------------------------->
         <h4>Education</h4>
-        <div fxLayout="column" fxLayoutGap="16px">
-          <div *ngFor="let ed of this.formEducation.controls; let a =index;" formArrayName="education" fxLayout="column"
-               fxLayoutGap="16px">
-            <div [formGroupName]="a" fxFlex=80%; fxLayout="column">
-              <mat-accordion id="{{'accordion'+a}}">
-                <mat-expansion-panel expanded>
-                  <mat-expansion-panel-header>
-                    <mat-panel-title>
-                      <span *ngIf="title.value; else titled">{{title.value}}</span>
-                      <ng-template #titled><span>Title</span></ng-template>
-                    </mat-panel-title>
-                    <mat-panel-description fxHide fxShow.gt-xs>
-                    <span *ngIf="(iend.value && !iend.disabled && istart.value) ||
-                    (iend.disabled && istart.value)
-                    ; else date">
-                    From: {{istart.value}} to: 
-                    <span *ngIf="iend.value && !iend.disabled">
-                    {{iend.value}} </span>
-                    <span *ngIf="current.checked">
-                    current</span>
-                  </span>
-
-                      <ng-template #date><span>Date</span></ng-template>
-
-
-                    </mat-panel-description>
-                  </mat-expansion-panel-header>
-
-
-                  <div fxLayout="column" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
-                    <mat-form-field>
-                      <input
-                        #title
-                        class="form-control"
-                        formControlName="title"
-                        id="{{'titled'+a}}"
-                        matInput
-                        placeholder="Title" type="text">
-                    </mat-form-field>
-                  </div>
-                  <!--------------------------------------------------->
-                  <div fxLayout="column" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
-                    <mat-form-field>
-                      <input
-                        class="form-control"
-                        formControlName="institution"
-                        matInput
-                        placeholder="Institution" type="text">
-                    </mat-form-field>
-                  </div>
-                  <!--------------------------------------------------->
-                  <div fxLayout="row"
-                       fxLayout.xs="column"
-                       fxLayoutAlign.xs="center start"
-                       fxLayoutGap="16px"
-                       fxLayoutGap.xs="0px">
-                    <mat-form-field fxFlex="30%">
-                      <input #istart [matDatepicker]="start" formControlName="start" matInput placeholder="Start">
-                      <mat-datepicker-toggle [for]="start" matPrefix></mat-datepicker-toggle>
-                      <mat-datepicker #start></mat-datepicker>
-                    </mat-form-field>
-
-                    <!--------------------------------------------------->
-                    <p> To: </p>
-                    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
-                      <mat-form-field fxFlex="50%" fxFlex.xs="70%">
-                        <input #iend [matDatepicker]="end" formControlName="end" id="{{'toEd'+a}}" matInput
-                               placeholder="End">
-                        <mat-datepicker-toggle [for]="end" matPrefix></mat-datepicker-toggle>
-                        <mat-datepicker #end
-                                        [disabled]="current.checked"
-                        ></mat-datepicker>
-                      </mat-form-field>
-
-                      <mat-checkbox #current (change)="onChangeEd($event, a)">Current</mat-checkbox>
-                    </div>
-                  </div>
-                  <!--------------------------------------------------->
-                  <div fxLayout="column" fxLayout.xs="column">
-                    <mat-form-field>
-                      <textarea formControlName="description" matInput placeholder="Description"></textarea>
-                    </mat-form-field>
-                  </div>
-                  <div fxLayout="row"
-                       fxLayoutAlign="end" fxLayoutGap="0"
-                       fxLayoutGap.gt-sm="8px">
-                    <div>
-                      <button (click)="deleteEducation(a)" color="warn" mat-button type="button">Delete</button>
-                    </div>
-                    <div>
-                      <button (click)="onDoneEd(a)"
-                              color="accent"
-                              mat-button
-                              type="button">Done
-                      </button>
-                    </div>
-
-                  </div>
-                </mat-expansion-panel>
-              </mat-accordion>
-            </div>
-          </div>
-          <div class="divBtn" fxLayout="column" fxLayoutAlign="end">
-            <button (click)=" addEducation()" mat-button type="button">
-              Add
-            </button>
-          </div>
-        </div>
+        <p>If you want to add an education card, click on the "Add" button</p>
+        <app-education-forms (formReady)="formInitialized('education', $event)"></app-education-forms>
         <br>
         <!--------------------------------------------------->
         <h4>Skills:</h4>
+        <p>If you want to add a skill, write it and click on the "Add" button</p>
         <div fxLayout="row" fxLayoutGap="16px">
           <div formArrayName="skills" fxFlex="50%" fxLayout="column" fxLayoutGap="-16px">
             <mat-form-field *ngFor="let skill of formSkills.controls; let i =index;">
@@ -434,20 +224,24 @@
         </div>
         <!----------------------------------------->
         <h4>Languages:</h4>
-        <div fxLayout="column" fxLayoutGap="16px">
+        <p>If you want to add a language card, click on the "Add" button</p>
+        <div>
+        <div fxLayout="column" fxLayoutGap="16px" fxFlex="99%">
+          <div *ngIf="this.formLanguages.value" fxLayoutGap="16px" fxLayout="column">
           <div *ngFor="let language of formLanguages.controls; let j =index;" formArrayName="languages"
                fxLayout="column"
                fxLayoutGap="16px">
             <div [formGroupName]="j" fxFlex=80%; fxLayout="column">
               <mat-accordion>
-                <mat-expansion-panel expanded>
+                <mat-checkbox #toggle [checked]="true" style="display: none"></mat-checkbox>
+                <mat-expansion-panel [(expanded)]="toggle.checked">
                   <mat-expansion-panel-header>
                     <mat-panel-title>
                       <span *ngIf="language.value; else l">{{language.value}}</span>
                       <ng-template #l><span>Language</span></ng-template>
                     </mat-panel-title>
                     <mat-panel-description fxHide fxShow.gt-xs>
-                      <span *ngIf="proficiency.value; else p">{{getProf(proficiency.value)}}</span>
+                      <span *ngIf="proficiency.value>=0; else p">{{getProf(proficiency.value)}}</span>
                       <ng-template #p><span>Proficiency</span></ng-template>
                     </mat-panel-description>
                   </mat-expansion-panel-header>
@@ -460,7 +254,7 @@
                           class="form-control"
                           formControlName="language"
                           matInput
-
+                          required
                           placeholder="Language" type="text">
                         <mat-error
                           *ngIf="!thirdFormGroup.get('languages').controls[j].controls.language.valid">
@@ -470,7 +264,7 @@
                     </div>
                     <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
                       <mat-form-field>
-                        <mat-select #proficiency formControlName="proficiency" placeholder="Proficiency">
+                        <mat-select #proficiency formControlName="proficiency" placeholder="Proficiency" required>
                           <mat-option *ngFor="let proficiency of proficiencies" [value]="proficiency.value">
                             {{proficiency.viewValue}}
                           </mat-option>
@@ -487,10 +281,10 @@
                        fxLayoutAlign="end" fxLayoutGap="0"
                        fxLayoutGap.gt-sm="8px">
                     <div>
-                      <button (click)="deleteLanguage(s)" color="warn" mat-button type="button">Delete</button>
+                      <button (click)="deleteLanguage(j)" color="warn" mat-button type="button">Delete</button>
                     </div>
                     <div>
-                      <button (click)="onDoneLang(j)"
+                      <button (click)="toggle.checked=onDoneLang(j)?false:true"
                               color="accent"
                               mat-button
                               type="button">Done
@@ -508,9 +302,11 @@
             </button>
           </div>
         </div>
+        </div>
+        </div>
         <!----------------------------------------->
         <div fxLayout="row" fxLayoutAlign="end">
-          <button color="accent" mat-button routerLink="/" type="button">Done</button>
+          <button (click)="onSaveOptional()" color="accent" mat-button routerLink="/" type="button">Done</button>
         </div>
       </div>
     </form>

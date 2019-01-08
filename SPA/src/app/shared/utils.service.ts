@@ -26,11 +26,11 @@ export class UtilsService {
     } else if (difference > 2 * week) {
       return Math.round(difference / week) + ' weeks ago';
     } else if (difference > 2 * day) {
-      return Math.round(difference / day) + 'days ago';
+      return Math.round(difference / day) + ' days ago';
     } else if (difference > 2 * hour) {
-      return Math.round(difference / hour) + 'hours ago';
+      return Math.round(difference / hour) + ' hours ago';
     } else if (difference > 2 * min) {
-      return Math.round(difference / min) + 'minutes ago';
+      return Math.round(difference / min) + ' minutes ago';
     } else {
       return 'Just now!';
     }

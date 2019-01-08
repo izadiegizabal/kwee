@@ -20,6 +20,7 @@ import {
   MatRadioModule,
   MatSelectModule,
   MatSidenavModule,
+  MatSnackBarModule,
   MatStepperModule,
   MatTabsModule,
   MatToolbarModule
@@ -78,7 +79,8 @@ import {CommonModule} from '@angular/common';
     MatBadgeModule,
     MatChipsModule,
     MatAutocompleteModule,
-    MatDialogModule
+    MatDialogModule,
+    MatSnackBarModule,
   ],
 })
 export class MaterialAngularModule {

@@ -15,8 +15,10 @@
 !.vscode/extensions.json
 
 node_modules/
+uploads/
 passwords.js
 
 # System Files
 .DS_Store
 Thumbs.db
+apirest/\.idea/

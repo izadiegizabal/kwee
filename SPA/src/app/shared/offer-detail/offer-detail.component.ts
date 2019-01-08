@@ -139,4 +139,8 @@ export class OfferDetailComponent implements OnInit {
     const numOfApplications = this.offer.applications;
     return numOfApplications + (numOfApplications === 1 ? ' application' : ' applications');
   }
+
+  getShareableOffer() {
+    return {title: this.offer.title, url: window.location.href};
+  }
 }

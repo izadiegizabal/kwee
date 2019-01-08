@@ -1,5 +1,5 @@
 const { checkToken, checkAdmin } = require('../../../middlewares/authentication');
-const getTokenId = require('../../../shared/functions');
+const { tokenId, logger } = require('../../../shared/functions');
 const env = require('../../../tools/constants');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
@@ -15,6 +15,7 @@ module.exports = (app, db) => {
 
     // GET all users
     app.get('/users', async(req, res, next) => {
+        await logger.saveLog('GET', 'users', null, res);
         try {
             res.status(200).json({
                 ok: true,
@@ -34,6 +35,7 @@ module.exports = (app, db) => {
     // GET one user by id
     app.get('/user/:id([0-9]+)', async(req, res, next) => {
         const id = req.params.id;
+        await logger.saveLog('GET', 'user', id, res);
 
         try {
 
@@ -61,8 +63,9 @@ module.exports = (app, db) => {
         }
     });
 
+    // POST new user
     app.post('/user', async(req, res, next) => {
-
+        await logger.saveLog('POST', 'user', null, res);
         try {
             const body = req.body;
 
@@ -71,7 +74,7 @@ module.exports = (app, db) => {
                 password: body.password ? bcrypt.hashSync(body.password, 10) : null,
                 email: body.email ? body.email : null,
 
-                photo: body.photo ? body.photo : null,
+                img: body.img ? body.img : null,
                 bio: body.bio ? body.bio : null
 
             });
@@ -94,8 +97,11 @@ module.exports = (app, db) => {
 
     // Update user by themself
     app.put('/user', async(req, res, next) => {
+        let logId = await logger.saveLog('PUT', 'user', null, res);
         try {
-            let id = getTokenId.tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'));
+
+            logger.updateLog(logId, id);
 
             const updates = req.body;
 
@@ -111,7 +117,8 @@ module.exports = (app, db) => {
 
     // Update user by admin
     app.put('/user/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
-        console.log("PUT user/:", req.params.id);
+        await logger.saveLog('PUT', 'user', req.params.id, res);
+
         try {
             const id = req.params.id;
             const updates = req.body;
@@ -128,6 +135,7 @@ module.exports = (app, db) => {
     // never will delete it from database
     app.delete('/user/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
+        await logger.saveLog('DELETE', 'user', id, res);
 
         try {
             let result = await db.users.destroy({
@@ -183,7 +191,7 @@ module.exports = (app, db) => {
             id: user.id
         }, env.JSONWEBTOKEN_SECRET, { expiresIn: '1h' });
 
-        let urlValidation = `http://localhost:3000/email-verified/` + token;
+        let urlValidation = `${ env.URL }/email-verified/` + token;
 
         nodemailer.createTestAccount((err, account) => {
             // create reusable transporter object using the default SMTP transport
