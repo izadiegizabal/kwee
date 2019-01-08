@@ -1,5 +1,5 @@
 const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
-const getTokenId = require('../../../../shared/functions');
+const { tokenId, logger } = require('../../../../shared/functions');
 const bcrypt = require('bcrypt');
 
 // ============================
@@ -10,7 +10,7 @@ module.exports = (app, db) => {
 
     // GET all users offerers
     app.get('/offerers', async(req, res, next) => {
-
+        await logger.saveLog('GET', 'offerers', null, res);
         try {
             let users = await db.users.findAll();
             let offerers = await db.offerers.findAll();
@@ -52,7 +52,7 @@ module.exports = (app, db) => {
     // GET one offerer by id
     app.get('/offerer/:id([0-9]+)', async(req, res, next) => {
         const id = req.params.id;
-        console.log("id" + id);
+        await logger.saveLog('GET', 'offerer', id, res);
         try {
             let users = await db.users.findOne({
                 where: { id }
@@ -99,6 +99,7 @@ module.exports = (app, db) => {
 
     // POST single offerer
     app.post('/offerer', async(req, res, next) => {
+        await logger.saveLog('POST', 'offerer', null, res);
         let transaction;
 
         try {
@@ -111,7 +112,7 @@ module.exports = (app, db) => {
                             password,
                             email: body.email,
 
-                            photo: body.photo,
+                            img: body.img,
                             bio: body.bio,
 
                         }, { transaction: transaction })
@@ -137,10 +138,12 @@ module.exports = (app, db) => {
 
     // Update offerer by themself
     app.put('/offerer', async(req, res, next) => {
+        let logId = await logger.saveLog('PUT', 'offerer', null, res);
         const updates = req.body;
 
         try {
-            let id = getTokenId.tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'));
+            logger.updateLog(logId, id);
             updateOfferer(id, updates, res);
         } catch (err) {
             next({ type: 'error', error: err.message });
@@ -151,6 +154,7 @@ module.exports = (app, db) => {
     app.put('/offerer/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
+        await logger.saveLog('PUT', 'offerer', id, res);
 
         try {
             updateOfferer(id, updates, res);
@@ -162,6 +166,7 @@ module.exports = (app, db) => {
     // DELETE
     app.delete('/offerer/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
+        await logger.saveLog('DELETE', 'offerer', id, res);
 
         try {
             let offerer = await db.offerers.findOne({
@@ -202,7 +207,7 @@ module.exports = (app, db) => {
 
             let offereruser = true;
 
-            if (updates.password || updates.email || updates.name || updates.snSignIn || updates.root || updates.photo || updates.bio) {
+            if (updates.password || updates.email || updates.name || updates.snSignIn || updates.root || updates.img || updates.bio) {
                 // Update user values
                 if (updates.password)
                     updates.password = bcrypt.hashSync(updates.password, 10);

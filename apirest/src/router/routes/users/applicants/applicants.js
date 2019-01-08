@@ -1,4 +1,5 @@
 const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
+const { tokenId, logger } = require('../../../../shared/functions');
 const bcrypt = require('bcrypt');
 
 // ============================
@@ -9,6 +10,7 @@ module.exports = (app, db) => {
 
     // GET all users applicants
     app.get('/applicants', async(req, res, next) => {
+        await logger.saveLog('GET', 'applicant', null, res);
 
         try {
             let users = await db.users.findAll();
@@ -46,6 +48,7 @@ module.exports = (app, db) => {
     // GET one applicant by id
     app.get('/applicant/:id([0-9]+)', async(req, res, next) => {
         const id = req.params.id;
+        await logger.saveLog('GET', 'applicant', id, res);
 
         try {
             let user = await db.users.findOne({
@@ -91,6 +94,7 @@ module.exports = (app, db) => {
 
     // POST single applicant
     app.post('/applicant', async(req, res, next) => {
+        await logger.saveLog('POST', 'applicant', null, res);
 
         try {
             const body = req.body;
@@ -102,8 +106,9 @@ module.exports = (app, db) => {
                             password: password,
                             email: body.email,
 
-                            photo: body.photo,
-                            bio: body.bio
+                            img: body.img,
+                            bio: body.bio,
+                            //root: body.root
 
                         }, { transaction: transaction })
                         .then(async user => {
@@ -127,10 +132,12 @@ module.exports = (app, db) => {
 
     // Update applicant by themself
     app.put('/applicant', async(req, res, next) => {
+        let logId = await logger.saveLog('PUT', 'applicant', null, res);
         const updates = req.body;
 
         try {
-            let id = getTokenId.tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'));
+            logger.updateLog(logId, id);
             updateApplicant(id, updates, res);
         } catch (err) {
             return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
@@ -141,6 +148,7 @@ module.exports = (app, db) => {
     app.put('/applicant/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
+        await logger.saveLog('PUT', 'applicant', id, res);
 
         try {
             updateApplicant(id, updates, res);
@@ -152,6 +160,7 @@ module.exports = (app, db) => {
     // DELETE
     app.delete('/applicant/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
+        await logger.saveLog('DELETE', 'applicant', id, res);
 
         try {
             let applicant = await db.applicants.findOne({
@@ -191,7 +200,7 @@ module.exports = (app, db) => {
 
             let applicantuser = true;
 
-            if (updates.password || updates.email || updates.name || updates.snSignIn || updates.root || updates.photo || updates.bio) {
+            if (updates.password || updates.email || updates.name || updates.snSignIn || updates.root || updates.img || updates.bio) {
                 // Update user values
 
                 if (updates.password)

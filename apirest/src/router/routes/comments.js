@@ -19,7 +19,7 @@ module.exports = (app, db) => {
     });
 
     // GET one comment by id
-    app.get('/comment/:id', checkToken, async(req, res, next) => {
+    app.get('/comment/:id([0-9]+)', checkToken, async(req, res, next) => {
         const id = req.params.id;
 
         try {
@@ -60,7 +60,7 @@ module.exports = (app, db) => {
     });
 
     // PUT single comment
-    app.put('/comment/:id', checkToken, async(req, res, next) => {
+    app.put('/comment/:id([0-9]+)', checkToken, async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
 
@@ -81,7 +81,7 @@ module.exports = (app, db) => {
     });
 
     // DELETE single comment
-    app.delete('/comment/:id', checkToken, async(req, res, next) => {
+    app.delete('/comment/:id([0-9]+)', checkToken, async(req, res, next) => {
         const id = req.params.id;
 
         try {

@@ -1,4 +1,5 @@
 const { checkToken } = require('../../../../middlewares/authentication');
+const { tokenId } = require('../../../../shared/functions');
 
 // ============================
 // ===== CRUD applicant_language ======
@@ -56,17 +57,18 @@ module.exports = (app, db) => {
     });
 
     // POST single applicant_language
-    app.post("/applicant_language", checkToken, async(req, res, next) => {
+    app.post("/applicant_language", async(req, res, next) => {
         const body = req.body;
         let fk_language = body.fk_language;
 
         try {
+            let id = tokenId.getTokenId(req.get('token'));
+
             let applicant = await db.applicants.findOne({
-                where: { userId: body.fk_applicant }
+                where: { userId: id }
             });
 
             if (applicant) {
-
                 // Obtain what languages were known by the applicant previously
                 let languagesPrevious = (await applicant.getLanguages());
 
@@ -116,8 +118,10 @@ module.exports = (app, db) => {
         const body = req.body;
 
         try {
+            let id = tokenId.getTokenId(req.get('token'));
+
             let applicant = await db.applicants.findOne({
-                    where: { userId: body.fk_applicant }
+                    where: { userId: id }
                 })
                 .then(async applicant => {
                     if (applicant) {
@@ -171,8 +175,11 @@ module.exports = (app, db) => {
         const body = req.body;
 
         try {
+
+            let id = tokenId.getTokenId(req.get('token'));
+
             let applicant = await db.applicants.findOne({
-                where: { userId: body.fk_applicant }
+                where: { userId: id }
             });
 
             if (applicant) {
