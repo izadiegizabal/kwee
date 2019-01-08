@@ -49,6 +49,7 @@ export class SignupCandidateComponent implements OnInit {
     {value: 6, viewValue: 'Proficient - C2'},
     {value: 7, viewValue: 'Native'},
   ];
+  private dialogShown = false;
 
   constructor(private _formBuilder: FormBuilder,
               public dialog: MatDialog,
@@ -234,6 +235,7 @@ export class SignupCandidateComponent implements OnInit {
   }
 
   onSave(stepper: MatStepper) {
+    this.dialogShown = false;
     // console.log(this.secondFormGroup);
 
     if (this.secondFormGroup.status === 'VALID') {
@@ -258,14 +260,13 @@ export class SignupCandidateComponent implements OnInit {
       this.authEffects$.authSignupCandidate.pipe(
         filter((action: Action) => action.type === AuthActions.AUTH_ERROR)
       ).subscribe((error: { payload: any, type: string }) => {
-        console.log(error.payload);
-        this.dialog.open(DialogErrorComponent);
+        if (!this.dialogShown) {
+          console.log(error.payload);
+          this.dialog.open(DialogErrorComponent);
+          this.dialogShown = true;
+        }
       });
     }
-  }
-
-  onSubmit_form2() {
-    console.log(this.thirdFormGroup);
   }
 
   add_skill() {

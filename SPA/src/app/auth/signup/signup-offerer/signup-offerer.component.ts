@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {DialogErrorComponent} from '../dialog-error/dialog-error.component';
 import {MatDialog, MatStepper} from '@angular/material';
@@ -7,6 +7,7 @@ import {filter} from 'rxjs/operators';
 import {Action, Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
 import {AuthEffects} from '../../store/auth.effects';
+import {Subscription} from 'rxjs';
 
 
 @Component({
@@ -43,6 +44,9 @@ export class SignupOffererComponent implements OnInit {
     {value: 3, viewValue: '4'},
     {value: 4, viewValue: '5'},
   ];
+  private errorListener: Subscription;
+  private authSignInListener: Subscription;
+  private dialogShown = false;
 
 
   constructor(private _formBuilder: FormBuilder,
@@ -129,6 +133,7 @@ export class SignupOffererComponent implements OnInit {
 
 
   onSave(stepper: MatStepper) {
+    this.dialogShown = false;
     // console.log(this.secondFormGroup);
 
     if (this.secondFormGroup.status === 'VALID') {
@@ -157,8 +162,11 @@ export class SignupOffererComponent implements OnInit {
       this.authEffects$.authSignupBusiness.pipe(
         filter((action: Action) => action.type === AuthActions.AUTH_ERROR)
       ).subscribe((error: { payload: any, type: string }) => {
-        console.log(error.payload);
-        this.dialog.open(DialogErrorComponent);
+        if (!this.dialogShown) {
+          console.log(error.payload);
+          this.dialog.open(DialogErrorComponent);
+          this.dialogShown = true;
+        }
       });
     }
   }
