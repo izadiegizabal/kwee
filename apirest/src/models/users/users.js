@@ -113,9 +113,7 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 0,
             validate: {
                 isIn: {
-                    args: [
-                        [0, 1, 2, 3, 4]
-                    ],
+                    args: [[0, 1, 2, 3, 4]],
                     msg: "Invalid status type. Only valid 'verification pending' (0), 'active' (1), 'validation pending' (2), 'blocked' (3) or social network verification pending(4)."
                 }
             }

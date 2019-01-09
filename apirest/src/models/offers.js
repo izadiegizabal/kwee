@@ -73,10 +73,10 @@ module.exports = (sequelize, DateTypes) => {
                 startDateAfterEndDate() {
                     const today = new Date();
                     if (this.dateStart >= this.dateEnd ) {
-                        throw new Error('Start date must be before the end date.');
+                        throw new Error('Starting date must be before the end date.');
                     }
                     else if( this.dateStart <= today) {
-                        throw new Error('Start date must be after today\'s date.');
+                        throw new Error('Starting date must be after today\'s date.');
                     }
                 }
                 
