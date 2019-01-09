@@ -77,13 +77,7 @@ module.exports = (sequelize, DataTypes) => {
         bio: {
             type: DataTypes.TEXT(),
             allowNull: false,
-            defaultValue: "Here you have a place to define yourself",
-            validate: {
-                len: {
-                    args: [0, 500],
-                    msg: "Bio length should be max 500 long."
-                }
-            }
+            defaultValue: "Here you have a place to define yourself"
         },
 
 

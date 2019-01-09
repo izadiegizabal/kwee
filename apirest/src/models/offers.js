@@ -13,22 +13,12 @@ module.exports = (sequelize, DateTypes) => {
                 isInt: {
                     "args": true,
                     "msg": "fk_offerer invalid type."
-                }/*,
-                custom() {
-                    console.log("fk_offerer:" + this.fk_offerer);
-                    const user = sequelize.models.offerers.findOne({where: {userId: this.fk_offerer}})
-                        .then( u => {
-                            if( u == null ){
-                                throw new sequelize.ValidationError("fk_offerer is not pointing to an offerer.");
-                            }
-                        })
-                }*/
+                }
             }
         },
 
         title: {
             type: DateTypes.STRING(50),
-            field: 'title',
             allowNull: false,
             validate: {
                 notEmpty: {
@@ -44,23 +34,17 @@ module.exports = (sequelize, DateTypes) => {
 
         description: {
             type: DateTypes.TEXT,
-            field: 'description',
             allowNull: false,
             validate: {
                 notEmpty: {
                     "args": true,
                     "msg": "Description should be filled."
-                },
-                len: {
-                    args: [0, 140],
-                    msg: 'Description must be [0, 140] characters.'
-                  }
+                }
             }
         },
 
         dateStart: {
             type: DateTypes.DATE,
-            field: 'date_start',
             allowNull: false,
             validate: {
                 notEmpty: {
@@ -76,16 +60,15 @@ module.exports = (sequelize, DateTypes) => {
 
         dateEnd: {
             type: DateTypes.DATE,
-            field: 'date_end',
             allowNull: false,
             validate: {
                 notEmpty: {
                     "args": true,
-                    "msg": "Starting date should be filled."
+                    "msg": "Ending date should be filled."
                 },
                 isDate: {
                     "args": true,
-                    "msg": "Starting date should be a date."
+                    "msg": "Ending date should be a date."
                 },
                 startDateAfterEndDate() {
                     const today = new Date();
@@ -102,7 +85,6 @@ module.exports = (sequelize, DateTypes) => {
 
         location: {
             type: DateTypes.STRING(),
-            field: 'location',
             allowNull: false,
             validate: {
                 notEmpty: {
@@ -114,7 +96,6 @@ module.exports = (sequelize, DateTypes) => {
 
         salary: {
             type: DateTypes.INTEGER,
-            field: 'salary',
             allowNull: false,
             validate: {
                 notEmpty: {
@@ -128,13 +109,101 @@ module.exports = (sequelize, DateTypes) => {
             }
         },
 
+        status: {
+            type: DateTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0,
+            validate: {
+                isIn: {
+                    args: [[0,1,2,3]],
+                    msg: "Invalid status type. Only valid 0,1,2 or 3."
+                }
+            }
+        },
+
+        datePublished: {
+            type: DateTypes.DATE,
+            allowNull: false,
+            validate: {
+                notEmpty: {
+                    "args": true,
+                    "msg": "Published date should be filled."
+                },
+                isDate: {
+                    "args": true,
+                    "msg": "Published date should be a date."
+                }
+            }
+        },
+
+        salaryFrecuency: {
+            type: DateTypes.INTEGER,
+            allowNull: false,
+            validate: {
+                isIn: {
+                    args: [[0,1,2,3]],
+                    msg: "Invalid salary type. Only valid 0,1,2 or 3."
+                }
+            }
+        },
+
+        salaryCurrency: {
+            type: DateTypes.STRING(3),
+            allowNull: false,
+            validate: {
+                len: {
+                    args: [3,3],
+                    msg: "Salary currency invalid value. Should be 3 character length (EUR, USD, GBP...)"
+                }
+            }
+        },
+
+        workLocation: {
+            type: DateTypes.INTEGER,
+            allowNull: false,
+            validate: {
+                isIn: {
+                    args: [[0,1,2]],
+                    msg: "Invalid workLocation type. Only valid 0,1 or 2."
+                }
+            }
+        },
+
+        seniority: {
+            type: DateTypes.INTEGER,
+            allowNull: false,
+            validate: {
+                isIn: {
+                    args: [[0,1,2,3]],
+                    msg: "Invalid seniority type. Only valid 0,1,2 or 3."
+                }
+            }
+        },
+
+        responsabilities: {
+            type: DateTypes.TEXT,
+            allowNull: true,
+            validate: {
+                len: {
+                    args: [0,300],
+                    msg: "Responsabilities text too large (0,300)."
+                }
+            }
+        },
+
+        requeriments: {
+            type: DateTypes.TEXT,
+            allowNull: true
+        },
+
+        skills: {
+            type: DateTypes.TEXT,
+            allowNull: true,
+        }
 
         /////////////////
 
-        // status --> open, closed, draft, selection (INTs)
-
-        // datePublished
-
+       
         // @todo and @tocheck
         // * duration --> int (1,2,3...)
         // * durationUnit --> enum 0,1,2 = (semana / mes / año)

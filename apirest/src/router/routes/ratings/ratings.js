@@ -10,9 +10,10 @@ module.exports = (app, db) => {
     // GET all ratings
     app.get('/ratings', checkToken, async(req, res, next) => {
         try {
-            res.status(200).json({
+            return res.status(200).json({
                 ok: true,
-                ratings: await db.ratings.findAll()
+                message: 'All ratings list',
+                data: await db.ratings.findAll()
             });
         } catch (err) {
             next({ type: 'error', error: 'Error getting data' });
@@ -34,12 +35,13 @@ module.exports = (app, db) => {
                 });
 
                 if (rating) {
-                    res.status(200).json({
+                    return res.status(200).json({
                         ok: true,
-                        rating
+                        message: `${id} ratings`,
+                        data: rating
                     });
                 } else {
-                    res.status(400).json({
+                    return res.status(400).json({
                         ok: false,
                         message: 'Rating doesn\'t exist'
                     });
@@ -87,9 +89,10 @@ module.exports = (app, db) => {
                 where: { id }
             });
             if (updated) {
-                res.status(200).json({
+                return res.status(200).json({
                     ok: true,
-                    message: updates
+                    message: `Updated single rating`,
+                    data: updates
                 })
             }
 
@@ -106,9 +109,10 @@ module.exports = (app, db) => {
         const id = req.params.id;
 
         try {
-            res.json({
+            return res.json({
                 ok: true,
-                rating: await db.ratings.destroy({
+                message: 'Rating deleted',
+                data: await db.ratings.destroy({
                     where: { id: id }
                 })
             });

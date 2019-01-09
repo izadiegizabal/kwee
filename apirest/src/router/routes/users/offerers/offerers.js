@@ -34,14 +34,16 @@ module.exports = (app, db) => {
                             premium: offerers[j].premium,
                             createdAt: offerers[j].createdAt,
                             lastAccess: users[i].lastAccess,
-                            status: users[i].status
+                            status: users[i].status,
+                            img: users[i].img
                         }
                     }
                 }
             }
             res.status(200).json({
                 ok: true,
-                offerers: offerersView
+                message: 'All offerers list',
+                data: offerersView
             });
         } catch (err) {
             next({ type: 'error', error: err.message });
@@ -64,6 +66,7 @@ module.exports = (app, db) => {
 
             console.log("fdasfdsa");
             if (users && offerers) {
+                console.log("entra");
                 const userOfferer = {
                     id: offerers.userId,
                     index: users.index,
@@ -79,12 +82,15 @@ module.exports = (app, db) => {
                     premium: offerers.premium,
                     createdAt: offerers.createdAt,
                     lastAccess: users.lastAccess,
-                    status: users.status
+                    status: users.status,
+                    img: users.img
+
                 };
 
                 return res.status(200).json({
                     ok: true,
-                    userOfferer
+                    message: `Offerer ${ id } data`,
+                    data: userOfferer
                 });
             } else {
                 return res.status(400).json({
@@ -224,7 +230,8 @@ module.exports = (app, db) => {
             if (updated && offereruser) {
                 return res.status(200).json({
                     ok: true,
-                    message: updates
+                    message: `Values updated for offerer ${ id }`,
+                    data: updates
                 })
             } else {
                 return next({ type: 'error', error: 'Can\'t update offerer' });

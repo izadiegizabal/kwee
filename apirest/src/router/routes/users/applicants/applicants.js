@@ -28,16 +28,19 @@ module.exports = (app, db) => {
                             city: applicants[j].city,
                             dateBorn: applicants[j].dateBorn,
                             premium: applicants[j].premium,
-                            createdAt: applicants[j].createdAt,
+                            //createdAt: applicants[j].createdAt,
                             lastAccess: users[i].lastAccess,
-                            status: users[i].status
+                            status: users[i].status,
+                            img: users[i].img,
+                            bio: users[i].bio,
                         }
                     }
                 }
             }
-            res.status(200).json({
+            return res.status(200).json({
                 ok: true,
-                applicants: applicantsView
+                message: 'All applicants',
+                data: applicantsView
             });
         } catch (err) {
             next({ type: 'error', error: err.message });
@@ -52,10 +55,6 @@ module.exports = (app, db) => {
 
         try {
             let user = await db.users.findOne({
-                attributes: [
-                    'name',
-                    'email'
-                ],
                 where: { id }
             });
 
@@ -72,14 +71,17 @@ module.exports = (app, db) => {
                     city: applicant.city,
                     dateBorn: applicant.dateBorn,
                     premium: applicant.premium,
-                    createdAt: applicant.createdAt,
+                    //createdAt: applicant.createdAt,
                     status: user.status,
-                    lastAccess: user.lastAccess
+                    lastAccess: user.lastAccess,
+                    img: user.img,
+                    bio: user.bio,
                 };
 
                 return res.status(200).json({
                     ok: true,
-                    userApplicant
+                    message: `Get applicant by id ${ id } success`,
+                    data: userApplicant
                 });
             } else {
                 return res.status(400).json({
@@ -138,7 +140,7 @@ module.exports = (app, db) => {
         try {
             let id = tokenId.getTokenId(req.get('token'));
             logger.updateLog(logId, id);
-            updateApplicant(id, updates, res);
+            updateApplicant(id, updates, res, next);
         } catch (err) {
             return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
         }
@@ -151,7 +153,7 @@ module.exports = (app, db) => {
         await logger.saveLog('PUT', 'applicant', id, res);
 
         try {
-            updateApplicant(id, updates, res);
+            updateApplicant(id, updates, res, next);
         } catch (err) {
             return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
         }
@@ -191,7 +193,7 @@ module.exports = (app, db) => {
         }
     });
 
-    async function updateApplicant(id, updates, res) {
+    async function updateApplicant(id, updates, res, next) {
         let applicant = await db.applicants.findOne({
             where: { userId: id }
         });
@@ -217,7 +219,8 @@ module.exports = (app, db) => {
             if (updated && applicantuser) {
                 return res.status(200).json({
                     ok: true,
-                    message: updates
+                    message: `Applicant ${ id } data updated successfuly`,
+                    data: updates
                 })
             } else {
                 return next({ type: 'error', error: 'Can\'t update Applicant' });

@@ -18,18 +18,14 @@ module.exports = (app, db) => {
             if (!user) {
                 return res.status(400).json({
                     ok: false,
-                    err: {
-                        message: 'User or password incorrect'
-                    }
+                    message: 'User or password incorrect'
                 });
             }
 
             if (!bcrypt.compareSync(body.password, user.password)) {
                 return res.status(400).json({
                     ok: false,
-                    err: {
-                        message: 'User or password incorrect'
-                    }
+                    message: 'User or password incorrect'
                 });
             }
 
@@ -48,7 +44,17 @@ module.exports = (app, db) => {
 
             return res.json({
                 ok: true,
-                user: userUpdated,
+                message: 'Login successful',
+                data: {
+                    id: userUpdated.id,
+                    name: userUpdated.name,
+                    email: userUpdated.email,
+                    img: userUpdated.img,
+                    bio: userUpdated.bio,
+                    lastAccess: userUpdated.lastAccess,
+                    index: userUpdated.index,
+                    status: userUpdated.status,
+                },
                 token
             });
 

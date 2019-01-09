@@ -19,7 +19,8 @@ module.exports = (app, db) => {
         try {
             res.status(200).json({
                 ok: true,
-                users: await db.users.findAll({
+                message: 'All users list',
+                data: await db.users.findAll({
                     attributes: [
                         'name',
                         'email'
@@ -50,7 +51,8 @@ module.exports = (app, db) => {
             if (user) {
                 return res.status(200).json({
                     ok: true,
-                    user
+                    message: `Get user by id ${id} successful`,
+                    data: user
                 });
             } else {
                 return res.status(400).json({
@@ -145,7 +147,8 @@ module.exports = (app, db) => {
             if (result > 0) {
                 return res.status(200).json({
                     ok: true,
-                    user: result
+                    message: `User ${ id } deleted.`,
+                    data: result
                 });
             } else {
                 return res.status(204).json({
@@ -172,8 +175,8 @@ module.exports = (app, db) => {
         if (updated > 0) {
             return res.status(200).json({
                 ok: true,
-                result: `Updated ${updated} rows. New values showing in message.`,
-                message: await db.users.findOne({ where: { id } })
+                message: `Updated ${updated} rows. New values showing in message.`,
+                data: await db.users.findOne({ where: { id } })
             })
         } else {
             return res.status(400).json({
