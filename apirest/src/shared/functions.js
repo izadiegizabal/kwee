@@ -36,16 +36,15 @@ class Logger {
 
     }
 
-    updateLog(id, toId) {
+    updateLog(id, status, toId) {
         // id is the log to update
         // toId is the id to which route id is the action
-        let updates = { actionToId: toId }
-        console.log("id: ", id);
-        console.log("toId: ", toId);
-        console.log("updates: ", updates);
+
+        let updates = { status: status };
+        toId ? updates.actionToId = toId : null;
+
         Log.findByIdAndUpdate(id, updates, (err, userDB) => {
-            if (err) throw new Error();
-            console.log("actualizado el log");
+            if (err) throw new Error(err);
         })
     }
 }

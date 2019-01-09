@@ -9,7 +9,8 @@ let logSchema = new Schema({
     actionToId: { type: Number },
     date: { type: String },
     hour: { type: String },
-    email: { type: String }
+    email: { type: String },
+    status: { type: Boolean }
 });
 
 

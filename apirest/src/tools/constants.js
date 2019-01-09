@@ -6,6 +6,8 @@ let PROD = pass.PROD;
 
 const env = {
 
+    URL: pass.URL,
+
     PROD,
 
     DATABASE_NAME: pass.DATABASE_NAME,

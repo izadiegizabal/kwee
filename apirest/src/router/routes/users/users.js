@@ -194,7 +194,7 @@ module.exports = (app, db) => {
             id: user.id
         }, env.JSONWEBTOKEN_SECRET, { expiresIn: '1h' });
 
-        let urlValidation = `${ process.env.URL }/email-verified/` + token;
+        let urlValidation = `${ env.URL }/email-verified/` + token;
 
         nodemailer.createTestAccount((err, account) => {
             // create reusable transporter object using the default SMTP transport

@@ -8,7 +8,7 @@ const { logger } = require('../../../shared/functions');
 module.exports = (app, db) => {
 
     app.post('/login', async(req, res, next) => {
-        await logger.saveLog('POST', 'login', null, res, req.body.email);
+        let logId = await logger.saveLog('POST', 'login', null, res, req.body.email);
 
         let body = req.body;
 
@@ -16,6 +16,7 @@ module.exports = (app, db) => {
             let user = await db.users.findOne({ where: { email: body.email } })
 
             if (!user) {
+                logger.updateLog(logId, false);
                 return res.status(400).json({
                     ok: false,
                     message: 'User or password incorrect'
@@ -23,6 +24,7 @@ module.exports = (app, db) => {
             }
 
             if (!bcrypt.compareSync(body.password, user.password)) {
+                logger.updateLog(logId, false);
                 return res.status(400).json({
                     ok: false,
                     message: 'User or password incorrect'
@@ -41,7 +43,7 @@ module.exports = (app, db) => {
             delete userUpdated.dataValues.password;
 
             let token = auth.auth.encode(userUpdated);
-
+            logger.updateLog(logId, true, id);
             return res.json({
                 ok: true,
                 message: 'Login successful',
@@ -59,7 +61,6 @@ module.exports = (app, db) => {
             });
 
         } catch (err) {
-            console.log(err);
             next({ type: 'error', error: 'Error getting data' });
         }
     });
