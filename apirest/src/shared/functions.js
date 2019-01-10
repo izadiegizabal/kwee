@@ -1,6 +1,11 @@
 const auth = require('../middlewares/auth/auth');
 const Log = require('../models/logs');
 const moment = require('moment');
+const fs = require('fs');
+const path = require('path');
+const nodemailer = require('nodemailer');
+const env = require('../tools/constants.js');
+const jwt = require('jsonwebtoken');
 
 class TokenId {
     getTokenId(token) {
@@ -55,7 +60,49 @@ class Logger {
 const tokenId = new TokenId();
 const logger = new Logger();
 
+function sendVerificationEmail(body, user) {
+    // Generate test SMTP service account from gmail
+    let data = fs.readFileSync(path.join(__dirname, '../templates/email.html'), 'utf-8');
+
+    let token = jwt.sign({
+        id: user.id
+    }, env.JSONWEBTOKEN_SECRET, { expiresIn: '1h' });
+
+    let urlValidation = `${ env.URL }/email-verified/` + token;
+
+    nodemailer.createTestAccount((err, account) => {
+        // create reusable transporter object using the default SMTP transport
+
+        let transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false, // true for 465, false for other ports
+            auth: {
+                user: env.EMAIL,
+                pass: env.EMAIL_PASSWORD
+            }
+        });
+
+        // setup email data with unicode symbols
+        let mailOptions = {
+            from: '"Kwee 👻" <hello@kwee.ovh>', // sender address
+            to: body.email,
+            subject: 'Please validate your email to signin ✔', // Subject line
+            html: data.replace('@@name@@', body.name).replace('@@url@@', urlValidation)
+        };
+
+        // send mail with defined transport object
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                return console.log(error);
+            }
+        });
+    });
+}
+
+
 module.exports = {
     tokenId,
-    logger
+    logger,
+    sendVerificationEmail
 }
