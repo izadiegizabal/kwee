@@ -14,12 +14,7 @@ class Auth {
             return (jwt.verify(token, env.JSONWEBTOKEN_SECRET, { issuer: env.JSONWEBTOKEN_ISSUER })).id;
         } catch (e) {
             // throw new HttpException('Su token ha expirado', HttpStatus.UNAUTHORIZED);
-            return {
-                ok: false,
-                err: {
-                    message: 'Invalid token'
-                }
-            };
+            throw new Error('Invalid token');
         }
     }
 }
