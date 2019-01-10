@@ -1,8 +1,8 @@
-import {Component, Inject, Input, OnInit} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material';
 
 export interface DialogData {
-  offer: {title: string, url: string};
+  offer: { title: string, url: string };
 }
 
 @Component({

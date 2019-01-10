@@ -1,19 +1,12 @@
-import {Component, OnInit, Output, EventEmitter} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {MatDialog, MatStepper} from '@angular/material';
-import {Action, Store} from '@ngrx/store';
-import * as fromApp from '../../../../store/app.reducers';
-import * as AuthActions from '../../../store/auth.actions';
-import {AuthEffects} from '../../../store/auth.effects';
-import {filter} from 'rxjs/operators';
-import {DialogErrorComponent} from '../../dialog-error/dialog-error.component';
+import {MatDialog} from '@angular/material';
 
 import {MomentDateAdapter} from '@angular/material-moment-adapter';
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
 import {MatDatepicker} from '@angular/material/datepicker';
-
-import * as _moment from 'moment';
 // tslint:disable-next-line:no-duplicate-imports
+import * as _moment from 'moment';
 import {Moment} from 'moment';
 
 const moment = _moment;
@@ -45,16 +38,12 @@ export const MY_FORMATS = {
 })
 export class ExperienceFormsComponent implements OnInit {
 
-
- @Output() formReady = new EventEmitter<FormArray>()
-  
+  @Output() formReady = new EventEmitter<FormArray>();
   experiences: FormGroup;
-
   iskilex = 0;
 
   constructor(private _formBuilder: FormBuilder,
-              public dialog: MatDialog,
-              private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects) {
+              public dialog: MatDialog) {
 
     this.iskilex = 0;
 
@@ -64,36 +53,9 @@ export class ExperienceFormsComponent implements OnInit {
     return <FormArray>this.experiences.get('experience');
   }
 
-  date(n: number){
-  	return (<FormGroup>(<FormArray>this.experiences.get('experience')).controls[n]).controls.start;
-  }
-
-  dateEnd(n:number){
-  	return (<FormGroup>(<FormArray>this.experiences.get('experience')).controls[n]).controls.end;
-  }
-
-  addExperienceGroup(): FormGroup {
-    return this._formBuilder.group({
-      'title': new FormControl(null, Validators.required),
-      'company': new FormControl(null),
-      'start': new FormControl(null,[this.maxMinDate, this.maxDate]),
-      'end': new FormControl(null, [this.maxMinDate, this.maxDate]),
-      'description': new FormControl(null)
-    });
-  }
-
-  ngOnInit() {
-
-    this.experiences = this._formBuilder.group({
-        'experience': this._formBuilder.array([]),
-    });
-
-    this.formReady.emit(this.formExperience);
-  }
-
-  maxMinDate(control: FormControl): { [s: string]: { [s: string]: boolean } } {
+  static maxMinDate(control: FormControl): { [s: string]: { [s: string]: boolean } } {
     const today = new Date();
-    const mdate = new Date(today.getFullYear() - 100,today.getMonth(),today.getDay());
+    const mdate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDay());
 
     if (control.value > mdate) {
       return null;
@@ -101,13 +63,40 @@ export class ExperienceFormsComponent implements OnInit {
     return {'tooOld': {value: true}};
   }
 
-  maxDate(control: FormControl): { [s: string]: boolean } {
+  static maxDate(control: FormControl): { [s: string]: boolean } {
     const today = new Date();
 
     if (control.value < today) {
       return null;
     }
     return {'tooYoung': true};
+  }
+
+  date(n: number) {
+    return (<FormGroup>(<FormArray>this.experiences.get('experience')).controls[n]).controls.start;
+  }
+
+  dateEnd(n: number) {
+    return (<FormGroup>(<FormArray>this.experiences.get('experience')).controls[n]).controls.end;
+  }
+
+  addExperienceGroup(): FormGroup {
+    return this._formBuilder.group({
+      'title': new FormControl(null, Validators.required),
+      'company': new FormControl(null),
+      'start': new FormControl(null, [ExperienceFormsComponent.maxMinDate, ExperienceFormsComponent.maxDate]),
+      'end': new FormControl(null, [ExperienceFormsComponent.maxMinDate, ExperienceFormsComponent.maxDate]),
+      'description': new FormControl(null)
+    });
+  }
+
+  ngOnInit() {
+
+    this.experiences = this._formBuilder.group({
+      'experience': this._formBuilder.array([]),
+    });
+
+    this.formReady.emit(this.formExperience);
   }
 
   addExperience() {
@@ -149,22 +138,21 @@ export class ExperienceFormsComponent implements OnInit {
   onDoneEx(index: number) {
     if (!(<FormArray>this.experiences.controls['experience']).controls[index].valid) {
       (<FormGroup>(<FormArray>this.experiences.get('experience')).controls[index]).controls.title.markAsTouched();
-    } else{ return true; }
+    } else {
+      return true;
+    }
     return false;
   }
 
-  onCheck(istart,iend,index){
-    if((iend.value && !iend.disabled && istart.value && this.getEx(index).start.value && this.getEx(index).end.value) || 
-      (iend.disabled && istart.value && this.getEx(index).start.value)){
-      return true;
-    }
-    else{return false;}
+  onCheck(istart, iend, index) {
+    return !!((iend.value && !iend.disabled && istart.value && this.getEx(index).start.value && this.getEx(index).end.value) ||
+      (iend.disabled && istart.value && this.getEx(index).start.value));
   }
 
 
   // Date handlers
   chosenYearHandler(normalizedYear: Moment, index: number) {
-  	this.date(index).setValue(moment());
+    this.date(index).setValue(moment());
     const ctrlValue = this.date(index).value;
     ctrlValue.year(normalizedYear.year());
     this.date(index).setValue(ctrlValue);
@@ -179,7 +167,7 @@ export class ExperienceFormsComponent implements OnInit {
   }
 
   chosenYearHandlerEnd(normalizedYear: Moment, index: number) {
-  	this.dateEnd(index).setValue(moment());
+    this.dateEnd(index).setValue(moment());
     const ctrlValue = this.dateEnd(index).value;
     ctrlValue.year(normalizedYear.year());
     this.dateEnd(index).setValue(ctrlValue);

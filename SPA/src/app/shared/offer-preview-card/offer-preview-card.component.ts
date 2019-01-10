@@ -16,7 +16,7 @@ export class OfferPreviewCardComponent implements OnInit {
   @Input() offer: any;
 
 
-  constructor(private _utils: UtilsService, public dialog: MatDialog) {
+  constructor(public dialog: MatDialog) {
 
   }
 
@@ -31,7 +31,7 @@ export class OfferPreviewCardComponent implements OnInit {
 
   getPublishedDate() {
     if (this.offer && this.offer.createdAt) {
-      return this._utils.getTimePassed(new Date(this.offer.createdAt));
+      return UtilsService.getTimePassed(new Date(this.offer.createdAt));
     }
   }
 

@@ -18,13 +18,10 @@ export class SignupCandidateComponent implements OnInit {
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
   thirdFormGroup: FormGroup;
-
   candidate: any;
-
   hide = false;
   iskill = 0;
   iskillang = 0;
-
   roles: { value: number, viewValue: string }[] = [
     {value: 0, viewValue: 'Software Engineering'},
     {value: 1, viewValue: 'Engineering Management'},
@@ -36,7 +33,6 @@ export class SignupCandidateComponent implements OnInit {
     {value: 7, viewValue: 'Project Management'},
     {value: 8, viewValue: 'Product Management'},
   ];
-
   proficiencies: { value: number, viewValue: string }[] = [
     {value: 0, viewValue: 'Native'},
     {value: 1, viewValue: 'Begginer - A1'},
@@ -71,6 +67,26 @@ export class SignupCandidateComponent implements OnInit {
     return <FormArray>this.thirdFormGroup.get('education');
   }
 
+  static minDate(control: FormControl): { [s: string]: { [s: string]: boolean } } {
+    const today = new Date();
+    const mdate = new Date(today.getFullYear() - 16, today.getMonth(), today.getDay());
+
+    if (control.value > mdate) {
+      return {'min16years': {value: true}};
+    }
+    return null;
+  }
+
+  static maxMinDate(control: FormControl): { [s: string]: { [s: string]: boolean } } {
+    const today = new Date();
+    const mdate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDay());
+
+    if (control.value > mdate) {
+      return null;
+    }
+    return {'tooOld': {value: true}};
+  }
+
   getProf(n: number) {
     return this.proficiencies[n].viewValue;
   }
@@ -102,16 +118,16 @@ export class SignupCandidateComponent implements OnInit {
 
     this.secondFormGroup.controls['birthday'].setValidators([
       Validators.required,
-      this.minDate.bind(this.secondFormGroup),
-      this.maxMinDate.bind(this.secondFormGroup),
+      SignupCandidateComponent.minDate.bind(this.secondFormGroup),
+      SignupCandidateComponent.maxMinDate.bind(this.secondFormGroup),
     ]);
 
 
-    this.secondFormGroup.controls['password'].valueChanges.subscribe(value => {
+    this.secondFormGroup.controls['password'].valueChanges.subscribe(() => {
       this.secondFormGroup.controls['password2'].updateValueAndValidity();
     });
 
-    this.secondFormGroup.controls['email'].valueChanges.subscribe(value => {
+    this.secondFormGroup.controls['email'].valueChanges.subscribe(() => {
       if (this.secondFormGroup.controls['email'].value != null && this.secondFormGroup.controls['confEmail'].value != null) {
         this.secondFormGroup.controls['confEmail'].updateValueAndValidity();
       }
@@ -135,26 +151,6 @@ export class SignupCandidateComponent implements OnInit {
     });
   }
 
-  addExperienceGroup(): FormGroup {
-    return this._formBuilder.group({
-      'title': new FormControl(null, Validators.required),
-      'company': new FormControl(null),
-      'start': new FormControl(null),
-      'end': new FormControl(null),
-      'description': new FormControl(null)
-    });
-  }
-
-  addEducationGroup(): FormGroup {
-    return this._formBuilder.group({
-      'title': new FormControl(null, Validators.required),
-      'institution': new FormControl(null),
-      'start': new FormControl(null),
-      'end': new FormControl(null),
-      'description': new FormControl(null)
-    });
-  }
-
 
   samePassword(control: FormControl): { [s: string]: boolean } {
     const secondFormGroup: any = this;
@@ -170,26 +166,6 @@ export class SignupCandidateComponent implements OnInit {
       return {same: true};
     }
     return null;
-  }
-
-  minDate(control: FormControl): { [s: string]: { [s: string]: boolean } } {
-    const today = new Date();
-    const mdate = new Date(today.getFullYear() - 16,today.getMonth(),today.getDay());
-
-    if (control.value > mdate) {
-      return {'min16years': {value: true}};
-    }
-    return null;
-  }
-
-  maxMinDate(control: FormControl): { [s: string]: { [s: string]: boolean } } {
-    const today = new Date();
-    const mdate = new Date(today.getFullYear() - 100,today.getMonth(),today.getDay());
-
-    if (control.value > mdate) {
-      return null;
-    }
-    return {'tooOld': {value: true}};
   }
 
   onSave(stepper: MatStepper) {
@@ -208,7 +184,7 @@ export class SignupCandidateComponent implements OnInit {
         'rol': this.secondFormGroup.controls['role'].value.toString()
       };
 
-      //console.log(this.candidate);
+      // console.log(this.candidate);
       this.store$.dispatch(new AuthActions.TrySignupCandidate(this.candidate));
       this.authEffects$.authSignin.pipe(
         filter((action: Action) => action.type === AuthActions.SIGNIN)
@@ -224,22 +200,22 @@ export class SignupCandidateComponent implements OnInit {
           this.dialogShown = true;
         }
       });
-    }
-    else{
-      for(let i in this.secondFormGroup.controls)
+    } else {
+      for (const i of Object.keys(this.secondFormGroup.controls)) {
         this.secondFormGroup.controls[i].markAsTouched();
+      }
     }
-    //stepper.next();
+    // stepper.next();
   }
 
-  onSaveOptional(){
-    console.log(this.thirdFormGroup);
+  onSaveOptional() {
+    // console.log(this.thirdFormGroup);
   }
 
   add_skill() {
     (<FormArray>this.thirdFormGroup.controls['skills']).push(new FormControl(null));
     this.iskill++;
-    console.log(this.formSkills.length);
+    // console.log(this.formSkills.length);
     setTimeout(() => {
       document.getElementById(`skill${this.iskill}`).focus();
     }, 1);
@@ -248,7 +224,7 @@ export class SignupCandidateComponent implements OnInit {
   addLanguage() {
     (<FormArray>this.thirdFormGroup.controls['languages']).push(this.addLanguageGroup());
     this.iskillang++;
-    console.log(this.formLanguages);
+    // console.log(this.formLanguages);
   }
 
   deleteSkill(i) {
@@ -265,8 +241,9 @@ export class SignupCandidateComponent implements OnInit {
     if (!(<FormArray>this.thirdFormGroup.controls['languages']).controls[index].valid) {
       (<FormGroup>(<FormArray>this.thirdFormGroup.get('languages')).controls[index]).controls.language.markAsTouched();
       (<FormGroup>(<FormArray>this.thirdFormGroup.get('languages')).controls[index]).controls.proficiency.markAsTouched();
+    } else {
+      return true;
     }
-    else{ return true; }
     return false;
   }
 

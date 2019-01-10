@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {ObservableMedia} from '@angular/flex-layout';
 import {MatSidenav} from '@angular/material';
+import {BreakpointObserver} from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-admin',
@@ -10,14 +10,18 @@ import {MatSidenav} from '@angular/material';
 export class AdminComponent implements OnInit {
   @ViewChild('drawer') drawer: MatSidenav;
 
-  constructor(public media: ObservableMedia) {
+  constructor(public media: BreakpointObserver) {
   }
 
   ngOnInit() {
   }
 
+  isMobile() {
+    return !this.media.isMatched('screen and (min-width: 960px)'); // gt-sm
+  }
+
   closeDrawerIfMobile() {
-    if (!this.media.isActive('gt-sm')) {
+    if (this.isMobile()) {
       this.drawer.toggle();
     }
   }

@@ -7,22 +7,22 @@ import {MatSnackBar} from '@angular/material';
   styleUrls: ['./sns-share.component.scss']
 })
 export class SnsShareComponent implements OnInit {
+
   modal = false;
   @Input() offer: { title: string, url: string };
-
-  @Input()
-  public set isModal(value: boolean) {
-    if (value) {
-      this.modal = true;
-    } else {
-      this.modal = false;
-    }
-  }
-
   text = '';
   hashtags = 'kwee, joboffer, devjob, newjob';
 
   constructor(public snackBar: MatSnackBar) {
+  }
+
+  @Input()
+  public set isModal(value: boolean) {
+    this.modal = value;
+  }
+
+  static openNewWindowWithUrl(url: string) {
+    window.open(url, '_blank');
   }
 
   ngOnInit() {
@@ -51,21 +51,17 @@ export class SnsShareComponent implements OnInit {
       });
   }
 
-  openNewWindowWithUrl(url: string) {
-    window.open(url, '_blank');
-  }
-
   shareInTw() {
     const url = `https://twitter.com/share` +
       `?text=${this.text}` +
       `&url=${this.offer.url}` +
       `&hashtags=${this.hashtags}`;
-    this.openNewWindowWithUrl(url);
+    SnsShareComponent.openNewWindowWithUrl(url);
   }
 
   shareInFb() {
     const url = `https://www.facebook.com/sharer.php?u=${this.offer.url}`;
-    this.openNewWindowWithUrl(url);
+    SnsShareComponent.openNewWindowWithUrl(url);
   }
 
   shareInLi() {
@@ -74,13 +70,13 @@ export class SnsShareComponent implements OnInit {
       `&title=${this.offer.title}` +
       `&summary=${this.text}` +
       `&source=kwee.ovh`;
-    this.openNewWindowWithUrl(url);
+    SnsShareComponent.openNewWindowWithUrl(url);
   }
 
   shareInTl() {
     const url = `https://telegram.me/share/url?` +
       `url=${this.offer.url}` +
       `&text=${this.text}`;
-    this.openNewWindowWithUrl(url);
+    SnsShareComponent.openNewWindowWithUrl(url);
   }
 }

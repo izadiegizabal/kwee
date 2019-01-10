@@ -1,46 +1,46 @@
 <div fxLayout="row">
-  <button mat-icon-button
-          (click)="shareInTw()">
+  <button (click)="shareInTw()"
+          mat-icon-button>
     <mat-icon
-      color="primary"
-      class="fa-icon"
       [ngClass]="modal ? 'tw' : '' "
       aria-label="Share in Twitter"
+      class="fa-icon"
+      color="primary"
       fontIcon="fa-twitter"
       fontSet="fab"></mat-icon>
   </button>
-  <button mat-icon-button
-          (click)="shareInFb()">
+  <button (click)="shareInFb()"
+          mat-icon-button>
     <mat-icon
-      color="primary"
-      class="fa-icon"
       [ngClass]="modal ? 'fb' : '' "
       aria-label="Share in Facebook"
+      class="fa-icon"
+      color="primary"
       fontIcon="fa-facebook" fontSet="fab"></mat-icon>
   </button>
-  <button mat-icon-button
-          (click)="shareInLi()">
+  <button (click)="shareInLi()"
+          mat-icon-button>
     <mat-icon
-      color="primary"
-      class="fa-icon"
       [ngClass]="modal ? 'li' : '' "
       aria-label="Share in LinkedIn"
+      class="fa-icon"
+      color="primary"
       fontIcon="fa-linkedin" fontSet="fab"></mat-icon>
   </button>
-  <button mat-icon-button
-          (click)="shareInTl()">
+  <button (click)="shareInTl()"
+          mat-icon-button>
     <mat-icon
-      color="primary"
-      class="fa-icon"
       [ngClass]="modal ? 'tl' : '' "
       aria-label="Share in Telegram"
+      class="fa-icon"
+      color="primary"
       fontIcon="fa-telegram" fontSet="fab"></mat-icon>
   </button>
-  <button mat-icon-button
-          (click)="copyToClipboard()">
+  <button (click)="copyToClipboard()"
+          mat-icon-button>
     <mat-icon
-      color="primary"
-      aria-label="Copy link to clipboard">link
+      aria-label="Copy link to clipboard"
+      color="primary">link
     </mat-icon>
   </button>
 </div>

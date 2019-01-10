@@ -6,7 +6,7 @@ export class UtilsService {
   constructor() {
   }
 
-  getTimePassed(publishDate: Date): string {
+  static getTimePassed(publishDate: Date): string {
     const min = 1000 * 60;
     const hour = 60 * min;
     const day = 24 * hour;

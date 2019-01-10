@@ -1,19 +1,12 @@
-import {Component, OnInit, Output, EventEmitter} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {MatDialog, MatStepper} from '@angular/material';
-import {Action, Store} from '@ngrx/store';
-import * as fromApp from '../../../../store/app.reducers';
-import * as AuthActions from '../../../store/auth.actions';
-import {AuthEffects} from '../../../store/auth.effects';
-import {filter} from 'rxjs/operators';
-import {DialogErrorComponent} from '../../dialog-error/dialog-error.component';
+import {MatDialog} from '@angular/material';
 
 import {MomentDateAdapter} from '@angular/material-moment-adapter';
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
 import {MatDatepicker} from '@angular/material/datepicker';
-
-import * as _moment from 'moment';
 // tslint:disable-next-line:no-duplicate-imports
+import * as _moment from 'moment';
 import {Moment} from 'moment';
 
 const moment = _moment;
@@ -45,15 +38,12 @@ export const MY_FORMATS = {
 })
 export class EducationFormsComponent implements OnInit {
 
-  @Output() formReady = new EventEmitter<FormArray>()
-  
+  @Output() formReady = new EventEmitter<FormArray>();
   educations: FormGroup;
-
   iskiled = 0;
 
   constructor(private _formBuilder: FormBuilder,
-              public dialog: MatDialog,
-              private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects) {
+              public dialog: MatDialog) {
 
     this.iskiled = 0;
 
@@ -63,36 +53,9 @@ export class EducationFormsComponent implements OnInit {
     return <FormArray>this.educations.get('education');
   }
 
-  date(n: number){
-  	return (<FormGroup>(<FormArray>this.educations.get('education')).controls[n]).controls.start;
-  }
-
-  dateEnd(n: number){
-  	return (<FormGroup>(<FormArray>this.educations.get('education')).controls[n]).controls.end;
-  }
-
-  addEducationGroup(): FormGroup {
-    return this._formBuilder.group({
-      'title': new FormControl(null, Validators.required),
-      'institution': new FormControl(null),
-      'start': new FormControl(null,[this.maxMinDate]),
-      'end': new FormControl(null, [this.maxMinDate]),
-      'description': new FormControl(null)
-    });
-  }
-
-  ngOnInit() {
-
-    this.educations = this._formBuilder.group({
-        'education': this._formBuilder.array([]),
-    });
-
-    this.formReady.emit(this.formEducation);
-  }
-
-  maxMinDate(control: FormControl): { [s: string]: { [s: string]: boolean } } {
+  static maxMinDate(control: FormControl): { [s: string]: { [s: string]: boolean } } {
     const today = new Date();
-    const mdate = new Date(today.getFullYear() - 100,today.getMonth(),today.getDay());
+    const mdate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDay());
 
     if (control.value > mdate) {
       return null;
@@ -100,13 +63,31 @@ export class EducationFormsComponent implements OnInit {
     return {'tooOld': {value: true}};
   }
 
-  maxDate(control: FormControl): { [s: string]: boolean } {
-    const today = new Date();
+  date(n: number) {
+    return (<FormGroup>(<FormArray>this.educations.get('education')).controls[n]).controls.start;
+  }
 
-    if (control.value < today) {
-      return null;
-    }
-    return {'tooYoung': true};
+  dateEnd(n: number) {
+    return (<FormGroup>(<FormArray>this.educations.get('education')).controls[n]).controls.end;
+  }
+
+  addEducationGroup(): FormGroup {
+    return this._formBuilder.group({
+      'title': new FormControl(null, Validators.required),
+      'institution': new FormControl(null),
+      'start': new FormControl(null, [EducationFormsComponent.maxMinDate]),
+      'end': new FormControl(null, [EducationFormsComponent.maxMinDate]),
+      'description': new FormControl(null)
+    });
+  }
+
+  ngOnInit() {
+
+    this.educations = this._formBuilder.group({
+      'education': this._formBuilder.array([]),
+    });
+
+    this.formReady.emit(this.formEducation);
   }
 
   addEducation() {
@@ -135,7 +116,7 @@ export class EducationFormsComponent implements OnInit {
     return (<FormGroup>(<FormArray>this.educations.get('education')).controls[n]).controls;
   }
 
-  onWhatEdS(index: number, obj: any) {
+  onWhatEdS(index: number) {
     this.getEd(index).start.updateValueAndValidity();
     return false;
   }
@@ -148,22 +129,21 @@ export class EducationFormsComponent implements OnInit {
   onDoneEd(index: number) {
     if (!(<FormArray>this.educations.controls['education']).controls[index].valid) {
       (<FormGroup>(<FormArray>this.educations.get('education')).controls[index]).controls.title.markAsTouched();
-    } else{ return true; }
+    } else {
+      return true;
+    }
     return false;
   }
 
-  onCheck(istart,iend,index){
-    if((iend.value && !iend.disabled && istart.value && this.getEd(index).start.value && this.getEd(index).end.value) || 
-      (iend.disabled && istart.value && this.getEd(index).start.value)){
-      return true;
-    }
-    else{return false;}
+  onCheck(istart, iend, index) {
+    return !!((iend.value && !iend.disabled && istart.value && this.getEd(index).start.value && this.getEd(index).end.value) ||
+      (iend.disabled && istart.value && this.getEd(index).start.value));
   }
 
 
   // Date handlers
   chosenYearHandler(normalizedYear: Moment, index: number) {
-  	this.date(index).setValue(moment());
+    this.date(index).setValue(moment());
     const ctrlValue = this.date(index).value;
     ctrlValue.year(normalizedYear.year());
     this.date(index).setValue(ctrlValue);
@@ -178,7 +158,7 @@ export class EducationFormsComponent implements OnInit {
   }
 
   chosenYearHandlerEnd(normalizedYear: Moment, index: number) {
-  	this.dateEnd(index).setValue(moment());
+    this.dateEnd(index).setValue(moment());
     const ctrlValue = this.dateEnd(index).value;
     ctrlValue.year(normalizedYear.year());
     this.dateEnd(index).setValue(ctrlValue);

@@ -54,6 +54,7 @@ export class AuthEffects {
             ];
           }),
           catchError((err: HttpErrorResponse) => {
+            console.log(err);
             throwError(this.handleError('signIn', err));
             return [
               {
@@ -87,10 +88,7 @@ export class AuthEffects {
         const body = JSON.stringify(authData);
         const headers = new HttpHeaders().set('Content-Type', 'application/json');
         return this.httpClient.post(environment.apiUrl + 'applicant', body, {headers: headers}).pipe(
-          mergeMap((res: {
-            message: string,
-            ok: boolean,
-          }) => {
+          mergeMap(() => {
             return [
               {
                 type: AuthActions.SIGNUP,
@@ -137,10 +135,7 @@ export class AuthEffects {
         const body = JSON.stringify(authData);
         const headers = new HttpHeaders().set('Content-Type', 'application/json');
         return this.httpClient.post(environment.apiUrl + 'offerer', body, {headers: headers}).pipe(
-          mergeMap((res: {
-            message: string,
-            ok: boolean,
-          }) => {
+          mergeMap(() => {
             return [
               {
                 type: AuthActions.SIGNUP,
