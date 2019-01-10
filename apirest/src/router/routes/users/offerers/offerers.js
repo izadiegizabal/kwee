@@ -1,5 +1,5 @@
 const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
-const { tokenId, logger } = require('../../../../shared/functions');
+const { tokenId, logger, sendVerificationEmail } = require('../../../../shared/functions');
 const bcrypt = require('bcrypt');
 
 // ============================
@@ -111,7 +111,7 @@ module.exports = (app, db) => {
         try {
             const body = req.body;
             const password = body.password ? bcrypt.hashSync(body.password, 10) : null;
-
+            var uservar;
             return db.sequelize.transaction(transaction => {
                     return db.users.create({
                             name: body.name,
@@ -123,9 +123,11 @@ module.exports = (app, db) => {
 
                         }, { transaction: transaction })
                         .then(_user => {
+                            uservar = _user;
                             return createOfferer(body, _user, next, transaction);
                         })
                         .then(ending => {
+                            sendVerificationEmail(body,uservar);
                             return res.status(201).json({
                                 ok: true,
                                 message: `Offerer with id ${ending.userId} has been created.`
@@ -133,12 +135,12 @@ module.exports = (app, db) => {
                         })
                 })
                 .catch(err => {
-                    return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
+                    return next({ type: 'error', error: err.message });
                 })
 
         } catch (err) {
             //await transaction.rollback();
-            next({ type: 'error', error: (err.errors ? err.errors[0].message : err.message) });
+            next({ type: 'error', error: err.message });
         }
     });
 

@@ -1,11 +1,7 @@
 const { checkToken, checkAdmin } = require('../../../middlewares/authentication');
-const { tokenId, logger } = require('../../../shared/functions');
-const env = require('../../../tools/constants');
-const nodemailer = require('nodemailer');
-const jwt = require('jsonwebtoken');
+const { tokenId, logger, sendVerificationEmail } = require('../../../shared/functions');
 const bcrypt = require('bcrypt');
-const path = require('path');
-const fs = require('fs');
+
 
 // ============================
 // ======== CRUD user =========
@@ -186,43 +182,4 @@ module.exports = (app, db) => {
         }
     }
 
-    function sendVerificationEmail(body, user) {
-        // Generate test SMTP service account from gmail
-        let data = fs.readFileSync(path.join(__dirname, '../../../templates/email.html'), 'utf-8');
-
-        let token = jwt.sign({
-            id: user.id
-        }, env.JSONWEBTOKEN_SECRET, { expiresIn: '1h' });
-
-        let urlValidation = `${ env.URL }/email-verified/` + token;
-
-        nodemailer.createTestAccount((err, account) => {
-            // create reusable transporter object using the default SMTP transport
-
-            let transporter = nodemailer.createTransport({
-                host: 'smtp.gmail.com',
-                port: 587,
-                secure: false, // true for 465, false for other ports
-                auth: {
-                    user: env.EMAIL,
-                    pass: env.EMAIL_PASSWORD
-                }
-            });
-
-            // setup email data with unicode symbols
-            let mailOptions = {
-                from: '"Kwee 👻" <hello@kwee.ovh>', // sender address
-                to: body.email,
-                subject: 'Please validate your email to signin ✔', // Subject line
-                html: data.replace('@@name@@', body.name).replace('@@url@@', urlValidation)
-            };
-
-            // send mail with defined transport object
-            transporter.sendMail(mailOptions, (error, info) => {
-                if (error) {
-                    return console.log(error);
-                }
-            });
-        });
-    }
 }
