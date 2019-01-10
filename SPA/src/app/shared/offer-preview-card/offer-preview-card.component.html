@@ -51,7 +51,7 @@
     </div>
     <div fxHide.gt-xs fxLayout="row">
       <button [routerLink]="offerUrl" color="accent" mat-button>{{'More Info' | uppercase }}</button>
-      <button mat-icon-button>
+      <button mat-icon-button (click)="openShareDialog()">
         <mat-icon aria-label="Share offer in social networks" color="accent" svgIcon="share"></mat-icon>
       </button>
     </div>
