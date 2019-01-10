@@ -182,13 +182,7 @@ module.exports = (sequelize, DateTypes) => {
 
         responsabilities: {
             type: DateTypes.TEXT,
-            allowNull: true,
-            validate: {
-                len: {
-                    args: [0,300],
-                    msg: "Responsabilities text too large (0,300)."
-                }
-            }
+            allowNull: true
         },
 
         requeriments: {
