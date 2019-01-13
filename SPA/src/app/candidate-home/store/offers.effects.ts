@@ -16,16 +16,23 @@ export class OffersEffects {
     ofType(OffersActions.TRY_GET_OFFERS),
     switchMap(() => {
         const apiEndpointUrl = environment.apiUrl + 'offers';
+        console.log(apiEndpointUrl);
         // const token = authState.token;
         // const headers = new HttpHeaders().set('token', token);
         return this.httpClient.get(apiEndpointUrl).pipe(
           map((res: {
             ok: boolean,
-            offers: any[]
+            message: any,
+            data: {
+              offer: any[],
+              user: any[],
+            }
           }) => {
+            console.log(res.ok);
+            console.log(res.data);
             return {
               type: OffersActions.SET_OFFERS,
-              payload: res.offers
+              payload: res.data,
             };
           }),
           catchError((err: HttpErrorResponse) => {
