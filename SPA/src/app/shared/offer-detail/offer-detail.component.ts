@@ -85,14 +85,14 @@ export class OfferDetailComponent implements OnInit {
     ],
   };
 
-  constructor() {
+  constructor(private _utils: UtilsService) {
   }
 
   ngOnInit() {
   }
 
   getTimePassed() {
-    return UtilsService.getTimePassed(this.offer.publishDate);
+    return this._utils.getTimePassed(this.offer.publishDate);
   }
 
   getOfferStatus() {

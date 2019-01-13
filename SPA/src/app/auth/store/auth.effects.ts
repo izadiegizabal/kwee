@@ -52,7 +52,7 @@ export class AuthEffects {
           catchError((err: HttpErrorResponse) => {
             console.log(err);
             throwError(this.handleError('signIn', err));
-            const error = err.message ? err.message : err;
+            const error = err.error.message ? err.error.message : err;
             return [
               {
                 type: AuthActions.AUTH_ERROR,
@@ -94,7 +94,7 @@ export class AuthEffects {
           }),
           catchError((err: HttpErrorResponse) => {
             throwError(this.handleError('signUp', err));
-            const error = err.message ? err.message : err;
+            const error = err.error.message ? err.error.message : err;
             return [
               {
                 type: AuthActions.AUTH_ERROR,
@@ -135,7 +135,7 @@ export class AuthEffects {
           }),
           catchError((err: HttpErrorResponse) => {
             throwError(this.handleError('signUp', err));
-            const error = err.message ? err.message : err;
+            const error = err.error.message ? err.error.message : err;
             return [
               {
                 type: AuthActions.AUTH_ERROR,
