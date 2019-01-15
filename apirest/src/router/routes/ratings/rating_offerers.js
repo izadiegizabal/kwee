@@ -44,6 +44,39 @@ module.exports = (app, db) => {
 
     });
 
+    // GET rating_offerers by page limit to 10 rating_offerers/page
+    app.get('/rating_offerers/:page([0-9]+)', async(req, res, next) => {
+        let limit = 10;
+        let page = req.params.page;
+        // logger.saveLog('GET', `rating_offerers/${ page }`, null, res);
+
+        try {
+            let count = await db.rating_offerers.findAndCountAll();
+            let pages = Math.ceil(count.count / limit);
+            offset = limit * (page - 1);
+
+            if (page > pages) {
+                return res.status(400).json({
+                    ok: false,
+                    message: `It doesn't exist ${ page } pages`
+                })
+            }
+
+            return res.status(200).json({
+                ok: true,
+                message: `${ limit } rating_offerers of page ${ page } of ${ pages } pages`,
+                data: await db.rating_offerers.findAll({
+                    limit,
+                    offset,
+                    $sort: { id: 1 }
+                }),
+                total: count.count
+            });
+        } catch (err) {
+            next({ type: 'error', error: err });
+        }
+    });
+
     // GET one rating_offerer by id
     app.get('/rating_offerer/:id([0-9]+)', checkToken, async(req, res, next) => {
         const id = req.params.id;

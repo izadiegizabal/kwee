@@ -34,6 +34,39 @@ module.exports = (app, db) => {
         }
     });
 
+    // GET social_networks by page limit to 10 social_networks/page
+    app.get('/social_networks/:page([0-9]+)', async(req, res, next) => {
+        let limit = 10;
+        let page = req.params.page;
+        // logger.saveLog('GET', `social_networks/${ page }`, null, res);
+
+        try {
+            let count = await db.social_networks.findAndCountAll();
+            let pages = Math.ceil(count.count / limit);
+            offset = limit * (page - 1);
+
+            if (page > pages) {
+                return res.status(400).json({
+                    ok: false,
+                    message: `It doesn't exist ${ page } pages`
+                })
+            }
+
+            return res.status(200).json({
+                ok: true,
+                message: `${ limit } social_networks of page ${ page } of ${ pages } pages`,
+                data: await db.social_networks.findAll({
+                    limit,
+                    offset,
+                    $sort: { id: 1 }
+                }),
+                total: count.count
+            });
+        } catch (err) {
+            next({ type: 'error', error: err });
+        }
+    });
+
     // POST single social_network
     app.post('/social_network', async(req, res, next) => {
         const body = req.body;

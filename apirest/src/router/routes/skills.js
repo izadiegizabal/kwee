@@ -18,6 +18,39 @@ module.exports = (app, db) => {
         }
     });
 
+    // GET skills by page limit to 10 skills/page
+    app.get('/skills/:page([0-9]+)', async(req, res, next) => {
+        let limit = 10;
+        let page = req.params.page;
+        // logger.saveLog('GET', `skills/${ page }`, null, res);
+
+        try {
+            let count = await db.skills.findAndCountAll();
+            let pages = Math.ceil(count.count / limit);
+            offset = limit * (page - 1);
+
+            if (page > pages) {
+                return res.status(400).json({
+                    ok: false,
+                    message: `It doesn't exist ${ page } pages`
+                })
+            }
+
+            return res.status(200).json({
+                ok: true,
+                message: `${ limit } skills of page ${ page } of ${ pages } pages`,
+                data: await db.skills.findAll({
+                    limit,
+                    offset,
+                    $sort: { id: 1 }
+                }),
+                total: count.count
+            });
+        } catch (err) {
+            next({ type: 'error', error: err });
+        }
+    });
+
     // GET one skill by id
     app.get('/skill/:id([0-9]+)', checkToken, async(req, res, next) => {
         const id = req.params.id;

@@ -18,6 +18,39 @@ module.exports = (app, db) => {
         }
     });
 
+    // GET comments by page limit to 10 comments/page
+    app.get('/comments/:page([0-9]+)', async(req, res, next) => {
+        let limit = 10;
+        let page = req.params.page;
+        // logger.saveLog('GET', `comments/${ page }`, null, res);
+
+        try {
+            let count = await db.comments.findAndCountAll();
+            let pages = Math.ceil(count.count / limit);
+            offset = limit * (page - 1);
+
+            if (page > pages) {
+                return res.status(400).json({
+                    ok: false,
+                    message: `It doesn't exist ${ page } pages`
+                })
+            }
+
+            return res.status(200).json({
+                ok: true,
+                message: `${ limit } comments of page ${ page } of ${ pages } pages`,
+                data: await db.comments.findAll({
+                    limit,
+                    offset,
+                    $sort: { id: 1 }
+                }),
+                total: count.count
+            });
+        } catch (err) {
+            next({ type: 'error', error: err });
+        }
+    });
+
     // GET one comment by id
     app.get('/comment/:id([0-9]+)', checkToken, async(req, res, next) => {
         const id = req.params.id;

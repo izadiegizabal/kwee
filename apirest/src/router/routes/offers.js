@@ -11,7 +11,7 @@ module.exports = (app, db) => {
     // REVISAR LOOPS!!!!! MAS OPTIMOS!!
     app.get('/offers', async(req, res, next) => {
         try {
-            
+
             offers = await db.offers.findAll({
                 attributes: [
                     'fk_offerer',
@@ -43,11 +43,11 @@ module.exports = (app, db) => {
                 ]
             })
             console.log("users ok");
-            
+
             var ret = [];
 
-            for(var count in offers){
-                
+            for (var count in offers) {
+
                 ret[count] = {};
                 ret[count].offer = {};
                 ret[count].user = {};
@@ -55,13 +55,13 @@ module.exports = (app, db) => {
                 // Así saca ID
                 // ---------------
                 ret[count].offer = offers[count];
-                
-                for(var key in users){
-                    if(users[key].id == offers[count]['fk_offerer']){
-                        
+
+                for (var key in users) {
+                    if (users[key].id == offers[count]['fk_offerer']) {
+
                         ret[count].user = users[key];
 
-                        ret[count].user.id = undefined; 
+                        ret[count].user.id = undefined;
 
                         ret[count].offer.fk_offerer = undefined;
                         break;
@@ -83,10 +83,10 @@ module.exports = (app, db) => {
                 //     ret[count].user.bio = users[key].bio;
                 //     ret[count].user.index = users[key].index;
                 // }
-                
+
 
             }
-            
+
             return res.status(200).json({
                 ok: true,
                 message: "Offers list and its users.",
@@ -98,12 +98,45 @@ module.exports = (app, db) => {
         }
     });
 
+    // GET offers by page limit to 10 offers/page
+    app.get('/offers/:page([0-9]+)', async(req, res, next) => {
+        let limit = 10;
+        let page = req.params.page;
+        // logger.saveLog('GET', `offers/${ page }`, null, res);
+
+        try {
+            let count = await db.offers.findAndCountAll();
+            let pages = Math.ceil(count.count / limit);
+            offset = limit * (page - 1);
+
+            if (page > pages) {
+                return res.status(400).json({
+                    ok: false,
+                    message: `It doesn't exist ${ page } pages`
+                })
+            }
+
+            return res.status(200).json({
+                ok: true,
+                message: `${ limit } offers of page ${ page } of ${ pages } pages`,
+                data: await db.offers.findAll({
+                    limit,
+                    offset,
+                    $sort: { id: 1 }
+                }),
+                total: count.count
+            });
+        } catch (err) {
+            next({ type: 'error', error: err });
+        }
+    });
+
     // GET one offer by id
     app.get('/offer/:id([0-9]+)', async(req, res, next) => {
         const id = req.params.id;
 
         try {
-            resOffer =  await db.offers.findOne({
+            resOffer = await db.offers.findOne({
                 where: { id },
                 attributes: [
                     'fk_offerer',
@@ -154,7 +187,7 @@ module.exports = (app, db) => {
 
         try {
             let id = tokenId.getTokenId(req.get('token'));
-            
+
             console.log(id);
             await db.offers.create({
                 fk_offerer: id,

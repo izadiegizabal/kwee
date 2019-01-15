@@ -21,6 +21,39 @@ module.exports = (app, db) => {
 
     });
 
+    // GET ratings by page limit to 10 ratings/page
+    app.get('/ratings/:page([0-9]+)', async(req, res, next) => {
+        let limit = 10;
+        let page = req.params.page;
+        // logger.saveLog('GET', `ratings/${ page }`, null, res);
+
+        try {
+            let count = await db.ratings.findAndCountAll();
+            let pages = Math.ceil(count.count / limit);
+            offset = limit * (page - 1);
+
+            if (page > pages) {
+                return res.status(400).json({
+                    ok: false,
+                    message: `It doesn't exist ${ page } pages`
+                })
+            }
+
+            return res.status(200).json({
+                ok: true,
+                message: `${ limit } ratings of page ${ page } of ${ pages } pages`,
+                data: await db.ratings.findAll({
+                    limit,
+                    offset,
+                    $sort: { id: 1 }
+                }),
+                total: count.count
+            });
+        } catch (err) {
+            next({ type: 'error', error: err });
+        }
+    });
+
     // GET one rating by id
     app.get('/rating/:id([0-9]+)',
         checkToken,

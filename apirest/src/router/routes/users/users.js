@@ -18,6 +18,7 @@ module.exports = (app, db) => {
                 message: 'All users list',
                 data: await db.users.findAll({
                     attributes: [
+                        'id',
                         'name',
                         'email'
                     ]
@@ -29,6 +30,44 @@ module.exports = (app, db) => {
 
     });
 
+    // GET users by page limit to 10 users/page
+    app.get('/users/:page([0-9]+)', async(req, res, next) => {
+        let limit = 10;
+        let page = req.params.page;
+        logger.saveLog('GET', `users/${ page }`, null, res);
+
+        try {
+            let count = await db.users.findAndCountAll();
+            let pages = Math.ceil(count.count / limit);
+            offset = limit * (page - 1);
+
+            if (page > pages) {
+                return res.status(400).json({
+                    ok: false,
+                    message: `It doesn't exist ${ page } pages`
+                })
+            }
+
+            return res.status(200).json({
+                ok: true,
+                message: `${ limit } users of page ${ page } of ${ pages } pages`,
+                data: await db.users.findAll({
+                    attributes: [
+                        'id',
+                        'name',
+                        'email'
+                    ],
+                    limit,
+                    offset,
+                    $sort: { id: 1 }
+                }),
+                total: count.count
+            });
+        } catch (err) {
+            next({ type: 'error', error: err });
+        }
+    });
+
     // GET one user by id
     app.get('/user/:id([0-9]+)', async(req, res, next) => {
         const id = req.params.id;
@@ -38,6 +77,7 @@ module.exports = (app, db) => {
 
             let user = await db.users.findOne({
                 attributes: [
+                    'id',
                     'name',
                     'email'
                 ],
