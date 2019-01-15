@@ -32,9 +32,9 @@ module.exports = (app, db) => {
     });
 
     // GET users by page limit to 10 users/page
-    app.get('/users/:page([0-9]+)', async(req, res, next) => {
-        let limit = 10;
-        let page = req.params.page;
+    app.get('/users/:page([0-9]+)/:limit([0-9]+)', async(req, res, next) => {
+        let limit = Number(req.params.limit);
+        let page = Number(req.params.page);
 
         try {
             await logger.saveLog('GET', `users/${ page }`, null, res);

@@ -22,9 +22,9 @@ module.exports = (app, db) => {
     });
 
     // GET experiences by page limit to 10 experiences/page
-    app.get('/experiences/:page([0-9]+)', async(req, res, next) => {
-        let limit = 10;
-        let page = req.params.page;
+    app.get('/experiences/:page([0-9]+)/:limit([0-9]+)', async(req, res, next) => {
+        let limit = Number(req.params.limit);
+        let page = Number(req.params.page);
 
         try {
             await logger.saveLog('GET', `experiences/${ page }`, null, res);

@@ -38,9 +38,9 @@ module.exports = (app, db) => {
     });
 
     // GET messages by page limit to 10 messages/page
-    app.get('/messages/:page([0-9]+)', async(req, res, next) => {
-        let limit = 10;
-        let page = req.params.page;
+    app.get('/messages/:page([0-9]+)/:limit([0-9]+)', async(req, res, next) => {
+        let limit = Number(req.params.limit);
+        let page = Number(req.params.page);
 
         try {
             await logger.saveLog('GET', `messages/${ page }`, null, res);

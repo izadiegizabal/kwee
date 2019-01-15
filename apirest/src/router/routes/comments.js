@@ -22,9 +22,9 @@ module.exports = (app, db) => {
     });
 
     // GET comments by page limit to 10 comments/page
-    app.get('/comments/:page([0-9]+)', async(req, res, next) => {
-        let limit = 10;
-        let page = req.params.page;
+    app.get('/comments/:page([0-9]+)/:limit([0-9]+)', async(req, res, next) => {
+        let limit = Number(req.params.limit);
+        let page = Number(req.params.page);
 
         try {
             await logger.saveLog('GET', `comments/${ page }`, null, res);

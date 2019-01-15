@@ -50,9 +50,9 @@ module.exports = (app, db) => {
     });
 
     // GET applicants by page limit to 10 applicants/page
-    app.get('/applicants/:page([0-9]+)', async(req, res, next) => {
-        let limit = 10;
-        let page = req.params.page;
+    app.get('/applicants/:page([0-9]+)/:limit([0-9]+)', async(req, res, next) => {
+        let limit = Number(req.params.limit);
+        let page = Number(req.params.page);
 
         try {
             await logger.saveLog('GET', `applicants/${ page }`, null, res);

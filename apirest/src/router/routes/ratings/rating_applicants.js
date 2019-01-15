@@ -48,9 +48,9 @@ module.exports = (app, db) => {
     });
 
     // GET rating_applicants by page limit to 10 rating_applicants/page
-    app.get('/rating_applicants/:page([0-9]+)', async(req, res, next) => {
-        let limit = 10;
-        let page = req.params.page;
+    app.get('/rating_applicants/:page([0-9]+)/:limit([0-9]+)', async(req, res, next) => {
+        let limit = Number(req.params.limit);
+        let page = Number(req.params.page);
 
         try {
             await logger.saveLog('GET', `rating_applicants/${ page }`, null, res);
