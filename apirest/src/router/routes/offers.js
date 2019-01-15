@@ -1,5 +1,5 @@
 const { checkToken } = require('../../middlewares/authentication');
-const { tokenId } = require('../../shared/functions');
+const { tokenId, logger } = require('../../shared/functions');
 
 // ============================
 // ======== CRUD offers =========
@@ -11,6 +11,7 @@ module.exports = (app, db) => {
     // REVISAR LOOPS!!!!! MAS OPTIMOS!!
     app.get('/offers', async(req, res, next) => {
         try {
+            await logger.saveLog('GET', 'offers', null, res);
 
             offers = await db.offers.findAll({
                 attributes: [
@@ -102,9 +103,10 @@ module.exports = (app, db) => {
     app.get('/offers/:page([0-9]+)', async(req, res, next) => {
         let limit = 10;
         let page = req.params.page;
-        // logger.saveLog('GET', `offers/${ page }`, null, res);
 
         try {
+            await logger.saveLog('GET', `offers/${ page }`, null, res);
+
             let count = await db.offers.findAndCountAll();
             let pages = Math.ceil(count.count / limit);
             offset = limit * (page - 1);

@@ -1,5 +1,5 @@
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
-const { tokenId } = require('../../shared/functions');
+const { tokenId, logger } = require('../../shared/functions');
 
 // ============================
 // ===== CRUD application ======
@@ -9,7 +9,9 @@ module.exports = (app, db) => {
     // GET all applications
     app.get("/applications", checkToken, async(req, res, next) => {
         try {
-            res.status(200).json({
+            await logger.saveLog('GET', 'applications', null, res);
+
+            return res.status(200).json({
                 ok: true,
                 applications: await db.applications.findAll()
             });
@@ -22,9 +24,9 @@ module.exports = (app, db) => {
     app.get('/applications/:page([0-9]+)', async(req, res, next) => {
         let limit = 10;
         let page = req.params.page;
-        // logger.saveLog('GET', `applications/${ page }`, null, res);
 
         try {
+            await logger.saveLog('GET', `applications/${ page }`, null, res);
             let count = await db.applications.findAndCountAll();
             let pages = Math.ceil(count.count / limit);
             offset = limit * (page - 1);

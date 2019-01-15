@@ -1,5 +1,6 @@
-const bcrypt = require('bcrypt');
 const { checkToken, checkAdmin } = require('../../../middlewares/authentication');
+const { logger } = require('../../../shared/functions');
+const bcrypt = require('bcrypt');
 
 // ============================
 // ======== CRUD rating =========
@@ -11,6 +12,8 @@ module.exports = (app, db) => {
     app.get('/rating_offerers', checkToken, async(req, res, next) => {
 
         try {
+            await logger.saveLog('GET', 'rating_offerers', null, res);
+
             let ratings = await db.ratings.findAll();
             let rating_offerers = await db.rating_offerers.findAll();
             let rating_offerersView = [];
@@ -48,9 +51,9 @@ module.exports = (app, db) => {
     app.get('/rating_offerers/:page([0-9]+)', async(req, res, next) => {
         let limit = 10;
         let page = req.params.page;
-        // logger.saveLog('GET', `rating_offerers/${ page }`, null, res);
 
         try {
+            await logger.saveLog('GET', `rating_offerers/${ page }`, null, res);
             let count = await db.rating_offerers.findAndCountAll();
             let pages = Math.ceil(count.count / limit);
             offset = limit * (page - 1);

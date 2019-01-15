@@ -1,4 +1,5 @@
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
+const { logger } = require('../../shared/functions');
 const auth = require('../../shared/functions');
 
 // =======================================
@@ -10,7 +11,9 @@ module.exports = (app, db) => {
     // GET all social_networks
     app.get('/social_networks', checkToken, async(req, res, next) => {
         try {
-            res.status(200).json({
+            await logger.saveLog('GET', 'social_networks', null, res);
+
+            return res.status(200).json({
                 ok: true,
                 social_networks: await db.social_networks.findAll()
             });
@@ -38,9 +41,10 @@ module.exports = (app, db) => {
     app.get('/social_networks/:page([0-9]+)', async(req, res, next) => {
         let limit = 10;
         let page = req.params.page;
-        // logger.saveLog('GET', `social_networks/${ page }`, null, res);
 
         try {
+            await logger.saveLog('GET', `social_networks/${ page }`, null, res);
+
             let count = await db.social_networks.findAndCountAll();
             let pages = Math.ceil(count.count / limit);
             offset = limit * (page - 1);

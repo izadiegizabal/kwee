@@ -1,4 +1,5 @@
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
+const { logger } = require('../../shared/functions');
 
 // ============================
 // ======== CRUD educations =========
@@ -9,6 +10,8 @@ module.exports = (app, db) => {
     // GET all educations
     app.get('/educations', checkToken, async(req, res, next) => {
         try {
+            await logger.saveLog('GET', 'educations', null, res);
+            
             return res.status(200).json({
                 ok: true,
                 educations: await db.educations.findAll()
@@ -22,9 +25,10 @@ module.exports = (app, db) => {
     app.get('/educations/:page([0-9]+)', async(req, res, next) => {
         let limit = 10;
         let page = req.params.page;
-        // logger.saveLog('GET', `educations/${ page }`, null, res);
 
         try {
+            await logger.saveLog('GET', `educations/${ page }`, null, res);
+
             let count = await db.educations.findAndCountAll();
             let pages = Math.ceil(count.count / limit);
             offset = limit * (page - 1);

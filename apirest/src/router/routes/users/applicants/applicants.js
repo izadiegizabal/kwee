@@ -10,9 +10,10 @@ module.exports = (app, db) => {
 
     // GET all users applicants
     app.get('/applicants', async(req, res, next) => {
-        await logger.saveLog('GET', 'applicant', null, res);
 
         try {
+            await logger.saveLog('GET', 'applicant', null, res);
+
             let users = await db.users.findAll();
             let applicants = await db.applicants.findAll();
             let applicantsView = [];
@@ -52,9 +53,10 @@ module.exports = (app, db) => {
     app.get('/applicants/:page([0-9]+)', async(req, res, next) => {
         let limit = 10;
         let page = req.params.page;
-        logger.saveLog('GET', `applicants/${ page }`, null, res);
 
         try {
+            await logger.saveLog('GET', `applicants/${ page }`, null, res);
+
             let count = await db.applicants.findAndCountAll();
             let pages = Math.ceil(count.count / limit);
             offset = limit * (page - 1);
@@ -84,9 +86,10 @@ module.exports = (app, db) => {
     // GET one applicant by id
     app.get('/applicant/:id([0-9]+)', async(req, res, next) => {
         const id = req.params.id;
-        await logger.saveLog('GET', 'applicant', id, res);
 
         try {
+            await logger.saveLog('GET', 'applicant', id, res);
+
             let user = await db.users.findOne({
                 where: { id }
             });
@@ -129,9 +132,10 @@ module.exports = (app, db) => {
 
     // POST single applicant
     app.post('/applicant', async(req, res, next) => {
-        await logger.saveLog('POST', 'applicant', null, res);
 
         try {
+            await logger.saveLog('POST', 'applicant', null, res);
+
             const body = req.body;
             const password = body.password ? bcrypt.hashSync(body.password, 10) : null;
             var uservar;
@@ -170,10 +174,11 @@ module.exports = (app, db) => {
 
     // Update applicant by themself
     app.put('/applicant', async(req, res, next) => {
-        let logId = await logger.saveLog('PUT', 'applicant', null, res);
         const updates = req.body;
 
         try {
+            let logId = await logger.saveLog('PUT', 'applicant', null, res);
+
             let id = tokenId.getTokenId(req.get('token'));
             logger.updateLog(logId, id);
             updateApplicant(id, updates, res, next);
@@ -186,9 +191,9 @@ module.exports = (app, db) => {
     app.put('/applicant/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
-        await logger.saveLog('PUT', 'applicant', id, res);
 
         try {
+            await logger.saveLog('PUT', 'applicant', id, res);
             updateApplicant(id, updates, res, next);
         } catch (err) {
             return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
@@ -198,9 +203,10 @@ module.exports = (app, db) => {
     // DELETE
     app.delete('/applicant/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
-        await logger.saveLog('DELETE', 'applicant', id, res);
 
         try {
+            await logger.saveLog('DELETE', 'applicant', id, res);
+
             let applicant = await db.applicants.findOne({
                 where: { userId: id }
             });

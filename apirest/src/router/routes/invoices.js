@@ -1,4 +1,5 @@
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
+const { logger } = require('../../shared/functions');
 
 // =======================================
 // ======== CRUD invoices =========
@@ -9,7 +10,9 @@ module.exports = (app, db) => {
     // GET all invoices
     app.get('/invoices', checkToken, async(req, res, next) => {
         try {
-            res.status(200).json({
+            await logger.saveLog('GET', 'invoices', null, res);
+
+            return res.status(200).json({
                 ok: true,
                 invoices: await db.invoices.findAll()
             });
@@ -22,9 +25,10 @@ module.exports = (app, db) => {
     app.get('/invoices/:page([0-9]+)', async(req, res, next) => {
         let limit = 10;
         let page = req.params.page;
-        // logger.saveLog('GET', `invoices/${ page }`, null, res);
 
         try {
+            await logger.saveLog('GET', `invoices/${ page }`, null, res);
+
             let count = await db.invoices.findAndCountAll();
             let pages = Math.ceil(count.count / limit);
             offset = limit * (page - 1);

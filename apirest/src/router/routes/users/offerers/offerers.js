@@ -10,8 +10,9 @@ module.exports = (app, db) => {
 
     // GET all users offerers
     app.get('/offerers', async(req, res, next) => {
-        await logger.saveLog('GET', 'offerers', null, res);
         try {
+            await logger.saveLog('GET', 'offerers', null, res);
+
             let users = await db.users.findAll();
             let offerers = await db.offerers.findAll();
             let offerersView = [];
@@ -55,9 +56,10 @@ module.exports = (app, db) => {
     app.get('/offerers/:page([0-9]+)', async(req, res, next) => {
         let limit = 10;
         let page = req.params.page;
-        logger.saveLog('GET', `offerers/${ page }`, null, res);
 
         try {
+            await logger.saveLog('GET', `offerers/${ page }`, null, res);
+
             let count = await db.offerers.findAndCountAll();
             let pages = Math.ceil(count.count / limit);
             offset = limit * (page - 1);
@@ -87,8 +89,9 @@ module.exports = (app, db) => {
     // GET one offerer by id
     app.get('/offerer/:id([0-9]+)', async(req, res, next) => {
         const id = req.params.id;
-        await logger.saveLog('GET', 'offerer', id, res);
         try {
+            await logger.saveLog('GET', 'offerer', id, res);
+
             let users = await db.users.findOne({
                 where: { id }
             });
@@ -138,10 +141,10 @@ module.exports = (app, db) => {
 
     // POST single offerer
     app.post('/offerer', async(req, res, next) => {
-        await logger.saveLog('POST', 'offerer', null, res);
-        let transaction;
 
         try {
+            await logger.saveLog('POST', 'offerer', null, res);
+
             const body = req.body;
             const password = body.password ? bcrypt.hashSync(body.password, 10) : null;
             var uservar;
@@ -154,7 +157,7 @@ module.exports = (app, db) => {
                             img: body.img,
                             bio: body.bio,
 
-                        }, { transaction: transaction })
+                        }, { transaction })
                         .then(_user => {
                             uservar = _user;
                             return createOfferer(body, _user, next, transaction);
@@ -179,10 +182,11 @@ module.exports = (app, db) => {
 
     // Update offerer by themself
     app.put('/offerer', async(req, res, next) => {
-        let logId = await logger.saveLog('PUT', 'offerer', null, res);
         const updates = req.body;
 
         try {
+            let logId = await logger.saveLog('PUT', 'offerer', null, res);
+
             let id = tokenId.getTokenId(req.get('token'));
             logger.updateLog(logId, id);
             updateOfferer(id, updates, res);
@@ -195,9 +199,9 @@ module.exports = (app, db) => {
     app.put('/offerer/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
-        await logger.saveLog('PUT', 'offerer', id, res);
 
         try {
+            await logger.saveLog('PUT', 'offerer', id, res);
             updateOfferer(id, updates, res);
         } catch (err) {
             next({ type: 'error', error: err.message });
@@ -207,9 +211,10 @@ module.exports = (app, db) => {
     // DELETE
     app.delete('/offerer/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
-        await logger.saveLog('DELETE', 'offerer', id, res);
 
         try {
+            await logger.saveLog('DELETE', 'offerer', id, res);
+
             let offerer = await db.offerers.findOne({
                 where: { userId: id }
             });

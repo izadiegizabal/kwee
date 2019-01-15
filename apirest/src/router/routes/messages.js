@@ -1,4 +1,5 @@
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
+const { logger } = require('../../shared/functions');
 
 // ============================
 // ===== CRUD message ======
@@ -8,7 +9,9 @@ module.exports = (app, db) => {
     // GET all messages
     app.get("/messages", checkToken, async(req, res, next) => {
         try {
-            res.status(200).json({
+            await logger.saveLog('GET', 'messages', null, res);
+            
+            return res.status(200).json({
                 ok: true,
                 messages: await db.messages.findAll()
             });
@@ -38,9 +41,10 @@ module.exports = (app, db) => {
     app.get('/messages/:page([0-9]+)', async(req, res, next) => {
         let limit = 10;
         let page = req.params.page;
-        // logger.saveLog('GET', `messages/${ page }`, null, res);
 
         try {
+            await logger.saveLog('GET', `messages/${ page }`, null, res);
+
             let count = await db.messages.findAndCountAll();
             let pages = Math.ceil(count.count / limit);
             offset = limit * (page - 1);
