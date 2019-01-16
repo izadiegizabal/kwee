@@ -21,17 +21,13 @@ export class AuthEffects {
         const headers = new HttpHeaders().set('Content-Type', 'application/json');
         return this.httpClient.post(environment.apiUrl + 'login', body, {headers: headers}).pipe(
           mergeMap((res: {
-            ok: string,
             token: string,
-            user: {
-              createdAt: Date
-              deletedAt: Date
+            data: {
               email: string
               id: number
               name: string
               root: boolean
-              sn_signin: boolean
-              updatedAt: Date
+              lastAccess: Date
             }
           }) => {
             return [
@@ -45,20 +41,22 @@ export class AuthEffects {
               {
                 type: AuthActions.SET_USER,
                 payload: {
-                  email: res.user.email,
-                  id: res.user.id,
-                  name: res.user.name,
-                  root: res.user.root
+                  email: res.data.email,
+                  id: res.data.id,
+                  name: res.data.name,
+                  root: res.data.root
                 }
               }
             ];
           }),
           catchError((err: HttpErrorResponse) => {
+            console.log(err);
             throwError(this.handleError('signIn', err));
+            const error = err.error.message ? err.error.message : err;
             return [
               {
                 type: AuthActions.AUTH_ERROR,
-                payload: err.error.err.message
+                payload: error
               }
             ];
           })
@@ -76,21 +74,14 @@ export class AuthEffects {
     }),
     switchMap(
       (authData: {
-        name: string,
         password: string,
         email: string,
-        city: string,
-        dateBorn: Date,
-        premium: string,
-        rol: string
       }) => {
         const body = JSON.stringify(authData);
         const headers = new HttpHeaders().set('Content-Type', 'application/json');
         return this.httpClient.post(environment.apiUrl + 'applicant', body, {headers: headers}).pipe(
-          mergeMap((res: {
-            message: string,
-            ok: boolean,
-          }) => {
+          mergeMap((res) => {
+            console.log(res);
             return [
               {
                 type: AuthActions.SIGNUP,
@@ -103,10 +94,11 @@ export class AuthEffects {
           }),
           catchError((err: HttpErrorResponse) => {
             throwError(this.handleError('signUp', err));
+            const error = err.error.message ? err.error.message : err;
             return [
               {
                 type: AuthActions.AUTH_ERROR,
-                payload: err.error.error
+                payload: error
               }
             ];
           }),
@@ -124,23 +116,13 @@ export class AuthEffects {
     }),
     switchMap(
       (authData: {
-        name: string,
         password: string,
         email: string,
-        address: string,
-        cif: string,
-        workField: string,
-        year: Date,
-        premium: string,
-        companySize: string
       }) => {
         const body = JSON.stringify(authData);
         const headers = new HttpHeaders().set('Content-Type', 'application/json');
         return this.httpClient.post(environment.apiUrl + 'offerer', body, {headers: headers}).pipe(
-          mergeMap((res: {
-            message: string,
-            ok: boolean,
-          }) => {
+          mergeMap(() => {
             return [
               {
                 type: AuthActions.SIGNUP,
@@ -153,10 +135,11 @@ export class AuthEffects {
           }),
           catchError((err: HttpErrorResponse) => {
             throwError(this.handleError('signUp', err));
+            const error = err.error.message ? err.error.message : err;
             return [
               {
                 type: AuthActions.AUTH_ERROR,
-                payload: err.error.error
+                payload: error
               }
             ];
           }),

@@ -8,7 +8,7 @@
   fxLayout="column">
 
   <mat-sidenav-container>
-    <mat-sidenav #drawer [mode]="media.isActive('gt-sm') ? 'side' : 'over'" [opened]="media.isActive('gt-sm')">
+    <mat-sidenav #drawer [mode]="!isMobile() ? 'side' : 'over'" [opened]="!isMobile()">
       <mat-action-list>
         <button (click)="closeDrawerIfMobile()"
                 mat-list-item routerLink="/admin/statistics">
@@ -47,7 +47,7 @@
     </mat-sidenav>
 
     <mat-sidenav-content>
-      <button *ngIf="!media.isActive('gt-sm')" mat-icon-button>
+      <button *ngIf="isMobile()" mat-icon-button>
         <mat-icon (click)="drawer.toggle()" aria-label="Open menu button">menu</mat-icon>
       </button>
       <router-outlet></router-outlet>

@@ -1,11 +1,7 @@
 const { checkToken, checkAdmin } = require('../../../middlewares/authentication');
-const { tokenId, logger } = require('../../../shared/functions');
-const env = require('../../../tools/constants');
-const nodemailer = require('nodemailer');
-const jwt = require('jsonwebtoken');
+const { tokenId, logger, sendVerificationEmail } = require('../../../shared/functions');
 const bcrypt = require('bcrypt');
-const path = require('path');
-const fs = require('fs');
+
 
 // ============================
 // ======== CRUD user =========
@@ -19,7 +15,8 @@ module.exports = (app, db) => {
         try {
             res.status(200).json({
                 ok: true,
-                users: await db.users.findAll({
+                message: 'All users list',
+                data: await db.users.findAll({
                     attributes: [
                         'name',
                         'email'
@@ -50,7 +47,8 @@ module.exports = (app, db) => {
             if (user) {
                 return res.status(200).json({
                     ok: true,
-                    user
+                    message: `Get user by id ${id} successful`,
+                    data: user
                 });
             } else {
                 return res.status(400).json({
@@ -145,7 +143,8 @@ module.exports = (app, db) => {
             if (result > 0) {
                 return res.status(200).json({
                     ok: true,
-                    user: result
+                    message: `User ${ id } deleted.`,
+                    data: result
                 });
             } else {
                 return res.status(204).json({
@@ -172,8 +171,8 @@ module.exports = (app, db) => {
         if (updated > 0) {
             return res.status(200).json({
                 ok: true,
-                result: `Updated ${updated} rows. New values showing in message.`,
-                message: await db.users.findOne({ where: { id } })
+                message: `Updated ${updated} rows. New values showing in message.`,
+                data: await db.users.findOne({ where: { id } })
             })
         } else {
             return res.status(400).json({
@@ -183,43 +182,4 @@ module.exports = (app, db) => {
         }
     }
 
-    function sendVerificationEmail(body, user) {
-        // Generate test SMTP service account from gmail
-        let data = fs.readFileSync(path.join(__dirname, '../../../templates/email.html'), 'utf-8');
-
-        let token = jwt.sign({
-            id: user.id
-        }, env.JSONWEBTOKEN_SECRET, { expiresIn: '1h' });
-
-        let urlValidation = `${ env.URL }/email-verified/` + token;
-
-        nodemailer.createTestAccount((err, account) => {
-            // create reusable transporter object using the default SMTP transport
-
-            let transporter = nodemailer.createTransport({
-                host: 'smtp.gmail.com',
-                port: 587,
-                secure: false, // true for 465, false for other ports
-                auth: {
-                    user: env.EMAIL,
-                    pass: env.EMAIL_PASSWORD
-                }
-            });
-
-            // setup email data with unicode symbols
-            let mailOptions = {
-                from: '"Kwee 👻" <hello@kwee.ovh>', // sender address
-                to: body.email,
-                subject: 'Please validate your email to signin ✔', // Subject line
-                html: data.replace('@@name@@', body.name).replace('@@url@@', urlValidation)
-            };
-
-            // send mail with defined transport object
-            transporter.sendMail(mailOptions, (error, info) => {
-                if (error) {
-                    return console.log(error);
-                }
-            });
-        });
-    }
 }

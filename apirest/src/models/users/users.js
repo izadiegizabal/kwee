@@ -77,13 +77,7 @@ module.exports = (sequelize, DataTypes) => {
         bio: {
             type: DataTypes.TEXT(),
             allowNull: false,
-            defaultValue: "Here you have a place to define yourself",
-            validate: {
-                len: {
-                    args: [0, 500],
-                    msg: "Bio length should be max 500 long."
-                }
-            }
+            defaultValue: "Here you have a place to define yourself"
         },
 
 
@@ -119,9 +113,7 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 0,
             validate: {
                 isIn: {
-                    args: [
-                        [0, 1, 2, 3, 4]
-                    ],
+                    args: [[0, 1, 2, 3, 4]],
                     msg: "Invalid status type. Only valid 'verification pending' (0), 'active' (1), 'validation pending' (2), 'blocked' (3) or social network verification pending(4)."
                 }
             }

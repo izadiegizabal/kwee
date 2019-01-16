@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { SnsShareComponent } from './sns-share.component';
+import {SnsShareComponent} from './sns-share.component';
 
 describe('SnsShareComponent', () => {
   let component: SnsShareComponent;
@@ -8,9 +8,9 @@ describe('SnsShareComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SnsShareComponent ]
+      declarations: [SnsShareComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
