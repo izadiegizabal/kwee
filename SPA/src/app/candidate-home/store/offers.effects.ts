@@ -21,11 +21,15 @@ export class OffersEffects {
         return this.httpClient.get(apiEndpointUrl).pipe(
           map((res: {
             ok: boolean,
-            offers: any[]
+            message: any,
+            data: {
+              offer: any[],
+              user: any[],
+            }
           }) => {
             return {
               type: OffersActions.SET_OFFERS,
-              payload: res.offers
+              payload: res.data,
             };
           }),
           catchError((err: HttpErrorResponse) => {

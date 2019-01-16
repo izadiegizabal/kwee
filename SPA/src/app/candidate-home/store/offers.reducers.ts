@@ -2,17 +2,28 @@ import * as OffersActions from './offers.actions';
 
 export interface State {
   offers: {
-    id: number,
-    fk_offerer: number,
-    title: string,
-    description: string,
-    dateStart: Date,
-    dateEnd: Date,
-    location: string,
-    salary: number,
-    createdAt: Date,
-    updatedAt: Date,
-    deletedAt: Date,
+    offer: {
+      status: number,
+      title: string,
+      description: string,
+      datePublished: Date,
+      dateStart: Date,
+      dateEnd: Date,
+      location: string,
+      salary: number,
+      salaryFrecuency: number,
+      salaryCurrency: string,
+      workLocation: number,
+      seniority: number,
+      responsabilities: string,
+    },
+    user: {
+      id: number,
+      name: string,
+      img: string,
+      bio: string,
+      index: number,
+    }
   }[];
 }
 

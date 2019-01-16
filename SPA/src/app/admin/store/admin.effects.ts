@@ -22,19 +22,20 @@ export class AdminEffects {
         return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
           map((res: {
             ok: boolean,
-            applicants: any[]
+            data: any[]
           }) => {
             return {
               type: AdminActions.SET_CANDIDATES,
-              payload: res.applicants
+              payload: res.data
             };
           }),
           catchError((err: HttpErrorResponse) => {
             throwError(this.handleError('getCandidates', err));
+            const error = err.error.message ? err.error.message : err;
             return [
               {
                 type: AdminActions.OPERATION_ERROR,
-                // payload: err.error.error
+                payload: error
               }
             ];
           })
@@ -55,19 +56,20 @@ export class AdminEffects {
         return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
           map((res: {
             ok: boolean,
-            offerers: any[]
+            data: any[],
           }) => {
             return {
               type: AdminActions.SET_BUSINESSES,
-              payload: res.offerers
+              payload: res.data
             };
           }),
           catchError((err: HttpErrorResponse) => {
             throwError(this.handleError('getBusinesses', err));
+            const error = err.error.message ? err.error.message : err;
             return [
               {
                 type: AdminActions.OPERATION_ERROR,
-                // payload: err.error.error
+                payload: error
               }
             ];
           })
@@ -99,10 +101,11 @@ export class AdminEffects {
           }),
           catchError((err: HttpErrorResponse) => {
             throwError(this.handleError('updateCandidate', err));
+            const error = err.error.message ? err.error.message : err;
             return [
               {
                 type: AdminActions.OPERATION_ERROR,
-                // payload: err.error.error
+                payload: error
               }
             ];
           })
@@ -134,10 +137,11 @@ export class AdminEffects {
           }),
           catchError((err: HttpErrorResponse) => {
             throwError(this.handleError('updateBusiness', err));
+            const error = err.error.message ? err.error.message : err;
             return [
               {
                 type: AdminActions.OPERATION_ERROR,
-                // payload: err.error.error
+                payload: error
               }
             ];
           })
@@ -167,10 +171,11 @@ export class AdminEffects {
           }),
           catchError((err: HttpErrorResponse) => {
             throwError(this.handleError('deleteCandidate', err));
+            const error = err.error.message ? err.error.message : err;
             return [
               {
                 type: AdminActions.OPERATION_ERROR,
-                // payload: err.error.err.message
+                payload: error
               }
             ];
           })
@@ -200,10 +205,11 @@ export class AdminEffects {
           }),
           catchError((err: HttpErrorResponse) => {
             throwError(this.handleError('deleteBusiness', err));
+            const error = err.error.message ? err.error.message : err;
             return [
               {
                 type: AdminActions.OPERATION_ERROR,
-                // payload: err.error.err.message
+                payload: error
               }
             ];
           })

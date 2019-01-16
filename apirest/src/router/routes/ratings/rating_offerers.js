@@ -33,9 +33,10 @@ module.exports = (app, db) => {
                     }
                 }
             }
-            res.status(200).json({
+            return res.status(200).json({
                 ok: true,
-                rating_offerers: rating_offerersView
+                message: 'Rating offerers list',
+                data: rating_offerersView
             });
         } catch (err) {
             next({ type: 'error', error: err.message });
@@ -70,12 +71,13 @@ module.exports = (app, db) => {
                     createdAt: rating.createdAt
                 };
 
-                res.status(200).json({
+                return res.status(200).json({
                     ok: true,
-                    ratingRating_Offerer
+                    message: 'Rating offerer list',
+                    data: ratingRating_Offerer
                 });
             } else {
-                res.status(400).json({
+                return res.status(400).json({
                     ok: false,
                     message: 'Rating_Offerer doesn\'t exist'
                 });
@@ -159,9 +161,10 @@ module.exports = (app, db) => {
                     where: { ratingId: id }
                 });
                 if (updated) {
-                    res.status(200).json({
+                    return res.status(200).json({
                         ok: true,
-                        message: updates
+                        message: 'Updates successful',
+                        data: updates
                     })
                 } else {
                     return next({ type: 'error', error: 'Can\'t update rating_offerer' });
@@ -190,7 +193,7 @@ module.exports = (app, db) => {
                 let rating = await db.ratings.destroy({ where: { id } });
 
                 if (rating_offererToDelete && rating && rating_applicant) {
-                    res.json({
+                    return res.json({
                         ok: true,
                         message: 'Rating_Offerer deleted'
                     });

@@ -69,7 +69,7 @@ export class BusinessOverviewComponent implements OnInit {
       this.samePassword.bind(this.userForm),
     ]);
 
-    this.userForm.controls['password'].valueChanges.subscribe(value => {
+    this.userForm.controls['password'].valueChanges.subscribe(() => {
       if (this.userForm.controls['password'].value !== null) {
         this.userForm.controls['password2'].updateValueAndValidity();
       }

@@ -13,7 +13,8 @@ module.exports = (app, db) => {
             try {
                 return res.status(200).json({
                     ok: true,
-                    applicant_educations: await db.applicant_educations.findAll()
+                    message: 'All applicant educations',
+                    data: await db.applicant_educations.findAll()
                 });
             } catch (err) {
                 return next({ type: 'error', error: 'Error getting data' });

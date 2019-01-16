@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {DialogErrorComponent} from '../dialog-error/dialog-error.component';
 import {MatDialog, MatStepper} from '@angular/material';
@@ -7,7 +7,6 @@ import {filter} from 'rxjs/operators';
 import {Action, Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
 import {AuthEffects} from '../../store/auth.effects';
-import {Subscription} from 'rxjs';
 
 
 @Component({
@@ -44,8 +43,8 @@ export class SignupOffererComponent implements OnInit {
     {value: 3, viewValue: '4'},
     {value: 4, viewValue: '5'},
   ];
-  private errorListener: Subscription;
-  private authSignInListener: Subscription;
+
+
   private dialogShown = false;
 
 

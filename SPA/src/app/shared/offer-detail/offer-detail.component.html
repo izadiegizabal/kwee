@@ -76,23 +76,23 @@
             <app-icon-with-text [text]="getOfferApplications()" icon="people"></app-icon-with-text>
           </div>
           <div fxFlex="33%"
-               fxLayout="column"
                fxHide.xs
-               fxShow.gt-xs
+               fxLayout="column"
                fxLayoutAlign="center center"
-               fxLayoutGap="8px">
+               fxLayoutGap="8px"
+               fxShow.gt-xs>
             <button color="accent"
-                    style="color: white"
-                    mat-raised-button>{{'Apply Now!' | uppercase }}</button>
+                    mat-raised-button
+                    style="color: white">{{'Apply Now!' | uppercase }}</button>
             <app-sns-share [offer]="getShareableOffer()"></app-sns-share>
           </div>
         </div>
       </div>
       <div fxFlex="100%"
            fxHide
-           fxShow.xs
            fxLayoutAlign="center"
            fxLayoutGap="8px"
+           fxShow.xs
            style="padding-bottom: 16px">
         <button color="primary" mat-raised-button>{{'Apply Now!' | uppercase }}</button>
         <app-sns-share [offer]="getShareableOffer()"></app-sns-share>

@@ -21,6 +21,8 @@
           <mat-form-field>
             <input matInput formControlName="email" placeholder="Email" required>
             <mat-icon svgIcon="email" color="primary" matPrefix></mat-icon>
+            <mat-error *ngIf="user.get('email').invalid && !user.get('password').invalid">Please input a valid mail.
+            </mat-error>
           </mat-form-field>
 
           <mat-form-field>

@@ -33,9 +33,10 @@ module.exports = (app, db) => {
                     }
                 }
             }
-            res.status(200).json({
+            return res.status(200).json({
                 ok: true,
-                rating_applicants: rating_applicantsView
+                message: 'Rating applicants list',
+                data: rating_applicantsView
             });
         } catch (err) {
             next({ type: 'error', error: err.message });
@@ -73,9 +74,10 @@ module.exports = (app, db) => {
                     ratingApplicant
                 });
             } else {
-                res.status(400).json({
+
+                return res.status(400).json({
                     ok: false,
-                    message: 'RatingApplicant doesn\'t exist'
+                    message: 'RatingApplicant doesn\'t exist',
                 });
             }
         } catch (err) {
