@@ -1,7 +1,7 @@
 const pass = require('./passwords');
 
-const callback_url = 'http://localhost:5000/auth/';
-// const callback_url = 'https://kwee.ovh/api/auth/';
+// const callback_url = 'http://localhost:5000/auth/';
+const callback_url = 'https://kwee.ovh/api/auth/';
 let PROD = pass.PROD;
 
 const env = {
@@ -25,13 +25,6 @@ const env = {
     // Gmail
     EMAIL: pass.EMAIL,
     EMAIL_PASSWORD: pass.EMAIL_PASSWORD,
-    message: {
-        from: pass.EMAIL,
-        to: 'carlosaldaravi@gmail.com',
-        subject: 'Prueba de verificación',
-        text: 'Plaintext version of the message',
-        html: '<p>HTML version of the message</p>'
-    },
 
     //Instagram API
     INSTAGRAM_ID: pass.INSTAGRAM_ID,
