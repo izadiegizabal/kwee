@@ -1,5 +1,5 @@
 const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
-const { tokenId, logger, sendVerificationEmail } = require('../../../../shared/functions');
+const { tokenId, logger, sendVerificationEmail, pagination } = require('../../../../shared/functions');
 const bcrypt = require('bcrypt');
 
 // ============================
@@ -14,10 +14,24 @@ module.exports = (app, db) => {
         try {
             await logger.saveLog('GET', 'applicant', null, res);
 
-            let users = await db.users.findAll();
-            let applicants = await db.applicants.findAll();
-            let applicantsView = [];
+            var attributes = [];
+            
+            var users = await db.users.findAll();
 
+            var output = await pagination(
+                db.applicants,
+                "applicants",
+                req.query.limit,
+                req.query.page,
+                attributes,
+                res,
+                next
+            );
+
+            var applicants = output.data;
+
+            var applicantsView = [];
+            
             for (let i = 0; i < users.length; i++) {
                 for (let j = 0; j < applicants.length; j++) {
                     if (users[i].id === applicants[j].userId) {
@@ -38,11 +52,14 @@ module.exports = (app, db) => {
                     }
                 }
             }
+
             return res.status(200).json({
                 ok: true,
-                message: 'All applicants',
-                data: applicantsView
+                message: output.message,
+                data: applicantsView,
+                total: output.count
             });
+            
         } catch (err) {
             next({ type: 'error', error: err.message });
         }

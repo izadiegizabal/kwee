@@ -1,5 +1,5 @@
 const { checkToken, checkAdmin } = require('../../../middlewares/authentication');
-const { tokenId, logger, sendVerificationEmail } = require('../../../shared/functions');
+const { tokenId, logger, sendVerificationEmail, pagination } = require('../../../shared/functions');
 const bcrypt = require('bcrypt');
 
 
@@ -9,64 +9,35 @@ const bcrypt = require('bcrypt');
 
 module.exports = (app, db) => {
 
-    // GET all users
+
     app.get('/users', async(req, res, next) => {
-        try {
-            await logger.saveLog('GET', 'users', null, res);
+        try{
 
-            res.status(200).json({
-                ok: true,
-                message: 'All users list',
-                data: await db.users.findAll({
-                    attributes: [
-                        'id',
-                        'name',
-                        'email'
-                    ]
-                })
-            });
-        } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
-        }
+            var attributes = [
+                'id',
+                'name',
+                'email'
+            ];
 
-    });
-
-    // GET users by page limit to 10 users/page
-    app.get('/users/:page([0-9]+)/:limit([0-9]+)', async(req, res, next) => {
-        let limit = Number(req.params.limit);
-        let page = Number(req.params.page);
-
-        try {
-            await logger.saveLog('GET', `users/${ page }`, null, res);
-
-            let count = await db.users.findAndCountAll();
-            let pages = Math.ceil(count.count / limit);
-            offset = limit * (page - 1);
-
-            if (page > pages) {
-                return res.status(400).json({
-                    ok: false,
-                    message: `It doesn't exist ${ page } pages`
-                })
-            }
+            var output = await pagination( 
+                db.users,
+                "users",
+                req.query.limit,
+                req.query.page,
+                attributes,
+                res,
+                next);
+            
 
             return res.status(200).json({
                 ok: true,
-                message: `${ limit } users of page ${ page } of ${ pages } pages`,
-                data: await db.users.findAll({
-                    attributes: [
-                        'id',
-                        'name',
-                        'email'
-                    ],
-                    limit,
-                    offset,
-                    $sort: { id: 1 }
-                }),
-                total: count.count
+                message: output.message,
+                data: output.data,
+                count: output.count
             });
-        } catch (err) {
-            next({ type: 'error', error: err });
+        }
+        catch{
+            next({ type: 'error', error: 'Error getting data' });
         }
     });
 

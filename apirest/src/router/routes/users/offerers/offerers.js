@@ -1,5 +1,5 @@
 const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
-const { tokenId, logger, sendVerificationEmail } = require('../../../../shared/functions');
+const { tokenId, logger, sendVerificationEmail, pagination } = require('../../../../shared/functions');
 const bcrypt = require('bcrypt');
 
 // ============================
@@ -13,9 +13,24 @@ module.exports = (app, db) => {
         try {
             await logger.saveLog('GET', 'offerers', null, res);
 
-            let users = await db.users.findAll();
-            let offerers = await db.offerers.findAll();
-            let offerersView = [];
+            var attributes = [];
+
+            // Need USER values, so we get ALL USERS
+            var users = await db.users.findAll();
+
+            // But paginated OFFERERS
+            var output = await pagination(
+                db.offerers,
+                "offerers",
+                req.query.limit,
+                req.query.page,
+                attributes,
+                res,
+                next
+            )
+
+            var offerers = output.data;
+            var offerersView = [];
 
             for (let i = 0; i < users.length; i++) {
                 for (let j = 0; j < offerers.length; j++) {
@@ -41,49 +56,18 @@ module.exports = (app, db) => {
                     }
                 }
             }
-            res.status(200).json({
+
+            return res.status(200).json({
                 ok: true,
-                message: 'All offerers list',
-                data: offerersView
+                message: output.message,
+                data: offerersView,
+                total: output.count
             });
+
         } catch (err) {
             next({ type: 'error', error: err.message });
         }
 
-    });
-
-    // GET offerers by page limit to 10 offerers/page
-    app.get('/offerers/:page([0-9]+)/:limit([0-9]+)', async(req, res, next) => {
-        let limit = Number(req.params.limit);
-        let page = Number(req.params.page);
-
-        try {
-            await logger.saveLog('GET', `offerers/${ page }`, null, res);
-
-            let count = await db.offerers.findAndCountAll();
-            let pages = Math.ceil(count.count / limit);
-            offset = limit * (page - 1);
-
-            if (page > pages) {
-                return res.status(400).json({
-                    ok: false,
-                    message: `It doesn't exist ${ page } pages`
-                })
-            }
-
-            return res.status(200).json({
-                ok: true,
-                message: `${ limit } offerers of page ${ page } of ${ pages } pages`,
-                data: await db.offerers.findAll({
-                    limit,
-                    offset,
-                    $sort: { id: 1 }
-                }),
-                total: count.count
-            });
-        } catch (err) {
-            next({ type: 'error', error: err });
-        }
     });
 
     // GET one offerer by id

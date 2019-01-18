@@ -1,5 +1,5 @@
 const { checkToken } = require('../../middlewares/authentication');
-const { tokenId, logger } = require('../../shared/functions');
+const { tokenId, logger, pagination } = require('../../shared/functions');
 
 // ============================
 // ======== CRUD offers =========
@@ -8,31 +8,41 @@ const { tokenId, logger } = require('../../shared/functions');
 module.exports = (app, db) => {
 
     // GET all offers
-    // REVISAR LOOPS!!!!! MAS OPTIMOS!!
     app.get('/offers', async(req, res, next) => {
         try {
             await logger.saveLog('GET', 'offers', null, res);
 
-            offers = await db.offers.findAll({
-                attributes: [
-                    'fk_offerer',
-                    'status',
-                    'title',
-                    'description',
-                    'datePublished',
-                    'dateStart',
-                    'dateEnd',
-                    'location',
-                    'salary',
-                    'salaryFrecuency',
-                    'salaryCurrency',
-                    'workLocation',
-                    'seniority',
-                    'responsabilities'
-                ]
-            });
-
-            console.log("offers ok");
+            var offers;
+            
+            var attributes = [
+                'id',
+                'fk_offerer',
+                'status',
+                'title',
+                'description',
+                'datePublished',
+                'dateStart',
+                'dateEnd',
+                'location',
+                'salary',
+                'salaryFrecuency',
+                'salaryCurrency',
+                'workLocation',
+                'seniority',
+                'responsabilities'
+            ]
+            
+            var output = await pagination(
+                db.offers,
+                "offers",
+                req.query.limit,
+                req.query.page,
+                attributes,
+                res,
+                next
+                );
+                
+            offers = output.data;
 
             users = await db.users.findAll({
                 attributes: [
@@ -43,7 +53,6 @@ module.exports = (app, db) => {
                     'index'
                 ]
             })
-            console.log("users ok");
 
             var ret = [];
 
@@ -52,84 +61,19 @@ module.exports = (app, db) => {
                 ret[count] = {};
                 ret[count].offer = {};
                 ret[count].user = {};
-
-                // Así saca ID
-                // ---------------
                 ret[count].offer = offers[count];
-
-                for (var key in users) {
-                    if (users[key].id == offers[count]['fk_offerer']) {
-
-                        ret[count].user = users[key];
-
-                        ret[count].user.id = undefined;
-
-                        ret[count].offer.fk_offerer = undefined;
-                        break;
-                    }
-                }
-
-                // ----------------
-                // A pelo funciona
-                // ret[count].offer.title = offers[count].title;
-                // ret[count].offer.description = offers[count].description;
-                // ret[count].offer.dateStart = offers[count].dateStart;
-                // ret[count].offer.dateEnd = offers[count].dateEnd;
-                // ret[count].offer.location = offers[count].location;
-                // ret[count].offer.salary = offers[count].salary;
-
-                // for(var key in users){
-                //     ret[count].user.name = users[key].name;
-                //     ret[count].user.photo = users[key].photo? users[key].photo : null;
-                //     ret[count].user.bio = users[key].bio;
-                //     ret[count].user.index = users[key].index;
-                // }
-
-
+                ret[count].user = users.find( element => offers[count]['fk_offerer'] == element.id);
             }
 
             return res.status(200).json({
                 ok: true,
-                message: "Offers list and its users.",
-                data: ret
+                message: output.message,
+                data: ret,
+                total: output.count
             });
 
         } catch (err) {
             next({ type: 'error', error: 'Error getting data' });
-        }
-    });
-
-    // GET offers by page limit to 10 offers/page
-    app.get('/offers/:page([0-9]+)/:limit([0-9]+)', async(req, res, next) => {
-        let limit = Number(req.params.limit);
-        let page = Number(req.params.page);
-
-        try {
-            await logger.saveLog('GET', `offers/${ page }`, null, res);
-
-            let count = await db.offers.findAndCountAll();
-            let pages = Math.ceil(count.count / limit);
-            offset = limit * (page - 1);
-
-            if (page > pages) {
-                return res.status(400).json({
-                    ok: false,
-                    message: `It doesn't exist ${ page } pages`
-                })
-            }
-
-            return res.status(200).json({
-                ok: true,
-                message: `${ limit } offers of page ${ page } of ${ pages } pages`,
-                data: await db.offers.findAll({
-                    limit,
-                    offset,
-                    $sort: { id: 1 }
-                }),
-                total: count.count
-            });
-        } catch (err) {
-            next({ type: 'error', error: err });
         }
     });
 

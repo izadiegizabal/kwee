@@ -101,8 +101,64 @@ function sendVerificationEmail(body, user) {
 }
 
 
+async function pagination( db, dbname, _limit, _page, attr, res, next){
+    var output = {};
+
+    var data;
+    var message;
+
+    try{
+        var countTotal = await db.findAndCountAll();
+
+        if( _limit === undefined || _page === undefined ){
+            data = await db.findAll({attributes: attr});
+            message = `Listing all ${dbname}s`;
+        }
+        else{
+            let limit = Number(_limit);
+            let page = Number(_page);
+            
+            if(isNaN(limit)) return res.status(400).json({ ok: false, message: 'Invalid limit value'});
+            else if(isNaN(page)) return res.status(400).json({ ok: false, message: 'Invalid page value. Page starts in 1.'});
+    
+            let pages = Math.ceil(countTotal.count / limit);
+            
+            // Offset: sets the starting index to start counting 
+            offset = limit * (page - 1);
+    
+            if (page > pages) {
+                return res.status(400).json({
+                    ok: false,
+                    message: `It doesn't exist ${ page } pages`
+                })
+            }
+            data = await db.findAll({
+                attributes: attr,
+                limit,
+                offset,
+            });
+    
+            message = `Listing ${ limit } ${ dbname }. Page ${ page } of ${ pages }.`
+        }
+
+        output.data = data;
+        output.message = message;
+        output.count = countTotal.count;
+        
+        return output;
+
+    }
+    catch{
+        next({ type: 'error', error: 'Error on pagination' });
+    }
+
+    
+}
+
+
 module.exports = {
     tokenId,
     logger,
-    sendVerificationEmail
+    sendVerificationEmail,
+    pagination
 }
