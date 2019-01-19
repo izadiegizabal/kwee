@@ -1,5 +1,6 @@
 const { checkToken } = require('../../middlewares/authentication');
 const { tokenId, logger, pagination } = require('../../shared/functions');
+const { Op } = require('../../database/op');
 
 // ============================
 // ======== CRUD offers =========
@@ -7,13 +8,48 @@ const { tokenId, logger, pagination } = require('../../shared/functions');
 
 module.exports = (app, db) => {
 
+    app.get('/offers/search', async(req, res, next) => {
+
+        try {
+            let query = '';
+            let buildedQuery = buildQuery(req.body);
+
+            for(let i = 0; i < buildedQuery.length; i++){   
+                query += buildedQuery[i];
+                if( i < buildedQuery.length - 1 ){
+                    query += ` AND `;
+                }
+            }
+            
+            // console.log("query: ", query)
+
+            let offers = (await db.sequelize.query(`SELECT * FROM offers WHERE ${ query }`))[0];
+            
+            if (offers && offers.length > 0) {
+                res.json({
+                    ok: true,
+                    message: "Showing the results",
+                    data: offers
+                })
+            } else {
+                res.json({
+                    ok: false,
+                    message: "No results were found"
+                })
+            }
+
+        } catch (err) {
+            next({ type: 'error', error: err });
+        }
+    });
+
     // GET all offers
     app.get('/offers', async(req, res, next) => {
         try {
             await logger.saveLog('GET', 'offers', null, res);
 
             var offers;
-            
+
             var attributes = [
                 'id',
                 'fk_offerer',
@@ -31,7 +67,7 @@ module.exports = (app, db) => {
                 'seniority',
                 'responsabilities'
             ]
-            
+
             var output = await pagination(
                 db.offers,
                 "offers",
@@ -40,8 +76,8 @@ module.exports = (app, db) => {
                 attributes,
                 res,
                 next
-                );
-                
+            );
+
             offers = output.data;
 
             users = await db.users.findAll({
@@ -62,7 +98,7 @@ module.exports = (app, db) => {
                 ret[count].offer = {};
                 ret[count].user = {};
                 ret[count].offer = offers[count];
-                ret[count].user = users.find( element => offers[count]['fk_offerer'] == element.id);
+                ret[count].user = users.find(element => offers[count]['fk_offerer'] == element.id);
             }
 
             return res.status(200).json({
@@ -134,7 +170,6 @@ module.exports = (app, db) => {
         try {
             let id = tokenId.getTokenId(req.get('token'));
 
-            console.log(id);
             await db.offers.create({
                 fk_offerer: id,
                 status: body.status,
@@ -225,4 +260,41 @@ module.exports = (app, db) => {
             next({ type: 'error', error: 'Error getting data' });
         }
     });
+
+    function buildQuery(body) {
+        let title, description, dateStart, dateEnd, location, salary, status, datePublished, requeriments, skills;
+
+        let query = [];
+
+        body.title ? query.push(`title = '${ body.title }'`) : null;
+        body.description ? description = body.description : null;
+        body.dateStart ? dateStart = body.dateStart : null;
+        body.dateEnd ? dateEnd = body.dateEnd : null;
+        body.location ? query = getQuerySearch(query, 'location', body.location) : null;
+        body.salary ? query.push(`(salary >= ${ body.salary[0] } AND salary <= ${ body.salary[1] })`) : null;
+        body.status ? status = body.status : null;
+        body.datePublished ? datePublished = body.datePublished : null;
+        body.requeriments ? requeriments = body.requeriments : null;
+        body.skills ? query = getQuerySearch(query, 'skills', body.skills) : null;
+    
+        return query;
+    }
+
+    function getQuerySearch(query, colum,  value ) {
+        if ( typeof(value) == 'string' ) {
+            query.push(`${ colum } = '${ value }'`);
+        } else {
+            let values = `(${ colum } = `;
+            for(let i = 0; i < value.length; i++){
+                values += `'${ value[i] }'`;
+                if ( i < value.length - 1 ) {
+                    values += ` OR ${ colum } = `;
+                }
+            }
+            values += `)`;
+            query.push(values);
+        }
+        return query;
+    }
+
 }
