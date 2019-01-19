@@ -1,6 +1,6 @@
 const { checkToken, checkAdmin } = require('../../../middlewares/authentication');
 const { tokenId, logger, sendVerificationEmail, pagination } = require('../../../shared/functions');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 
 // ============================
@@ -11,7 +11,7 @@ module.exports = (app, db) => {
 
 
     app.get('/users', async(req, res, next) => {
-        try{
+        try {
 
             var attributes = [
                 'id',
@@ -19,7 +19,7 @@ module.exports = (app, db) => {
                 'email'
             ];
 
-            var output = await pagination( 
+            var output = await pagination(
                 db.users,
                 "users",
                 req.query.limit,
@@ -27,7 +27,7 @@ module.exports = (app, db) => {
                 attributes,
                 res,
                 next);
-            
+
 
             return res.status(200).json({
                 ok: true,
@@ -35,8 +35,7 @@ module.exports = (app, db) => {
                 data: output.data,
                 count: output.count
             });
-        }
-        catch{
+        } catch {
             next({ type: 'error', error: 'Error getting data' });
         }
     });

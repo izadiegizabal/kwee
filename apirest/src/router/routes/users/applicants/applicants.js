@@ -1,6 +1,6 @@
 const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
 const { tokenId, logger, sendVerificationEmail, pagination } = require('../../../../shared/functions');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 // ============================
 // ======== CRUD user =========
@@ -15,7 +15,7 @@ module.exports = (app, db) => {
             await logger.saveLog('GET', 'applicant', null, res);
 
             var attributes = [];
-            
+
             var users = await db.users.findAll();
 
             var output = await pagination(
@@ -31,7 +31,7 @@ module.exports = (app, db) => {
             var applicants = output.data;
 
             var applicantsView = [];
-            
+
             for (let i = 0; i < users.length; i++) {
                 for (let j = 0; j < applicants.length; j++) {
                     if (users[i].id === applicants[j].userId) {
@@ -59,7 +59,7 @@ module.exports = (app, db) => {
                 data: applicantsView,
                 total: output.count
             });
-            
+
         } catch (err) {
             next({ type: 'error', error: err.message });
         }

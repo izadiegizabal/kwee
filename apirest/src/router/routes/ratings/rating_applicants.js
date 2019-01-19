@@ -1,6 +1,6 @@
 const { checkToken, checkAdmin } = require('../../../middlewares/authentication');
 const { logger } = require('../../../shared/functions');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 // ============================
 // ======== CRUD rating =========
