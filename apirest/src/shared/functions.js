@@ -151,8 +151,15 @@ async function pagination( db, dbname, _limit, _page, attr, res, next){
     catch{
         next({ type: 'error', error: 'Error on pagination' });
     }
-
     
+}
+
+function validateDate ( date ) {
+    if(moment(date, 'YYYY-MM-DD', true).isValid()){
+        return true;
+    } else {
+        throw new Error("Invalid date");
+    }
 }
 
 
@@ -160,5 +167,6 @@ module.exports = {
     tokenId,
     logger,
     sendVerificationEmail,
-    pagination
+    pagination,
+    validateDate
 }
