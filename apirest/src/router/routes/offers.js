@@ -46,14 +46,14 @@ module.exports = (app, db) => {
             offers = (await db.sequelize.query(`SELECT * FROM offers WHERE ${ query }`))[0];
             
             if (offers && offers.length > 0) {
-                res.json({
+                return res.json({
                     ok: true,
                     message: "Showing the results",
                     data: offers,
                     total: offers.length
                 })
             } else {
-                res.json({
+                return res.json({
                     ok: false,
                     message: "No results were found"
                 })
@@ -286,7 +286,7 @@ module.exports = (app, db) => {
         let title, description, dateStart, dateEnd, location, salary, status, datePublished, requeriments, skills;
 
         // Building an array with all the searchs
-        // one slot to each parametre
+        // one element to each search parametre
         let query = [];
 
         body.title ? query.push(`title LIKE '%${ body.title }%'`) : null;
