@@ -1,5 +1,5 @@
 const env = require('../../../tools/constants');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
 const auth = require('../../../middlewares/auth/auth');

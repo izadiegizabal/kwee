@@ -1,4 +1,5 @@
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
+const { logger } = require('../../shared/functions');
 
 // ============================
 // ======== CRUD experiences =========
@@ -9,12 +10,48 @@ module.exports = (app, db) => {
     // GET all experiences
     app.get('/experiences', checkToken, async(req, res, next) => {
         try {
-            res.status(200).json({
+            await logger.saveLog('GET', 'experiences', null, res);
+
+            return res.status(200).json({
                 ok: true,
                 experiences: await db.experiences.findAll()
             });
         } catch (err) {
             next({ type: 'error', error: 'Error getting data' });
+        }
+    });
+
+    // GET experiences by page limit to 10 experiences/page
+    app.get('/experiences/:page([0-9]+)/:limit([0-9]+)', async(req, res, next) => {
+        let limit = Number(req.params.limit);
+        let page = Number(req.params.page);
+
+        try {
+            await logger.saveLog('GET', `experiences/${ page }`, null, res);
+
+            let count = await db.experiences.findAndCountAll();
+            let pages = Math.ceil(count.count / limit);
+            offset = limit * (page - 1);
+
+            if (page > pages) {
+                return res.status(400).json({
+                    ok: false,
+                    message: `It doesn't exist ${ page } pages`
+                })
+            }
+
+            return res.status(200).json({
+                ok: true,
+                message: `${ limit } experiences of page ${ page } of ${ pages } pages`,
+                data: await db.experiences.findAll({
+                    limit,
+                    offset,
+                    $sort: { id: 1 }
+                }),
+                total: count.count
+            });
+        } catch (err) {
+            next({ type: 'error', error: err });
         }
     });
 

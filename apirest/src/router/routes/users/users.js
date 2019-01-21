@@ -1,6 +1,6 @@
 const { checkToken, checkAdmin } = require('../../../middlewares/authentication');
-const { tokenId, logger, sendVerificationEmail } = require('../../../shared/functions');
-const bcrypt = require('bcrypt');
+const { tokenId, logger, sendVerificationEmail, pagination } = require('../../../shared/functions');
+const bcrypt = require('bcryptjs');
 
 
 // ============================
@@ -9,35 +9,47 @@ const bcrypt = require('bcrypt');
 
 module.exports = (app, db) => {
 
-    // GET all users
+
     app.get('/users', async(req, res, next) => {
-        await logger.saveLog('GET', 'users', null, res);
         try {
-            res.status(200).json({
+
+            var attributes = [
+                'id',
+                'name',
+                'email'
+            ];
+
+            var output = await pagination(
+                db.users,
+                "users",
+                req.query.limit,
+                req.query.page,
+                attributes,
+                res,
+                next);
+
+
+            return res.status(200).json({
                 ok: true,
-                message: 'All users list',
-                data: await db.users.findAll({
-                    attributes: [
-                        'name',
-                        'email'
-                    ]
-                })
+                message: output.message,
+                data: output.data,
+                count: output.count
             });
-        } catch (err) {
+        } catch {
             next({ type: 'error', error: 'Error getting data' });
         }
-
     });
 
     // GET one user by id
     app.get('/user/:id([0-9]+)', async(req, res, next) => {
         const id = req.params.id;
-        await logger.saveLog('GET', 'user', id, res);
 
         try {
+            await logger.saveLog('GET', 'user', id, res);
 
             let user = await db.users.findOne({
                 attributes: [
+                    'id',
                     'name',
                     'email'
                 ],
@@ -63,8 +75,9 @@ module.exports = (app, db) => {
 
     // POST new user
     app.post('/user', async(req, res, next) => {
-        await logger.saveLog('POST', 'user', null, res);
         try {
+            await logger.saveLog('POST', 'user', null, res);
+
             const body = req.body;
 
             let user = await db.users.create({
@@ -95,8 +108,9 @@ module.exports = (app, db) => {
 
     // Update user by themself
     app.put('/user', async(req, res, next) => {
-        let logId = await logger.saveLog('PUT', 'user', null, res);
         try {
+            let logId = await logger.saveLog('PUT', 'user', null, res);
+
             let id = tokenId.getTokenId(req.get('token'));
 
             logger.updateLog(logId, id);
@@ -115,9 +129,10 @@ module.exports = (app, db) => {
 
     // Update user by admin
     app.put('/user/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
-        await logger.saveLog('PUT', 'user', req.params.id, res);
 
         try {
+            await logger.saveLog('PUT', 'user', req.params.id, res);
+
             const id = req.params.id;
             const updates = req.body;
 
@@ -133,9 +148,10 @@ module.exports = (app, db) => {
     // never will delete it from database
     app.delete('/user/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
-        await logger.saveLog('DELETE', 'user', id, res);
 
         try {
+            await logger.saveLog('DELETE', 'user', id, res);
+
             let result = await db.users.destroy({
                 where: { id: id }
             });

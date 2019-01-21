@@ -1,5 +1,5 @@
-const bcrypt = require('bcrypt');
 const { checkToken, checkAdmin } = require('../../../middlewares/authentication');
+const { logger } = require('../../../shared/functions');
 
 // ============================
 // ======== CRUD rating =========
@@ -10,6 +10,8 @@ module.exports = (app, db) => {
     // GET all ratings
     app.get('/ratings', checkToken, async(req, res, next) => {
         try {
+            await logger.saveLog('GET', 'ratings', null, res);
+
             return res.status(200).json({
                 ok: true,
                 message: 'All ratings list',
@@ -19,6 +21,40 @@ module.exports = (app, db) => {
             next({ type: 'error', error: 'Error getting data' });
         }
 
+    });
+
+    // GET ratings by page limit to 10 ratings/page
+    app.get('/ratings/:page([0-9]+)/:limit([0-9]+)', async(req, res, next) => {
+        let limit = Number(req.params.limit);
+        let page = Number(req.params.page);
+
+        try {
+            await logger.saveLog('GET', `ratings/${ page }`, null, res);
+
+            let count = await db.ratings.findAndCountAll();
+            let pages = Math.ceil(count.count / limit);
+            offset = limit * (page - 1);
+
+            if (page > pages) {
+                return res.status(400).json({
+                    ok: false,
+                    message: `It doesn't exist ${ page } pages`
+                })
+            }
+
+            return res.status(200).json({
+                ok: true,
+                message: `${ limit } ratings of page ${ page } of ${ pages } pages`,
+                data: await db.ratings.findAll({
+                    limit,
+                    offset,
+                    $sort: { id: 1 }
+                }),
+                total: count.count
+            });
+        } catch (err) {
+            next({ type: 'error', error: err });
+        }
     });
 
     // GET one rating by id
