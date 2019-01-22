@@ -53,7 +53,7 @@ export class SnsShareComponent implements OnInit {
 
   shareInTw() {
     const url = `https://twitter.com/share` +
-      `?text=${this.text}` +
+      `?text=${this.text} + ${this.offer.url}` +
       `&url=${this.offer.url}` +
       `&hashtags=${this.hashtags}`;
     SnsShareComponent.openNewWindowWithUrl(url);
