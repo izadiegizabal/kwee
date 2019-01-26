@@ -181,11 +181,10 @@ module.exports = (app, db) => {
     app.post('/forgot', async(req, res, next) => {
         try {
             let email = req.body.email;
-            let user = await db.users.findOne({
-                where: { email: email }
-            });
+            let user = await db.users.findOne({where: { email }});
+
             if( user ) {
-                sendEmailResetPassword(email, res);
+                sendEmailResetPassword(user, res);
             } else {
                 return res.status(400).json({
                     ok: false,
@@ -198,7 +197,39 @@ module.exports = (app, db) => {
     });
     
     app.post('/reset', async(req, res, next) => {
-        const id = req.params.id;
+        let token = req.body.token;
+        let password = req.body.password;
+
+        try {
+            let id = tokenId.getTokenId(token);
+            let user = await db.users.findOne({where: { id }});
+
+            if ( user ) {
+                password = bcrypt.hashSync(password, 10)
+                let updated = await db.users.update({password}, {
+                    where: { id }
+                });
+                if ( updated ) {
+                    return res.json({
+                        ok: true,
+                        message: 'Password changed'
+                    });
+                } else {
+                    return res.status(400).json({
+                        ok: false,
+                        message: "Password not updated."
+                    });
+                }
+            } else {
+                return res.status(400).json({
+                    ok: false,
+                    message: "User not matched."
+                });
+            }
+        } catch (error) {
+            next({ type: 'error', error });
+        }
+
     });
 
     async function updateUser(id, updates, res) {

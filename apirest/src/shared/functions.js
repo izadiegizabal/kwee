@@ -100,16 +100,13 @@ function sendVerificationEmail(body, user) {
     });
 }
 
-function sendEmailResetPassword(email, res) {
+function sendEmailResetPassword(user, res) {
     // Generate test SMTP service account from gmail
     let data = fs.readFileSync(path.join(__dirname, '../templates/emailResetPassword.html'), 'utf-8');
-
-    let token = jwt.sign({
-        email
-    }, env.JSONWEBTOKEN_SECRET, { expiresIn: '1h' });
+    let token = auth.auth.encode(user);
 
     // let urlValidation = `${ env.URL }/email-verified/` + token;
-    let urlValidation = `http://localhost:4200/reset/` + token;
+    let urlValidation = `http://localhost:4200/reset-password/` + token;
 
     nodemailer.createTestAccount((err, account) => {
         // create reusable transporter object using the default SMTP transport
@@ -127,9 +124,9 @@ function sendEmailResetPassword(email, res) {
         // setup email data with unicode symbols
         let mailOptions = {
             from: '"Kwee 👻" <hello@kwee.ovh>', // sender address
-            to: email,
+            to: user.email,
             subject: 'Reset password ✔', // Subject line
-            html: data.replace('@@name@@', email).replace('@@url@@', urlValidation)
+            html: data.replace('@@name@@', user.email).replace('@@url@@', urlValidation)
         };
 
         // send mail with defined transport object
@@ -143,7 +140,8 @@ function sendEmailResetPassword(email, res) {
             }
             return res.status(200).json({
                 ok: true,
-                message: "Reset password email sended"
+                message: "Reset password email sended",
+                token
             });
         });
     });
