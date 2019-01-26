@@ -129,12 +129,27 @@ module.exports = (app, db) => {
                     lastAccess: user.lastAccess,
                     img: user.img,
                     bio: user.bio,
+                    social_networks: []
                 };
 
-                return res.status(200).json({
-                    ok: true,
-                    message: `Get applicant by id ${ id } success`,
-                    data: userApplicant
+                let networks = await db.social_networks.findOne({
+                    where: { userId: user.id }
+                });
+
+                if( networks ) {
+                    networks.google ? userApplicant.social_networks.push({ google: networks.google }) : null;
+                    networks.twitter ? userApplicant.social_networks.push({ twitter: networks.twitter }) : null;
+                    networks.instagram ? userApplicant.social_networks.push({ instagram: networks.instagram }) : null;
+                    networks.telegram ? userApplicant.social_networks.push({ telegram: networks.telegram }) : null;
+                    networks.linkedin ? userApplicant.social_networks.push({ linkeding: networks.linkedin }): null;
+                }
+
+                getData(applicant, userApplicant).then( (applicantDates) => {
+                    return res.status(200).json({
+                        ok: true,
+                        message: `Get applicant by id ${ id } success`,
+                        data: applicantDates
+                    });
                 });
             } else {
                 return res.status(400).json({
@@ -143,7 +158,7 @@ module.exports = (app, db) => {
                 });
             }
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            next({ type: 'error', error: err });
         }
     });
 
@@ -308,5 +323,38 @@ module.exports = (app, db) => {
             await transaction.rollback();
             return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
         }
+    }
+
+    async function getData(applicant, data) {
+        try{
+            let skills = await applicant.getSkills();
+            let educations = await applicant.getEducations();
+            let languages = await applicant.getLanguages();
+            let skillsNames = [];
+            let languagesNames = [];
+            let educationsNames = [];
+            if (skills){
+                for (let i = 0; i < skills.length; i++) {
+                    skillsNames.push(skills[i].name);
+                }
+                data.skills = skillsNames;
+            }
+            if (educations){
+                for (let i = 0; i < educations.length; i++) {
+                    educationsNames.push(educations[i].title);
+                }
+                data.educations = educationsNames;
+            }
+            if (languages){
+                for (let i = 0; i < languages.length; i++) {
+                    languagesNames.push(languages[i].language);
+                }
+                data.languages = languagesNames;
+            }
+        }catch(error){
+            console.log(error);
+        }
+
+        return data;
     }
 }

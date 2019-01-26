@@ -1,5 +1,5 @@
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
-const { logger } = require('../../shared/functions');
+const { tokenId, logger } = require('../../shared/functions');
 const auth = require('../../shared/functions');
 
 // =======================================
@@ -92,7 +92,7 @@ module.exports = (app, db) => {
             });
 
         } catch (err) {
-            next({ type: 'error', error: err.errors[0].message });
+            next({ type: 'error', error: err });
         };
 
     });
