@@ -103,16 +103,23 @@ module.exports = (app, db) => {
 
         try {
             let id = tokenId.getTokenId(req.get('token'));
-            res.status(200).json({
-                ok: true,
-                social_network: await db.social_networks.update(updates, {
-                    where: { userId: id }
-                })
+            delete updates.userId;
+            
+            let social_network = await db.social_networks.update(updates, {
+                where: { userId: id }
             });
-            // json
-            // social_network: [1] -> Updated
-            // social_network: [0] -> Not updated
-            // empty body will change 'updateAt'
+
+            if ( social_network ) {
+                res.status(200).json({
+                    ok: true,
+                    message: `Social networks updated`,
+                });
+            } else {
+                    res.status(400).json({
+                        ok: false,
+                        message: `Social networks not updated`,
+                    });
+            }
         } catch (err) {
             next({ type: 'error', error: err.errors[0].message });
         }

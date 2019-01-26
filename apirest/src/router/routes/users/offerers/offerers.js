@@ -76,36 +76,56 @@ module.exports = (app, db) => {
         try {
             await logger.saveLog('GET', 'offerer', id, res);
 
-            let users = await db.users.findOne({
+            let user = await db.users.findOne({
                 where: { id }
             });
 
-            let offerers = await db.offerers.findOne({
+            let offerer = await db.offerers.findOne({
                 where: { userId: id }
             });
 
-            console.log("fdasfdsa");
-            if (users && offerers) {
-                console.log("entra");
+            if (user && offerer) {
                 const userOfferer = {
-                    id: offerers.userId,
-                    index: users.index,
-                    name: users.name,
-                    email: users.email,
-                    address: offerers.address,
-                    workField: offerers.workField,
-                    cif: offerers.cif,
-                    dateVerification: offerers.dateVerification,
-                    website: offerers.website,
-                    companySize: offerers.companySize,
-                    year: offerers.year,
-                    premium: offerers.premium,
-                    createdAt: offerers.createdAt,
-                    lastAccess: users.lastAccess,
-                    status: users.status,
-                    img: users.img
-
+                    id: offerer.userId,
+                    index: user.index,
+                    name: user.name,
+                    email: user.email,
+                    address: offerer.address,
+                    workField: offerer.workField,
+                    cif: offerer.cif,
+                    dateVerification: offerer.dateVerification,
+                    website: offerer.website,
+                    companySize: offerer.companySize,
+                    year: offerer.year,
+                    premium: offerer.premium,
+                    createdAt: offerer.createdAt,
+                    lastAccess: user.lastAccess,
+                    status: user.status,
+                    img: user.img,
+                    social_networks: []
                 };
+
+                let networks = await db.social_networks.findOne({
+                    where: { userId: user.id }
+                });
+
+                if( networks ) {
+                    networks.google ? userOfferer.social_networks.push({ google: networks.google }) : null;
+                    networks.twitter ? userOfferer.social_networks.push({ twitter: networks.twitter }) : null;
+                    networks.instagram ? userOfferer.social_networks.push({ instagram: networks.instagram }) : null;
+                    networks.telegram ? userOfferer.social_networks.push({ telegram: networks.telegram }) : null;
+                    networks.linkedin ? userOfferer.social_networks.push({ linkeding: networks.linkedin }): null;
+                }
+
+                let offers = await offerer.getOffers();
+                let offersIds = [];
+            
+                if (offers){
+                    for (let i = 0; i < offers.length; i++) {
+                        offersIds.push(offers[i]);
+                    }
+                    userOfferer.offers = offersIds;
+                }
 
                 return res.status(200).json({
                     ok: true,

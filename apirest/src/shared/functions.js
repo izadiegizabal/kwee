@@ -111,8 +111,8 @@ async function pagination( db, dbname, _limit, _page, attr, res, next){
         var countTotal = await db.findAndCountAll();
 
         if( _limit === undefined || _page === undefined ){
-            data = await db.findAll({attributes: attr});
-            message = `Listing all ${dbname}s`;
+            data = await db.findAll();
+            message = `Listing all ${dbname}`;
         }
         else{
             let limit = Number(_limit);
@@ -148,8 +148,8 @@ async function pagination( db, dbname, _limit, _page, attr, res, next){
         return output;
 
     }
-    catch{
-        next({ type: 'error', error: 'Error on pagination' });
+    catch(error){
+        next({ type: 'error', error: error });
     }
     
 }

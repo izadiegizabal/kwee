@@ -1,5 +1,5 @@
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
-const { logger } = require('../../shared/functions');
+const { tokenId, logger } = require('../../shared/functions');
 
 // ============================
 // ======== CRUD experiences =========
@@ -76,12 +76,14 @@ module.exports = (app, db) => {
     app.post('/experience', [checkToken, checkAdmin], async(req, res, next) => {
         let body = req.body
 
+        
         try {
+            let id = tokenId.getTokenId(req.get('token'));
 
             res.status(201).json({
                 ok: true,
                 experience: await db.experiences.create({
-                    fk_applicant: body.fk_applicant,
+                    fk_applicant: id,
                     title: body.title,
                     description: body.description,
                     date_start: body.date_start,

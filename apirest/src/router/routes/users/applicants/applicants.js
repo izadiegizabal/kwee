@@ -10,14 +10,15 @@ module.exports = (app, db) => {
 
     // GET all users applicants
     app.get('/applicants', async(req, res, next) => {
-
         try {
             await logger.saveLog('GET', 'applicant', null, res);
 
             var attributes = [];
 
+            // Need USER values, so we get ALL USERS
             var users = await db.users.findAll();
 
+            // But paginated APPLICANTS
             var output = await pagination(
                 db.applicants,
                 "applicants",
@@ -29,7 +30,6 @@ module.exports = (app, db) => {
             );
 
             var applicants = output.data;
-
             var applicantsView = [];
 
             for (let i = 0; i < users.length; i++) {
@@ -330,26 +330,44 @@ module.exports = (app, db) => {
             let skills = await applicant.getSkills();
             let educations = await applicant.getEducations();
             let languages = await applicant.getLanguages();
-            let skillsNames = [];
-            let languagesNames = [];
-            let educationsNames = [];
+            let experiences = await applicant.getExperiences();
+            let applications = await db.applications.findAll();
+            let skillsArray = [];
+            let languagesArray = [];
+            let educationsArray = [];
+            let experiencesArray = [];
+            let applicationsArray = [];
             if (skills){
                 for (let i = 0; i < skills.length; i++) {
-                    skillsNames.push(skills[i].name);
+                    skillsArray.push(skills[i]);
                 }
-                data.skills = skillsNames;
+                data.skills = skillsArray;
             }
             if (educations){
                 for (let i = 0; i < educations.length; i++) {
-                    educationsNames.push(educations[i].title);
+                    educationsArray.push(educations[i]);
                 }
-                data.educations = educationsNames;
+                data.educations = educationsArray;
             }
             if (languages){
                 for (let i = 0; i < languages.length; i++) {
-                    languagesNames.push(languages[i].language);
+                    languagesArray.push(languages[i]);
                 }
-                data.languages = languagesNames;
+                data.languages = languagesArray;
+            }
+            if(experiences){
+                for (let i = 0; i < experiences.length; i++) {
+                    experiencesArray.push(experiences[i]);
+                }
+                data.experiences = experiencesArray;
+            }
+            if(applications){
+                for (let i = 0; i < applications.length; i++) {
+                    if(applications[i].fk_applicant == applicant.userId) {
+                        applicationsArray.push(applications[i]);
+                    }
+                }
+                data.applications = applicationsArray;
             }
         }catch(error){
             console.log(error);
