@@ -1,5 +1,5 @@
 const { checkToken, checkAdmin } = require('../../../middlewares/authentication');
-const { tokenId, logger, sendVerificationEmail, pagination } = require('../../../shared/functions');
+const { tokenId, logger, sendVerificationEmail, sendEmailResetPassword, pagination } = require('../../../shared/functions');
 const bcrypt = require('bcryptjs');
 
 
@@ -13,11 +13,14 @@ module.exports = (app, db) => {
     app.get('/users', async(req, res, next) => {
         try {
 
-            var attributes = [
-                'id',
-                'name',
-                'email'
-            ];
+            var attributes = {
+                include: [
+                    'id',
+                    'name',
+                    'email'
+                ],
+                exclude: ['password']
+            };
 
             var output = await pagination(
                 db.users,
@@ -27,7 +30,6 @@ module.exports = (app, db) => {
                 attributes,
                 res,
                 next);
-
 
             return res.status(200).json({
                 ok: true,
@@ -174,6 +176,29 @@ module.exports = (app, db) => {
         } catch (err) {
             next({ type: 'error', error: 'Error deleting user.' });
         }
+    });
+
+    app.post('/forgot', async(req, res, next) => {
+        try {
+            let email = req.body.email;
+            let user = await db.users.findOne({
+                where: { email: email }
+            });
+            if( user ) {
+                sendEmailResetPassword(email, res);
+            } else {
+                return res.status(400).json({
+                    ok: false,
+                    message: "Email not found in our database"
+                });
+            }
+        } catch (error) {
+            next({ type: 'error', error });
+        }
+    });
+    
+    app.post('/reset', async(req, res, next) => {
+        const id = req.params.id;
     });
 
     async function updateUser(id, updates, res) {
