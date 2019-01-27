@@ -13,7 +13,7 @@ module.exports = (app, db) => {
         try {
             await logger.saveLog('GET', 'offerers', null, res);
 
-            var attributes = [];
+            var attributes = {};
 
             // Need USER values, so we get ALL USERS
             var users = await db.users.findAll();
@@ -70,6 +70,70 @@ module.exports = (app, db) => {
 
     });
 
+    // GET one offerer offers by id
+    app.get('/offerer/:id([0-9]+)/offers', async(req, res, next) => {
+        const id = req.params.id;
+        let limit = Number(req.query.limit);
+        let page = Number(req.query.page);
+        let status = Number(req.query.status);
+        
+        try {
+            await logger.saveLog('GET', 'offerer', id, res);
+            
+            let message = ``;
+
+            // But paginated OFFERERS
+            let offerer = await db.offerers.findOne({
+                where: { userId: id }
+            });
+
+            if ( offerer ) {
+                let offers;
+                if ( status >= 0 && status <= 3){
+                    offers = await db.offers.findAll({where: {fk_offerer: id, status }})
+                } else {
+                    offers = await offerer.getOffers();
+                }
+                let totalOffers = offers.length;
+                console.log('totalOffers: ', totalOffers)
+
+                let pages = Math.ceil(totalOffers / limit);
+                
+                // Offset: sets the starting index to start counting 
+                offset = limit * (page - 1);
+                
+                if (page > pages) {
+                    return res.status(400).json({
+                        ok: false,
+                        message: `It doesn't exist ${ page } pages`
+                    })
+                }
+                if( limit && page ) {
+                    if ( status >= 0 && status <= 3){
+                        offers = await db.offers.findAll({where: {fk_offerer: id, status }, limit, offset})
+                    } else {
+                        offers = await offerer.getOffers({limit, offset});
+                    }
+                    message = `Listing ${ limit } offers of this offerer. Page ${ page } of ${ pages }.`;
+                } else {
+                    message = `Listing all offers of this user.`;
+                }
+                if ( status >= 0 ) message += ` With status = ${ status }`
+
+                return res.json({
+                    ok: true,
+                    message,
+                    data: offers,
+                    count: totalOffers
+                });
+
+            }
+
+        } catch (error) {
+            next({ type: 'error', error: error.message });
+        }
+    });
+
     // GET one offerer by id
     app.get('/offerer/:id([0-9]+)', async(req, res, next) => {
         const id = req.params.id;
@@ -115,16 +179,6 @@ module.exports = (app, db) => {
                     networks.instagram ? userOfferer.social_networks.push({ instagram: networks.instagram }) : null;
                     networks.telegram ? userOfferer.social_networks.push({ telegram: networks.telegram }) : null;
                     networks.linkedin ? userOfferer.social_networks.push({ linkeding: networks.linkedin }): null;
-                }
-
-                let offers = await offerer.getOffers();
-                let offersIds = [];
-            
-                if (offers){
-                    for (let i = 0; i < offers.length; i++) {
-                        offersIds.push(offers[i]);
-                    }
-                    userOfferer.offers = offersIds;
                 }
 
                 return res.status(200).json({
