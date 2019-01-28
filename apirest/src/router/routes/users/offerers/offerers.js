@@ -13,7 +13,7 @@ module.exports = (app, db) => {
         try {
             await logger.saveLog('GET', 'offerers', null, res);
 
-            var attributes = [];
+            var attributes = {};
 
             // Need USER values, so we get ALL USERS
             var users = await db.users.findAll();
@@ -70,42 +70,116 @@ module.exports = (app, db) => {
 
     });
 
+    // GET one offerer offers by id
+    app.get('/offerer/:id([0-9]+)/offers', async(req, res, next) => {
+        const id = req.params.id;
+        let limit = Number(req.query.limit);
+        let page = Number(req.query.page);
+        let status = Number(req.query.status);
+        
+        try {
+            await logger.saveLog('GET', 'offerer', id, res);
+            
+            let message = ``;
+
+            // But paginated OFFERERS
+            let offerer = await db.offerers.findOne({
+                where: { userId: id }
+            });
+
+            if ( offerer ) {
+                let offers;
+                if ( status >= 0 && status <= 3){
+                    offers = await db.offers.findAll({where: {fk_offerer: id, status }})
+                } else {
+                    offers = await offerer.getOffers();
+                }
+                let totalOffers = offers.length;
+                console.log('totalOffers: ', totalOffers)
+
+                let pages = Math.ceil(totalOffers / limit);
+                
+                // Offset: sets the starting index to start counting 
+                offset = limit * (page - 1);
+                
+                if (page > pages) {
+                    return res.status(400).json({
+                        ok: false,
+                        message: `It doesn't exist ${ page } pages`
+                    })
+                }
+                if( limit && page ) {
+                    if ( status >= 0 && status <= 3){
+                        offers = await db.offers.findAll({where: {fk_offerer: id, status }, limit, offset})
+                    } else {
+                        offers = await offerer.getOffers({limit, offset});
+                    }
+                    message = `Listing ${ limit } offers of this offerer. Page ${ page } of ${ pages }.`;
+                } else {
+                    message = `Listing all offers of this user.`;
+                }
+                if ( status >= 0 ) message += ` With status = ${ status }`
+
+                return res.json({
+                    ok: true,
+                    message,
+                    data: offers,
+                    count: totalOffers
+                });
+
+            }
+
+        } catch (error) {
+            next({ type: 'error', error: error.message });
+        }
+    });
+
     // GET one offerer by id
     app.get('/offerer/:id([0-9]+)', async(req, res, next) => {
         const id = req.params.id;
         try {
             await logger.saveLog('GET', 'offerer', id, res);
 
-            let users = await db.users.findOne({
+            let user = await db.users.findOne({
                 where: { id }
             });
 
-            let offerers = await db.offerers.findOne({
+            let offerer = await db.offerers.findOne({
                 where: { userId: id }
             });
 
-            console.log("fdasfdsa");
-            if (users && offerers) {
-                console.log("entra");
+            if (user && offerer) {
                 const userOfferer = {
-                    id: offerers.userId,
-                    index: users.index,
-                    name: users.name,
-                    email: users.email,
-                    address: offerers.address,
-                    workField: offerers.workField,
-                    cif: offerers.cif,
-                    dateVerification: offerers.dateVerification,
-                    website: offerers.website,
-                    companySize: offerers.companySize,
-                    year: offerers.year,
-                    premium: offerers.premium,
-                    createdAt: offerers.createdAt,
-                    lastAccess: users.lastAccess,
-                    status: users.status,
-                    img: users.img
-
+                    id: offerer.userId,
+                    index: user.index,
+                    name: user.name,
+                    email: user.email,
+                    address: offerer.address,
+                    workField: offerer.workField,
+                    cif: offerer.cif,
+                    dateVerification: offerer.dateVerification,
+                    website: offerer.website,
+                    companySize: offerer.companySize,
+                    year: offerer.year,
+                    premium: offerer.premium,
+                    createdAt: offerer.createdAt,
+                    lastAccess: user.lastAccess,
+                    status: user.status,
+                    img: user.img,
+                    social_networks: []
                 };
+
+                let networks = await db.social_networks.findOne({
+                    where: { userId: user.id }
+                });
+
+                if( networks ) {
+                    networks.google ? userOfferer.social_networks.push({ google: networks.google }) : null;
+                    networks.twitter ? userOfferer.social_networks.push({ twitter: networks.twitter }) : null;
+                    networks.instagram ? userOfferer.social_networks.push({ instagram: networks.instagram }) : null;
+                    networks.telegram ? userOfferer.social_networks.push({ telegram: networks.telegram }) : null;
+                    networks.linkedin ? userOfferer.social_networks.push({ linkeding: networks.linkedin }): null;
+                }
 
                 return res.status(200).json({
                     ok: true,

@@ -10,14 +10,15 @@ module.exports = (app, db) => {
 
     // GET all users applicants
     app.get('/applicants', async(req, res, next) => {
-
         try {
             await logger.saveLog('GET', 'applicant', null, res);
 
             var attributes = [];
 
+            // Need USER values, so we get ALL USERS
             var users = await db.users.findAll();
 
+            // But paginated APPLICANTS
             var output = await pagination(
                 db.applicants,
                 "applicants",
@@ -29,7 +30,6 @@ module.exports = (app, db) => {
             );
 
             var applicants = output.data;
-
             var applicantsView = [];
 
             for (let i = 0; i < users.length; i++) {
@@ -129,12 +129,27 @@ module.exports = (app, db) => {
                     lastAccess: user.lastAccess,
                     img: user.img,
                     bio: user.bio,
+                    social_networks: []
                 };
 
-                return res.status(200).json({
-                    ok: true,
-                    message: `Get applicant by id ${ id } success`,
-                    data: userApplicant
+                let networks = await db.social_networks.findOne({
+                    where: { userId: user.id }
+                });
+
+                if( networks ) {
+                    networks.google ? userApplicant.social_networks.push({ google: networks.google }) : null;
+                    networks.twitter ? userApplicant.social_networks.push({ twitter: networks.twitter }) : null;
+                    networks.instagram ? userApplicant.social_networks.push({ instagram: networks.instagram }) : null;
+                    networks.telegram ? userApplicant.social_networks.push({ telegram: networks.telegram }) : null;
+                    networks.linkedin ? userApplicant.social_networks.push({ linkeding: networks.linkedin }): null;
+                }
+
+                getData(applicant, userApplicant).then( (applicantDates) => {
+                    return res.status(200).json({
+                        ok: true,
+                        message: `Get applicant by id ${ id } success`,
+                        data: applicantDates
+                    });
                 });
             } else {
                 return res.status(400).json({
@@ -143,7 +158,7 @@ module.exports = (app, db) => {
                 });
             }
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            next({ type: 'error', error: err });
         }
     });
 
@@ -308,5 +323,56 @@ module.exports = (app, db) => {
             await transaction.rollback();
             return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
         }
+    }
+
+    async function getData(applicant, data) {
+        try{
+            let skills = await applicant.getSkills();
+            let educations = await applicant.getEducations();
+            let languages = await applicant.getLanguages();
+            let experiences = await applicant.getExperiences();
+            let applications = await db.applications.findAll();
+            let skillsArray = [];
+            let languagesArray = [];
+            let educationsArray = [];
+            let experiencesArray = [];
+            let applicationsArray = [];
+            if (skills){
+                for (let i = 0; i < skills.length; i++) {
+                    skillsArray.push(skills[i]);
+                }
+                data.skills = skillsArray;
+            }
+            if (educations){
+                for (let i = 0; i < educations.length; i++) {
+                    educationsArray.push(educations[i]);
+                }
+                data.educations = educationsArray;
+            }
+            if (languages){
+                for (let i = 0; i < languages.length; i++) {
+                    languagesArray.push(languages[i]);
+                }
+                data.languages = languagesArray;
+            }
+            if(experiences){
+                for (let i = 0; i < experiences.length; i++) {
+                    experiencesArray.push(experiences[i]);
+                }
+                data.experiences = experiencesArray;
+            }
+            if(applications){
+                for (let i = 0; i < applications.length; i++) {
+                    if(applications[i].fk_applicant == applicant.userId) {
+                        applicationsArray.push(applications[i]);
+                    }
+                }
+                data.applications = applicationsArray;
+            }
+        }catch(error){
+            console.log(error);
+        }
+
+        return data;
     }
 }

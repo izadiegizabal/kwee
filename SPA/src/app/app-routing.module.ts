@@ -11,6 +11,7 @@ const routes: Routes = [
   {path: 'signup', loadChildren: './auth/signup/signup.module#SignupModule'},
   {path: 'signin', loadChildren: './auth/signin/signin.module#SigninModule'},
   {path: 'email-verified/:token', loadChildren: './shared/email-verified/email-verified.module#EmailVerifiedModule'},
+  {path: 'reset-password/:token', loadChildren: './shared/reset-password/reset-password.module#ResetPasswordModule'},
   {path: '**', redirectTo: '/candidate-home'}
 ];
 
