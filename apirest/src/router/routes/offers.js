@@ -41,8 +41,6 @@ module.exports = (app, db) => {
                 });
             }
             
-            console.log("query: ", query)
-            
             offers = (await db.sequelize.query(`SELECT * FROM offers WHERE ${ query }`))[0];
             
             if (offers && offers.length > 0) {

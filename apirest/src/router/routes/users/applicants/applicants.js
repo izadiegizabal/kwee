@@ -370,7 +370,7 @@ module.exports = (app, db) => {
                 data.applications = applicationsArray;
             }
         }catch(error){
-            console.log(error);
+            throw new Error(error);
         }
 
         return data;

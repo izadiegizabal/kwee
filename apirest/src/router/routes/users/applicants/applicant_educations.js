@@ -136,10 +136,7 @@ module.exports = (app, db) => {
                 });
             }
         } catch (err) {
-            //console.log(err.toString());
             return next({ type: "error", error: err.toString() /*err.errors?err.errors[0].message:err.message*/ });
-            //return "EEERRROOOOOOOR";
-            //return next({ type: 'error', error: err.errors?err.errors[0].message:err.message });
         }
     });
 
