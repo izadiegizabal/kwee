@@ -7,6 +7,9 @@ export const OPERATION_ERROR = 'OPERATION_ERROR';
 
 export class TryGetOffer implements Action {
   readonly type = TRY_GET_OFFER;
+
+  constructor(public payload: { id: number }) {
+  }
 }
 
 export class SetOffer implements Action {

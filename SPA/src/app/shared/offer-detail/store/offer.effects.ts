@@ -14,8 +14,11 @@ export class OfferEffects {
   @Effect()
   offerGetoffer = this.actions$.pipe(
     ofType(OfferActions.TRY_GET_OFFER),
-    switchMap(() => {
-        const apiEndpointUrl = environment.apiUrl + 'offer/' + '4';
+    map((action: OfferActions.TryGetOffer) => {
+      return action.payload;
+    }),
+    switchMap((payload) => {
+        const apiEndpointUrl = environment.apiUrl + 'offer/' + payload.id;
         // const token = authState.token;
         // const headers = new HttpHeaders().set('token', token);
         return this.httpClient.get(apiEndpointUrl).pipe(

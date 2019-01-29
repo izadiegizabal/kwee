@@ -16,6 +16,7 @@ import {
   WorkLocationType
 } from '../../../models/Offer.model';
 import {UtilsService} from '../utils.service';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-offer-detail',
@@ -94,11 +95,13 @@ export class OfferDetailComponent implements OnInit {
 
   offerState: Observable<fromOffer.State>;
 
-  constructor(private _utils: UtilsService, private store$: Store<fromApp.AppState>) {
+  constructor(private _utils: UtilsService, private store$: Store<fromApp.AppState>, private activatedRoute: ActivatedRoute) {
   }
 
   ngOnInit() {
-    this.store$.dispatch(new OfferActions.TryGetOffer());
+    const params = this.activatedRoute.snapshot.params;
+    console.log(params.id);
+    this.store$.dispatch(new OfferActions.TryGetOffer({id: params.id}));
     this.offerState = this.store$.pipe(select(state => state.offer));
   }
 
@@ -106,8 +109,8 @@ export class OfferDetailComponent implements OnInit {
     return this._utils.getTimePassed(this.offer.publishDate);
   }
 
-  getOfferStatus() {
-    return OfferStatus[this.offer.status];
+  getOfferStatus(status) {
+    return OfferStatus[status];
   }
 
   getOfferDuration() {
