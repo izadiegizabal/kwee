@@ -4,7 +4,7 @@
             fxFlex.gt-lg="50%" fxFlex.gt-md="60%" fxFlex.gt-sm="75%" fxLayout="column">
     <mat-card-header fxLayoutAlign="space-between">
       <mat-card-title fxLayout="row" fxLayoutGap="16px">
-        <span>{{offer.title}}</span>
+        <span>{{(offerState | async).offer.title}}</span>
         <mat-chip-list fxHide fxShow.gt-sm>
           <mat-chip color="primary" selected style="pointer-events: none">{{ getOfferStatus() | titlecase}}</mat-chip>
         </mat-chip-list>

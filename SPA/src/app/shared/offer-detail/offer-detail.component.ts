@@ -1,4 +1,11 @@
 import {Component, OnInit} from '@angular/core';
+import {select, Store} from '@ngrx/store';
+import * as fromApp from '../../store/app.reducers';
+import * as OfferActions from './store/offer.actions';
+import * as fromOffer from './store/offer.reducers';
+import {Observable} from 'rxjs';
+
+
 import {
   ContractType,
   JobDurationUnit,
@@ -85,10 +92,14 @@ export class OfferDetailComponent implements OnInit {
     ],
   };
 
-  constructor(private _utils: UtilsService) {
+  offerState: Observable<fromOffer.State>;
+
+  constructor(private _utils: UtilsService, private store$: Store<fromApp.AppState>) {
   }
 
   ngOnInit() {
+    this.store$.dispatch(new OfferActions.TryGetOffer());
+    this.offerState = this.store$.pipe(select(state => state.offer));
   }
 
   getTimePassed() {
