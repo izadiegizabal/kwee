@@ -14,8 +14,10 @@ export class UserMenuComponent implements OnInit {
   authState: Observable<fromAuth.State>;
   username = '';
   userId = '';
+  userType = '';
 
   constructor(private store$: Store<fromApp.AppState>) {
+    this.userType = 'candidate';
   }
 
   ngOnInit() {
@@ -36,4 +38,7 @@ export class UserMenuComponent implements OnInit {
     this.store$.dispatch(new AuthActions.Logout());
   }
 
+  urlfyUser() {
+    return this.username.toLowerCase().replace(/ /g, '-');
+  }
 }

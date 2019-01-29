@@ -12,11 +12,12 @@ const routes: Routes = [
   {path: 'signin', loadChildren: './auth/signin/signin.module#SigninModule'},
   {path: 'email-verified/:token', loadChildren: './shared/email-verified/email-verified.module#EmailVerifiedModule'},
   {path: 'reset-password/:token', loadChildren: './shared/reset-password/reset-password.module#ResetPasswordModule'},
+  {path: 'candidate/:id/:name', loadChildren: './shared/profiles/candidate-profile/candidate-profile.module#CandidateProfileModule'},
   {path: '**', redirectTo: '/candidate-home'}
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {preloadingStrategy: PreloadAllModules})],
+  imports: [RouterModule.forRoot(routes, {preloadingStrategy: false})],
   exports: [RouterModule]
 })
 export class AppRoutingModule {
