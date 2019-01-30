@@ -76,14 +76,32 @@
       </mat-list>
     </div>
   </div>
-  <div fxLayout="column" fxFlex="50%">
-    <h2>Documents</h2>
-    <p style="margin-top: 0">
-      The Shiba Inu (柴犬) is the smallest of the six original and distinct spitz breeds of dog native to Japan. A
-      small,
-      agile dog that copes very well with mountainous terrain, the Shiba Inu was originally bred for hunting. It looks
-      similar to and is often mistaken for other Japanese dog breeds like the Akita Inu or Hokkaido, but the Shiba Inu
-      is a different breed with a distinct blood line, temperament and smaller size than other Japanese dog breeds.
-    </p>
+  <div fxFlex="50%" fxLayout="row" fxLayoutAlign.lt-sm="end end">
+    <div fxLayout="column">
+      <h2 fxLayout="row">
+        <mat-chip-list>
+          <mat-chip
+            color="accent" selected
+            style="color: white;">
+            Premium
+          </mat-chip>
+        </mat-chip-list>
+        &nbsp; Documents
+      </h2>
+      <p style="margin-top: 0; font-style: italic;">
+        With the premium membership you'll be able to upload files like your CV, recommendation letters or even your
+        certifications!
+      </p>
+      <mat-list style="margin-bottom: 16px; opacity: 0.5;">
+        <mat-list-item>
+          <mat-icon color="primary" svgIcon="insert-drive-file" mat-list-icon></mat-icon>
+          <h4 mat-line>Curriculum Vitae</h4>
+        </mat-list-item>
+        <mat-list-item>
+          <mat-icon color="primary" svgIcon="insert-drive-file" mat-list-icon></mat-icon>
+          <h4 mat-line>Recommendation Letter</h4>
+        </mat-list-item>
+      </mat-list>
+    </div>
   </div>
 </div>

@@ -69,7 +69,7 @@ export class CandidateProfileComponent implements OnInit {
       }
     ],
     skills: ['Java', 'Android', 'Kotlin', 'HTML', 'CSS', 'JS', 'Angular', 'Android Studio', 'MySQL',
-      'Java', 'Android', 'Kotlin', 'HTML', 'CSS', 'JS', 'Angular', 'Android Studio', 'MySQL']
+    ]
   };
 
   profilesState: Observable<fromProfiles.State>;

@@ -3,7 +3,7 @@
     fxFlex="95%"
     fxFlex.gt-md="=70%"
     fxFlex.gt-sm="80%">
-    <div fxLayout="row" fxLayout.lt-sm="column">
+    <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap.lt-sm="16px">
       <!-- Basic info -->
       <mat-card fxFlex="70">
         <mat-card-title>
@@ -15,10 +15,14 @@
         </mat-card-title>
         <mat-card-content
           style="margin-top: 16px"
-          fxLayoutAlign="center stretch"
-          fxLayout="row">
-          <img src="{{(profilesState | async).candidate.img}}" alt="{{(profilesState | async).candidate.name + ' profile picture'}}'"/>
-          <p fxLayoutAlign="center center">
+          fxLayoutAlign="center stretch" fxLayoutAlign.lt-sm="center center"
+          fxLayout="row" fxLayout.lt-sm="column">
+          <img
+            width="200px" height="200px"
+            src="{{(profilesState | async).candidate.img}}"
+            alt="{{(profilesState | async).candidate.name + ' profile picture'}}'"/>
+          <p
+            fxLayoutAlign="center center">
             {{(profilesState | async).candidate.bio}}
           </p>
         </mat-card-content>
@@ -49,7 +53,8 @@
         </mat-card-content>
         <mat-card-actions fxLayoutAlign="center">
           <button
-            color="primary"
+            color="accent"
+            style="color: white; margin-bottom: 16px"
             mat-raised-button>
             Upgrade to Premium
           </button>
