@@ -1,4 +1,7 @@
-<div>
+<div [ngClass]="{
+  big: size === 'title',
+  'mat-card-title': size === 'title'
+}">
   <span>{{index}}</span>
   <p>{{name}}</p>
 </div>

@@ -1,0 +1,89 @@
+<div
+  fxLayout="row" fxLayout.lt-md="column"
+  fxFlexOffset="4%"
+  fxLayoutGap="32px"
+  fxFlex="92%">
+  <div fxLayout="column" fxFlex="50%" style="padding-bottom: 32px">
+    <h2>Experience</h2>
+    <mat-accordion>
+      <mat-expansion-panel *ngFor="let experience of candidate.experience">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <h4>
+              {{experience.title}}
+            </h4>
+          </mat-panel-title>
+          <mat-panel-description style="margin-top: 20px">
+            {{experience.company +
+          " - " +
+          (experience.start | date:'y') + "/" + (experience.end | date:'y')}}
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <p>
+          {{experience.description}}
+        </p>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+    <h2>Education</h2>
+    <mat-accordion>
+      <mat-expansion-panel *ngFor="let education of candidate.education">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <h4>
+              {{education.title}}
+            </h4>
+          </mat-panel-title>
+          <mat-panel-description style="margin-top: 20px">
+            {{education.institution +
+          " - " +
+          (education.start | date:'y') + "/" + (education.end | date:'y')}}
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <p>
+          {{education.description}}
+        </p>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+    <h2>Skills</h2>
+    <div
+      fxLayout="row">
+      <mat-list
+        fxFlex="50%"
+        style="padding-top: 0">
+        <div
+          *ngFor="let skill of candidate.skills; let i = index"
+          style="margin-left: -20px">
+          <mat-list-item
+            *ngIf="i % 2 === 0">
+            <mat-icon color="primary">chevron_right</mat-icon>
+            {{' ' + skill}}</mat-list-item>
+        </div>
+      </mat-list>
+      <mat-list
+        fxFlex="50%"
+        style="padding-top: 0">
+        <div
+          *ngFor="let skill of candidate.skills; let i = index"
+          style="margin-left: -20px">
+          <mat-list-item *ngIf="i % 2 !== 0">
+            <mat-icon color="primary">chevron_right</mat-icon>
+            {{' ' + skill}}</mat-list-item>
+        </div>
+      </mat-list>
+    </div>
+  </div>
+  <div fxLayout="column" fxFlex="50%">
+    <h2>Documents</h2>
+    <p style="margin-top: 0">
+      The Shiba Inu (柴犬) is the smallest of the six original and distinct spitz breeds of dog native to Japan. A
+      small,
+      agile dog that copes very well with mountainous terrain, the Shiba Inu was originally bred for hunting. It looks
+      similar to and is often mistaken for other Japanese dog breeds like the Akita Inu or Hokkaido, but the Shiba Inu
+      is a different breed with a distinct blood line, temperament and smaller size than other Japanese dog breeds.
+    </p>
+  </div>
+</div>
