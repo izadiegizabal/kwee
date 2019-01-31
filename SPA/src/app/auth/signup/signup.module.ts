@@ -11,8 +11,8 @@ import {StoreModule} from '@ngrx/store';
 import {authReducer} from '../store/auth.reducers';
 import {EffectsModule} from '@ngrx/effects';
 import {AuthEffects} from '../store/auth.effects';
-import {ExperienceFormsComponent} from './signup-candidate/experience-forms/experience-forms.component';
-import {EducationFormsComponent} from './signup-candidate/education-forms/education-forms.component';
+import {EducationsFormsModule} from './signup-candidate/education-forms/educations-forms.module';
+import {ExperienceFormsModule} from './signup-candidate/experience-forms/experience-forms.module';
 
 @NgModule({
   declarations: [
@@ -20,14 +20,14 @@ import {EducationFormsComponent} from './signup-candidate/education-forms/educat
     SignupCandidateComponent,
     SignupOffererComponent,
     DialogErrorComponent,
-    ExperienceFormsComponent,
-    EducationFormsComponent,
   ],
   imports: [
     SharedModule,
     HttpClientModule,
     SignupRoutingModule,
     ReactiveFormsModule,
+    EducationsFormsModule,
+    ExperienceFormsModule,
     StoreModule.forFeature('auth', authReducer),
     EffectsModule.forFeature([AuthEffects])
   ],

@@ -7,6 +7,7 @@ import * as AuthActions from '../../store/auth.actions';
 import {AuthEffects} from '../../store/auth.effects';
 import {filter} from 'rxjs/operators';
 import {DialogErrorComponent} from '../dialog-error/dialog-error.component';
+import { TrySignupGoogle, TrySignupGitHub, TrySignupLinkedIn } from '../../store/auth.actions';
 
 @Component({
   selector: 'app-signup-candidate',
@@ -253,6 +254,46 @@ export class SignupCandidateComponent implements OnInit {
 
   formInitialized(name: string, form: FormGroup) {
     this.thirdFormGroup.setControl(name, form);
+  }
+
+  googleSignUp (stepper: MatStepper) {
+    console.log('google Sign Up');
+    this.store$.dispatch(new AuthActions.TrySignupGoogle());
+
+
+
+
+    // this.authEffects$.authSignupGoogle.pipe(
+    //   filter((action: Action) => action.type === AuthActions.AUTH_ERROR)
+    // ).subscribe((error: { payload: any, type: string }) => {
+    //   if (!this.dialogShown) {
+    //     console.log(error.payload);
+    //     this.dialog.open(DialogErrorComponent, {
+    //       data: {
+    //         error: error.payload,
+    //       }
+    //     });
+    //     this.dialogShown = true;
+    //   }
+    // });
+    // stepper.next();
+  }
+
+  gitHubSignUp(stepper: MatStepper) {
+    console.log('GitHub Sign Up');
+    this.store$.dispatch(new AuthActions.TrySignupGitHub());
+    stepper.next();
+  }
+
+  linkedInSignUp(stepper: MatStepper) {
+    console.log('linkedIn Sign Up');
+    this.store$.dispatch(new AuthActions.TrySignupLinkedIn());
+    // stepper.next();
+  }
+
+  twitterSignUp(stepper: MatStepper) {
+    console.log('twitter Sign Up');
+    stepper.next();
   }
 
 }

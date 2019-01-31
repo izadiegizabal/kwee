@@ -4,9 +4,9 @@
             fxFlex.gt-lg="50%" fxFlex.gt-md="60%" fxFlex.gt-sm="75%" fxLayout="column">
     <mat-card-header fxLayoutAlign="space-between">
       <mat-card-title fxLayout="row" fxLayoutGap="16px">
-        <span>{{offer.title}}</span>
+        <span>{{(offerState | async).offer.title}}</span>
         <mat-chip-list fxHide fxShow.gt-sm>
-          <mat-chip color="primary" selected style="pointer-events: none">{{ getOfferStatus() | titlecase}}</mat-chip>
+          <mat-chip color="primary" selected style="pointer-events: none">{{ getOfferStatus((offerState | async).offer.status) | titlecase}}</mat-chip>
         </mat-chip-list>
       </mat-card-title>
       <mat-card-subtitle>
@@ -48,7 +48,7 @@
              src="https://cdn.vox-cdn.com/thumbor/Pkmq1nm3skO0-j693JTMd7RL0Zk=/0x0:2012x1341/1200x800/filters:focal(0x0:2012x1341)/cdn.vox-cdn.com/uploads/chorus_image/image/47070706/google2.0.0.jpg"
              style="object-fit: cover; height: 150px;">
         <p>
-          {{ offer.description }}
+          {{ (offerState | async).offer.description }}
         </p>
       </div>
 
@@ -119,8 +119,7 @@
       <div fxLayout="column">
         <h2 class="mat-h2">Skills</h2>
         <div
-          fxLayout="row"
-          fxLayout.lt-sm="column">
+          fxLayout="row">
           <mat-list
             fxFlex="50%" fxFlex.lt-sm="100%"
             style="padding-top: 0">

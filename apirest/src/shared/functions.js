@@ -158,7 +158,7 @@ async function pagination( db, dbname, _limit, _page, attr, res, next){
         var countTotal = await db.findAndCountAll();
 
         if( _limit === undefined || _page === undefined ){
-            data = await db.findAll({attributes: attr});
+            data = await db.findAll();
             message = `Listing all ${dbname}`;
         } else {
             let limit = Number(_limit);
@@ -178,6 +178,8 @@ async function pagination( db, dbname, _limit, _page, attr, res, next){
                     message: `It doesn't exist ${ page } pages`
                 })
             }
+            // if (attr.length == 0) attr = '';
+            
             data = await db.findAll({
                 attributes: attr,
                 limit,

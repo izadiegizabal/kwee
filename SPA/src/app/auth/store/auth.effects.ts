@@ -6,6 +6,7 @@ import {Actions, Effect, ofType} from '@ngrx/effects';
 import {Observable, of, throwError} from 'rxjs';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
+import { TRY_SIGNUP_LINKEDIN } from './auth.actions';
 
 @Injectable()
 export class AuthEffects {
@@ -109,6 +110,101 @@ export class AuthEffects {
   );
 
   @Effect()
+  authSignupGoogle = this.actions$.pipe(
+    ofType(AuthActions.TRY_SIGNUP_GOOGLE),
+    switchMap(
+      () => {
+        const headers = new HttpHeaders().set('Content-Type', 'application/json');
+        return this.httpClient.get(environment.apiUrl + 'auth/google', {headers: headers}).pipe(
+          mergeMap((res) => {
+            console.log(res);
+            return [
+              {
+                type: AuthActions.TRY_SIGNUP_GOOGLE,
+              }
+            ];
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('signUp', err));
+            console.log('ERRRROOOORRRR: ', err);
+            const error = err.error.message ? err.error.message : err;
+            return [
+              {
+                type: AuthActions.AUTH_ERROR,
+                payload: error
+              }
+            ];
+          }),
+        );
+      }
+    ),
+    share()
+  );
+
+  @Effect()
+  authSignupGitHub = this.actions$.pipe(
+    ofType(AuthActions.TRY_SIGNUP_GITHUB),
+    switchMap(
+      () => {
+        const headers = new HttpHeaders().set('Content-Type', 'application/json');
+        return this.httpClient.get(environment.apiUrl + 'auth/github', {headers: headers}).pipe(
+          mergeMap((res) => {
+            console.log(res);
+            return [
+              {
+                type: AuthActions.TRY_SIGNUP_GITHUB,
+              }
+            ];
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('signUp', err));
+            console.log('ERRRROOOORRRR: ', err);
+            const error = err.error.message ? err.error.message : err;
+            return [
+              {
+                type: AuthActions.AUTH_ERROR,
+                payload: error
+              }
+            ];
+          }),
+        );
+      }
+    ),
+    share()
+  );
+
+  @Effect()
+  authSignupLinkedIn = this.actions$.pipe(
+    ofType(AuthActions.TRY_SIGNUP_LINKEDIN),
+    switchMap(
+      () => {
+        return this.httpClient.get(environment.apiUrl + 'auth/linkedin').pipe(
+          mergeMap((res) => {
+            console.log(res);
+            return [
+              {
+                type: AuthActions.TRY_SIGNUP_LINKEDIN,
+              }
+            ];
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('signUp', err));
+            console.log('ERRRROOOORRRR: ', err);
+            const error = err.error.message ? err.error.message : err;
+            return [
+              {
+                type: AuthActions.AUTH_ERROR,
+                payload: error
+              }
+            ];
+          }),
+        );
+      }
+    ),
+    share()
+  );
+
+  @Effect()
   authSignupBusiness = this.actions$.pipe(
     ofType(AuthActions.TRY_SIGNUP_BUSINESS),
     map((action: AuthActions.TrySignupBusiness) => {
@@ -167,10 +263,12 @@ export class AuthEffects {
       // console.error(error); // log to console instead
 
       // better job of transforming error for user consumption
+
       console.log(`${operation} failed: ${error.message}`);
 
       // Let the app keep running by returning an empty result.
       return of(result as T);
     };
   }
+
 }
