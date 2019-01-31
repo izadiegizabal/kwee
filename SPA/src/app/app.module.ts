@@ -18,7 +18,7 @@ import {localStorageSync} from 'ngrx-store-localstorage';
 import {OfferDetailModule} from './shared/offer-detail/offer-detail.module';
 
 export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {
-  return localStorageSync({keys: ['auth', 'admin', 'offers', 'offer'], rehydrate: true})(reducer);
+  return localStorageSync({keys: ['auth', 'admin', 'offers', 'offer', 'profiles'], rehydrate: true})(reducer);
 }
 
 const metaReducers: Array<MetaReducer<any, any>> = [localStorageSyncReducer];

@@ -4,40 +4,78 @@ import {catchError, map, share, switchMap} from 'rxjs/operators';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {Observable, of, throwError} from 'rxjs';
-import * as OfferActions from './offer.actions';
+import * as UserActions from './profiles.actions';
 import {environment} from '../../../../environments/environment';
 import {Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
 
+
 @Injectable()
-export class OfferEffects {
+export class ProfilesEffects {
   @Effect()
-  offerGetoffer = this.actions$.pipe(
-    ofType(OfferActions.TRY_GET_OFFER),
-    map((action: OfferActions.TryGetOffer) => {
+  profileGetCandidate = this.actions$.pipe(
+    ofType(UserActions.TRY_GET_PROFILE_CANDIDATE),
+    map((action: UserActions.TryGetProfileCandidate) => {
       return action.payload;
     }),
     switchMap((payload) => {
-        const apiEndpointUrl = environment.apiUrl + 'offer/' + payload.id;
+        const apiEndpointUrl = environment.apiUrl + 'applicant/' + payload.id;
         // const token = authState.token;
         // const headers = new HttpHeaders().set('token', token);
         return this.httpClient.get(apiEndpointUrl).pipe(
           map((res: {
             ok: boolean,
-            offer: any[],
-            user: any[],
+            message: any[],
+            data: any[],
           }) => {
             console.log(res);
             return {
-              type: OfferActions.SET_OFFER,
-              payload: res.offer,
+              type: UserActions.SET_PROFILE_CANDIDATE,
+              payload: res.data,
             };
           }),
           catchError((err: HttpErrorResponse) => {
-            throwError(this.handleError('getOffer', err));
+            throwError(this.handleError('getProfileCandidate', err));
             return [
               {
-                type: OfferActions.OPERATION_ERROR,
+                type: UserActions.OPERATION_ERROR,
+                payload: err.error.error
+              }
+            ];
+          })
+        );
+      }
+    ),
+    share()
+  );
+
+  @Effect()
+  profileGetOfferer = this.actions$.pipe(
+    ofType(UserActions.TRY_GET_PROFILE_OFFERER),
+    map((action: UserActions.TryGetProfileOfferer) => {
+      return action.payload;
+    }),
+    switchMap((payload) => {
+        const apiEndpointUrl = environment.apiUrl + 'offerer/' + payload.id;
+        // const token = authState.token;
+        // const headers = new HttpHeaders().set('token', token);
+        return this.httpClient.get(apiEndpointUrl).pipe(
+          map((res: {
+            ok: boolean,
+            message: any[],
+            data: any[],
+          }) => {
+            console.log(res);
+            return {
+              type: UserActions.SET_PROFILE_OFFERER,
+              payload: res.data,
+            };
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('getProfileOfferer', err));
+            return [
+              {
+                type: UserActions.OPERATION_ERROR,
                 payload: err.error.error
               }
             ];
