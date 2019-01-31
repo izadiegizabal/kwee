@@ -1,6 +1,6 @@
 const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
-const { tokenId, logger, sendVerificationEmail } = require('../../../../shared/functions');
-const bcrypt = require('bcrypt');
+const { tokenId, logger, sendVerificationEmail, pagination } = require('../../../../shared/functions');
+const bcrypt = require('bcryptjs');
 
 // ============================
 // ======== CRUD user =========
@@ -10,12 +10,27 @@ module.exports = (app, db) => {
 
     // GET all users applicants
     app.get('/applicants', async(req, res, next) => {
-        await logger.saveLog('GET', 'applicant', null, res);
-
         try {
-            let users = await db.users.findAll();
-            let applicants = await db.applicants.findAll();
-            let applicantsView = [];
+            await logger.saveLog('GET', 'applicant', null, res);
+
+            var attributes = [];
+
+            // Need USER values, so we get ALL USERS
+            var users = await db.users.findAll();
+
+            // But paginated APPLICANTS
+            var output = await pagination(
+                db.applicants,
+                "applicants",
+                req.query.limit,
+                req.query.page,
+                attributes,
+                res,
+                next
+            );
+
+            var applicants = output.data;
+            var applicantsView = [];
 
             for (let i = 0; i < users.length; i++) {
                 for (let j = 0; j < applicants.length; j++) {
@@ -37,23 +52,61 @@ module.exports = (app, db) => {
                     }
                 }
             }
+
             return res.status(200).json({
                 ok: true,
-                message: 'All applicants',
-                data: applicantsView
+                message: output.message,
+                data: applicantsView,
+                total: output.count
             });
+
         } catch (err) {
             next({ type: 'error', error: err.message });
         }
 
     });
 
+    // GET applicants by page limit to 10 applicants/page
+    app.get('/applicants/:page([0-9]+)/:limit([0-9]+)', async(req, res, next) => {
+        let limit = Number(req.params.limit);
+        let page = Number(req.params.page);
+
+        try {
+            await logger.saveLog('GET', `applicants/${ page }`, null, res);
+
+            let count = await db.applicants.findAndCountAll();
+            let pages = Math.ceil(count.count / limit);
+            offset = limit * (page - 1);
+
+            if (page > pages) {
+                return res.status(400).json({
+                    ok: false,
+                    message: `It doesn't exist ${ page } pages`
+                })
+            }
+
+            return res.status(200).json({
+                ok: true,
+                message: `${ limit } applicants of page ${ page } of ${ pages } pages`,
+                data: await db.applicants.findAll({
+                    limit,
+                    offset,
+                    $sort: { id: 1 }
+                }),
+                total: count.count
+            });
+        } catch (err) {
+            next({ type: 'error', error: err });
+        }
+    });
+
     // GET one applicant by id
     app.get('/applicant/:id([0-9]+)', async(req, res, next) => {
         const id = req.params.id;
-        await logger.saveLog('GET', 'applicant', id, res);
 
         try {
+            await logger.saveLog('GET', 'applicant', id, res);
+
             let user = await db.users.findOne({
                 where: { id }
             });
@@ -76,12 +129,27 @@ module.exports = (app, db) => {
                     lastAccess: user.lastAccess,
                     img: user.img,
                     bio: user.bio,
+                    social_networks: []
                 };
 
-                return res.status(200).json({
-                    ok: true,
-                    message: `Get applicant by id ${ id } success`,
-                    data: userApplicant
+                let networks = await db.social_networks.findOne({
+                    where: { userId: user.id }
+                });
+
+                if( networks ) {
+                    networks.google ? userApplicant.social_networks.push({ google: networks.google }) : null;
+                    networks.twitter ? userApplicant.social_networks.push({ twitter: networks.twitter }) : null;
+                    networks.instagram ? userApplicant.social_networks.push({ instagram: networks.instagram }) : null;
+                    networks.telegram ? userApplicant.social_networks.push({ telegram: networks.telegram }) : null;
+                    networks.linkedin ? userApplicant.social_networks.push({ linkeding: networks.linkedin }): null;
+                }
+
+                getData(applicant, userApplicant).then( (applicantDates) => {
+                    return res.status(200).json({
+                        ok: true,
+                        message: `Get applicant by id ${ id } success`,
+                        data: applicantDates
+                    });
                 });
             } else {
                 return res.status(400).json({
@@ -90,15 +158,16 @@ module.exports = (app, db) => {
                 });
             }
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            next({ type: 'error', error: err });
         }
     });
 
     // POST single applicant
     app.post('/applicant', async(req, res, next) => {
-        await logger.saveLog('POST', 'applicant', null, res);
 
         try {
+            await logger.saveLog('POST', 'applicant', null, res);
+
             const body = req.body;
             const password = body.password ? bcrypt.hashSync(body.password, 10) : null;
             var uservar;
@@ -118,12 +187,12 @@ module.exports = (app, db) => {
                             return createApplicant(body, user, next, transaction);
                         })
                         .then(ending => {
-                            sendVerificationEmail(body,uservar);
+                            sendVerificationEmail(body, uservar);
                             return res.status(201).json({
                                 ok: true,
                                 message: `Applicant with id ${ending.userId} has been created.`
                             });
-                            
+
                         })
                 })
                 .catch(err => {
@@ -135,12 +204,42 @@ module.exports = (app, db) => {
         }
     });
 
+    app.post('/applicant/info', async(req, res, next) => {
+
+        const body = req.body;
+        let id = tokenId.getTokenId(req.get('token'));
+        
+        try {
+            let applicant = await db.applicants.findOne({
+                where: { userId: id }
+            });
+            if ( applicant ) {
+                await setEducations(applicant, body, next).then( async () => {
+                    await setSkills(applicant, body, next).then( async () => {
+                        await setLanguages(applicant, body, next).then( async () => {
+                            await setExperiences(id, body, next).then( async () => {
+                                return res.status(200).json({
+                                    ok: true,
+                                    message: "Added the info of this user"
+                                });
+                            });
+                        });
+                    });
+                });
+            }
+        } catch (err) {
+            return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
+        }
+
+    });
+
     // Update applicant by themself
     app.put('/applicant', async(req, res, next) => {
-        let logId = await logger.saveLog('PUT', 'applicant', null, res);
         const updates = req.body;
 
         try {
+            let logId = await logger.saveLog('PUT', 'applicant', null, res);
+
             let id = tokenId.getTokenId(req.get('token'));
             logger.updateLog(logId, id);
             updateApplicant(id, updates, res, next);
@@ -153,9 +252,9 @@ module.exports = (app, db) => {
     app.put('/applicant/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
-        await logger.saveLog('PUT', 'applicant', id, res);
 
         try {
+            await logger.saveLog('PUT', 'applicant', id, res);
             updateApplicant(id, updates, res, next);
         } catch (err) {
             return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
@@ -165,9 +264,10 @@ module.exports = (app, db) => {
     // DELETE
     app.delete('/applicant/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
-        await logger.saveLog('DELETE', 'applicant', id, res);
 
         try {
+            await logger.saveLog('DELETE', 'applicant', id, res);
+
             let applicant = await db.applicants.findOne({
                 where: { userId: id }
             });
@@ -251,6 +351,165 @@ module.exports = (app, db) => {
         } catch (err) {
             await transaction.rollback();
             return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
+        }
+    }
+
+    async function getData(applicant, data) {
+        try{
+            let skills = await applicant.getSkills();
+            let educations = await applicant.getEducations();
+            let languages = await applicant.getLanguages();
+            let experiences = await applicant.getExperiences();
+            let applications = await db.applications.findAll();
+            let skillsArray = [];
+            let languagesArray = [];
+            let educationsArray = [];
+            let experiencesArray = [];
+            let applicationsArray = [];
+            if (skills){
+                for (let i = 0; i < skills.length; i++) {
+                    skillsArray.push(skills[i]);
+                }
+                data.skills = skillsArray;
+            }
+            if (educations){
+                for (let i = 0; i < educations.length; i++) {
+                    educationsArray.push(educations[i]);
+                }
+                data.educations = educationsArray;
+            }
+            if (languages){
+                for (let i = 0; i < languages.length; i++) {
+                    languagesArray.push(languages[i]);
+                }
+                data.languages = languagesArray;
+            }
+            if(experiences){
+                for (let i = 0; i < experiences.length; i++) {
+                    experiencesArray.push(experiences[i]);
+                }
+                data.experiences = experiencesArray;
+            }
+            if(applications){
+                for (let i = 0; i < applications.length; i++) {
+                    if(applications[i].fk_applicant == applicant.userId) {
+                        applicationsArray.push(applications[i]);
+                    }
+                }
+                data.applications = applicationsArray;
+            }
+        }catch(error){
+            throw new Error(error);
+        }
+
+        return data;
+    }
+
+    async function setEducations( applicant, body, next ) {
+        if( body.educations ) {
+            try {
+                if ( body.educations.length > 0 ) {
+                    return new Promise(async(resolve, reject) => {
+                        for (let i = 0; i < body.educations.length; i++) {
+                            await applicant.addEducation(body.educations[i].fk_education, {
+                                through: {
+                                    description: body.educations[i].description,
+                                    date_start: body.educations[i].date_start,
+                                    date_end: body.educations[i].date_end,
+                                    institution: body.educations[i].institution
+                                }
+                            }).then(result => {
+                                if (result) {
+                                    return resolve('Education Added');
+                                } else {
+                                    return reject(new Error('Education not added'));
+                                }
+                            }).catch(err => {
+                                return next({ type: 'error', error: err.message });
+                            })
+                        }
+                    });
+                }
+            } catch (err) {
+                return next({ type: 'error', error: err.message });
+            }
+        }
+    }
+
+    async function setSkills( applicant, body, next ) {
+        if( body.skills ) {
+            try {
+                if ( body.skills.length > 0 ) {
+                    return new Promise(async(resolve, reject) => {
+                        for (let i = 0; i < body.skills.length; i++) {
+                            await applicant.addSkill(body.skills[i].fk_skill, {
+                                through: {
+                                    description: body.skills[i].description,
+                                    level: body.skills[i].level,
+                                }
+                            }).then(result => {
+                                if (result) {
+                                    return resolve('Skill added');
+                                } else {
+                                    return reject(new Error('Skill not added'));
+                                }
+                            }).catch(err => {
+                                return next({ type: 'error', error: err.message });
+                            })
+                        }
+                    });
+                }
+            } catch (err) {
+                return next({ type: 'error', error: err.message });
+            }
+        }
+    }
+
+    async function setLanguages( applicant, body, next ) {
+        if( body.languages ) {
+            try {
+                if ( body.languages.length > 0 ) {
+                    return new Promise(async(resolve, reject) => {
+                        for (let i = 0; i < body.languages.length; i++) {
+                            await applicant.addLanguage(body.languages[i].fk_language, {
+                                through: {
+                                    level: body.languages[i].level,
+                                }
+                            }).then(result => {
+                                if (result) {
+                                    return resolve('Language added');
+                                } else {
+                                    return reject(new Error('Language not added'));
+                                }
+                            }).catch(err => {
+                                return next({ type: 'error', error: err.message });
+                            })
+                        }
+                    });
+                }
+            } catch (err) {
+                return next({ type: 'error', error: err.message });
+            }
+        }
+    }
+
+    async function setExperiences( id, body, next ) {
+        if( body.experiences ) {
+            try {
+                if ( body.experiences.length > 0 ) {
+                    for (let i = 0; i < body.experiences.length; i++) {
+                        await db.experiences.create({
+                            fk_applicant: id,
+                            title: body.experiences[i].title,
+                            description: body.experiences[i].description,
+                            date_start: body.experiences[i].date_start,
+                            date_end: body.experiences[i].date_end,
+                        });
+                    }
+                }
+            } catch (err) {
+                return next({ type: 'error', error: err.message });
+            }
         }
     }
 }

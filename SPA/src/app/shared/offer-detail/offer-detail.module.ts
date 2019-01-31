@@ -5,6 +5,10 @@ import {OffererNameOverviewModule} from '../offerer-name-overview/offerer-name-o
 import {IconWithTextModule} from '../icon-with-text/icon-with-text.module';
 import {RouterModule} from '@angular/router';
 import {SnsShareModule} from '../sns-share/sns-share.module';
+import {StoreModule} from '@ngrx/store';
+import {EffectsModule} from '@ngrx/effects';
+import {offerReducer} from './store/offer.reducers';
+import {OfferEffects} from './store/offer.effects';
 
 @NgModule({
   declarations: [
@@ -15,7 +19,9 @@ import {SnsShareModule} from '../sns-share/sns-share.module';
     RouterModule,
     OffererNameOverviewModule,
     IconWithTextModule,
-    SnsShareModule
+    SnsShareModule,
+    StoreModule.forFeature('offer', offerReducer),
+    EffectsModule.forFeature([OfferEffects])
   ],
   exports: [
     OfferDetailComponent

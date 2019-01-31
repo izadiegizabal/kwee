@@ -1,5 +1,6 @@
-const bcrypt = require('bcrypt');
 const { checkToken, checkAdmin } = require('../../../middlewares/authentication');
+const { logger } = require('../../../shared/functions');
+const bcrypt = require('bcryptjs');
 
 // ============================
 // ======== CRUD rating =========
@@ -11,6 +12,8 @@ module.exports = (app, db) => {
     app.get('/rating_offerers', checkToken, async(req, res, next) => {
 
         try {
+            await logger.saveLog('GET', 'rating_offerers', null, res);
+
             let ratings = await db.ratings.findAll();
             let rating_offerers = await db.rating_offerers.findAll();
             let rating_offerersView = [];
@@ -42,6 +45,39 @@ module.exports = (app, db) => {
             next({ type: 'error', error: err.message });
         }
 
+    });
+
+    // GET rating_offerers by page limit to 10 rating_offerers/page
+    app.get('/rating_offerers/:page([0-9]+)/:limit([0-9]+)', async(req, res, next) => {
+        let limit = Number(req.params.limit);
+        let page = Number(req.params.page);
+
+        try {
+            await logger.saveLog('GET', `rating_offerers/${ page }`, null, res);
+            let count = await db.rating_offerers.findAndCountAll();
+            let pages = Math.ceil(count.count / limit);
+            offset = limit * (page - 1);
+
+            if (page > pages) {
+                return res.status(400).json({
+                    ok: false,
+                    message: `It doesn't exist ${ page } pages`
+                })
+            }
+
+            return res.status(200).json({
+                ok: true,
+                message: `${ limit } rating_offerers of page ${ page } of ${ pages } pages`,
+                data: await db.rating_offerers.findAll({
+                    limit,
+                    offset,
+                    $sort: { id: 1 }
+                }),
+                total: count.count
+            });
+        } catch (err) {
+            next({ type: 'error', error: err });
+        }
     });
 
     // GET one rating_offerer by id
@@ -110,7 +146,6 @@ module.exports = (app, db) => {
             // if not, create new rating
 
             if (ratingBefore) {
-                console.log("ya estaba rateado");
                 rating = ratingBefore;
             } else {
                 rating = await db.ratings.create({

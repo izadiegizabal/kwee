@@ -22,7 +22,7 @@ import {NgcCookieConsentModule, NgcCookieConsentConfig} from 'ngx-cookieconsent'
 import { PrivacyComponent } from './privacy/privacy.component';
 
 export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {
-  return localStorageSync({keys: ['auth', 'admin', 'offers'], rehydrate: true})(reducer);
+  return localStorageSync({keys: ['auth', 'admin', 'offers', 'offer', 'profiles'], rehydrate: true})(reducer);
 }
 
 const metaReducers: Array<MetaReducer<any, any>> = [localStorageSyncReducer];

@@ -16,8 +16,7 @@ export class OfferPreviewCardComponent implements OnInit {
   @Input() offer: any;
 
 
-  constructor(public dialog: MatDialog) {
-
+  constructor(private _utils: UtilsService, public dialog: MatDialog) {
   }
 
   ngOnInit() {
@@ -25,20 +24,20 @@ export class OfferPreviewCardComponent implements OnInit {
   }
 
   urlfyPosition() {
-    return '/offer/' + this.offer.id + '/' + this.offer.title.toLowerCase().replace(/ /g, '-');
+    return '/offer/' + this.offer.user.id + '/' + this.offer.offer.title.toLowerCase().replace(/ /g, '-');
   }
 
 
   getPublishedDate() {
-    if (this.offer && this.offer.createdAt) {
-      return UtilsService.getTimePassed(new Date(this.offer.createdAt));
+    if (this.offer && this.offer.offer.datePublished) {
+      return this._utils.getTimePassed(new Date(this.offer.offer.datePublished));
     }
   }
 
   openShareDialog() {
     this.dialog.open(SnsShareDialogComponent, {
       data: {
-        offer: {title: this.offer.title, url: location.hostname + this.urlfyPosition()}
+        offer: {title: this.offer.offer.title, url: location.hostname + this.urlfyPosition()}
       }
     });
   }

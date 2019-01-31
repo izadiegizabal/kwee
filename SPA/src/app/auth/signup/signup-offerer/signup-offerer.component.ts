@@ -194,7 +194,11 @@ export class SignupOffererComponent implements OnInit {
       ).subscribe((error: { payload: any, type: string }) => {
         if (!this.dialogShown) {
           console.log(error.payload);
-          this.dialog.open(DialogErrorComponent);
+          this.dialog.open(DialogErrorComponent, {
+            data: {
+              error: error.payload,
+            }
+          });
           this.dialogShown = true;
         }
       });

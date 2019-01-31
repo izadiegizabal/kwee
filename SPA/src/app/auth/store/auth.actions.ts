@@ -3,8 +3,12 @@ import {Action} from '@ngrx/store';
 
 export const TRY_SIGNUP_CANDIDATE = 'TRY_SIGNUP_CANDIDATE';
 export const TRY_SIGNUP_BUSINESS = 'TRY_SIGNUP_BUSINESS';
-export const SIGNUP = 'SIGNUP';
+export const TRY_SIGNUP_GOOGLE = 'TRY_SIGNUP_GOOGLE';
+export const TRY_SIGNUP_GITHUB = 'TRY_SIGNUP_GITHUB';
+export const TRY_SIGNUP_LINKEDIN = 'TRY_SIGNUP_LINKEDIN';
+export const TRY_SIGNUP_TWITTER = 'TRY_SIGNUP_TWITTER';
 export const TRY_SIGNIN = 'TRY_SIGNIN';
+export const SIGNUP = 'SIGNUP';
 export const SIGNIN = 'SIGNIN';
 export const LOGOUT = 'LOGOUT';
 export const AUTH_ERROR = 'AUTH_ERROR';
@@ -31,6 +35,22 @@ export class TrySignupBusiness implements Action {
 
   constructor(public payload: { email: string, password: string }) {
   }
+}
+
+export class TrySignupGoogle implements Action {
+  readonly type = TRY_SIGNUP_GOOGLE;
+}
+
+export class TrySignupGitHub implements Action {
+  readonly type = TRY_SIGNUP_GITHUB;
+}
+
+export class TrySignupLinkedIn implements Action {
+  readonly type = TRY_SIGNUP_LINKEDIN;
+}
+
+export class TrySignupTwitter implements Action {
+  readonly type = TRY_SIGNUP_TWITTER;
 }
 
 export class TrySignin implements Action {

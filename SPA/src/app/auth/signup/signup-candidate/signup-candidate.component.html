@@ -14,25 +14,25 @@
           </button>
         </div>
         <div class="signupButton">
-          <button color="primary" mat-raised-button matStepperNext type="button">
+          <button color="primary" mat-raised-button (click)="gitHubSignUp(stepper)" type="button">
             <mat-icon fontIcon="fa-github" fontSet="fab"></mat-icon>
             <span>Continue with GitHub</span>
           </button>
         </div>
         <div class="signupButton">
-          <button color="primary" id="linkedinBtn" mat-raised-button matStepperNext type="button">
+          <button color="primary" id="linkedinBtn" mat-raised-button (click)="linkedInSignUp(stepper)" type="button">
             <mat-icon fontIcon="fa-linkedin-in" fontSet="fab"></mat-icon>
             <span>Continue with LinkedIn</span>
           </button>
         </div>
         <div class="signupButton">
-          <button color="primary" id="googleBtn" mat-raised-button matStepperNext type="button">
+          <button color="primary" id="googleBtn" mat-raised-button (click)="googleSignUp(stepper)" type="button">
             <mat-icon fontIcon="fa-google" fontSet="fab"></mat-icon>
             <span>Continue with Google</span>
           </button>
         </div>
         <div class="signupButton">
-          <button color="primary" id="twitterBtn" mat-raised-button matStepperNext type="button">
+          <button color="primary" id="twitterBtn" mat-raised-button (click)="twitterSignUp(stepper)" type="button">
             <mat-icon fontIcon="fa-twitter" fontSet="fab"></mat-icon>
             <span>Continue with Twitter</span>
           </button>

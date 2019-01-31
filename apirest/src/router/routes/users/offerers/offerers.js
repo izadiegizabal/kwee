@@ -1,6 +1,6 @@
 const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
-const { tokenId, logger, sendVerificationEmail } = require('../../../../shared/functions');
-const bcrypt = require('bcrypt');
+const { tokenId, logger, sendVerificationEmail, pagination } = require('../../../../shared/functions');
+const bcrypt = require('bcryptjs');
 
 // ============================
 // ======== CRUD user =========
@@ -10,11 +10,27 @@ module.exports = (app, db) => {
 
     // GET all users offerers
     app.get('/offerers', async(req, res, next) => {
-        await logger.saveLog('GET', 'offerers', null, res);
         try {
-            let users = await db.users.findAll();
-            let offerers = await db.offerers.findAll();
-            let offerersView = [];
+            await logger.saveLog('GET', 'offerers', null, res);
+
+            var attributes = {};
+
+            // Need USER values, so we get ALL USERS
+            var users = await db.users.findAll();
+
+            // But paginated OFFERERS
+            var output = await pagination(
+                db.offerers,
+                "offerers",
+                req.query.limit,
+                req.query.page,
+                attributes,
+                res,
+                next
+            )
+
+            var offerers = output.data;
+            var offerersView = [];
 
             for (let i = 0; i < users.length; i++) {
                 for (let j = 0; j < offerers.length; j++) {
@@ -40,52 +56,172 @@ module.exports = (app, db) => {
                     }
                 }
             }
-            res.status(200).json({
+
+            return res.status(200).json({
                 ok: true,
-                message: 'All offerers list',
-                data: offerersView
+                message: output.message,
+                data: offerersView,
+                total: output.count
             });
+
         } catch (err) {
             next({ type: 'error', error: err.message });
         }
 
     });
 
+    // GET one offerer offers by id
+    app.get('/offerer/:id([0-9]+)/offers', async(req, res, next) => {
+        const id = req.params.id;
+        let limit = Number(req.query.limit);
+        let page = Number(req.query.page);
+        let status = Number(req.query.status);
+        let offersWithStatus = [];
+        let statusName;
+        let statusBool = false;
+        if ( status >=0 && status <= 3 ) {
+            statusBool = true;
+        }
+        let draft = 0;
+        let open = 0;
+        let selection = 0;
+        let closed = 0;
+        let pages = 0;
+
+        
+        try {
+            await logger.saveLog('GET', 'offerer', id, res);
+            
+            let message = ``;
+
+            // But paginated OFFERERS
+            let offerer = await db.offerers.findOne({
+                where: { userId: id }
+            });
+            
+            if ( offerer ) {
+                let offers = await offerer.getOffers();
+                
+                let count = offers.length;
+
+                for (let i = 0; i < count; i++) {
+                    if( statusBool ){
+                        if (offers[i].status == status ) {
+                            offersWithStatus.push(offers[i])
+                        }
+                    }
+                    if( req.query.summary ){
+                        switch(offers[i].status){
+                            case 0: draft++; break;
+                            case 1: open++; break;
+                            case 2: selection++; break;
+                            case 3: closed++; break;
+                        }
+                    }
+                }
+
+                if( req.query.summary ){
+                    var totalOffers = count;
+                    count = [];
+                    count.push("Total: " + totalOffers);
+                    count.push("Draft: " + draft);
+                    count.push("Open: " + open);
+                    count.push("Selection: " + selection);
+                    count.push("Closed: " + closed);
+                }
+
+                if( limit && page ) {
+                    if ( offersWithStatus.length > 0 ) {
+                        console.log("offersWithStatus.length: ", offersWithStatus.length);
+                        pages = Math.ceil(offersWithStatus.length / limit);
+                    } else {
+                        console.log("offersWithStatus.length: ", offersWithStatus.length);
+                        pages = Math.ceil(totalOffers / limit);
+                    }
+                    
+                    offset = limit * (page - 1);
+                    
+                    if (page > pages) {
+                        return res.status(400).json({
+                            ok: false,
+                            message: `It doesn't exist ${ page } pages. Total of pages ${ pages }`
+                        })
+                    }
+                    if ( statusBool ){
+                        offers = await db.offers.findAll({where: {fk_offerer: id, status }, limit, offset})
+                    } else {
+                        offers = await offerer.getOffers({limit, offset});
+                    }
+                    message = `Listing ${ limit } of this user. Page ${ page } of ${ pages }.`;
+                } else {
+                    message = `Listing all offers of this user.`;
+                }
+
+                if ( statusBool ) {
+                    offers = offersWithStatus;
+                    message += ` With status = ${ status }`
+                }
+
+                return res.json({
+                    ok: true,
+                    message,
+                    data: offers,
+                    count
+                });
+
+            }
+
+        } catch (error) {
+            next({ type: 'error', error: error.message });
+        }
+    });
+
     // GET one offerer by id
     app.get('/offerer/:id([0-9]+)', async(req, res, next) => {
         const id = req.params.id;
-        await logger.saveLog('GET', 'offerer', id, res);
         try {
-            let users = await db.users.findOne({
+            await logger.saveLog('GET', 'offerer', id, res);
+
+            let user = await db.users.findOne({
                 where: { id }
             });
 
-            let offerers = await db.offerers.findOne({
+            let offerer = await db.offerers.findOne({
                 where: { userId: id }
             });
 
-            console.log("fdasfdsa");
-            if (users && offerers) {
-                console.log("entra");
+            if (user && offerer) {
                 const userOfferer = {
-                    id: offerers.userId,
-                    index: users.index,
-                    name: users.name,
-                    email: users.email,
-                    address: offerers.address,
-                    workField: offerers.workField,
-                    cif: offerers.cif,
-                    dateVerification: offerers.dateVerification,
-                    website: offerers.website,
-                    companySize: offerers.companySize,
-                    year: offerers.year,
-                    premium: offerers.premium,
-                    createdAt: offerers.createdAt,
-                    lastAccess: users.lastAccess,
-                    status: users.status,
-                    img: users.img
-
+                    id: offerer.userId,
+                    index: user.index,
+                    name: user.name,
+                    email: user.email,
+                    address: offerer.address,
+                    workField: offerer.workField,
+                    cif: offerer.cif,
+                    dateVerification: offerer.dateVerification,
+                    website: offerer.website,
+                    companySize: offerer.companySize,
+                    year: offerer.year,
+                    premium: offerer.premium,
+                    createdAt: offerer.createdAt,
+                    lastAccess: user.lastAccess,
+                    status: user.status,
+                    img: user.img,
+                    social_networks: []
                 };
+
+                let networks = await db.social_networks.findOne({
+                    where: { userId: user.id }
+                });
+
+                if( networks ) {
+                    networks.google ? userOfferer.social_networks.push({ google: networks.google }) : null;
+                    networks.twitter ? userOfferer.social_networks.push({ twitter: networks.twitter }) : null;
+                    networks.instagram ? userOfferer.social_networks.push({ instagram: networks.instagram }) : null;
+                    networks.telegram ? userOfferer.social_networks.push({ telegram: networks.telegram }) : null;
+                    networks.linkedin ? userOfferer.social_networks.push({ linkeding: networks.linkedin }): null;
+                }
 
                 return res.status(200).json({
                     ok: true,
@@ -105,10 +241,10 @@ module.exports = (app, db) => {
 
     // POST single offerer
     app.post('/offerer', async(req, res, next) => {
-        await logger.saveLog('POST', 'offerer', null, res);
-        let transaction;
 
         try {
+            await logger.saveLog('POST', 'offerer', null, res);
+
             const body = req.body;
             const password = body.password ? bcrypt.hashSync(body.password, 10) : null;
             var uservar;
@@ -121,13 +257,13 @@ module.exports = (app, db) => {
                             img: body.img,
                             bio: body.bio,
 
-                        }, { transaction: transaction })
+                        }, { transaction })
                         .then(_user => {
                             uservar = _user;
                             return createOfferer(body, _user, next, transaction);
                         })
                         .then(ending => {
-                            sendVerificationEmail(body,uservar);
+                            sendVerificationEmail(body, uservar);
                             return res.status(201).json({
                                 ok: true,
                                 message: `Offerer with id ${ending.userId} has been created.`
@@ -146,10 +282,11 @@ module.exports = (app, db) => {
 
     // Update offerer by themself
     app.put('/offerer', async(req, res, next) => {
-        let logId = await logger.saveLog('PUT', 'offerer', null, res);
         const updates = req.body;
 
         try {
+            let logId = await logger.saveLog('PUT', 'offerer', null, res);
+
             let id = tokenId.getTokenId(req.get('token'));
             logger.updateLog(logId, id);
             updateOfferer(id, updates, res);
@@ -162,9 +299,9 @@ module.exports = (app, db) => {
     app.put('/offerer/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
-        await logger.saveLog('PUT', 'offerer', id, res);
 
         try {
+            await logger.saveLog('PUT', 'offerer', id, res);
             updateOfferer(id, updates, res);
         } catch (err) {
             next({ type: 'error', error: err.message });
@@ -174,9 +311,10 @@ module.exports = (app, db) => {
     // DELETE
     app.delete('/offerer/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
-        await logger.saveLog('DELETE', 'offerer', id, res);
 
         try {
+            await logger.saveLog('DELETE', 'offerer', id, res);
+
             let offerer = await db.offerers.findOne({
                 where: { userId: id }
             });

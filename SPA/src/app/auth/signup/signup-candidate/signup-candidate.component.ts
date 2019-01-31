@@ -8,6 +8,7 @@ import {AuthEffects} from '../../store/auth.effects';
 import {filter} from 'rxjs/operators';
 import {DialogErrorComponent} from '../dialog-error/dialog-error.component';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from '@angular/common/http';
+import { TrySignupGoogle, TrySignupGitHub, TrySignupLinkedIn } from '../../store/auth.actions';
 
 interface City {
   name: string;
@@ -16,6 +17,8 @@ interface City {
     lng: number
   };
 }
+
+
 
 @Component({
   selector: 'app-signup-candidate',
@@ -210,7 +213,11 @@ export class SignupCandidateComponent implements OnInit {
       ).subscribe((error: { payload: any, type: string }) => {
         if (!this.dialogShown) {
           console.log(error.payload);
-          this.dialog.open(DialogErrorComponent);
+          this.dialog.open(DialogErrorComponent, {
+            data: {
+              error: error.payload,
+            }
+          });
           this.dialogShown = true;
         }
       });
@@ -310,6 +317,47 @@ export class SignupCandidateComponent implements OnInit {
         this.options = [];
       }
     }
+  }
+  
+  googleSignUp (stepper: MatStepper) {
+    console.log('google Sign Up');
+    this.store$.dispatch(new AuthActions.TrySignupGoogle());
+
+
+
+
+    // this.authEffects$.authSignupGoogle.pipe(
+    //   filter((action: Action) => action.type === AuthActions.AUTH_ERROR)
+    // ).subscribe((error: { payload: any, type: string }) => {
+    //   if (!this.dialogShown) {
+    //     console.log(error.payload);
+    //     this.dialog.open(DialogErrorComponent, {
+    //       data: {
+    //         error: error.payload,
+    //       }
+    //     });
+    //     this.dialogShown = true;
+    //   }
+    // });
+    // stepper.next();
+  }
+
+  gitHubSignUp(stepper: MatStepper) {
+    console.log('GitHub Sign Up');
+    this.store$.dispatch(new AuthActions.TrySignupGitHub());
+    stepper.next();
+  }
+
+  linkedInSignUp(stepper: MatStepper) {
+    console.log('linkedIn Sign Up');
+    this.store$.dispatch(new AuthActions.TrySignupLinkedIn());
+    // stepper.next();
+  }
+
+  twitterSignUp(stepper: MatStepper) {
+    console.log('twitter Sign Up');
+    stepper.next();
+
   }
 
 }
