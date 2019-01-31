@@ -127,7 +127,13 @@
         <br>
         <div fxLayout="row" fxLayout.xs="column">
           <mat-form-field>
-            <input formControlName="location" matInput placeholder="Location" required>
+            <input id="city" formControlName="location" matInput placeholder="Location" required [matAutocomplete]="auto" (keyup)="onKey($event)">
+            <mat-hint>City and Country</mat-hint>
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+              <mat-option *ngFor="let option of options; index as i" [value]="option">
+                {{option.name}}
+              </mat-option>
+            </mat-autocomplete>
             <mat-icon color="primary" matPrefix svgIcon="place"></mat-icon>
             <mat-error *ngIf="!secondFormGroup.get('location').valid ">
               This field is required

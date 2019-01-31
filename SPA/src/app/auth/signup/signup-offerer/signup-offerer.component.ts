@@ -7,6 +7,22 @@ import {filter} from 'rxjs/operators';
 import {Action, Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
 import {AuthEffects} from '../../store/auth.effects';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {Observable} from 'rxjs';
+
+interface City {
+  first: string;
+  second: string;
+  geo: {
+    lat: number,
+    lng: number
+  };
+}
+
+interface Address {
+  ad1: string;
+  ad2: string;
+}
 
 
 @Component({
@@ -16,6 +32,9 @@ import {AuthEffects} from '../../store/auth.effects';
     '../signup-candidate/signup-candidate.component.scss']
 })
 export class SignupOffererComponent implements OnInit {
+
+  options: City[] = [];
+  address: Address;
 
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
@@ -50,7 +69,9 @@ export class SignupOffererComponent implements OnInit {
 
   constructor(private _formBuilder: FormBuilder,
               public dialog: MatDialog,
-              private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects) {
+              private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects,
+              private httpClient: HttpClient) {
+    this.address = {ad1: null, ad2: null};
   }
 
   ngOnInit() {
@@ -108,6 +129,15 @@ export class SignupOffererComponent implements OnInit {
       }
     });
 
+    this.secondFormGroup.controls['address1'].valueChanges.subscribe(value => {
+      if (this.secondFormGroup.controls['address1'].value) {
+        const aux = this.secondFormGroup.controls['address1'].value;
+        if (aux.second) {
+          this.secondFormGroup.controls['address2'].setValue(aux.second);
+        }
+      }
+    });
+
   }
 
 
@@ -134,6 +164,7 @@ export class SignupOffererComponent implements OnInit {
   onSave(stepper: MatStepper) {
     this.dialogShown = false;
     // console.log(this.secondFormGroup);
+    console.log(this.secondFormGroup.controls['address1'].value);
 
     if (this.secondFormGroup.status === 'VALID') {
 
@@ -167,6 +198,66 @@ export class SignupOffererComponent implements OnInit {
           this.dialogShown = true;
         }
       });
+    }
+  }
+
+  displayFn(city?: City): string | undefined {
+    return city ? city.first : undefined;
+  }
+
+  onKey(event: any) { // without type info
+    // q=benidorm&format=json&addressdetails=1&limit=5&polygon_svg=1
+
+    if (event.key !== 'ArrowUp' &&
+      event.key !== 'ArrowRight' &&
+      event.key !== 'ArrowDown' &&
+      event.key !== 'ArrowLeft' &&
+      event.key !== 'Enter') {
+
+      let ad1 = this.secondFormGroup.get('address1').value;
+      if (!ad1.first) {
+        ad1 = this.secondFormGroup.get('address1').value;
+        this.secondFormGroup.get('address2').setValue(null);
+      } else {
+        ad1 = ad1.first;
+      }
+
+      const ad2 = this.secondFormGroup.get('address2').value;
+
+      if ((ad1 as string).length > 2) {
+        const options = {
+          params: new HttpParams().set('query', ad1 + ', ' + ad2)
+            .append('type', 'address'),
+          headers: new HttpHeaders().append('X-Algolia-Application-Id', 'pl6XVPPQOTDD')
+            .append('X-Algolia-API-Key', 'c02074725fd0344cc60949c969775748')
+        };
+        this.options = [];
+        // https://nominatim.openstreetmap.org/search/03502?format=json&addressdetails=1&limit=5&polygon_svg=1
+        this.httpClient.get('https://places-dsn.algolia.net/1/places/query', options)
+          .subscribe((data: any) => {
+            console.log('Consulta:');
+            console.log(data);
+            console.log('Valor de address:');
+            console.log(this.secondFormGroup.get('address1').value);
+            data.hits.forEach((e, i) => {
+              const auxCity = {
+                first: data.hits[i].locale_names.default
+                  + ', ' + (data.hits[i].city ? data.hits[i].city.default : ''),
+                second: data.hits[i].administrative
+                  + ', ' + (data.hits[i].postcode ? data.hits[i].postcode[0] : '')
+                  + ', ' + (data.hits[i].country ? data.hits[i].country.default : ''),
+                geo: data.hits[i]._geoloc ? data.hits[i]._geoloc : {}
+              };
+              if (data.hits[i].locale_names.default) {
+                if (!this.options.some(element => element.first === auxCity.first)) {
+                  this.options.push(auxCity);
+                }
+              }
+            });
+          });
+      } else {
+        this.options = [];
+      }
     }
   }
 }

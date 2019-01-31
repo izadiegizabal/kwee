@@ -2,10 +2,12 @@ import {NgModule} from '@angular/core';
 import {PreloadAllModules, RouterModule, Routes} from '@angular/router';
 import {CandidateHomeComponent} from './candidate-home/candidate-home.component';
 import {OfferDetailComponent} from './shared/offer-detail/offer-detail.component';
+import {PrivacyComponent} from './privacy/privacy.component';
 
 const routes: Routes = [
   {path: '', redirectTo: '/candidate-home', pathMatch: 'full'},
   {path: 'candidate-home', component: CandidateHomeComponent},
+  {path: 'privacy', component: PrivacyComponent},
   {path: 'offer/:id/:name', component: OfferDetailComponent},
   {path: 'admin', loadChildren: './admin/admin.module#AdminModule'},
   {path: 'signup', loadChildren: './auth/signup/signup.module#SignupModule'},

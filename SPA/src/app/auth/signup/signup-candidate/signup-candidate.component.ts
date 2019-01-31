@@ -7,13 +7,25 @@ import * as AuthActions from '../../store/auth.actions';
 import {AuthEffects} from '../../store/auth.effects';
 import {filter} from 'rxjs/operators';
 import {DialogErrorComponent} from '../dialog-error/dialog-error.component';
+import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from '@angular/common/http';
+
+interface City {
+  name: string;
+  geo: {
+    lat: number,
+    lng: number
+  };
+}
 
 @Component({
   selector: 'app-signup-candidate',
   templateUrl: './signup-candidate.component.html',
   styleUrls: ['./signup-candidate.component.scss'],
 })
+
 export class SignupCandidateComponent implements OnInit {
+
+  options: City[] = [];
 
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
@@ -46,7 +58,8 @@ export class SignupCandidateComponent implements OnInit {
 
   constructor(private _formBuilder: FormBuilder,
               public dialog: MatDialog,
-              private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects) {
+              private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects,
+              private httpClient: HttpClient) {
     this.iskill = 0;
     this.iskillang = 0;
   }
@@ -171,6 +184,7 @@ export class SignupCandidateComponent implements OnInit {
   onSave(stepper: MatStepper) {
     this.dialogShown = false;
     // console.log(this.secondFormGroup);
+    console.log(this.secondFormGroup.controls['location'].value);
 
     if (this.secondFormGroup.status === 'VALID') {
 
@@ -249,6 +263,53 @@ export class SignupCandidateComponent implements OnInit {
 
   formInitialized(name: string, form: FormGroup) {
     this.thirdFormGroup.setControl(name, form);
+  }
+
+  capitalizeFirstLetter(string: string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
+  displayFn(city?: City): string | undefined {
+    return city ? city.name : undefined;
+  }
+
+  onKey(event: any) { // without type info
+    // q=benidorm&format=json&addressdetails=1&limit=5&polygon_svg=1
+
+    if (event.key !== 'ArrowUp' &&
+      event.key !== 'ArrowRight' &&
+      event.key !== 'ArrowDown' &&
+      event.key !== 'ArrowLeft' &&
+      event.key !== 'Enter') {
+      const text: string = (document.getElementById('city') as HTMLInputElement).value;
+      if (text.length > 2) {
+        const options = {
+          params: new HttpParams().set('query', text)
+            .append('type', 'city'),
+          headers: new HttpHeaders().append('X-Algolia-Application-Id', 'pl6XVPPQOTDD')
+            .append('X-Algolia-API-Key', 'c02074725fd0344cc60949c969775748')
+        };
+        this.options = [];
+        // https://nominatim.openstreetmap.org/search/03502?format=json&addressdetails=1&limit=5&polygon_svg=1
+        this.httpClient.get('https://places-dsn.algolia.net/1/places/query', options)
+          .subscribe((data: any) => {
+            console.log(data);
+            data.hits.forEach((e, i) => {
+              const auxCity = {
+                name: data.hits[i].locale_names.default + ', ' + this.capitalizeFirstLetter(data.hits[i].country_code),
+                geo: data.hits[i]._geoloc ? data.hits[i]._geoloc : {}
+            }
+              if (data.hits[i].is_city) {
+                if (!this.options.some(element => element.name === auxCity.name)) {
+                  this.options.push(auxCity);
+                }
+              }
+            });
+          });
+      } else {
+        this.options = [];
+      }
+    }
   }
 
 }

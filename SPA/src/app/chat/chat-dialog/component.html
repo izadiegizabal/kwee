@@ -1,0 +1,43 @@
+<h2 mat-dialog-title>Talk to Iwi</h2>
+<mat-dialog-content class="mat-typography" style="height: 400px;
+      width: 600px">
+  <ng-container *ngFor="let message of messages | async">
+
+    <mat-card *ngIf="message.type==0" class="message" [ngClass]="{ 'from': message.sentBy === 'bot',
+                                      'to':   message.sentBy === 'user' }">
+      <mat-card-content>{{ message.content }}</mat-card-content>
+    </mat-card>
+
+    <mat-chip-list *ngIf="message.type==2" class="toLeft">
+        <mat-chip color="primary" *ngFor="let chip of message.obj.chips" (click)="sendReply(chip)">{{chip}}</mat-chip>
+    </mat-chip-list>
+
+    <mat-card class="example-card" *ngIf="message.type==1">
+      <mat-card-header>
+        <div mat-card-avatar class="example-header-image"></div>
+        <mat-card-title>{{message.content}}</mat-card-title>
+      </mat-card-header>
+      <img mat-card-image [src]='message.obj.img' alt="Photo of an offer">
+      <mat-card-content>
+        <p>
+          {{message.obj.subtitle}}
+        </p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button (click)="openTab(message.obj.link)">{{message.obj.button}}</button>
+      </mat-card-actions>
+    </mat-card>
+
+  </ng-container>
+
+
+
+</mat-dialog-content>
+<mat-dialog-actions>
+  <mat-form-field class="example-full-width" style="width: 75%; margin-right: 1em;">
+    <input [(ngModel)]="formValue" matInput  (keyup.enter)="sendMessage()" type="text" id="nameField">
+  </mat-form-field>
+
+  <button color="accent" mat-raised-button (click)="sendMessage()" align="end" style="width: 20%;">Send</button>
+  <!--<button mat-button mat-dialog-close cdkFocusInitial>Done</button>-->
+</mat-dialog-actions>
