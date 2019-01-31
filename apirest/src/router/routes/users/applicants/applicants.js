@@ -198,11 +198,11 @@ module.exports = (app, db) => {
                         })
                 })
                 .catch(err => {
-                    return next({ type: 'error', error: err.message });
+                    return next({ type: 'error', error: err.errors[0].message });
                 })
 
         } catch (err) {
-            return next({ type: 'error', error: err.message });
+            return next({ type: 'error', error: err.errors[0].message });
         }
     });
 

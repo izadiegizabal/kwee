@@ -149,6 +149,7 @@ module.exports = (app, db) => {
             resOffer = await db.offers.findOne({
                 where: { id },
                 attributes: [
+                    'id',
                     'fk_offerer',
                     'status',
                     'title',
