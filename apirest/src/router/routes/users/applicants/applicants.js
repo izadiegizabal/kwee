@@ -204,6 +204,35 @@ module.exports = (app, db) => {
         }
     });
 
+    app.post('/applicant/info', async(req, res, next) => {
+
+        const body = req.body;
+        let id = tokenId.getTokenId(req.get('token'));
+        
+        try {
+            let applicant = await db.applicants.findOne({
+                where: { userId: id }
+            });
+            if ( applicant ) {
+                await setEducations(applicant, body, next).then( async () => {
+                    await setSkills(applicant, body, next).then( async () => {
+                        await setLanguages(applicant, body, next).then( async () => {
+                            await setExperiences(id, body, next).then( async () => {
+                                return res.status(200).json({
+                                    ok: true,
+                                    message: "Added the info of this user"
+                                });
+                            });
+                        });
+                    });
+                });
+            }
+        } catch (err) {
+            return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
+        }
+
+    });
+
     // Update applicant by themself
     app.put('/applicant', async(req, res, next) => {
         const updates = req.body;
@@ -374,5 +403,111 @@ module.exports = (app, db) => {
         }
 
         return data;
+    }
+
+    async function setEducations( applicant, body, next ) {
+        if( body.educations ) {
+            try {
+                if ( body.educations.length > 0 ) {
+                    for (let i = 0; i < body.educations.length; i++) {
+                        await applicant.addEducation(body.educations[i].fk_education, {
+                            through: {
+                                description: body.educations[i].description,
+                                date_start: body.educations[i].date_start,
+                                date_end: body.educations[i].date_end,
+                                institution: body.educations[i].institution
+                            }
+                        }).then(result => {
+                            if (result) {
+                                console.log(`Education with id ${ body.educations[i].fk_education } added to this user`);
+                            } else {
+                                console.log('Education no added');
+                                return false;
+                            }
+                        }).catch(err => {
+                            return next({ type: 'error', error: err.message });
+                        })
+                    }
+                    return true;
+                }
+            } catch (err) {
+                return next({ type: 'error', error: err.message });
+            }
+        }
+    }
+
+    async function setSkills( applicant, body, next ) {
+        if( body.skills ) {
+            try {
+                if ( body.skills.length > 0 ) {
+                    for (let i = 0; i < body.skills.length; i++) {
+                        await applicant.addSkill(body.skills[i].fk_skill, {
+                            through: {
+                                description: body.skills[i].description,
+                                level: body.skills[i].level,
+                            }
+                        }).then(result => {
+                            if (result) {
+                                console.log(`Skill with id ${ body.skills[i].fk_skill } added to this user`);
+                            } else {
+                                console.log('Skill no added');
+                                return false;
+                            }
+                        }).catch(err => {
+                            return next({ type: 'error', error: err.message });
+                        })
+                    }
+                    return true;
+                }
+            } catch (err) {
+                return next({ type: 'error', error: err.message });
+            }
+        }
+    }
+
+    async function setLanguages( applicant, body, next ) {
+        if( body.languages ) {
+            try {
+                if ( body.languages.length > 0 ) {
+                    for (let i = 0; i < body.languages.length; i++) {
+                        await applicant.addLanguage(body.languages[i].fk_language, {
+                            through: {
+                                level: body.languages[i].level,
+                            }
+                        }).then(result => {
+                            if (result) {
+                                console.log(`Language with id ${ body.languages[i].fk_language } added to this user`);
+                            } else {
+                                console.log('Language no added');
+                            }
+                        }).catch(err => {
+                            return next({ type: 'error', error: err.message });
+                        })
+                    }
+                }
+            } catch (err) {
+                return next({ type: 'error', error: err.message });
+            }
+        }
+    }
+
+    async function setExperiences( id, body, next ) {
+        if( body.experiences ) {
+            try {
+                if ( body.experiences.length > 0 ) {
+                    for (let i = 0; i < body.experiences.length; i++) {
+                        await db.experiences.create({
+                            fk_applicant: id,
+                            title: body.experiences[i].title,
+                            description: body.experiences[i].description,
+                            date_start: body.experiences[i].date_start,
+                            date_end: body.experiences[i].date_end,
+                        });
+                    }
+                }
+            } catch (err) {
+                return next({ type: 'error', error: err.message });
+            }
+        }
     }
 }
