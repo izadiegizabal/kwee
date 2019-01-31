@@ -27,7 +27,7 @@ export class AuthEffects {
               email: string
               id: number
               name: string
-              root: boolean
+              type: string
               lastAccess: Date
             }
           }) => {
@@ -45,7 +45,7 @@ export class AuthEffects {
                   email: res.data.email,
                   id: res.data.id,
                   name: res.data.name,
-                  root: res.data.root
+                  type: res.data.type
                 }
               }
             ];

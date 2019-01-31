@@ -23,17 +23,23 @@
   </button>
   <button
     routerLink="/my-offers"
-    mat-menu-item *ngIf="userType==='business' || userType==='candidate'">
+    mat-menu-item *ngIf="userType==='offerer' || userType==='applicant'">
     <mat-icon svgIcon="work"></mat-icon>
     <span>My Offers</span>
   </button>
-  <button mat-menu-item *ngIf="userType==='business'">
+  <button mat-menu-item *ngIf="userType==='offerer'">
     <mat-icon svgIcon="people"></mat-icon>
     <span>Search Candidates</span>
   </button>
-  <button mat-menu-item *ngIf="userType==='candidate'">
+  <button mat-menu-item *ngIf="userType==='applicant'">
     <mat-icon svgIcon="domain"></mat-icon>
     <span>Search Businesses</span>
+  </button>
+  <button
+    routerLink="/kwee-live"
+    mat-menu-item *ngIf="userType==='offerer' || userType==='applicant'">
+    <mat-icon svgIcon="public"></mat-icon>
+    <span>Kwee Live</span>
   </button>
   <button mat-menu-item>
     <mat-icon svgIcon="settings"></mat-icon>
