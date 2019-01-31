@@ -36,6 +36,12 @@
     <span>Search Businesses</span>
   </button>
   <button
+    routerLink="/invoices"
+    mat-menu-item *ngIf="userType==='offerer' || userType==='applicant'">
+    <mat-icon svgIcon="insert-drive-file"></mat-icon>
+    <span>Invoices</span>
+  </button>
+  <button
     routerLink="/kwee-live"
     mat-menu-item *ngIf="userType==='offerer' || userType==='applicant'">
     <mat-icon svgIcon="public"></mat-icon>
