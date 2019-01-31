@@ -64,11 +64,13 @@
     <div fxLayout="row" style="margin-top: 16px">
       <mat-card fxFlex="100" style="padding: 0 !important;">
         <mat-tab-group>
+          <mat-tab label="Opinions">
+            <app-candidate-profile-opinions></app-candidate-profile-opinions>
+          </mat-tab>
           <mat-tab label="More Info">
             <!--<app-candidate-more-info [candidate]="(profilesState | async).candidate"></app-candidate-more-info>-->
             <app-candidate-more-info [candidate]="candidate"></app-candidate-more-info>
           </mat-tab>
-          <mat-tab label="Opinions"> Content 2</mat-tab>
           <mat-tab label="Offers"> Content 3</mat-tab>
         </mat-tab-group>
       </mat-card>
