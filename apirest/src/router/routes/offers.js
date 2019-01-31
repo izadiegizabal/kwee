@@ -72,19 +72,26 @@ module.exports = (app, db) => {
             var attributes = [
                 'id',
                 'fk_offerer',
-                'status',
                 'title',
+                'status',
                 'description',
                 'datePublished',
                 'dateStart',
                 'dateEnd',
                 'location',
-                'salary',
+                'isIndefinite',
+                'salaryAmount',
                 'salaryFrecuency',
                 'salaryCurrency',
                 'workLocation',
-                'seniority',
-                'responsabilities'
+                'contractType',
+                'maxApplicants',
+                'currentApplications',
+                //'seniority',
+                //'responsabilities',
+                //'skills',
+                //'duration',
+                //'durationUnit',
             ]
 
             var output = await pagination(
@@ -104,8 +111,8 @@ module.exports = (app, db) => {
                     'id',
                     'name',
                     'img',
-                    'bio',
-                    'index'
+                    'index',
+                    //'bio'
                 ]
             })
 
@@ -118,6 +125,8 @@ module.exports = (app, db) => {
                 ret[count].user = {};
                 ret[count].offer = offers[count];
                 ret[count].user = users.find(element => offers[count]['fk_offerer'] == element.id);
+                
+                ret[count].offer.fk_offerer = undefined;
             }
 
             return res.status(200).json({
@@ -140,6 +149,7 @@ module.exports = (app, db) => {
             resOffer = await db.offers.findOne({
                 where: { id },
                 attributes: [
+                    'id',
                     'fk_offerer',
                     'status',
                     'title',
@@ -148,13 +158,20 @@ module.exports = (app, db) => {
                     'dateStart',
                     'dateEnd',
                     'location',
-                    'salary',
+                    'salaryAmount',
                     'salaryFrecuency',
                     'salaryCurrency',
                     'workLocation',
                     'seniority',
                     'responsabilities',
-                    'requeriments'
+                    'requeriments', //
+                    'skills',
+                    'maxApplicants',
+                    'currentApplications',
+                    'duration',
+                    'durationUnit',
+                    'contractType',
+                    'isIndefinite'
                 ]
             });
 
@@ -168,12 +185,14 @@ module.exports = (app, db) => {
                 ]
             });
 
-            resOffer.fk_offerer = undefined;
+            //resOffer.fk_offerer = undefined;
 
             return res.status(200).json({
                 ok: true,
-                offer: resOffer,
-                user: resUser,
+                data: {
+                    offer: resOffer,
+                    user: resUser
+                }
             });
 
         } catch (err) {
@@ -181,6 +200,8 @@ module.exports = (app, db) => {
         }
     });
 
+
+    
     // POST single offer
     app.post('/offer', async(req, res, next) => {
 
@@ -198,18 +219,26 @@ module.exports = (app, db) => {
                 dateStart: body.dateStart,
                 dateEnd: body.dateEnd,
                 location: body.location,
-                salary: body.salary,
+                salaryAmount: body.salaryAmount,
                 salaryFrecuency: body.salaryFrecuency,
                 salaryCurrency: body.salaryCurrency,
                 workLocation: body.workLocation,
                 seniority: body.seniority,
                 responsabilities: body.responsabilities,
-                requeriments: body.requeriments
+                requeriments: body.requeriments,
+                skills: body.skills,
+                maxApplicants: body.maxApplicants,
+                currentApplications: body.currentApplications,
+                duration: body.duration,
+                durationUnit: body.durationUnit,
+                contractType: body.contractType,
+                isIndefinite: body.isIndefinite
             }).then(result => {
                 return res.status(201).json({
                     ok: true,
                     message: 'Offer created',
                     data: {
+                        fk_offerer: result.id,
                         status: result.status,
                         title: result.title,
                         description: result.description,
@@ -217,13 +246,20 @@ module.exports = (app, db) => {
                         dateStart: result.dateStart,
                         dateEnd: result.dateEnd,
                         location: result.location,
-                        salary: result.salary,
+                        salaryAmount: result.salaryAmount,
                         salaryFrecuency: result.salaryFrecuency,
                         salaryCurrency: result.salaryCurrency,
                         workLocation: result.workLocation,
                         seniority: result.seniority,
                         responsabilities: result.responsabilities,
-                        requeriments: result.requeriments
+                        requeriments: result.requeriments,
+                        skills: body.skills,
+                        maxApplicants: body.maxApplicants,
+                        currentApplications: body.currentApplications,
+                        duration: body.duration,
+                        durationUnit: body.durationUnit,
+                        contractType: body.contractType,
+                        isIndefinite: body.isIndefinite
                     }
                 });
             });
@@ -281,7 +317,7 @@ module.exports = (app, db) => {
     });
 
     function buildQuery( body ) {
-        let title, description, dateStart, dateEnd, location, salary, status, datePublished, requeriments, skills;
+        let title, description, dateStart, dateEnd, location, salaryAmount, status, datePublished, requeriments, skills;
 
         // Building an array with all the searchs
         // one element to each search parametre
@@ -292,12 +328,18 @@ module.exports = (app, db) => {
         body.dateStart ? query = getQueryDate(query, 'dateStart', body.dateStart) : null;
         body.dateEnd ? query = getQueryDate(query, 'dateEnd', body.dateEnd) : null;
         body.location ? query = getQuerySearch(query, 'location', body.location) : null;
-        body.salary ? query.push(`(salary >= ${ body.salary[0] } AND salary <= ${ body.salary[1] })`) : null;
+        body.salaryAmount ? query.push(`(salaryAmount >= ${ body.salaryAmount[0] } AND salaryAmount <= ${ body.salaryAmount[1] })`) : null;
         body.status ? query = getQuerySearch(query, 'location', body.location) : null;
         body.datePublished ? query = getQueryDate(query, 'datePublished', body.datePublished) : null;
         body.requeriments ? query.push(`requeriments LIKE '%${ body.requeriments }%'`) : null;
         body.skills ? query = getQuerySearch(query, 'skills', body.skills) : null;
-    
+        body.maxApplicants ? query.push(`(maxApplicants >= ${ body.maxApplicants[0] } AND maxApplicants <= ${ body.maxApplicants[1] })`) : null;
+        body.currentApplications ? query.push(`(currentApplications >= ${ body.currentApplications[0] } AND currentApplications <= ${ body.currentApplications[1] })`) : null;
+        body.duration ? query.push(`(duration >= ${ body.duration[0] } AND duration <= ${ body.duration[1] })`) : null;
+        body.durationUnit ? query.push(`(durationUnit >= ${ body.durationUnit[0] } AND durationUnit <= ${ body.durationUnit[1] })`) : null;
+        body.contractType ? query.push(`(contractType >= ${ body.contractType[0] } AND contractType <= ${ body.contractType[1] })`) : null;
+        body.isIndefinite ? query.push(`(isIndefinite >= ${ body.isIndefinite[0] } AND isIndefinite <= ${ body.isIndefinite[1] })`) : null;
+
         return query;
     }
 

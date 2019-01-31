@@ -13,7 +13,8 @@ module.exports = (app, db) => {
 
             return res.status(200).json({
                 ok: true,
-                applications: await db.applications.findAll()
+                message: `Showing all applications`,
+                data: await db.applications.findAll()
             });
         } catch (err) {
             next({ type: 'error', error: 'Error getting data' });
@@ -60,7 +61,8 @@ module.exports = (app, db) => {
         try {
             res.status(200).json({
                 ok: true,
-                application: await db.applications.findOne({
+                message: `Showing offer application ${params.fk_offer} of applicant ${params.fk_applicant}`,
+                data: await db.applications.findOne({
                     where: { fk_applicant: params.fk_applicant, fk_offer: params.fk_offer }
                 })
             });
@@ -70,14 +72,15 @@ module.exports = (app, db) => {
         }
     });
 
-    // GET one applicant_language by one id
+    // GET one application by applicant id
     app.get("/application/:fk_applicant([0-9]+)", checkToken, async(req, res, next) => {
         const params = req.params;
 
         try {
             res.status(200).json({
                 ok: true,
-                application: await db.applications.findAll({
+                message: `Showing applications of user ${ params.fk_applicant}`,
+                data: await db.applications.findAll({
                     where: { fk_applicant: params.fk_applicant }
                 })
             });

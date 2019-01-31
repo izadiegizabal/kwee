@@ -34,6 +34,7 @@ module.exports = (app, db) => {
 
             for (let i = 0; i < users.length; i++) {
                 for (let j = 0; j < applicants.length; j++) {
+                    
                     if (users[i].id === applicants[j].userId) {
                         applicantsView[j] = {
                             id: applicants[j].userId,
@@ -49,6 +50,7 @@ module.exports = (app, db) => {
                             img: users[i].img,
                             bio: users[i].bio,
                         }
+                        
                     }
                 }
             }
@@ -196,11 +198,11 @@ module.exports = (app, db) => {
                         })
                 })
                 .catch(err => {
-                    return next({ type: 'error', error: err.message });
+                    return next({ type: 'error', error: err.errors[0].message });
                 })
 
         } catch (err) {
-            return next({ type: 'error', error: err.message });
+            return next({ type: 'error', error: err.errors[0].message });
         }
     });
 

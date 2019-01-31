@@ -83,44 +83,6 @@ module.exports = (sequelize, DateTypes) => {
             }
         },
 
-        location: {
-            type: DateTypes.STRING(),
-            allowNull: false,
-            validate: {
-                notEmpty: {
-                    "args": true,
-                    "msg": "Location should be filled."
-                }
-            }
-        },
-
-        salary: {
-            type: DateTypes.INTEGER,
-            allowNull: false,
-            validate: {
-                notEmpty: {
-                    "args": true,
-                    "msg": "Salary should be filled."
-                },
-                isNumeric: {
-                    "args": true,
-                    "msg": "Salary should be a number."
-                }
-            }
-        },
-
-        status: {
-            type: DateTypes.INTEGER,
-            allowNull: false,
-            defaultValue: 0,
-            validate: {
-                isIn: {
-                    args: [[0,1,2,3]],
-                    msg: "Invalid status type. Only valid 0,1,2 or 3."
-                }
-            }
-        },
-
         datePublished: {
             type: DateTypes.DATE,
             allowNull: false,
@@ -136,13 +98,52 @@ module.exports = (sequelize, DateTypes) => {
             }
         },
 
+        location: {
+            type: DateTypes.STRING(),
+            allowNull: false,
+            validate: {
+                notEmpty: {
+                    "args": true,
+                    "msg": "Location should be filled."
+                }
+            }
+        },
+
+        
+        status: {
+            type: DateTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 2,
+            validate: {
+                isIn: {
+                    args: [[0,1,2,3]],
+                    msg: "Invalid status type. Only valid 0 (Open), 1 (Closed), 2 (Draft), 3 (Selection)."
+                }
+            }
+        },
+        
+        
+        salaryAmount: {
+            type: DateTypes.INTEGER,
+            allowNull: false,
+            validate: {
+                notEmpty: {
+                    "args": true,
+                    "msg": "Salary should be filled."
+                },
+                isNumeric: {
+                    "args": true,
+                    "msg": "Salary should be a number."
+                }
+            }
+        },
         salaryFrecuency: {
             type: DateTypes.INTEGER,
             allowNull: false,
             validate: {
                 isIn: {
                     args: [[0,1,2,3]],
-                    msg: "Invalid salary type. Only valid 0,1,2 or 3."
+                    msg: "Invalid salary type. Only valid 0 (per hour), 1 (per month), 2 (per year) or 3 (for the project)."
                 }
             }
         },
@@ -164,7 +165,7 @@ module.exports = (sequelize, DateTypes) => {
             validate: {
                 isIn: {
                     args: [[0,1,2]],
-                    msg: "Invalid workLocation type. Only valid 0,1 or 2."
+                    msg: "Invalid workLocation type. Only valid 0 (On Site), 1 (Remote) or 2 (Partially Remote)."
                 }
             }
         },
@@ -175,7 +176,68 @@ module.exports = (sequelize, DateTypes) => {
             validate: {
                 isIn: {
                     args: [[0,1,2,3]],
-                    msg: "Invalid seniority type. Only valid 0,1,2 or 3."
+                    msg: "Invalid seniority type. Only valid 0 (Entry-Junior), 1 (Intermediate), 2 (Senior) or 3 (Lead)."
+                }
+            }
+        },
+
+        maxApplicants: {
+            type: DateTypes.INTEGER,
+            allowNull: false,
+            validate: {
+                notEmpty: {
+                    "args": true,
+                    "msg": "maxApplicants should be filled (integer). maxApplicants = Max of jobs offered"
+                }
+            }
+        },
+
+        currentApplications: {
+            type: DateTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0
+        },
+
+        duration: {
+            type: DateTypes.INTEGER,
+            allowNull: false,
+            validate: {
+                notEmpty: {
+                    "args": true,
+                    "msg": "Duration should be filled (integer). Is the quantity of durationUnit. (2 duration of 2 durationUnit = 2 years)"
+                }
+            }
+        },
+
+        durationUnit: {
+            type: DateTypes.INTEGER,
+            allowNull: false,
+            validate: {
+                isIn: {
+                    args: [[0,1,2]],
+                    msg: "Invalid duration number. Only 0 (for days), 1 (for months) or 2 (for years)."
+                }
+            }
+        },
+
+        isIndefinite: {
+            type: DateTypes.BOOLEAN,
+            allowNull: false,
+            validate: {
+                notEmpty: {
+                    "args": true,
+                    "msg": "isIndefinite should be filled (boolean)."
+                }
+            }
+        },
+
+        contractType: {
+            type: DateTypes.INTEGER,
+            allowNull: false,
+            validate: {
+                isIn: {
+                    args: [[0,1,2,3]],
+                    msg: "Invalid contract type number. Only 0 (Full-Time), 1 (Part-Time), 2 (Internship) or 3 (End of Degree Project)."
                 }
             }
         },
@@ -193,7 +255,7 @@ module.exports = (sequelize, DateTypes) => {
         skills: {
             type: DateTypes.TEXT,
             allowNull: true,
-        }
+        },
 
         /////////////////
 

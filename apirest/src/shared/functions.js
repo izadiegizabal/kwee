@@ -188,7 +188,6 @@ async function pagination( db, dbname, _limit, _page, attr, res, next){
     
             message = `Listing ${ limit } ${ dbname }. Page ${ page } of ${ pages }.`
         }
-
         output.data = data;
         output.message = message;
         output.count = countTotal.count;
