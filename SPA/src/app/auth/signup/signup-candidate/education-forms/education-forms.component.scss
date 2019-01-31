@@ -1,0 +1,17 @@
+mat-form-field mat-icon {
+  margin-right: 8px;
+}
+
+mat-datepicker-toggle {
+  font-size: 1.5rem;
+  color: #546e7a;
+  margin-left: -4;
+}
+
+.example-month-picker .mat-calendar-period-button {
+  pointer-events: none;
+}
+
+.example-month-picker .mat-calendar-arrow {
+  display: none;
+}

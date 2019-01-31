@@ -1,0 +1,24 @@
+mat-sidenav-container {
+  background-color: white;
+  min-height: 500px;
+}
+
+mat-sidenav {
+  width: 225px;
+}
+
+mat-sidenav-content {
+  padding-left: 16px;
+  padding-bottom: 24px;
+}
+
+button mat-icon {
+  margin-right: 8px;
+}
+
+.mat-badge-content {
+  right: -1px !important;
+  top: -1px !important;
+  font-size: 0.6rem;
+  color: white;
+}

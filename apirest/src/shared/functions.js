@@ -100,6 +100,53 @@ function sendVerificationEmail(body, user) {
     });
 }
 
+function sendEmailResetPassword(user, res) {
+    // Generate test SMTP service account from gmail
+    let data = fs.readFileSync(path.join(__dirname, '../templates/emailResetPassword.html'), 'utf-8');
+    let token = auth.auth.encode(user);
+
+    // let urlValidation = `${ env.URL }/email-verified/` + token;
+    let urlValidation = `http://localhost:4200/reset-password/` + token;
+
+    nodemailer.createTestAccount((err, account) => {
+        // create reusable transporter object using the default SMTP transport
+
+        let transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false, // true for 465, false for other ports
+            auth: {
+                user: env.EMAIL,
+                pass: env.EMAIL_PASSWORD
+            }
+        });
+
+        // setup email data with unicode symbols
+        let mailOptions = {
+            from: '"Kwee 👻" <hello@kwee.ovh>', // sender address
+            to: user.email,
+            subject: 'Reset password ✔', // Subject line
+            html: data.replace('@@name@@', user.email).replace('@@url@@', urlValidation)
+        };
+
+        // send mail with defined transport object
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.log("error: ", error);
+                return res.status(400).json({
+                    ok: false,
+                    message: "Error sending email reset password"
+                });
+            }
+            return res.status(200).json({
+                ok: true,
+                message: "Reset password email sended",
+                token
+            });
+        });
+    });
+}
+
 
 async function pagination( db, dbname, _limit, _page, attr, res, next){
     var output = {};
@@ -111,11 +158,9 @@ async function pagination( db, dbname, _limit, _page, attr, res, next){
         var countTotal = await db.findAndCountAll();
 
         if( _limit === undefined || _page === undefined ){
-            data = await db.findAll({attributes: attr});
+            data = await db.findAll();
             message = `Listing all ${dbname}`;
-        }
-        else{
-
+        } else {
             let limit = Number(_limit);
             let page = Number(_page);
             
@@ -133,6 +178,8 @@ async function pagination( db, dbname, _limit, _page, attr, res, next){
                     message: `It doesn't exist ${ page } pages`
                 })
             }
+            // if (attr.length == 0) attr = '';
+            
             data = await db.findAll({
                 attributes: attr,
                 limit,
@@ -148,8 +195,8 @@ async function pagination( db, dbname, _limit, _page, attr, res, next){
         return output;
 
     }
-    catch{
-        next({ type: 'error', error: 'Error on pagination' });
+    catch(error){
+        next({ type: 'error', error: error });
     }
     
 }
@@ -167,6 +214,7 @@ module.exports = {
     tokenId,
     logger,
     sendVerificationEmail,
+    sendEmailResetPassword,
     pagination,
     validateDate
 }

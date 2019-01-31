@@ -1,5 +1,5 @@
 const { checkToken, checkAdmin } = require('../../../middlewares/authentication');
-const { tokenId, logger, sendVerificationEmail, pagination } = require('../../../shared/functions');
+const { tokenId, logger, sendVerificationEmail, sendEmailResetPassword, pagination } = require('../../../shared/functions');
 const bcrypt = require('bcryptjs');
 
 
@@ -13,11 +13,14 @@ module.exports = (app, db) => {
     app.get('/users', async(req, res, next) => {
         try {
 
-            var attributes = [
-                'id',
-                'name',
-                'email'
-            ];
+            var attributes = {
+                include: [
+                    'id',
+                    'name',
+                    'email'
+                ],
+                exclude: ['password']
+            };
 
             var output = await pagination(
                 db.users,
@@ -27,7 +30,6 @@ module.exports = (app, db) => {
                 attributes,
                 res,
                 next);
-
 
             return res.status(200).json({
                 ok: true,
@@ -174,6 +176,60 @@ module.exports = (app, db) => {
         } catch (err) {
             next({ type: 'error', error: 'Error deleting user.' });
         }
+    });
+
+    app.post('/forgot', async(req, res, next) => {
+        try {
+            let email = req.body.email;
+            let user = await db.users.findOne({where: { email }});
+
+            if( user ) {
+                sendEmailResetPassword(user, res);
+            } else {
+                return res.status(400).json({
+                    ok: false,
+                    message: "Email not found in our database"
+                });
+            }
+        } catch (error) {
+            next({ type: 'error', error });
+        }
+    });
+    
+    app.post('/reset', async(req, res, next) => {
+        let token = req.body.token;
+        let password = req.body.password;
+
+        try {
+            let id = tokenId.getTokenId(token);
+            let user = await db.users.findOne({where: { id }});
+
+            if ( user ) {
+                password = bcrypt.hashSync(password, 10)
+                let updated = await db.users.update({password}, {
+                    where: { id }
+                });
+                if ( updated ) {
+                    return res.json({
+                        ok: true,
+                        message: 'Password changed'
+                    });
+                } else {
+                    return res.status(400).json({
+                        ok: false,
+                        message: "Password not updated."
+                    });
+                }
+            } else {
+                return res.status(400).json({
+                    ok: false,
+                    message: "User not matched."
+                });
+            }
+        } catch (error) {
+            next({ type: 'error', error });
+        }
+
     });
 
     async function updateUser(id, updates, res) {

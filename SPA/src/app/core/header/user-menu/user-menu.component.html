@@ -1,0 +1,57 @@
+<mat-menu #menu="matMenu">
+  <div class="welcomeMsg">
+    Hi, <strong>{{username}}</strong>!
+    <br>
+    <a [routerLink]="'/' + userType + '/' + userId + '/' + urlfyUser()">View Profile</a>
+  </div>
+  <mat-divider></mat-divider>
+  <button mat-menu-item>
+    <mat-icon svgIcon="notifications"></mat-icon>
+    <span>Notifications</span>
+  </button>
+  <button mat-menu-item>
+    <mat-icon svgIcon="chat"></mat-icon>
+    <span>Messages</span>
+  </button>
+  <button routerLink="/admin/manage-candidates" mat-menu-item *ngIf="userType==='admin'">
+    <mat-icon svgIcon="people"></mat-icon>
+    <span>Manage Users</span>
+  </button>
+  <button routerLink="/admin/statistics" mat-menu-item *ngIf="userType==='admin'">
+    <mat-icon svgIcon="timeline"></mat-icon>
+    <span>Stats</span>
+  </button>
+  <button
+    routerLink="/my-offers"
+    mat-menu-item *ngIf="userType==='business' || userType==='candidate'">
+    <mat-icon svgIcon="work"></mat-icon>
+    <span>My Offers</span>
+  </button>
+  <button mat-menu-item *ngIf="userType==='business'">
+    <mat-icon svgIcon="people"></mat-icon>
+    <span>Search Candidates</span>
+  </button>
+  <button mat-menu-item *ngIf="userType==='candidate'">
+    <mat-icon svgIcon="domain"></mat-icon>
+    <span>Search Businesses</span>
+  </button>
+  <button mat-menu-item>
+    <mat-icon svgIcon="settings"></mat-icon>
+    <span>Settings</span>
+  </button>
+  <mat-divider></mat-divider>
+  <button (click)="logOut()" mat-menu-item>Sign out</button>
+</mat-menu>
+
+
+<button mat-icon-button class="profileLogo" color="primary">
+  <a [matMenuTriggerFor]="menu">
+    <mat-icon svgIcon="account-circle"></mat-icon>
+    <br>
+    <div>Me
+      <div>
+        <mat-icon svgIcon="arrow-drop-down"></mat-icon>
+      </div>
+    </div>
+  </a>
+</button>

@@ -7,3 +7,5 @@ mongoose.connect('mongodb://localhost:27017/kwee', { useNewUrlParser: true }, (e
     console.log("Base de datos en Mongo online");
 
 });
+
+mongoose.set('useFindAndModify', false);

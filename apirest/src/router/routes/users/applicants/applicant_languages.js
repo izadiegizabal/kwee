@@ -86,12 +86,12 @@ module.exports = (app, db) => {
                     }
                 }
 
-                await applicant.addLanguage(body.fk_language, {
+                await applicant.addLanguage(fk_language, {
                     through: {
                         level: body.level
                     }
-                }).then(result => {
-                    if (result) {
+                }).then(created => {
+                    if (created) {
                         return res.status(201).json({
                             ok: true,
                             message: "Added language to applicant"
@@ -111,7 +111,7 @@ module.exports = (app, db) => {
                 });
             }
         } catch (err) {
-            next({ type: 'error', error: err.message });
+            next({ type: 'error', error: err[0].message });
         }
     });
 

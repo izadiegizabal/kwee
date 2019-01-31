@@ -1,0 +1,5 @@
+<div fxFlex="96%" fxFlex.gt-sm="75%" fxFlexOffset="16px" fxLayout="column" fxLayoutGap="16px">
+  <app-searchbar></app-searchbar>
+  <app-offer-preview-card *ngFor="let offer of (offersState | async).offers;" [offer]="offer">
+  </app-offer-preview-card>
+</div>

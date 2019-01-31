@@ -146,7 +146,6 @@ module.exports = (app, db) => {
             // if not, create new rating
 
             if (ratingBefore) {
-                console.log("ya estaba rateado");
                 rating = ratingBefore;
             } else {
                 rating = await db.ratings.create({
