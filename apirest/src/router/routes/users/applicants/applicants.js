@@ -409,26 +409,26 @@ module.exports = (app, db) => {
         if( body.educations ) {
             try {
                 if ( body.educations.length > 0 ) {
-                    for (let i = 0; i < body.educations.length; i++) {
-                        await applicant.addEducation(body.educations[i].fk_education, {
-                            through: {
-                                description: body.educations[i].description,
-                                date_start: body.educations[i].date_start,
-                                date_end: body.educations[i].date_end,
-                                institution: body.educations[i].institution
-                            }
-                        }).then(result => {
-                            if (result) {
-                                console.log(`Education with id ${ body.educations[i].fk_education } added to this user`);
-                            } else {
-                                console.log('Education no added');
-                                return false;
-                            }
-                        }).catch(err => {
-                            return next({ type: 'error', error: err.message });
-                        })
-                    }
-                    return true;
+                    return new Promise(async(resolve, reject) => {
+                        for (let i = 0; i < body.educations.length; i++) {
+                            await applicant.addEducation(body.educations[i].fk_education, {
+                                through: {
+                                    description: body.educations[i].description,
+                                    date_start: body.educations[i].date_start,
+                                    date_end: body.educations[i].date_end,
+                                    institution: body.educations[i].institution
+                                }
+                            }).then(result => {
+                                if (result) {
+                                    return resolve('Education Added');
+                                } else {
+                                    return reject(new Error('Education not added'));
+                                }
+                            }).catch(err => {
+                                return next({ type: 'error', error: err.message });
+                            })
+                        }
+                    });
                 }
             } catch (err) {
                 return next({ type: 'error', error: err.message });
@@ -440,24 +440,24 @@ module.exports = (app, db) => {
         if( body.skills ) {
             try {
                 if ( body.skills.length > 0 ) {
-                    for (let i = 0; i < body.skills.length; i++) {
-                        await applicant.addSkill(body.skills[i].fk_skill, {
-                            through: {
-                                description: body.skills[i].description,
-                                level: body.skills[i].level,
-                            }
-                        }).then(result => {
-                            if (result) {
-                                console.log(`Skill with id ${ body.skills[i].fk_skill } added to this user`);
-                            } else {
-                                console.log('Skill no added');
-                                return false;
-                            }
-                        }).catch(err => {
-                            return next({ type: 'error', error: err.message });
-                        })
-                    }
-                    return true;
+                    return new Promise(async(resolve, reject) => {
+                        for (let i = 0; i < body.skills.length; i++) {
+                            await applicant.addSkill(body.skills[i].fk_skill, {
+                                through: {
+                                    description: body.skills[i].description,
+                                    level: body.skills[i].level,
+                                }
+                            }).then(result => {
+                                if (result) {
+                                    return resolve('Skill added');
+                                } else {
+                                    return reject(new Error('Skill not added'));
+                                }
+                            }).catch(err => {
+                                return next({ type: 'error', error: err.message });
+                            })
+                        }
+                    });
                 }
             } catch (err) {
                 return next({ type: 'error', error: err.message });
@@ -469,21 +469,23 @@ module.exports = (app, db) => {
         if( body.languages ) {
             try {
                 if ( body.languages.length > 0 ) {
-                    for (let i = 0; i < body.languages.length; i++) {
-                        await applicant.addLanguage(body.languages[i].fk_language, {
-                            through: {
-                                level: body.languages[i].level,
-                            }
-                        }).then(result => {
-                            if (result) {
-                                console.log(`Language with id ${ body.languages[i].fk_language } added to this user`);
-                            } else {
-                                console.log('Language no added');
-                            }
-                        }).catch(err => {
-                            return next({ type: 'error', error: err.message });
-                        })
-                    }
+                    return new Promise(async(resolve, reject) => {
+                        for (let i = 0; i < body.languages.length; i++) {
+                            await applicant.addLanguage(body.languages[i].fk_language, {
+                                through: {
+                                    level: body.languages[i].level,
+                                }
+                            }).then(result => {
+                                if (result) {
+                                    return resolve('Language added');
+                                } else {
+                                    return reject(new Error('Language not added'));
+                                }
+                            }).catch(err => {
+                                return next({ type: 'error', error: err.message });
+                            })
+                        }
+                    });
                 }
             } catch (err) {
                 return next({ type: 'error', error: err.message });
