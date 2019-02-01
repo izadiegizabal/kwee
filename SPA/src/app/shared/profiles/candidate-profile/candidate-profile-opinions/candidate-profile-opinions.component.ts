@@ -7,7 +7,6 @@ import {UtilsService} from '../../../utils.service';
   styleUrls: ['./candidate-profile-opinions.component.scss']
 })
 export class CandidateProfileOpinionsComponent implements OnInit {
-  panelOpenState = false;
 
   opinions = [
     {
@@ -19,7 +18,7 @@ export class CandidateProfileOpinionsComponent implements OnInit {
       userName: 'Google SA.',
       userIndex: 88,
       opinionScore: 3,
-      ratingScore: 5.1,
+      ratingScore: 4.1,
       opinion: 'He\'s a really nice worker and it\'s always a pleasure to work with him. He arrives punctually and he\'s very professional',
       details: {
         efficiency: 5,
@@ -47,7 +46,7 @@ export class CandidateProfileOpinionsComponent implements OnInit {
       userName: 'Amazon',
       userIndex: 88,
       opinionScore: 3,
-      ratingScore: 5.1,
+      ratingScore: 3.2,
       opinion: 'He\'s a really nice worker and it\'s always a pleasure to work with him. He arrives punctually and he\'s very professional',
       details: {
         efficiency: 5,

@@ -18,10 +18,13 @@
           fxLayoutAlign="center stretch" fxLayoutAlign.lt-sm="center center"
           fxLayout="row" fxLayout.lt-sm="column">
           <img
+            fxlayout="column"
+            fxFlex="200px"
             width="200px" height="200px"
             src="{{(profilesState | async).candidate.img}}"
             alt="{{(profilesState | async).candidate.name + ' profile picture'}}'"/>
           <p
+            fxLayout="column"
             fxLayoutAlign="center center">
             {{(profilesState | async).candidate.bio}}
           </p>
@@ -64,12 +67,12 @@
     <div fxLayout="row" style="margin-top: 16px">
       <mat-card fxFlex="100" style="padding: 0 !important;">
         <mat-tab-group>
-          <mat-tab label="Opinions">
-            <app-candidate-profile-opinions></app-candidate-profile-opinions>
-          </mat-tab>
           <mat-tab label="More Info">
             <!--<app-candidate-more-info [candidate]="(profilesState | async).candidate"></app-candidate-more-info>-->
             <app-candidate-more-info [candidate]="candidate"></app-candidate-more-info>
+          </mat-tab>
+          <mat-tab label="Opinions">
+            <app-candidate-profile-opinions></app-candidate-profile-opinions>
           </mat-tab>
           <mat-tab label="Offers"> Content 3</mat-tab>
         </mat-tab-group>

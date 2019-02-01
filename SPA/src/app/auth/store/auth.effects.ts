@@ -6,7 +6,6 @@ import {Actions, Effect, ofType} from '@ngrx/effects';
 import {Observable, of, throwError} from 'rxjs';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
-import { TRY_SIGNUP_LINKEDIN } from './auth.actions';
 
 @Injectable()
 export class AuthEffects {
@@ -31,6 +30,15 @@ export class AuthEffects {
               lastAccess: Date
             }
           }) => {
+            switch (res.data.type) {
+              case 'offerer':
+                res.data.type = 'business';
+                break;
+              case 'applicant':
+                res.data.type = 'candidate';
+                break;
+            }
+
             return [
               {
                 type: AuthActions.SIGNIN
