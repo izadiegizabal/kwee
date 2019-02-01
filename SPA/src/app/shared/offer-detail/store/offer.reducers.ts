@@ -1,29 +1,39 @@
 import * as OfferActions from './offer.actions';
 
 export interface State {
- // offer: {
+  offer: {
     offer: {
-      status: number,
-      title: string,
-      description: string,
+      contractType: number,
+      currentApplications: number,
+      dateEnd: Date,
       datePublished: Date,
       dateStart: Date,
-      dateEnd: Date,
+      description: string,
+      duration: number,
+      durationUnit: number,
+      fk_offerer: number,
+      id: number,
+      isIndefinite: boolean,
       location: string,
-      salary: number,
-      salaryFrecuency: number,
-      salaryCurrency: string,
-      workLocation: number,
-      seniority: number,
+      maxApplicants: number,
+      requeriments: string,
       responsabilities: string,
-    /*},
+      salaryAmount: number,
+      salaryCurrency: string,
+      salaryFrecuency: number,
+      seniority: number,
+      skills: string[],
+      status: number,
+      title: string,
+      workLocation: number,
+    },
     user: {
       id: number,
       name: string,
       img: string,
       bio: string,
       index: number,
-    }*/
+    }
   };
 }
 

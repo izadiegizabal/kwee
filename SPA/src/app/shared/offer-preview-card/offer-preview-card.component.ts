@@ -24,7 +24,7 @@ export class OfferPreviewCardComponent implements OnInit {
   }
 
   urlfyPosition() {
-    return '/offer/' + this.offer.user.id + '/' + this.offer.offer.title.toLowerCase().replace(/ /g, '-');
+    return '/offer/' + this.offer.offer.id + '/' + this.offer.offer.title.toLowerCase().replace(/ /g, '-');
   }
 
 

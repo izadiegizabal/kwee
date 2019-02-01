@@ -24,7 +24,9 @@ import {ActivatedRoute} from '@angular/router';
   styleUrls: ['./offer-detail.component.scss']
 })
 export class OfferDetailComponent implements OnInit {
-  offer: Offer = {
+  offerSkills: [ ' ' ];
+  offerRequeriments: [ ' ' ];
+  /*offer: Offer = {
     // Basic info
     id: 1,
     title: 'Senior SEO Consultant',
@@ -91,7 +93,7 @@ export class OfferDetailComponent implements OnInit {
       'Program Development',
       'Fashion'
     ],
-  };
+  };*/
 
   offerState: Observable<fromOffer.State>;
 
@@ -100,61 +102,70 @@ export class OfferDetailComponent implements OnInit {
 
   ngOnInit() {
     const params = this.activatedRoute.snapshot.params;
-    console.log(params.id);
     this.store$.dispatch(new OfferActions.TryGetOffer({id: params.id}));
     this.offerState = this.store$.pipe(select(state => state.offer));
   }
 
-  getTimePassed() {
-    return this._utils.getTimePassed(this.offer.publishDate);
+  getTimePassed(publishDate) {
+    return this._utils.getTimePassed(new Date(publishDate));
   }
 
   getOfferStatus(status) {
     return OfferStatus[status];
   }
 
-  getOfferDuration() {
-    if (this.offer.isIndefinite) {
+  getOfferDuration(isIndefinite, duration, durationUnit) {
+    if (isIndefinite) {
       return 'Indefinite';
     } else {
-      if (this.offer.duration > 1) {
-        return this.offer.duration + ' ' + JobDurationUnit[this.offer.durationUnit];
+      if (duration > 1) {
+        return duration + ' ' + JobDurationUnit[durationUnit];
       } else {
-        return this.offer.duration + ' ' + JobDurationUnit[this.offer.durationUnit].slice(0, -1);
+        return duration + ' ' + JobDurationUnit[durationUnit].slice(0, -1);
       }
     }
   }
 
-  getOfferContractType() {
-    return ContractType[this.offer.contractType];
+  getOfferContractType(contractType) {
+    return ContractType[contractType];
   }
 
-  getOfferSeniorityLevel() {
-    return SeniorityLevel[this.offer.seniority] + ' Position';
+  getOfferSeniorityLevel(seniority) {
+    return SeniorityLevel[seniority] + ' Position';
   }
 
-  getOfferSalary() {
-    return this.offer.salaryAmount + this.offer.salaryCurrency + ' ' + SalaryFrequency[this.offer.salaryFrequency];
+  getOfferSalary(salaryAmount, salaryCurrency, salaryFrequency) {
+    return salaryAmount + salaryCurrency + ' ' + SalaryFrequency[salaryFrequency];
   }
 
-  getOfferLocation() {
-    let location = this.offer.location ? this.offer.location : '';
-    if (location !== '' && this.offer.workLocation !== WorkLocationType['On Site']) {
+  getOfferLocation(offerlocation, workLocation) {
+    let location = offerlocation ? offerlocation : '';
+    if (location !== '' && workLocation !== WorkLocationType['On Site']) {
       location += ' - ';
-      location += WorkLocationType[this.offer.workLocation];
+      location += WorkLocationType[workLocation];
     } else if (location === '') {
-      location = WorkLocationType[this.offer.workLocation];
+      location = WorkLocationType[workLocation];
     }
 
     return location;
   }
 
-  getOfferApplications() {
-    const numOfApplications = this.offer.applications;
+  getOfferApplications(applications) {
+    const numOfApplications = applications;
     return numOfApplications + (numOfApplications === 1 ? ' application' : ' applications');
   }
 
-  getShareableOffer() {
-    return {title: this.offer.title, url: window.location.href};
+  getShareableOffer(title) {
+    return {title: title, url: window.location.href};
+  }
+
+  getSkills(skills) {
+    this.offerSkills = skills.split([',']);
+    return this.offerSkills;
+  }
+
+  getRequirements(requirements) {
+    this.offerRequeriments = requirements.split(['\n']);
+    return this.offerRequeriments;
   }
 }
