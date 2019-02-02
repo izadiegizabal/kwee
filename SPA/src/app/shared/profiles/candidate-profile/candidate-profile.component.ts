@@ -5,7 +5,7 @@ import * as fromApp from '../../../store/app.reducers';
 import * as ProfilesActions from './../store/profiles.actions';
 import * as fromProfiles from './../store/profiles.reducers';
 import {UtilsService} from '../../utils.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-candidate-profile',
@@ -74,7 +74,10 @@ export class CandidateProfileComponent implements OnInit {
 
   profilesState: Observable<fromProfiles.State>;
 
-  constructor(private _utils: UtilsService, private store$: Store<fromApp.AppState>, private activatedRoute: ActivatedRoute) {
+  constructor(private _utils: UtilsService,
+              private store$: Store<fromApp.AppState>,
+              private activatedRoute: ActivatedRoute,
+              private router: Router) {
   }
 
   ngOnInit() {
@@ -86,4 +89,9 @@ export class CandidateProfileComponent implements OnInit {
     // this.profilesState = this.store$.pipe(select(state => state.profiles));
   }
 
+  goToMyOffers(tabIndex: number) {
+    if (tabIndex && tabIndex === 2) {
+      this.router.navigate(['/my-offers']);
+    }
+  }
 }
