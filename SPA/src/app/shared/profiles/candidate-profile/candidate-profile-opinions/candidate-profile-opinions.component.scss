@@ -37,14 +37,25 @@ mat-panel-title .mat-button {
   }
 }
 
-mat-list-item span {
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
-  background: #444B54;
-  color: white;
-  text-align: center;
-  margin-right: 8px;
+::ng-deep .opinionDetails .mat-expansion-panel-body {
+  padding: 0 !important;
+}
+
+mat-expansion-panel h4 {
+  margin-left: 16px;
+}
+
+mat-list-item {
+
+  span {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    background: #444B54;
+    color: white;
+    text-align: center;
+    margin-right: 8px;
+  }
 }
 
 mat-icon {

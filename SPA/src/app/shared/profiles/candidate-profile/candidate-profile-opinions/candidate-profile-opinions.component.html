@@ -42,7 +42,7 @@
     </div>
     <mat-card-content>
       <mat-expansion-panel
-        class="mat-elevation-z0"
+        class="mat-elevation-z0 opinionDetails"
         (opened)="opinion.panelOpenState = true"
         (closed)="opinion.panelOpenState = false"
       >
@@ -54,7 +54,7 @@
 
         <h4>Details</h4>
         <div fxLayout="row">
-          <div fxLayout="column" fxFlex="50">
+          <div fxLayout="column" fxFlex="50%">
             <mat-list>
               <mat-list-item>
                 <span>{{opinion.details.efficiency}}</span>
@@ -70,7 +70,7 @@
               </mat-list-item>
             </mat-list>
           </div>
-          <div fxLayout="column">
+          <div fxLayout="column" fxFlex="50%">
             <mat-list>
               <mat-list-item>
                 <span>{{opinion.details.hygiene}}</span>

@@ -68,6 +68,24 @@ export class CandidateProfileComponent implements OnInit {
           '“digital leisure”.'
       }
     ],
+    languages: [
+      {
+        name: 'Basque',
+        level: 'Native'
+      },
+      {
+        name: 'Spanish',
+        level: 'Native'
+      },
+      {
+        name: 'English',
+        level: 'Full Business Proficiency'
+      },
+      {
+        name: 'Japanese',
+        level: 'Elementary Proficiency'
+      },
+    ],
     skills: ['Java', 'Android', 'Kotlin', 'HTML', 'CSS', 'JS', 'Angular', 'Android Studio', 'MySQL',
     ]
   };

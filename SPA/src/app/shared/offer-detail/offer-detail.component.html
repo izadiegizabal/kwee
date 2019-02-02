@@ -6,11 +6,14 @@
       <mat-card-title fxLayout="row" fxLayoutGap="16px">
         <span>{{(offerState | async).offer.offer.title }}</span>
         <mat-chip-list fxHide fxShow.gt-sm>
-          <mat-chip color="primary" selected style="pointer-events: none">{{ getOfferStatus((offerState | async).offer.offer.status) | titlecase}}</mat-chip>
+          <mat-chip color="primary" selected
+                    style="pointer-events: none">{{ getOfferStatus((offerState | async).offer.offer.status) | titlecase}}</mat-chip>
         </mat-chip-list>
       </mat-card-title>
       <mat-card-subtitle>
-        <span [routerLink]="'/business/' + (offerState | async).offer.user.id + '/' + (offerState | async).offer.user.name + '/'" style="cursor: pointer">
+        <span
+          [routerLink]="'/business/' + (offerState | async).offer.user.id + '/' + (offerState | async).offer.user.name + '/'"
+          style="cursor: pointer">
           <app-offerer-name-overview [index]="(offerState | async).offer.user.index"
                                      [name]="(offerState | async).offer.user.name"></app-offerer-name-overview>
         </span>
@@ -22,18 +25,23 @@
         fxLayout.lt-md="column"
         fxLayoutAlign="end start"
         fxLayoutGap="16px">
-        <app-icon-with-text [text]="getTimePassed((offerState | async).offer.offer.datePublished)" icon="access-time"></app-icon-with-text>
-        <app-icon-with-text [text]="(offerState | async).offer.offer.dateStart | date" icon="alarm"></app-icon-with-text>
+        <app-icon-with-text [text]="getTimePassed((offerState | async).offer.offer.datePublished)"
+                            icon="access-time"></app-icon-with-text>
+        <app-icon-with-text [text]="(offerState | async).offer.offer.dateStart | date"
+                            icon="alarm"></app-icon-with-text>
       </div>
       <mat-card-subtitle
         class="quickInfo"
         fxHide.gt-xs
         fxLayout="row"
         fxLayoutGap="16px">
-        <app-icon-with-text [text]="getTimePassed((offerState | async).offer.offer.datePublished)" icon="access-time"></app-icon-with-text>
-        <app-icon-with-text [text]="(offerState | async).offer.offer.dateStart | date" icon="alarm"></app-icon-with-text>
+        <app-icon-with-text [text]="getTimePassed((offerState | async).offer.offer.datePublished)"
+                            icon="access-time"></app-icon-with-text>
+        <app-icon-with-text [text]="(offerState | async).offer.offer.dateStart | date"
+                            icon="alarm"></app-icon-with-text>
         <mat-chip-list>
-          <mat-chip color="primary" selected style="pointer-events: none">{{ getOfferStatus((offerState | async).offer.offer.status) | titlecase}}</mat-chip>
+          <mat-chip color="primary" selected
+                    style="pointer-events: none">{{ getOfferStatus((offerState | async).offer.offer.status) | titlecase}}</mat-chip>
         </mat-chip-list>
       </mat-card-subtitle>
     </mat-card-header>
@@ -63,17 +71,26 @@
                fxLayout="column"
                fxLayoutAlign="start start"
                fxLayoutGap="8px">
-            <app-icon-with-text [text]="getOfferDuration((offerState | async).offer.offer.isIndefinite, (offerState | async).offer.offer.duration, (offerState | async).offer.offer.durationUnit) | lowercase" icon="date-range"></app-icon-with-text>
-            <app-icon-with-text [text]="getOfferSalary((offerState | async).offer.offer.salaryAmount, (offerState | async).offer.offer.salaryCurrency, (offerState | async).offer.offer.salaryFrecuency)" icon="local-atm"></app-icon-with-text>
-            <app-icon-with-text [text]="getOfferSeniorityLevel((offerState | async).offer.offer.seniority)" icon="face"></app-icon-with-text>
+            <app-icon-with-text
+              [text]="getOfferDuration((offerState | async).offer.offer.isIndefinite, (offerState | async).offer.offer.duration, (offerState | async).offer.offer.durationUnit) | lowercase"
+              icon="date-range"></app-icon-with-text>
+            <app-icon-with-text
+              [text]="getOfferSalary((offerState | async).offer.offer.salaryAmount, (offerState | async).offer.offer.salaryCurrency, (offerState | async).offer.offer.salaryFrecuency)"
+              icon="local-atm"></app-icon-with-text>
+            <app-icon-with-text [text]="getOfferSeniorityLevel((offerState | async).offer.offer.seniority)"
+                                icon="face"></app-icon-with-text>
           </div>
           <div fxFlex="33%" fxFlex.lt-sm="100%"
                fxLayout="column"
                fxLayoutAlign="start start"
                fxLayoutGap="8px">
-            <app-icon-with-text [text]="getOfferContractType((offerState | async).offer.offer.contractType)" icon="work"></app-icon-with-text>
-            <app-icon-with-text [text]="getOfferLocation((offerState | async).offer.offer.location, (offerState | async).offer.offer.workLocation)" icon="place"></app-icon-with-text>
-            <app-icon-with-text [text]="getOfferApplications((offerState | async).offer.offer.currentApplications)" icon="people"></app-icon-with-text>
+            <app-icon-with-text [text]="getOfferContractType((offerState | async).offer.offer.contractType)"
+                                icon="work"></app-icon-with-text>
+            <app-icon-with-text
+              [text]="getOfferLocation((offerState | async).offer.offer.location, (offerState | async).offer.offer.workLocation)"
+              icon="place"></app-icon-with-text>
+            <app-icon-with-text [text]="getOfferApplications((offerState | async).offer.offer.currentApplications)"
+                                icon="people"></app-icon-with-text>
           </div>
           <div fxFlex="33%"
                fxHide.xs
