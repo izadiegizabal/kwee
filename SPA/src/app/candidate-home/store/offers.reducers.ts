@@ -3,6 +3,7 @@ import * as OffersActions from './offers.actions';
 export interface State {
   offers: {
     offer: {
+      id: number,
       status: number,
       title: string,
       description: string,
@@ -10,12 +11,17 @@ export interface State {
       dateStart: Date,
       dateEnd: Date,
       location: string,
-      salary: number,
+      salaryAmount: number,
       salaryFrecuency: number,
       salaryCurrency: string,
       workLocation: number,
       seniority: number,
-      responsabilities: string,
+      isIndefinite: boolean,
+      duration: number,
+      durationUnit: number,
+      fk_offerer: number,
+      contractType: number,
+
     },
     user: {
       id: number,

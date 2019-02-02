@@ -39,8 +39,7 @@ export interface State {
 
 const initialState: State = {
     offer: null,
-  }
-;
+};
 
 export function offerReducer(state = initialState, action: OfferActions.OfferActions) {
   switch (action.type) {
@@ -48,6 +47,10 @@ export function offerReducer(state = initialState, action: OfferActions.OfferAct
       return {
         ...state,
         offer: action.payload
+      };
+    case OfferActions.POST_APPLICATION:
+      return {
+        ...state,
       };
     default:
       return state;

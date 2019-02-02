@@ -83,7 +83,7 @@
                fxShow.gt-xs>
             <button color="accent"
                     mat-raised-button
-                    style="color: white">{{'Apply Now!' | uppercase }}</button>
+                    style="color: white" (click)="postApplication()">{{'Apply Now!' | uppercase }}</button>
             <app-sns-share [offer]="getShareableOffer((offerState | async).offer.offer.title)"></app-sns-share>
           </div>
         </div>
@@ -100,30 +100,19 @@
 
       <div fxLayout="column">
         <h2 class="mat-h2">Responsibilities</h2>
-       <!-- <div
+        <div
           fxLayout="row"
           style="white-space: pre-wrap; margin-bottom: 16px">
           {{(offerState | async).offer.offer.responsabilities}}
         </div>
-        -->
-        <div *ngFor="let responsabilities of getRequirements((offerState | async).offer.offer.responsabilities); let i = index"
-             fxLayout="row"
-             style="white-space: pre-wrap; margin-bottom: 16px">
-          <mat-list-item>
-            {{'- ' + responsabilities}}
-          </mat-list-item>
-        </div>
-
       </div>
 
       <div fxLayout="column">
         <h2 class="mat-h2">Requirements</h2>
-        <div *ngFor="let requeriments of getRequirements((offerState | async).offer.offer.requeriments); let i = index"
+        <div
           fxLayout="row"
           style="white-space: pre-wrap; margin-bottom: 16px">
-          <mat-list-item>
-            {{'- ' + requeriments}}
-          </mat-list-item>
+            {{(offerState | async).offer.offer.requeriments}}
         </div>
       </div>
 
