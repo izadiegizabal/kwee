@@ -8,10 +8,12 @@ import {authReducer} from '../store/auth.reducers';
 import {EffectsModule} from '@ngrx/effects';
 import {AuthEffects} from '../store/auth.effects';
 import {HttpClientModule} from '@angular/common/http';
+import {ResetDialogComponent} from './reset-dialog/reset-dialog.component';
 
 @NgModule({
   declarations: [
     SigninComponent,
+    ResetDialogComponent,
   ],
   imports: [
     SharedModule,
@@ -21,7 +23,10 @@ import {HttpClientModule} from '@angular/common/http';
     FormsModule,
     StoreModule.forFeature('auth', authReducer),
     EffectsModule.forFeature([AuthEffects])
-  ]
+  ],
+  entryComponents: [
+    ResetDialogComponent
+  ],
 })
 export class SigninModule {
 
