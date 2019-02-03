@@ -15,7 +15,7 @@ import {PageEvent} from '@angular/material';
 export class CandidateHomeComponent implements OnInit {
   offersState: Observable<fromOffers.State>;
 
-  pageSize = 10;
+  pageSize = 2;
   pageSizeOptions: number[] = [2, 5, 10, 25, 100];
 
   // MatPaginator Output
