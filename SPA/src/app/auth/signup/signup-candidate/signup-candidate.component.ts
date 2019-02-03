@@ -7,8 +7,7 @@ import * as AuthActions from '../../store/auth.actions';
 import {AuthEffects} from '../../store/auth.effects';
 import {filter} from 'rxjs/operators';
 import {DialogErrorComponent} from '../dialog-error/dialog-error.component';
-import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from '@angular/common/http';
-import { TrySignupGoogle, TrySignupGitHub, TrySignupLinkedIn } from '../../store/auth.actions';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 
 interface City {
   name: string;
@@ -17,7 +16,6 @@ interface City {
     lng: number
   };
 }
-
 
 
 @Component({
@@ -305,7 +303,7 @@ export class SignupCandidateComponent implements OnInit {
               const auxCity = {
                 name: data.hits[i].locale_names.default + ', ' + this.capitalizeFirstLetter(data.hits[i].country_code),
                 geo: data.hits[i]._geoloc ? data.hits[i]._geoloc : {}
-            }
+              };
               if (data.hits[i].is_city) {
                 if (!this.options.some(element => element.name === auxCity.name)) {
                   this.options.push(auxCity);
@@ -318,12 +316,10 @@ export class SignupCandidateComponent implements OnInit {
       }
     }
   }
-  
-  googleSignUp (stepper: MatStepper) {
+
+  googleSignUp(stepper: MatStepper) {
     console.log('google Sign Up');
     this.store$.dispatch(new AuthActions.TrySignupGoogle());
-
-
 
 
     // this.authEffects$.authSignupGoogle.pipe(
