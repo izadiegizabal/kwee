@@ -22,7 +22,7 @@ module.exports = (app, db) => {
     });
 
     // GET applications by page limit to 10 applications/page
-    app.get('/applications/:page([0-9]+)/:limit([0-9]+)', async(req, res, next) => {
+    app.get('/applications/:page([0-9]+)/:limit([0-9]+)', checkToken ,async(req, res, next) => {
         let limit = Number(req.params.limit);
         let page = Number(req.params.page);
 
@@ -59,7 +59,7 @@ module.exports = (app, db) => {
         const params = req.params;
 
         try {
-            res.status(200).json({
+            return res.status(200).json({
                 ok: true,
                 message: `Showing offer application ${params.fk_offer} of applicant ${params.fk_applicant}`,
                 data: await db.applications.findOne({
@@ -72,7 +72,7 @@ module.exports = (app, db) => {
         }
     });
 
-    // GET one application by applicant id
+    // GET applications by applicant id
     app.get("/application/:fk_applicant([0-9]+)", checkToken, async(req, res, next) => {
         const params = req.params;
 

@@ -104,9 +104,12 @@ function sendEmailResetPassword(user, res) {
     // Generate test SMTP service account from gmail
     let data = fs.readFileSync(path.join(__dirname, '../templates/emailResetPassword.html'), 'utf-8');
     let token = auth.auth.encode(user);
-
+    
     // let urlValidation = `${ env.URL }/email-verified/` + token;
-    let urlValidation = `http://localhost:4200/reset-password/` + token;
+
+    let urlValidation = `${ env.URL }/reset-password/` + token;
+
+    //let urlValidation = `http://localhost:4200/reset-password/` + token;
 
     nodemailer.createTestAccount((err, account) => {
         // create reusable transporter object using the default SMTP transport
@@ -141,7 +144,7 @@ function sendEmailResetPassword(user, res) {
             return res.status(200).json({
                 ok: true,
                 message: "Reset password email sended",
-                token
+                //token
             });
         });
     });

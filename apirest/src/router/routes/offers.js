@@ -90,8 +90,8 @@ module.exports = (app, db) => {
                 //'seniority',
                 //'responsabilities',
                 //'skills',
-                //'duration',
-                //'durationUnit',
+                'duration',
+                'durationUnit',
             ]
 
             var output = await pagination(
