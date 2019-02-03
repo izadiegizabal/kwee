@@ -4,8 +4,8 @@ const env = require('../../tools/constants')
 // const { HttpException, HttpStatus } = require('@nestjs/common');
 
 class Auth {
-    encode(user) {
-        return jwt.sign({ id: user.id }, env.JSONWEBTOKEN_SECRET, { expiresIn: env.JSONWEBTOKEN_EXPIRES, issuer: env.JSONWEBTOKEN_ISSUER });
+    encode(user, expires) {
+        return jwt.sign({ id: user.id }, env.JSONWEBTOKEN_SECRET, { expiresIn: expires ? expires : env.JSONWEBTOKEN_EXPIRES, issuer: env.JSONWEBTOKEN_ISSUER });
     }
 
     decode(token) {

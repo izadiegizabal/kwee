@@ -103,7 +103,7 @@ function sendVerificationEmail(body, user) {
 function sendEmailResetPassword(user, res) {
     // Generate test SMTP service account from gmail
     let data = fs.readFileSync(path.join(__dirname, '../templates/emailResetPassword.html'), 'utf-8');
-    let token = auth.auth.encode(user);
+    let token = auth.auth.encode(user, '1h');
     
     // let urlValidation = `${ env.URL }/email-verified/` + token;
 
