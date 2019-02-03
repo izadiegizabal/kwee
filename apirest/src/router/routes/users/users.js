@@ -14,11 +14,6 @@ module.exports = (app, db) => {
         try {
 
             var attributes = {
-                include: [
-                    'id',
-                    'name',
-                    'email'
-                ],
                 exclude: ['password']
             };
 
@@ -50,11 +45,11 @@ module.exports = (app, db) => {
             await logger.saveLog('GET', 'user', id, res);
 
             let user = await db.users.findOne({
-                attributes: [
-                    'id',
-                    'name',
-                    'email'
-                ],
+                attributes: {
+                    exclude: [
+                        'password'
+                    ]
+                },
                 where: { id }
             });
 
