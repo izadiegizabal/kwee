@@ -2,26 +2,26 @@ import * as OffersActions from './offers.actions';
 
 export interface State {
   offers: {
-    offer: {
-      id: number,
-      status: number,
-      title: string,
-      description: string,
-      datePublished: Date,
-      dateStart: Date,
-      dateEnd: Date,
-      location: string,
-      salaryAmount: number,
-      salaryFrecuency: number,
-      salaryCurrency: string,
-      workLocation: number,
-      seniority: number,
-      isIndefinite: boolean,
-      duration: number,
-      durationUnit: number,
-      fk_offerer: number,
-      contractType: number,
-
+    data: {
+      offer: {
+        id: number,
+        status: number,
+        title: string,
+        description: string,
+        datePublished: Date,
+        dateStart: Date,
+        dateEnd: Date,
+        location: string,
+        salaryAmount: number,
+        salaryFrecuency: number,
+        salaryCurrency: string,
+        workLocation: number,
+        seniority: number,
+        isIndefinite: boolean,
+        duration: number,
+        durationUnit: number,
+        fk_offerer: number,
+        contractType: number,
     },
     user: {
       id: number,
@@ -30,6 +30,8 @@ export interface State {
       bio: string,
       index: number,
     }
+  },
+  total: number,
   }[];
 }
 

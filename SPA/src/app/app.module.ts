@@ -20,6 +20,7 @@ import {ChatModule} from './chat/chat.module';
 import {CookieService} from 'ngx-cookie-service';
 import {NgcCookieConsentConfig, NgcCookieConsentModule} from 'ngx-cookieconsent';
 import {PrivacyComponent} from './privacy/privacy.component';
+import { PaginatorModule } from './shared/paginator/paginator.module';
 
 export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {
   return localStorageSync({keys: ['auth', 'admin', 'offers', 'offer', 'profiles'], rehydrate: true})(reducer);
@@ -58,7 +59,7 @@ const cookieConfig: NgcCookieConsentConfig = {
 @NgModule({
   declarations: [
     AppComponent,
-    PrivacyComponent
+    PrivacyComponent,
   ],
   imports: [
     BrowserModule,
@@ -68,6 +69,7 @@ const cookieConfig: NgcCookieConsentConfig = {
     CoreModule,
     CandidateHomeModule,
     OfferDetailModule,
+    PaginatorModule,
     AppRoutingModule,
     FormsModule,
     ChatModule,

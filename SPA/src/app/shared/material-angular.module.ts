@@ -23,7 +23,8 @@ import {
   MatSnackBarModule,
   MatStepperModule,
   MatTabsModule,
-  MatToolbarModule
+  MatToolbarModule,
+  MatPaginatorModule,
 } from '@angular/material';
 import {DomSanitizer} from '@angular/platform-browser';
 import {CommonModule} from '@angular/common';
@@ -53,7 +54,8 @@ import {CommonModule} from '@angular/common';
     MatBadgeModule,
     MatChipsModule,
     MatAutocompleteModule,
-    MatDialogModule
+    MatDialogModule,
+    MatPaginatorModule,
   ],
   exports: [
     CommonModule,
@@ -81,6 +83,7 @@ import {CommonModule} from '@angular/common';
     MatAutocompleteModule,
     MatDialogModule,
     MatSnackBarModule,
+    MatPaginatorModule,
   ],
 })
 export class MaterialAngularModule {
