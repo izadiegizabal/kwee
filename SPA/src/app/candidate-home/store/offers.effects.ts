@@ -8,7 +8,6 @@ import * as OffersActions from './offers.actions';
 import {environment} from '../../../environments/environment';
 import {Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
-import * as OfferActions from '../../shared/offer-detail/store/offer.actions';
 
 @Injectable()
 export class OffersEffects {

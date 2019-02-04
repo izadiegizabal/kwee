@@ -22,15 +22,15 @@ export interface State {
         durationUnit: number,
         fk_offerer: number,
         contractType: number,
+      },
+      user: {
+        id: number,
+        name: string,
+        img: string,
+        bio: string,
+        index: number,
+      }
     },
-    user: {
-      id: number,
-      name: string,
-      img: string,
-      bio: string,
-      index: number,
-    }
-  },
   total: number,
   }[];
 }

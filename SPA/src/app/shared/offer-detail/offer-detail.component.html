@@ -12,7 +12,7 @@
       </mat-card-title>
       <mat-card-subtitle>
         <span
-          [routerLink]="'/business/' + (offerState | async).offer.user.id + '/' + (offerState | async).offer.user.name + '/'"
+          [routerLink]="'/business/' + (offerState | async).offer.offer.fk_offerer + '/' + (offerState | async).offer.user.name + '/'"
           style="cursor: pointer">
           <app-offerer-name-overview [index]="(offerState | async).offer.user.index"
                                      [name]="(offerState | async).offer.user.name"></app-offerer-name-overview>

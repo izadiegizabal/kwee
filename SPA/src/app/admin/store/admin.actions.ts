@@ -16,10 +16,16 @@ export const OPERATION_ERROR = 'OPERATION_ERROR';
 
 export class TryGetCandidates implements Action {
   readonly type = TRY_GET_CANDIDATES;
+
+  constructor(public payload: {page: number, limit: number}) {
+  }
 }
 
 export class TryGetBusinesses implements Action {
   readonly type = TRY_GET_BUSINESSES;
+
+  constructor(public payload: {page: number, limit: number}) {
+  }
 }
 
 export class SetCandidates implements Action {
