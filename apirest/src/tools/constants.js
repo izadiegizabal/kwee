@@ -17,7 +17,7 @@ const env = {
 
     JSONWEBTOKEN_SECRET: pass.JSONWEBTOKEN_SECRET,
     JSONWEBTOKEN_ISSUER: pass.JSONWEBTOKEN_ISSUER,
-    JSONWEBTOKEN_EXPIRES: '88888h',
+    JSONWEBTOKEN_EXPIRES: '1h',
     // sería bueno que caducara por sesión y si el usuario sigue logueado hacer un proceso de renovación automática de token
     SESSION_SECRET: pass.SESSION_SECRET,
     LOGIN_MASTER_PASSWORD: pass.LOGIN_MASTER_PASSWORD,
