@@ -13,7 +13,7 @@ module.exports = (app, db) => {
         try {
             await logger.saveLog('GET', 'applicant', null, res);
 
-            var attributes = [];
+            var attributes = {};
 
             // Need USER values, so we get ALL USERS
             var users = await db.users.findAll();
@@ -69,38 +69,38 @@ module.exports = (app, db) => {
     });
 
     // GET applicants by page limit to 10 applicants/page
-    app.get('/applicants/:page([0-9]+)/:limit([0-9]+)', async(req, res, next) => {
-        let limit = Number(req.params.limit);
-        let page = Number(req.params.page);
+    // app.get('/applicants/:page([0-9]+)/:limit([0-9]+)', async(req, res, next) => {
+    //     let limit = Number(req.params.limit);
+    //     let page = Number(req.params.page);
 
-        try {
-            await logger.saveLog('GET', `applicants/${ page }`, null, res);
+    //     try {
+    //         await logger.saveLog('GET', `applicants/${ page }`, null, res);
 
-            let count = await db.applicants.findAndCountAll();
-            let pages = Math.ceil(count.count / limit);
-            offset = limit * (page - 1);
+    //         let count = await db.applicants.findAndCountAll();
+    //         let pages = Math.ceil(count.count / limit);
+    //         offset = limit * (page - 1);
 
-            if (page > pages) {
-                return res.status(400).json({
-                    ok: false,
-                    message: `It doesn't exist ${ page } pages`
-                })
-            }
+    //         if (page > pages) {
+    //             return res.status(400).json({
+    //                 ok: false,
+    //                 message: `It doesn't exist ${ page } pages`
+    //             })
+    //         }
 
-            return res.status(200).json({
-                ok: true,
-                message: `${ limit } applicants of page ${ page } of ${ pages } pages`,
-                data: await db.applicants.findAll({
-                    limit,
-                    offset,
-                    $sort: { id: 1 }
-                }),
-                total: count.count
-            });
-        } catch (err) {
-            next({ type: 'error', error: err });
-        }
-    });
+    //         return res.status(200).json({
+    //             ok: true,
+    //             message: `${ limit } applicants of page ${ page } of ${ pages } pages`,
+    //             data: await db.applicants.findAll({
+    //                 limit,
+    //                 offset,
+    //                 $sort: { id: 1 }
+    //             }),
+    //             total: count.count
+    //         });
+    //     } catch (err) {
+    //         next({ type: 'error', error: err });
+    //     }
+    // });
 
     // GET one applicant by id
     app.get('/applicant/:id([0-9]+)', async(req, res, next) => {
@@ -178,7 +178,6 @@ module.exports = (app, db) => {
                             name: body.name,
                             password: password,
                             email: body.email,
-
                             img: body.img,
                             bio: body.bio,
                             //root: body.root
