@@ -7,9 +7,7 @@ import {Observable} from 'rxjs';
 import * as fromAdmin from '../../store/admin.reducers';
 import {filter} from 'rxjs/operators';
 import {AdminEffects} from '../../store/admin.effects';
-import * as fromOffers from '../../../candidate-home/store/offers.reducers';
 import {PageEvent} from '@angular/material';
-import * as OffersActions from '../../../candidate-home/store/offers.actions';
 
 @Component({
   selector: 'app-business-overview',

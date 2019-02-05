@@ -13,9 +13,9 @@ export interface State {
       premium: number,
       // index: number,
       // state: number,
-    },
+    }[],
     total: number,
-  }[];
+  };
   businesses: {
     data: {
       id: number,
@@ -28,14 +28,14 @@ export interface State {
       premium: number,
       lastAccess: Date,
       createdAt: Date,
-    },
-    total: number,
-  }[];
+    }[],
+    total: number;
+  };
 }
 
 const initialState: State = {
-  candidates: [],
-  businesses: []
+  candidates: null,
+  businesses: null,
 };
 
 export function adminReducer(state = initialState, action: AdminActions.AdminActions) {
@@ -51,9 +51,9 @@ export function adminReducer(state = initialState, action: AdminActions.AdminAct
         businesses: action.payload
       };
     case AdminActions.UPDATE_CANDIDATE:
-      const updatedCandidates = [...state.candidates];
+      const updatedCandidates = [...state.candidates.data];
       for (const i in updatedCandidates) {
-        if (updatedCandidates[i].data.id === action.payload.id) {
+        if (updatedCandidates[i].id === action.payload.id) {
           updatedCandidates[i] = {
             ...updatedCandidates[i],
             ...action.payload.updatedCandidate
@@ -66,9 +66,9 @@ export function adminReducer(state = initialState, action: AdminActions.AdminAct
         candidates: updatedCandidates
       };
     case AdminActions.UPDATE_BUSINESS:
-      const updatedBusinesses = [...state.businesses];
+      const updatedBusinesses = [...state.businesses.data];
       for (const i in updatedBusinesses) {
-        if (updatedBusinesses[i].data.id === action.payload.id) {
+        if (updatedBusinesses[i].id === action.payload.id) {
           updatedBusinesses[i] = {
             ...updatedBusinesses[i],
             ...action.payload.updatedBusiness
@@ -81,9 +81,9 @@ export function adminReducer(state = initialState, action: AdminActions.AdminAct
         businesses: updatedBusinesses
       };
     case AdminActions.DELETE_CANDIDATE:
-      const candidatesDel = [...state.candidates];
+      const candidatesDel = [...state.candidates.data];
       for (const i in candidatesDel) {
-        if (candidatesDel[i].data.id === action.payload) {
+        if (candidatesDel[i].id === action.payload) {
           candidatesDel.splice(+i, 1);
           break;
         }
@@ -93,9 +93,9 @@ export function adminReducer(state = initialState, action: AdminActions.AdminAct
         candidates: candidatesDel
       };
     case AdminActions.DELETE_BUSINESS:
-      const businessesDel = [...state.businesses];
+      const businessesDel = [...state.businesses.data];
       for (const i in businessesDel) {
-        if (businessesDel[i].data.id === action.payload) {
+        if (businessesDel[i].id === action.payload) {
           businessesDel.splice(+i, 1);
           break;
         }

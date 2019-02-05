@@ -30,13 +30,13 @@ export interface State {
         bio: string,
         index: number,
       }
-    },
+    }[],
   total: number,
-  }[];
+  };
 }
 
 const initialState: State = {
-  offers: [],
+  offers: null,
 };
 
 export function offersReducer(state = initialState, action: OffersActions.OffersActions) {
