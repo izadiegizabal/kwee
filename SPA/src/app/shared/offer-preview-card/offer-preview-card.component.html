@@ -8,7 +8,7 @@
       class="quickInfo"
       fxHide.lt-sm
       fxLayoutGap="16px">
-      <app-icon-with-text [text]="offer.offer.location" icon="place"></app-icon-with-text>
+      <app-icon-with-text [text]="getOfferLocation()" icon="place"></app-icon-with-text>
       <app-icon-with-text [text]="getPublishedDate()" icon="access-time"></app-icon-with-text>
 
     </div>
@@ -16,7 +16,7 @@
       class="quickInfo"
       fxHide.gt-xs
       fxLayoutGap="16px">
-      <app-icon-with-text [text]="offer.offer.location" icon="place"></app-icon-with-text>
+      <app-icon-with-text [text]="getOfferLocation()" icon="place"></app-icon-with-text>
       <app-icon-with-text [text]="getPublishedDate()" icon="access-time"></app-icon-with-text>
 
     </mat-card-subtitle>
@@ -39,9 +39,9 @@
       fxLayout="row"
       fxLayoutAlign="center center"
       fxLayoutGap="16px">
-      <app-icon-with-text [text]="'Indefinite'" icon="date-range"></app-icon-with-text>
-      <app-icon-with-text [text]="'Part-Time'" icon="work"></app-icon-with-text>
-      <app-icon-with-text [text]="offer.offer.salary + '€/month'" icon="local-atm"></app-icon-with-text>
+      <app-icon-with-text [text]="getOfferDuration()" icon="date-range"></app-icon-with-text>
+      <app-icon-with-text [text]="getOfferContractType()" icon="work"></app-icon-with-text>
+      <app-icon-with-text [text]="getOfferSalary()" icon="local-atm"></app-icon-with-text>
       <div fxHide.lt-sm>
         <button [routerLink]="offerUrl" color="accent" mat-button>{{'More Info' | uppercase }}</button>
         <button (click)="openShareDialog()" mat-icon-button>

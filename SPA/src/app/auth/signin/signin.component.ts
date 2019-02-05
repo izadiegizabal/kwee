@@ -8,6 +8,8 @@ import {filter} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import * as fromAuth from '../store/auth.reducers';
+import {MatDialog} from '@angular/material';
+import {ResetDialogComponent} from './reset-dialog/reset-dialog.component';
 
 
 @Component({
@@ -22,6 +24,7 @@ export class SigninComponent implements OnInit {
   authState: Observable<fromAuth.State>;
 
   constructor(private _formBuilder: FormBuilder,
+              public dialog: MatDialog,
               private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects,
               private router: Router) {
   }
@@ -62,4 +65,11 @@ export class SigninComponent implements OnInit {
     );
   }
 
+  openResetModal() {
+    this.dialog.open(ResetDialogComponent, {
+      data: {
+        email: this.user.controls['email'].value,
+      }
+    });
+  }
 }

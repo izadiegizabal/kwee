@@ -17,7 +17,6 @@ export class UserMenuComponent implements OnInit {
   userType = '';
 
   constructor(private store$: Store<fromApp.AppState>) {
-    this.userType = 'candidate';
   }
 
   ngOnInit() {
@@ -30,6 +29,7 @@ export class UserMenuComponent implements OnInit {
         if (user && user.name && user.id) {
           this.username = user.name;
           this.userId = '' + user.id;
+          this.userType = user.type;
         }
       });
   }
