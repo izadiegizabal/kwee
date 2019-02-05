@@ -1,12 +1,17 @@
 const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
-const { tokenId, logger, sendVerificationEmail, pagination } = require('../../../../shared/functions');
+const { tokenId, logger, sendVerificationEmail, pagination, uploadFile } = require('../../../../shared/functions');
 const bcrypt = require('bcryptjs');
+
+// File upload
+const fileUpload = require('express-fileupload');
 
 // ============================
 // ======== CRUD user =========
 // ============================
 
 module.exports = (app, db) => {
+
+    app.use(fileUpload());
 
     // GET all users offerers
     app.get('/offerers', async(req, res, next) => {
@@ -253,8 +258,7 @@ module.exports = (app, db) => {
                             name: body.name,
                             password,
                             email: body.email,
-
-                            img: body.img,
+                            //img: body.img,
                             bio: body.bio,
 
                         }, { transaction })
@@ -264,10 +268,27 @@ module.exports = (app, db) => {
                         })
                         .then(ending => {
                             sendVerificationEmail(body, uservar);
-                            return res.status(201).json({
-                                ok: true,
-                                message: `Offerer with id ${ending.userId} has been created.`
-                            });
+                    
+                            /////
+                            if(req.files.img) console.log("req.files.img");
+                            /////
+
+                            uploadFile( req, res, next, 'users', ending.userId, db)
+                            .then( output => {
+
+                                if( output ){
+                                    return res.status(201).json({
+                                        ok: true,
+                                        message: `Offerer with id ${ending.userId} has been created.`
+                                    });
+                                }
+                                else{
+                                    return res.status(400).json({
+                                        ok: output,
+                                        message: 'Offerer created, but img was not saved.'
+                                    });
+                                }
+                            })
                         })
                 })
                 .catch(err => {
@@ -276,7 +297,7 @@ module.exports = (app, db) => {
 
         } catch (err) {
             //await transaction.rollback();
-            next({ type: 'error', error: err.message });
+            next({ type: 'error', error: err.errors[0].message });
         }
     });
 
