@@ -2,6 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {UtilsService} from '../utils.service';
 import {MatDialog} from '@angular/material';
 import {SnsShareDialogComponent} from '../sns-share/sns-share-dialog/sns-share-dialog.component';
+import {ContractType, JobDurationUnit, SalaryFrequency} from '../../../models/Offer.model';
 
 
 @Component({
@@ -24,7 +25,7 @@ export class OfferPreviewCardComponent implements OnInit {
   }
 
   urlfyPosition() {
-    return '/offer/' + this.offer.user.id + '/' + this.offer.offer.title.toLowerCase().replace(/ /g, '-');
+    return '/offer/' + this.offer.offer.id + '/' + this.offer.offer.title.toLowerCase().replace(/ /g, '-');
   }
 
 
@@ -41,4 +42,25 @@ export class OfferPreviewCardComponent implements OnInit {
       }
     });
   }
+
+  getOfferSalary() {
+    return this.offer.offer.salaryAmount + this.offer.offer.salaryCurrency + ' ' + SalaryFrequency[this.offer.offer.salaryFrequency];
+  }
+
+  getOfferDuration() {
+    if (this.offer.offer.isIndefinite) {
+      return 'Indefinite';
+    } else {
+      if (this.offer.offer.duration > 1) {
+        return this.offer.offer.duration + ' ' + JobDurationUnit[this.offer.offer.durationUnit];
+      } else {
+        return this.offer.offer.duration + ' ' + JobDurationUnit[this.offer.offer.durationUnit].slice(0, -1);
+      }
+    }
+  }
+
+  getOfferContractType() {
+    return ContractType[this.offer.offer.contractType];
+  }
+
 }

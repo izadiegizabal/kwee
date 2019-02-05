@@ -56,8 +56,9 @@
               </div>
               <!--------------------------------------------------->
               <div fxLayout="row"
-                   fxLayout.xs="column"
-                   fxLayoutAlign.xs="center start"
+                   fxLayout.lt-md="column"
+                   fxLayoutAlign="none"
+                   fxLayoutAlign.lt-md="center"
                    fxLayoutGap="16px"
                    fxLayoutGap.xs="0px">
                 <mat-form-field fxFlex="30%">
@@ -98,7 +99,11 @@
 
                 <!--------------------------------------------------->
                 <p> To: </p>
-                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
+                <div fxLayout="row"
+                     fxLayout.lt-md="column"
+                     fxLayoutAlign="start center"
+                     fxLayoutAlign.lt-md="none"
+                     fxLayoutGap="16px">
                   <mat-form-field fxFlex="50%" fxFlex.xs="70%">
                     <input #iend [matDatepicker]="end" formControlName="end" id="{{'toExp'+s}}" matInput
                            placeholder="End">

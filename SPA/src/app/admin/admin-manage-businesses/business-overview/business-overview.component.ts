@@ -7,6 +7,7 @@ import {Observable} from 'rxjs';
 import * as fromAdmin from '../../store/admin.reducers';
 import {filter} from 'rxjs/operators';
 import {AdminEffects} from '../../store/admin.effects';
+import {PageEvent} from '@angular/material';
 
 @Component({
   selector: 'app-business-overview',
@@ -14,6 +15,15 @@ import {AdminEffects} from '../../store/admin.effects';
   styleUrls: ['./business-overview.component.scss']
 })
 export class BusinessOverviewComponent implements OnInit {
+
+  // paging
+  pageSize = 2;
+  pageSizeOptions: number[] = [2, 5, 10, 25, 100];
+
+  // MatPaginator Output
+  pageEvent: PageEvent;
+  // ---------
+
   isPanelOpen = false;
   isInEditMode = false;
   updateuser: any;
@@ -51,7 +61,7 @@ export class BusinessOverviewComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store$.dispatch(new AdminActions.TryGetBusinesses());
+    this.store$.dispatch(new AdminActions.TryGetBusinesses({page: 1, limit: 2}));
     this.adminState = this.store$.pipe(select(s => s.admin));
 
     this.userForm = this._formBuilder.group({
@@ -133,5 +143,10 @@ export class BusinessOverviewComponent implements OnInit {
     ).subscribe((error: { payload: any, type: string }) => {
       console.log(error.payload);
     });
+  }
+
+  changepage() {
+    this.store$.dispatch(new AdminActions.TryGetBusinesses({page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize}));
+    this.adminState = this.store$.pipe(select(s => s.admin));
   }
 }

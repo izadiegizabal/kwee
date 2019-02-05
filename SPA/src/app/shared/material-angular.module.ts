@@ -23,7 +23,8 @@ import {
   MatSnackBarModule,
   MatStepperModule,
   MatTabsModule,
-  MatToolbarModule
+  MatToolbarModule,
+  MatPaginatorModule,
 } from '@angular/material';
 import {DomSanitizer} from '@angular/platform-browser';
 import {CommonModule} from '@angular/common';
@@ -53,7 +54,8 @@ import {CommonModule} from '@angular/common';
     MatBadgeModule,
     MatChipsModule,
     MatAutocompleteModule,
-    MatDialogModule
+    MatDialogModule,
+    MatPaginatorModule,
   ],
   exports: [
     CommonModule,
@@ -81,6 +83,7 @@ import {CommonModule} from '@angular/common';
     MatAutocompleteModule,
     MatDialogModule,
     MatSnackBarModule,
+    MatPaginatorModule,
   ],
 })
 export class MaterialAngularModule {
@@ -115,7 +118,11 @@ export class MaterialAngularModule {
     matIconRegistry.addSvgIcon('report', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-report.svg'));
     matIconRegistry.addSvgIcon('alarm', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-alarm.svg'));
     matIconRegistry.addSvgIcon('face', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-face.svg'));
-    matIconRegistry.addSvgIcon('insert-drive-file', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-insert_drive_file.svg'));
+    matIconRegistry.addSvgIcon(
+      'insert-drive-file', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-insert_drive_file.svg'));
+    matIconRegistry.addSvgIcon('thumb-up', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-thumb_up.svg'));
+    matIconRegistry.addSvgIcon('thumb-down', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-thumb_down.svg'));
+    matIconRegistry.addSvgIcon('error', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-error.svg'));
 
     // Branding icons
     matIconRegistry.addSvgIcon('kwee-logo', domSanitizer.bypassSecurityTrustResourceUrl('assets/branding/logo-kwee-light.svg'));

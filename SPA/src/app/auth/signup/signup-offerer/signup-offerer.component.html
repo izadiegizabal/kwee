@@ -142,7 +142,12 @@
 
         <div class="line1" fxLayout="column">
           <mat-form-field>
-            <input formControlName="address1" matInput placeholder="Address line 1" required>
+            <input [matAutocomplete]="auto" (keyup)="onKey($event)" id="address" formControlName="address1" matInput placeholder="Street and City" required>
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+              <mat-option *ngFor="let option of options; index as i" [value]="option" >
+                {{option.first}}, {{option.second}}
+              </mat-option>
+            </mat-autocomplete>
             <mat-icon color="primary" matPrefix svgIcon="place"></mat-icon>
             <mat-error *ngIf="!secondFormGroup.get('address1').valid ">
               Please enter a valid address
@@ -153,10 +158,14 @@
 
         <div class="line1" fxLayout="column">
           <mat-form-field>
-            <input formControlName="address2" matInput placeholder="Address line 2">
+            <input (keyup)="onKey($event)" id="administrative" formControlName="address2" matInput placeholder="Administrative and Postcode" required>
+            <mat-icon color="primary" matPrefix svgIcon="place"></mat-icon>
+            <mat-error *ngIf="!secondFormGroup.get('address2').valid ">
+              Please enter a valid address
+            </mat-error>
           </mat-form-field>
         </div>
-
+        <!--
         <br>
 
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="22px" fxLayoutGap.xs="0px">
@@ -190,7 +199,7 @@
             </mat-error>
           </mat-form-field>
         </div>
-
+        -->
         <br>
         <div fxLayout="row" fxLayoutAlign="end">
           <button color="primary" mat-button matStepperPrevious>Back</button>

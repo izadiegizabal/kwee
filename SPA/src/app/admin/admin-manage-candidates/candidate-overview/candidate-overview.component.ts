@@ -7,6 +7,7 @@ import * as AdminActions from '../../store/admin.actions';
 import {Observable} from 'rxjs';
 import {filter} from 'rxjs/operators';
 import {AdminEffects} from '../../store/admin.effects';
+import {PageEvent} from '@angular/material';
 
 @Component({
   selector: 'app-candidate-overview',
@@ -14,6 +15,15 @@ import {AdminEffects} from '../../store/admin.effects';
   styleUrls: ['./candidate-overview.component.scss']
 })
 export class CandidateOverviewComponent implements OnInit {
+
+  // paging
+  pageSize = 2;
+  pageSizeOptions: number[] = [2, 5, 10, 25, 100];
+
+  // MatPaginator Output
+  pageEvent: PageEvent;
+  // -----
+
   isInEditMode = false;
   isPanelOpen = false;
   updateuser: any;
@@ -38,7 +48,7 @@ export class CandidateOverviewComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store$.dispatch(new AdminActions.TryGetCandidates());
+    this.store$.dispatch(new AdminActions.TryGetCandidates({page: 1, limit: 2}));
     this.adminState = this.store$.pipe(select(state => state.admin));
 
     this.userForm = this._formBuilder.group({
@@ -111,6 +121,11 @@ export class CandidateOverviewComponent implements OnInit {
     ).subscribe((error: { payload: any, type: string }) => {
       console.log(error.payload);
     });
+  }
+
+  changepage() {
+    this.store$.dispatch(new AdminActions.TryGetCandidates({page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize}));
+    this.adminState = this.store$.pipe(select(state => state.admin));
   }
 
 }
