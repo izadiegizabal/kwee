@@ -14,10 +14,14 @@ export class OffersEffects {
   @Effect()
   offersGetoffers = this.actions$.pipe(
     ofType(OffersActions.TRY_GET_OFFERS),
-    switchMap(() => {
-        const apiEndpointUrl = environment.apiUrl + 'offers';
+    map((action: OffersActions.TryGetOffers) => {
+      return action.payload;
+    }),
+    switchMap((payload) => {
+        const apiEndpointUrl = environment.apiUrl + 'offers/?page=' + payload.page + '&limit=' + payload.limit ;
         // const token = authState.token;
         // const headers = new HttpHeaders().set('token', token);
+      console.log(apiEndpointUrl);
         return this.httpClient.get(apiEndpointUrl).pipe(
           map((res: {
             ok: boolean,
@@ -25,11 +29,13 @@ export class OffersEffects {
             data: {
               offer: any[],
               user: any[],
-            }
+            },
+            total: number,
           }) => {
+            console.log(res);
             return {
               type: OffersActions.SET_OFFERS,
-              payload: res.data,
+              payload: res,
             };
           }),
           catchError((err: HttpErrorResponse) => {

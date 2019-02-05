@@ -4,15 +4,18 @@
             fxFlex.gt-lg="50%" fxFlex.gt-md="60%" fxFlex.gt-sm="75%" fxLayout="column">
     <mat-card-header fxLayoutAlign="space-between">
       <mat-card-title fxLayout="row" fxLayoutGap="16px">
-        <span>{{(offerState | async).offer.title}}</span>
+        <span>{{(offerState | async).offer.offer.title }}</span>
         <mat-chip-list fxHide fxShow.gt-sm>
-          <mat-chip color="primary" selected style="pointer-events: none">{{ getOfferStatus((offerState | async).offer.status) | titlecase}}</mat-chip>
+          <mat-chip color="primary" selected
+                    style="pointer-events: none">{{ getOfferStatus((offerState | async).offer.offer.status) | titlecase}}</mat-chip>
         </mat-chip-list>
       </mat-card-title>
       <mat-card-subtitle>
-        <span [routerLink]="'/business/' + offer.companyId + '/' + offer.companyName + '/'" style="cursor: pointer">
-          <app-offerer-name-overview [index]="offer.companyIndex"
-                                     [name]="offer.companyName"></app-offerer-name-overview>
+        <span
+          [routerLink]="'/business/' + (offerState | async).offer.offer.fk_offerer + '/' + (offerState | async).offer.user.name + '/'"
+          style="cursor: pointer">
+          <app-offerer-name-overview [index]="(offerState | async).offer.user.index"
+                                     [name]="(offerState | async).offer.user.name"></app-offerer-name-overview>
         </span>
       </mat-card-subtitle>
       <div
@@ -22,18 +25,23 @@
         fxLayout.lt-md="column"
         fxLayoutAlign="end start"
         fxLayoutGap="16px">
-        <app-icon-with-text [text]="getTimePassed()" icon="access-time"></app-icon-with-text>
-        <app-icon-with-text [text]="offer.selectionStartDate | date" icon="alarm"></app-icon-with-text>
+        <app-icon-with-text [text]="getTimePassed((offerState | async).offer.offer.datePublished)"
+                            icon="access-time"></app-icon-with-text>
+        <app-icon-with-text [text]="(offerState | async).offer.offer.dateStart | date"
+                            icon="alarm"></app-icon-with-text>
       </div>
       <mat-card-subtitle
         class="quickInfo"
         fxHide.gt-xs
         fxLayout="row"
         fxLayoutGap="16px">
-        <app-icon-with-text [text]="getTimePassed()" icon="access-time"></app-icon-with-text>
-        <app-icon-with-text [text]="offer.selectionStartDate | date" icon="alarm"></app-icon-with-text>
+        <app-icon-with-text [text]="getTimePassed((offerState | async).offer.offer.datePublished)"
+                            icon="access-time"></app-icon-with-text>
+        <app-icon-with-text [text]="(offerState | async).offer.offer.dateStart | date"
+                            icon="alarm"></app-icon-with-text>
         <mat-chip-list>
-          <mat-chip color="primary" selected style="pointer-events: none">{{ getOfferStatus() | titlecase}}</mat-chip>
+          <mat-chip color="primary" selected
+                    style="pointer-events: none">{{ getOfferStatus((offerState | async).offer.offer.status) | titlecase}}</mat-chip>
         </mat-chip-list>
       </mat-card-subtitle>
     </mat-card-header>
@@ -48,7 +56,7 @@
              src="https://cdn.vox-cdn.com/thumbor/Pkmq1nm3skO0-j693JTMd7RL0Zk=/0x0:2012x1341/1200x800/filters:focal(0x0:2012x1341)/cdn.vox-cdn.com/uploads/chorus_image/image/47070706/google2.0.0.jpg"
              style="object-fit: cover; height: 150px;">
         <p>
-          {{ (offerState | async).offer.description }}
+          {{ (offerState | async).offer.offer.description }}
         </p>
       </div>
 
@@ -63,17 +71,26 @@
                fxLayout="column"
                fxLayoutAlign="start start"
                fxLayoutGap="8px">
-            <app-icon-with-text [text]="getOfferDuration() | lowercase" icon="date-range"></app-icon-with-text>
-            <app-icon-with-text [text]="getOfferSalary()" icon="local-atm"></app-icon-with-text>
-            <app-icon-with-text [text]="getOfferSeniorityLevel()" icon="face"></app-icon-with-text>
+            <app-icon-with-text
+              [text]="getOfferDuration((offerState | async).offer.offer.isIndefinite, (offerState | async).offer.offer.duration, (offerState | async).offer.offer.durationUnit) | lowercase"
+              icon="date-range"></app-icon-with-text>
+            <app-icon-with-text
+              [text]="getOfferSalary((offerState | async).offer.offer.salaryAmount, (offerState | async).offer.offer.salaryCurrency, (offerState | async).offer.offer.salaryFrecuency)"
+              icon="local-atm"></app-icon-with-text>
+            <app-icon-with-text [text]="getOfferSeniorityLevel((offerState | async).offer.offer.seniority)"
+                                icon="face"></app-icon-with-text>
           </div>
           <div fxFlex="33%" fxFlex.lt-sm="100%"
                fxLayout="column"
                fxLayoutAlign="start start"
                fxLayoutGap="8px">
-            <app-icon-with-text [text]="getOfferContractType()" icon="work"></app-icon-with-text>
-            <app-icon-with-text [text]="getOfferLocation()" icon="place"></app-icon-with-text>
-            <app-icon-with-text [text]="getOfferApplications()" icon="people"></app-icon-with-text>
+            <app-icon-with-text [text]="getOfferContractType((offerState | async).offer.offer.contractType)"
+                                icon="work"></app-icon-with-text>
+            <app-icon-with-text
+              [text]="getOfferLocation((offerState | async).offer.offer.location, (offerState | async).offer.offer.workLocation)"
+              icon="place"></app-icon-with-text>
+            <app-icon-with-text [text]="getOfferApplications((offerState | async).offer.offer.currentApplications)"
+                                icon="people"></app-icon-with-text>
           </div>
           <div fxFlex="33%"
                fxHide.xs
@@ -83,8 +100,8 @@
                fxShow.gt-xs>
             <button color="accent"
                     mat-raised-button
-                    style="color: white">{{'Apply Now!' | uppercase }}</button>
-            <app-sns-share [offer]="getShareableOffer()"></app-sns-share>
+                    style="color: white" (click)="postApplication()">{{'Apply Now!' | uppercase }}</button>
+            <app-sns-share [offer]="getShareableOffer((offerState | async).offer.offer.title)"></app-sns-share>
           </div>
         </div>
       </div>
@@ -95,7 +112,7 @@
            fxShow.xs
            style="padding-bottom: 16px">
         <button color="primary" mat-raised-button>{{'Apply Now!' | uppercase }}</button>
-        <app-sns-share [offer]="getShareableOffer()"></app-sns-share>
+        <app-sns-share [offer]="getShareableOffer((offerState | async).offer.offer.title)"></app-sns-share>
       </div>
 
       <div fxLayout="column">
@@ -103,7 +120,7 @@
         <div
           fxLayout="row"
           style="white-space: pre-wrap; margin-bottom: 16px">
-          {{offer.responsibilities}}
+          {{(offerState | async).offer.offer.responsabilities}}
         </div>
       </div>
 
@@ -112,7 +129,7 @@
         <div
           fxLayout="row"
           style="white-space: pre-wrap; margin-bottom: 16px">
-          {{offer.requirements}}
+            {{(offerState | async).offer.offer.requeriments}}
         </div>
       </div>
 
@@ -124,7 +141,7 @@
             fxFlex="50%" fxFlex.lt-sm="100%"
             style="padding-top: 0">
             <div
-              *ngFor="let skill of offer.skills; let i = index"
+              *ngFor="let skill of getSkills((offerState | async).offer.offer.skills); let i = index"
               style="margin-left: -20px">
               <mat-list-item
                 *ngIf="i % 2 === 0">
@@ -136,7 +153,7 @@
             fxFlex="50%" fxFlex.lt-sm="100%"
             style="padding-top: 0">
             <div
-              *ngFor="let skill of offer.skills; let i = index"
+              *ngFor="let skill of getSkills((offerState | async).offer.offer.skills); let i = index"
               style="margin-left: -20px">
               <mat-list-item *ngIf="i % 2 !== 0">
                 <mat-icon color="primary">chevron_right</mat-icon>

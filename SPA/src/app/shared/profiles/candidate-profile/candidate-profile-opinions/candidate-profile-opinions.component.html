@@ -10,22 +10,41 @@
   <p>Here you'll be able to find what other users have to say about his/her way of working, and other professional
     abilities. </p>
   <mat-card *ngFor="let opinion of opinions"
+            style="margin-bottom: 8px"
             [ngClass]="{
-              'mat-elevation-z0' : !panelOpenState
+              'mat-elevation-z0' : !opinion.panelOpenState
             }"
   >
-    <mat-card-title>
-      {{opinion.offerTitle}}
-    </mat-card-title>
-    <mat-card-subtitle>
-      {{opinion.userName + " - " + getPublishedDate(opinion.publishedAt)}}
-    </mat-card-subtitle>
+    <div fxLayout="row" fxLayoutGap="32px">
+      <div fxLayout="column">
+        <div fxLayout="row" class="rating"><span>{{opinion.ratingScore}}</span></div>
+        <div fxLayout="row" class="usefulness">
+          <span>{{opinion.opinionScore}}</span>
+          <button color="accent" mat-icon-button>
+            <mat-icon color="primary" svgIcon="thumb-up"></mat-icon>
+          </button>
+          <button
+            style="margin-left: -16px"
+            color="warn" mat-icon-button>
+            <mat-icon color="primary" svgIcon="thumb-down"></mat-icon>
+          </button>
+        </div>
+      </div>
+      <div fxLayout="column">
+        <mat-card-title>
+          {{opinion.offerTitle}}
+        </mat-card-title>
+        <mat-card-subtitle>
+          {{opinion.userName + " - " + getPublishedDate(opinion.publishedAt)}}
+        </mat-card-subtitle>
+        <p>{{opinion.opinion}}</p>
+      </div>
+    </div>
     <mat-card-content>
-      <p>{{opinion.opinion}}</p>
       <mat-expansion-panel
-        class="mat-elevation-z0"
-        (opened)="panelOpenState = true"
-        (closed)="panelOpenState = false"
+        class="mat-elevation-z0 opinionDetails"
+        (opened)="opinion.panelOpenState = true"
+        (closed)="opinion.panelOpenState = false"
       >
         <mat-expansion-panel-header>
           <mat-panel-title fxLayoutAlign="end">
@@ -34,6 +53,36 @@
         </mat-expansion-panel-header>
 
         <h4>Details</h4>
+        <div fxLayout="row">
+          <div fxLayout="column" fxFlex="50%">
+            <mat-list>
+              <mat-list-item>
+                <span>{{opinion.details.efficiency}}</span>
+                Efficiency
+              </mat-list-item>
+              <mat-list-item>
+                <span>{{opinion.details.skills}}</span>
+                Skills
+              </mat-list-item>
+              <mat-list-item>
+                <span>{{opinion.details.punctuality}}</span>
+                Punctuality
+              </mat-list-item>
+            </mat-list>
+          </div>
+          <div fxLayout="column" fxFlex="50%">
+            <mat-list>
+              <mat-list-item>
+                <span>{{opinion.details.hygiene}}</span>
+                Hygiene
+              </mat-list-item>
+              <mat-list-item>
+                <span>{{opinion.details.teamwork}}</span>
+                Teamwork
+              </mat-list-item>
+            </mat-list>
+          </div>
+        </div>
 
       </mat-expansion-panel>
     </mat-card-content>
