@@ -21,7 +21,6 @@ export class OffersEffects {
         const apiEndpointUrl = environment.apiUrl + 'offers/?page=' + payload.page + '&limit=' + payload.limit ;
         // const token = authState.token;
         // const headers = new HttpHeaders().set('token', token);
-      console.log(apiEndpointUrl);
         return this.httpClient.get(apiEndpointUrl).pipe(
           map((res: {
             ok: boolean,
@@ -32,7 +31,6 @@ export class OffersEffects {
             },
             total: number,
           }) => {
-            console.log(res);
             return {
               type: OffersActions.SET_OFFERS,
               payload: res,

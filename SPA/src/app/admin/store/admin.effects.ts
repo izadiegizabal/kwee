@@ -29,7 +29,6 @@ export class AdminEffects {
             data: any[],
             total: number,
           }) => {
-            console.log(res);
             return {
               type: AdminActions.SET_CANDIDATES,
               payload: res,
