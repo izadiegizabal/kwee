@@ -31,7 +31,7 @@ export class OfferDetailComponent implements OnInit {
   ngOnInit() {
     const params = this.activatedRoute.snapshot.params;
 
-   // if (Number(params.id)) {
+    if (Number(params.id)) {
       this.store$.dispatch(new OfferActions.TryGetOffer({id: params.id}));
       this.offerState = this.store$.pipe(select(state => state.offer));
 
@@ -40,10 +40,9 @@ export class OfferDetailComponent implements OnInit {
       ).subscribe((error: { payload: any, type: string }) => {
         this.router.navigate(['/']);
       });
-    // } else {
-    //   console.log('No es un número');
-    //   this.router.navigate(['/']);
-    // }
+     } else {
+       this.router.navigate(['/']);
+     }
 
   }
 
@@ -109,4 +108,11 @@ export class OfferDetailComponent implements OnInit {
     const params = this.activatedRoute.snapshot.params;
     this.store$.dispatch(new OfferActions.TryPostApplication({fk_offer: params.id}));
   }
+
+  urlOfferer(id, name) {
+    const url = '/business/' + id + '/' + name.toLowerCase().replace(/ /g, '-');
+    return url;
+  }
+
+
 }

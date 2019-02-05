@@ -29,7 +29,6 @@ export class OfferEffects {
               user: any[],
             }
           }) => {
-            console.log(res);
             return {
               type: OfferActions.SET_OFFER,
               payload: res.data,
