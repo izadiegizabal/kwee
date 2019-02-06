@@ -5,6 +5,9 @@
 export const environment = {
   production: false,
   apiUrl: 'http://h203.eps.ua.es/api/',
+  algoliaAppId: 'pl6XVPPQOTDD',
+  algoliaAPIKey: 'c02074725fd0344cc60949c969775748',
+  mapboxAPIKey: 'pk.eyJ1IjoiaGVsbG9rd2VlIiwiYSI6ImNqcnQ0cGd6YjF3djM0OXBzZ3oxOWR0ZWsifQ.GEPBeWzXy9pia-AlR7LbLw',
 };
 
 /*

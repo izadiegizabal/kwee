@@ -8,6 +8,7 @@ import {AuthEffects} from '../../store/auth.effects';
 import {filter} from 'rxjs/operators';
 import {DialogErrorComponent} from '../dialog-error/dialog-error.component';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {environment} from '../../../../environments/environment';
 
 interface City {
   name: string;
@@ -291,8 +292,8 @@ export class SignupCandidateComponent implements OnInit {
         const options = {
           params: new HttpParams().set('query', text)
             .append('type', 'city'),
-          headers: new HttpHeaders().append('X-Algolia-Application-Id', 'pl6XVPPQOTDD')
-            .append('X-Algolia-API-Key', 'c02074725fd0344cc60949c969775748')
+          headers: new HttpHeaders().append('X-Algolia-Application-Id', environment.algoliaAppId)
+            .append('X-Algolia-API-Key', environment.algoliaAPIKey)
         };
         this.options = [];
         // https://nominatim.openstreetmap.org/search/03502?format=json&addressdetails=1&limit=5&polygon_svg=1
