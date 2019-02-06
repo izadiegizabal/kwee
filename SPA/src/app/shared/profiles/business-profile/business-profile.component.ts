@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-business-profile',
@@ -28,10 +29,15 @@ export class BusinessProfileComponent implements OnInit {
     address: '770 Broadway, New York, NY 10003, USA',
   };
 
-  constructor() {
+  constructor(private router: Router) {
   }
 
   ngOnInit() {
   }
 
+  goToMyOffers(tabIndex: number) {
+    if (tabIndex && tabIndex === 2) {
+      this.router.navigate(['/my-offers']);
+    }
+  }
 }
