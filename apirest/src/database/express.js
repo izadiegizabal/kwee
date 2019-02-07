@@ -11,7 +11,11 @@ const app = express();
 app.use(logger);
 // Configure the app to use bodyParser()
 // This will let us get the data from post
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({
+    parameterLimit: 100000,
+    limit: '50mb',
+    extended: true
+  }));
 app.use(bodyParser.json());
 
 app.use((req, res, next) => {
