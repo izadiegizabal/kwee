@@ -165,8 +165,7 @@ module.exports = (app, db) => {
                 .then(ending => {
                     sendVerificationEmail(body, uservar);
 
-                    if(req.files && req.files.img) {
-                        console.log("req.files.img");
+                    if(req.files) {
                         uploadFile( req, res, next, 'users', ending.userId, db)
                         .then( output => {
 
@@ -186,13 +185,13 @@ module.exports = (app, db) => {
                     } else {
                         return res.status(201).json({
                             ok: true,
-                            message: `Applicant with id ${ending.userId} has been created.`
+                            message: `Applicant with id ${ending.userId} has been created without picture.`
                         });
                     }
                 })
             })
             .catch(err => {
-                return next({ type: 'error', error: err.message });
+                return next({ type: 'error', error: err.errors[0].message });
             })
 
         } catch (err) {
@@ -238,6 +237,18 @@ module.exports = (app, db) => {
 
             let id = tokenId.getTokenId(req.get('token'));
             logger.updateLog(logId, true, id);
+            if(req.files) {
+                updates.img = req.files.img.name;
+                uploadFile( req, res, next, 'users', id, db)
+                .then( output => {
+                    if( output ){
+                        console.log('foto subida');
+                    }
+                    else{
+                        console.log('foto no subida');
+                    }
+                });
+            }
             updateApplicant(id, updates, res, next);
         } catch (err) {
             return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
