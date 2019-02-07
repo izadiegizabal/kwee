@@ -174,6 +174,11 @@ module.exports = (app, db) => {
                     count
                 });
 
+            } else {
+                return res.status(400).json({
+                    ok: false,
+                    message: `It doesn't exist this user`
+                })
             }
 
         } catch (error) {
