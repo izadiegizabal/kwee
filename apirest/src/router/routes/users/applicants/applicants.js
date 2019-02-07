@@ -1,12 +1,17 @@
 const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
-const { tokenId, logger, sendVerificationEmail, pagination } = require('../../../../shared/functions');
+const { tokenId, logger, sendVerificationEmail, pagination, uploadFile } = require('../../../../shared/functions');
 const bcrypt = require('bcryptjs');
+
+// File upload
+const fileUpload = require('express-fileupload');
 
 // ============================
 // ======== CRUD user =========
 // ============================
 
 module.exports = (app, db) => {
+
+    app.use(fileUpload());
 
     // GET all users applicants
     app.get('/applicants', async(req, res, next) => {
@@ -67,40 +72,6 @@ module.exports = (app, db) => {
         }
 
     });
-
-    // GET applicants by page limit to 10 applicants/page
-    // app.get('/applicants/:page([0-9]+)/:limit([0-9]+)', async(req, res, next) => {
-    //     let limit = Number(req.params.limit);
-    //     let page = Number(req.params.page);
-
-    //     try {
-    //         await logger.saveLog('GET', `applicants/${ page }`, null, res);
-
-    //         let count = await db.applicants.findAndCountAll();
-    //         let pages = Math.ceil(count.count / limit);
-    //         offset = limit * (page - 1);
-
-    //         if (page > pages) {
-    //             return res.status(400).json({
-    //                 ok: false,
-    //                 message: `It doesn't exist ${ page } pages`
-    //             })
-    //         }
-
-    //         return res.status(200).json({
-    //             ok: true,
-    //             message: `${ limit } applicants of page ${ page } of ${ pages } pages`,
-    //             data: await db.applicants.findAll({
-    //                 limit,
-    //                 offset,
-    //                 $sort: { id: 1 }
-    //             }),
-    //             total: count.count
-    //         });
-    //     } catch (err) {
-    //         next({ type: 'error', error: err });
-    //     }
-    // });
 
     // GET one applicant by id
     app.get('/applicant/:id([0-9]+)', async(req, res, next) => {
@@ -172,33 +143,51 @@ module.exports = (app, db) => {
 
             const body = req.body;
             const password = body.password ? bcrypt.hashSync(body.password, 10) : null;
-            var uservar;
+            
+            
             return db.sequelize.transaction(transaction => {
-                    return db.users.create({
-                            name: body.name,
-                            password: password,
-                            email: body.email,
-                            img: body.img,
-                            bio: body.bio,
-                            //root: body.root
+                return db.users.create({
+                    name: body.name,
+                    password: password,
+                    email: body.email,
+                    bio: body.bio,
+                    //img: body.img, uploadFile saves it
+                    //root: body.root
+                    
+                }, { transaction: transaction })
+                .then(async user => {
+                    uservar = user;
+                    return createApplicant(body, user, next, transaction);
+                })
+                .then(ending => {
+                    sendVerificationEmail(body, uservar);
+                    
+                    /////
+                    if(req.files.img) console.log("req.files.img");
+                    /////
 
-                        }, { transaction: transaction })
-                        .then(async user => {
-                            uservar = user;
-                            return createApplicant(body, user, next, transaction);
-                        })
-                        .then(ending => {
-                            sendVerificationEmail(body, uservar);
+                    uploadFile( req, res, next, 'users', ending.userId, db)
+                    .then( output => {
+
+                        if( output ){
                             return res.status(201).json({
                                 ok: true,
                                 message: `Applicant with id ${ending.userId} has been created.`
                             });
+                        }
+                        else{
+                            return res.status(400).json({
+                                ok: output,
+                                message: 'Applicant created, but img was not saved.'
+                            });
+                        }
+                    })
 
-                        })
                 })
-                .catch(err => {
-                    return next({ type: 'error', error: err.errors[0].message });
-                })
+            })
+            .catch(err => {
+                return next({ type: 'error', error: err.message });
+            })
 
         } catch (err) {
             return next({ type: 'error', error: err.errors[0].message });
@@ -309,8 +298,7 @@ module.exports = (app, db) => {
             if (updates.password || updates.email || updates.name || updates.snSignIn || updates.root || updates.img || updates.bio) {
                 // Update user values
 
-                if (updates.password)
-                    updates.password = bcrypt.hashSync(updates.password, 10);
+                if (updates.password) updates.password = bcrypt.hashSync(updates.password, 10);
 
                 applicantuser = await db.users.update(updates, {
                     where: { id: id }

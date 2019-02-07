@@ -7,6 +7,8 @@ const nodemailer = require('nodemailer');
 const env = require('../tools/constants.js');
 const jwt = require('jsonwebtoken');
 
+
+
 class TokenId {
     getTokenId(token) {
         return auth.auth.decode(token);
@@ -212,6 +214,110 @@ function validateDate ( date ) {
     }
 }
 
+async function uploadFile ( req, res, next, _type, _id, _db ) {
+    
+    try {
+        let type = _type;
+        var path = `uploads/${ type }`;
+        
+        // Create dir if not exists
+        if (!fs.existsSync(path)){
+            fs.mkdirSync(path, { recursive: true });
+            console.log(`Path ${ path } created`);
+        }
+        
+        let id = _id;
+        
+            if (!isNaN(id)) {
+                if (!req.files) {
+                    return res.status(400).json({
+                        ok: false,
+                        message: 'Not file selected'
+                    });
+                }
+
+                // Validate type
+                let validTypes = ['users'];
+                if (validTypes.indexOf(type) < 0) {
+                    return res.status(400).json({
+                        ok: false,
+                        message: 'Valid types are: ' + validTypes.join(', ')
+                    })
+                }
+
+                let file = req.files.img;
+                
+                let fileNameCut = file.name.split('.');
+                let fileExt = fileNameCut[fileNameCut.length - 1];
+
+                // Validate extension
+                let validExt = ['png', 'jpg', 'gif', 'jpeg'];
+
+                if (validExt.indexOf(fileExt) < 0) {
+                    return res.status(400).json({
+                        ok: false,
+                        message: 'Valid extension are ' + validExt.join(', '),
+                        ext: fileExt
+                    })
+                }
+
+                // Change file name
+                let fileName = `user${ id }-${ new Date().getMilliseconds() }.${ fileExt }`;
+                var outputPath = `uploads/${ type }/${ fileName }`;
+                file.mv(outputPath, (err) => {
+                    if (err) {
+                        return res.status(500).json({
+                            ok: false,
+                            message: err
+                        });
+                    }
+                    
+                });
+                var out = await saveUserImg(id, outputPath, _db);
+                return out;
+            } else {
+                return res.status(400).json({
+                    ok: false,
+                    message: 'Invalid user'
+                });
+            }
+        } catch (err) {
+            next({ type: 'error', error: err });
+        }
+}
+
+async function saveUserImg(id, outputPath, db) {
+    
+    var ok;
+    
+    let user = await db.users.findOne({
+        where: { id }
+    });
+    
+    deleteFile(user.img);
+
+    let updated = await db.users.update({ img: outputPath }, {
+        where: { id }
+    });
+
+    if (updated > 0) {
+        ok = true;
+    } else {
+        ok = false;
+    }
+    //console.log("1- (saveUser) ok = " + ok);
+    return ok
+}
+
+function deleteFile(outputPath) {
+
+    //let pathImage = path.resolve(__dirname, `../../../uploads/${ type }/${ fileName }`);
+
+    if (fs.existsSync(outputPath)) {
+        fs.unlinkSync(outputPath);
+    }
+}
+
 
 module.exports = {
     tokenId,
@@ -219,5 +325,6 @@ module.exports = {
     sendVerificationEmail,
     sendEmailResetPassword,
     pagination,
-    validateDate
+    validateDate,
+    uploadFile
 }
