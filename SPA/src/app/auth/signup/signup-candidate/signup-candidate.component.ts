@@ -8,7 +8,8 @@ import {AuthEffects} from '../../store/auth.effects';
 import {filter} from 'rxjs/operators';
 import {DialogErrorComponent} from '../dialog-error/dialog-error.component';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from '@angular/common/http';
-import { TrySignupGoogle, TrySignupGitHub, TrySignupLinkedIn } from '../../store/auth.actions';
+import {TrySignupGoogle, TrySignupGitHub, TrySignupLinkedIn} from '../../store/auth.actions';
+import {DialogImageCropComponent} from '../dialog-image-crop/dialog-image-crop.component';
 
 interface City {
   name: string;
@@ -17,7 +18,6 @@ interface City {
     lng: number
   };
 }
-
 
 
 @Component({
@@ -29,6 +29,7 @@ interface City {
 export class SignupCandidateComponent implements OnInit {
 
   options: City[] = [];
+  fileEvent = null;
 
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
@@ -138,7 +139,6 @@ export class SignupCandidateComponent implements OnInit {
       SignupCandidateComponent.maxMinDate.bind(this.secondFormGroup),
     ]);
 
-
     this.secondFormGroup.controls['password'].valueChanges.subscribe(() => {
       this.secondFormGroup.controls['password2'].updateValueAndValidity();
     });
@@ -151,12 +151,44 @@ export class SignupCandidateComponent implements OnInit {
 
 
     this.thirdFormGroup = this._formBuilder.group({
+      'profile': new FormControl(null),
       'bio': new FormControl(null),
+      'twitter': new FormControl(null),
+      'linkedIn': new FormControl(null),
+      'github': new FormControl(null),
       'skills': new FormArray([new FormControl(null)]),
       'languages': this._formBuilder.array([]),
       'experience': this._formBuilder.array([]),
       'education': this._formBuilder.array([])
     });
+
+    this.thirdFormGroup.controls['twitter'].valueChanges.subscribe(() => {
+      const value = <String>this.thirdFormGroup.controls['twitter'].value;
+      if (value.includes('twitter.com/')) {
+        const arr = value.split('twitter.com/');
+        this.thirdFormGroup.controls['twitter'].setValue(arr[arr.length - 1]);
+      }
+    });
+
+    this.thirdFormGroup.controls['linkedIn'].valueChanges.subscribe(() => {
+      let value = this.thirdFormGroup.controls['linkedIn'].value;
+      if (value.includes('linkedin.com/in/')) {
+        let arr = value.split('linkedin.com/in/');
+        value = arr[arr.length - 1];
+        arr = value.split('/');
+        value = arr[0];
+        this.thirdFormGroup.controls['linkedIn'].setValue(value);
+      }
+    });
+
+    this.thirdFormGroup.controls['github'].valueChanges.subscribe(() => {
+      const value = <String>this.thirdFormGroup.controls['github'].value;
+      if (value.includes('github.com/')) {
+        const arr = value.split('github.com/');
+        this.thirdFormGroup.controls['github'].setValue(arr[arr.length - 1]);
+      }
+    });
+
 
   }
 
@@ -187,7 +219,6 @@ export class SignupCandidateComponent implements OnInit {
   onSave(stepper: MatStepper) {
     this.dialogShown = false;
     // console.log(this.secondFormGroup);
-    console.log(this.secondFormGroup.controls['location'].value);
 
     if (this.secondFormGroup.status === 'VALID') {
 
@@ -195,7 +226,9 @@ export class SignupCandidateComponent implements OnInit {
         'name': this.secondFormGroup.controls['name'].value,
         'password': this.secondFormGroup.controls['password'].value,
         'email': this.secondFormGroup.controls['email'].value,
-        'city': this.secondFormGroup.controls['location'].value,
+        'city': (this.secondFormGroup.controls['location'].value as City).name
+          ? (this.secondFormGroup.controls['location'].value as City).name
+          : this.secondFormGroup.controls['location'].value,
         'dateBorn': this.secondFormGroup.controls['birthday'].value,
         'premium': '0',
         'rol': this.secondFormGroup.controls['role'].value.toString()
@@ -230,7 +263,7 @@ export class SignupCandidateComponent implements OnInit {
   }
 
   onSaveOptional() {
-    // console.log(this.thirdFormGroup);
+    console.log(this.thirdFormGroup);
   }
 
   add_skill() {
@@ -300,12 +333,12 @@ export class SignupCandidateComponent implements OnInit {
         // https://nominatim.openstreetmap.org/search/03502?format=json&addressdetails=1&limit=5&polygon_svg=1
         this.httpClient.get('https://places-dsn.algolia.net/1/places/query', options)
           .subscribe((data: any) => {
-            console.log(data);
+            // console.log(data);
             data.hits.forEach((e, i) => {
               const auxCity = {
                 name: data.hits[i].locale_names.default + ', ' + this.capitalizeFirstLetter(data.hits[i].country_code),
                 geo: data.hits[i]._geoloc ? data.hits[i]._geoloc : {}
-            }
+              };
               if (data.hits[i].is_city) {
                 if (!this.options.some(element => element.name === auxCity.name)) {
                   this.options.push(auxCity);
@@ -318,12 +351,10 @@ export class SignupCandidateComponent implements OnInit {
       }
     }
   }
-  
-  googleSignUp (stepper: MatStepper) {
+
+  googleSignUp(stepper: MatStepper) {
     console.log('google Sign Up');
     this.store$.dispatch(new AuthActions.TrySignupGoogle());
-
-
 
 
     // this.authEffects$.authSignupGoogle.pipe(
@@ -358,6 +389,53 @@ export class SignupCandidateComponent implements OnInit {
     console.log('twitter Sign Up');
     stepper.next();
 
+  }
+
+  deletePhoto() {
+    (document.getElementById('photo_profile') as HTMLInputElement).src = '../../../../assets/defaut_profile.png';
+    this.thirdFormGroup.controls['profile'].setValue(null);
+  }
+
+
+  previewFile(event: any) {
+
+    this.fileEvent = event;
+    /// 3MB IMAGES MAX
+    if (event.target.files[0]) {
+      if (event.target.files[0].size < 300000) {
+        // @ts-ignore
+        const preview = (document.getElementById('photo_profile') as HTMLInputElement);
+        const file = (document.getElementById('file_profile') as HTMLInputElement).files[0];
+        const reader = new FileReader();
+        reader.onloadend = function () {
+          // @ts-ignore
+          preview.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+
+        const dialogRef = this.dialog.open(DialogImageCropComponent, {
+          width: '90%',
+          height: '90%',
+          data: event
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+          if (result) {
+            preview.src = result.base64;
+          }
+        });
+      } else {
+        this.deletePhoto();
+        this.dialog.open(DialogErrorComponent, {
+          data: {
+            error: 'Your image is too big. We only allow files under 3Mb.',
+          }
+        });
+        this.dialogShown = true;
+      }
+    } else {
+      this.deletePhoto();
+    }
   }
 
 }

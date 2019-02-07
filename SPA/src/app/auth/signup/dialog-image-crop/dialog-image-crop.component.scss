@@ -1,0 +1,18 @@
+image-cropper{
+  float: left;
+  display: inline-block;
+}
+#float{
+  margin-left: 1em;
+  float: left;
+  width: 40%;
+  display: inline-block;
+}
+
+img {
+  width: 50%;
+  cursor: pointer;
+  float: left;
+  margin: 0 16px 16px 0;
+  border-radius: 4px;
+}

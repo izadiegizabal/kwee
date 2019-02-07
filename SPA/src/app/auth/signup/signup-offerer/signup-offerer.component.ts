@@ -4,11 +4,14 @@ import {DialogErrorComponent} from '../dialog-error/dialog-error.component';
 import {MatDialog, MatStepper} from '@angular/material';
 import * as AuthActions from '../../store/auth.actions';
 import {filter} from 'rxjs/operators';
-import {Action, Store} from '@ngrx/store';
+import {Action, select, Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
 import {AuthEffects} from '../../store/auth.effects';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
+import {DialogImageCropComponent} from '../dialog-image-crop/dialog-image-crop.component';
+import {environment} from '../../../../environments/environment';
+import {Router} from '@angular/router';
 
 interface City {
   first: string;
@@ -35,6 +38,8 @@ export class SignupOffererComponent implements OnInit {
 
   options: City[] = [];
   address: Address;
+  fileEvent = null;
+  file: any;
 
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
@@ -42,6 +47,8 @@ export class SignupOffererComponent implements OnInit {
 
   hide = false;
   offerer: any;
+  token;
+  authState: any;
 
   workFields: { value: number, viewValue: string }[] = [
     {value: 0, viewValue: 'Software Engineering'},
@@ -56,25 +63,44 @@ export class SignupOffererComponent implements OnInit {
   ];
 
   companySizes: { value: number, viewValue: string }[] = [
-    {value: 0, viewValue: '1'},
-    {value: 1, viewValue: '2'},
-    {value: 2, viewValue: '3'},
-    {value: 3, viewValue: '4'},
-    {value: 4, viewValue: '5'},
+    {value: 10, viewValue: '10'},
+    {value: 50, viewValue: '50'},
+    {value: 100, viewValue: '100'},
+    {value: 1000, viewValue: '1000'},
   ];
 
 
   private dialogShown = false;
 
+  static maxMinDate(control: FormControl): { [s: string]: { [s: string]: boolean } } {
+    const today = new Date();
+    const mdate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDay());
+
+    if (control.value > mdate) {
+      return null;
+    }
+    return {'tooOld': {value: true}};
+  }
+
 
   constructor(private _formBuilder: FormBuilder,
               public dialog: MatDialog,
               private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects,
-              private httpClient: HttpClient) {
+              private httpClient: HttpClient,
+              private router: Router) {
     this.address = {ad1: null, ad2: null};
   }
 
   ngOnInit() {
+
+    this.authState = this.store$.pipe(select('auth'));
+    this.authState.pipe(
+      // @ts-ignore
+      select(s => s.token)
+    ).subscribe(
+      (token) => {
+        this.token = token;
+      });
 
 
     this.firstFormGroup = this._formBuilder.group({});
@@ -89,16 +115,12 @@ export class SignupOffererComponent implements OnInit {
       'password2': new FormControl(null, Validators.required),
       'workField': new FormControl(null, Validators.required),
       'address1': new FormControl(null, Validators.required),
-      'address2': new FormControl(null),
-      'city': new FormControl(null, Validators.required),
-      'province': new FormControl(null, Validators.required),
-      'postalCode': new FormControl(null, Validators.required),
-      'country': new FormControl(null, Validators.required),
-
+      'address2': new FormControl(null)
     });
 
     this.thirdFormGroup = this._formBuilder.group({
       'about': new FormControl(),
+      'profile': new FormControl(),
       'website': new FormControl(),
       'companySize': new FormControl(),
       'year': new FormControl(),
@@ -138,6 +160,10 @@ export class SignupOffererComponent implements OnInit {
       }
     });
 
+    this.thirdFormGroup.controls['year'].setValidators([
+      SignupOffererComponent.maxMinDate.bind(this.thirdFormGroup),
+    ]);
+
   }
 
 
@@ -163,8 +189,6 @@ export class SignupOffererComponent implements OnInit {
 
   onSave(stepper: MatStepper) {
     this.dialogShown = false;
-    // console.log(this.secondFormGroup);
-    console.log(this.secondFormGroup.controls['address1'].value);
 
     if (this.secondFormGroup.status === 'VALID') {
 
@@ -172,12 +196,15 @@ export class SignupOffererComponent implements OnInit {
         'name': this.secondFormGroup.controls['businessName'].value,
         'password': this.secondFormGroup.controls['password'].value,
         'email': this.secondFormGroup.controls['email'].value,
-        'address': this.secondFormGroup.controls['address1'].value,
+        'address': this.secondFormGroup.controls['address1'].value.first,
         'cif': this.secondFormGroup.controls['vat'].value,
         'workField': this.secondFormGroup.controls['workField'].value,
         'year': '1997-03-17',
         'premium': '0',
-        'companySize': '50'
+        'companySize': '50',
+        'bio': '',
+        'img': null,
+        'status': 0
       };
 
       // console.log(this.offerer);
@@ -203,6 +230,39 @@ export class SignupOffererComponent implements OnInit {
         }
       });
     }
+  }
+
+  onUpdate() {
+
+    console.log('wqeqw');
+
+    const options = {
+      headers: new HttpHeaders().append('token', this.token)
+        .append('Content-Type', 'application/json')
+    };
+    const uploadData = new FormData();
+    uploadData.append('img', this.file, this.thirdFormGroup.controls['profile'].value);
+    uploadData.append('about', this.thirdFormGroup.controls['about'].value);
+    uploadData.append('website', this.thirdFormGroup.controls['website'].value);
+    uploadData.append('companySize', this.thirdFormGroup.controls['companySize'].value);
+    uploadData.append('year', this.thirdFormGroup.controls['year'].value);
+    this.httpClient.put(environment.apiUrl + 'offerer',
+      uploadData
+      , options)
+      .subscribe((data: any) => {
+        console.log(data);
+        this.router.navigate(['/']);
+      }, (error: any) => {
+        console.log(error);
+        /*if (!this.dialogShown) {
+          this.dialog.open(DialogErrorComponent, {
+            data: {
+              error: 'We had some issue creating your offer. Please try again later',
+            }
+          });
+          this.dialogShown = true;
+        }*/
+      });
   }
 
   displayFn(city?: City): string | undefined {
@@ -239,10 +299,6 @@ export class SignupOffererComponent implements OnInit {
         // https://nominatim.openstreetmap.org/search/03502?format=json&addressdetails=1&limit=5&polygon_svg=1
         this.httpClient.get('https://places-dsn.algolia.net/1/places/query', options)
           .subscribe((data: any) => {
-            console.log('Consulta:');
-            console.log(data);
-            console.log('Valor de address:');
-            console.log(this.secondFormGroup.get('address1').value);
             data.hits.forEach((e, i) => {
               const auxCity = {
                 first: data.hits[i].locale_names.default
@@ -262,6 +318,55 @@ export class SignupOffererComponent implements OnInit {
       } else {
         this.options = [];
       }
+    }
+  }
+
+  deletePhoto() {
+    (document.getElementById('photo_profile') as HTMLInputElement).src = '../../../../assets/defaut_profile.png';
+    this.thirdFormGroup.controls['profile'].setValue(null);
+  }
+
+
+  previewFile(event: any) {
+
+    this.fileEvent = event;
+    /// 3MB IMAGES MAX
+    if (event.target.files[0]) {
+      if (event.target.files[0].size < 300000) {
+        // @ts-ignore
+        const preview = (document.getElementById('photo_profile') as HTMLInputElement);
+        const file = (document.getElementById('file_profile') as HTMLInputElement).files[0];
+        const reader = new FileReader();
+        reader.onloadend = function () {
+          // @ts-ignore
+          preview.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+
+        const dialogRef = this.dialog.open(DialogImageCropComponent, {
+          width: '90%',
+          height: '90%',
+          data: event
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+          if (result) {
+            console.log(result);
+            preview.src = result.base64;
+            this.file = result.file;
+          }
+        });
+      } else {
+        this.deletePhoto();
+        this.dialog.open(DialogErrorComponent, {
+          data: {
+            error: 'Your image is too big. We only allow files under 3Mb.',
+          }
+        });
+        this.dialogShown = true;
+      }
+    } else {
+      this.deletePhoto();
     }
   }
 }

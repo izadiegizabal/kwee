@@ -118,6 +118,9 @@ export class MaterialAngularModule {
     matIconRegistry.addSvgIcon('insert-drive-file', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-insert_drive_file.svg'));
     matIconRegistry.addSvgIcon('thumb-up', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-thumb_up.svg'));
     matIconRegistry.addSvgIcon('thumb-down', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-thumb_down.svg'));
+    matIconRegistry.addSvgIcon('close', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-close.svg'));
+    matIconRegistry.addSvgIcon('money', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-money.svg'));
+    matIconRegistry.addSvgIcon('attach-money', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-attach_money.svg'));
 
     // Branding icons
     matIconRegistry.addSvgIcon('kwee-logo', domSanitizer.bypassSecurityTrustResourceUrl('assets/branding/logo-kwee-light.svg'));

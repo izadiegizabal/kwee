@@ -179,10 +179,53 @@
           <p>Complete your profile to increase your visibility and help you find the job you want!</p>
         </div>
         <br>
+
+        <div fxLayout="column">
+          <h4>Profile picture</h4>
+          <p>Click on the image or the button to add a image to your profile</p>
+          <label for="file_profile"><img
+            id="photo_profile"
+            fxlayout="column"
+            fxFlex="200px"
+            width="200px" height="200px"
+            src="../../../../assets/defaut_profile.png"
+            alt="default profile picture"/></label>
+          <label for="file_profile"><button class="photo-buttons" mat-raised-button color="primary" type="button"
+          (click)="profile.click()">Upload photo</button></label>
+          <input #profile id="file_profile" style="width: 0px; height: 0px;"
+          type="file" accept="image/*" (change)="previewFile($event)" formControlName="profile">
+          <button class="photo-buttons" [disabled]="! profile.value" mat-raised-button color="primary" type="button"
+                  (click)='previewFile(this.fileEvent)'>Crop again</button>
+          <button class="photo-buttons" mat-raised-button color="warn" type="button"
+                  (click)="deletePhoto()">Delete Photo</button>
+        </div>
+        <br>
         <div fxLayout="column">
           <h4>Bio</h4>
           <mat-form-field>
             <textarea formControlName="bio" matInput placeholder="Leave a comment"></textarea>
+          </mat-form-field>
+        </div>
+        <br>
+
+        <h4>Social Media</h4>
+        <p>You can link your social media accouts to your profile. Just type your username</p>
+        <div class="line1" fxLayout="column">
+          <mat-form-field>
+            <input  matInput placeholder="Twitter username" formControlName="twitter">
+            <mat-icon class="social-icons" color="primary" fontSet="fab" matPrefix fontIcon="fa-twitter"></mat-icon>
+          </mat-form-field>
+        </div>
+        <div class="line1" fxLayout="column">
+          <mat-form-field>
+            <input  matInput placeholder="Github username" formControlName="github">
+            <mat-icon class="social-icons" color="primary" fontSet="fab" matPrefix fontIcon="fa-github"></mat-icon>
+          </mat-form-field>
+        </div>
+        <div class="line1" fxLayout="column">
+          <mat-form-field>
+            <input  matInput placeholder="LinkedIn username" formControlName="linkedIn">
+            <mat-icon class="social-icons" color="primary" fontSet="fab" matPrefix fontIcon="fa-linkedin-in"></mat-icon>
           </mat-form-field>
         </div>
         <br>
