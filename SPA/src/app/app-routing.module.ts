@@ -17,6 +17,7 @@ const routes: Routes = [
   {path: 'email-verified/:token', loadChildren: './shared/email-verified/email-verified.module#EmailVerifiedModule'},
   {path: 'reset-password/:token', loadChildren: './shared/reset-password/reset-password.module#ResetPasswordModule'},
   {path: 'candidate/:id/:name', loadChildren: './shared/profiles/candidate-profile/candidate-profile.module#CandidateProfileModule'},
+  {path: 'business/:id/:name', loadChildren: './shared/profiles/business-profile/business-profile.module#BusinessProfileModule'},
   {path: '**', redirectTo: '/candidate-home'}
 ];
 

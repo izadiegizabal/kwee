@@ -22,6 +22,7 @@ import {NgcCookieConsentConfig, NgcCookieConsentModule} from 'ngx-cookieconsent'
 import {PrivacyComponent} from './privacy/privacy.component';
 import {OfferCreateComponent} from './shared/offer-create/offer-create.component';
 import {OfferCreateModule} from './shared/offer-create/offer-create.module';
+import { PaginatorModule } from './shared/paginator/paginator.module';
 
 export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {
   return localStorageSync({keys: ['auth', 'admin', 'offers', 'offer', 'profiles'], rehydrate: true})(reducer);
@@ -71,6 +72,7 @@ const cookieConfig: NgcCookieConsentConfig = {
     CandidateHomeModule,
     OfferDetailModule,
     OfferCreateModule,
+    PaginatorModule,
     AppRoutingModule,
     FormsModule,
     ChatModule,

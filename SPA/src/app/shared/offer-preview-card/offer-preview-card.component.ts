@@ -2,7 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {UtilsService} from '../utils.service';
 import {MatDialog} from '@angular/material';
 import {SnsShareDialogComponent} from '../sns-share/sns-share-dialog/sns-share-dialog.component';
-import {ContractType, JobDurationUnit, SalaryFrequency} from '../../../models/Offer.model';
+import {ContractType, JobDurationUnit, SalaryFrequency, WorkLocationType} from '../../../models/Offer.model';
 
 
 @Component({
@@ -61,6 +61,18 @@ export class OfferPreviewCardComponent implements OnInit {
 
   getOfferContractType() {
     return ContractType[this.offer.offer.contractType];
+  }
+
+  getOfferLocation() {
+    let location = this.offer.offer.location ? this.offer.offer.location : '';
+    if (location !== '' && this.offer.offer.workLocation !== WorkLocationType['On Site']) {
+      location += ' - ';
+      location += WorkLocationType[this.offer.offer.workLocation];
+    } else if (location === '') {
+      location = WorkLocationType[this.offer.offer.workLocation];
+    }
+
+    return location;
   }
 
 }

@@ -61,8 +61,8 @@
             </mat-error>
           </mat-form-field>
         </div>
-        <br>
-        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
+        <br *ngIf="!isSocialNetwork">
+        <div *ngIf="!isSocialNetwork" fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
           <mat-form-field>
             <input formControlName="email" matInput placeholder="Email" required>
             <mat-icon color="primary" matPrefix svgIcon="email"></mat-icon>
@@ -77,8 +77,8 @@
             </mat-error>
           </mat-form-field>
         </div>
-        <br>
-        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
+        <br *ngIf="!isSocialNetwork">
+        <div *ngIf="!isSocialNetwork" fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
           <mat-form-field>
             <mat-icon color="primary" matPrefix svgIcon="lock"></mat-icon>
             <input [type]="hide ? 'text' : 'password'" formControlName="password" matInput placeholder="Password"

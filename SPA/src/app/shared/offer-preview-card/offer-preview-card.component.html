@@ -8,7 +8,7 @@
       class="quickInfo"
       fxHide.lt-sm
       fxLayoutGap="16px">
-      <app-icon-with-text [text]="offer.offer.location" icon="place"></app-icon-with-text>
+      <app-icon-with-text [text]="getOfferLocation()" icon="place"></app-icon-with-text>
       <app-icon-with-text [text]="getPublishedDate()" icon="access-time"></app-icon-with-text>
 
     </div>
@@ -16,7 +16,7 @@
       class="quickInfo"
       fxHide.gt-xs
       fxLayoutGap="16px">
-      <app-icon-with-text [text]="offer.offer.location" icon="place"></app-icon-with-text>
+      <app-icon-with-text [text]="getOfferLocation()" icon="place"></app-icon-with-text>
       <app-icon-with-text [text]="getPublishedDate()" icon="access-time"></app-icon-with-text>
 
     </mat-card-subtitle>

@@ -1,21 +1,16 @@
 import {Component, OnInit} from '@angular/core';
-import {select, Store} from '@ngrx/store';
+import {Action, select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
 import * as OfferActions from './store/offer.actions';
 import * as fromOffer from './store/offer.reducers';
 import {Observable} from 'rxjs';
+import {OfferEffects} from './store/offer.effects';
+import {filter} from 'rxjs/operators';
 
 
-import {
-  ContractType,
-  JobDurationUnit,
-  OfferStatus,
-  SalaryFrequency,
-  SeniorityLevel,
-  WorkLocationType
-} from '../../../models/Offer.model';
+import {ContractType, JobDurationUnit, OfferStatus, SalaryFrequency, SeniorityLevel, WorkLocationType} from '../../../models/Offer.model';
 import {UtilsService} from '../utils.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-offer-detail',
@@ -26,13 +21,29 @@ export class OfferDetailComponent implements OnInit {
   offerSkills: [' '];
   offerState: Observable<fromOffer.State>;
 
-  constructor(private _utils: UtilsService, private store$: Store<fromApp.AppState>, private activatedRoute: ActivatedRoute) {
+  constructor(private _utils: UtilsService,
+              private store$: Store<fromApp.AppState>,
+              private activatedRoute: ActivatedRoute,
+              private offerEffects$: OfferEffects,
+              private router: Router) {
   }
 
   ngOnInit() {
     const params = this.activatedRoute.snapshot.params;
-    this.store$.dispatch(new OfferActions.TryGetOffer({id: params.id}));
-    this.offerState = this.store$.pipe(select(state => state.offer));
+
+    if (Number(params.id)) {
+      this.store$.dispatch(new OfferActions.TryGetOffer({id: params.id}));
+      this.offerState = this.store$.pipe(select(state => state.offer));
+
+      this.offerEffects$.offerGetoffer.pipe(
+        filter((action: Action) => action.type === OfferActions.OPERATION_ERROR)
+      ).subscribe((error: { payload: any, type: string }) => {
+        this.router.navigate(['/']);
+      });
+     } else {
+       this.router.navigate(['/']);
+     }
+
   }
 
   getTimePassed(publishDate) {
@@ -97,4 +108,11 @@ export class OfferDetailComponent implements OnInit {
     const params = this.activatedRoute.snapshot.params;
     this.store$.dispatch(new OfferActions.TryPostApplication({fk_offer: params.id}));
   }
+
+  urlOfferer(id, name) {
+    const url = '/business/' + id + '/' + name.toLowerCase().replace(/ /g, '-');
+    return url;
+  }
+
+
 }

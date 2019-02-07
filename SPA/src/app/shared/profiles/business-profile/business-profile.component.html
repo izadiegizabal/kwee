@@ -1,0 +1,86 @@
+<div fxLayout="row" fxLayoutAlign="center start">
+  <div
+    fxFlex="95%"
+    fxFlex.gt-md="=70%"
+    fxFlex.gt-sm="80%">
+    <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap.lt-sm="16px">
+      <!-- Basic info -->
+      <mat-card fxFlex="70">
+        <mat-card-title>
+          <app-offerer-name-overview
+            [name]="business.name"
+            [index]="business.kweeIndex"
+            size="title">
+          </app-offerer-name-overview>
+        </mat-card-title>
+        <mat-card-content
+          style="margin-top: 16px"
+          fxLayoutAlign="center stretch" fxLayoutAlign.lt-sm="center center"
+          fxLayout="row" fxLayout.lt-sm="column">
+          <img
+            fxlayout="column"
+            fxFlex="200px"
+            width="200px" height="200px"
+            src="{{business.img}}"
+            alt="{{business.name + ' profile picture'}}'"/>
+          <p
+            fxLayout="column"
+            fxLayoutAlign="center center">
+            {{business.bio}}
+          </p>
+        </mat-card-content>
+        <mat-card-actions fxLayoutAlign="end end">
+          <button
+            color="accent"
+            mat-button>
+            Edit
+          </button>
+        </mat-card-actions>
+      </mat-card>
+
+      <!-- Premium info -->
+      <mat-card
+        fxFlexOffset.gt-xs="32px" fxFlex="30">
+        <mat-card-subtitle style="text-align: center">Active account type:</mat-card-subtitle>
+        <mat-card-title style="text-align: center">
+          Basic
+        </mat-card-title>
+        <hr>
+        <mat-card-content>
+          <mat-list>
+            <mat-list-item><p>Publish more offers.</p></mat-list-item>
+            <mat-list-item><p>More advanced offers.</p></mat-list-item>
+            <mat-list-item><p>Direct customer support.</p></mat-list-item>
+            <mat-list-item><p>Help us maintain the platform.</p></mat-list-item>
+          </mat-list>
+        </mat-card-content>
+        <mat-card-actions fxLayoutAlign="center">
+          <button
+            color="accent"
+            style="color: white; margin-bottom: 16px"
+            mat-raised-button>
+            Upgrade to Premium
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+    <div fxLayout="row" style="margin-top: 16px">
+      <mat-card fxFlex="100" style="padding: 0 !important;">
+        <mat-tab-group (selectedIndexChange)="goToMyOffers($event)">
+          <mat-tab label="More Info">
+            <ng-template matTabContent>
+              <app-business-more-info [business]="business"></app-business-more-info>
+            </ng-template>
+          </mat-tab>
+          <mat-tab label="Opinions">
+            <ng-template matTabContent>
+              <app-business-profile-opinions></app-business-profile-opinions>
+            </ng-template>
+          </mat-tab>
+          <mat-tab label="Offers"></mat-tab>
+        </mat-tab-group>
+      </mat-card>
+    </div>
+
+  </div>
+</div>

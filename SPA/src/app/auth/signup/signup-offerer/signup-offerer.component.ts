@@ -292,11 +292,10 @@ export class SignupOffererComponent implements OnInit {
         const options = {
           params: new HttpParams().set('query', ad1 + ', ' + ad2)
             .append('type', 'address'),
-          headers: new HttpHeaders().append('X-Algolia-Application-Id', 'pl6XVPPQOTDD')
-            .append('X-Algolia-API-Key', 'c02074725fd0344cc60949c969775748')
+          headers: new HttpHeaders().append('X-Algolia-Application-Id', environment.algoliaAppId)
+            .append('X-Algolia-API-Key', environment.algoliaAPIKey)
         };
         this.options = [];
-        // https://nominatim.openstreetmap.org/search/03502?format=json&addressdetails=1&limit=5&polygon_svg=1
         this.httpClient.get('https://places-dsn.algolia.net/1/places/query', options)
           .subscribe((data: any) => {
             data.hits.forEach((e, i) => {

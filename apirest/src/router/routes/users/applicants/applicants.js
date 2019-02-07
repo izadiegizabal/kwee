@@ -241,7 +241,7 @@ module.exports = (app, db) => {
             let logId = await logger.saveLog('PUT', 'applicant', null, res);
 
             let id = tokenId.getTokenId(req.get('token'));
-            logger.updateLog(logId, id);
+            logger.updateLog(logId, true, id);
             updateApplicant(id, updates, res, next);
         } catch (err) {
             return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
