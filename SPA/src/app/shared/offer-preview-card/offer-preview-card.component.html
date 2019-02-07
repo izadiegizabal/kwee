@@ -2,7 +2,7 @@
   <mat-card-header fxLayoutAlign="space-between">
     <mat-card-title [routerLink]="offerUrl" style="cursor: pointer">{{offer.offer.title}}</mat-card-title>
     <mat-card-subtitle>
-      <app-offerer-name-overview [index]="offer.user.index" [name]="offer.user.name"></app-offerer-name-overview>
+      <app-offerer-name-overview [index]="offer.user.index" [name]="offer.user.name"  [routerLink]="urlOfferer()"></app-offerer-name-overview>
     </mat-card-subtitle>
     <div
       class="quickInfo"

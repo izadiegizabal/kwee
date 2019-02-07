@@ -44,7 +44,11 @@ export class OfferPreviewCardComponent implements OnInit {
   }
 
   getOfferSalary() {
-    return this.offer.offer.salaryAmount + this.offer.offer.salaryCurrency + ' ' + SalaryFrequency[this.offer.offer.salaryFrequency];
+    const salary =
+      this.offer.offer.salaryAmount +
+      this.offer.offer.salaryCurrency + ' ' +
+      SalaryFrequency[this.offer.offer.salaryFrecuency];
+    return salary;
   }
 
   getOfferDuration() {
@@ -73,6 +77,11 @@ export class OfferPreviewCardComponent implements OnInit {
     }
 
     return location;
+  }
+
+  urlOfferer() {
+    const url = '/business/' + this.offer.user.id + '/' + this.offer.user.name.toLowerCase().replace(/ /g, '-');
+    return url;
   }
 
 }
