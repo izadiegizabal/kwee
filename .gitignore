@@ -22,3 +22,5 @@ passwords.js
 .DS_Store
 Thumbs.db
 apirest/\.idea/
+
+SPA/src/environments/

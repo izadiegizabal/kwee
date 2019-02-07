@@ -224,6 +224,26 @@
             incrase your trustiness for the applicants.</p>
         </div>
         <br>
+        <div fxLayout="column">
+          <h4>Profile picture</h4>
+          <p>Click on the image or the button to add a image to your profile</p>
+          <label for="file_profile"><img
+            id="photo_profile"
+            fxlayout="column"
+            fxFlex="200px"
+            width="200px" height="200px"
+            src="../../../../assets/defaut_profile.png"
+            alt="default profile picture"/></label>
+          <label for="file_profile"><button class="photo-buttons" mat-raised-button color="primary" type="button"
+                                            (click)="profile.click()">Upload photo</button></label>
+          <input #profile id="file_profile" style="width: 0px; height: 0px;"
+                 type="file" accept="image/*" (change)="previewFile($event)" formControlName="profile">
+          <button class="photo-buttons" [disabled]="! profile.value" mat-raised-button color="primary" type="button"
+                  (click)='previewFile(this.fileEvent)'>Crop again</button>
+          <button class="photo-buttons" mat-raised-button color="warn" type="button"
+                  (click)="deletePhoto()">Delete Photo</button>
+        </div>
+        <br>
 
         <div fxLayout="column">
           <h4>About us</h4>
@@ -265,15 +285,23 @@
         <br>
         <div fxLayout="row">
           <mat-form-field>
-            <input formControlName="year" matInput placeholder="Year founded">
-            <mat-icon color="primary" matPrefix svgIcon="cake"></mat-icon>
+            <input [matDatepicker]="picker" formControlName="year" matInput placeholder="Date funded" required>
+            <mat-datepicker-toggle [for]="picker" matPrefix></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <mat-error *ngIf="!thirdFormGroup.get('year').valid && !thirdFormGroup.get('year').hasError('tooOld')">
+              Please enter a valid date
+            </mat-error>
+            <mat-error
+              *ngIf="thirdFormGroup.get('year').hasError('tooOld')">
+              Your date is too old
+            </mat-error>
           </mat-form-field>
         </div>
 
 
         <br>
         <div fxLayout="row" fxLayoutAlign="end">
-          <button color="accent" mat-button routerLink="/">Done</button>
+          <button color="accent" type="button" (click)="onUpdate()" mat-button routerLink="/">Done</button>
         </div>
       </div>
     </form>

@@ -1,0 +1,248 @@
+<form [formGroup]="form">
+  <div fxLayout="row" fxLayoutAlign="center start">
+    <div
+      fxFlex="70%"
+      fxFlex.gt-md="=70%"
+      fxFlex.gt-sm="80%">
+    <div fxLayout="row">
+      <h2>Publish a new offer</h2></div>
+    <div class="line2" fxLayout="column">
+      <mat-form-field>
+        <input matInput formControlName="title" placeholder="Title" required>
+        <mat-error *ngIf="!form.get('title').valid ">
+          This field is required
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <br>
+    <div class="line2" fxLayout="column">
+      <mat-form-field>
+        <textarea formControlName="description" matInput placeholder="Description" required></textarea>
+        <mat-error *ngIf="!form.get('description').valid ">
+          This field is required
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <br>
+      <h3>Details</h3>
+      <div fxLayout="row">
+        <div fxFlexOffset="10%" fxFlexOffset.lt-sm="0">
+      <h4>Duration</h4>
+      <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
+        <mat-form-field>
+          <input [required]="durationReq"  id="dnum" matInput formControlName="duration" placeholder="Numeric unit" type="number" required>
+          <mat-icon color="primary" matPrefix svgIcon="access-time"></mat-icon>
+          <mat-error *ngIf="!form.get('duration').valid ">
+            This field is required
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-select [required]="durationReq" id="dtime" formControlName="durationUnit"  placeholder="Time Unit" required>
+            <mat-option *ngFor="let value of durationUnit" [value]="value.value">
+              {{value.viewValue}}
+            </mat-option>
+          </mat-select>
+          <mat-icon color="primary" matPrefix svgIcon="date-range"></mat-icon>
+          <mat-error *ngIf="!form.get('durationUnit').valid ">
+            This field is required
+          </mat-error>
+        </mat-form-field>
+        <div fxLayout="row" fxLayoutAlign="center center" fxLayoutAlign.xs="start center">
+          <mat-checkbox formControlName="isIndefinite" (change)="onChange($event)">Indefinite</mat-checkbox>
+        </div>
+      </div>
+      <br>
+      <h4>Start of the job</h4>
+      <div class="line1" fxLayout="column">
+        <mat-form-field>
+          <input [matDatepicker]="picker" formControlName="dateStart" matInput placeholder="Job start" required>
+          <mat-datepicker-toggle [for]="picker" matPrefix></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-hint>This date has to be older than today.</mat-hint>
+
+          <mat-error *ngIf="form.get('dateStart').hasError('required') ">
+            This field is required
+          </mat-error>
+          <mat-error
+            *ngIf="!form.get('dateStart').valid && !form.get('dateStart').hasError('required')">
+            Please enter a valid date
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <h4>Contract type</h4>
+      <div class="line1" fxLayout="column">
+        <mat-form-field>
+          <mat-select formControlName="contractType"  placeholder="Contract type" required>
+            <mat-option *ngFor="let value of contractType" [value]="value.value">
+              {{value.viewValue}}
+            </mat-option>
+          </mat-select>
+          <mat-icon color="primary" matPrefix svgIcon="work"></mat-icon>
+          <mat-error *ngIf="!form.get('contractType').valid ">
+            This field is required
+          </mat-error>
+          <mat-hint>The kind of job you are offering.</mat-hint>
+        </mat-form-field>
+      </div>
+      <br>
+      <h4>Salary aproximation</h4>
+      <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
+        <mat-form-field fxFlex="20%" fxFlex.xs="99%">
+          <input matInput formControlName="salary" placeholder="Amount" type="number" required>
+          <mat-error *ngIf="!form.get('salary').valid ">
+            This field is required
+          </mat-error>
+          <mat-icon color="primary" matPrefix svgIcon="money"></mat-icon>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-select formControlName="salaryCurrency"  placeholder="Currency" required>
+            <mat-option *ngFor="let curr of auxCurrencies" [value]="curr.value">
+              {{curr.value}} ({{curr.symbol}})
+            </mat-option>
+          </mat-select>
+          <mat-icon color="primary" matPrefix svgIcon="attach-money"></mat-icon>
+          <mat-error *ngIf="!form.get('salaryCurrency').valid">
+            This field is required
+          </mat-error>
+        </mat-form-field>
+        <p>per</p>
+        <mat-form-field>
+          <mat-select formControlName="salaryFrecuency"  placeholder="Frequency" required>
+            <mat-option *ngFor="let value of salaryFrecuency" [value]="value.value">
+              {{value.viewValue}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="!form.get('salaryFrecuency').valid ">
+            This field is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <br>
+      <h4>Location</h4>
+      <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
+        <mat-form-field>
+          <input id="city" formControlName="location" matInput placeholder="Location" required [matAutocomplete]="auto" (keyup)="onKey($event)">
+          <mat-hint>City and Country. Location of the job.</mat-hint>
+          <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+            <mat-option *ngFor="let option of options; index as i" [value]="option">
+              {{option.name}}
+            </mat-option>
+          </mat-autocomplete>
+          <mat-icon color="primary" matPrefix svgIcon="place"></mat-icon>
+          <mat-error *ngIf="!form.get('location').valid ">
+            This field is required
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-select formControlName="workLocation"  placeholder="Working location" required>
+            <mat-option *ngFor="let value of workLocation" [value]="value.value">
+              {{value.viewValue}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="!form.get('workLocation').valid ">
+            This field is required
+          </mat-error>
+          <mat-hint>OnSite? Remote?</mat-hint>
+        </mat-form-field>
+      </div>
+      <br>
+      <h4>Seniority Level</h4>
+      <div class="line1" fxLayout="column">
+        <mat-form-field>
+          <mat-select formControlName="seniority"  placeholder="Seniority" required>
+            <mat-option *ngFor="let value of seniority" [value]="value.value">
+              {{value.viewValue}}
+            </mat-option>
+          </mat-select>
+          <mat-icon color="primary" matPrefix svgIcon="face"></mat-icon>
+          <mat-error *ngIf="!form.get('seniority').valid ">
+            This field is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <br>
+      <h4>Number of jobs</h4>
+      <div class="line1" fxLayout="column">
+        <mat-form-field>
+          <input matInput formControlName="maxApplicants" placeholder="Number of jobs" type="number" required>
+          <mat-hint>How many people do you want to hire?</mat-hint>
+          <mat-icon color="primary" matPrefix svgIcon="people"></mat-icon>
+          <mat-error *ngIf="!form.get('maxApplicants').valid ">
+            This field is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <br>
+      <h4>Expiration of the offer</h4>
+      <div class="line1" fxLayout="column">
+        <mat-form-field>
+          <input [matDatepicker]="pickerEnd" formControlName="dateEnd" matInput placeholder="Offer expiration" required>
+          <mat-datepicker-toggle [for]="pickerEnd" matPrefix></mat-datepicker-toggle>
+          <mat-datepicker #pickerEnd></mat-datepicker>
+          <mat-hint>The date must be older than today.</mat-hint>
+          <mat-error *ngIf="form.get('dateEnd').hasError('required') ">
+            This field is required
+          </mat-error>
+          <mat-error
+            *ngIf="!form.get('dateEnd').valid && !form.get('dateEnd').hasError('required')">
+            Please enter a valid date
+          </mat-error>
+        </mat-form-field>
+      </div>
+      </div>
+      </div>
+    <br><br>
+    <h4>Responsabilities:</h4>
+    <p>What responsabilitites will your candidates have?</p>
+    <div class="line2" fxLayout="column">
+      <mat-form-field>
+        <textarea formControlName="responsabilities" matInput placeholder="Responsabilities"></textarea>
+      </mat-form-field>
+    </div>
+    <br>
+    <h4>Requirements:</h4>
+    <p>What requirements must your candidates have?</p>
+    <div class="line2" fxLayout="column">
+      <mat-form-field>
+        <textarea formControlName="requirements" matInput placeholder="Requirements"></textarea>
+      </mat-form-field>
+    </div>
+    <br>
+    <h4>Skills:</h4>
+    <p>If you want to add a skill, write it and click on the "Add" button</p>
+    <div fxLayout="row" fxLayoutGap="16px">
+      <div formArrayName="skills" fxFlex="50%" fxLayout="column" fxLayoutGap="-16px">
+        <mat-form-field *ngFor="let skill of formSkills.controls; let i =index;">
+          <input (keyup.enter)='add_skill()'
+                 [formControlName]="i"
+                 class="form-control"
+                 id="{{'skill'+i}}"
+                 matInput type="text">
+
+
+          <button (click)="deleteSkill(i)" *ngIf="this.formSkills.controls[i].value && this.formSkills.length-1!=i"
+                  aria-label="Clear"
+                  mat-button mat-icon-button matSuffix type="button">
+            <mat-icon color="primary" svgIcon="close"></mat-icon>
+          </button>
+
+          <button (click)="deleteSkill(i); add_skill()"
+                  *ngIf="this.formSkills.controls[i].value && this.formSkills.length-1==i" aria-label="Clear"
+                  mat-button mat-icon-button matSuffix type="button">
+            <mat-icon color="primary" svgIcon="close"></mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+      <div class="divBtn" fxLayout="column" fxLayoutAlign="end">
+        <button (click)=" add_skill()" mat-button type="button">
+          Add
+        </button>
+      </div>
+    </div>
+    <br>
+    <div fxLayout="row" fxLayoutAlign="end">
+      <button (click)="onSave()" color="accent" mat-button type="button">Publish</button>
+    </div>
+    </div>
+  </div>
+</form>

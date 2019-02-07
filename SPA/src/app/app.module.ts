@@ -20,6 +20,8 @@ import {ChatModule} from './chat/chat.module';
 import {CookieService} from 'ngx-cookie-service';
 import {NgcCookieConsentConfig, NgcCookieConsentModule} from 'ngx-cookieconsent';
 import {PrivacyComponent} from './privacy/privacy.component';
+import {OfferCreateComponent} from './shared/offer-create/offer-create.component';
+import {OfferCreateModule} from './shared/offer-create/offer-create.module';
 import { PaginatorModule } from './shared/paginator/paginator.module';
 
 export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {
@@ -30,7 +32,7 @@ const metaReducers: Array<MetaReducer<any, any>> = [localStorageSyncReducer];
 
 const cookieConfig: NgcCookieConsentConfig = {
   'cookie': {
-    'domain': 'tinesoft.github.io'
+    'domain': window.location.hostname
   },
   'position': 'bottom',
   'theme': 'edgeless',
@@ -69,6 +71,7 @@ const cookieConfig: NgcCookieConsentConfig = {
     CoreModule,
     CandidateHomeModule,
     OfferDetailModule,
+    OfferCreateModule,
     PaginatorModule,
     AppRoutingModule,
     FormsModule,

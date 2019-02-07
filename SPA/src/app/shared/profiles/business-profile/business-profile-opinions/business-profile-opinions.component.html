@@ -1,0 +1,89 @@
+<div
+  fxLayout="column"
+  fxFlexOffset="4%"
+  fxFlex="92%"
+  fxFlex.gt-sm="60%"
+  style="margin-bottom: 16px">
+  <h2 style="margin-bottom: 0">
+    Opinions
+  </h2>
+  <p>Here you'll be able to find what other users have to say about the business above. </p>
+  <mat-card *ngFor="let opinion of opinions"
+            style="margin-bottom: 8px"
+            [ngClass]="{
+              'mat-elevation-z0' : !opinion.panelOpenState
+            }"
+  >
+    <div fxLayout="row" fxLayoutGap="32px">
+      <div fxLayout="column">
+        <div fxLayout="row" class="rating"><span>{{opinion.ratingScore}}</span></div>
+        <div fxLayout="row" class="usefulness">
+          <span>{{opinion.opinionScore}}</span>
+          <button color="accent" mat-icon-button>
+            <mat-icon color="primary" svgIcon="thumb-up"></mat-icon>
+          </button>
+          <button
+            style="margin-left: -16px"
+            color="warn" mat-icon-button>
+            <mat-icon color="primary" svgIcon="thumb-down"></mat-icon>
+          </button>
+        </div>
+      </div>
+      <div fxLayout="column">
+        <mat-card-title>
+          {{opinion.offerTitle}}
+        </mat-card-title>
+        <mat-card-subtitle>
+          {{opinion.userName + " - " + getPublishedDate(opinion.publishedAt)}}
+        </mat-card-subtitle>
+        <p>{{opinion.opinion}}</p>
+      </div>
+    </div>
+    <mat-card-content>
+      <mat-expansion-panel
+        class="mat-elevation-z0 opinionDetails"
+        (opened)="opinion.panelOpenState = true"
+        (closed)="opinion.panelOpenState = false"
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title fxLayoutAlign="end">
+            <p class="mat-button">More Details</p>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <h4>Details</h4>
+        <div fxLayout="row">
+          <div fxLayout="column" fxFlex="50%">
+            <mat-list>
+              <mat-list-item>
+                <span>{{opinion.details.salary}}</span>
+                Salary
+              </mat-list-item>
+              <mat-list-item>
+                <span>{{opinion.details.enviroment}}</span>
+                Environment
+              </mat-list-item>
+              <mat-list-item>
+                <span>{{opinion.details.partners}}</span>
+                Coworkers
+              </mat-list-item>
+            </mat-list>
+          </div>
+          <div fxLayout="column" fxFlex="50%">
+            <mat-list>
+              <mat-list-item>
+                <span>{{opinion.details.services}}</span>
+                Services
+              </mat-list-item>
+              <mat-list-item>
+                <span>{{opinion.details.instalations}}</span>
+                Work Space
+              </mat-list-item>
+            </mat-list>
+          </div>
+        </div>
+
+      </mat-expansion-panel>
+    </mat-card-content>
+  </mat-card>
+</div>

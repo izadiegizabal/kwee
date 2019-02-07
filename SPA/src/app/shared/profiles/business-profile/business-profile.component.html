@@ -48,9 +48,9 @@
         <hr>
         <mat-card-content>
           <mat-list>
-            <mat-list-item><p>Unlimited concurrent applications.</p></mat-list-item>
-            <mat-list-item><p>Upload files to complete your profile.</p></mat-list-item>
-            <mat-list-item><p>Access to highlighted profiles section.</p></mat-list-item>
+            <mat-list-item><p>Publish more offers.</p></mat-list-item>
+            <mat-list-item><p>More advanced offers.</p></mat-list-item>
+            <mat-list-item><p>Direct customer support.</p></mat-list-item>
             <mat-list-item><p>Help us maintain the platform.</p></mat-list-item>
           </mat-list>
         </mat-card-content>
@@ -69,12 +69,12 @@
         <mat-tab-group (selectedIndexChange)="goToMyOffers($event)">
           <mat-tab label="More Info">
             <ng-template matTabContent>
-              <!--<app-candidate-more-info [candidate]="business"></app-candidate-more-info>-->
+              <app-business-more-info [business]="business"></app-business-more-info>
             </ng-template>
           </mat-tab>
           <mat-tab label="Opinions">
             <ng-template matTabContent>
-              <!--<app-candidate-profile-opinions></app-candidate-profile-opinions>-->
+              <app-business-profile-opinions></app-business-profile-opinions>
             </ng-template>
           </mat-tab>
           <mat-tab label="Offers"></mat-tab>

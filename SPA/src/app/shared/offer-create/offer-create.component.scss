@@ -1,5 +1,9 @@
 @import "~src/common-utils";
 
+*{
+  font-family: IBM Plex Sans, sans-serif;
+}
+
 .signupButton button {
   width: 250px;
 
@@ -50,7 +54,11 @@ mat-datepicker-toggle {
 }
 
 .line1 {
-  max-width: 410px;
+  max-width: 500px;
+}
+
+.line2 {
+  max-width: 600px;
 }
 
 .divskill {

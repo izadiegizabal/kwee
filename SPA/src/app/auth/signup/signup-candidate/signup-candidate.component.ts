@@ -1,13 +1,17 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {MatDialog, MatStepper} from '@angular/material';
+import {MatDialog, MatStepper, MatSelectTrigger} from '@angular/material';
 import {Action, Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
 import * as AuthActions from '../../store/auth.actions';
 import {AuthEffects} from '../../store/auth.effects';
 import {filter} from 'rxjs/operators';
 import {DialogErrorComponent} from '../dialog-error/dialog-error.component';
-import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from '@angular/common/http';
+import {TrySignupGoogle, TrySignupGitHub, TrySignupLinkedIn} from '../../store/auth.actions';
+import {DialogImageCropComponent} from '../dialog-image-crop/dialog-image-crop.component';
+import {ActivatedRoute} from '@angular/router';
+import {environment} from '../../../../environments/environment';
 
 interface City {
   name: string;
@@ -25,8 +29,10 @@ interface City {
 })
 
 export class SignupCandidateComponent implements OnInit {
+  @ViewChild('stepper') stepper:MatStepper;
 
   options: City[] = [];
+  fileEvent = null;
 
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
@@ -35,6 +41,8 @@ export class SignupCandidateComponent implements OnInit {
   hide = false;
   iskill = 0;
   iskillang = 0;
+  isSocialNetwork = false;
+  snToken;
   roles: { value: number, viewValue: string }[] = [
     {value: 0, viewValue: 'Software Engineering'},
     {value: 1, viewValue: 'Engineering Management'},
@@ -60,7 +68,8 @@ export class SignupCandidateComponent implements OnInit {
   constructor(private _formBuilder: FormBuilder,
               public dialog: MatDialog,
               private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects,
-              private httpClient: HttpClient) {
+              private httpClient: HttpClient,
+              private activatedRoute: ActivatedRoute) {
     this.iskill = 0;
     this.iskillang = 0;
   }
@@ -108,6 +117,7 @@ export class SignupCandidateComponent implements OnInit {
   ngOnInit() {
     this.firstFormGroup = this._formBuilder.group({
       // firstCtrl: ['', Validators.required]
+
     });
     this.secondFormGroup = this._formBuilder.group({
       'name': new FormControl(null, Validators.required),
@@ -136,7 +146,6 @@ export class SignupCandidateComponent implements OnInit {
       SignupCandidateComponent.maxMinDate.bind(this.secondFormGroup),
     ]);
 
-
     this.secondFormGroup.controls['password'].valueChanges.subscribe(() => {
       this.secondFormGroup.controls['password2'].updateValueAndValidity();
     });
@@ -149,13 +158,57 @@ export class SignupCandidateComponent implements OnInit {
 
 
     this.thirdFormGroup = this._formBuilder.group({
+      'profile': new FormControl(null),
       'bio': new FormControl(null),
+      'twitter': new FormControl(null),
+      'linkedIn': new FormControl(null),
+      'github': new FormControl(null),
       'skills': new FormArray([new FormControl(null)]),
       'languages': this._formBuilder.array([]),
       'experience': this._formBuilder.array([]),
       'education': this._formBuilder.array([])
     });
 
+    this.thirdFormGroup.controls['twitter'].valueChanges.subscribe(() => {
+      const value = <String>this.thirdFormGroup.controls['twitter'].value;
+      if (value.includes('twitter.com/')) {
+        const arr = value.split('twitter.com/');
+        this.thirdFormGroup.controls['twitter'].setValue(arr[arr.length - 1]);
+      }
+    });
+
+    this.thirdFormGroup.controls['linkedIn'].valueChanges.subscribe(() => {
+      let value = this.thirdFormGroup.controls['linkedIn'].value;
+      if (value.includes('linkedin.com/in/')) {
+        let arr = value.split('linkedin.com/in/');
+        value = arr[arr.length - 1];
+        arr = value.split('/');
+        value = arr[0];
+        this.thirdFormGroup.controls['linkedIn'].setValue(value);
+      }
+    });
+
+    this.thirdFormGroup.controls['github'].valueChanges.subscribe(() => {
+      const value = <String>this.thirdFormGroup.controls['github'].value;
+      if (value.includes('github.com/')) {
+        const arr = value.split('github.com/');
+        this.thirdFormGroup.controls['github'].setValue(arr[arr.length - 1]);
+      }
+    });
+
+    this.activatedRoute.queryParams.subscribe(params => {
+      const token = params['token'];
+      this.snToken = token;
+      if ( token ) {
+        this.stepper.selectedIndex = 1;
+        this.secondFormGroup.controls['name'].setValue(params['name']);
+        this.secondFormGroup.controls['email'].setValue(params['email']);
+        this.secondFormGroup.controls['confEmail'].setValue(params['email']);
+        this.secondFormGroup.controls['password'].setValue('123456');
+        this.secondFormGroup.controls['password2'].setValue('123456');
+        this.isSocialNetwork = true;
+      }
+    });
   }
 
   addLanguageGroup(): FormGroup {
@@ -185,41 +238,54 @@ export class SignupCandidateComponent implements OnInit {
   onSave(stepper: MatStepper) {
     this.dialogShown = false;
     // console.log(this.secondFormGroup);
-    console.log(this.secondFormGroup.controls['location'].value);
-
+    console.log('save');
     if (this.secondFormGroup.status === 'VALID') {
-
+      console.log('form valid');
+      if (!this.isSocialNetwork) {
+        console.log('no viene por red social');
       this.candidate = {
         'name': this.secondFormGroup.controls['name'].value,
         'password': this.secondFormGroup.controls['password'].value,
         'email': this.secondFormGroup.controls['email'].value,
-        'city': this.secondFormGroup.controls['location'].value,
+        'city': (this.secondFormGroup.controls['location'].value as City).name
+          ? (this.secondFormGroup.controls['location'].value as City).name
+          : this.secondFormGroup.controls['location'].value,
         'dateBorn': this.secondFormGroup.controls['birthday'].value,
         'premium': '0',
         'rol': this.secondFormGroup.controls['role'].value.toString()
       };
 
-      // console.log(this.candidate);
-      this.store$.dispatch(new AuthActions.TrySignupCandidate(this.candidate));
-      this.authEffects$.authSignin.pipe(
-        filter((action: Action) => action.type === AuthActions.SIGNIN)
-      ).subscribe(() => {
-        stepper.next();
-      });
-      this.authEffects$.authSignupCandidate.pipe(
-        filter((action: Action) => action.type === AuthActions.AUTH_ERROR)
-      ).subscribe((error: { payload: any, type: string }) => {
-        if (!this.dialogShown) {
-          console.log(error.payload);
-          this.dialog.open(DialogErrorComponent, {
-            data: {
-              error: error.payload,
-            }
-          });
-          this.dialogShown = true;
-        }
-      });
+        // console.log(this.candidate);
+        this.store$.dispatch(new AuthActions.TrySignupCandidate(this.candidate));
+        this.authEffects$.authSignin.pipe(
+          filter((action: Action) => action.type === AuthActions.SIGNIN)
+        ).subscribe(() => {
+          stepper.next();
+        });
+        this.authEffects$.authSignupCandidate.pipe(
+          filter((action: Action) => action.type === AuthActions.AUTH_ERROR)
+        ).subscribe((error: { payload: any, type: string }) => {
+          if (!this.dialogShown) {
+            console.log(error.payload);
+            this.dialog.open(DialogErrorComponent, {
+              data: {
+                error: error.payload,
+              }
+            });
+            this.dialogShown = true;
+          }
+        });
+      } else {
+        console.log('viene por red social');
+        // Update of user that is coming by social network with his birthday, role and location
+        const updateuser = {
+          'dateBorn': this.secondFormGroup.controls['birthday'].value,
+          'rol': this.secondFormGroup.controls['role'].value
+        };
+        // this.store$.dispatch(new AuthActions.TryUpdateCandidate({updatedCandidate: updateuser}));
+      }
     } else {
+      console.log('not valid form');
       for (const i of Object.keys(this.secondFormGroup.controls)) {
         this.secondFormGroup.controls[i].markAsTouched();
       }
@@ -228,7 +294,7 @@ export class SignupCandidateComponent implements OnInit {
   }
 
   onSaveOptional() {
-    // console.log(this.thirdFormGroup);
+    console.log(this.thirdFormGroup);
   }
 
   add_skill() {
@@ -291,14 +357,14 @@ export class SignupCandidateComponent implements OnInit {
         const options = {
           params: new HttpParams().set('query', text)
             .append('type', 'city'),
-          headers: new HttpHeaders().append('X-Algolia-Application-Id', 'pl6XVPPQOTDD')
-            .append('X-Algolia-API-Key', 'c02074725fd0344cc60949c969775748')
+          headers: new HttpHeaders().append('X-Algolia-Application-Id', environment.algoliaAppId)
+            .append('X-Algolia-API-Key', environment.algoliaAPIKey)
         };
         this.options = [];
         // https://nominatim.openstreetmap.org/search/03502?format=json&addressdetails=1&limit=5&polygon_svg=1
         this.httpClient.get('https://places-dsn.algolia.net/1/places/query', options)
           .subscribe((data: any) => {
-            console.log(data);
+            // console.log(data);
             data.hits.forEach((e, i) => {
               const auxCity = {
                 name: data.hits[i].locale_names.default + ', ' + this.capitalizeFirstLetter(data.hits[i].country_code),
@@ -319,9 +385,6 @@ export class SignupCandidateComponent implements OnInit {
 
   googleSignUp(stepper: MatStepper) {
     console.log('google Sign Up');
-    this.store$.dispatch(new AuthActions.TrySignupGoogle());
-
-
     // this.authEffects$.authSignupGoogle.pipe(
     //   filter((action: Action) => action.type === AuthActions.AUTH_ERROR)
     // ).subscribe((error: { payload: any, type: string }) => {
@@ -335,25 +398,74 @@ export class SignupCandidateComponent implements OnInit {
     //     this.dialogShown = true;
     //   }
     // });
+    window.location.href = 'http://localhost:3000/google';
     // stepper.next();
   }
 
   gitHubSignUp(stepper: MatStepper) {
-    console.log('GitHub Sign Up');
-    this.store$.dispatch(new AuthActions.TrySignupGitHub());
-    stepper.next();
+    window.location.href = 'http://localhost:3000/auth/github';
+    // stepper.next();
   }
 
   linkedInSignUp(stepper: MatStepper) {
     console.log('linkedIn Sign Up');
     this.store$.dispatch(new AuthActions.TrySignupLinkedIn());
+    window.location.href = 'http://localhost:3000/auth/github';
     // stepper.next();
   }
 
   twitterSignUp(stepper: MatStepper) {
     console.log('twitter Sign Up');
-    stepper.next();
+    window.location.href = 'http://localhost:3000/auth/twitter';
+    // stepper.next();
 
+  }
+
+  deletePhoto() {
+    (document.getElementById('photo_profile') as HTMLInputElement).src = '../../../../assets/defaut_profile.png';
+    this.thirdFormGroup.controls['profile'].setValue(null);
+  }
+
+
+  previewFile(event: any) {
+
+    this.fileEvent = event;
+    /// 3MB IMAGES MAX
+    if (event.target.files[0]) {
+      if (event.target.files[0].size < 300000) {
+        // @ts-ignore
+        const preview = (document.getElementById('photo_profile') as HTMLInputElement);
+        const file = (document.getElementById('file_profile') as HTMLInputElement).files[0];
+        const reader = new FileReader();
+        reader.onloadend = function () {
+          // @ts-ignore
+          preview.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+
+        const dialogRef = this.dialog.open(DialogImageCropComponent, {
+          width: '90%',
+          height: '90%',
+          data: event
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+          if (result) {
+            preview.src = result.base64;
+          }
+        });
+      } else {
+        this.deletePhoto();
+        this.dialog.open(DialogErrorComponent, {
+          data: {
+            error: 'Your image is too big. We only allow files under 3Mb.',
+          }
+        });
+        this.dialogShown = true;
+      }
+    } else {
+      this.deletePhoto();
+    }
   }
 
 }

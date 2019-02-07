@@ -122,6 +122,9 @@ export class MaterialAngularModule {
       'insert-drive-file', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-insert_drive_file.svg'));
     matIconRegistry.addSvgIcon('thumb-up', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-thumb_up.svg'));
     matIconRegistry.addSvgIcon('thumb-down', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-thumb_down.svg'));
+    matIconRegistry.addSvgIcon('close', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-close.svg'));
+    matIconRegistry.addSvgIcon('money', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-money.svg'));
+    matIconRegistry.addSvgIcon('attach-money', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-attach_money.svg'));
     matIconRegistry.addSvgIcon('error', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-error.svg'));
 
     // Branding icons
