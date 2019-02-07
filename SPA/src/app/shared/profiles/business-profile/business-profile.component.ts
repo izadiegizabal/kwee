@@ -1,26 +1,43 @@
 import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-business-profile',
   templateUrl: './business-profile.component.html',
-  styleUrls: ['./business-profile.component.scss']
+  styleUrls: [
+    '../candidate-profile/candidate-profile.component.scss',
+    './business-profile.component.scss',
+  ]
 })
 export class BusinessProfileComponent implements OnInit {
   business = {
-    name: 'Apple',
-    kweeIndex: 99,
-    bio: 'The Shiba Inu (柴犬) is the smallest of the six original and distinct spitz breeds of dog native to Japan.\n' +
-      '\n' +
-      'A small, agile dog that copes very well with mountainous terrain, the Shiba Inu was originally bred for hunting. It looks similar ' +
-      'to and is often mistaken for other Japanese dog breeds like the Akita Inu or Hokkaido, but the Shiba Inu is a different breed with' +
-      ' a distinct blood line, temperament and smaller size than other Japanese dog breeds.',
-    img: 'https://steemitimages.com/DQmcitBuKSUc9hhetXkhSz3Boca9Y2cgVWEaqsMcC6d4Zzb/ryuji-640x640.jpg',
+    name: 'Facebook',
+    kweeIndex: 56,
+    bio: 'Facebook, Inc. is an American online social media and social networking service company. It is based in Menlo Park, ' +
+      'California. Its was founded by Mark Zuckerberg, along with fellow Harvard College students and roommates Eduardo Saverin, Andrew' +
+      ' McCollum, Dustin Moskovitz and Chris Hughes. It is considered one of the Big Four (actually five) technology companies along with' +
+      ' Amazon, Aapple, Google and Microsoft.',
+    img: 'https://cdn.worldvectorlogo.com/logos/facebook-1.svg',
+    website: 'https://facebook.com',
+    size: '1000',
+    industry: 'Online Service Company',
+    year: '2004-02-04',
+    location: {
+      lat: -74.20,
+      long: 40.51,
+    },
+    address: '770 Broadway, New York, NY 10003, USA',
   };
 
-  constructor() {
+  constructor(private router: Router) {
   }
 
   ngOnInit() {
   }
 
+  goToMyOffers(tabIndex: number) {
+    if (tabIndex && tabIndex === 2) {
+      this.router.navigate(['/my-offers']);
+    }
+  }
 }
