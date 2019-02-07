@@ -95,8 +95,7 @@ export class SignupOffererComponent implements OnInit {
 
     this.authState = this.store$.pipe(select('auth'));
     this.authState.pipe(
-      // @ts-ignore
-      select(s => s.token)
+      select((s: {token: string}) => s.token)
     ).subscribe(
       (token) => {
         this.token = token;
@@ -203,7 +202,7 @@ export class SignupOffererComponent implements OnInit {
         'premium': '0',
         'companySize': '50',
         'bio': '',
-        'img': null,
+        'img': '',
         'status': 0
       };
 
