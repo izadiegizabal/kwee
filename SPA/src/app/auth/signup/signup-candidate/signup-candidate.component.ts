@@ -1,6 +1,6 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {MatDialog, MatStepper} from '@angular/material';
+import {MatDialog, MatStepper, MatSelectTrigger} from '@angular/material';
 import {Action, Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
 import * as AuthActions from '../../store/auth.actions';
@@ -8,6 +8,8 @@ import {AuthEffects} from '../../store/auth.effects';
 import {filter} from 'rxjs/operators';
 import {DialogErrorComponent} from '../dialog-error/dialog-error.component';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {ActivatedRoute} from '@angular/router';
+import {environment} from '../../../../environments/environment';
 
 interface City {
   name: string;
@@ -25,6 +27,7 @@ interface City {
 })
 
 export class SignupCandidateComponent implements OnInit {
+  @ViewChild('stepper') stepper:MatStepper;
 
   options: City[] = [];
 
@@ -35,6 +38,8 @@ export class SignupCandidateComponent implements OnInit {
   hide = false;
   iskill = 0;
   iskillang = 0;
+  isSocialNetwork = false;
+  snToken;
   roles: { value: number, viewValue: string }[] = [
     {value: 0, viewValue: 'Software Engineering'},
     {value: 1, viewValue: 'Engineering Management'},
@@ -60,7 +65,8 @@ export class SignupCandidateComponent implements OnInit {
   constructor(private _formBuilder: FormBuilder,
               public dialog: MatDialog,
               private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects,
-              private httpClient: HttpClient) {
+              private httpClient: HttpClient,
+              private activatedRoute: ActivatedRoute) {
     this.iskill = 0;
     this.iskillang = 0;
   }
@@ -108,6 +114,7 @@ export class SignupCandidateComponent implements OnInit {
   ngOnInit() {
     this.firstFormGroup = this._formBuilder.group({
       // firstCtrl: ['', Validators.required]
+
     });
     this.secondFormGroup = this._formBuilder.group({
       'name': new FormControl(null, Validators.required),
@@ -156,6 +163,19 @@ export class SignupCandidateComponent implements OnInit {
       'education': this._formBuilder.array([])
     });
 
+    this.activatedRoute.queryParams.subscribe(params => {
+      const token = params['token'];
+      this.snToken = token;
+      if ( token ) {
+        this.stepper.selectedIndex = 1;
+        this.secondFormGroup.controls['name'].setValue(params['name']);
+        this.secondFormGroup.controls['email'].setValue(params['email']);
+        this.secondFormGroup.controls['confEmail'].setValue(params['email']);
+        this.secondFormGroup.controls['password'].setValue('123456');
+        this.secondFormGroup.controls['password2'].setValue('123456');
+        this.isSocialNetwork = true;
+      }
+    });
   }
 
   addLanguageGroup(): FormGroup {
@@ -185,41 +205,52 @@ export class SignupCandidateComponent implements OnInit {
   onSave(stepper: MatStepper) {
     this.dialogShown = false;
     // console.log(this.secondFormGroup);
-    console.log(this.secondFormGroup.controls['location'].value);
-
+    console.log('save');
     if (this.secondFormGroup.status === 'VALID') {
+      console.log('form valid');
+      if (!this.isSocialNetwork) {
+        console.log('no viene por red social');
+        this.candidate = {
+          'name': this.secondFormGroup.controls['name'].value,
+          'password': this.secondFormGroup.controls['password'].value,
+          'email': this.secondFormGroup.controls['email'].value,
+          'city': this.secondFormGroup.controls['location'].value,
+          'dateBorn': this.secondFormGroup.controls['birthday'].value,
+          'premium': '0',
+          'rol': this.secondFormGroup.controls['role'].value.toString()
+        };
 
-      this.candidate = {
-        'name': this.secondFormGroup.controls['name'].value,
-        'password': this.secondFormGroup.controls['password'].value,
-        'email': this.secondFormGroup.controls['email'].value,
-        'city': this.secondFormGroup.controls['location'].value,
-        'dateBorn': this.secondFormGroup.controls['birthday'].value,
-        'premium': '0',
-        'rol': this.secondFormGroup.controls['role'].value.toString()
-      };
-
-      // console.log(this.candidate);
-      this.store$.dispatch(new AuthActions.TrySignupCandidate(this.candidate));
-      this.authEffects$.authSignin.pipe(
-        filter((action: Action) => action.type === AuthActions.SIGNIN)
-      ).subscribe(() => {
-        stepper.next();
-      });
-      this.authEffects$.authSignupCandidate.pipe(
-        filter((action: Action) => action.type === AuthActions.AUTH_ERROR)
-      ).subscribe((error: { payload: any, type: string }) => {
-        if (!this.dialogShown) {
-          console.log(error.payload);
-          this.dialog.open(DialogErrorComponent, {
-            data: {
-              error: error.payload,
-            }
-          });
-          this.dialogShown = true;
-        }
-      });
+        // console.log(this.candidate);
+        this.store$.dispatch(new AuthActions.TrySignupCandidate(this.candidate));
+        this.authEffects$.authSignin.pipe(
+          filter((action: Action) => action.type === AuthActions.SIGNIN)
+        ).subscribe(() => {
+          stepper.next();
+        });
+        this.authEffects$.authSignupCandidate.pipe(
+          filter((action: Action) => action.type === AuthActions.AUTH_ERROR)
+        ).subscribe((error: { payload: any, type: string }) => {
+          if (!this.dialogShown) {
+            console.log(error.payload);
+            this.dialog.open(DialogErrorComponent, {
+              data: {
+                error: error.payload,
+              }
+            });
+            this.dialogShown = true;
+          }
+        });
+      } else {
+        console.log('viene por red social');
+        // Update of user that is coming by social network with his birthday, role and location
+        const updateuser = {
+          'dateBorn': this.secondFormGroup.controls['birthday'].value,
+          'rol': this.secondFormGroup.controls['role'].value
+        };
+        // this.store$.dispatch(new AuthActions.TryUpdateCandidate({updatedCandidate: updateuser}));
+      }
     } else {
+      console.log('not valid form');
       for (const i of Object.keys(this.secondFormGroup.controls)) {
         this.secondFormGroup.controls[i].markAsTouched();
       }
@@ -318,41 +349,27 @@ export class SignupCandidateComponent implements OnInit {
   }
 
   googleSignUp(stepper: MatStepper) {
-    console.log('google Sign Up');
-    this.store$.dispatch(new AuthActions.TrySignupGoogle());
+    window.location.href = 'http://localhost:3000/google';
 
-
-    // this.authEffects$.authSignupGoogle.pipe(
-    //   filter((action: Action) => action.type === AuthActions.AUTH_ERROR)
-    // ).subscribe((error: { payload: any, type: string }) => {
-    //   if (!this.dialogShown) {
-    //     console.log(error.payload);
-    //     this.dialog.open(DialogErrorComponent, {
-    //       data: {
-    //         error: error.payload,
-    //       }
-    //     });
-    //     this.dialogShown = true;
-    //   }
-    // });
     // stepper.next();
   }
 
   gitHubSignUp(stepper: MatStepper) {
-    console.log('GitHub Sign Up');
-    this.store$.dispatch(new AuthActions.TrySignupGitHub());
-    stepper.next();
+    window.location.href = 'http://localhost:3000/auth/github';
+    // stepper.next();
   }
 
   linkedInSignUp(stepper: MatStepper) {
     console.log('linkedIn Sign Up');
     this.store$.dispatch(new AuthActions.TrySignupLinkedIn());
+    window.location.href = 'http://localhost:3000/auth/github';
     // stepper.next();
   }
 
   twitterSignUp(stepper: MatStepper) {
     console.log('twitter Sign Up');
-    stepper.next();
+    window.location.href = 'http://localhost:3000/auth/twitter';
+    // stepper.next();
 
   }
 
