@@ -273,27 +273,30 @@ module.exports = (app, db) => {
                         })
                         .then(ending => {
                             sendVerificationEmail(body, uservar);
-                    
-                            /////
-                            if(req.files.img) console.log("req.files.img");
-                            /////
+                
+                            if(req.files && req.files.img) { 
+                                uploadFile( req, res, next, 'users', ending.userId, db)
+                                .then( output => {
 
-                            uploadFile( req, res, next, 'users', ending.userId, db)
-                            .then( output => {
-
-                                if( output ){
-                                    return res.status(201).json({
-                                        ok: true,
-                                        message: `Offerer with id ${ending.userId} has been created.`
-                                    });
-                                }
-                                else{
-                                    return res.status(400).json({
-                                        ok: output,
-                                        message: 'Offerer created, but img was not saved.'
-                                    });
-                                }
-                            })
+                                    if( output ){
+                                        return res.status(201).json({
+                                            ok: true,
+                                            message: `Offerer with id ${ending.userId} has been created.`
+                                        });
+                                    }
+                                    else{
+                                        return res.status(400).json({
+                                            ok: output,
+                                            message: 'Offerer created, but img was not saved.'
+                                        });
+                                    }
+                                });
+                            } else {
+                                return res.status(201).json({
+                                    ok: true,
+                                    message: `Offerer with id ${ending.userId} has been created.`
+                                });
+                            }
                         })
                 })
                 .catch(err => {
