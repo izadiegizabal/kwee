@@ -72,6 +72,9 @@ module.exports = (app, db) => {
         }
 
     });
+    app.get('/applicant/:id([0-9]+)/applications', async(req, res, next) => {
+        const id = req.params.id;
+    });
 
     // GET one applicant by id
     app.get('/applicant/:id([0-9]+)', async(req, res, next) => {
@@ -161,28 +164,31 @@ module.exports = (app, db) => {
                 })
                 .then(ending => {
                     sendVerificationEmail(body, uservar);
-                    
-                    /////
-                    if(req.files.img) console.log("req.files.img");
-                    /////
 
-                    uploadFile( req, res, next, 'users', ending.userId, db)
-                    .then( output => {
+                    if(req.files && req.files.img) {
+                        console.log("req.files.img");
+                        uploadFile( req, res, next, 'users', ending.userId, db)
+                        .then( output => {
 
-                        if( output ){
-                            return res.status(201).json({
-                                ok: true,
-                                message: `Applicant with id ${ending.userId} has been created.`
-                            });
-                        }
-                        else{
-                            return res.status(400).json({
-                                ok: output,
-                                message: 'Applicant created, but img was not saved.'
-                            });
-                        }
-                    })
-
+                            if( output ){
+                                return res.status(201).json({
+                                    ok: true,
+                                    message: `Applicant with id ${ending.userId} has been created.`
+                                });
+                            }
+                            else{
+                                return res.status(400).json({
+                                    ok: output,
+                                    message: 'Applicant created, but img was not saved.'
+                                });
+                            }
+                        });
+                    } else {
+                        return res.status(201).json({
+                            ok: true,
+                            message: `Applicant with id ${ending.userId} has been created.`
+                        });
+                    }
                 })
             })
             .catch(err => {
