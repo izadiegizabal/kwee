@@ -11,7 +11,7 @@ const fileUpload = require('express-fileupload');
 
 module.exports = (app, db) => {
 
-    app.use(fileUpload());
+    // app.use(fileUpload());
 
     // GET all users applicants
     app.get('/applicants', async(req, res, next) => {
