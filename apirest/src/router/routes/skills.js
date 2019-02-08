@@ -1,5 +1,8 @@
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
-const { logger } = require('../../shared/functions');
+const { logger, uploadFile } = require('../../shared/functions');
+const Busboy = require('busboy'),
+        path = require('path'),
+        fs = require('fs');
 
 // ============================
 // ======== CRUD skills =========
@@ -73,19 +76,59 @@ module.exports = (app, db) => {
     });
 
     // POST single skill
-    app.post('/skill', [checkToken, checkAdmin], async(req, res, next) => {
-        let body = req.body;
-
+    app.post('/skill', checkAdmin, async(req, res, next) => {
+        
         try {
-            res.status(201).json({
-                ok: true,
-                skill: await db.skills.create({
-                    name: body.name,
-                }),
-                message: `Skill has been created.`
+            
+            var busboy = new Busboy({ headers: req.headers });
+            busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated) {
+                req.body[fieldname] = val;
             });
+            busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+                if (!fs.existsSync('uploads/skills')){
+                    fs.mkdirSync('uploads/skills', { recursive: true });
+                }
+                let fileNameCut = filename.split('.');
+                let fileExt = fileNameCut[fileNameCut.length - 1];
+                let nameToSave = req.body['name'] + '.' + fileExt;
+                req.body['img'] = nameToSave;
+                console.log('name',req.body['name']);
+                if ( mimetype.split('/')[0] == 'image' ) {
+                    var saveTo = path.join('./uploads/skills', nameToSave);
+                    if ( req.body['name'] ) {
+                        console.log('Uploading: ' + saveTo);
+                        file.pipe(fs.createWriteStream(saveTo));
+                    } else {
+                        return res.status(400).json({
+                            ok: false,
+                            message: 'Name is required'
+                        });
+                    }
+                } else {
+                    return res.status(400).json({
+                        ok: false,
+                        message: 'File should be an image'
+                    });
+                }
+            });
+            busboy.on('finish', async function() {
+                try {
+                    let skill = await db.skills.create({
+                        name: req.body.name,
+                        img: req.body.img
+                    });
+                    res.status(201).json({
+                        ok: true,
+                        message: `Skill has been created.`,
+                        skill
+                    });
+                } catch (err) {
+                    next({ type: 'error', error: err.message });
+                }
+            });
+            return req.pipe(busboy);
         } catch (err) {
-            next({ type: 'error', error: err.errors[0].message });
+            next({ type: 'error', error: err.message });
         }
 
     });
