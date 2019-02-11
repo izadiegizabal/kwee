@@ -29,7 +29,7 @@ interface City {
 })
 
 export class SignupCandidateComponent implements OnInit {
-  @ViewChild('stepper') stepper:MatStepper;
+  @ViewChild('stepper') stepper: MatStepper;
 
   options: City[] = [];
   fileEvent = null;
