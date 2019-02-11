@@ -133,26 +133,6 @@ class TTransform extends TEntity {
 		return glMatrix.mat4.multiplyScalar(out, a, b);
 	}
 
-	ortho(out, left, right, bottom, top, near, far){
-		return glMatrix.mat4.ortho(out, left, right, bottom, top, near, far);
-	}
-
-	perspective(out, fovy, aspect, near, far){
-		// fovy: Vertical field of view in radians;
-		// aspect: Aspect ratio. typically viewport width/height;
-		return glMatrix.mat4.perspective(out, fovy, aspect, near, far);
-	}
-
-	targetTo(out, eye, center, up){
-		// Generates a matrix that makes something look at something else.
-		return glMatrix.mat4.targetTo(out, eye, center, up);
-	}
-
-	lookAt(out, eye, center, up){
-		// Generates a look-at matrix with the given eye position, focal point, and up axis.
-		return glMatrix.mat4.lookAt(out, eye, center, up);
-	}
-
 	equals(a, b){
 		return glMatrix.mat4.equals(a, b);
 	}
@@ -241,6 +221,7 @@ class TCamera extends TEntity {
 		this.left = left;
 		this.top = top;
 		this.bottom = bottom;
+		this.projection = glMatrix.mat4.create();
 	}
 
 	setter(near, far, right, left, top, bottom){
@@ -252,14 +233,26 @@ class TCamera extends TEntity {
 			this.bottom = bottom;
 	}
 
-	setPerspective(near, far, right, left, top, bottom){
-		// Set Perspective ??? 
+	setPerspective(fovy, aspect, near, far){
+		// fovy: Vertical field of view in radians;
+		// aspect: Aspect ratio. typically viewport width/height;
+		glMatrix.mat4.perspective(this.projection, fovy, aspect, near, far);
 		this.isPerspective = true;
 	}
 
-	setParallel(near, far, right, left, top, bottom){
-		// Set parallel ???
+	setParallel(left, right, bottom, top, near, far){
+		glMatrix.mat4.ortho(this.projection, left, right, bottom, top, near, far);
 		this.isPerspective = false;
+	}
+
+	targetTo(eye, center, up){
+		// Generates a matrix that makes something look at something else.
+		glMatrix.mat4.targetTo(this.projection, eye, center, up);
+	}
+
+	lookAt(eye, center, up){
+		// Generates a look-at matrix with the given eye position, focal point, and up axis.
+		glMatrix.mat4.lookAt(this.projection, eye, center, up);
 	}
 
 	beginDraw() {
