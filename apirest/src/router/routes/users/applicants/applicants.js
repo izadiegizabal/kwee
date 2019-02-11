@@ -11,7 +11,7 @@ const fileUpload = require('express-fileupload');
 
 module.exports = (app, db) => {
 
-    app.use(fileUpload());
+    // app.use(fileUpload());
 
     // GET all users applicants
     app.get('/applicants', async(req, res, next) => {
@@ -71,6 +71,9 @@ module.exports = (app, db) => {
             next({ type: 'error', error: err.message });
         }
 
+    });
+    app.get('/applicant/:id([0-9]+)/applications', async(req, res, next) => {
+        const id = req.params.id;
     });
 
     // GET one applicant by id
@@ -161,32 +164,34 @@ module.exports = (app, db) => {
                 })
                 .then(ending => {
                     sendVerificationEmail(body, uservar);
-                    
-                    /////
-                    if(req.files.img) console.log("req.files.img");
-                    /////
 
-                    uploadFile( req, res, next, 'users', ending.userId, db)
-                    .then( output => {
+                    if(req.files) {
+                        uploadFile( req, res, next, 'users', ending.userId, db)
+                        .then( output => {
 
-                        if( output ){
-                            return res.status(201).json({
-                                ok: true,
-                                message: `Applicant with id ${ending.userId} has been created.`
-                            });
-                        }
-                        else{
-                            return res.status(400).json({
-                                ok: output,
-                                message: 'Applicant created, but img was not saved.'
-                            });
-                        }
-                    })
-
+                            if( output ){
+                                return res.status(201).json({
+                                    ok: true,
+                                    message: `Applicant with id ${ending.userId} has been created.`
+                                });
+                            }
+                            else{
+                                return res.status(400).json({
+                                    ok: output,
+                                    message: 'Applicant created, but img was not saved.'
+                                });
+                            }
+                        });
+                    } else {
+                        return res.status(201).json({
+                            ok: true,
+                            message: `Applicant with id ${ending.userId} has been created without picture.`
+                        });
+                    }
                 })
             })
             .catch(err => {
-                return next({ type: 'error', error: err.message });
+                return next({ type: 'error', error: err.errors[0].message });
             })
 
         } catch (err) {
@@ -232,6 +237,18 @@ module.exports = (app, db) => {
 
             let id = tokenId.getTokenId(req.get('token'));
             logger.updateLog(logId, true, id);
+            if(req.files) {
+                updates.img = req.files.img.name;
+                uploadFile( req, res, next, 'users', id, db)
+                .then( output => {
+                    if( output ){
+                        console.log('foto subida');
+                    }
+                    else{
+                        console.log('foto no subida');
+                    }
+                });
+            }
             updateApplicant(id, updates, res, next);
         } catch (err) {
             return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
