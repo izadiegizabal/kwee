@@ -1,49 +1,56 @@
 ////////// AUTHOR: WATERMELON CORP. - MULTIMEDIA ENGINEERING : TAG - UNIVERSITY OF ALICANTE
 ///////
 ////
-//// WEBGL MATRIX STACK ???
-class MatrixStack {
+
+// Virtual class
+class TEntity {
+
+	beginDraw() {}
+	endDraw() {}
+
+}
+// Static attributes
+// WARNING: current matrix in the drawing process
+TEntity.Model = glMatrix.mat4.create();
+TEntity.View = [];
+TEntity.Views = [];
+TEntity.AuxViews = [];
+TEntity.Light = [];
+TEntity.Lights = [];
+TEntity.AuxLights = [];
+TEntity.Aux = [];
+// Our stack class
+class Stack{
 
 	constructor(){
-		this.stack = [];
-		this.pop();
+		this.items = [TEntity.Model];
+	}
+
+	push(el){
+		// WARNING: slice arrays to avoid memory reference problems
+		this.items.push( el.slice() );
+	}
+
+	pushLast(){
+		this.items.push( peek() );
 	}
 
 	pop(){
-	    // Never let the stack be totally empty
-	    if (this.stack.length < 1) {
-	     this.stack[0] = glMatrix.mat4.create();
-	    }
-	    return this.stack.pop();
+		return this.items.pop();
 	}
 
-	multiply(matrix){
-		var mult = glMatrix.mat4.mul(this.getCurrentMatrix(), matrix, this.getCurrentMatrix());
-		this.setCurrentMatrix(mult);
+	peek(){
+		return this.items[this.items.length - 1];
 	}
 
-	push(){
-		this.stack.push(this.getCurrentMatrix());
-	}
-
-	getCurrentMatrix() {
-		if (this.stack.length < 1) {
-	     this.stack[0] = glMatrix.mat4.create();
-	    }
-	  return this.stack[this.stack.length - 1].slice();
-	}
-
-	setCurrentMatrix(matrix) {
-		if (this.stack.length < 1) {
-	     this.stack[0] = glMatrix.mat4.create();
-	    }
-	  	return this.stack[this.stack.length - 1] = matrix;
+	isEmpty(){
+		return (this.items.length === 0) ? true : false;
 	}
 
 }
-//// SIMULATE GLOBAL STACK
-var GStack = new MatrixStack();
-
+// Static attribute stack
+TEntity.stack = new Stack();
+// Structures and entities
 class TColor {
 	// TColor
 	constructor(){}
@@ -58,134 +65,92 @@ class TMeshSource {
 	}
 }
 
-class TMatrix4x4 {
-	/// TMatrix
-	/// YOU CAN CALL AN EMPTY CONSTRUCTOR, BUT IF YOU PASS ANY PARAMETER, YOU MUST DO IT RIGHT
-	constructor(numbers){
-		this.value = glMatrix.mat4.create();
-		try{
-			if(numbers && numbers != null && Array.isArray(numbers)){
-				if(!(numbers.length == 16)) throw 'The matrix must have 16 elements';
-				numbers.forEach ( (e) => {
-					if(isNaN(e)) throw 'An element of the matrix it is not a number';
-				});
-				glMatrix.mat4.set(this.value, numbers[0], numbers[1], numbers[2], numbers[3], 
-					numbers[4], numbers[5], numbers[6], numbers[7],numbers[8],numbers[9], 
-					numbers[10], numbers[11], numbers[12], numbers[13],numbers[14], numbers[15]);
-			}
-		} catch (err) {
-			console.log('Error: '+err);
-		}
-	
-	}
-}
-
 class TFile { 
 	// TColor
 	constructor(){}
 }
 
-class TEntity {
-
-	beginDraw() {}
-	endDraw() {}
-
-}
-
 class TTransform extends TEntity {
-	/// YOU CAN CALL AN EMPTY CONSTRUCTOR, BUT IF YOU PASS ANY PARAMETER, YOU MUST DO IT RIGHT
+
 	constructor(matrix){
 		super();
-		try{
-			if(matrix && !(matrix instanceof TMatrix4x4)) throw 'the mesh you passed it is not a TMatrix4x4';
-			this.matrix = matrix ? new TMatrix4x4(Array.prototype.slice.call(matrix.value)) : new TMatrix4x4();
-			//this.matrix = matrix ? Object.assign(Object.create(Object.getPrototypeOf(matrix)), matrix) : null;
-
-		} catch (err) {
-			console.log('Error: '+err);
-		}
+		this.matrix = glMatrix.mat4.create();
 	}
 
 	identity(){
-		this.matrix.value = glMatrix.mat4.create();
+		this.matrix = glMatrix.mat4.create();
 	}
 
 	load(matrix){
-		try{
-			if(matrix && !(matrix instanceof TMatrix4x4)) throw 'the mesh you passed it is not a TMatrix4x4';
-			this.matrix = matrix;
-
-		} catch (err) {
-			console.log('Error: '+err);
-		}
+		this.matrix = matrix;
 	}
 
 	transpose(){
-		glMatrix.mat4.transpose(this.matrix.value, this.matrix.value);
+		return glMatrix.mat4.transpose(this.matrix, this.matrix);
 	}
 
 	translate(translation){
-		glMatrix.mat4.translate(this.matrix.value, this.matrix.value, translation);
+		return glMatrix.mat4.translate(this.matrix, this.matrix, translation);
 	}
 
 	rotateX(angle){
-		glMatrix.mat4.rotateX(this.matrix.value, this.matrix.value, glMatrix.toRadian(angle));
+		return glMatrix.mat4.rotateX(this.matrix, this.matrix, glMatrix.glMatrix.toRadian(angle));
 	}
 
 	rotateY(angle){
-		glMatrix.mat4.rotateY(this.matrix.value, this.matrix.value, glMatrix.toRadian(angle));
+		return glMatrix.mat4.rotateY(this.matrix, this.matrix, glMatrix.glMatrix.toRadian(angle));
 	}
 
 	rotateZ(angle){
-		glMatrix.mat4.rotateZ(this.matrix.value, this.matrix.value, glMatrix.toRadian(angle));
+		return glMatrix.mat4.rotateZ(this.matrix, this.matrix, glMatrix.glMatrix.toRadian(angle));
 	}
 
 	rotate(angle, axis){
-		glMatrix.mat4.rotate(this.matrix.value, this.matrix.value, glMatrix.toRadian(angle), axis);
+		return glMatrix.mat4.rotate(this.matrix, this.matrix, glMatrix.glMatrix.toRadian(angle), axis);
 	}
 
 	scale(scalation){
-		glMatrix.mat4.scale(this.matrix.value, this.matrix.value, scalation);
+		return glMatrix.mat4.scale(this.matrix, this.matrix, scalation);
 	}
 
 	invert(){
-		glMatrix.mat4.invert(this.matrix.value, this.matrix.value);
+		return glMatrix.mat4.invert(this.matrix, this.matrix);
 	}
 
 	add(addition) { 
-		glMatrix.mat4.add(this.matrix.value, this.matrix.value, addition);
+		return glMatrix.mat4.add(this.matrix, this.matrix, addition);
 	}
 
 	multiply(mult) {
-		glMatrix.mat4.multiply(this.matrix.value,this.matrix.value,mult);
+		return glMatrix.mat4.multiply(this.matrix,this.matrix,mult);
 	}
 
 	mul(out, first, second){
-		glMatrix.mat4.mul(out, first, second);
+		return glMatrix.mat4.mul(out, first, second);
 	}
 
 	multiplyScalar(out, a, b){
-		glMatrix.mat4.multiplyScalar(out, a, b);
+		return glMatrix.mat4.multiplyScalar(out, a, b);
 	}
 
 	ortho(out, left, right, bottom, top, near, far){
-		glMatrix.mat4.ortho(out, left, right, bottom, top, near, far);
+		return glMatrix.mat4.ortho(out, left, right, bottom, top, near, far);
 	}
 
 	perspective(out, fovy, aspect, near, far){
 		// fovy: Vertical field of view in radians;
 		// aspect: Aspect ratio. typically viewport width/height;
-		glMatrix.mat4.perspective(out, fovy, aspect, near, far);
+		return glMatrix.mat4.perspective(out, fovy, aspect, near, far);
 	}
 
 	targetTo(out, eye, center, up){
 		// Generates a matrix that makes something look at something else.
-		glMatrix.mat4.targetTo(out, eye, center, up);
+		return glMatrix.mat4.targetTo(out, eye, center, up);
 	}
 
 	lookAt(out, eye, center, up){
 		// Generates a look-at matrix with the given eye position, focal point, and up axis.
-		glMatrix.mat4.lookAt(out, eye, center, up);
+		return glMatrix.mat4.lookAt(out, eye, center, up);
 	}
 
 	equals(a, b){
@@ -200,43 +165,39 @@ class TTransform extends TEntity {
 		return this.matrix;
 	}
 
+
 	beginDraw() {
-		GStack.push();
-		GStack.multiply(this.matrix.value);
-		console.log(GStack);
+		// push the model matrix
+		TEntity.stack.push(TEntity.Model);
+		// multiply the current model matrix with the TTransform matrix with
+		glMatrix.mat4.multiply(TEntity.Model,TEntity.Model,this.matrix);
+		/*console.log('--------');
+		console.log('----------------------');
+		console.log('-------------------------------------- Stack');
+		console.log(TEntity.stack);
+		console.log(TEntity.Model);
+		console.log('-----------------------------------');
+		console.log('----------------------');
+		console.log('-------');*/
 		console.log(this);
 	}
 
 	endDraw() {
-		const last = GStack.pop();
-		GStack.setCurrentMatrix(last);
-		console.log(GStack);
-		console.log(this);
+		// pop and set the current model matrix
+		TEntity.Model = TEntity.stack.pop();
 	}
 	
 }
 
 class TLight extends TEntity {
-	/// YOU CAN CALL AN EMPTY CONSTRUCTOR, BUT IF YOU PASS ANY PARAMETER, YOU MUST DO IT RIGHT
+
 	constructor(intensity){
 		super();
-		try{
-			if(intensity && !(intensity instanceof TColor)) throw 'the intensity you passed it is not a TColor';
-			this.intensity = intensity ? intensity : null;
-
-		} catch (err) {
-			console.log('Error: '+err);
-		}
+		this.intensity = intensity;
 	}
 
 	setIntensity(intensity){
-		try{
-			if( !(intensity instanceof TColor)) throw 'the intensity you passed it is not a TColor';
-			this.intensity = intensity;
-
-		} catch (err){
-			console.log('Error: '+err);
-		}
+		this.intensity = intensity;
 	}
 
 	getIntensity(){
@@ -252,26 +213,14 @@ class TLight extends TEntity {
 }
 
 class TMesh extends TEntity {
-	/// YOU CAN CALL AN EMPTY CONSTRUCTOR, BUT IF YOU PASS ANY PARAMETER, YOU MUST DO IT RIGHT
+
 	constructor(mesh){
 		super();
-		try{
-			if(mesh && !(mesh instanceof TMeshSource)) throw 'the mesh you passed it is not a TMeshSource';
-			this.mesh = mesh ? mesh : null;
-
-		} catch (err) {
-			console.log('Error: '+err);
-		}
+		this.mesh = mesh;
 	}
 
 	loadMesh(file){
-		try{
-			if( !(file instanceof TFile)) throw 'the mesh you passed it is not a TMeshSource';
-			// load mesh
-
-		} catch (err) {
-			console.log('Error: '+err);
-		}
+		this.mesh = mesh;
 	}
 
 	beginDraw() {
@@ -282,57 +231,34 @@ class TMesh extends TEntity {
 }
 
 class TCamera extends TEntity {
-	/// YOU CAN CALL AN EMPTY CONSTRUCTOR, BUT IF YOU PASS ANY PARAMETER, YOU MUST DO IT RIGHT
+
 	constructor(isPerspective, near, far, right, left, top, bottom) {
 		super();
-		try{
-			if (isPerspective && !(isPerspective instanceof Boolean)) throw 'isPerspective it is not a boolean';
-			this.isPerspective = isPerspective ? isPerspective: false;
-			if (near && !(near instanceof Number)) throw 'near it is not a number';
-			this.near = (near && near != null) ? near : Number.MAX_SAFE_INTEGER;
-			if (far && !(far instanceof Number)) throw 'far it is not a number';
-			this.far = (far && far != null) ? far : Number.MAX_SAFE_INTEGER;
-			if (right && !(right instanceof Number)) throw 'right it is not a number';
-			this.right = (right && right != null) ? right : Number.MAX_SAFE_INTEGER;
-			if (left && !(left instanceof Number)) throw 'left it is not a number';
-			this.left = (left && left != null) ? left : Number.MAX_SAFE_INTEGER;
-			if (top && !(top instanceof Number)) throw 'top it is not a number';
-			this.top = (top && top != null) ? top : Number.MAX_SAFE_INTEGER;
-			if (bottom && !(bottom instanceof Number)) throw 'bottom it is not a number';
-			this.bottom = (bottom && bottom != null) ? bottom : Number.MAX_SAFE_INTEGER;
-		} catch (err){
-			console.log('Error: '+err);
-		}
+		this.isPerspective = isPerspective;
+		this.near = near;
+		this.far = far;
+		this.right = right;
+		this.left = left;
+		this.top = top;
+		this.bottom = bottom;
 	}
 
 	setter(near, far, right, left, top, bottom){
-		try{
-			if(!(near && near != null && near instanceof Number)) throw 'near it is not a number'
-			if(!(far && far != null && far instanceof Number)) throw 'far it is not a number'
-			if(!(right && right != null && right instanceof Number)) throw 'right it is not a number'
-			if(!(left && left != null && left instanceof Number)) throw 'left it is not a number'
-			if(!(top && top != null && top instanceof Number)) throw 'top it is not a number'
-			if(!(bottom && bottom != null && bottom instanceof Number)) throw 'bottom it is not a number'
 			this.near = near;
 			this.far = far;
 			this.right = right;
 			this.left = left;
 			this.top = top;
 			this.bottom = bottom;
-		} catch (err){
-			console.log('Error: '+err);
-		}
 	}
 
 	setPerspective(near, far, right, left, top, bottom){
-		setter(near, far, right, left, top, bottom);
 		// Set Perspective ??? 
 		this.isPerspective = true;
 	}
 
-	setParalel(near, far, right, left, top, bottom){
-		setter(near, far, right, left, top, bottom);
-		// Set paralel ???
+	setParallel(near, far, right, left, top, bottom){
+		// Set parallel ???
 		this.isPerspective = false;
 	}
 
@@ -344,70 +270,41 @@ class TCamera extends TEntity {
 }
 
 class TNode{
-
-	constructor(entity, children, father){
-		/// YOU CAN CALL AN EMPTY CONSTRUCTOR, BUT IF YOU PASS ANY PARAMETER, YOU MUST DO IT RIGHT
-		try {
-			if (entity && !(entity instanceof TEntity)) throw 'entity it is not a TEntity';
-			this.entity = entity ? deepClone(entity) : null;
-			if(this.entity && this.entity.matrix){ 
-				var arr = Object.values(this.entity.matrix.value);
-				var newer = new Float32Array(16);
-				for (var i = 16 - 1; i >= 0; i--) {
-					newer[i] = arr[i];
-				}
-				this.entity.matrix.value = newer;
-			}
-
+	// WARNING: TE FATHER IS REQUIRED
+	constructor(father, entity, children){
+			this.entity = entity;
+			this.father = father;
 			this.children = [];
-			if(Array.isArray(children) && children.length > 0){
-				children.forEach((e)=>{
-					if (e instanceof TNode){
-						this.children.push(e);
-					}
-				})
+			if (children){
+				children.forEach((e)=> {
+					this.children.push(e);
+				});
 			}
-			else{
-				if (children && !(children instanceof TNode)) throw 'the children must be a TNode';
-				if(children!=null){
-					this.children.push(children);
-				}				
-			}
-			if (father && !(father instanceof TEntity)) throw 'father it is not a TEntity';
-			this.father = father ? father : null;
-
-		} catch(err) {
-			console.log('Error: '+err);
-		}
 	}
 
 	addChild(child){
-		try{
-			if(!(child instanceof TNode)) throw 'the child you want to add it is not a TNode';
-			this.children.push(child);
-
-		} catch(err){
-			console.log('Error: '+err);
-		}
+		this.children.push(child);
 	}
 
 	remChild(child){
-		try{
-			if (!(child instanceof TNode)) throw 'the child you want to remove it is not a TNode';
-			if (this.children.indexOf(child) === -1) throw 'the node does not contain the child you want to remove'
-			this.children.splice(this.children.indexOf(child),1);
-
-		} catch(err){
-			console.log('Error: '+err);
+		this.children.splice(this.children.indexOf(child),1);
+		// WARNING: remove from the Lights and Cameras arrays
+		if(this.entity instanceof TLight){
+			TEntity.Lights.push(this);
+		}
+		if(this.entity instanceof TCamera){
+			TEntity.Views.push(this);
 		}
 	}
 
 	setEntity(entity){
-		try{
-			if (!(entity instanceof TEntity)) throw 'the entity you want to set it is not a TEntity'
-			this.entity = entity;
-		} catch(err) {
-			console.log('Error: '+err);
+		this.entity = entity;
+		// WARNING: add to the Lights and Cameras arrays
+		if(this.entity instanceof TLight){
+			TEntity.Lights.push(this);
+		}
+		if(this.entity instanceof TCamera){
+			TEntity.Views.push(this);
 		}
 	}
 
@@ -420,6 +317,7 @@ class TNode{
 	}
 
 	draw(){
+		console.log('Nodo: ');
 		console.log(this);
 		if(this.entity && this.entity != null){
 			this.entity.beginDraw();
@@ -435,29 +333,75 @@ class TNode{
 	}
 
 }
-
-/// DEEPCLONING TO COPY ENTITIES CORRECTLY
+// WARNING: MONTER function we will not probably use // DO NOT REMOVE
 function deepClone(obj) {
+
   if (obj === null || typeof obj !== "object")
     return obj
   var props = Object.getOwnPropertyDescriptors(obj);
   for (var prop in props) {
     props[prop].value = deepClone(props[prop].value)
   }
-  /// DO NOT REMOVE PLS
-  /*if(obj instanceof Float32Array){
-  	var arr = [];
-  	for (var i = 0; i < 16; i++){
-    	arr.push(props[i].value);
-	}
-	props = arr;
-  }*/
 
   return Object.create(
     Object.getPrototypeOf(obj), 
     props
   )
 }
+// WARNING: MEH function we will not probably use // DO NOT REMOVE
+function copyClone(obj) {
+	return Object.assign( Object.create( obj.prototype ) , obj );
+}
+// WARNING: we will need it if we need to copy simple objects // DO NOT REMOVE
+function copy(obj){
+	return Object.assign( {} , obj ); 
+}
+// WARNING: Go over the tree and get all the lights and cameras // DO NOT REMOVE
+function getLigthsViews(obj){
+	if(obj.entity instanceof TLight){
+		TEntity.Lights.push(obj);
+	}
+	if(obj.entity instanceof TCamera){
+		TEntity.Views.push(obj);
+	}
+	obj.children.forEach( (e) => {
+		getLigthsViews(e);
+	});
+}
+// calculate all the light matices from the Lighs static array and drop them into the AuxLights array
+function calculateLights(){
+	let aux = glMatrix.mat4.create();
+	TEntity.Lights.forEach( (e) => {
+		goToRoot(e);
+		for(let i = TEntity.Aux.length - 1 ; i >= 0 ; i--){
+			glMatrix.mat4.mul(aux, aux, TEntity.Aux[i] )
+		}
+		TEntity.AuxLights.push(aux);
+		TEntity.Aux = [];
+	});
+}
+// same as calculateLights but for the Cameras
+function calculateViews(){
+	let aux = glMatrix.mat4.create();
+	TEntity.Views.forEach( (e) => {
+		goToRoot(e);
+		for(let i = TEntity.Aux.length - 1 ; i >= 0 ; i--){
+			glMatrix.mat4.mul(aux, aux, TEntity.Aux[i] )
+		}
+		TEntity.AuxViews.push(aux);
+		TEntity.Aux = [];
+	});
+}
+// go from the leaf to the root
+function goToRoot(obj){
+	if(obj.entity instanceof TTransform){
+		TEntity.Aux.push(obj.entity.matrix);
+	}
+	if(obj.father){
+		goToRoot(obj.father);
+	}
+}
+
 /// AKA MAIN
 var InitDemo = function () {
 
@@ -465,15 +409,15 @@ var InitDemo = function () {
 	//---- Crear la estructura del árbol ----
 
 	let Escena = new TNode();
-	let RotaLuz = new TNode();
-	let RotaCam = new TNode();
-	let RotaCoche = new TNode();
+	let RotaLuz = new TNode(Escena);
+	let RotaCam = new TNode(Escena);
+	let RotaCoche = new TNode(Escena);
 	Escena.addChild(RotaLuz);
 	Escena.addChild(RotaCam);
 	Escena.addChild(RotaCoche);
-	let TraslaLuz = new TNode();
-	let TraslaCoche = new TNode();
-	let TraslaCam = new TNode();
+	let TraslaLuz = new TNode(RotaLuz);
+	let TraslaCoche = new TNode(RotaCam);
+	let TraslaCam = new TNode(RotaCoche);
 	RotaLuz.addChild(TraslaLuz);
 	RotaCam.addChild(TraslaCam);
 	RotaCoche.addChild(TraslaCoche);
@@ -481,8 +425,12 @@ var InitDemo = function () {
 	//---- Añadir las entidades a los nodos ----
 
 	let TransfRotaLuz = new TTransform();
+	TransfRotaLuz.load(glMatrix.mat4.set(TransfRotaLuz.matrix,1,2,3,4,1,2,3,4,1,2,3,4,1,2,3,4));
 	let TransfRotaCam = new TTransform();
+	let TransfRotaCam2 = new TTransform();
+	TransfRotaCam2.load(glMatrix.mat4.set(TransfRotaCam2.matrix,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5))
 	let TransfRotaCoche = new TTransform();
+	TransfRotaCoche.load(glMatrix.mat4.set(TransfRotaCoche.matrix,4,3,2,1,4,3,2,1,4,3,2,1,4,3,2,1));
 
 	RotaLuz.setEntity(TransfRotaLuz);
 	RotaCam.setEntity(TransfRotaCam);
@@ -494,9 +442,9 @@ var InitDemo = function () {
 
 	/// Esto no estaba en las transparencias
 
-	let NLuz = new TNode();
-	let NCam = new TNode();
-	let NChasis = new TNode();
+	let NLuz = new TNode(TraslaLuz);
+	let NCam = new TNode(TraslaCam);
+	let NChasis = new TNode(TraslaCoche);
 
 	NLuz.setEntity(EntLuz);
 	NCam.setEntity(EntCam);
@@ -508,10 +456,21 @@ var InitDemo = function () {
 
 	TraslaLuz.setEntity(TransfRotaLuz);
 	TraslaCoche.setEntity(TransfRotaCoche);
-	TraslaCam.setEntity(TransfRotaCam);
+	TraslaCam.setEntity(TransfRotaCam2);
 
 	//---- Recorrer el árbol (dibujarlo) ----
 
 	Escena.draw();
+
+	// DO NOT USE NOW
+	// getLigthsViews(Escena);
+
+	// Calculate all matrices and print their values
+	calculateLights();
+	calculateViews();
+	console.log('Lights array: ');
+	console.log(TEntity.AuxLights);
+	console.log('Views/cameras array: ');
+	console.log(TEntity.AuxViews);
 
 };
