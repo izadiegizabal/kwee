@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import { of } from 'rxjs';
 import { PayPalConfig, PayPalEnvironment, PayPalIntegrationType } from 'ngx-paypal';
+import {environment} from '../../../environments/environment';
 
 
 
@@ -25,7 +26,7 @@ export class FooterComponent implements OnInit {
         commit: true,
         client: {
           sandbox:
-            'AZDxjDScFpQtjWTOUtWKbyN_bDt4OgqaF4eYXlewfBP4-8aqX3PiV8e1GWU6liB2CUXlkA59kJXE7M6R'
+            environment.paypal
         },
         button: {
           label: 'paypal',
@@ -52,7 +53,7 @@ export class FooterComponent implements OnInit {
         },
         experience: {
           noShipping: true,
-          brandName: 'Angular PayPal'
+          brandName: 'Kwee'
         },
         transactions: [
           {

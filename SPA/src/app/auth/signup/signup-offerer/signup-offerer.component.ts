@@ -199,28 +199,13 @@ export class SignupOffererComponent implements OnInit {
         'address': this.secondFormGroup.controls['address1'].value.first,
         'cif': this.secondFormGroup.controls['vat'].value,
         'workField': this.secondFormGroup.controls['workField'].value,
-        'year': '1997-03-17',
+        'year': new Date().toDateString(),
         'premium': '0',
         'companySize': '50',
         'bio': '',
-        'img': '',
-        'status': 0
+        'img': this.file,
+        'status': '0'
       };
-
-      const uploadData = new FormData();
-      uploadData.append('name', this.secondFormGroup.controls['businessName'].value);
-      uploadData.append('password', this.secondFormGroup.controls['password'].value);
-      uploadData.append('email', this.secondFormGroup.controls['email'].value);
-      uploadData.append('address', this.secondFormGroup.controls['address1'].value.first);
-      uploadData.append('cif', this.secondFormGroup.controls['vat'].value);
-      uploadData.append('workField', this.secondFormGroup.controls['workField'].value);
-      uploadData.append('premium', '0');
-      uploadData.append('companySize', '10');
-      uploadData.append('bio', '');
-      uploadData.append('img', this.file, this.thirdFormGroup.controls['profile'].value);
-      uploadData.append('status', '0');
-      uploadData.append('year', '1997-03-17');
-
 
       // console.log(this.offerer);
 
@@ -249,20 +234,19 @@ export class SignupOffererComponent implements OnInit {
 
   onUpdate() {
 
-    console.log('wqeqw');
+    const update = {
+      'about' : this.thirdFormGroup.controls['about'].value,
+      'website' : this.thirdFormGroup.controls['website'].value,
+      'companySize' : this.thirdFormGroup.controls['companySize'].value,
+      'year' : this.thirdFormGroup.controls['year'].value
+    };
 
     const options = {
       headers: new HttpHeaders().append('token', this.token)
         .append('Content-Type', 'application/json')
     };
-    const uploadData = new FormData();
-    uploadData.append('img', this.file, this.thirdFormGroup.controls['profile'].value);
-    uploadData.append('about', this.thirdFormGroup.controls['about'].value);
-    uploadData.append('website', this.thirdFormGroup.controls['website'].value);
-    uploadData.append('companySize', this.thirdFormGroup.controls['companySize'].value);
-    uploadData.append('year', this.thirdFormGroup.controls['year'].value);
     this.httpClient.put(environment.apiUrl + 'offerer',
-      uploadData
+      update
       , options)
       .subscribe((data: any) => {
         console.log(data);
@@ -367,7 +351,7 @@ export class SignupOffererComponent implements OnInit {
           if (result) {
             console.log(result);
             preview.src = result.base64;
-            this.file = result.file;
+            this.file = result.base64;
           }
         });
       } else {

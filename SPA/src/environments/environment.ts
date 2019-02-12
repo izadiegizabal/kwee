@@ -9,6 +9,7 @@ export const environment = {
   algoliaAPIKey: 'c02074725fd0344cc60949c969775748',
   mapboxAPIKey: 'pk.eyJ1IjoiaGVsbG9rd2VlIiwiYSI6ImNqcnQ0cGd6YjF3djM0OXBzZ3oxOWR0ZWsifQ.GEPBeWzXy9pia-AlR7LbLw',
   dialogflow: '736fcaf97e434e659f0dcada55651c93',
+  paypal: 'ATQTgy9J882CpyJ8h0p4QMgh5t7QdmsLnVprkzSLmbWU8IvAG8Ycg4Ja5unKGVi3HXgi6eVxaeUMzQl_',
 };
 
 /*
