@@ -76,16 +76,13 @@ module.exports = (app, db) => {
             await logger.saveLog('POST', 'user', null, res);
 
             const body = req.body;
+            body.password ? user.password = bcrypt.hashSync(body.password, 10) : null;
+            if ( body.img && checkImg(body.img) ) {
+                var imgName = uploadImg(req, res, next, 'users');
+                    user.img = imgName;
+            }
 
-            let user = await db.users.create({
-                name: body.name ? body.name : null,
-                password: body.password ? bcrypt.hashSync(body.password, 10) : null,
-                email: body.email ? body.email : null,
-
-                img: body.img ? body.img : null,
-                bio: body.bio ? body.bio : null
-
-            });
+            let user = await db.users.create(body);
 
             if (user) {
                 sendVerificationEmail(body, user);
@@ -112,12 +109,7 @@ module.exports = (app, db) => {
 
             logger.updateLog(logId, id);
 
-            const updates = req.body;
-
-            // We can't let users update 'root' field themself
-            delete updates.root;
-
-            updateUser(id, updates, res);
+            updateUser(id, req, res, next);
 
         } catch (err) {
             next({ type: 'error', error: (err.errors ? err.errors[0].message : err.message) });
@@ -131,9 +123,8 @@ module.exports = (app, db) => {
             await logger.saveLog('PUT', 'user', req.params.id, res);
 
             const id = req.params.id;
-            const updates = req.body;
 
-            updateUser(id, updates, res);
+            updateUser(id, req, res, next);
 
         } catch (err) {
             next({ type: 'error', error: (err.errors ? err.errors[0].message : err.message) });
@@ -227,11 +218,23 @@ module.exports = (app, db) => {
 
     });
 
-    async function updateUser(id, updates, res) {
-        if (updates.password)
-            updates.password = bcrypt.hashSync(updates.password, 10);
+    async function updateUser(id, req, res) {
+        let body = req.body;
+        // We can't let users update 'root' field themself
+        delete body.root;
 
-        let updated = await db.users.update(updates, {
+        if (body.password) body.password = bcrypt.hashSync(body.password, 10);
+        if ( body.img && checkImg(body.img) ) {
+            let user = await db.users.findOne({
+                where: { id }
+            });
+            if ( user.img ) deleteFile('uploads/users/' + user.img);
+
+            var imgName = uploadImg(req, res, next, 'users');
+                body.img = imgName;
+        }
+
+        let updated = await db.users.update(body, {
             where: { id }
         });
 
