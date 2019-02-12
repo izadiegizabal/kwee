@@ -1,8 +1,5 @@
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
-const { logger, uploadFile } = require('../../shared/functions');
-const Busboy = require('busboy'),
-        path = require('path'),
-        fs = require('fs');
+const { logger, uploadImg, checkImg, deleteFile } = require('../../shared/functions');
 
 // ============================
 // ======== CRUD skills =========
@@ -79,55 +76,26 @@ module.exports = (app, db) => {
     app.post('/skill', checkAdmin, async(req, res, next) => {
         
         try {
-            
-            var busboy = new Busboy({ headers: req.headers });
-            busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated) {
-                req.body[fieldname] = val;
-            });
-            busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
-                if (!fs.existsSync('uploads/skills')){
-                    fs.mkdirSync('uploads/skills', { recursive: true });
-                }
-                let fileNameCut = filename.split('.');
-                let fileExt = fileNameCut[fileNameCut.length - 1];
-                let nameToSave = req.body['name'] + '.' + fileExt;
-                req.body['img'] = nameToSave;
-                console.log('name',req.body['name']);
-                if ( mimetype.split('/')[0] == 'image' ) {
-                    var saveTo = path.join('./uploads/skills', nameToSave);
-                    if ( req.body['name'] ) {
-                        console.log('Uploading: ' + saveTo);
-                        file.pipe(fs.createWriteStream(saveTo));
-                    } else {
-                        return res.status(400).json({
-                            ok: false,
-                            message: 'Name is required'
-                        });
-                    }
-                } else {
-                    return res.status(400).json({
-                        ok: false,
-                        message: 'File should be an image'
-                    });
-                }
-            });
-            busboy.on('finish', async function() {
-                try {
-                    let skill = await db.skills.create({
-                        name: req.body.name,
-                        img: req.body.img
-                    });
-                    res.status(201).json({
-                        ok: true,
-                        message: `Skill has been created.`,
-                        skill
-                    });
-                } catch (err) {
-                    next({ type: 'error', error: err.message });
-                }
-            });
-            return req.pipe(busboy);
+            if ( req.body.img && req.body.name ) {
+                var imgName = uploadImg(req, res, next, 'skills');
+                    req.body.img = imgName;
+                let skill = await db.skills.create({
+                    name: req.body.name,
+                    img: req.body.img
+                });
+                res.status(201).json({
+                    ok: true,
+                    message: `Skill has been created.`,
+                    skill
+                });
+            } else {
+                res.status(400).json({
+                    ok: false,
+                    message: 'Name and img are required'
+                })
+            }
         } catch (err) {
+            deleteFile('uploads/skills/' + req.body.img);
             next({ type: 'error', error: err.message });
         }
 
@@ -136,12 +104,21 @@ module.exports = (app, db) => {
     // PUT single skill
     app.put('/skill/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
-        const updates = req.body;
+        const body = req.body;
 
         try {
+            if ( body.img && checkImg(body.img) ) {
+                let skill = await db.skills.findOne({
+                    where: { id }
+                });
+                if ( skill.img ) deleteFile('uploads/skills/' + skill.img);
+
+                var imgName = uploadImg(req, res, next, 'skills');
+                    body.img = imgName;
+            }
             res.status(200).json({
                 ok: true,
-                skill: await db.skills.update(updates, {
+                skill: await db.skills.update(body, {
                     where: { id }
                 })
             });

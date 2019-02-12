@@ -1,17 +1,13 @@
 const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
-const { tokenId, logger, sendVerificationEmail, pagination, uploadFile } = require('../../../../shared/functions');
+const { tokenId, logger, sendVerificationEmail, pagination, uploadImg, checkImg, deleteFile } = require('../../../../shared/functions');
 const bcrypt = require('bcryptjs');
-
-// File upload
-const fileUpload = require('express-fileupload');
+const fs = require('fs');
 
 // ============================
 // ======== CRUD user =========
 // ============================
 
 module.exports = (app, db) => {
-
-    app.use(fileUpload());
 
     // GET all users offerers
     app.get('/offerers', async(req, res, next) => {
@@ -256,69 +252,57 @@ module.exports = (app, db) => {
             await logger.saveLog('POST', 'offerer', null, res);
 
             const body = req.body;
-            const password = body.password ? bcrypt.hashSync(body.password, 10) : null;
+            let user = {};
+            body.password ? user.password = bcrypt.hashSync(body.password, 10) : null;
+            body.name ? user.name = body.name : null;
+            body.bio ? user.bio = body.bio : null;
+            body.email ? user.email = body.email : null;
             var uservar;
-            return db.sequelize.transaction(transaction => {
-                    return db.users.create({
-                            name: body.name,
-                            password,
-                            email: body.email,
-                            //img: body.img,
-                            bio: body.bio,
 
-                        }, { transaction })
-                        .then(_user => {
-                            uservar = _user;
-                            return createOfferer(body, _user, next, transaction);
-                        })
-                        .then(ending => {
-                            sendVerificationEmail(body, uservar);
+            if ( body.img && checkImg(body.img) ) {
                 
-                            if(req.files && req.files.img) { 
-                                uploadFile( req, res, next, 'users', ending.userId, db)
-                                .then( output => {
-
-                                    if( output ){
-                                        return res.status(201).json({
-                                            ok: true,
-                                            message: `Offerer with id ${ending.userId} has been created.`
-                                        });
-                                    }
-                                    else{
-                                        return res.status(400).json({
-                                            ok: output,
-                                            message: 'Offerer created, but img was not saved.'
-                                        });
-                                    }
-                                });
-                            } else {
+                return db.sequelize.transaction(transaction => {
+                    var imgName = uploadImg(req, res, next, 'offerers');
+                    user.img = imgName;
+                        return db.users.create(user, { transaction })
+                            .then(_user => {
+                                uservar = _user;
+                                return createOfferer(body, _user, next, transaction);
+                            })
+                            .then(ending => {
+                                sendVerificationEmail(body, uservar);
                                 return res.status(201).json({
                                     ok: true,
                                     message: `Offerer with id ${ending.userId} has been created.`
                                 });
-                            }
-                        })
-                })
-                .catch(err => {
-                    return next({ type: 'error', error: err.message });
-                })
+                            })
+                    })
+                    .catch(err => {
+                        deleteFile('uploads/offerers/' + user.img);
+                        return next({ type: 'error', error: err.message });
+                    })
+            } else {
+                return res.status(400).json({
+                    ok: false,
+                    message: 'Bussines picture is required'
+                });
+            }
 
         } catch (err) {
             //await transaction.rollback();
-            next({ type: 'error', error: err.errors[0].message });
+            next({ type: 'error', error: 'eeeeeerroooorrr' });
         }
     });
 
     // Update offerer by themself
     app.put('/offerer', async(req, res, next) => {
-        const updates = req.body;
 
         try {
             let logId = await logger.saveLog('PUT', 'offerer', null, res);
 
             let id = tokenId.getTokenId(req.get('token'));
             logger.updateLog(logId, true, id);
-            updateOfferer(id, updates, res);
+            updateOfferer(id, req, res, next);
         } catch (err) {
             next({ type: 'error', error: err.message });
         }
@@ -327,11 +311,10 @@ module.exports = (app, db) => {
     // Update offerer by admin
     app.put('/offerer/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
-        const updates = req.body;
 
         try {
             await logger.saveLog('PUT', 'offerer', id, res);
-            updateOfferer(id, updates, res);
+            updateOfferer(id, req, res, next);
         } catch (err) {
             next({ type: 'error', error: err.message });
         }
@@ -372,27 +355,51 @@ module.exports = (app, db) => {
         }
     });
 
-    async function updateOfferer(id, updates, res) {
-
+    async function updateOfferer(id, req, res, next) {
+        let body = req.body;
         const offerer = await db.offerers.findOne({
             where: { userId: id }
         });
 
         if (offerer) {
-
+            delete body.root;
+            delete body.dateVerification;
             let offereruser = true;
+            let userOff = {};
+            body.cif ? userOff.cif = body.cif : null;
+            body.address ? userOff.address = body.address : null;
+            body.workField ? userOff.workField = body.workField : null;
+            body.premium ? userOff.premium = body.premium : null;
+            body.website ? userOff.website = body.website : null;
+            body.companySize ? userOff.companySize = body.companySize : null;
+            body.year ? userOff.year = body.year : null;
 
-            if (updates.password || updates.email || updates.name || updates.snSignIn || updates.root || updates.img || updates.bio) {
+            if (body.password || body.email || body.name || body.snSignIn || body.img || body.bio) {
+                delete body.cif;
+                delete body.address;
+                delete body.workField;
+                delete body.premium;
+                delete body.website;
+                delete body.companySize;
+                delete body.year;
                 // Update user values
-                if (updates.password)
-                    updates.password = bcrypt.hashSync(updates.password, 10);
+                if (body.password) body.password = bcrypt.hashSync(body.password, 10);
+                if ( body.img && checkImg(body.img) ) {
+                    let user = await db.users.findOne({
+                        where: { id }
+                    });
+                    if ( user.img ) deleteFile('uploads/offerers/' + user.img);
 
-                offereruser = await db.users.update(updates, {
-                    where: { id: id }
+                    var imgName = uploadImg(req, res, next, 'offerers');
+                        body.img = imgName;
+                }
+
+                offereruser = await db.users.update(body, {
+                    where: { id }
                 })
             }
 
-            let updated = await db.offerers.update(updates, {
+            let updated = await db.offerers.update(userOff, {
                 where: { userId: id }
             });
 
@@ -400,7 +407,7 @@ module.exports = (app, db) => {
                 return res.status(200).json({
                     ok: true,
                     message: `Values updated for offerer ${ id }`,
-                    data: updates
+                    data: body
                 })
             } else {
                 return next({ type: 'error', error: 'Can\'t update offerer' });
