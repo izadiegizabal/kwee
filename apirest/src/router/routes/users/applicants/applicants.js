@@ -95,8 +95,6 @@ module.exports = (app, db) => {
                             where: { id: allOffers[j].fk_offerer }
                         });
 
-                        
-                        // offer = JSON.stringify(allOffers[j]);
                         offer.id = allOffers[j].id;
                         offer.fk_offerer = allOffers[j].fk_offerer;
                         offer.offererName = offerer.name;
@@ -125,20 +123,11 @@ module.exports = (app, db) => {
                         offer.updatedAt = allOffers[j].updatedAt;
                         offer.deletedAt = allOffers[j].deletedAt;
 
-                        console.log('offer: ', offer);
-                        console.log('\n');
-                        
-
                         offers.push(offer);
                     }
                 }
             }
-
-
-            // for (let i = 0; i < offers.length; i++) {
-                delete offers.skills;
-            // }
-
+            
             return res.json({
                 ok: true,
                 message: `Listing all offers that applicated this user with id: ${ id }`,
