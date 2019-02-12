@@ -76,10 +76,10 @@ module.exports = (app, db) => {
             await logger.saveLog('POST', 'user', null, res);
 
             const body = req.body;
-            body.password ? user.password = bcrypt.hashSync(body.password, 10) : null;
+            body.password ? body.password = bcrypt.hashSync(body.password, 10) : null;
             if ( body.img && checkImg(body.img) ) {
                 var imgName = uploadImg(req, res, next, 'users');
-                    user.img = imgName;
+                    body.img = imgName;
             }
 
             let user = await db.users.create(body);
@@ -218,7 +218,7 @@ module.exports = (app, db) => {
 
     });
 
-    async function updateUser(id, req, res) {
+    async function updateUser(id, req, res, next) {
         let body = req.body;
         // We can't let users update 'root' field themself
         delete body.root;
