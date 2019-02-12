@@ -4,7 +4,8 @@ const express = require('express'),
     session = require('express-session'),
     env = require('../tools/constants'),
     moment = require('moment'),
-    logger = require('../middlewares/logger');
+    logger = require('../middlewares/logger')
+    cors = require('cors');
 
 const app = express();
 
