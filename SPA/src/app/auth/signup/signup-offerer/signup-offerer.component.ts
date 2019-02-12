@@ -95,7 +95,7 @@ export class SignupOffererComponent implements OnInit {
 
     this.authState = this.store$.pipe(select('auth'));
     this.authState.pipe(
-      select((s: {token: string}) => s.token)
+      select((s: { token: string }) => s.token)
     ).subscribe(
       (token) => {
         this.token = token;
@@ -114,7 +114,8 @@ export class SignupOffererComponent implements OnInit {
       'password2': new FormControl(null, Validators.required),
       'workField': new FormControl(null, Validators.required),
       'address1': new FormControl(null, Validators.required),
-      'address2': new FormControl(null)
+      'address2': new FormControl(null),
+      'profile': new FormControl(null)
     });
 
     this.thirdFormGroup = this._formBuilder.group({
@@ -205,6 +206,21 @@ export class SignupOffererComponent implements OnInit {
         'img': '',
         'status': 0
       };
+
+      const uploadData = new FormData();
+      uploadData.append('name', this.secondFormGroup.controls['businessName'].value);
+      uploadData.append('password', this.secondFormGroup.controls['password'].value);
+      uploadData.append('email', this.secondFormGroup.controls['email'].value);
+      uploadData.append('address', this.secondFormGroup.controls['address1'].value.first);
+      uploadData.append('cif', this.secondFormGroup.controls['vat'].value);
+      uploadData.append('workField', this.secondFormGroup.controls['workField'].value);
+      uploadData.append('premium', '0');
+      uploadData.append('companySize', '10');
+      uploadData.append('bio', '');
+      uploadData.append('img', this.file, this.thirdFormGroup.controls['profile'].value);
+      uploadData.append('status', '0');
+      uploadData.append('year', '1997-03-17');
+
 
       // console.log(this.offerer);
 

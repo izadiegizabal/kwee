@@ -5,6 +5,7 @@ import {FooterComponent} from './footer/footer.component';
 import {SharedModule} from '../shared/shared.module';
 import {AppRoutingModule} from '../app-routing.module';
 import {UserMenuComponent} from './header/user-menu/user-menu.component';
+import {NgxPayPalModule} from 'ngx-paypal';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import {UserMenuComponent} from './header/user-menu/user-menu.component';
   ],
   imports: [
     SharedModule,
-    AppRoutingModule
+    AppRoutingModule,
+    NgxPayPalModule,
   ],
   exports: [
     AppRoutingModule,
