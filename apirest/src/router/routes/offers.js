@@ -238,7 +238,8 @@ module.exports = (app, db) => {
                     ok: true,
                     message: 'Offer created',
                     data: {
-                        fk_offerer: result.id,
+                        id: result.id,
+                        fk_offerer: id,
                         status: result.status,
                         title: result.title,
                         description: result.description,
