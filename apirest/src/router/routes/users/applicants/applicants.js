@@ -80,15 +80,65 @@ module.exports = (app, db) => {
         if ( applicant ) {
             let offers = [];
             let applications = await db.applications.findAll({where: { fk_applicant: id }});
-            let allOffers = await db.offers.findAll();
+            let allOffers = await db.offers.findAll({
+                attributes: {
+                  exclude: ['skills', 'requeriments', 'responsabilities']
+                }
+              });
             
             for (let i = 0; i < applications.length; i++) {
                 for (let j = 0; j < allOffers.length; j++) {
                     if ( applications[i].fk_offer == allOffers[j].id ) {
-                        offers.push(allOffers[j]);
+                        let offer = {};
+                        
+                        let offerer = await db.users.findOne({
+                            where: { id: allOffers[j].fk_offerer }
+                        });
+
+                        
+                        // offer = JSON.stringify(allOffers[j]);
+                        offer.id = allOffers[j].id;
+                        offer.fk_offerer = allOffers[j].fk_offerer;
+                        offer.offererName = offerer.name;
+                        offer.offererIndex = offerer.index;
+                        offer.title = allOffers[j].title;
+                        offer.description = allOffers[j].description;
+                        offer.dateStart = allOffers[j].dateStart;
+                        offer.dateEnd = allOffers[j].dateEnd;
+                        offer.datePublished = allOffers[j].datePublished;
+                        offer.location = allOffers[j].location;
+                        offer.status = allOffers[j].status;
+                        offer.salaryAmount = allOffers[j].salaryAmount;
+                        offer.salaryFrecuency = allOffers[j].salaryFrecuency;
+                        offer.salaryCurrency = allOffers[j].salaryCurrency;
+                        offer.workLocation = allOffers[j].workLocation;
+                        offer.seniority = allOffers[j].seniority;
+                        offer.maxApplicants = allOffers[j].maxApplicants;
+                        offer.currentApplications = allOffers[j].currentApplications;
+                        offer.duration = allOffers[j].duration;
+                        offer.durationUnit = allOffers[j].durationUnit;
+                        offer.isIndefinite = allOffers[j].isIndefinite;
+                        offer.contractType = allOffers[j].contractType;
+                        offer.lat = allOffers[j].lat;
+                        offer.lon = allOffers[j].lon;
+                        offer.createdAt = allOffers[j].createdAt;
+                        offer.updatedAt = allOffers[j].updatedAt;
+                        offer.deletedAt = allOffers[j].deletedAt;
+
+                        console.log('offer: ', offer);
+                        console.log('\n');
+                        
+
+                        offers.push(offer);
                     }
                 }
             }
+
+
+            // for (let i = 0; i < offers.length; i++) {
+                delete offers.skills;
+            // }
+
             return res.json({
                 ok: true,
                 message: `Listing all offers that applicated this user with id: ${ id }`,
