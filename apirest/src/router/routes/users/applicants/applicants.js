@@ -72,6 +72,30 @@ module.exports = (app, db) => {
     });
     app.get('/applicant/:id([0-9]+)/applications', async(req, res, next) => {
         const id = req.params.id;
+
+        let applicant = await db.applicants.findOne({
+            where: { userId: id }
+        });
+
+        if ( applicant ) {
+            let offers = [];
+            let applications = await db.applications.findAll({where: { fk_applicant: id }});
+            let allOffers = await db.offers.findAll();
+            
+            for (let i = 0; i < applications.length; i++) {
+                for (let j = 0; j < allOffers.length; j++) {
+                    if ( applications[i].fk_offer == allOffers[j].id ) {
+                        offers.push(allOffers[j]);
+                    }
+                }
+            }
+            return res.json({
+                ok: true,
+                message: `Listing all offers that applicated this user with id: ${ id }`,
+                data: offers
+            })
+        }
+
     });
 
     // GET one applicant by id
