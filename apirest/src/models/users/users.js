@@ -131,6 +131,18 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: null,
         },
 
+        lat: {
+            type: DataTypes.DECIMAL(9,6),
+            allowNull: true,
+            defaultValue: null,
+        },
+
+        lon: {
+            type: DataTypes.DECIMAL(9,6),
+            allowNull: true,
+            defaultValue: null,
+        }
+
         
 
 
