@@ -1,25 +1,24 @@
 <mat-card class="example-card">
-  <mat-card-header fxLayoutAlign="space-between">
-    <mat-card-title [routerLink]="offerUrl" style="cursor: pointer">{{offer.offer.title}}</mat-card-title>
+  <mat-card-header
+    fxLayout="row"
+    fxLayout.lt-sm="column"
+    fxLayoutAlign="space-between"
+  >
+    <mat-card-title
+      [routerLink]="offerUrl"
+      style="cursor: pointer">{{offer.offer.title}}
+    </mat-card-title>
     <mat-card-subtitle>
       <app-offerer-name-overview [index]="offer.user.index" [name]="offer.user.name"  [routerLink]="urlOfferer()"></app-offerer-name-overview>
     </mat-card-subtitle>
     <div
       class="quickInfo"
-      fxHide.lt-sm
+      fxLayout="row"
+      fxFlexAlign="start start"
       fxLayoutGap="16px">
       <app-icon-with-text [text]="getOfferLocation()" icon="place"></app-icon-with-text>
       <app-icon-with-text [text]="getPublishedDate()" icon="access-time"></app-icon-with-text>
-
     </div>
-    <mat-card-subtitle
-      class="quickInfo"
-      fxHide.gt-xs
-      fxLayoutGap="16px">
-      <app-icon-with-text [text]="getOfferLocation()" icon="place"></app-icon-with-text>
-      <app-icon-with-text [text]="getPublishedDate()" icon="access-time"></app-icon-with-text>
-
-    </mat-card-subtitle>
   </mat-card-header>
 
   <mat-card-content>
@@ -37,23 +36,20 @@
     fxLayoutGap="24px" fxLayoutGap.lt-sm="16px">
     <div
       fxLayout="row"
+      fxLayout.lt-sm="column"
       fxLayoutAlign="center center"
       fxLayoutGap="16px">
-      <app-icon-with-text [text]="getOfferDuration()" icon="date-range"></app-icon-with-text>
-      <app-icon-with-text [text]="getOfferContractType()" icon="work"></app-icon-with-text>
-      <app-icon-with-text [text]="getOfferSalary()" icon="local-atm"></app-icon-with-text>
-      <div fxHide.lt-sm>
+      <div fxLayout="row" fxLayoutGap="16px">
+        <app-icon-with-text [text]="getOfferDuration()" icon="date-range"></app-icon-with-text>
+        <app-icon-with-text [text]="getOfferContractType()" icon="work"></app-icon-with-text>
+        <app-icon-with-text [text]="getOfferSalary()" icon="local-atm"></app-icon-with-text>
+      </div>
+      <div>
         <button [routerLink]="offerUrl" color="accent" mat-button>{{'More Info' | uppercase }}</button>
         <button (click)="openShareDialog()" mat-icon-button>
           <mat-icon aria-label="Share offer in social networks" color="accent" svgIcon="share"></mat-icon>
         </button>
       </div>
-    </div>
-    <div fxHide.gt-xs fxLayout="row">
-      <button [routerLink]="offerUrl" color="accent" mat-button>{{'More Info' | uppercase }}</button>
-      <button (click)="openShareDialog()" mat-icon-button>
-        <mat-icon aria-label="Share offer in social networks" color="accent" svgIcon="share"></mat-icon>
-      </button>
     </div>
   </mat-card-actions>
 
