@@ -12,6 +12,7 @@ const routes: Routes = [
   {path: 'offer/:id/:name', component: OfferDetailComponent},
   {path: 'offer/create', component: OfferCreateComponent},
   {path: 'admin', loadChildren: './admin/admin.module#AdminModule'},
+  {path: 'paypal', loadChildren: './paypal/paypal.module#PaypalModule'},
   {path: 'signup', loadChildren: './auth/signup/signup.module#SignupModule'},
   {path: 'signin', loadChildren: './auth/signin/signin.module#SigninModule'},
   {path: 'email-verified/:token', loadChildren: './shared/email-verified/email-verified.module#EmailVerifiedModule'},

@@ -63,6 +63,27 @@
           <h4>Basic info</h4>
         </div>
 
+        <div fxLayout="column">
+          <h4>Profile picture</h4>
+          <p>In order to offer an excellent user experience, we require a profile photo to all the companies.</p>
+          <label for="file_profile"><img
+            id="photo_profile"
+            fxlayout="column"
+            fxFlex="200px"
+            width="200px" height="200px"
+            src="../../../../assets/defaut_profile.png"
+            alt="default profile picture"/></label>
+          <label for="file_profile"><button class="photo-buttons" mat-raised-button color="primary" type="button"
+                                            (click)="profile.click()">Upload photo</button></label>
+          <input #profile id="file_profile" style="width: 0px; height: 0px;"
+                 type="file" accept="image/*" (change)="previewFile($event)" formControlName="profile">
+          <button class="photo-buttons" [disabled]="! profile.value" mat-raised-button color="primary" type="button"
+                  (click)='previewFile(this.fileEvent)'>Crop again</button>
+          <button class="photo-buttons" mat-raised-button color="warn" type="button"
+                  (click)="deletePhoto()">Delete Photo</button>
+        </div>
+        <br>
+
 
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0px">
           <mat-form-field>
@@ -222,26 +243,6 @@
           <h2 fxLayoutAlign="center center">✨ Welcome to the Kwee family! ✨</h2>
           <p>While we verify the information provided, please fill the information below to improve your visibility and
             incrase your trustiness for the applicants.</p>
-        </div>
-        <br>
-        <div fxLayout="column">
-          <h4>Profile picture</h4>
-          <p>Click on the image or the button to add a image to your profile</p>
-          <label for="file_profile"><img
-            id="photo_profile"
-            fxlayout="column"
-            fxFlex="200px"
-            width="200px" height="200px"
-            src="../../../../assets/defaut_profile.png"
-            alt="default profile picture"/></label>
-          <label for="file_profile"><button class="photo-buttons" mat-raised-button color="primary" type="button"
-                                            (click)="profile.click()">Upload photo</button></label>
-          <input #profile id="file_profile" style="width: 0px; height: 0px;"
-                 type="file" accept="image/*" (change)="previewFile($event)" formControlName="profile">
-          <button class="photo-buttons" [disabled]="! profile.value" mat-raised-button color="primary" type="button"
-                  (click)='previewFile(this.fileEvent)'>Crop again</button>
-          <button class="photo-buttons" mat-raised-button color="warn" type="button"
-                  (click)="deletePhoto()">Delete Photo</button>
         </div>
         <br>
 

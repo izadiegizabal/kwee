@@ -25,15 +25,11 @@ img {
 }
 
 mat-card-content {
+  min-height: 95px;
   p {
     margin-top: 0;
     font-size: 0.9rem;
   }
-}
-
-.quickInfo {
-  display: flex;
-  max-width: 45%;
 }
 
 @media all and (max-width: ($phone - 1px)) {
@@ -42,8 +38,9 @@ mat-card-content {
   }
 
   .quickInfo {
-    max-width: 100%;
-    margin-top: 8px !important;
+    margin-left: 16px;
+    margin-top: -4px;
+    margin-bottom: 16px !important;
   }
 
   .example-card {

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 
 import {ApiAiClient} from 'api-ai-javascript/es6/ApiAiClient';
-
+import {environment} from '../../environments/environment';
 import {Observable} from 'rxjs';
 import {BehaviorSubject} from 'rxjs';
 
@@ -14,7 +14,7 @@ export class Message {
 @Injectable()
 export class ChatService {
 
-  readonly token = '736fcaf97e434e659f0dcada55651c93';
+  readonly token = environment.dialogflow;
   readonly client = new ApiAiClient({accessToken: this.token});
 
   conversation = new BehaviorSubject<Message[]>([]);

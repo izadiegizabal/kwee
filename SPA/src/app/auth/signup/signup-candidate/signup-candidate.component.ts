@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {MatDialog, MatStepper, MatSelectTrigger} from '@angular/material';
-import {Action, Store} from '@ngrx/store';
+import {Action, select, Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
 import * as AuthActions from '../../store/auth.actions';
 import {AuthEffects} from '../../store/auth.effects';
@@ -10,7 +10,7 @@ import {DialogErrorComponent} from '../dialog-error/dialog-error.component';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from '@angular/common/http';
 import {TrySignupGoogle, TrySignupGitHub, TrySignupLinkedIn} from '../../store/auth.actions';
 import {DialogImageCropComponent} from '../dialog-image-crop/dialog-image-crop.component';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {environment} from '../../../../environments/environment';
 
 interface City {
@@ -43,6 +43,10 @@ export class SignupCandidateComponent implements OnInit {
   iskillang = 0;
   isSocialNetwork = false;
   snToken;
+  token;
+  authState: any;
+  file: any;
+
   roles: { value: number, viewValue: string }[] = [
     {value: 0, viewValue: 'Software Engineering'},
     {value: 1, viewValue: 'Engineering Management'},
@@ -69,7 +73,8 @@ export class SignupCandidateComponent implements OnInit {
               public dialog: MatDialog,
               private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects,
               private httpClient: HttpClient,
-              private activatedRoute: ActivatedRoute) {
+              private activatedRoute: ActivatedRoute,
+              private router: Router) {
     this.iskill = 0;
     this.iskillang = 0;
   }
@@ -115,6 +120,15 @@ export class SignupCandidateComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    this.authState = this.store$.pipe(select('auth'));
+    this.authState.pipe(
+      select((s: { token: string }) => s.token)
+    ).subscribe(
+      (token) => {
+        this.token = token;
+      });
+
     this.firstFormGroup = this._formBuilder.group({
       // firstCtrl: ['', Validators.required]
 
@@ -163,6 +177,7 @@ export class SignupCandidateComponent implements OnInit {
       'twitter': new FormControl(null),
       'linkedIn': new FormControl(null),
       'github': new FormControl(null),
+      'telegram': new FormControl(null),
       'skills': new FormArray([new FormControl(null)]),
       'languages': this._formBuilder.array([]),
       'experience': this._formBuilder.array([]),
@@ -199,7 +214,7 @@ export class SignupCandidateComponent implements OnInit {
     this.activatedRoute.queryParams.subscribe(params => {
       const token = params['token'];
       this.snToken = token;
-      if ( token ) {
+      if (token) {
         this.stepper.selectedIndex = 1;
         this.secondFormGroup.controls['name'].setValue(params['name']);
         this.secondFormGroup.controls['email'].setValue(params['email']);
@@ -243,17 +258,17 @@ export class SignupCandidateComponent implements OnInit {
       console.log('form valid');
       if (!this.isSocialNetwork) {
         console.log('no viene por red social');
-      this.candidate = {
-        'name': this.secondFormGroup.controls['name'].value,
-        'password': this.secondFormGroup.controls['password'].value,
-        'email': this.secondFormGroup.controls['email'].value,
-        'city': (this.secondFormGroup.controls['location'].value as City).name
-          ? (this.secondFormGroup.controls['location'].value as City).name
-          : this.secondFormGroup.controls['location'].value,
-        'dateBorn': this.secondFormGroup.controls['birthday'].value,
-        'premium': '0',
-        'rol': this.secondFormGroup.controls['role'].value.toString()
-      };
+        this.candidate = {
+          'name': this.secondFormGroup.controls['name'].value,
+          'password': this.secondFormGroup.controls['password'].value,
+          'email': this.secondFormGroup.controls['email'].value,
+          'city': (this.secondFormGroup.controls['location'].value as City).name
+            ? (this.secondFormGroup.controls['location'].value as City).name
+            : this.secondFormGroup.controls['location'].value,
+          'dateBorn': this.secondFormGroup.controls['birthday'].value,
+          'premium': '0',
+          'rol': this.secondFormGroup.controls['role'].value.toString()
+        };
 
         // console.log(this.candidate);
         this.store$.dispatch(new AuthActions.TrySignupCandidate(this.candidate));
@@ -295,6 +310,46 @@ export class SignupCandidateComponent implements OnInit {
 
   onSaveOptional() {
     console.log(this.thirdFormGroup);
+
+    const auxSkills = (this.thirdFormGroup.controls['skills'].value as Array<string>).filter(e => {
+      return (e !== null);
+    }).join(',');
+
+    const update = {
+      'img': this.file,
+      'bio': this.thirdFormGroup.controls['bio'].value,
+      'twitter': this.thirdFormGroup.controls['twitter'].value,
+      'linkedIn': this.thirdFormGroup.controls['linkedIn'].value,
+      'github': this.thirdFormGroup.controls['github'].value,
+      'telegram': this.thirdFormGroup.controls['telegram'].value,
+      'skills': auxSkills
+      // 'languages': this._formBuilder.array([]),
+      // 'experience': this._formBuilder.array([]),
+      // 'education': this._formBuilder.array([])
+    };
+
+    console.log(update);
+    const options = {
+      headers: new HttpHeaders().append('token', this.token)
+        .append('Content-Type', 'application/json')
+    };
+    this.httpClient.put(environment.apiUrl + 'applicant',
+      update
+      , options)
+      .subscribe((data: any) => {
+        console.log(data);
+        this.router.navigate(['/']);
+      }, (error: any) => {
+        console.log(error);
+        /*if (!this.dialogShown) {
+          this.dialog.open(DialogErrorComponent, {
+            data: {
+              error: 'We had some issue creating your offer. Please try again later',
+            }
+          });
+          this.dialogShown = true;
+        }*/
+      });
   }
 
   add_skill() {
@@ -373,6 +428,7 @@ export class SignupCandidateComponent implements OnInit {
               if (data.hits[i].is_city) {
                 if (!this.options.some(element => element.name === auxCity.name)) {
                   this.options.push(auxCity);
+                  console.log(auxCity);
                 }
               }
             });
@@ -452,6 +508,7 @@ export class SignupCandidateComponent implements OnInit {
         dialogRef.afterClosed().subscribe(result => {
           if (result) {
             preview.src = result.base64;
+            this.file = result.base64;
           }
         });
       } else {
