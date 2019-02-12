@@ -1,17 +1,13 @@
 const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
-const { tokenId, logger, sendVerificationEmail, pagination, uploadFile } = require('../../../../shared/functions');
+const { tokenId, logger, sendVerificationEmail, pagination, checkImg, deleteFile, uploadImg } = require('../../../../shared/functions');
 const bcrypt = require('bcryptjs');
 
-// File upload
-const fileUpload = require('express-fileupload');
 
 // ============================
 // ======== CRUD user =========
 // ============================
 
 module.exports = (app, db) => {
-
-    // app.use(fileUpload());
 
     // GET all users applicants
     app.get('/applicants', async(req, res, next) => {
@@ -145,52 +141,33 @@ module.exports = (app, db) => {
             await logger.saveLog('POST', 'applicant', null, res);
 
             const body = req.body;
-            const password = body.password ? bcrypt.hashSync(body.password, 10) : null;
+            let user = {};
+            body.password ? user.password = bcrypt.hashSync(body.password, 10) : null;
+            body.name ? user.name = body.name : null;
+            body.bio ? user.bio = body.bio : null;
+            body.email ? user.email = body.email : null;
             
+            if ( body.img && checkImg(body.img) ) {
+                var imgName = uploadImg(req, res, next, 'applicants');
+                    user.img = imgName;
+            }
             
             return db.sequelize.transaction(transaction => {
-                return db.users.create({
-                    name: body.name,
-                    password: password,
-                    email: body.email,
-                    bio: body.bio,
-                    //img: body.img, uploadFile saves it
-                    //root: body.root
-                    
-                }, { transaction: transaction })
+                return db.users.create(user, { transaction: transaction })
                 .then(async user => {
                     uservar = user;
                     return createApplicant(body, user, next, transaction);
                 })
                 .then(ending => {
                     sendVerificationEmail(body, uservar);
-
-                    if(req.files) {
-                        uploadFile( req, res, next, 'users', ending.userId, db)
-                        .then( output => {
-
-                            if( output ){
-                                return res.status(201).json({
-                                    ok: true,
-                                    message: `Applicant with id ${ending.userId} has been created.`
-                                });
-                            }
-                            else{
-                                return res.status(400).json({
-                                    ok: output,
-                                    message: 'Applicant created, but img was not saved.'
-                                });
-                            }
-                        });
-                    } else {
-                        return res.status(201).json({
-                            ok: true,
-                            message: `Applicant with id ${ending.userId} has been created without picture.`
-                        });
-                    }
+                    return res.status(201).json({
+                        ok: true,
+                        message: `Applicant with id ${ending.userId} has been created.`
+                    });
                 })
             })
             .catch(err => {
+                deleteFile('uploads/applicants/' + user.img);
                 return next({ type: 'error', error: err.errors[0].message });
             })
 
@@ -230,26 +207,16 @@ module.exports = (app, db) => {
 
     // Update applicant by themself
     app.put('/applicant', async(req, res, next) => {
-        const updates = req.body;
+        const body = req.body;
 
         try {
             let logId = await logger.saveLog('PUT', 'applicant', null, res);
-
             let id = tokenId.getTokenId(req.get('token'));
+
             logger.updateLog(logId, true, id);
-            if(req.files) {
-                updates.img = req.files.img.name;
-                uploadFile( req, res, next, 'users', id, db)
-                .then( output => {
-                    if( output ){
-                        console.log('foto subida');
-                    }
-                    else{
-                        console.log('foto no subida');
-                    }
-                });
-            }
-            updateApplicant(id, updates, res, next);
+
+            updateApplicant(id, req, res, next);
+
         } catch (err) {
             return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
         }
@@ -258,11 +225,10 @@ module.exports = (app, db) => {
     // Update applicant by admin
     app.put('/applicant/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
-        const updates = req.body;
 
         try {
             await logger.saveLog('PUT', 'applicant', id, res);
-            updateApplicant(id, updates, res, next);
+            updateApplicant(id, req, res, next);
         } catch (err) {
             return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
         }
@@ -303,33 +269,55 @@ module.exports = (app, db) => {
         }
     });
 
-    async function updateApplicant(id, updates, res, next) {
+    async function updateApplicant(id, req, res, next) {
+        let body = req.body;
         let applicant = await db.applicants.findOne({
             where: { userId: id }
         });
 
         if (applicant) {
+            delete body.root;
 
             let applicantuser = true;
+            let userApp = {};
+            body.city ? userApp.city = body.city : null;
+            body.dateBorn ? userApp.dateBorn = body.dateBorn : null;
+            body.rol ? userApp.rol = body.rol : null;
+            body.premium ? userApp.premium = body.premium : null;
 
-            if (updates.password || updates.email || updates.name || updates.snSignIn || updates.root || updates.img || updates.bio) {
+            
+            
+            if (body.password || body.email || body.name || body.snSignIn || body.img || body.bio) {
                 // Update user values
+                delete body.city;
+                delete body.dateBorn;
+                delete body.rol;
+                delete body.premium;
+                
+                if ( body.password ) body.password = bcrypt.hashSync(body.password, 10);
+                if ( body.img && checkImg(body.img) ) {
+                    let user = await db.users.findOne({
+                        where: { id }
+                    });
+                    if ( user.img ) deleteFile('uploads/applicants/' + user.img);
 
-                if (updates.password) updates.password = bcrypt.hashSync(updates.password, 10);
+                    var imgName = uploadImg(req, res, next, 'applicants');
+                        body.img = imgName;
+                }
 
-                applicantuser = await db.users.update(updates, {
-                    where: { id: id }
+                applicantuser = await db.users.update(body, {
+                    where: { id }
                 })
             }
 
-            let updated = await db.applicants.update(updates, {
+            let updated = await db.applicants.update(userApp, {
                 where: { userId: id }
             });
             if (updated && applicantuser) {
                 return res.status(200).json({
                     ok: true,
                     message: `Applicant ${ id } data updated successfuly`,
-                    data: updates
+                    data: body
                 })
             } else {
                 return next({ type: 'error', error: 'Can\'t update Applicant' });

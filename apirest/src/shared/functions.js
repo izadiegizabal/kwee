@@ -313,9 +313,61 @@ function deleteFile(outputPath) {
 
     //let pathImage = path.resolve(__dirname, `../../../uploads/${ type }/${ fileName }`);
 
+    console.log('path: ', outputPath);
+
     if (fs.existsSync(outputPath)) {
         fs.unlinkSync(outputPath);
     }
+}
+
+function uploadImg(req, res, next, type,) {
+    
+    try {
+        var location = `uploads/${ type }`;
+        
+        // Create dir if not exists
+        if (!fs.existsSync(location)){
+            fs.mkdirSync(location, { recursive: true });
+        }
+        
+        // image takes from body which you uploaded
+        const imgdata = req.body.img;    
+        
+        // to convert base64 format into random filename
+        // const base64Data = imgdata.replace(/^data:([A-Za-z-+/]+);base64,/, '');
+        const base64Data = imgdata.split(',');
+        if ( type != 'skills' ) {
+            // to create some random id or name for your image name
+            var imgname = new Date().getTime().toString();
+        } else {
+            var imgname = req.body.name;
+        } 
+
+        imgname = imgname + '.' + base64Data[0].split('/')[1].split(';')[0];
+        
+        // to declare some path to store your converted image
+        const path = location + '/' + imgname;
+
+        fs.writeFile(path, base64Data[1], 'base64', (err) => {
+            if ( err ) {
+                next({ type: 'error', error: err });
+            }
+        });
+        return imgname;
+    } catch (err) {
+        next({ type: 'error', error: err });
+    }
+
+}
+
+function checkImg(data) {
+    let dataSplit = data.split(',');
+    dataSplit = dataSplit[0].split('/');
+    dataSplit = dataSplit[0].split(':')[1];
+    if( dataSplit == 'image' ){
+        return true;
+    }
+    return false;
 }
 
 
@@ -326,5 +378,8 @@ module.exports = {
     sendEmailResetPassword,
     pagination,
     validateDate,
-    uploadFile
+    uploadFile,
+    uploadImg,
+    checkImg,
+    deleteFile
 }
