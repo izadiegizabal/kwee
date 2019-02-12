@@ -99,7 +99,7 @@ export class BusinessOverviewComponent implements OnInit {
     this.userForm.controls['name'].setValue(user.name);
     this.userForm.controls['email'].setValue(user.email);
     this.userForm.controls['vat'].setValue(user.cif);
-    // this.userForm.controls['accountState'].setValue(user.status);
+    this.userForm.controls['accountState'].setValue(user.status);
     this.userForm.controls['premium'].setValue(user.premium);
     this.userForm.controls['workField'].setValue(user.workField);
   }
@@ -119,7 +119,7 @@ export class BusinessOverviewComponent implements OnInit {
         'email': this.userForm.controls['email'].value,
         'cif': this.userForm.controls['vat'].value,
         'workField': this.userForm.controls['workField'].value,
-        // 'status': this.userForm.controls['accountState'].value,
+        'status': this.userForm.controls['accountState'].value,
         'premium': this.userForm.controls['premium'].value,
       };
 
