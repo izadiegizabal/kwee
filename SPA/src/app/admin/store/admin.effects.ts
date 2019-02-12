@@ -22,7 +22,7 @@ export class AdminEffects {
         const apiEndpointUrl = environment.apiUrl + 'applicants/?page=' + payload.page + '&limit=' + payload.limit;
         const token = authState.token;
         const headers = new HttpHeaders().set('token', token);
-        console.log(apiEndpointUrl);
+        // console.log(apiEndpointUrl);
         return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
           map((res: {
             ok: boolean,
@@ -61,6 +61,7 @@ export class AdminEffects {
         const apiEndpointUrl = environment.apiUrl + 'offerers/?page=' + payload.page + '&limit=' + payload.limit;
         const token = authState.token;
         const headers = new HttpHeaders().set('token', token);
+        // console.log(apiEndpointUrl);
         return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
           map((res: {
             ok: boolean,
