@@ -11,18 +11,17 @@ const app = express();
 app.use(logger);
 // Configure the app to use bodyParser()
 // This will let us get the data from post
-app.use(bodyParser.urlencoded({
-    parameterLimit: 100000,
-    limit: '50mb',
-    extended: true
-  }));
-app.use(bodyParser.json());
+app.use(cors());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({ limit: '15mb' }));
 
 app.use((req, res, next) => {
     // res.writeHead(200, { 'Content-Type': 'text/html' });
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DETELE');
+    res.setHeader('Access-Control-Allow-Headers', '*');
+    
     // res.header('Content-Type', 'application/json');
 
     next();
