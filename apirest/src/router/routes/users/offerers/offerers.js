@@ -14,7 +14,9 @@ module.exports = (app, db) => {
         try {
             await logger.saveLog('GET', 'offerers', null, res);
 
-            var attributes = {};
+            var attributes = {
+                exclude: ['password']
+            };
 
             // Need USER values, so we get ALL USERS
             var users = await db.users.findAll();
