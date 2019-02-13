@@ -4,6 +4,7 @@ import * as fromAdmin from '../admin/store/admin.reducers';
 import * as fromOffers from '../candidate-home/store/offers.reducers';
 import * as fromOffer from '../shared/offer-detail/store/offer.reducers';
 import * as fromProfiles from '../shared/profiles/store/profiles.reducers';
+import * as fromAdminOffers from '../shared/admin-offers/store/admin-offers.reducers';
 
 export interface AppState {
   // List different app states like auth etc...
@@ -12,6 +13,7 @@ export interface AppState {
   offers: fromOffers.State;
   offer: fromOffer.State;
   profiles: fromProfiles.State;
+  adminOffers: fromAdminOffers.State;
 }
 
 export const reducers: ActionReducerMap<AppState> = {
@@ -21,4 +23,5 @@ export const reducers: ActionReducerMap<AppState> = {
   offers: fromOffers.offersReducer,
   offer: fromOffer.offerReducer,
   profiles: fromProfiles.profilesReducer,
+  adminOffers: fromAdminOffers.adminOffersReducer,
 };

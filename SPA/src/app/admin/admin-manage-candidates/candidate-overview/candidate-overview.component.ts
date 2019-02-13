@@ -84,7 +84,7 @@ export class CandidateOverviewComponent implements OnInit {
     this.isInEditMode = true;
     this.userForm.controls['name'].setValue(user.name);
     this.userForm.controls['email'].setValue(user.email);
-    this.userForm.controls['accountState'].setValue(user.state);
+    this.userForm.controls['accountState'].setValue(user.status);
     this.userForm.controls['premium'].setValue(user.premium);
   }
 
