@@ -70,8 +70,6 @@ export class AdminOffersEffects {
           '&status=' + payload.status + '&summary=0';
         const token = authState.token;
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
-        console.log(apiEndpointUrl);
-        console.log(token);
 
         return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
           map((res: {
