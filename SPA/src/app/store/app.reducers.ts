@@ -2,8 +2,8 @@ import {ActionReducerMap} from '@ngrx/store';
 import * as fromAuth from '../auth/store/auth.reducers';
 import * as fromAdmin from '../admin/store/admin.reducers';
 import * as fromOffers from '../candidate-home/store/offers.reducers';
-import * as fromOffer from '../shared/offer-detail/store/offer.reducers';
-import * as fromProfiles from '../shared/profiles/store/profiles.reducers';
+import * as fromOffer from '../offer/offer-detail/store/offer.reducers';
+import * as fromProfiles from '../profiles/store/profiles.reducers';
 import * as fromAdminOffers from '../shared/admin-offers/store/admin-offers.reducers';
 
 export interface AppState {

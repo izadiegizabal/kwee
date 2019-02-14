@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {SharedModule} from '../shared.module';
+import {SharedModule} from '../shared/shared.module';
 import {EmailVerifiedComponent} from './email-verified.component';
 import {EmailVerifiedRoutingModule} from './email-verified.routing.module';
 

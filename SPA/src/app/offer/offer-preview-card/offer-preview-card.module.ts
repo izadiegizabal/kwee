@@ -1,10 +1,10 @@
 import {NgModule} from '@angular/core';
-import {SharedModule} from '../shared.module';
+import {SharedModule} from '../../shared/shared.module';
 import {OfferPreviewCardComponent} from './offer-preview-card.component';
-import {IconWithTextModule} from '../icon-with-text/icon-with-text.module';
-import {OffererNameOverviewModule} from '../offerer-name-overview/offerer-name-overview.module';
+import {IconWithTextModule} from '../../shared/icon-with-text/icon-with-text.module';
+import {OffererNameOverviewModule} from '../../shared/offerer-name-overview/offerer-name-overview.module';
 import {RouterModule} from '@angular/router';
-import {SnsShareModule} from '../sns-share/sns-share.module';
+import {SnsShareModule} from '../../shared/sns-share/sns-share.module';
 
 @NgModule({
   declarations: [
