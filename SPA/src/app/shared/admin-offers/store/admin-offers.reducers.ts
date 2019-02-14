@@ -1,4 +1,4 @@
-import * as OffersActions from './offers.actions';
+import * as AdminOffersActions from './admin-offers.actions';
 
 export interface State {
   offers: {
@@ -22,7 +22,7 @@ export interface State {
         durationUnit: number,
         fk_offerer: number,
         contractType: number,
-        maxApplicats: number,
+        maxApplicants: number,
         currentApplications: number,
       },
       user: {
@@ -33,17 +33,29 @@ export interface State {
         index: number,
       }
     }[],
-  total: number,
+    count: {
+      Total: number,
+      Draft: number,
+      Open: number,
+      Selection: number,
+      Closed: number,
+    }[],
   };
 }
+
 
 const initialState: State = {
   offers: null,
 };
 
-export function offersReducer(state = initialState, action: OffersActions.OffersActions) {
+export function adminOffersReducer(state = initialState, action: AdminOffersActions.AdminOffersActions) {
   switch (action.type) {
-    case OffersActions.SET_OFFERS:
+    case AdminOffersActions.SET_OFFERS_OFFERER:
+      return {
+        ...state,
+        offers: action.payload
+      };
+    case AdminOffersActions.SET_OFFERS_APPLICANT:
       return {
         ...state,
         offers: action.payload
@@ -52,3 +64,4 @@ export function offersReducer(state = initialState, action: OffersActions.Offers
       return state;
   }
 }
+

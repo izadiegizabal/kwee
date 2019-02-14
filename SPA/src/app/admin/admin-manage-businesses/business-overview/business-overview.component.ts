@@ -126,9 +126,6 @@ export class BusinessOverviewComponent implements OnInit {
       if (this.userForm.controls['password'].value !== null && this.userForm.controls['password'].value !== '') {
         this.updateuser['password'] = this.userForm.controls['password'].value;
       }
-
-      // console.log(this.updateuser);
-
       this.store$.dispatch(new AdminActions.TryUpdateBusiness({id: id, updatedBusiness: this.updateuser}));
     } else {
       console.log(this.userForm);
@@ -147,6 +144,5 @@ export class BusinessOverviewComponent implements OnInit {
 
   changepage() {
     this.store$.dispatch(new AdminActions.TryGetBusinesses({page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize}));
-    this.adminState = this.store$.pipe(select(s => s.admin));
   }
 }

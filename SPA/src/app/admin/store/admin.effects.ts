@@ -61,7 +61,6 @@ export class AdminEffects {
         const apiEndpointUrl = environment.apiUrl + 'offerers/?page=' + payload.page + '&limit=' + payload.limit;
         const token = authState.token;
         const headers = new HttpHeaders().set('token', token);
-        // console.log(apiEndpointUrl);
         return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
           map((res: {
             ok: boolean,
@@ -137,7 +136,6 @@ export class AdminEffects {
         const token = authState.token;
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
         const body = JSON.stringify(payload.updatedBusiness);
-
         return this.httpClient.put(apiEndpointUrl, body, {headers: headers}).pipe(
           map(() => {
             return {

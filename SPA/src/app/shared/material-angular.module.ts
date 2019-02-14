@@ -126,6 +126,12 @@ export class MaterialAngularModule {
     matIconRegistry.addSvgIcon('money', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-money.svg'));
     matIconRegistry.addSvgIcon('attach-money', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-attach_money.svg'));
     matIconRegistry.addSvgIcon('error', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-error.svg'));
+    matIconRegistry.addSvgIcon('favorite', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-favorite.svg'));
+    matIconRegistry.addSvgIcon('drafts', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-drafts.svg'));
+    matIconRegistry.addSvgIcon('inbox', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-inbox.svg'));
+    matIconRegistry.addSvgIcon('move-to-inbox', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-move_to_inbox.svg'));
+    matIconRegistry.addSvgIcon('mail', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-mail.svg'));
+    matIconRegistry.addSvgIcon('archive', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-archive.svg'));
 
     // Branding icons
     matIconRegistry.addSvgIcon('kwee-logo', domSanitizer.bypassSecurityTrustResourceUrl('assets/branding/logo-kwee-light.svg'));

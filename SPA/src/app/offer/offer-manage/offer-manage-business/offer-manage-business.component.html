@@ -1,0 +1,52 @@
+<div fxLayout="column">
+  <h2 class="mat-h1">Manage Offers</h2>
+  <mat-card fxFlex="100" style="padding: 0 !important;">
+    <mat-tab-group [selectedIndex]="1">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon color="primary" svgIcon="move-to-inbox" class="tab-icon"></mat-icon>
+          Drafts
+        </ng-template>
+        <ng-template matTabContent>
+          <app-offer-manage-tab [offers]="(offersState | async).offers" [status]="4"></app-offer-manage-tab>
+        </ng-template>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon color="primary" svgIcon="inbox" class="tab-icon"></mat-icon>
+          All
+        </ng-template>
+        <ng-template matTabContent>
+          <app-offer-manage-tab [offers]="(offersState | async).offers" [status]="0"></app-offer-manage-tab>
+        </ng-template>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon color="primary" svgIcon="drafts" class="tab-icon"></mat-icon>
+          Open
+        </ng-template>
+        <ng-template matTabContent>
+          <app-offer-manage-tab [offers]="(offersState | async).offers" [status]="1"></app-offer-manage-tab>
+        </ng-template>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon color="primary" svgIcon="access-time" class="tab-icon"></mat-icon>
+          Selection
+        </ng-template>
+        <ng-template matTabContent>
+          <app-offer-manage-tab [offers]="(offersState | async).offers" [status]="2"></app-offer-manage-tab>
+        </ng-template>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon color="primary" svgIcon="archive" class="tab-icon"></mat-icon>
+          Closed
+        </ng-template>
+        <ng-template matTabContent>
+          <app-offer-manage-tab [offers]="(offersState | async).offers" [status]="3"></app-offer-manage-tab>
+        </ng-template>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-card>
+</div>
