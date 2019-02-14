@@ -72,6 +72,69 @@ module.exports = (app, db) => {
     });
     app.get('/applicant/:id([0-9]+)/applications', async(req, res, next) => {
         const id = req.params.id;
+
+        let applicant = await db.applicants.findOne({
+            where: { userId: id }
+        });
+
+        if ( applicant ) {
+            let offers = [];
+            let applications = await db.applications.findAll({where: { fk_applicant: id }});
+            let allOffers = await db.offers.findAll({
+                attributes: {
+                  exclude: ['skills', 'requeriments', 'responsabilities']
+                }
+              });
+            
+            for (let i = 0; i < applications.length; i++) {
+                for (let j = 0; j < allOffers.length; j++) {
+                    if ( applications[i].fk_offer == allOffers[j].id ) {
+                        let offer = {};
+                        
+                        let offerer = await db.users.findOne({
+                            where: { id: allOffers[j].fk_offerer }
+                        });
+
+                        offer.id = allOffers[j].id;
+                        offer.fk_offerer = allOffers[j].fk_offerer;
+                        offer.offererName = offerer.name;
+                        offer.offererIndex = offerer.index;
+                        offer.title = allOffers[j].title;
+                        offer.description = allOffers[j].description;
+                        offer.dateStart = allOffers[j].dateStart;
+                        offer.dateEnd = allOffers[j].dateEnd;
+                        offer.datePublished = allOffers[j].datePublished;
+                        offer.location = allOffers[j].location;
+                        offer.status = allOffers[j].status;
+                        offer.salaryAmount = allOffers[j].salaryAmount;
+                        offer.salaryFrecuency = allOffers[j].salaryFrecuency;
+                        offer.salaryCurrency = allOffers[j].salaryCurrency;
+                        offer.workLocation = allOffers[j].workLocation;
+                        offer.seniority = allOffers[j].seniority;
+                        offer.maxApplicants = allOffers[j].maxApplicants;
+                        offer.currentApplications = allOffers[j].currentApplications;
+                        offer.duration = allOffers[j].duration;
+                        offer.durationUnit = allOffers[j].durationUnit;
+                        offer.isIndefinite = allOffers[j].isIndefinite;
+                        offer.contractType = allOffers[j].contractType;
+                        offer.lat = allOffers[j].lat;
+                        offer.lon = allOffers[j].lon;
+                        offer.createdAt = allOffers[j].createdAt;
+                        offer.updatedAt = allOffers[j].updatedAt;
+                        offer.deletedAt = allOffers[j].deletedAt;
+
+                        offers.push(offer);
+                    }
+                }
+            }
+
+            return res.json({
+                ok: true,
+                message: `Listing all offers that applicated this user with id: ${ id }`,
+                data: offers
+            })
+        }
+
     });
 
     // GET one applicant by id
@@ -146,13 +209,7 @@ module.exports = (app, db) => {
             let user = {};
             body.password ? user.password = bcrypt.hashSync(body.password, 10) : null;
             body.name ? user.name = body.name : null;
-            body.bio ? user.bio = body.bio : null;
             body.email ? user.email = body.email : null;
-            
-            if ( body.img && checkImg(body.img) ) {
-                var imgName = uploadImg(req, res, next, 'applicants');
-                    user.img = imgName;
-            }
             
             return db.sequelize.transaction(transaction => {
                 return db.users.create(user, { transaction: transaction })
@@ -169,7 +226,6 @@ module.exports = (app, db) => {
                 })
             })
             .catch(err => {
-                deleteFile('uploads/applicants/' + user.img);
                 return next({ type: 'error', error: err.errors[0].message });
             })
 
@@ -188,6 +244,15 @@ module.exports = (app, db) => {
                 where: { userId: id }
             });
             if ( applicant ) {
+                let user = {};
+                if ( body.img && checkImg(body.img) ) {
+                    var imgName = uploadImg(req, res, next, 'applicants');
+                        user.img = imgName;
+                }
+                body.bio ? user.bio = body.bio : null;
+                applicantuser = await db.users.update(user, {
+                    where: { id }
+                })
                 await setEducations(applicant, body, next).then( async () => {
                     await setSkills(applicant, body, next).then( async () => {
                         await setLanguages(applicant, body, next).then( async () => {
@@ -202,6 +267,7 @@ module.exports = (app, db) => {
                 });
             }
         } catch (err) {
+            deleteFile('uploads/applicants/' + user.img);
             return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
         }
 
@@ -209,7 +275,6 @@ module.exports = (app, db) => {
 
     // Update applicant by themself
     app.put('/applicant', async(req, res, next) => {
-        const body = req.body;
 
         try {
             let logId = await logger.saveLog('PUT', 'applicant', null, res);
