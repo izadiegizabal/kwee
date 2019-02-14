@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {SharedModule} from '../shared.module';
+import {SharedModule} from '../shared/shared.module';
 import {ResetPasswordComponent} from './reset-password.component';
 import {ResetPasswordRoutingModule} from './reset-password.routing.module';
 import {HttpClientModule} from '@angular/common/http';

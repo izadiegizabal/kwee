@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {select, Store} from '@ngrx/store';
-import * as fromApp from '../../../store/app.reducers';
-import * as ProfilesActions from './../store/profiles.actions';
-import * as fromProfiles from './../store/profiles.reducers';
-import {UtilsService} from '../../utils.service';
+import * as fromApp from '../../store/app.reducers';
+import * as ProfilesActions from '../store/profiles.actions';
+import * as fromProfiles from '../store/profiles.reducers';
+import {UtilsService} from '../../shared/utils.service';
 import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({

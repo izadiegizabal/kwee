@@ -9,7 +9,7 @@ import {filter} from 'rxjs/operators';
 
 
 import {ContractType, JobDurationUnit, OfferStatus, SalaryFrequency, SeniorityLevel, WorkLocationType} from '../../../models/Offer.model';
-import {UtilsService} from '../utils.service';
+import {UtilsService} from '../../shared/utils.service';
 import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({

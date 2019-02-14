@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {UtilsService} from '../../../utils.service';
+import {UtilsService} from '../../../shared/utils.service';
 
 @Component({
   selector: 'app-business-profile-opinions',

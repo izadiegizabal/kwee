@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {UtilsService} from '../utils.service';
+import {UtilsService} from '../../shared/utils.service';
 import {MatDialog} from '@angular/material';
-import {SnsShareDialogComponent} from '../sns-share/sns-share-dialog/sns-share-dialog.component';
+import {SnsShareDialogComponent} from '../../shared/sns-share/sns-share-dialog/sns-share-dialog.component';
 import {ContractType, JobDurationUnit, SalaryFrequency, WorkLocationType} from '../../../models/Offer.model';
 
 

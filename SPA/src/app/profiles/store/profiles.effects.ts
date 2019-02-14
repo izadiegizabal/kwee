@@ -5,9 +5,9 @@ import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {Observable, of, throwError} from 'rxjs';
 import * as UserActions from './profiles.actions';
-import {environment} from '../../../../environments/environment';
+import {environment} from '../../../environments/environment';
 import {Store} from '@ngrx/store';
-import * as fromApp from '../../../store/app.reducers';
+import * as fromApp from '../../store/app.reducers';
 
 
 @Injectable()
