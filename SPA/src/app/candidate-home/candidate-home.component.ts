@@ -31,7 +31,6 @@ export class CandidateHomeComponent implements OnInit {
 
   changepage() {
     this.store$.dispatch(new OffersActions.TryGetOffers({page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize}));
-    this.offersState = this.store$.pipe(select(state => state.offers));
   }
 
 }

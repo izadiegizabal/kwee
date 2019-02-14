@@ -125,7 +125,6 @@ export class CandidateOverviewComponent implements OnInit {
 
   changepage() {
     this.store$.dispatch(new AdminActions.TryGetCandidates({page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize}));
-    this.adminState = this.store$.pipe(select(state => state.admin));
   }
 
 }
