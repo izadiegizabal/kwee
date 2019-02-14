@@ -5,7 +5,7 @@
   <mat-paginator [length]="(offersState | async).offers.total"
                  [pageSize]="pageSize"
                  [pageSizeOptions]="pageSizeOptions"
-                 (page)="pageEvent = $event; changepage();">
+                 (page)="pageEvent = $event; changePage();">
   </mat-paginator>
 </div>
 

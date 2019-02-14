@@ -4,16 +4,20 @@ import {SharedModule} from '../../shared/shared.module';
 import {OfferManageRoutingModule} from './offer-manage.routing.module';
 import {OfferManageComponent} from './offer-manage.component';
 import {OfferManageBusinessComponent} from './offer-manage-business/offer-manage-business.component';
+import {OfferManageTabComponent} from './offer-manage-tab/offer-manage-tab.component';
+import {OfferPreviewCardModule} from '../offer-preview-card/offer-preview-card.module';
 
 @NgModule({
   declarations: [
     OfferManageComponent,
     OfferManageCandidateComponent,
-    OfferManageBusinessComponent
+    OfferManageBusinessComponent,
+    OfferManageTabComponent
   ],
   imports: [
     SharedModule,
-    OfferManageRoutingModule
+    OfferManageRoutingModule,
+    OfferPreviewCardModule
   ]
 })
 export class OfferManageModule {

@@ -29,7 +29,7 @@ export class CandidateHomeComponent implements OnInit {
     this.offersState = this.store$.pipe(select(state => state.offers));
   }
 
-  changepage() {
+  changePage() {
     this.store$.dispatch(new OffersActions.TryGetOffers({page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize}));
   }
 
