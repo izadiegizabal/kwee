@@ -51,10 +51,6 @@ class Stack{
 // Static attribute stack
 TEntity.stack = new Stack();
 // Structures and entities
-class TColor {
-	// TColor
-	constructor(){}
-}
 
 class TMeshSource {
 	// TColor
@@ -171,9 +167,34 @@ class TTransform extends TEntity {
 
 class TLight extends TEntity {
 
-	constructor(intensity){
+	// type 0 = putual ; 1 = dirigido
+	// intensity vec4: r g b a
+	// specular vec4: r g b a ? 
+	// direction vec4: x y z ?
+	// s coeficient
+	constructor(typ, intensity, specular, direction, s){
 		super();
-		this.intensity = intensity;
+		this.typ = typ;
+		this.intensity = glMatrix.vec4.create();
+		if (!intensity) {
+			this.intensity = (intensity.left === 4) 
+			? glMatrix.vec4.fromValues(...intensity) 
+			: glMatrix.vec4.fromValues(...intensity, 1.0);
+		}
+		this.specular = glMatrix.vec4.create();
+		if (!specular) {
+			this.specular = (specular.left === 4) 
+			? glMatrix.vec4.fromValues(...specular) 
+			: glMatrix.vec4.fromValues(...specular, 1.0);
+		}
+		this.direction = glMatrix.vec4.create();
+		if (!direction) {
+			this.direction = (direction.left === 4) 
+			? glMatrix.vec4.fromValues(...direction) 
+			: glMatrix.vec4.fromValues(...direction, 1.0);
+		}
+
+		
 	}
 
 	setIntensity(intensity){
@@ -182,6 +203,34 @@ class TLight extends TEntity {
 
 	getIntensity(){
 		return this.intensity;
+	}
+
+	setDirection(direction){
+		this.direction = direction;
+	}
+
+	getDirection(){
+		return this.direction;
+	}
+
+	setSpecular(specular){
+		this.specular = specular;
+	}
+
+	getSpecular(){
+		return this.specular;
+	}
+
+	setS(s){
+		this.s = s;
+	}
+
+	getS(){
+		return this.s;
+	}
+
+	getType(){
+		return this.typ;
 	}
 
 	beginDraw() {
