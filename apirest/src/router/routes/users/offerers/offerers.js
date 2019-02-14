@@ -316,6 +316,7 @@ module.exports = (app, db) => {
 
         try {
             await logger.saveLog('PUT', 'offerer', id, res);
+            console.log("body.status: " + req.body.status);
             updateOfferer(id, req, res, next);
         } catch (err) {
             next({ type: 'error', error: err.message });
@@ -375,8 +376,9 @@ module.exports = (app, db) => {
             body.website ? userOff.website = body.website : null;
             body.companySize ? userOff.companySize = body.companySize : null;
             body.year ? userOff.year = body.year : null;
+            body.status ? userOff.status = body.status : null;
 
-            if (body.password || body.email || body.name || body.snSignIn || body.img || body.bio) {
+            if (body.password || body.email || body.name || body.snSignIn || body.img || body.bio || body.status) {
                 delete body.cif;
                 delete body.address;
                 delete body.workField;

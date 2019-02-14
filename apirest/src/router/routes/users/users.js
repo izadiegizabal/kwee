@@ -123,7 +123,6 @@ module.exports = (app, db) => {
             await logger.saveLog('PUT', 'user', req.params.id, res);
 
             const id = req.params.id;
-
             updateUser(id, req, res, next);
 
         } catch (err) {
@@ -224,6 +223,7 @@ module.exports = (app, db) => {
         delete body.root;
 
         if (body.password) body.password = bcrypt.hashSync(body.password, 10);
+
         if ( body.img && checkImg(body.img) ) {
             let user = await db.users.findOne({
                 where: { id }
