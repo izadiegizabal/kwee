@@ -19,6 +19,7 @@ const routes: Routes = [
   {path: 'reset-password/:token', loadChildren: './reset-password/reset-password.module#ResetPasswordModule'},
   {path: 'candidate/:id/:name', loadChildren: './profiles/candidate-profile/candidate-profile.module#CandidateProfileModule'},
   {path: 'business/:id/:name', loadChildren: './profiles/business-profile/business-profile.module#BusinessProfileModule'},
+  {path: 'my-offers', loadChildren: './offer/offer-manage/offer-manage.module#OfferManageModule'},
   {path: 'kwee-live', loadChildren: './kwee-live/kwee-live.module#KweeLiveModule'},
   {path: '**', redirectTo: '/candidate-home'}
 ];
