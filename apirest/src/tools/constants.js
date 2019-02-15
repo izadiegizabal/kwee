@@ -1,7 +1,9 @@
 const pass = require('./passwords');
 
 // const callback_url = 'http://localhost:5000/auth/';
-const callback_url = 'https://kwee.ovh/auth/';
+// const callback_url = 'https://kwee.ovh/auth/';
+const callback_url = 'http://h203.eps.ua.es/auth/';
+
 let PROD = pass.PROD;
 
 const env = {
