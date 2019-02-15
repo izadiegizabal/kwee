@@ -3,13 +3,14 @@
 
 /*
 
-                TResourceManager
-                    |
-                TResource
-                /   |             \
-              /     |              \
-            /       |               \
-    TResourceMesh TResourceMaterial TResourceTexture        
+                    TResourceManager
+                      	   |
+                  	   TResource
+                     /     |     \
+                   /       |       \
+                 /         |         \
+               /           |           \
+    TResourceMesh  TResourceMaterial  TResourceTexture        
 
 */
 
@@ -188,7 +189,7 @@ class TResourceMaterial extends TResource{
             return materials;
         }
         else{
-            // If only 1 material --> return material
+            // If we only have 1 material --> return material
             this.color = jsonMaterial.color;
             this.draw_count = jsonMaterial.draw_count;
             this.draw_first = jsonMaterial.draw_first;
@@ -232,7 +233,7 @@ var main = function () {
 async function loadJSON(filename){
 
     let host = "http://localhost";
-    let path = '/Kwee_tag/JSON/';
+    let path = '/kwee-live/JSON/';
     let url = `${host + path + filename}.json`;
     
     console.log(`Fetching JSON resource from url: ${ url }`);

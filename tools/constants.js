@@ -9,9 +9,7 @@ function check() {
     console.log("Running on " + ENVIRONMENT);
     switch(ENVIRONMENT){
         case 'LOCAL': {
-            
-            URL = 'lolcahost/';
-
+            URL = 'localhost/';
             break;
         }
         case 'DEVELOPMENT': {
