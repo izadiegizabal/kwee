@@ -1,6 +1,7 @@
 const passport = require('../../../middlewares/passport');
 const querystring = require('querystring');
 const auth = require('../../../middlewares/auth/auth');
+const env = require('../../../tools/constants');
 
 module.exports = (app, db) => {
 
@@ -37,7 +38,7 @@ module.exports = (app, db) => {
                     //         email: user.email
                     // });
                     let token = 'token=' + auth.auth.encode(user);
-                    res.redirect('http://h203.eps.ua.es/signup?' + token);
+                    res.redirect(env.SIGNUP + token);
 
                 } else {
                     // Existent user

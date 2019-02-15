@@ -12,6 +12,8 @@ const env = {
 
     PROD,
 
+    SIGNUP: 'http://h203.eps.ua.es/signup?',
+
     DATABASE_NAME: pass.DATABASE_NAME,
     DATABASE_USERNAME: pass.DATABASE_USERNAME,
     DATABASE_PASSWORD: pass.MYSQL_PASSWORD,
