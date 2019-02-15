@@ -37,7 +37,7 @@ module.exports = (app, db) => {
                     //         email: user.email
                     // });
                     let token = 'token=' + auth.auth.encode(user);
-                    res.redirect('http://localhost:4200/signup?' + token);
+                    res.redirect('https://kwee.ovh/signup?' + token);
 
                 } else {
                     // Existent user
