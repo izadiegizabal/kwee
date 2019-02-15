@@ -56,6 +56,7 @@ import {CommonModule} from '@angular/common';
     MatAutocompleteModule,
     MatDialogModule,
     MatPaginatorModule,
+    MatMenuModule,
   ],
   exports: [
     CommonModule,
@@ -84,6 +85,7 @@ import {CommonModule} from '@angular/common';
     MatDialogModule,
     MatSnackBarModule,
     MatPaginatorModule,
+    MatMenuModule,
   ],
 })
 export class MaterialAngularModule {
