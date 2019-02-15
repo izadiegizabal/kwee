@@ -15,7 +15,8 @@ import { OrderbyButtonComponent } from './orderby-button/orderby-button.componen
     FormsModule
   ],
   exports: [
-    SearchbarComponent
+    SearchbarComponent,
+    OrderbyButtonComponent
   ]
 })
 export class SearchbarModule {

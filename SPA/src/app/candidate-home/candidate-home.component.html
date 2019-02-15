@@ -1,17 +1,43 @@
-<div fxLayoutAlign.lt-sm="center center">
-  <div fxFlex="96%"
-       fxFlex.gt-sm="75%"
-       fxFlexOffset.gt-xs="16px"
-       fxLayout="column"
-       fxLayoutGap="16px">
-    <app-searchbar></app-searchbar>
-    <app-offer-preview-card *ngFor="let offer of (offersState | async).offers.data;" [offer]="offer">
-    </app-offer-preview-card>
-    <mat-paginator [length]="(offersState | async).offers.total"
-                   [pageSize]="pageSize"
-                   [pageSizeOptions]="pageSizeOptions"
-                   (page)="pageEvent = $event; changePage();">
-    </mat-paginator>
-  </div>
+<div fxLayoutAlign.lt-sm="center center" fxFlex="100%">
+  <mat-sidenav-container class="example-container">
+
+    <mat-sidenav #sidenav mode="over" [(opened)]="opened">
+      Sidenav content
+    </mat-sidenav>
+
+    <mat-sidenav-content
+      fxFlex="96%"
+      fxFlex.gt-sm="75%"
+      fxFlexOffset.gt-xs="16px"
+      fxLayout="column"
+      fxLayoutGap="16px">
+      <div
+        fxLayout="row"
+        fxLayoutAlign="center center"
+        fxLayoutAlign.gt-sm="start center"
+        fxLayoutGap="8px"
+        fxFlex="50%">
+        <app-searchbar
+          fxFlex.gt-xs="100%" fxFlex="60%">
+        </app-searchbar>
+        <app-orderby-button></app-orderby-button>
+        <button color="primary"
+                (click)="sidenav.toggle()"
+                mat-raised-button
+                fxHide.gt-xs>
+          <mat-icon svgIcon="filter-list"></mat-icon>
+        </button>
+      </div>
+      <app-offer-preview-card *ngFor="let offer of (offersState | async).offers.data;" [offer]="offer">
+      </app-offer-preview-card>
+      <mat-paginator [length]="(offersState | async).offers.total"
+                     [pageSize]="pageSize"
+                     [pageSizeOptions]="pageSizeOptions"
+                     (page)="pageEvent = $event; changePage();">
+      </mat-paginator>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+
+
 </div>
 

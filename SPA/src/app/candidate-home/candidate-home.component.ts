@@ -15,11 +15,13 @@ import {PageEvent} from '@angular/material';
 export class CandidateHomeComponent implements OnInit {
   offersState: Observable<fromOffers.State>;
 
+  // MatPaginator
   pageSize = 2;
   pageSizeOptions: number[] = [2, 5, 10, 25, 100];
-
-  // MatPaginator Output
   pageEvent: PageEvent;
+
+  // Filter sidebar
+  opened: boolean;
 
   constructor(private store$: Store<fromApp.AppState>) {
   }
