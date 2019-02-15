@@ -1,14 +1,37 @@
 <html>
+	<script src="gl-matrix.js"></script>
+	<script src="app.js"></script>
+	<script src="resource-manager.js"></script>
+	<!--
+		@ todo
+		
+	<script id="shader-fs" type="x-shader/x-fragment">
+		#ifdef GL_ES
+		precision highp float;
+		#endif
+	
+		void main(void) {
+			gl_FragColor = vec4(1.0,1.0,1.0, 0.1);
+		}	
+	</script>
+	<script id="shader-vs" type="x-shader/x-vertex">
+		attribute vec3 aVertexPosition;
+		uniform mat4 uMVMatrix;
+		uniform mat4 uPMatrix;
+
+		void main(void) {
+			gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+		}
+	</script>
+	-->
 	<head>
 		<title>TAG</title>
 	</head>
-	<body onload="InitDemo();">
+	<body onload="main()">
 		<canvas id="game-surface" width="800" height="600">
 			Your browser does not support HTML5
 		</canvas>
 		<br />
 		<i>Pruebas</i>
-		<script src="gl-matrix.js"></script>
-		<script src="app.js"></script>
 	</body>
 </html>

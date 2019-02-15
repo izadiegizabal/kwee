@@ -516,3 +516,9 @@ var InitDemo = function () {
 	console.log(TEntity.AuxViews);
 
 };
+
+function initWebGL(){
+	// @todo
+	var ctx = null; // Canvas context
+	var prg = null // fragment-shader + vertex-shader;
+}
