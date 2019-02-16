@@ -42,7 +42,7 @@ export class OperationError implements Action {
   }
 }
 
-export type AdminOffersActions =
+export type OfferManageActions =
   TryGetOffersOfferer |
   SetOffersOfferer |
   TryGetOffersApplicant |
