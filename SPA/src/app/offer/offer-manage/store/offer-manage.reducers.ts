@@ -1,4 +1,4 @@
-import * as AdminOffersActions from './admin-offers.actions';
+import * as OfferManageActions from './offer-manage.actions';
 
 export interface State {
   offers: {
@@ -48,14 +48,14 @@ const initialState: State = {
   offers: null,
 };
 
-export function adminOffersReducer(state = initialState, action: AdminOffersActions.AdminOffersActions) {
+export function OfferManageReducer(state = initialState, action: OfferManageActions.OfferManageActions) {
   switch (action.type) {
-    case AdminOffersActions.SET_OFFERS_OFFERER:
+    case OfferManageActions.SET_OFFERS_OFFERER:
       return {
         ...state,
         offers: action.payload
       };
-    case AdminOffersActions.SET_OFFERS_APPLICANT:
+    case OfferManageActions.SET_OFFERS_APPLICANT:
       return {
         ...state,
         offers: action.payload

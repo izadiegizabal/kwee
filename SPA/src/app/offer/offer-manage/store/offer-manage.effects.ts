@@ -4,17 +4,17 @@ import {catchError, map, share, switchMap, withLatestFrom} from 'rxjs/operators'
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {Observable, of, throwError} from 'rxjs';
-import * as AdminOffersActions from './admin-offers.actions';
+import * as OfferManageActions from './offer-manage.actions';
 import {environment} from '../../../../environments/environment';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
 
 @Injectable()
-export class AdminOffersEffects {
+export class OfferManageEffects {
   @Effect()
   GetOffersOfferer = this.actions$.pipe(
-    ofType(AdminOffersActions.TRY_GET_OFFERS_OFFERER),
-    map((action: AdminOffersActions.TryGetOffersOfferer) => {
+    ofType(OfferManageActions.TRY_GET_OFFERS_OFFERER),
+    map((action: OfferManageActions.TryGetOffersOfferer) => {
       return action.payload;
     }),
     //  withLatestFrom(this.store$.pipe(select(state => state.auth))),
@@ -35,9 +35,8 @@ export class AdminOffersEffects {
             },
             count: number,
           }) => {
-            console.log(res);
             return {
-              type: AdminOffersActions.SET_OFFERS_OFFERER,
+              type: OfferManageActions.SET_OFFERS_OFFERER,
               payload: res,
             };
           }),
@@ -45,7 +44,7 @@ export class AdminOffersEffects {
             throwError(this.handleError('getOffersOfferer', err));
             return [
               {
-                type: AdminOffersActions.OPERATION_ERROR,
+                type: OfferManageActions.OPERATION_ERROR,
                 payload: err.error.error
               }
             ];
@@ -59,17 +58,18 @@ export class AdminOffersEffects {
 
   @Effect()
   GetOffersApplicant = this.actions$.pipe(
-    ofType(AdminOffersActions.TRY_GET_OFFERS_APPLICANT),
-    map((action: AdminOffersActions.TryGetOffersApplicant) => {
+    ofType(OfferManageActions.TRY_GET_OFFERS_APPLICANT),
+    map((action: OfferManageActions.TryGetOffersApplicant) => {
       return action.payload;
     }),
     withLatestFrom(this.store$.pipe(select(state => state.auth))),
     switchMap(([payload, authState]) => {
-        const apiEndpointUrl = environment.apiUrl + 'application/' + payload.id
+        const apiEndpointUrl = environment.apiUrl + 'applicant/' + payload.id + '/applications/'
           + '?page=' + payload.page + '&limit=' + payload.limit +
           '&status=' + payload.status + '&summary=0';
         const token = authState.token;
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+        // console.log(apiEndpointUrl);
 
         return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
           map((res: {
@@ -81,9 +81,9 @@ export class AdminOffersEffects {
             },
             count: number,
           }) => {
-            console.log(res);
+            // console.log(res);
             return {
-              type: AdminOffersActions.SET_OFFERS_APPLICANT,
+              type: OfferManageActions.SET_OFFERS_APPLICANT,
               payload: res,
             };
           }),
@@ -91,7 +91,7 @@ export class AdminOffersEffects {
             throwError(this.handleError('getOffersApplicant', err));
             return [
               {
-                type: AdminOffersActions.OPERATION_ERROR,
+                type: OfferManageActions.OPERATION_ERROR,
                 payload: err.error.error
               }
             ];

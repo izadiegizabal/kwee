@@ -1,7 +1,8 @@
 <div fxLayoutGap="8px" style="padding: 8px 16px">
-  <app-offer-preview-card *ngFor="let offer of offers.data;" [offer]="offer">
-  </app-offer-preview-card>
-  <mat-paginator [length]="offers.total"
+  <app-offer-preview-card-manage *ngFor="let offer of  (offerManageState | async).offers.data;" [offer]="offer">
+  </app-offer-preview-card-manage>
+
+  <mat-paginator [length]="10"
                  [pageSize]="pageSize"
                  [pageSizeOptions]="pageSizeOptions"
                  (page)="pageEvent = $event; changePage();">

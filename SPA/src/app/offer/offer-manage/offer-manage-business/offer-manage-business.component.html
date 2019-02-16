@@ -2,13 +2,13 @@
   <h2 class="mat-h1">Manage Offers</h2>
   <mat-card fxFlex="100" style="padding: 0 !important;">
     <mat-tab-group [selectedIndex]="1">
-      <mat-tab>
+      <mat-tab >
         <ng-template mat-tab-label>
           <mat-icon color="primary" svgIcon="move-to-inbox" class="tab-icon"></mat-icon>
           Drafts
         </ng-template>
         <ng-template matTabContent>
-          <app-offer-manage-tab [offers]="(offersState | async).offers" [status]="4"></app-offer-manage-tab>
+          <app-offer-manage-tab [status]="0" [type]="0"></app-offer-manage-tab>
         </ng-template>
       </mat-tab>
       <mat-tab>
@@ -17,7 +17,7 @@
           All
         </ng-template>
         <ng-template matTabContent>
-          <app-offer-manage-tab [offers]="(offersState | async).offers" [status]="0"></app-offer-manage-tab>
+          <app-offer-manage-tab [status]="-1" [type]="0"></app-offer-manage-tab>
         </ng-template>
       </mat-tab>
       <mat-tab>
@@ -26,7 +26,7 @@
           Open
         </ng-template>
         <ng-template matTabContent>
-          <app-offer-manage-tab [offers]="(offersState | async).offers" [status]="1"></app-offer-manage-tab>
+          <app-offer-manage-tab [status]="1" [type]="0"></app-offer-manage-tab>
         </ng-template>
       </mat-tab>
       <mat-tab>
@@ -35,7 +35,7 @@
           Selection
         </ng-template>
         <ng-template matTabContent>
-          <app-offer-manage-tab [offers]="(offersState | async).offers" [status]="2"></app-offer-manage-tab>
+          <app-offer-manage-tab [status]="2" [type]="0"></app-offer-manage-tab>
         </ng-template>
       </mat-tab>
       <mat-tab>
@@ -44,7 +44,7 @@
           Closed
         </ng-template>
         <ng-template matTabContent>
-          <app-offer-manage-tab [offers]="(offersState | async).offers" [status]="3"></app-offer-manage-tab>
+          <app-offer-manage-tab [status]="3" [type]="0"></app-offer-manage-tab>
         </ng-template>
       </mat-tab>
     </mat-tab-group>
