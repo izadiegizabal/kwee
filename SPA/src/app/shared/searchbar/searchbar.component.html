@@ -1,4 +1,7 @@
-<div fxLayout="row" fxLayout.gt-sm="16px" fxLayoutGap="8px">
+<div fxLayout="row"
+     fxLayoutAlign="start center"
+     fxLayoutAlign.lt-sm="center center"
+     fxLayoutGap="8px">
   <mat-card fxFlex="60%" fxFlexOffset="16dp" fxLayout="row" fxLayoutGap="8px">
     <form fxFlex="80%" fxFlex.gt-sm="95%">
       <mat-form-field fxFlex="100%">
@@ -19,12 +22,10 @@
       <mat-icon matSuffix svgIcon="search"></mat-icon>
     </button>
   </mat-card>
-  <button color="primary" mat-raised-button>
+  <app-orderby-button></app-orderby-button>
+  <button color="primary"
+          mat-raised-button
+          fxHide.gt-xs>
     <mat-icon svgIcon="filter-list"></mat-icon>
-    <span fxHide.lt-sm>Filter</span>
-  </button>
-  <button mat-raised-button>
-    <mat-icon class="fa-rotate-90" color="primary">arrow_right_alt</mat-icon>
-    <span fxHide.lt-sm>Relevance</span>
   </button>
 </div>
