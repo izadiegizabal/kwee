@@ -21,8 +21,6 @@ import {CookieService} from 'ngx-cookie-service';
 import {NgcCookieConsentConfig, NgcCookieConsentModule} from 'ngx-cookieconsent';
 import {PrivacyComponent} from './privacy/privacy.component';
 import {OfferCreateModule} from './offer/offer-create/offer-create.module';
-import { OfferManageCandidateComponent } from './offer/offer-manage/offer-manage-candidate/offer-manage-candidate.component';
-import { OfferManageComponent } from './offer/offer-manage/offer-manage.component';
 
 export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {
   return localStorageSync({keys: ['auth', 'admin', 'offers', 'offer', 'profiles', 'OfferManage'], rehydrate: true})(reducer);

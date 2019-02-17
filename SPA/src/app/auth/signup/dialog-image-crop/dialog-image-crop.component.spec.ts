@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { DialogImageCropComponent } from './dialog-image-crop.component';
+import {DialogImageCropComponent} from './dialog-image-crop.component';
 
 describe('DialogImageCropComponent', () => {
   let component: DialogImageCropComponent;
@@ -8,9 +8,9 @@ describe('DialogImageCropComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DialogImageCropComponent ]
+      declarations: [DialogImageCropComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

@@ -10,7 +10,7 @@ export const OPERATION_ERROR = 'OPERATION_ERROR';
 export class TryGetOffersOfferer implements Action {
   readonly type = TRY_GET_OFFERS_OFFERER;
 
-  constructor(public payload: {id: number, page: number, limit: number, status: number}) {
+  constructor(public payload: { id: number, page: number, limit: number, status: number }) {
   }
 }
 
@@ -24,7 +24,7 @@ export class SetOffersOfferer implements Action {
 export class TryGetOffersApplicant implements Action {
   readonly type = TRY_GET_OFFERS_APPLICANT;
 
-  constructor(public payload: {id: number, page: number, limit: number, status: number}) {
+  constructor(public payload: { id: number, page: number, limit: number, status: number }) {
   }
 }
 

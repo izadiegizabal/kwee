@@ -38,7 +38,7 @@ export interface State {
 }
 
 const initialState: State = {
-    offer: null,
+  offer: null,
 };
 
 export function offerReducer(state = initialState, action: OfferActions.OfferActions) {

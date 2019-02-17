@@ -8,21 +8,21 @@
       <mat-card fxFlex="70">
         <mat-card-title>
           <app-offerer-name-overview
-            [name]="business.name"
             [index]="business.kweeIndex"
+            [name]="business.name"
             size="title">
           </app-offerer-name-overview>
         </mat-card-title>
         <mat-card-content
-          style="margin-top: 16px"
-          fxLayoutAlign="center stretch" fxLayoutAlign.lt-sm="center center"
-          fxLayout="row" fxLayout.lt-sm="column">
+          fxLayout="row"
+          fxLayout.lt-sm="column" fxLayoutAlign="center stretch"
+          fxLayoutAlign.lt-sm="center center" style="margin-top: 16px">
           <img
-            fxlayout="column"
+            alt="{{business.name + ' profile picture'}}'"
             fxFlex="200px"
-            width="200px" height="200px"
+            fxlayout="column" height="200px"
             src="{{business.img}}"
-            alt="{{business.name + ' profile picture'}}'"/>
+            width="200px"/>
           <p
             fxLayout="column"
             fxLayoutAlign="center center">
@@ -40,7 +40,7 @@
 
       <!-- Premium info -->
       <mat-card
-        fxFlexOffset.gt-xs="32px" fxFlex="30">
+        fxFlex="30" fxFlexOffset.gt-xs="32px">
         <mat-card-subtitle style="text-align: center">Active account type:</mat-card-subtitle>
         <mat-card-title style="text-align: center">
           Basic
@@ -57,8 +57,8 @@
         <mat-card-actions fxLayoutAlign="center">
           <button
             color="accent"
-            style="color: white; margin-bottom: 16px"
-            mat-raised-button>
+            mat-raised-button
+            style="color: white; margin-bottom: 16px">
             Upgrade to Premium
           </button>
         </mat-card-actions>

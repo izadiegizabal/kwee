@@ -33,7 +33,7 @@ export interface State {
         index: number,
       }
     }[],
-  total: number,
+    total: number,
   };
 }
 

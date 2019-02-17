@@ -9,12 +9,13 @@
       style="cursor: pointer">{{offer.title}}
     </mat-card-title>
     <mat-card-subtitle>
-      <app-offerer-name-overview [index]="offer.index" [name]="offer.name"  [routerLink]="urlOfferer()"></app-offerer-name-overview>
+      <app-offerer-name-overview [index]="offer.index" [name]="offer.name"
+                                 [routerLink]="urlOfferer()"></app-offerer-name-overview>
     </mat-card-subtitle>
     <div
       class="quickInfo"
-      fxLayout="row"
       fxFlexAlign="start start"
+      fxLayout="row"
       fxLayoutGap="16px">
       <app-icon-with-text [text]="getOfferLocation()" icon="place"></app-icon-with-text>
       <app-icon-with-text [text]="getPublishedDate()" icon="access-time"></app-icon-with-text>

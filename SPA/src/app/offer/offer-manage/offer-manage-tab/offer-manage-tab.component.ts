@@ -13,15 +13,13 @@ import * as fromOfferManage from '../store/offer-manage.reducers';
   styleUrls: ['./offer-manage-tab.component.scss']
 })
 export class OfferManageTabComponent implements OnInit {
-  private offerManageState: Observable<fromOfferManage.State>;
-
   // @Input() offers: any;
   @Input() status: number;
   @Input() type: number;
   pageSize = 2;
   pageSizeOptions: number[] = [2, 5, 10, 25, 100];
   pageEvent: PageEvent;
-
+  private offerManageState: Observable<fromOfferManage.State>;
 
   constructor(private store$: Store<fromApp.AppState>, private activatedRoute: ActivatedRoute) {
   }

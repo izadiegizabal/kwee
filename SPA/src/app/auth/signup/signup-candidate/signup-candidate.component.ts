@@ -1,14 +1,13 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {MatDialog, MatStepper, MatSelectTrigger} from '@angular/material';
+import {MatDialog, MatStepper} from '@angular/material';
 import {Action, select, Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
 import * as AuthActions from '../../store/auth.actions';
 import {AuthEffects} from '../../store/auth.effects';
 import {filter} from 'rxjs/operators';
 import {DialogErrorComponent} from '../dialog-error/dialog-error.component';
-import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from '@angular/common/http';
-import {TrySignupGoogle, TrySignupGitHub, TrySignupLinkedIn} from '../../store/auth.actions';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {DialogImageCropComponent} from '../dialog-image-crop/dialog-image-crop.component';
 import {ActivatedRoute, Router} from '@angular/router';
 import {environment} from '../../../../environments/environment';

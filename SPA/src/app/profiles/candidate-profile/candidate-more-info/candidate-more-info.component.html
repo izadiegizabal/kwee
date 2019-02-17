@@ -1,9 +1,9 @@
 <div
-  fxLayout="row" fxLayout.lt-md="column"
-  fxFlexOffset="4%"
-  fxLayoutGap="32px"
-  fxFlex="92%">
-  <div fxLayout="column" fxFlex="50%" style="padding-bottom: 32px">
+  fxFlex="92%" fxFlexOffset="4%"
+  fxLayout="row"
+  fxLayout.lt-md="column"
+  fxLayoutGap="32px">
+  <div fxFlex="50%" fxLayout="column" style="padding-bottom: 32px">
     <h2>Experience</h2>
     <mat-accordion style="margin-bottom: 16px">
       <mat-expansion-panel *ngFor="let experience of candidate.experience">
@@ -110,11 +110,11 @@
       </p>
       <mat-list style="margin-bottom: 16px; opacity: 0.5; font-style: italic">
         <mat-list-item>
-          <mat-icon color="primary" svgIcon="insert-drive-file" mat-list-icon></mat-icon>
+          <mat-icon color="primary" mat-list-icon svgIcon="insert-drive-file"></mat-icon>
           <h4 mat-line>Curriculum Vitae</h4>
         </mat-list-item>
         <mat-list-item>
-          <mat-icon color="primary" svgIcon="insert-drive-file" mat-list-icon></mat-icon>
+          <mat-icon color="primary" mat-list-icon svgIcon="insert-drive-file"></mat-icon>
           <h4 mat-line>Recommendation Letter</h4>
         </mat-list-item>
       </mat-list>

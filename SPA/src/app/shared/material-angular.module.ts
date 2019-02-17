@@ -17,6 +17,7 @@ import {
   MatListModule,
   MatMenuModule,
   MatNativeDateModule,
+  MatPaginatorModule,
   MatRadioModule,
   MatSelectModule,
   MatSidenavModule,
@@ -24,40 +25,11 @@ import {
   MatStepperModule,
   MatTabsModule,
   MatToolbarModule,
-  MatPaginatorModule,
 } from '@angular/material';
 import {DomSanitizer} from '@angular/platform-browser';
 import {CommonModule} from '@angular/common';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    MatCardModule,
-    MatIconModule,
-    MatDividerModule,
-    MatButtonModule,
-    MatToolbarModule,
-    MatMenuModule,
-    MatTabsModule,
-    MatCheckboxModule,
-    MatStepperModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatSelectModule,
-    MatExpansionModule,
-    MatDividerModule,
-    MatSidenavModule,
-    MatRadioModule,
-    MatListModule,
-    MatBadgeModule,
-    MatChipsModule,
-    MatAutocompleteModule,
-    MatDialogModule,
-    MatPaginatorModule,
-    MatMenuModule,
-  ],
   exports: [
     CommonModule,
     MatCardModule,

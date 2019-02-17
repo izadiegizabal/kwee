@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 
 import {ApiAiClient} from 'api-ai-javascript/es6/ApiAiClient';
 import {environment} from '../../environments/environment';
-import {Observable} from 'rxjs';
 import {BehaviorSubject} from 'rxjs';
 
 // Message class for displaying messages in the component
@@ -59,7 +58,7 @@ export class ChatService {
                   break;
                 case 2:
                   console.log(e.replies);
-                  const botReply = new Message('chips', 'bot', 2, { chips: e.replies });
+                  const botReply = new Message('chips', 'bot', 2, {chips: e.replies});
                   this.update(botReply);
                   /*
                   e.replies.forEach(arr => {

@@ -14,7 +14,7 @@ import {AuthEffects} from '../store/auth.effects';
 import {EducationsFormsModule} from './signup-candidate/education-forms/educations-forms.module';
 import {ExperienceFormsModule} from './signup-candidate/experience-forms/experience-forms.module';
 import {ImageCropperModule} from 'ngx-image-cropper';
-import { DialogImageCropComponent } from './dialog-image-crop/dialog-image-crop.component';
+import {DialogImageCropComponent} from './dialog-image-crop/dialog-image-crop.component';
 
 @NgModule({
   declarations: [

@@ -40,9 +40,9 @@ export class OfferDetailComponent implements OnInit {
       ).subscribe((error: { payload: any, type: string }) => {
         this.router.navigate(['/']);
       });
-     } else {
-       this.router.navigate(['/']);
-     }
+    } else {
+      this.router.navigate(['/']);
+    }
 
   }
 

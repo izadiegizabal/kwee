@@ -21,7 +21,8 @@ export class OrderbyButtonComponent implements OnInit {
   @Output() selectedValue = 0;
   selectedViewValue;
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit() {
     this.selectedViewValue = this.orderBy[0].viewValue;

@@ -1,4 +1,4 @@
-  <div fxLayout="row">
+<div fxLayout="row">
   <mat-accordion fxFlex="99%">
     <mat-expansion-panel
       (closed)="isPanelOpen = !isPanelOpen; isInEditMode = false; userForm.reset()"
@@ -29,7 +29,8 @@
             <span>{{user.lastAccess | date:'d/M/y, HH:mm'}}</span>
           </div>
           <mat-chip-list fxHide fxShow.gt-sm>
-            <mat-chip color="primary" selected style="pointer-events: none">{{states[user.status].viewValue  | titlecase }}</mat-chip>
+            <mat-chip color="primary" selected
+                      style="pointer-events: none">{{states[user.status].viewValue  | titlecase }}</mat-chip>
           </mat-chip-list>
         </mat-panel-description>
       </mat-expansion-panel-header>

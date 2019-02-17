@@ -18,7 +18,7 @@ export class OffersEffects {
       return action.payload;
     }),
     switchMap((payload) => {
-        const apiEndpointUrl = environment.apiUrl + 'offers/?page=' + payload.page + '&limit=' + payload.limit ;
+        const apiEndpointUrl = environment.apiUrl + 'offers/?page=' + payload.page + '&limit=' + payload.limit;
         // const token = authState.token;
         // const headers = new HttpHeaders().set('token', token);
         return this.httpClient.get(apiEndpointUrl).pipe(

@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { OrderbyButtonComponent } from './orderby-button.component';
+import {OrderbyButtonComponent} from './orderby-button.component';
 
 describe('OrderbyButtonComponent', () => {
   let component: OrderbyButtonComponent;
@@ -8,9 +8,9 @@ describe('OrderbyButtonComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ OrderbyButtonComponent ]
+      declarations: [OrderbyButtonComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

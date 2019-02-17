@@ -2,7 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {DialogErrorComponent} from '../../auth/signup/dialog-error/dialog-error.component';
 import {MatDialog} from '@angular/material';
 import {environment} from '../../../environments/environment';
 import {select, Store} from '@ngrx/store';
@@ -72,16 +71,6 @@ export class OfferCreateComponent implements OnInit {
 
   private dialogShown = false;
 
-  static maxMinDate(control: FormControl): { [s: string]: { [s: string]: boolean } } {
-    const today = new Date();
-    const mdate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDay());
-
-    if (control.value > mdate && control.value >= today) {
-      return null;
-    }
-    return {'tooOld': {value: true}};
-  }
-
   constructor(private _formBuilder: FormBuilder,
               private http: HttpClient,
               public dialog: MatDialog,
@@ -101,12 +90,22 @@ export class OfferCreateComponent implements OnInit {
     });
   }
 
-  getJSON(): Observable<any> {
-    return this.http.get('./assets/CurrenciesISO.json');
-  }
-
   get formSkills() {
     return <FormArray>this.form.get('skills');
+  }
+
+  static maxMinDate(control: FormControl): { [s: string]: { [s: string]: boolean } } {
+    const today = new Date();
+    const mdate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDay());
+
+    if (control.value > mdate && control.value >= today) {
+      return null;
+    }
+    return {'tooOld': {value: true}};
+  }
+
+  getJSON(): Observable<any> {
+    return this.http.get('./assets/CurrenciesISO.json');
   }
 
   ngOnInit() {
