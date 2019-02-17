@@ -21,6 +21,7 @@ const routes: Routes = [
   {path: 'business/:id/:name', loadChildren: './profiles/business-profile/business-profile.module#BusinessProfileModule'},
   {path: 'my-offers', loadChildren: './offer/offer-manage/offer-manage.module#OfferManageModule'},
   {path: 'kwee-live', loadChildren: './kwee-live/kwee-live.module#KweeLiveModule'},
+  {path: 'contact-support', loadChildren: './contact-support/contact-support.module#ContactSupportModule'},
   {path: '**', redirectTo: '/candidate-home'}
 ];
 
