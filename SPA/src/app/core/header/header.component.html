@@ -1,9 +1,15 @@
-<mat-toolbar fxLayout="row">
+<mat-toolbar fxLayout="row" [ngClass]="{'business': (authState | async).authenticated && (authState | async).user.type !== 'candidate'}">
   <div class="logo">
-    <a routerLink="/">
+    <a routerLink="/" *ngIf="!(authState | async).authenticated || (authState | async).user.type === 'candidate'; else business">
       <mat-icon fxHide.gt-xs svgIcon="kwee-icon"></mat-icon>
       <mat-icon fxHide.lt-sm svgIcon="kwee-logo"></mat-icon>
     </a>
+    <ng-template #business>
+      <a routerLink="/">
+        <mat-icon fxHide.gt-xs svgIcon="kwee-icon-dark"></mat-icon>
+        <mat-icon fxHide.lt-sm svgIcon="kwee-logo-dark"></mat-icon>
+      </a>
+    </ng-template>
   </div>
   <div fxFlex="grow"></div>
   <div class="user-section">
