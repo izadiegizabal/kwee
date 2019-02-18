@@ -248,12 +248,18 @@ class TMesh extends TEntity {
 		this.mesh = mesh;
 	}
 
-	loadMesh(file){
-		this.mesh = mesh;
+	async loadMesh(file){
+		await manager.getResource(file, 'mesh');
+		this.mesh = manager.map.get('earth_thickness mesh');
+		
 	}
 
 	beginDraw() {
 		console.log(this);
+		if(this.mesh !== null){
+			this.mesh.draw();
+		}
+
 	}
 
 	endDraw() {}

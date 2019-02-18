@@ -8,8 +8,130 @@ function render(now) {
     }
     window.requestAnimationFrame(render);
 }*/
+var manager = new TResourceManager();
+
+var canvas = null;
+var gl = null;
+var program = null;
 
 async function main(){
+
+	canvas = document.getElementById('game-surface');
+	gl = canvas.getContext('webgl');
+
+	// gl.clearColor(0.266, 0.294, 0.329, 1.0); // our grey
+	gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
+	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	gl.enable(gl.DEPTH_TEST);
+	gl.enable(gl.CULL_FACE);
+	gl.frontFace(gl.CCW);
+	gl.cullFace(gl.BACK);
+
+	
+   
+    // let meshMaterial = await manager.getResource('cube','material');
+    let VShader = await manager.getResource('shader.vs','shader');
+    let FShader = await manager.getResource('shader.fs','shader');
+
+    var vertexShader = gl.createShader(gl.VERTEX_SHADER);
+	var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+
+	gl.shaderSource(vertexShader, manager.map.get('shader.vs shader').shader);
+	gl.shaderSource(fragmentShader, manager.map.get('shader.fs shader').shader);
+
+	gl.compileShader(vertexShader);
+	if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
+		console.error('ERROR compiling vertex shader', gl.getShaderInfoLog(vertexShader));
+		return;
+	}
+
+	gl.compileShader(fragmentShader);
+	if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
+		console.error('ERROR compiling fragment shader', gl.getShaderInfoLog(fragmentShader));
+		return;
+	}
+
+	program = gl.createProgram();
+	gl.attachShader(program, vertexShader);
+	gl.attachShader(program, fragmentShader);
+	gl.linkProgram(program);
+	if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+		console.error('ERROR linking program', gl.getProgramInfoLog(program));
+		return;
+	}
+	gl.validateProgram(program);
+	if (!gl.getProgramParameter(program, gl.VALIDATE_STATUS)) {
+		console.error('ERROR validating program', gl.getProgramInfoLog(program));
+		return;
+	}
+
+	gl.useProgram(program);
+
+
+
+	let Escena = new TNode();
+	let RotaLuz = new TNode(Escena);
+	let RotaCam = new TNode(Escena);
+	let RotaCoche = new TNode(Escena);
+	Escena.addChild(RotaLuz);
+	Escena.addChild(RotaCam);
+	Escena.addChild(RotaCoche);
+	let TraslaLuz = new TNode(RotaLuz);
+	let TraslaCoche = new TNode(RotaCam);
+	let TraslaCam = new TNode(RotaCoche);
+	RotaLuz.addChild(TraslaLuz);
+	RotaCam.addChild(TraslaCam);
+	RotaCoche.addChild(TraslaCoche);
+
+	//---- Añadir las entidades a los nodos ----
+
+	let TransfRotaLuz = new TTransform();
+	let TransfRotaCam = new TTransform();
+	let TransfRotaCoche = new TTransform();
+
+	RotaLuz.setEntity(TransfRotaLuz);
+	RotaCam.setEntity(TransfRotaCam);
+	RotaCoche.setEntity(TransfRotaCoche);
+
+	let EntLuz = new TLight(); 
+	let EntCam = new TCamera(); 
+	let MallaChasis = new TMesh();
+	await MallaChasis.loadMesh('earth_thickness');
+
+	console.log(MallaChasis.mesh);
+
+	/// Esto no estaba en las transparencias
+
+	let NLuz = new TNode(TraslaLuz);
+	let NCam = new TNode(TraslaCam);
+	let NChasis = new TNode(TraslaCoche);
+
+	NLuz.setEntity(EntLuz);
+	NCam.setEntity(EntCam);
+	NChasis.setEntity(MallaChasis);
+
+	TraslaLuz.addChild(NLuz);
+	TraslaCoche.addChild(NChasis);
+	TraslaCam.addChild(NCam);
+
+	TraslaLuz.setEntity(TransfRotaLuz);
+	TraslaCoche.setEntity(TransfRotaCoche);
+	TraslaCam.setEntity(TransfRotaCam);
+
+
+	Escena.draw();
+
+
+
+
+
+
+
+
+
+}
+
+async function mainRTM(){
 	var canvas = document.getElementById('game-surface');
 	var gl = canvas.getContext('webgl');
 
@@ -22,7 +144,7 @@ async function main(){
 	gl.cullFace(gl.BACK);
 
 	var manager = new TResourceManager();
-    let mesh = await manager.getResource('earth_thickness', 'mesh');
+    let mesh = await manager.getResource('cube', 'mesh');
     // let meshMaterial = await manager.getResource('cube','material');
     let VShader = await manager.getResource('shader.vs','shader');
     let FShader = await manager.getResource('shader.fs','shader');
@@ -67,8 +189,8 @@ async function main(){
     ///////////////////// 										VERTEX BUFFERS & MORE.
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	var earthVertices = manager.map.get('earth_thickness mesh').vertices;
-	var earthIndices = manager.map.get('earth_thickness mesh').triVertices
+	var earthVertices = manager.map.get('cube mesh').vertices;
+	var earthIndices = manager.map.get('cube mesh').triVertices
 	// var earthTexCoords = manager.map.get('earth mesh').textures;
 	// var earthNormals = manager.map.get('earth mesh').normals;
 
@@ -152,7 +274,7 @@ async function main(){
 	var viewMatrix = new Float32Array(16);
 	var projMatrix = new Float32Array(16);
 	glMatrix.mat4.identity(worldMatrix);
-	glMatrix.mat4.lookAt(viewMatrix, [0, 0, -1.5], [0, 0.63, 0], [0, 1, 0]);
+	glMatrix.mat4.lookAt(viewMatrix, [0, 0, -6], [0, 0.63, 0], [0, 1, 0]);
 	glMatrix.mat4.perspective(projMatrix, glMatrix.glMatrix.toRadian(45), canvas.clientWidth / canvas.clientHeight, 0.1, 1000.0);
 
 	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
@@ -165,7 +287,7 @@ async function main(){
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////// 										LIGHTNING
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	gl.useProgram(program);
+	/*gl.useProgram(program);
 
 	var ambientUniformLocation = gl.getUniformLocation(program, 'ambientLightIntensity');
 	var sunlightDirUniformLocation = gl.getUniformLocation(program, 'sun.direction');
@@ -173,7 +295,7 @@ async function main(){
 
 	gl.uniform3f(ambientUniformLocation, 0.2, 0.2, 0.2);
 	gl.uniform3f(sunlightDirUniformLocation, 3.0, 4.0, -2.0);
-	gl.uniform3f(sunlightIntUniformLocation, 0.9, 0.9, 0.9);
+	gl.uniform3f(sunlightIntUniformLocation, 0.9, 0.9, 0.9);*/
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////// 										LOOP
