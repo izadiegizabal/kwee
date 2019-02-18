@@ -1,11 +1,11 @@
-class constants{ 
+class constants {
     ENVIRONMENT = "LOCAL"
     URL = '';
 }
 
 function check() {
     console.log("Running on " + ENVIRONMENT);
-    switch(ENVIRONMENT){
+    switch (ENVIRONMENT) {
         case 'LOCAL': {
             URL = 'localhost/';
             break;
@@ -21,7 +21,7 @@ function check() {
     }
 }
 
-export { 
+export {
     constants,
     check
 }
