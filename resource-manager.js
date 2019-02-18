@@ -46,6 +46,11 @@ class TResourceManager {
                     resource = new TResourceMaterial(name);
                     break;
                 }
+                case 'shader': {
+                    console.log("-> Creating TResourceShader " + name + "...");
+                    resource = new TResourceShader(name);
+                    break;
+                }
             }
             // load resource
             var file = await resource.loadFile(name);
@@ -215,7 +220,24 @@ class TResourceTexture extends TResource{
     loadFile(){}
 }
 
-var main = function () {
+class TResourceShader extends TResource {
+  constructor(name) {
+    super(name);
+    this.shader = null;
+  }
+
+  async loadFile(name) {
+    let cargado, shader;
+    this.shader = await loadShader(name);
+    return this;
+  }
+
+  getShader() {
+    return this.shader;
+  }
+}
+
+var mainRM = function () {
 
     var manager = new TResourceManager();
 
@@ -228,6 +250,8 @@ var main = function () {
 
     let mesh = manager.getResource('earth', 'mesh');
     let meshMaterial = manager.getResource('earth','material');
+    let VShader = manager.getResource('shader.vs','shader');
+    let FShader = manager.getResource('shader.fs','shader');
 }
 
 async function loadJSON(filename){
@@ -249,4 +273,23 @@ async function loadJSON(filename){
         });
 
     return json;
+}
+
+async function loadShader(filename){
+
+    let host = "http://localhost";
+    let path = '/kwee-live/shaders/';
+    let url = `${host + path + filename}.glsl`;
+    
+    console.log(`Fetching ${filename} shader resource from url: ${ url }`);
+    
+    let file;
+    await fetch( url )
+        .then( response => { return response.text();})
+        .then( res => {
+            console.log(res);
+            file = Promise.resolve(res);
+        });
+
+    return file;
 }

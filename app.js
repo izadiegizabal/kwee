@@ -176,20 +176,20 @@ class TLight extends TEntity {
 		super();
 		this.typ = typ;
 		this.intensity = glMatrix.vec4.create();
-		if (!intensity) {
-			this.intensity = (intensity.left === 4) 
+		if (intensity) {
+			this.intensity = (intensity.length === 4) 
 			? glMatrix.vec4.fromValues(...intensity) 
 			: glMatrix.vec4.fromValues(...intensity, 1.0);
 		}
 		this.specular = glMatrix.vec4.create();
-		if (!specular) {
-			this.specular = (specular.left === 4) 
+		if (specular) {
+			this.specular = (specular.length === 4) 
 			? glMatrix.vec4.fromValues(...specular) 
 			: glMatrix.vec4.fromValues(...specular, 1.0);
 		}
 		this.direction = glMatrix.vec4.create();
-		if (!direction) {
-			this.direction = (direction.left === 4) 
+		if (direction) {
+			this.direction = (direction.length === 4) 
 			? glMatrix.vec4.fromValues(...direction) 
 			: glMatrix.vec4.fromValues(...direction, 1.0);
 		}
