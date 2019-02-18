@@ -1,4 +1,4 @@
-var last = 0; // timestamp of the last render() call
+/*var last = 0; // timestamp of the last render() call
 
 function render(now) {
     // each 2 seconds call the createNewObject() function
@@ -7,7 +7,7 @@ function render(now) {
         ////loop
     }
     window.requestAnimationFrame(render);
-}
+}*/
 
 async function main(){
 	var canvas = document.getElementById('game-surface');
@@ -22,14 +22,14 @@ async function main(){
 	gl.cullFace(gl.BACK);
 
 	var manager = new TResourceManager();
-    let mesh = await manager.getResource('earth', 'mesh');
-    let meshMaterial = await manager.getResource('earth','material');
+    let mesh = await manager.getResource('earth_thickness', 'mesh');
+    // let meshMaterial = await manager.getResource('cube','material');
     let VShader = await manager.getResource('shader.vs','shader');
     let FShader = await manager.getResource('shader.fs','shader');
 
-    console.log(' ');
-
-    ///
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////// 										SHADERS
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     var vertexShader = gl.createShader(gl.VERTEX_SHADER);
 	var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
@@ -39,13 +39,13 @@ async function main(){
 
 	gl.compileShader(vertexShader);
 	if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
-		console.error('ERROR compiling vertex shader!', gl.getShaderInfoLog(vertexShader));
+		console.error('ERROR compiling vertex shader', gl.getShaderInfoLog(vertexShader));
 		return;
 	}
 
 	gl.compileShader(fragmentShader);
 	if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
-		console.error('ERROR compiling fragment shader!', gl.getShaderInfoLog(fragmentShader));
+		console.error('ERROR compiling fragment shader', gl.getShaderInfoLog(fragmentShader));
 		return;
 	}
 
@@ -54,47 +54,39 @@ async function main(){
 	gl.attachShader(program, fragmentShader);
 	gl.linkProgram(program);
 	if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-		console.error('ERROR linking program!', gl.getProgramInfoLog(program));
+		console.error('ERROR linking program', gl.getProgramInfoLog(program));
 		return;
 	}
 	gl.validateProgram(program);
 	if (!gl.getProgramParameter(program, gl.VALIDATE_STATUS)) {
-		console.error('ERROR validating program!', gl.getProgramInfoLog(program));
+		console.error('ERROR validating program', gl.getProgramInfoLog(program));
 		return;
 	}
 
-	////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////// 										VERTEX BUFFERS & MORE.
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-	//
-	// Create buffer
-	//
-	var earthVertices = manager.map.get('earth mesh').vertices;
-	var earthIndices = manager.map.get('earth mesh').triVertices
-	var earthTexCoords = manager.map.get('earth mesh').textures;
-	var earthNormals = manager.map.get('earth mesh').normals;
+	var earthVertices = manager.map.get('earth_thickness mesh').vertices;
+	var earthIndices = manager.map.get('earth_thickness mesh').triVertices
+	// var earthTexCoords = manager.map.get('earth mesh').textures;
+	// var earthNormals = manager.map.get('earth mesh').normals;
 
 	var earthPosVertexBufferObject = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, earthPosVertexBufferObject);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(earthVertices), gl.STATIC_DRAW);
 
-	var earthTexCoordVertexBufferObject = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, earthTexCoordVertexBufferObject);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(earthTexCoords), gl.STATIC_DRAW);
+	//var earthTexCoordVertexBufferObject = gl.createBuffer();
+	//gl.bindBuffer(gl.ARRAY_BUFFER, earthTexCoordVertexBufferObject);
+	//gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(earthTexCoords), gl.STATIC_DRAW);
 
 	var earthIndexBufferObject = gl.createBuffer();
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, earthIndexBufferObject);
 	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(earthIndices), gl.STATIC_DRAW);
 
-	var earthNormalBufferObject = gl.createBuffer();
+	/*var earthNormalBufferObject = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, earthNormalBufferObject);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(earthNormals), gl.STATIC_DRAW);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(earthNormals), gl.STATIC_DRAW);*/
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, earthPosVertexBufferObject);
 	var positionAttribLocation = gl.getAttribLocation(program, 'vertPosition');
@@ -108,7 +100,7 @@ async function main(){
 	);
 	gl.enableVertexAttribArray(positionAttribLocation);
 
-	gl.bindBuffer(gl.ARRAY_BUFFER, earthTexCoordVertexBufferObject);
+	/*gl.bindBuffer(gl.ARRAY_BUFFER, earthTexCoordVertexBufferObject);
 	var texCoordAttribLocation = gl.getAttribLocation(program, 'vertTexCoord');
 	gl.vertexAttribPointer(
 		texCoordAttribLocation, // Attribute location
@@ -118,9 +110,9 @@ async function main(){
 		2 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
 		0
 	);
-	gl.enableVertexAttribArray(texCoordAttribLocation);
+	gl.enableVertexAttribArray(texCoordAttribLocation);*/
 
-	gl.bindBuffer(gl.ARRAY_BUFFER, earthNormalBufferObject);
+	/*gl.bindBuffer(gl.ARRAY_BUFFER, earthNormalBufferObject);
 	var normalAttribLocation = gl.getAttribLocation(program, 'vertNormal');
 	gl.vertexAttribPointer(
 		normalAttribLocation,
@@ -129,17 +121,27 @@ async function main(){
 		3 * Float32Array.BYTES_PER_ELEMENT,
 		0
 	);
-	gl.enableVertexAttribArray(normalAttribLocation);
+	gl.enableVertexAttribArray(normalAttribLocation);*/
 
-
-
-
-
-
-
-
-
-	// Tell OpenGL state machine which program should be active.
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////// 										TEXTURES
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/*var susanTexture = gl.createTexture();
+	gl.bindTexture(gl.TEXTURE_2D, susanTexture);
+	gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+	gl.texImage2D(
+		gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,
+		gl.UNSIGNED_BYTE,
+		SusanImage
+	);
+	gl.bindTexture(gl.TEXTURE_2D, null);*/
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////// 										PROGRAM
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	gl.useProgram(program);
 
 	var matWorldUniformLocation = gl.getUniformLocation(program, 'mWorld');
@@ -150,7 +152,7 @@ async function main(){
 	var viewMatrix = new Float32Array(16);
 	var projMatrix = new Float32Array(16);
 	glMatrix.mat4.identity(worldMatrix);
-	glMatrix.mat4.lookAt(viewMatrix, [0, 0, -8], [0, 0, 0], [0, 1, 0]);
+	glMatrix.mat4.lookAt(viewMatrix, [0, 0, -1.5], [0, 0.63, 0], [0, 1, 0]);
 	glMatrix.mat4.perspective(projMatrix, glMatrix.glMatrix.toRadian(45), canvas.clientWidth / canvas.clientHeight, 0.1, 1000.0);
 
 	gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
@@ -160,9 +162,9 @@ async function main(){
 	var xRotationMatrix = new Float32Array(16);
 	var yRotationMatrix = new Float32Array(16);
 
-	//
-	// Lighting information
-	//
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////// 										LIGHTNING
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	gl.useProgram(program);
 
 	var ambientUniformLocation = gl.getUniformLocation(program, 'ambientLightIntensity');
@@ -173,17 +175,15 @@ async function main(){
 	gl.uniform3f(sunlightDirUniformLocation, 3.0, 4.0, -2.0);
 	gl.uniform3f(sunlightIntUniformLocation, 0.9, 0.9, 0.9);
 
-	//
-	// Main render loop
-	//
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////// 										LOOP
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	var identityMatrix = new Float32Array(16);
 	glMatrix.mat4.identity(identityMatrix);
 	var angle = 0;
 	var loop = function () {
 		angle = performance.now() / 1000 / 6 * 2 * Math.PI;
-		glMatrix.mat4.rotate(yRotationMatrix, identityMatrix, angle, [0, 1, 0]);
-		glMatrix.mat4.rotate(xRotationMatrix, identityMatrix, angle / 4, [1, 0, 0]);
-		glMatrix.mat4.mul(worldMatrix, yRotationMatrix, xRotationMatrix);
+		glMatrix.mat4.rotate(worldMatrix, identityMatrix, angle, [0, 1, 0]);
 		gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
 
 		gl.clearColor(0.435, 0.909, 0.827, 1.0)
@@ -200,5 +200,3 @@ async function main(){
 
 
 }
-
-// window.requestAnimationFrame(render);

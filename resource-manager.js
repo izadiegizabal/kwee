@@ -124,7 +124,7 @@ class TResourceMesh extends TResource{
 
         this.normals = jsonMesh.normals;
 
-        this.textures = jsonMesh.texcoords.UVMap;
+        // this.textures = jsonMesh.texcoords.UVMap;
 
         this.nTris = jsonMesh.indices_count;
         this.nVertices = jsonMesh.vertices_count;

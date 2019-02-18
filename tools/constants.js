@@ -1,8 +1,6 @@
-class constants{
-    
+class constants{ 
     ENVIRONMENT = "LOCAL"
     URL = '';
-
 }
 
 function check() {
@@ -20,7 +18,6 @@ function check() {
             URL = 'https://www.kwee.ovh/'
             break;
         }
-
     }
 }
 
