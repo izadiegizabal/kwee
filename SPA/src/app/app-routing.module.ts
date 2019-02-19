@@ -3,14 +3,13 @@ import {PreloadAllModules, RouterModule, Routes} from '@angular/router';
 import {CandidateHomeComponent} from './candidate-home/candidate-home.component';
 import {OfferDetailComponent} from './offer/offer-detail/offer-detail.component';
 import {PrivacyComponent} from './privacy/privacy.component';
-import {OfferCreateComponent} from './offer/offer-create/offer-create.component';
 
 const routes: Routes = [
   {path: '', redirectTo: '/candidate-home', pathMatch: 'full'},
   {path: 'candidate-home', component: CandidateHomeComponent},
   {path: 'privacy', component: PrivacyComponent},
-  {path: 'offer/:id/edit', loadChildren: './shared/offer-create/offer-create.module#OfferCreateModule'},
-  {path: 'offer/create', loadChildren: './shared/offer-create/offer-create.module#OfferCreateModule'},
+  {path: 'offer/:id/edit', loadChildren: './offer/offer-create/offer-create.module#OfferCreateModule'},
+  {path: 'offer/create', loadChildren: './offer/offer-create/offer-create.module#OfferCreateModule'},
   {path: 'offer/:id/:name', component: OfferDetailComponent},
   {path: 'admin', loadChildren: './admin/admin.module#AdminModule'},
   {path: 'paypal', loadChildren: './paypal/paypal.module#PaypalModule'},
