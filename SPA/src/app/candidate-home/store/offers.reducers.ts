@@ -22,6 +22,8 @@ export interface State {
         durationUnit: number,
         fk_offerer: number,
         contractType: number,
+        maxApplicats: number,
+        currentApplications: number,
       },
       user: {
         id: number,
@@ -31,7 +33,7 @@ export interface State {
         index: number,
       }
     }[],
-  total: number,
+    total: number,
   };
 }
 

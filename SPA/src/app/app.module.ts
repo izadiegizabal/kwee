@@ -15,15 +15,15 @@ import {EffectsModule} from '@ngrx/effects';
 import {environment} from '../environments/environment';
 import {StoreDevtoolsModule} from '@ngrx/store-devtools';
 import {localStorageSync} from 'ngrx-store-localstorage';
-import {OfferDetailModule} from './shared/offer-detail/offer-detail.module';
+import {OfferDetailModule} from './offer/offer-detail/offer-detail.module';
 import {ChatModule} from './chat/chat.module';
 import {CookieService} from 'ngx-cookie-service';
 import {NgcCookieConsentConfig, NgcCookieConsentModule} from 'ngx-cookieconsent';
 import {PrivacyComponent} from './privacy/privacy.component';
-import {OfferCreateModule} from './shared/offer-create/offer-create.module';
+import {OfferCreateModule} from './offer/offer-create/offer-create.module';
 
 export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {
-  return localStorageSync({keys: ['auth', 'admin', 'offers', 'offer', 'profiles'], rehydrate: true})(reducer);
+  return localStorageSync({keys: ['auth', 'admin', 'offers', 'offer', 'profiles', 'OfferManage'], rehydrate: true})(reducer);
 }
 
 const metaReducers: Array<MetaReducer<any, any>> = [localStorageSyncReducer];

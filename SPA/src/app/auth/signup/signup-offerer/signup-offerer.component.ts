@@ -8,7 +8,6 @@ import {Action, select, Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
 import {AuthEffects} from '../../store/auth.effects';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
-import {Observable} from 'rxjs';
 import {DialogImageCropComponent} from '../dialog-image-crop/dialog-image-crop.component';
 import {environment} from '../../../../environments/environment';
 import {Router} from '@angular/router';
@@ -72,6 +71,14 @@ export class SignupOffererComponent implements OnInit {
 
   private dialogShown = false;
 
+  constructor(private _formBuilder: FormBuilder,
+              public dialog: MatDialog,
+              private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects,
+              private httpClient: HttpClient,
+              private router: Router) {
+    this.address = {ad1: null, ad2: null};
+  }
+
   static maxMinDate(control: FormControl): { [s: string]: { [s: string]: boolean } } {
     const today = new Date();
     const mdate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDay());
@@ -80,15 +87,6 @@ export class SignupOffererComponent implements OnInit {
       return null;
     }
     return {'tooOld': {value: true}};
-  }
-
-
-  constructor(private _formBuilder: FormBuilder,
-              public dialog: MatDialog,
-              private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects,
-              private httpClient: HttpClient,
-              private router: Router) {
-    this.address = {ad1: null, ad2: null};
   }
 
   ngOnInit() {
@@ -236,10 +234,10 @@ export class SignupOffererComponent implements OnInit {
   onUpdate() {
 
     const update = {
-      'about' : this.thirdFormGroup.controls['about'].value,
-      'website' : this.thirdFormGroup.controls['website'].value,
-      'companySize' : this.thirdFormGroup.controls['companySize'].value,
-      'year' : this.thirdFormGroup.controls['year'].value
+      'about': this.thirdFormGroup.controls['about'].value,
+      'website': this.thirdFormGroup.controls['website'].value,
+      'companySize': this.thirdFormGroup.controls['companySize'].value,
+      'year': this.thirdFormGroup.controls['year'].value
     };
 
     const options = {

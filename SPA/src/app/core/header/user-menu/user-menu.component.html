@@ -13,37 +13,37 @@
     <mat-icon svgIcon="chat"></mat-icon>
     <span>Messages</span>
   </button>
-  <button routerLink="/admin/manage-candidates" mat-menu-item *ngIf="userType==='admin'">
+  <button *ngIf="userType==='admin'" mat-menu-item routerLink="/admin/manage-candidates">
     <mat-icon svgIcon="people"></mat-icon>
     <span>Manage Users</span>
   </button>
-  <button routerLink="/admin/statistics" mat-menu-item *ngIf="userType==='admin'">
+  <button *ngIf="userType==='admin'" mat-menu-item routerLink="/admin/statistics">
     <mat-icon svgIcon="timeline"></mat-icon>
     <span>Stats</span>
   </button>
   <button
-    routerLink="/my-offers"
-    mat-menu-item *ngIf="userType==='business' || userType==='candidate'">
+    *ngIf="userType==='business' || userType==='candidate'"
+    mat-menu-item routerLink="/my-offers">
     <mat-icon svgIcon="work"></mat-icon>
     <span>My Offers</span>
   </button>
-  <button mat-menu-item *ngIf="userType==='business'">
+  <button *ngIf="userType==='business'" mat-menu-item>
     <mat-icon svgIcon="people"></mat-icon>
     <span>Search Candidates</span>
   </button>
-  <button mat-menu-item *ngIf="userType==='candidate'">
+  <button *ngIf="userType==='candidate'" mat-menu-item>
     <mat-icon svgIcon="domain"></mat-icon>
     <span>Search Businesses</span>
   </button>
   <button
-    routerLink="/invoices"
-    mat-menu-item *ngIf="userType==='business' || userType==='candidate'">
+    *ngIf="userType==='business' || userType==='candidate'"
+    mat-menu-item routerLink="/invoices">
     <mat-icon svgIcon="insert-drive-file"></mat-icon>
     <span>Invoices</span>
   </button>
   <button
-    routerLink="/kwee-live"
-    mat-menu-item *ngIf="userType==='business' || userType==='candidate'">
+    *ngIf="userType==='business' || userType==='candidate'"
+    mat-menu-item routerLink="/kwee-live">
     <mat-icon svgIcon="public"></mat-icon>
     <span>Kwee Live</span>
   </button>

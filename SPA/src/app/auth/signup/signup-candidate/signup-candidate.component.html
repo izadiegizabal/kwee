@@ -14,25 +14,25 @@
           </button>
         </div>
         <div class="signupButton">
-          <button color="primary" mat-raised-button (click)="gitHubSignUp(stepper)" type="button">
+          <button (click)="gitHubSignUp(stepper)" color="primary" mat-raised-button type="button">
             <mat-icon fontIcon="fa-github" fontSet="fab"></mat-icon>
             <span>Continue with GitHub</span>
           </button>
         </div>
         <div class="signupButton">
-          <button color="primary" id="linkedinBtn" mat-raised-button (click)="linkedInSignUp(stepper)" type="button">
+          <button (click)="linkedInSignUp(stepper)" color="primary" id="linkedinBtn" mat-raised-button type="button">
             <mat-icon fontIcon="fa-linkedin-in" fontSet="fab"></mat-icon>
             <span>Continue with LinkedIn</span>
           </button>
         </div>
         <div class="signupButton">
-          <button color="primary" id="googleBtn" mat-raised-button (click)="googleSignUp(stepper)" type="button">
+          <button (click)="googleSignUp(stepper)" color="primary" id="googleBtn" mat-raised-button type="button">
             <mat-icon fontIcon="fa-google" fontSet="fab"></mat-icon>
             <span>Continue with Google</span>
           </button>
         </div>
         <div class="signupButton">
-          <button color="primary" id="twitterBtn" mat-raised-button (click)="twitterSignUp(stepper)" type="button">
+          <button (click)="twitterSignUp(stepper)" color="primary" id="twitterBtn" mat-raised-button type="button">
             <mat-icon fontIcon="fa-twitter" fontSet="fab"></mat-icon>
             <span>Continue with Twitter</span>
           </button>
@@ -127,7 +127,8 @@
         <br>
         <div fxLayout="row" fxLayout.xs="column">
           <mat-form-field>
-            <input id="city" formControlName="location" matInput placeholder="Location" required [matAutocomplete]="auto" (keyup)="onKey($event)">
+            <input (keyup)="onKey($event)" [matAutocomplete]="auto" formControlName="location" id="city" matInput
+                   placeholder="Location" required>
             <mat-hint>City and Country</mat-hint>
             <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
               <mat-option *ngFor="let option of options; index as i" [value]="option">
@@ -184,20 +185,25 @@
           <h4>Profile picture</h4>
           <p>Click on the image or the button to add a image to your profile</p>
           <label for="file_profile"><img
-            id="photo_profile"
-            fxlayout="column"
+            alt="default profile picture"
             fxFlex="200px"
-            width="200px" height="200px"
+            fxlayout="column"
+            height="200px" id="photo_profile"
             src="../../../../assets/defaut_profile.png"
-            alt="default profile picture"/></label>
-          <label for="file_profile"><button class="photo-buttons" mat-raised-button color="primary" type="button"
-          (click)="profile.click()">Upload photo</button></label>
-          <input #profile id="file_profile" style="width: 0px; height: 0px;"
-          type="file" accept="image/*" (change)="previewFile($event)" formControlName="profile">
-          <button class="photo-buttons" [disabled]="! profile.value" mat-raised-button color="primary" type="button"
-                  (click)='previewFile(this.fileEvent)'>Crop again</button>
-          <button class="photo-buttons" mat-raised-button color="warn" type="button"
-                  (click)="deletePhoto()">Delete Photo</button>
+            width="200px"/></label>
+          <label for="file_profile">
+            <button (click)="profile.click()" class="photo-buttons" color="primary" mat-raised-button
+                    type="button">Upload photo
+            </button>
+          </label>
+          <input #profile (change)="previewFile($event)" accept="image/*"
+                 formControlName="profile" id="file_profile" style="width: 0px; height: 0px;" type="file">
+          <button (click)='previewFile(this.fileEvent)' [disabled]="! profile.value" class="photo-buttons" color="primary" mat-raised-button
+                  type="button">Crop again
+          </button>
+          <button (click)="deletePhoto()" class="photo-buttons" color="warn" mat-raised-button
+                  type="button">Delete Photo
+          </button>
         </div>
         <br>
         <div fxLayout="column">
@@ -212,20 +218,20 @@
         <p>You can link your social media accouts to your profile. Just type your username</p>
         <div class="line1" fxLayout="column">
           <mat-form-field>
-            <input  matInput placeholder="Twitter username" formControlName="twitter">
-            <mat-icon class="social-icons" color="primary" fontSet="fab" matPrefix fontIcon="fa-twitter"></mat-icon>
+            <input formControlName="twitter" matInput placeholder="Twitter username">
+            <mat-icon class="social-icons" color="primary" fontIcon="fa-twitter" fontSet="fab" matPrefix></mat-icon>
           </mat-form-field>
         </div>
         <div class="line1" fxLayout="column">
           <mat-form-field>
-            <input  matInput placeholder="Github username" formControlName="github">
-            <mat-icon class="social-icons" color="primary" fontSet="fab" matPrefix fontIcon="fa-github"></mat-icon>
+            <input formControlName="github" matInput placeholder="Github username">
+            <mat-icon class="social-icons" color="primary" fontIcon="fa-github" fontSet="fab" matPrefix></mat-icon>
           </mat-form-field>
         </div>
         <div class="line1" fxLayout="column">
           <mat-form-field>
-            <input  matInput placeholder="LinkedIn username" formControlName="linkedIn">
-            <mat-icon class="social-icons" color="primary" fontSet="fab" matPrefix fontIcon="fa-linkedin-in"></mat-icon>
+            <input formControlName="linkedIn" matInput placeholder="LinkedIn username">
+            <mat-icon class="social-icons" color="primary" fontIcon="fa-linkedin-in" fontSet="fab" matPrefix></mat-icon>
           </mat-form-field>
         </div>
         <br>

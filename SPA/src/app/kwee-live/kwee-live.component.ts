@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 
 @Component({
   selector: 'app-kwee-live',
@@ -12,5 +12,6 @@ export class KweeLiveComponent implements OnInit {
 
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+  }
 }

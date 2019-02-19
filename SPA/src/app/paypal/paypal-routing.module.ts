@@ -17,6 +17,6 @@ const PaypalRoutes: Routes = [
     RouterModule
   ]
 })
-export class PaypalRoutingModule{
+export class PaypalRoutingModule {
 
 }
