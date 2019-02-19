@@ -284,7 +284,8 @@ export class SignupCandidateComponent implements OnInit {
             console.log(error.payload);
             this.dialog.open(DialogErrorComponent, {
               data: {
-                error: error.payload,
+                header: 'The Sing Up has failed. Please go back and try again.',
+                error: 'Error: ' + error.payload,
               }
             });
             this.dialogShown = true;
@@ -428,7 +429,6 @@ export class SignupCandidateComponent implements OnInit {
               if (data.hits[i].is_city) {
                 if (!this.options.some(element => element.name === auxCity.name)) {
                   this.options.push(auxCity);
-                  console.log(auxCity);
                 }
               }
             });
@@ -507,15 +507,16 @@ export class SignupCandidateComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
           if (result) {
-            preview.src = result.base64;
-            this.file = result.base64;
+            preview.src = result;
+            this.file = result;
           }
         });
       } else {
         this.deletePhoto();
         this.dialog.open(DialogErrorComponent, {
           data: {
-            error: 'Your image is too big. We only allow files under 3Mb.',
+            header: 'The Upload process has failed. Please try again later or use another image.',
+            error: 'Error: Your image is too big. We only allow files under 3Mb.',
           }
         });
         this.dialogShown = true;

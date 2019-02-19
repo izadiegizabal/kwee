@@ -6,8 +6,9 @@
     [imageChangedEvent]="imageChangedEvent"
     [maintainAspectRatio]="true"
     [aspectRatio]="1"
-
-    format="png"
+    [outputType]="base64"
+    [imageQuality]="50"
+    format="jpeg"
     (imageCropped)="imageCropped($event)"
     (imageLoaded)="imageLoaded()"
     (loadImageFailed)="loadImageFailed()"
@@ -18,7 +19,7 @@
   ></image-cropper>
   <div id="float">
   <h3>Result:</h3>
-  <img [src]="croppedImage.base64" />
+  <img [src]="croppedImage" />
   </div></div>
 
 

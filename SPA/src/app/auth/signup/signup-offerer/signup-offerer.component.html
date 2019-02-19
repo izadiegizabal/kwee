@@ -77,7 +77,7 @@
                                             (click)="profile.click()">Upload photo</button></label>
           <input #profile id="file_profile" style="width: 0px; height: 0px;"
                  type="file" accept="image/*" (change)="previewFile($event)" formControlName="profile">
-          <button class="photo-buttons" [disabled]="! profile.value" mat-raised-button color="primary" type="button"
+          <button class="photo-buttons" [disabled]="!profile.value" mat-raised-button color="primary" type="button"
                   (click)='previewFile(this.fileEvent)'>Crop again</button>
           <button class="photo-buttons" mat-raised-button color="warn" type="button"
                   (click)="deletePhoto()">Delete Photo</button>

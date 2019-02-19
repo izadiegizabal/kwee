@@ -48,7 +48,7 @@ export class PaypalComponent implements OnInit {
           console.log('onClick');
         },
         validate: (actions) => {
-          console.log(actions);
+          // console.log(actions);
         },
         experience: {
           noShipping: true,
@@ -58,7 +58,7 @@ export class PaypalComponent implements OnInit {
           {
             amount: {
               total: 30.11,
-              currency: 'USD',
+              currency: 'EUR',
               details: {
                 subtotal: 30.00,
                 tax: 0.07,
@@ -78,7 +78,7 @@ export class PaypalComponent implements OnInit {
                   price: 3,
                   tax: 0.01,
                   sku: '1',
-                  currency: 'USD'
+                  currency: 'EUR'
                 },
                 {
                   name: 'handbag',
@@ -87,7 +87,7 @@ export class PaypalComponent implements OnInit {
                   price: 15,
                   tax: 0.02,
                   sku: 'product34',
-                  currency: 'USD'
+                  currency: 'EUR'
                 }],
               shipping_address: {
                 recipient_name: 'Brian Robinson',

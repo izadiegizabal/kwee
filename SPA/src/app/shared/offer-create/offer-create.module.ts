@@ -3,6 +3,7 @@ import {SharedModule} from '../shared.module';
 import {RouterModule} from '@angular/router';
 import {ReactiveFormsModule} from '@angular/forms';
 import {OfferCreateComponent} from './offer-create.component';
+import {OfferRoutingModule} from './offer-routing.module';
 
 @NgModule({
   declarations: [
@@ -11,7 +12,8 @@ import {OfferCreateComponent} from './offer-create.component';
   imports: [
     SharedModule,
     RouterModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    OfferRoutingModule
   ],
   exports: [
     OfferCreateComponent

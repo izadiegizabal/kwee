@@ -29,8 +29,7 @@ export class DialogImageCropComponent {
     this.imageChangedEvent = event;
   }
   imageCropped(event: ImageCroppedEvent) {
-    this.croppedImage = event;
-    console.log(event);
+    this.croppedImage = event.base64;
   }
   imageLoaded() {
     // show cropper

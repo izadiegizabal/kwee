@@ -121,7 +121,8 @@
       <h4>Location</h4>
       <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
         <mat-form-field>
-          <input id="city" formControlName="location" matInput placeholder="Location" required [matAutocomplete]="auto" (keyup)="onKey($event)">
+          <input id="city" formControlName="location" matInput placeholder="Location"
+                 required [matAutocomplete]="auto" (keyup)="onKey($event)">
           <mat-hint>City and Country. Location of the job.</mat-hint>
           <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
             <mat-option *ngFor="let option of options; index as i" [value]="option">
@@ -241,7 +242,8 @@
     </div>
     <br>
     <div fxLayout="row" fxLayoutAlign="end">
-      <button (click)="onSave()" color="accent" mat-button type="button">Publish</button>
+      <button *ngIf="edit; else update" (click)="onSave(true)" color="accent" mat-button type="button">Publish</button>
+      <ng-template #update><button (click)="onSave(false)" color="accent" mat-button type="button">Update</button></ng-template>
     </div>
     </div>
   </div>
