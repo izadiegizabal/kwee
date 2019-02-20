@@ -4,6 +4,7 @@ import {RouterModule} from '@angular/router';
 import {ReactiveFormsModule} from '@angular/forms';
 import {OfferCreateComponent} from './offer-create.component';
 import {OfferRoutingModule} from './offer-routing.module';
+import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 
 @NgModule({
   declarations: [
@@ -12,8 +13,9 @@ import {OfferRoutingModule} from './offer-routing.module';
   imports: [
     SharedModule,
     RouterModule,
+    CKEditorModule,
     ReactiveFormsModule,
-    OfferRoutingModule
+    OfferRoutingModule,
   ],
   exports: [
     OfferCreateComponent

@@ -20,6 +20,9 @@ import {ActivatedRoute, Router} from '@angular/router';
 export class OfferDetailComponent implements OnInit {
   offerSkills: [' '];
   offerState: Observable<fromOffer.State>;
+  authState: any;
+  id: Number;
+  offerId: Number;
 
   constructor(private _utils: UtilsService,
               private store$: Store<fromApp.AppState>,
@@ -29,9 +32,18 @@ export class OfferDetailComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.authState = this.store$.pipe(select('auth'));
+    this.authState.pipe(
+      select((s: { user: { id: Number } }) => s.user.id)
+    ).subscribe(
+      (id) => {
+        this.id = id;
+      });
+
     const params = this.activatedRoute.snapshot.params;
 
     if (Number(params.id)) {
+      this.offerId = Number(params.id);
       this.store$.dispatch(new OfferActions.TryGetOffer({id: params.id}));
       this.offerState = this.store$.pipe(select(state => state.offer));
 
@@ -112,6 +124,10 @@ export class OfferDetailComponent implements OnInit {
   urlOfferer(id, name) {
     const url = '/business/' + id + '/' + name.toLowerCase().replace(/ /g, '-');
     return url;
+  }
+
+  goEdit() {
+    this.router.navigate(['/offer' , this.offerId , 'edit']);
   }
 
 

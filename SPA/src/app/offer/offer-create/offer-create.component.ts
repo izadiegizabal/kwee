@@ -11,6 +11,16 @@ import * as fromOffer from '../offer-detail/store/offer.reducers';
 import {OfferEffects} from '../offer-detail/store/offer.effects';
 import * as OfferActions from '../offer-detail/store/offer.actions';
 import {filter, first} from 'rxjs/operators';
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { ChangeEvent } from '@ckeditor/ckeditor5-angular/ckeditor.component';
+import {
+  ContractType,
+  SalaryFrequency,
+  SeniorityLevel,
+  JobDurationUnit,
+  isStringNotANumber,
+  WorkLocationType
+} from '../../../models/Offer.model';
 
 
 interface City {
@@ -28,6 +38,17 @@ interface City {
 })
 export class OfferCreateComponent implements OnInit {
 
+
+  public Editor = ClassicEditor;
+  public Config = {
+    toolbar: ['heading', '|', 'bold', 'italic', 'link',
+      'bulletedList', 'numberedList', 'blockQuote',
+      'insertTable', 'undo', 'redo']
+  };
+  public DataDesc = '<p>Your text...</p>';
+  public DataReq = '<p>Your text...</p>';
+  public DataRes = '<p>Your text...</p>';
+
   authState: any;
   token;
   edit: boolean;
@@ -39,43 +60,23 @@ export class OfferCreateComponent implements OnInit {
   options: City[] = [];
   durationReq: boolean;
 
-  offerSkills: [' '];
   offerState: Observable<fromOffer.State>;
 
-  salaryFrecuency: { value: number, viewValue: string }[] = [
-    {value: 0, viewValue: 'Hour'},
-    {value: 1, viewValue: 'Month'},
-    {value: 2, viewValue: 'Year'},
-    {value: 3, viewValue: 'Whole Project'}
-  ];
-
-  workLocation: { value: number, viewValue: string }[] = [
-    {value: 0, viewValue: 'OnSite'},
-    {value: 1, viewValue: 'Remote'},
-    {value: 2, viewValue: 'Partially Remote'},
-  ];
-
-  seniority: { value: number, viewValue: string }[] = [
-    {value: 0, viewValue: 'Entry-Junior'},
-    {value: 1, viewValue: 'Intermediate'},
-    {value: 2, viewValue: 'Senior'},
-    {value: 3, viewValue: 'Lead'}
-  ];
-
-  durationUnit: { value: number, viewValue: string }[] = [
-    {value: 0, viewValue: 'Days'},
-    {value: 1, viewValue: 'Months'},
-    {value: 2, viewValue: 'Years'}
-  ];
-
-  contractType: { value: number, viewValue: string }[] = [
-    {value: 0, viewValue: 'Full-Time'},
-    {value: 1, viewValue: 'Part-Time'},
-    {value: 2, viewValue: 'Internship'},
-    {value: 3, viewValue: 'End of Degree Project'}
-  ];
-
-  salaryCurrencies: { value: string }[];
+  durationUnit = Object.keys(JobDurationUnit)
+    .filter(isStringNotANumber)
+    .map(key => ({value: JobDurationUnit[key], viewValue: key}));
+  workLocation = Object.keys(WorkLocationType)
+    .filter(isStringNotANumber)
+    .map(key => ({value: WorkLocationType[key], viewValue: key}));
+  contractType = Object.keys(ContractType)
+    .filter(isStringNotANumber)
+    .map(key => ({value: ContractType[key], viewValue: key}));
+  salaryFrecuency = Object.keys(SalaryFrequency)
+    .filter(isStringNotANumber)
+    .map(key => ({value: SalaryFrequency[key], viewValue: key}));
+  seniority = Object.keys(SeniorityLevel)
+    .filter(isStringNotANumber)
+    .map(key => ({value: SeniorityLevel[key], viewValue: key}));
 
   auxCurrencies: any[];
 
@@ -123,8 +124,7 @@ export class OfferCreateComponent implements OnInit {
   ngOnInit() {
     this.authState = this.store$.pipe(select('auth'));
     this.authState.pipe(
-      // @ts-ignore
-      select(s => s.token)
+      select((s: {token: string}) => s.token)
     ).subscribe(
       (token) => {
         this.token = token;
@@ -133,6 +133,7 @@ export class OfferCreateComponent implements OnInit {
     const params = this.activatedRoute.snapshot.params;
 
     if (Number(params.id)) {
+      this.edit = true;
       this.editOffer = Number(params.id);
       this.store$.dispatch(new OfferActions.TryGetOffer({id: params.id}));
       this.offerState = this.store$.pipe(select(state => state.offer));
@@ -157,6 +158,27 @@ export class OfferCreateComponent implements OnInit {
 
   }
 
+  public onChangeDescription( { editor }: ChangeEvent ) {
+    this.form.controls['description'].setValue(editor.getData());
+    if (this.form.controls['description'].value === '<p>&nbsp;</p>') {
+      this.form.controls['description'].setValue(null);
+    }
+  }
+
+  public onChangeRequirements( { editor }: ChangeEvent ) {
+    this.form.controls['requirements'].setValue(editor.getData());
+    if (this.form.controls['requirements'].value === '<p>&nbsp;</p>') {
+      this.form.controls['requirements'].setValue(null);
+    }
+  }
+
+  public onChangeResponsabilities( { editor }: ChangeEvent ) {
+    this.form.controls['responsabilities'].setValue(editor.getData());
+    if (this.form.controls['responsabilities'].value === '<p>&nbsp;</p>') {
+      this.form.controls['responsabilities'].setValue(null);
+    }
+  }
+
   initForm() {
     // (offerState | async).offer.offer.isIndefinite
     const loc = {
@@ -166,6 +188,13 @@ export class OfferCreateComponent implements OnInit {
         lng: this.offer ? this.offer.lng : null
       }
     };
+
+    if (this.offer) {
+      this.DataDesc = this.offer.description;
+      this.DataReq = this.offer.requeriments;
+      this.DataRes = this.offer.responsabilities;
+    }
+
     this.form = this._formBuilder.group({
       'title': new FormControl(this.offer ? this.offer.title : null, Validators.required),
       'description': new FormControl(this.offer ? this.offer.description : null, Validators.required),

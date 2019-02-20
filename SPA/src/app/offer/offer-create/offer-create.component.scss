@@ -4,6 +4,14 @@
   font-family: IBM Plex Sans, sans-serif;
 }
 
+:host ::ng-deep .ck-editor{
+  max-width: 600px;
+}
+
+.noUnderline ::ng-deep .mat-form-field-underline {
+  display: none;
+}
+
 .signupButton button {
   width: 250px;
 
