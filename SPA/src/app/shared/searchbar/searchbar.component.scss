@@ -4,8 +4,8 @@ mat-card {
   mat-form-field {
     margin-top: -24px;
   }
+}
 
-  button {
-    margin-top: -12px;
-  }
+::ng-deep app-searchbar mat-icon svg {
+  margin-bottom: -4px;
 }

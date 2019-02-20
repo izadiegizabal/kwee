@@ -98,9 +98,14 @@
                fxLayoutAlign="center center"
                fxLayoutGap="8px"
                fxShow.gt-xs>
-            <button color="accent"
-                    mat-raised-button
-                    style="color: white" (click)="postApplication()">{{'Apply Now!' | uppercase }}</button>
+            <a *ngIf="(offerState | async).offer.offer.fk_offerer === this.id; else apply"
+              (click)="goEdit()"><button
+              type="button"
+              color="accent"
+              mat-raised-button style="color: white">{{'Edit Offer' | uppercase }}</button></a>
+            <ng-template #apply><button (click)="postApplication()"
+                    color="accent"
+                    mat-raised-button style="color: white">{{'Apply Now!' | uppercase }}</button></ng-template>
             <app-sns-share [offer]="getShareableOffer((offerState | async).offer.offer.title)"></app-sns-share>
           </div>
         </div>
@@ -129,7 +134,7 @@
         <div
           fxLayout="row"
           style="white-space: pre-wrap; margin-bottom: 16px">
-            {{(offerState | async).offer.offer.requeriments}}
+          {{(offerState | async).offer.offer.requeriments}}
         </div>
       </div>
 

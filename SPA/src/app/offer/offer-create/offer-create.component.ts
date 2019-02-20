@@ -2,12 +2,25 @@ import {Component, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {DialogErrorComponent} from '../../auth/signup/dialog-error/dialog-error.component';
 import {MatDialog} from '@angular/material';
 import {environment} from '../../../environments/environment';
-import {select, Store} from '@ngrx/store';
+import {Action, select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
+import * as fromOffer from '../offer-detail/store/offer.reducers';
+import {OfferEffects} from '../offer-detail/store/offer.effects';
+import * as OfferActions from '../offer-detail/store/offer.actions';
+import {filter, first} from 'rxjs/operators';
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { ChangeEvent } from '@ckeditor/ckeditor5-angular/ckeditor.component';
+import {
+  ContractType,
+  SalaryFrequency,
+  SeniorityLevel,
+  JobDurationUnit,
+  isStringNotANumber,
+  WorkLocationType
+} from '../../../models/Offer.model';
 
 
 interface City {
@@ -25,68 +38,57 @@ interface City {
 })
 export class OfferCreateComponent implements OnInit {
 
+
+  public Editor = ClassicEditor;
+  public Config = {
+    toolbar: ['heading', '|', 'bold', 'italic', 'link',
+      'bulletedList', 'numberedList', 'blockQuote',
+      'insertTable', 'undo', 'redo']
+  };
+  public DataDesc = '<p>Your text...</p>';
+  public DataReq = '<p>Your text...</p>';
+  public DataRes = '<p>Your text...</p>';
+
   authState: any;
   token;
+  edit: boolean;
+  editOffer: Number = -1;
+  offer: any;
 
   form: FormGroup;
   iskill = 0;
   options: City[] = [];
   durationReq: boolean;
 
-  salaryFrecuency: { value: number, viewValue: string }[] = [
-    {value: 0, viewValue: 'Hour'},
-    {value: 1, viewValue: 'Month'},
-    {value: 2, viewValue: 'Year'},
-    {value: 3, viewValue: 'Whole Project'}
-  ];
+  offerState: Observable<fromOffer.State>;
 
-  workLocation: { value: number, viewValue: string }[] = [
-    {value: 0, viewValue: 'OnSite'},
-    {value: 1, viewValue: 'Remote'},
-    {value: 2, viewValue: 'Partially Remote'},
-  ];
-
-  seniority: { value: number, viewValue: string }[] = [
-    {value: 0, viewValue: 'Entry-Junior'},
-    {value: 1, viewValue: 'Intermediate'},
-    {value: 2, viewValue: 'Senior'},
-    {value: 3, viewValue: 'Lead'}
-  ];
-
-  durationUnit: { value: number, viewValue: string }[] = [
-    {value: 0, viewValue: 'Days'},
-    {value: 1, viewValue: 'Months'},
-    {value: 2, viewValue: 'Years'}
-  ];
-
-  contractType: { value: number, viewValue: string }[] = [
-    {value: 0, viewValue: 'Full-Time'},
-    {value: 1, viewValue: 'Part-Time'},
-    {value: 2, viewValue: 'Internship'},
-    {value: 3, viewValue: 'End of Degree Project'}
-  ];
-
-  salaryCurrencies: { value: string }[];
+  durationUnit = Object.keys(JobDurationUnit)
+    .filter(isStringNotANumber)
+    .map(key => ({value: JobDurationUnit[key], viewValue: key}));
+  workLocation = Object.keys(WorkLocationType)
+    .filter(isStringNotANumber)
+    .map(key => ({value: WorkLocationType[key], viewValue: key}));
+  contractType = Object.keys(ContractType)
+    .filter(isStringNotANumber)
+    .map(key => ({value: ContractType[key], viewValue: key}));
+  salaryFrecuency = Object.keys(SalaryFrequency)
+    .filter(isStringNotANumber)
+    .map(key => ({value: SalaryFrequency[key], viewValue: key}));
+  seniority = Object.keys(SeniorityLevel)
+    .filter(isStringNotANumber)
+    .map(key => ({value: SeniorityLevel[key], viewValue: key}));
 
   auxCurrencies: any[];
 
   private dialogShown = false;
 
-  static maxMinDate(control: FormControl): { [s: string]: { [s: string]: boolean } } {
-    const today = new Date();
-    const mdate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDay());
-
-    if (control.value > mdate && control.value >= today) {
-      return null;
-    }
-    return {'tooOld': {value: true}};
-  }
-
   constructor(private _formBuilder: FormBuilder,
               private http: HttpClient,
               public dialog: MatDialog,
               private store$: Store<fromApp.AppState>,
-              private router: Router) {
+              private router: Router,
+              private offerEffects$: OfferEffects,
+              private activatedRoute: ActivatedRoute) {
 
     this.iskill = 0;
     this.durationReq = true;
@@ -101,48 +103,125 @@ export class OfferCreateComponent implements OnInit {
     });
   }
 
-  getJSON(): Observable<any> {
-    return this.http.get('./assets/CurrenciesISO.json');
-  }
-
   get formSkills() {
     return <FormArray>this.form.get('skills');
+  }
+
+  static maxMinDate(control: FormControl): { [s: string]: { [s: string]: boolean } } {
+    const today = new Date();
+    const mdate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDay());
+
+    if (control.value > mdate && control.value >= today) {
+      return null;
+    }
+    return {'tooOld': {value: true}};
+  }
+
+  getJSON(): Observable<any> {
+    return this.http.get('./assets/CurrenciesISO.json');
   }
 
   ngOnInit() {
     this.authState = this.store$.pipe(select('auth'));
     this.authState.pipe(
-      // @ts-ignore
-      select(s => s.token)
+      select((s: {token: string}) => s.token)
     ).subscribe(
       (token) => {
         this.token = token;
       });
 
+    const params = this.activatedRoute.snapshot.params;
+
+    if (Number(params.id)) {
+      this.edit = true;
+      this.editOffer = Number(params.id);
+      this.store$.dispatch(new OfferActions.TryGetOffer({id: params.id}));
+      this.offerState = this.store$.pipe(select(state => state.offer));
+      this.offerState.pipe(
+        first()
+      ).subscribe(
+        (data: { offer: { offer: any } }) => {
+          console.log(data.offer.offer);
+          this.offer = data.offer.offer;
+          this.initForm();
+        });
+      this.offerEffects$.offerGetoffer.pipe(
+        filter((action: Action) => action.type === OfferActions.OPERATION_ERROR)
+      ).subscribe((error: { payload: any, type: string }) => {
+        this.router.navigate(['/']);
+      });
+    } else {
+      this.edit = false;
+      this.initForm();
+      // this.router.navigate(['/']);
+    }
+
+  }
+
+  public onChangeDescription( { editor }: ChangeEvent ) {
+    this.form.controls['description'].setValue(editor.getData());
+    if (this.form.controls['description'].value === '<p>&nbsp;</p>') {
+      this.form.controls['description'].setValue(null);
+    }
+  }
+
+  public onChangeRequirements( { editor }: ChangeEvent ) {
+    this.form.controls['requirements'].setValue(editor.getData());
+    if (this.form.controls['requirements'].value === '<p>&nbsp;</p>') {
+      this.form.controls['requirements'].setValue(null);
+    }
+  }
+
+  public onChangeResponsabilities( { editor }: ChangeEvent ) {
+    this.form.controls['responsabilities'].setValue(editor.getData());
+    if (this.form.controls['responsabilities'].value === '<p>&nbsp;</p>') {
+      this.form.controls['responsabilities'].setValue(null);
+    }
+  }
+
+  initForm() {
+    // (offerState | async).offer.offer.isIndefinite
+    const loc = {
+      name: this.offer ? this.offer.location : null,
+      geo: {
+        lat: this.offer ? this.offer.lat : null,
+        lng: this.offer ? this.offer.lng : null
+      }
+    };
+
+    if (this.offer) {
+      this.DataDesc = this.offer.description;
+      this.DataReq = this.offer.requeriments;
+      this.DataRes = this.offer.responsabilities;
+    }
 
     this.form = this._formBuilder.group({
-      'title': new FormControl(null, Validators.required),
-      'description': new FormControl(null, Validators.required),
+      'title': new FormControl(this.offer ? this.offer.title : null, Validators.required),
+      'description': new FormControl(this.offer ? this.offer.description : null, Validators.required),
       // ---------------------------------------------------------------------
       'datePublished': new FormControl(null),
       // ---------------------------------------------------------------------
-      'dateStart': new FormControl(null, Validators.required),
-      'dateEnd': new FormControl(null, Validators.required),
-      'location': new FormControl(null, Validators.required),
-      'salary': new FormControl(null, Validators.required),
-      'salaryFrecuency': new FormControl(null, Validators.required),
-      'salaryCurrency': new FormControl(null, Validators.required),
-      'seniority': new FormControl(null, Validators.required),
-      'maxApplicants': new FormControl(null, Validators.required),
-      'duration': new FormControl(null),
-      'durationUnit': new FormControl(null),
-      'contractType': new FormControl(null, Validators.required),
-      'isIndefinite': new FormControl(null),
-      'workLocation': new FormControl(null, Validators.required),
-      'skills': new FormArray([new FormControl(null)]),
-      'requirements': new FormControl(null),
-      'responsabilities': new FormControl(null)
+      'dateStart': new FormControl(this.offer ? this.offer.dateStart : null, Validators.required),
+      'dateEnd': new FormControl(this.offer ? this.offer.dateEnd : null, Validators.required),
+      'location': new FormControl(loc, Validators.required),
+      'salary': new FormControl(this.offer ? this.offer.salaryAmount : null, Validators.required),
+      'salaryFrecuency': new FormControl(this.offer ? this.offer.salaryFrecuency : null, Validators.required),
+      'salaryCurrency': new FormControl(this.offer ? this.offer.salaryCurrency : null, Validators.required),
+      'seniority': new FormControl(this.offer ? this.offer.seniority : null, Validators.required),
+      'maxApplicants': new FormControl(this.offer ? this.offer.maxApplicants : null, Validators.required),
+      'duration': new FormControl(this.offer ? this.offer.duration : null),
+      'durationUnit': new FormControl(this.offer ? this.offer.durationUnit : null),
+      'contractType': new FormControl(this.offer ? this.offer.contractType : null, Validators.required),
+      'isIndefinite': new FormControl(this.offer ? !this.offer.isIndefinite : null),
+      'workLocation': new FormControl(this.offer ? this.offer.workLocation : null, Validators.required),
+      'skills': new FormArray(this.getSkills(this.offer ? this.offer.skills : null)),
+      'requirements': new FormControl(this.offer ? this.offer.requeriments : null),
+      'responsabilities': new FormControl(this.offer ? this.offer.responsabilities : null)
     });
+
+    if (this.offer && !this.offer.isIndefinite) {
+      this.disableDuration();
+    }
 
     this.form.controls['dateStart'].setValidators([
       Validators.required,
@@ -155,7 +234,20 @@ export class OfferCreateComponent implements OnInit {
     ]);
   }
 
-  onSave() {
+  getSkills(skills): FormControl[] {
+    if (skills === null) {
+      return [new FormControl(null)];
+    } else {
+      const arr = (skills as String).split(',');
+      const arrAux = [];
+      arr.forEach(e => {
+        arrAux.push(new FormControl(e));
+      });
+      return arrAux;
+    }
+  }
+
+  onSave(create: boolean) {
     this.dialogShown = false;
     if (this.form.status === 'VALID') {
 
@@ -174,47 +266,62 @@ export class OfferCreateComponent implements OnInit {
 
       console.log(options);
 
-      this.http.post(environment.apiUrl + 'offer',
-        {
-          'status': '0',
-          'title': this.form.controls['title'].value,
-          'description': this.form.controls['description'].value,
-          'datePublished': (new Date()).toDateString(),
-          'dateStart': this.form.controls['dateStart'].value,
-          'dateEnd': this.form.controls['dateEnd'].value,
-          'location': (this.form.controls['location'].value as City).name
-            ? (this.form.controls['location'].value as City).name
-            : this.form.controls['location'].value,
-          'salaryAmount': this.form.controls['salary'].value,
-          'salaryFrecuency': this.form.controls['salaryFrecuency'].value,
-          'salaryCurrency': this.form.controls['salaryCurrency'].value,
-          'workLocation': this.form.controls['workLocation'].value,
-          'seniority': this.form.controls['seniority'].value,
-          'maxApplicants': this.form.controls['maxApplicants'].value,
-          'duration': this.form.controls['duration'].value ? this.form.controls['duration'].value : '0',
-          'durationUnit': this.form.controls['durationUnit'].value ? this.form.controls['durationUnit'].value : '0',
-          'contractType': this.form.controls['contractType'].value,
-          'isIndefinite': this.form.controls['isIndefinite'].value ? '0' : '1',
-          'currentApplications': '0',
-          'responsabilities': this.form.controls['responsabilities'].value,
-          'requeriments': this.form.controls['requirements'].value,
-          'skills': skills
-        }
-        , options)
-        .subscribe((data: any) => {
-          console.log(data);
-          this.router.navigate(['/']);
-        }, (error: any) => {
-          console.log(error);
-          /*if (!this.dialogShown) {
-            this.dialog.open(DialogErrorComponent, {
-              data: {
-                error: 'We had some issue creating your offer. Please try again later',
-              }
-            });
-            this.dialogShown = true;
-          }*/
-        });
+      const obj = {
+        'status': '0',
+        'title': this.form.controls['title'].value,
+        'description': this.form.controls['description'].value,
+        'datePublished': (new Date()).toDateString(),
+        'dateStart': this.form.controls['dateStart'].value,
+        'dateEnd': this.form.controls['dateEnd'].value,
+        'location': (this.form.controls['location'].value as City).name
+          ? (this.form.controls['location'].value as City).name
+          : this.form.controls['location'].value,
+        'salaryAmount': this.form.controls['salary'].value,
+        'salaryFrecuency': this.form.controls['salaryFrecuency'].value,
+        'salaryCurrency': this.form.controls['salaryCurrency'].value,
+        'workLocation': this.form.controls['workLocation'].value,
+        'seniority': this.form.controls['seniority'].value,
+        'maxApplicants': this.form.controls['maxApplicants'].value,
+        'duration': this.form.controls['duration'].value ? this.form.controls['duration'].value : '0',
+        'durationUnit': this.form.controls['durationUnit'].value ? this.form.controls['durationUnit'].value : '0',
+        'contractType': this.form.controls['contractType'].value,
+        'isIndefinite': this.form.controls['isIndefinite'].value ? '0' : '1',
+        'currentApplications': '0',
+        'responsabilities': this.form.controls['responsabilities'].value,
+        'requeriments': this.form.controls['requirements'].value,
+        'skills': skills
+      };
+
+      if (create) {
+        this.http.post(environment.apiUrl + 'offer',
+          obj
+          , options)
+          .subscribe((data: any) => {
+            console.log(data);
+            this.router.navigate(['/']);
+          }, (error: any) => {
+            console.log(error);
+            /*if (!this.dialogShown) {
+              this.dialog.open(DialogErrorComponent, {
+                data: {
+                  error: 'We had some issue creating your offer. Please try again later',
+                }
+              });
+              this.dialogShown = true;
+            }*/
+          });
+      } else {
+        this.http.put(environment.apiUrl + 'offer/' + this.editOffer,
+          obj
+          , options)
+          .subscribe((data: any) => {
+            console.log(data);
+            this.router.navigate(['/']);
+          }, (error: any) => {
+            console.log(error);
+          });
+      }
+
 
       /*if (!this.dialogShown) {
         this.dialog.open(DialogErrorComponent, {
@@ -247,15 +354,19 @@ export class OfferCreateComponent implements OnInit {
     this.iskill--;
   }
 
+  disableDuration() {
+    document.getElementById(`dnum`).setAttribute('disabled', 'true');
+    document.getElementById(`dtime`).setAttribute('disabled', 'true');
+    this.form.get('duration').setValue(null);
+    this.form.get('durationUnit').setValue(null);
+    this.form.get('durationUnit').disable();
+    this.form.get('duration').disable();
+    this.durationReq = false;
+  }
+
   onChange(e) {
     if (e.checked) {
-      document.getElementById(`dnum`).setAttribute('disabled', 'true');
-      document.getElementById(`dtime`).setAttribute('disabled', 'true');
-      this.form.get('duration').setValue(null);
-      this.form.get('durationUnit').setValue(null);
-      this.form.get('durationUnit').disable();
-      this.form.get('duration').disable();
-      this.durationReq = false;
+      this.disableDuration();
     } else {
       document.getElementById(`dnum`).removeAttribute('disabled');
       document.getElementById(`dtime`).removeAttribute('disabled');

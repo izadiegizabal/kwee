@@ -7,7 +7,8 @@
       <mat-expansion-panel-header>
         <mat-panel-title fxFlex="75%"
                          fxFlex.gt-lg="30%" fxFlex.gt-md="35%" fxFlex.gt-sm="40%" fxLayoutAlign="start center">
-          <app-offerer-name-overview [index]="user.index? user.index: 88" [name]="user.name"></app-offerer-name-overview>
+          <app-offerer-name-overview [index]="user.index? user.index: 88"
+                                     [name]="user.name"></app-offerer-name-overview>
         </mat-panel-title>
         <mat-panel-description
           fxFlex="25%"
@@ -28,7 +29,8 @@
             <span>{{user.lastAccess| date:'d/M/y, HH:mm'}}</span>
           </div>
           <mat-chip-list fxHide fxShow.gt-sm>
-            <mat-chip color="primary" selected style="pointer-events: none">{{states[user.status].viewValue  | titlecase }}</mat-chip>
+            <mat-chip color="primary" selected
+                      style="pointer-events: none">{{states[user.status].viewValue  | titlecase }}</mat-chip>
           </mat-chip-list>
         </mat-panel-description>
       </mat-expansion-panel-header>

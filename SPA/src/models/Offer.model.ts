@@ -25,6 +25,7 @@ export class Offer {
   responsibilities?: string;
   requirements?: string;
   skills?: string[];
+
 }
 
 // Enums for the offer details
@@ -40,6 +41,9 @@ export enum ContractType {
   'Part-Time' = 1,
   'Internship' = 2,
   'End of Degree Project' = 3,
+  // 'Temporary' = 4,
+  // 'Contract' = 5,
+  // 'Other' = 6,
 }
 
 export enum SalaryFrequency {
@@ -56,7 +60,7 @@ export enum WorkLocationType {
 }
 
 export enum SeniorityLevel {
-  'Entry - Junior' = 0,
+  'Entry / Junior' = 0,
   Intermediate = 1,
   Senior = 2,
   Lead = 3,
@@ -66,4 +70,26 @@ export enum JobDurationUnit {
   Days = 0,
   Months = 1,
   Years = 3
+}
+
+export enum Distances {
+  'Any' = 0,
+  'Less than 1km' = 1,
+  'Less than 5km' = 5,
+  'Less than 10km' = 10,
+  'Less than 25km' = 25,
+  'Less than 50km' = 50,
+}
+
+export enum PublishTime {
+  'Anytime' = 0,
+  'Past Month' = 1,
+  'Past Week' = 2,
+  'Past 24h' = 3,
+}
+
+
+// Helper method for filtering enums
+export function isStringNotANumber(value) {
+  return isNaN(Number(value)) === true;
 }

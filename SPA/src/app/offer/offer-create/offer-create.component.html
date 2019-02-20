@@ -15,9 +15,11 @@
       </mat-form-field>
     </div>
     <br>
+      <h3>Description</h3>
     <div class="line2" fxLayout="column">
-      <mat-form-field>
-        <textarea formControlName="description" matInput placeholder="Description" required></textarea>
+      <mat-form-field class="noUnderline">
+        <ckeditor [editor]="Editor" [config]="Config" [data]="DataDesc" (change)="onChangeDescription($event)"></ckeditor>
+        <input [hidden]="true" formControlName="description" matInput required>
         <mat-error *ngIf="!form.get('description').valid ">
           This field is required
         </mat-error>
@@ -105,7 +107,6 @@
             This field is required
           </mat-error>
         </mat-form-field>
-        <p>per</p>
         <mat-form-field>
           <mat-select formControlName="salaryFrecuency"  placeholder="Frequency" required>
             <mat-option *ngFor="let value of salaryFrecuency" [value]="value.value">
@@ -121,7 +122,8 @@
       <h4>Location</h4>
       <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
         <mat-form-field>
-          <input id="city" formControlName="location" matInput placeholder="Location" required [matAutocomplete]="auto" (keyup)="onKey($event)">
+          <input id="city" formControlName="location" matInput placeholder="Location"
+                 required [matAutocomplete]="auto" (keyup)="onKey($event)">
           <mat-hint>City and Country. Location of the job.</mat-hint>
           <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
             <mat-option *ngFor="let option of options; index as i" [value]="option">
@@ -195,16 +197,20 @@
     <h4>Responsabilities:</h4>
     <p>What responsabilitites will your candidates have?</p>
     <div class="line2" fxLayout="column">
-      <mat-form-field>
-        <textarea formControlName="responsabilities" matInput placeholder="Responsabilities"></textarea>
+      <mat-form-field class="noUnderline">
+        <!--<textarea formControlName="responsabilities" matInput placeholder="Responsabilities"></textarea>-->
+        <ckeditor [editor]="Editor" [config]="Config" [data]="DataRes" (change)="onChangeResponsabilities($event)"></ckeditor>
+        <input [hidden]="true" formControlName="responsabilities" matInput required>
       </mat-form-field>
     </div>
     <br>
     <h4>Requirements:</h4>
     <p>What requirements must your candidates have?</p>
     <div class="line2" fxLayout="column">
-      <mat-form-field>
-        <textarea formControlName="requirements" matInput placeholder="Requirements"></textarea>
+      <mat-form-field class="noUnderline">
+        <!--<textarea formControlName="requirements" matInput placeholder="Requirements"></textarea>-->
+        <ckeditor [editor]="Editor" [config]="Config" [data]="DataReq" (change)="onChangeRequirements($event)"></ckeditor>
+        <input [hidden]="true" formControlName="requirements" matInput required>
       </mat-form-field>
     </div>
     <br>
@@ -241,7 +247,8 @@
     </div>
     <br>
     <div fxLayout="row" fxLayoutAlign="end">
-      <button (click)="onSave()" color="accent" mat-button type="button">Publish</button>
+      <button *ngIf="!edit; else update" (click)="onSave(true)" color="accent" mat-button type="button">Publish</button>
+      <ng-template #update><button (click)="onSave(false)" color="accent" mat-button type="button">Update</button></ng-template>
     </div>
     </div>
   </div>

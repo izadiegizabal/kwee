@@ -1,7 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
+import {MatSidenav} from '@angular/material';
 
 @Component({
   selector: 'app-searchbar',
@@ -9,10 +10,13 @@ import {map, startWith} from 'rxjs/operators';
   styleUrls: ['./searchbar.component.scss']
 })
 export class SearchbarComponent implements OnInit {
-
+  @ViewChild('drawer') drawer: MatSidenav;
   myControl = new FormControl();
   options: string[] = ['SEO Specialist', 'Android Developer', 'JavaScript Expert'];
   filteredOptions: Observable<string[]>;
+
+  constructor() {
+  }
 
   ngOnInit() {
     this.filteredOptions = this.myControl.valueChanges

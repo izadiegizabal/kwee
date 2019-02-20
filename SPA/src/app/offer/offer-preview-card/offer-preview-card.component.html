@@ -1,20 +1,25 @@
-<mat-card class="example-card">
+<mat-card>
   <mat-card-header
     fxLayout="row"
     fxLayout.lt-sm="column"
-    fxLayoutAlign="space-between"
-  >
+    fxLayoutAlign="space-between">
     <mat-card-title
       [routerLink]="offerUrl"
-      style="cursor: pointer">{{offer.offer.title}}
+      style="cursor: pointer">
+      {{offer.offer.title}}
     </mat-card-title>
     <mat-card-subtitle>
-      <app-offerer-name-overview [index]="offer.user.index" [name]="offer.user.name"  [routerLink]="urlOfferer()"></app-offerer-name-overview>
+      <app-offerer-name-overview
+        [index]="offer.user.index"
+        [name]="offer.user.name"
+        [routerLink]="urlOfferer()"
+        style="cursor: pointer">
+      </app-offerer-name-overview>
     </mat-card-subtitle>
     <div
       class="quickInfo"
-      fxLayout="row"
       fxFlexAlign="start start"
+      fxLayout="row"
       fxLayoutGap="16px">
       <app-icon-with-text [text]="getOfferLocation()" icon="place"></app-icon-with-text>
       <app-icon-with-text [text]="getPublishedDate()" icon="access-time"></app-icon-with-text>

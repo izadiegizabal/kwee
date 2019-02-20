@@ -1,11 +1,122 @@
-<div fxFlex="96%" fxFlex.gt-sm="75%" fxFlexOffset="16px" fxLayout="column" fxLayoutGap="16px">
-  <app-searchbar></app-searchbar>
-  <app-offer-preview-card *ngFor="let offer of (offersState | async).offers.data;" [offer]="offer">
-  </app-offer-preview-card>
-  <mat-paginator [length]="(offersState | async).offers.total"
-                 [pageSize]="pageSize"
-                 [pageSizeOptions]="pageSizeOptions"
-                 (page)="pageEvent = $event; changePage();">
-  </mat-paginator>
-</div>
+<mat-sidenav-container
+  fxLayout="column">
+
+  <mat-sidenav #drawer
+               [autoFocus]="false"
+               [mode]="!isMobile() ? 'side' : 'over'"
+               [opened]="!isMobile()"
+               class="mat-typography">
+
+    <div class="container">
+      <h2>Filters</h2>
+      <form [formGroup]="filters" fxLayout="column">
+        <mat-form-field>
+          <input formControlName="location" matInput placeholder="Location" type="text">
+          <button (click)="filters.controls['location'].reset('')" *ngIf="filters.controls['location'].value" aria-label="Clear" mat-button
+                  mat-icon-button
+                  matSuffix>
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-select formControlName="distance" placeholder="Distance">
+            <mat-option *ngFor="let distance of distances" [value]="distance.value">
+              {{distance.viewValue}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <h3>Work Location</h3>
+        <section fxLayout="column">
+          <mat-checkbox *ngFor="let location of workLocations">
+            {{location.viewValue}}
+          </mat-checkbox>
+        </section>
+
+        <h3 style="margin-top: 16px">Job Type</h3>
+        <section fxLayout="column">
+          <mat-checkbox *ngFor="let type of jobTypes">
+            {{type.viewValue}}
+          </mat-checkbox>
+        </section>
+
+        <div fxLayout="row" style="margin-top: 16px">
+          <mat-form-field fxFlex="37%">
+            <input formControlName="salary" matInput placeholder="Min. Salary" type="number">
+          </mat-form-field>
+          <mat-form-field floatLabel="never" fxFlex="25%">
+            <mat-select formControlName="currency" placeholder="Currency">
+              <mat-option *ngFor="let currency of auxCurrencies" [value]="currency.value">
+                {{currency.value + ' (' + currency.symbol + ')'}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field floatLabel="never" fxFlex="38%">
+            <mat-select formControlName="frequency" placeholder="Frequency">
+              <mat-option *ngFor="let frequency of frequencies" [value]="frequency.value">
+                {{frequency.viewValue}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <h3>Experience Level</h3>
+        <section fxLayout="column">
+          <mat-checkbox *ngFor="let level of experienceLevels">
+            {{level.viewValue}}
+          </mat-checkbox>
+        </section>
+
+        <mat-form-field style="margin-top: 16px">
+          <mat-select formControlName="publishDate" placeholder="Publish Date">
+            <mat-option *ngFor="let time of publishTimes" [value]="time.value">
+              {{time.viewValue}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+      </form>
+
+      <div fxLayout="row" fxLayoutAlign="end end" style="margin-top: 16px" fxHide.gt-sm>
+        <button mat-raised-button color="primary" (click)="applyFilters()">Apply Filters</button>
+      </div>
+    </div>
+
+  </mat-sidenav>
+
+  <mat-sidenav-content
+    fxFlex="96%" fxFlex.gt-sm="75%"
+    fxLayout="column"
+    fxLayoutGap="16px" fxLayoutGap.gt-sm="32px">
+    <div
+      fxFlex="100%"
+      fxLayout="row"
+      fxLayoutAlign="center center"
+      fxLayoutGap="8px">
+      <app-searchbar
+        fxFlex="40%" fxFlex.lt-lg="60%">
+      </app-searchbar>
+      <app-orderby-button></app-orderby-button>
+      <button color="primary"
+              fxHide.gt-sm
+              mat-raised-button>
+        <mat-icon (click)="drawer.toggle()" aria-label="Open filters" svgIcon="filter-list"></mat-icon>
+      </button>
+    </div>
+
+
+    <div fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">
+      <app-offer-preview-card *ngFor="let offer of (offersState | async).offers.data;" [offer]="offer">
+      </app-offer-preview-card>
+    </div>
+
+
+    <mat-paginator (page)="pageEvent = $event; changePage();"
+                   [length]="(offersState | async).offers.total"
+                   [pageSizeOptions]="pageSizeOptions"
+                   [pageSize]="pageSize">
+    </mat-paginator>
+  </mat-sidenav-content>
+</mat-sidenav-container>
 

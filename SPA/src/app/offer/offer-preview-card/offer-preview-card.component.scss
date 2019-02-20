@@ -1,7 +1,7 @@
 @import "../../../common-utils";
 @import '../../../../node_modules/@angular/material/theming';
 
-.example-card {
+mat-card {
   max-width: 600px;
 }
 
@@ -26,6 +26,7 @@ img {
 
 mat-card-content {
   min-height: 95px;
+
   p {
     margin-top: 0;
     font-size: 0.9rem;

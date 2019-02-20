@@ -1,34 +1,34 @@
 <div
-  style="padding: 16px 0 32px 0"
+  fxFlex="92%"
+  fxFlexOffset="4%"
   fxLayout="column"
   fxLayout.gt-lg="row"
-  fxFlexOffset="4%"
-  fxFlex="92%">
-  <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap.gt-xs="32px" fxFlex.gt-lg="50">
-    <div fxLayout="column" fxFlex="50">
+  style="padding: 16px 0 32px 0">
+  <div fxFlex.gt-lg="50" fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap.gt-xs="32px">
+    <div fxFlex="50" fxLayout="column">
       <h4>Website</h4>
-      <a style="margin-bottom: 16px" [href]="business.website">{{business.website}}</a>
+      <a [href]="business.website" style="margin-bottom: 16px">{{business.website}}</a>
       <h4>Company Size</h4>
       <p>{{getSize()}}</p>
     </div>
-    <div fxLayout="column" fxFlex="50">
+    <div fxFlex="50" fxLayout="column">
       <h4>Industry</h4>
       <p>{{business.industry}}</p>
       <h4>Foundation</h4>
       <p>{{business.year | date:'longDate'}}</p>
     </div>
   </div>
-  <div fxLayout="row" fxLayout.gt-md="column" fxFlex.gt-lg="50">
+  <div fxFlex.gt-lg="50" fxLayout="row" fxLayout.gt-md="column">
     <h4>Location</h4>
     <p
       style="margin: 0"
     >{{business.address}}</p>
     <mgl-map
-      style="margin-top: 16px"
-      fxLayout="row"
+      [center]="[business.location.lat, business.location.long]"
       [style]="'mapbox://styles/mapbox/streets-v9'"
       [zoom]="[8]"
-      [center]="[business.location.lat, business.location.long]"
+      fxLayout="row"
+      style="margin-top: 16px"
     >
       <mgl-marker
         [lngLat]="[business.location.lat, business.location.long]">

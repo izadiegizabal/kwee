@@ -29,8 +29,8 @@
             <mat-icon class="svg" color="primary" svgIcon="access-time"></mat-icon>
             <span>{{user.lastAccess | date:'d/M/y, HH:mm'}}</span>
           </div>
-            <button (click)="accept(user)" color="accent" mat-button>Accept</button>
-            <button (click)="deny(user)" color="warn" mat-button>Deny</button>
+          <button (click)="accept(user)" color="accent" mat-button>Accept</button>
+          <button (click)="deny(user)" color="warn" mat-button>Deny</button>
         </mat-panel-description>
       </mat-expansion-panel-header>
 
@@ -40,12 +40,12 @@
         <div class="mat-body" fxFlex="50%">
           <span class="mat-small">{{'Name' | uppercase}}</span>
           <br>
-            {{user.name}}
+          {{user.name}}
         </div>
         <div class="mat-body" fxFlex="50%">
           <span class="mat-small">{{'Email' | uppercase}}</span>
           <br>
-            {{user.email}}
+          {{user.email}}
         </div>
       </div>
 
@@ -58,12 +58,12 @@
           <div class="mat-body">
             <span class="mat-small">{{'VAT / CIF' | uppercase}}</span>
             <br>
-              {{user.cif}}
+            {{user.cif}}
           </div>
           <div class="mat-body">
             <span class="mat-small">{{'Work Field' | uppercase}}</span>
             <br>
-              {{ getWorkField(user.workField) | titlecase }}
+            {{ getWorkField(user.workField) | titlecase }}
           </div>
         </div>
 
@@ -74,12 +74,12 @@
           <div>
             <span class="mat-small">{{'Account State' | uppercase}}</span>
             <br>
-              {{states[user.status].viewValue  | titlecase }}
+            {{states[user.status].viewValue  | titlecase }}
           </div>
           <div>
             <span class="mat-small">{{'Subscription' | uppercase}}</span>
             <br>
-              {{subscriptions[user.premium].viewValue  | titlecase }}
+            {{subscriptions[user.premium].viewValue  | titlecase }}
           </div>
         </div>
       </div>

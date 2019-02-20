@@ -7,6 +7,7 @@ import {StoreModule} from '@ngrx/store';
 import {EffectsModule} from '@ngrx/effects';
 import {offersReducer} from './store/offers.reducers';
 import {OffersEffects} from './store/offers.effects';
+import {ReactiveFormsModule} from '@angular/forms';
 
 
 @NgModule({
@@ -17,6 +18,7 @@ import {OffersEffects} from './store/offers.effects';
     SharedModule,
     OfferPreviewCardModule,
     SearchbarModule,
+    ReactiveFormsModule,
     StoreModule.forFeature('offers', offersReducer),
     EffectsModule.forFeature([OffersEffects])
   ],

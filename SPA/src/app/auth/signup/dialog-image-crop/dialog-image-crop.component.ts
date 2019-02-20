@@ -1,5 +1,5 @@
 import {Component, Inject} from '@angular/core';
-import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {ImageCroppedEvent} from 'ngx-image-cropper';
 import {FormControl} from '@angular/forms';
 
@@ -18,8 +18,8 @@ export class DialogImageCropComponent {
   constructor(
     public dialogRef: MatDialogRef<DialogImageCropComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) {
-      this.fileChangeEvent(data);
-    }
+    this.fileChangeEvent(data);
+  }
 
   onNoClick(): void {
     this.dialogRef.close();
@@ -28,13 +28,15 @@ export class DialogImageCropComponent {
   fileChangeEvent(event: any): void {
     this.imageChangedEvent = event;
   }
+
   imageCropped(event: ImageCroppedEvent) {
-    this.croppedImage = event;
-    console.log(event);
+    this.croppedImage = event.base64;
   }
+
   imageLoaded() {
     // show cropper
   }
+
   loadImageFailed() {
     // show message
   }

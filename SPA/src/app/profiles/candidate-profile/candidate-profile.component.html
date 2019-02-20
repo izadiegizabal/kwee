@@ -8,21 +8,21 @@
       <mat-card fxFlex="70">
         <mat-card-title>
           <app-offerer-name-overview
-            [name]="(profilesState | async).candidate.name"
             [index]="(profilesState | async).candidate.index"
+            [name]="(profilesState | async).candidate.name"
             size="title">
           </app-offerer-name-overview>
         </mat-card-title>
         <mat-card-content
-          style="margin-top: 16px"
-          fxLayoutAlign="center stretch" fxLayoutAlign.lt-sm="center center"
-          fxLayout="row" fxLayout.lt-sm="column">
+          fxLayout="row"
+          fxLayout.lt-sm="column" fxLayoutAlign="center stretch"
+          fxLayoutAlign.lt-sm="center center" style="margin-top: 16px">
           <img
-            fxLayout="column"
+            alt="{{(profilesState | async).candidate.name + ' profile picture'}}'"
             fxFlex="200px"
-            width="200px" height="200px"
+            fxLayout="column" height="200px"
             src="{{(profilesState | async).candidate.img}}"
-            alt="{{(profilesState | async).candidate.name + ' profile picture'}}'"/>
+            width="200px"/>
           <p
             fxLayout="column"
             fxLayoutAlign="center center">
@@ -40,7 +40,7 @@
 
       <!-- Premium info -->
       <mat-card
-        fxFlexOffset.gt-xs="32px" fxFlex="30">
+        fxFlex="30" fxFlexOffset.gt-xs="32px">
         <mat-card-subtitle style="text-align: center">Active account type:</mat-card-subtitle>
         <mat-card-title style="text-align: center">
           Basic
@@ -57,8 +57,8 @@
         <mat-card-actions fxLayoutAlign="center">
           <button
             color="accent"
-            style="color: white; margin-bottom: 16px"
-            mat-raised-button>
+            mat-raised-button
+            style="color: white; margin-bottom: 16px">
             Upgrade to Premium
           </button>
         </mat-card-actions>
@@ -75,7 +75,7 @@
           </mat-tab>
           <mat-tab label="Opinions">
             <ng-template matTabContent>
-            <app-candidate-profile-opinions></app-candidate-profile-opinions>
+              <app-candidate-profile-opinions></app-candidate-profile-opinions>
             </ng-template>
           </mat-tab>
           <mat-tab label="Offers"></mat-tab>

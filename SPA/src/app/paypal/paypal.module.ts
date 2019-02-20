@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
-import { SharedModule } from '../shared/shared.module';
-import { RouterModule } from '@angular/router';
+import {SharedModule} from '../shared/shared.module';
+import {RouterModule} from '@angular/router';
 import {PaypalComponent} from './paypal.component';
 import {PaypalRoutingModule} from './paypal-routing.module';
 import {NgxPayPalModule} from 'ngx-paypal';

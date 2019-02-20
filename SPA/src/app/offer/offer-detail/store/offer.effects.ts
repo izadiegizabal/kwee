@@ -56,9 +56,9 @@ export class OfferEffects {
     map((action: OfferActions.TryPostApplication) => {
       return action.payload;
     }),
-     withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    withLatestFrom(this.store$.pipe(select(state => state.auth))),
     switchMap(([payload, authState]) => {
-       const apiEndpointUrl = environment.apiUrl + 'application';
+        const apiEndpointUrl = environment.apiUrl + 'application';
         const token = authState.token;
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
         const body = JSON.stringify(payload);
@@ -89,7 +89,6 @@ export class OfferEffects {
     ),
     share()
   );
-
 
 
   constructor(private actions$: Actions, private store$: Store<fromApp.AppState>, private router: Router, private httpClient: HttpClient) {

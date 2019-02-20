@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { KweeLiveComponent } from './kwee-live.component';
+import {KweeLiveComponent} from './kwee-live.component';
 
 describe('KweeLiveComponent', () => {
   let component: KweeLiveComponent;
@@ -8,9 +8,9 @@ describe('KweeLiveComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ KweeLiveComponent ]
+      declarations: [KweeLiveComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

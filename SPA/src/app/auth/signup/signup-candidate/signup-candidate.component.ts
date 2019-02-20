@@ -1,14 +1,13 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {MatDialog, MatStepper, MatSelectTrigger} from '@angular/material';
+import {MatDialog, MatStepper} from '@angular/material';
 import {Action, select, Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
 import * as AuthActions from '../../store/auth.actions';
 import {AuthEffects} from '../../store/auth.effects';
 import {filter} from 'rxjs/operators';
 import {DialogErrorComponent} from '../dialog-error/dialog-error.component';
-import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from '@angular/common/http';
-import {TrySignupGoogle, TrySignupGitHub, TrySignupLinkedIn} from '../../store/auth.actions';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {DialogImageCropComponent} from '../dialog-image-crop/dialog-image-crop.component';
 import {ActivatedRoute, Router} from '@angular/router';
 import {environment} from '../../../../environments/environment';
@@ -284,7 +283,8 @@ export class SignupCandidateComponent implements OnInit {
             console.log(error.payload);
             this.dialog.open(DialogErrorComponent, {
               data: {
-                error: error.payload,
+                header: 'The Sing Up has failed. Please go back and try again.',
+                error: 'Error: ' + error.payload,
               }
             });
             this.dialogShown = true;
@@ -428,7 +428,6 @@ export class SignupCandidateComponent implements OnInit {
               if (data.hits[i].is_city) {
                 if (!this.options.some(element => element.name === auxCity.name)) {
                   this.options.push(auxCity);
-                  console.log(auxCity);
                 }
               }
             });
@@ -507,15 +506,16 @@ export class SignupCandidateComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
           if (result) {
-            preview.src = result.base64;
-            this.file = result.base64;
+            preview.src = result;
+            this.file = result;
           }
         });
       } else {
         this.deletePhoto();
         this.dialog.open(DialogErrorComponent, {
           data: {
-            error: 'Your image is too big. We only allow files under 3Mb.',
+            header: 'The Upload process has failed. Please try again later or use another image.',
+            error: 'Error: Your image is too big. We only allow files under 3Mb.',
           }
         });
         this.dialogShown = true;

@@ -1,6 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {NgcCookieConsentService, NgcInitializeEvent, NgcNoCookieLawEvent, NgcStatusChangeEvent} from 'ngx-cookieconsent';
-import {Subscription} from 'rxjs';
+import {NgcCookieConsentService} from 'ngx-cookieconsent';
 
 @Component({
   selector: 'app-root',

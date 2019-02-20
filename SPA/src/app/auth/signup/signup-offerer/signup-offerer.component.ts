@@ -8,7 +8,6 @@ import {Action, select, Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
 import {AuthEffects} from '../../store/auth.effects';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
-import {Observable} from 'rxjs';
 import {DialogImageCropComponent} from '../dialog-image-crop/dialog-image-crop.component';
 import {environment} from '../../../../environments/environment';
 import {Router} from '@angular/router';
@@ -72,6 +71,14 @@ export class SignupOffererComponent implements OnInit {
 
   private dialogShown = false;
 
+  constructor(private _formBuilder: FormBuilder,
+              public dialog: MatDialog,
+              private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects,
+              private httpClient: HttpClient,
+              private router: Router) {
+    this.address = {ad1: null, ad2: null};
+  }
+
   static maxMinDate(control: FormControl): { [s: string]: { [s: string]: boolean } } {
     const today = new Date();
     const mdate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDay());
@@ -80,15 +87,6 @@ export class SignupOffererComponent implements OnInit {
       return null;
     }
     return {'tooOld': {value: true}};
-  }
-
-
-  constructor(private _formBuilder: FormBuilder,
-              public dialog: MatDialog,
-              private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects,
-              private httpClient: HttpClient,
-              private router: Router) {
-    this.address = {ad1: null, ad2: null};
   }
 
   ngOnInit() {
@@ -223,7 +221,8 @@ export class SignupOffererComponent implements OnInit {
           console.log(error.payload);
           this.dialog.open(DialogErrorComponent, {
             data: {
-              error: error.payload,
+              header: 'The Sing Up has failed. Please go back and try again.',
+              error: 'Error: ' + error.payload,
             }
           });
           this.dialogShown = true;
@@ -235,10 +234,10 @@ export class SignupOffererComponent implements OnInit {
   onUpdate() {
 
     const update = {
-      'about' : this.thirdFormGroup.controls['about'].value,
-      'website' : this.thirdFormGroup.controls['website'].value,
-      'companySize' : this.thirdFormGroup.controls['companySize'].value,
-      'year' : this.thirdFormGroup.controls['year'].value
+      'about': this.thirdFormGroup.controls['about'].value,
+      'website': this.thirdFormGroup.controls['website'].value,
+      'companySize': this.thirdFormGroup.controls['companySize'].value,
+      'year': this.thirdFormGroup.controls['year'].value
     };
 
     const options = {
@@ -321,7 +320,7 @@ export class SignupOffererComponent implements OnInit {
 
   deletePhoto() {
     (document.getElementById('photo_profile') as HTMLInputElement).src = '../../../../assets/defaut_profile.png';
-    this.thirdFormGroup.controls['profile'].setValue(null);
+    this.secondFormGroup.controls['profile'].setValue(null);
   }
 
 
@@ -330,7 +329,7 @@ export class SignupOffererComponent implements OnInit {
     this.fileEvent = event;
     /// 3MB IMAGES MAX
     if (event.target.files[0]) {
-      if (event.target.files[0].size < 300000) {
+      if (event.target.files[0].size < 3000000) {
         // @ts-ignore
         const preview = (document.getElementById('photo_profile') as HTMLInputElement);
         const file = (document.getElementById('file_profile') as HTMLInputElement).files[0];
@@ -350,15 +349,16 @@ export class SignupOffererComponent implements OnInit {
         dialogRef.afterClosed().subscribe(result => {
           if (result) {
             console.log(result);
-            preview.src = result.base64;
-            this.file = result.base64;
+            preview.src = result;
+            this.file = result;
           }
         });
       } else {
         this.deletePhoto();
         this.dialog.open(DialogErrorComponent, {
           data: {
-            error: 'Your image is too big. We only allow files under 3Mb.',
+            header: 'The Upload process has failed. Please try again later or use another image.',
+            error: 'Error: Your image is too big. We only allow files under 3Mb.',
           }
         });
         this.dialogShown = true;

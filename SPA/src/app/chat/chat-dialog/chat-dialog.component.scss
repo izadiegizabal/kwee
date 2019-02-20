@@ -1,4 +1,4 @@
-*{
+* {
   z-index: 10;
 }
 
@@ -8,56 +8,59 @@
   padding: 15px 20px;
   position: relative;
 }
+
 .message.to {
   background-color: #455a64;
   color: #fff;
   //margin-left: 200px;
   text-align: right;
 }
+
 .message.from {
   background-color: whitesmoke;
   color: #363636;
   //margin-right: 150px;
 
 }
+
 .message.to + .message.to,
 .message.from + .message.from {
   margin-top: -10px;
 }
 
-.example-card, .message{
+.example-card, .message {
   max-width: 300px;
 }
 
-.example-card{
+.example-card {
   background-color: whitesmoke;
   position: relative;
   margin: 0 15px 10px;
 }
 
-.reply{
+.reply {
   border-radius: 50px;
   margin: 0 10px 10px;
   padding: 15px 20px;
   display: block;
 }
 
-.toRight{
+.toRight {
   position: relative;
   margin-left: 100px;
 }
 
-.toLeft{
+.toLeft {
   position: relative;
   margin-right: 100px;
 }
 
 .float {
-  position:fixed;
-  bottom:25px;
-  right:25px;
-  text-align:center;
-  box-shadow: -1px 5px 32px -7px rgba(0,0,0,0.36);
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  text-align: center;
+  box-shadow: -1px 5px 32px -7px rgba(0, 0, 0, 0.36);
   color: white;
 }
 
@@ -87,12 +90,12 @@
   }
 }
 
-.input{
+.input {
   position: fixed;
   bottom: 30px;
 }
 
-.floating-chat:first-child{
+.floating-chat:first-child {
   overflow-y: scroll;
 }
 
