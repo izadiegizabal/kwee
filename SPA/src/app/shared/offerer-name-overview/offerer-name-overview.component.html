@@ -1,4 +1,9 @@
-<div>
-  <span>{{index}}</span>
+<div
+  [ngClass]="{
+  big: size === 'title',
+  'mat-card-title': size === 'title'
+}"
+  fxLayout="row">
+  <div class="index"><span>{{index}}</span></div>
   <p>{{name}}</p>
 </div>

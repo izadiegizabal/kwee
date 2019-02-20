@@ -1,0 +1,57 @@
+<mat-card class="example-card">
+  <mat-card-header
+    fxLayout="row"
+    fxLayout.lt-sm="column"
+    fxLayoutAlign="space-between"
+  >
+    <mat-card-title
+      [routerLink]="offerUrl"
+      style="cursor: pointer">{{offer.title}}
+    </mat-card-title>
+    <mat-card-subtitle>
+      <app-offerer-name-overview [index]="offer.index" [name]="offer.name"
+                                 [routerLink]="urlOfferer()"></app-offerer-name-overview>
+    </mat-card-subtitle>
+    <div
+      class="quickInfo"
+      fxFlexAlign="start start"
+      fxLayout="row"
+      fxLayoutGap="16px">
+      <app-icon-with-text [text]="getOfferLocation()" icon="place"></app-icon-with-text>
+      <app-icon-with-text [text]="getPublishedDate()" icon="access-time"></app-icon-with-text>
+    </div>
+  </mat-card-header>
+
+  <mat-card-content>
+    <img
+      alt="Business Logo"
+      src="https://cdn.vox-cdn.com/thumbor/Pkmq1nm3skO0-j693JTMd7RL0Zk=/0x0:2012x1341/1200x800/filters:focal(0x0:2012x1341)/cdn.vox-cdn.com/uploads/chorus_image/image/47070706/google2.0.0.jpg">
+    <p>
+      {{ (offer.description | slice:0:280) + "..." }}
+    </p>
+  </mat-card-content>
+
+  <mat-card-actions
+    fxLayout="row" fxLayout.lt-sm="column"
+    fxLayoutAlign="end center"
+    fxLayoutGap="24px" fxLayoutGap.lt-sm="16px">
+    <div
+      fxLayout="row"
+      fxLayout.lt-sm="column"
+      fxLayoutAlign="center center"
+      fxLayoutGap="16px">
+      <div fxLayout="row" fxLayoutGap="16px">
+        <app-icon-with-text [text]="getOfferDuration()" icon="date-range"></app-icon-with-text>
+        <app-icon-with-text [text]="getOfferContractType()" icon="work"></app-icon-with-text>
+        <app-icon-with-text [text]="getOfferSalary()" icon="local-atm"></app-icon-with-text>
+      </div>
+      <div>
+        <button [routerLink]="offerUrl" color="accent" mat-button>{{'More Info' | uppercase }}</button>
+        <button (click)="openShareDialog()" mat-icon-button>
+          <mat-icon aria-label="Share offer in social networks" color="accent" svgIcon="share"></mat-icon>
+        </button>
+      </div>
+    </div>
+  </mat-card-actions>
+
+</mat-card>

@@ -1,4 +1,7 @@
 const passport = require('../../../middlewares/passport');
+const querystring = require('querystring');
+const auth = require('../../../middlewares/auth/auth');
+const env = require('../../../tools/constants');
 
 module.exports = (app, db) => {
 
@@ -29,16 +32,17 @@ module.exports = (app, db) => {
                         github: user.email
                     });
 
-                    return res.status(201).json({
-                        ok: true,
-                        user: {
-                            id: user.id,
-                            name: user.name
-                        }
-                    });
+                    // const query = querystring.stringify({
+                    //         user: user.id,
+                    //         name: user.name,
+                    //         email: user.email
+                    // });
+                    let token = 'token=' + auth.auth.encode(user);
+                    res.redirect(env.SIGNUP + token);
 
                 } else {
                     // Existent user
+                    console.log("Este email ya existe en la BBDD");
                     res.redirect('/');
                 }
             } catch (err) {

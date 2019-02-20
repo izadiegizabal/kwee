@@ -1,0 +1,123 @@
+<div
+  fxFlex="92%" fxFlexOffset="4%"
+  fxLayout="row"
+  fxLayout.lt-md="column"
+  fxLayoutGap="32px">
+  <div fxFlex="50%" fxLayout="column" style="padding-bottom: 32px">
+    <h2>Experience</h2>
+    <mat-accordion style="margin-bottom: 16px">
+      <mat-expansion-panel *ngFor="let experience of candidate.experience">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <h4>
+              {{experience.title}}
+            </h4>
+          </mat-panel-title>
+          <mat-panel-description style="margin-top: 20px">
+            {{experience.company +
+          " - " +
+          (experience.start | date:'y') + "/" + (experience.end | date:'y')}}
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <p>
+          {{experience.description}}
+        </p>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+    <h2>Education</h2>
+    <mat-accordion style="margin-bottom: 16px">
+      <mat-expansion-panel *ngFor="let education of candidate.education">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <h4>
+              {{education.title}}
+            </h4>
+          </mat-panel-title>
+          <mat-panel-description style="margin-top: 20px">
+            {{education.institution +
+          " - " +
+          (education.start | date:'y') + "/" + (education.end | date:'y')}}
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <p>
+          {{education.description}}
+        </p>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+    <h2 style="margin-bottom: 0">Languages</h2>
+    <mat-list style="margin-bottom: 16px">
+      <div
+        *ngFor="let language of candidate.languages"
+        style="margin-left: -20px">
+        <mat-list-item>
+          <mat-icon color="primary">chevron_right</mat-icon>
+          {{' ' + language.name + ' - ' + language.level}}</mat-list-item>
+      </div>
+    </mat-list>
+
+    <h2>Skills</h2>
+    <div
+      fxLayout="row">
+      <mat-list
+        fxFlex="50%"
+        style="padding-top: 0">
+        <div
+          *ngFor="let skill of candidate.skills; let i = index"
+          style="margin-left: -20px">
+          <mat-list-item
+            *ngIf="i % 2 === 0">
+            <mat-icon color="primary">chevron_right</mat-icon>
+            {{' ' + skill}}</mat-list-item>
+        </div>
+      </mat-list>
+      <mat-list
+        fxFlex="50%"
+        style="padding-top: 0">
+        <div
+          *ngFor="let skill of candidate.skills; let i = index"
+          style="margin-left: -20px">
+          <mat-list-item *ngIf="i % 2 !== 0">
+            <mat-icon color="primary">chevron_right</mat-icon>
+            {{' ' + skill}}</mat-list-item>
+        </div>
+      </mat-list>
+    </div>
+  </div>
+
+  <div
+    fxFlex="50%"
+    fxLayout="row"
+    fxLayoutAlign.lt-sm="end end"
+    style="padding-bottom: 64px">
+    <div fxLayout="column">
+      <h2 fxLayout="row">
+        <mat-chip-list>
+          <mat-chip
+            color="accent" selected
+            style="color: white;">
+            Premium
+          </mat-chip>
+        </mat-chip-list>
+        &nbsp; Documents
+      </h2>
+      <p style="margin-top: 0; font-style: italic;">
+        With the premium membership you'll be able to upload files like your CV, recommendation letters or even your
+        certifications!
+      </p>
+      <mat-list style="margin-bottom: 16px; opacity: 0.5; font-style: italic">
+        <mat-list-item>
+          <mat-icon color="primary" mat-list-icon svgIcon="insert-drive-file"></mat-icon>
+          <h4 mat-line>Curriculum Vitae</h4>
+        </mat-list-item>
+        <mat-list-item>
+          <mat-icon color="primary" mat-list-icon svgIcon="insert-drive-file"></mat-icon>
+          <h4 mat-line>Recommendation Letter</h4>
+        </mat-list-item>
+      </mat-list>
+    </div>
+  </div>
+</div>

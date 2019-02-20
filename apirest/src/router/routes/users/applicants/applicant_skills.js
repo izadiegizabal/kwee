@@ -1,5 +1,5 @@
 const { checkToken } = require('../../../../middlewares/authentication');
-const { tokenId } = require('../../../../shared/functions');
+const { tokenId, logger } = require('../../../../shared/functions');
 
 // ============================
 // ===== CRUD applicant_skill ======
@@ -9,7 +9,9 @@ module.exports = (app, db) => {
     // GET all applicant_skills
     app.get("/applicant_skills", checkToken, async(req, res, next) => {
         try {
-            res.status(200).json({
+            await logger.saveLog('GET', 'applicant_skills', null, res);
+
+            return res.status(200).json({
                 ok: true,
                 applicant_skills: await db.applicant_skills.findAll()
             });

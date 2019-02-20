@@ -117,7 +117,35 @@ module.exports = (sequelize, DataTypes) => {
                     msg: "Invalid status type. Only valid 'verification pending' (0), 'active' (1), 'validation pending' (2), 'blocked' (3) or social network verification pending(4)."
                 }
             }
+        },
+
+        twitter: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            defaultValue: null,
+        },
+
+        telegram: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            defaultValue: null,
+        },
+
+        lat: {
+            type: DataTypes.DECIMAL(9,6),
+            allowNull: true,
+            defaultValue: null,
+        },
+
+        lon: {
+            type: DataTypes.DECIMAL(9,6),
+            allowNull: true,
+            defaultValue: null,
         }
+
+        
+
+
 
 
     }, {

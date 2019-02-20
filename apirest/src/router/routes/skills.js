@@ -1,4 +1,5 @@
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
+const { logger, uploadImg, checkImg, deleteFile } = require('../../shared/functions');
 
 // ============================
 // ======== CRUD skills =========
@@ -9,12 +10,48 @@ module.exports = (app, db) => {
     // GET all skills
     app.get('/skills', checkToken, async(req, res, next) => {
         try {
-            res.status(200).json({
+            await logger.saveLog('GET', 'skills', null, res);
+
+            return res.status(200).json({
                 ok: true,
                 skills: await db.skills.findAll()
             });
         } catch (err) {
             next({ type: 'error', error: 'Error getting data' });
+        }
+    });
+
+    // GET skills by page limit to 10 skills/page
+    app.get('/skills/:page([0-9]+)/:limit([0-9]+)', async(req, res, next) => {
+        let limit = Number(req.params.limit);
+        let page = Number(req.params.page);
+
+        try {
+            await logger.saveLog('GET', `skills/${ page }`, null, res);
+
+            let count = await db.skills.findAndCountAll();
+            let pages = Math.ceil(count.count / limit);
+            offset = limit * (page - 1);
+
+            if (page > pages) {
+                return res.status(400).json({
+                    ok: false,
+                    message: `It doesn't exist ${ page } pages`
+                })
+            }
+
+            return res.status(200).json({
+                ok: true,
+                message: `${ limit } skills of page ${ page } of ${ pages } pages`,
+                data: await db.skills.findAll({
+                    limit,
+                    offset,
+                    $sort: { id: 1 }
+                }),
+                total: count.count
+            });
+        } catch (err) {
+            next({ type: 'error', error: err });
         }
     });
 
@@ -36,19 +73,30 @@ module.exports = (app, db) => {
     });
 
     // POST single skill
-    app.post('/skill', [checkToken, checkAdmin], async(req, res, next) => {
-        let body = req.body;
-
+    app.post('/skill', checkAdmin, async(req, res, next) => {
+        
         try {
-            res.status(201).json({
-                ok: true,
-                skill: await db.skills.create({
-                    name: body.name,
-                }),
-                message: `Skill has been created.`
-            });
+            if ( req.body.img && req.body.name ) {
+                var imgName = uploadImg(req, res, next, 'skills');
+                    req.body.img = imgName;
+                let skill = await db.skills.create({
+                    name: req.body.name,
+                    img: req.body.img
+                });
+                res.status(201).json({
+                    ok: true,
+                    message: `Skill has been created.`,
+                    skill
+                });
+            } else {
+                res.status(400).json({
+                    ok: false,
+                    message: 'Name and img are required'
+                })
+            }
         } catch (err) {
-            next({ type: 'error', error: err.errors[0].message });
+            deleteFile('uploads/skills/' + req.body.img);
+            next({ type: 'error', error: err.message });
         }
 
     });
@@ -56,12 +104,21 @@ module.exports = (app, db) => {
     // PUT single skill
     app.put('/skill/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
-        const updates = req.body;
+        const body = req.body;
 
         try {
+            if ( body.img && checkImg(body.img) ) {
+                let skill = await db.skills.findOne({
+                    where: { id }
+                });
+                if ( skill.img ) deleteFile('uploads/skills/' + skill.img);
+
+                var imgName = uploadImg(req, res, next, 'skills');
+                    body.img = imgName;
+            }
             res.status(200).json({
                 ok: true,
-                skill: await db.skills.update(updates, {
+                skill: await db.skills.update(body, {
                     where: { id }
                 })
             });

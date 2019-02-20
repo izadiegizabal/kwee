@@ -2,33 +2,43 @@ import * as OffersActions from './offers.actions';
 
 export interface State {
   offers: {
-    offer: {
-      status: number,
-      title: string,
-      description: string,
-      datePublished: Date,
-      dateStart: Date,
-      dateEnd: Date,
-      location: string,
-      salary: number,
-      salaryFrecuency: number,
-      salaryCurrency: string,
-      workLocation: number,
-      seniority: number,
-      responsabilities: string,
-    },
-    user: {
-      id: number,
-      name: string,
-      img: string,
-      bio: string,
-      index: number,
-    }
-  }[];
+    data: {
+      offer: {
+        id: number,
+        status: number,
+        title: string,
+        description: string,
+        datePublished: Date,
+        dateStart: Date,
+        dateEnd: Date,
+        location: string,
+        salaryAmount: number,
+        salaryFrecuency: number,
+        salaryCurrency: string,
+        workLocation: number,
+        seniority: number,
+        isIndefinite: boolean,
+        duration: number,
+        durationUnit: number,
+        fk_offerer: number,
+        contractType: number,
+        maxApplicats: number,
+        currentApplications: number,
+      },
+      user: {
+        id: number,
+        name: string,
+        img: string,
+        bio: string,
+        index: number,
+      }
+    }[],
+    total: number,
+  };
 }
 
 const initialState: State = {
-  offers: [],
+  offers: null,
 };
 
 export function offersReducer(state = initialState, action: OffersActions.OffersActions) {

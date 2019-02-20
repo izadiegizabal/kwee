@@ -1,0 +1,10 @@
+<div fxLayoutGap="8px" style="padding: 8px">
+  <app-offer-preview-card-manage *ngFor="let offer of  (offerManageState | async).offers.data;" [offer]="offer">
+  </app-offer-preview-card-manage>
+
+  <mat-paginator (page)="pageEvent = $event; changePage();"
+                 [length]="10"
+                 [pageSizeOptions]="pageSizeOptions"
+                 [pageSize]="pageSize">
+  </mat-paginator>
+</div>

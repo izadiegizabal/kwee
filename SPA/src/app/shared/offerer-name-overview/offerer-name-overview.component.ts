@@ -8,6 +8,7 @@ import {Component, Input, OnInit} from '@angular/core';
 export class OffererNameOverviewComponent implements OnInit {
   @Input() index: number;
   @Input() name: string;
+  @Input() size: string;
 
   constructor() {
   }

@@ -15,17 +15,51 @@ import {EffectsModule} from '@ngrx/effects';
 import {environment} from '../environments/environment';
 import {StoreDevtoolsModule} from '@ngrx/store-devtools';
 import {localStorageSync} from 'ngrx-store-localstorage';
-import {OfferDetailModule} from './shared/offer-detail/offer-detail.module';
+import {OfferDetailModule} from './offer/offer-detail/offer-detail.module';
+import {ChatModule} from './chat/chat.module';
+import {CookieService} from 'ngx-cookie-service';
+import {NgcCookieConsentConfig, NgcCookieConsentModule} from 'ngx-cookieconsent';
+import {PrivacyComponent} from './privacy/privacy.component';
+import {OfferCreateModule} from './offer/offer-create/offer-create.module';
 
 export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {
-  return localStorageSync({keys: ['auth', 'admin', 'offers'], rehydrate: true})(reducer);
+  return localStorageSync({keys: ['auth', 'admin', 'offers', 'offer', 'profiles', 'OfferManage'], rehydrate: true})(reducer);
 }
 
 const metaReducers: Array<MetaReducer<any, any>> = [localStorageSyncReducer];
 
+const cookieConfig: NgcCookieConsentConfig = {
+  'cookie': {
+    'domain': window.location.hostname
+  },
+  'position': 'bottom',
+  'theme': 'edgeless',
+  'palette': {
+    'popup': {
+      'background': '#000000',
+      'text': '#ffffff',
+      'link': '#ffffff'
+    },
+    'button': {
+      'background': '#6fe8d3',
+      'text': '#000000',
+      'border': 'transparent'
+    }
+  },
+  'type': 'info',
+  'content': {
+    'message': 'This site uses cookies. By continuing to browse the site, you are agreeing to our privacy policy and use of cookies.',
+    'dismiss': 'Got it!',
+    'deny': 'Refuse cookies',
+    'link': 'Learn more',
+    'href': '/privacy'
+  }
+};
+
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    PrivacyComponent,
   ],
   imports: [
     BrowserModule,
@@ -35,13 +69,17 @@ const metaReducers: Array<MetaReducer<any, any>> = [localStorageSyncReducer];
     CoreModule,
     CandidateHomeModule,
     OfferDetailModule,
+    OfferCreateModule,
     AppRoutingModule,
     FormsModule,
+    ChatModule,
     ReactiveFormsModule,
     StoreModule.forRoot(reducers, {metaReducers}),
     EffectsModule.forRoot([]),
+    NgcCookieConsentModule.forRoot(cookieConfig),
     !environment.production ? StoreDevtoolsModule.instrument() : []
   ],
+  providers: [CookieService],
   bootstrap: [AppComponent]
 })
 export class AppModule {

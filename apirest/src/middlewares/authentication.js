@@ -28,11 +28,15 @@ let checkToken = async(req, res, next) => {
 
 let checkAdmin = async(req, res, next) => {
 
+    let token = req.get('token');
+
+    let id = await auth.auth.decode(token);
+
     let user = await db.users.findOne({
         attributes: [
             'root'
         ],
-        where: { id: req.user }
+        where: { id }
     });
 
     if (user.root) {

@@ -7,6 +7,7 @@ import {Observable} from 'rxjs';
 import * as fromAdmin from '../../store/admin.reducers';
 import {filter} from 'rxjs/operators';
 import {AdminEffects} from '../../store/admin.effects';
+import {PageEvent} from '@angular/material';
 
 @Component({
   selector: 'app-business-overview',
@@ -14,6 +15,15 @@ import {AdminEffects} from '../../store/admin.effects';
   styleUrls: ['./business-overview.component.scss']
 })
 export class BusinessOverviewComponent implements OnInit {
+
+  // paging
+  pageSize = 2;
+  pageSizeOptions: number[] = [2, 5, 10, 25, 100];
+
+  // MatPaginator Output
+  pageEvent: PageEvent;
+  // ---------
+
   isPanelOpen = false;
   isInEditMode = false;
   updateuser: any;
@@ -51,7 +61,7 @@ export class BusinessOverviewComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store$.dispatch(new AdminActions.TryGetBusinesses());
+    this.store$.dispatch(new AdminActions.TryGetBusinesses({page: 1, limit: 2}));
     this.adminState = this.store$.pipe(select(s => s.admin));
 
     this.userForm = this._formBuilder.group({
@@ -89,7 +99,7 @@ export class BusinessOverviewComponent implements OnInit {
     this.userForm.controls['name'].setValue(user.name);
     this.userForm.controls['email'].setValue(user.email);
     this.userForm.controls['vat'].setValue(user.cif);
-    // this.userForm.controls['accountState'].setValue(user.status);
+    this.userForm.controls['accountState'].setValue(user.status);
     this.userForm.controls['premium'].setValue(user.premium);
     this.userForm.controls['workField'].setValue(user.workField);
   }
@@ -109,16 +119,13 @@ export class BusinessOverviewComponent implements OnInit {
         'email': this.userForm.controls['email'].value,
         'cif': this.userForm.controls['vat'].value,
         'workField': this.userForm.controls['workField'].value,
-        // 'status': this.userForm.controls['accountState'].value,
+        'status': this.userForm.controls['accountState'].value,
         'premium': this.userForm.controls['premium'].value,
       };
 
       if (this.userForm.controls['password'].value !== null && this.userForm.controls['password'].value !== '') {
         this.updateuser['password'] = this.userForm.controls['password'].value;
       }
-
-      // console.log(this.updateuser);
-
       this.store$.dispatch(new AdminActions.TryUpdateBusiness({id: id, updatedBusiness: this.updateuser}));
     } else {
       console.log(this.userForm);
@@ -133,5 +140,9 @@ export class BusinessOverviewComponent implements OnInit {
     ).subscribe((error: { payload: any, type: string }) => {
       console.log(error.payload);
     });
+  }
+
+  changepage() {
+    this.store$.dispatch(new AdminActions.TryGetBusinesses({page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize}));
   }
 }
