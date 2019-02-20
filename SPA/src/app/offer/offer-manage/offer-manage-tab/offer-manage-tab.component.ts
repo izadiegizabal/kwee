@@ -19,7 +19,7 @@ export class OfferManageTabComponent implements OnInit {
   pageSize = 2;
   pageSizeOptions: number[] = [2, 5, 10, 25, 100];
   pageEvent: PageEvent;
-  private offerManageState: Observable<fromOfferManage.State>;
+  public offerManageState: Observable<fromOfferManage.State>;
 
   constructor(private store$: Store<fromApp.AppState>, private activatedRoute: ActivatedRoute) {
   }
