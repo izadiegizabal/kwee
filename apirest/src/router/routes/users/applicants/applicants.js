@@ -72,69 +72,183 @@ module.exports = (app, db) => {
     });
     app.get('/applicant/:id([0-9]+)/applications', async(req, res, next) => {
         const id = req.params.id;
+        let limit = Number(req.query.limit);
+        let page = Number(req.query.page);
+        let status = Number(req.query.status);
+        let offersWithStatus = [];
+        let draft = 0;
+        let open = 0;
+        let selection = 0;
+        let closed = 0;
+        let pages = 0;
+        let statusBool = false;
 
-        let applicant = await db.applicants.findOne({
-            where: { userId: id }
-        });
+        if ( status >=0 && status <= 3 ) {
+            statusBool = true;
+        } else {
+            if ( status < 0 || status > 3 ){
+                return res.status(400).json({
+                    ok: false,
+                    message: 'Status should be between 0 and 3'
+                })
+            }
+        }
+        
+        try {
+            await logger.saveLog('GET', 'applicant', id, res);
 
-        if ( applicant ) {
-            let offers = [];
-            let applications = await db.applications.findAll({where: { fk_applicant: id }});
-            let allOffers = await db.offers.findAll({
-                attributes: {
-                  exclude: ['skills', 'requeriments', 'responsabilities']
-                }
-              });
+            let message = ``;
             
-            for (let i = 0; i < applications.length; i++) {
-                for (let j = 0; j < allOffers.length; j++) {
-                    if ( applications[i].fk_offer == allOffers[j].id ) {
-                        let offer = {};
-                        
-                        let offerer = await db.users.findOne({
-                            where: { id: allOffers[j].fk_offerer }
-                        });
-
-                        offer.id = allOffers[j].id;
-                        offer.fk_offerer = allOffers[j].fk_offerer;
-                        offer.offererName = offerer.name;
-                        offer.offererIndex = offerer.index;
-                        offer.title = allOffers[j].title;
-                        offer.description = allOffers[j].description;
-                        offer.dateStart = allOffers[j].dateStart;
-                        offer.dateEnd = allOffers[j].dateEnd;
-                        offer.datePublished = allOffers[j].datePublished;
-                        offer.location = allOffers[j].location;
-                        offer.status = allOffers[j].status;
-                        offer.salaryAmount = allOffers[j].salaryAmount;
-                        offer.salaryFrecuency = allOffers[j].salaryFrecuency;
-                        offer.salaryCurrency = allOffers[j].salaryCurrency;
-                        offer.workLocation = allOffers[j].workLocation;
-                        offer.seniority = allOffers[j].seniority;
-                        offer.maxApplicants = allOffers[j].maxApplicants;
-                        offer.currentApplications = allOffers[j].currentApplications;
-                        offer.duration = allOffers[j].duration;
-                        offer.durationUnit = allOffers[j].durationUnit;
-                        offer.isIndefinite = allOffers[j].isIndefinite;
-                        offer.contractType = allOffers[j].contractType;
-                        offer.lat = allOffers[j].lat;
-                        offer.lon = allOffers[j].lon;
-                        offer.createdAt = allOffers[j].createdAt;
-                        offer.updatedAt = allOffers[j].updatedAt;
-                        offer.deletedAt = allOffers[j].deletedAt;
-
-                        offers.push(offer);
+            let applicant = await db.applicants.findOne({
+                where: { userId: id }
+            });
+            
+            if ( applicant ) {
+                let offers = [];
+                let applications = await db.applications.findAll({where: { fk_applicant: id }});
+                let count = applications.length;
+                console.log('count: ', count);
+                let allOffers = await db.offers.findAll({
+                    attributes: {
+                        exclude: ['skills', 'requeriments', 'responsabilities']
+                    }
+                });
+                
+                for (let i = 0; i < applications.length; i++) {
+                    for (let j = 0; j < allOffers.length; j++) {
+                        if ( applications[i].fk_offer == allOffers[j].id && allOffers[j].id != null) {
+                            let offer = {};
+                            
+                            let offerer = await db.users.findOne({
+                                where: { id: allOffers[j].fk_offerer }
+                            });
+                            
+                            offer.id = allOffers[j].id;
+                            offer.fk_offerer = allOffers[j].fk_offerer;
+                            offer.offererName = offerer.name;
+                            offer.offererIndex = offerer.index;
+                            offer.title = allOffers[j].title;
+                            offer.description = allOffers[j].description;
+                            offer.dateStart = allOffers[j].dateStart;
+                            offer.dateEnd = allOffers[j].dateEnd;
+                            offer.datePublished = allOffers[j].datePublished;
+                            offer.location = allOffers[j].location;
+                            offer.status = allOffers[j].status;
+                            offer.salaryAmount = allOffers[j].salaryAmount;
+                            offer.salaryFrecuency = allOffers[j].salaryFrecuency;
+                            offer.salaryCurrency = allOffers[j].salaryCurrency;
+                            offer.workLocation = allOffers[j].workLocation;
+                            offer.seniority = allOffers[j].seniority;
+                            offer.maxApplicants = allOffers[j].maxApplicants;
+                            offer.currentApplications = allOffers[j].currentApplications;
+                            offer.duration = allOffers[j].duration;
+                            offer.durationUnit = allOffers[j].durationUnit;
+                            offer.isIndefinite = allOffers[j].isIndefinite;
+                            offer.contractType = allOffers[j].contractType;
+                            offer.lat = allOffers[j].lat;
+                            offer.lon = allOffers[j].lon;
+                            offer.createdAt = allOffers[j].createdAt;
+                            offer.updatedAt = allOffers[j].updatedAt;
+                            offer.deletedAt = allOffers[j].deletedAt;
+                            if ( offer != null ) 
+                                offers.push(offer);
+                        }
                     }
                 }
+
+                if ( statusBool || req.query.summary ) {
+                    for (let i = 0; i < count; i++) {
+                        if( statusBool ){
+                            if (offers[i].status == status ) {
+                                offersWithStatus.push(offers[i])
+                            }
+                        }
+                        if( req.query.summary ){
+                            switch(offers[i].status){
+                                case 0: draft++; break;
+                                case 1: open++; break;
+                                case 2: selection++; break;
+                                case 3: closed++; break;
+                            }
+                        }
+                    }
+                }
+                
+
+                if( limit && page ) {
+                    offersWithStatus.length > 0 ? pages = Math.ceil(offersWithStatus.length / limit) : pages = Math.ceil(count / limit);
+                    
+                    offset = limit * (page - 1);
+
+                    if (page > pages) {
+                        return res.status(400).json({
+                            ok: false,
+                            message: `It doesn't exist ${ page } pages. Total of pages ${ pages }`
+                        })
+                    }
+
+                    let offersAux = offers;
+                    let limitAux = limit;
+                    offers = [];
+                    
+                    if ( limitAux > offersAux.length ){
+                        limitAux = offersAux.length
+                    }
+
+                    if ( statusBool ){
+                        for (let i = offset; i < offset + limitAux; i++) {
+                            if ( offersAux[i].status == status ) {
+                                offers.push(offersAux[i]);
+                            }
+                        }
+                    } else {
+                        for (let i = offset; i < offset + limitAux; i++) {
+                            offers.push(offersAux[i]);
+                        }
+                    }
+
+                    if (isNaN(pages)){
+                        message = `No results`;
+                    } else {
+                        if ( limit > offers.length ){
+                            message = `Listing ${ offers.length } offers of this user. Page ${ page } of ${ pages }.`;
+                        } else {
+                            message = `Listing ${ limit } offers of this user. Page ${ page } of ${ pages }.`;
+                        }
+                    }
+                } else {
+                    message = `Listing all offers of this user.`;
+                }
+
+                if( req.query.summary ){
+                    var totalOffers = count;
+                    count = [];
+                    count.push("Total: " + totalOffers);
+                    count.push("Draft: " + draft);
+                    count.push("Open: " + open);
+                    count.push("Selection: " + selection);
+                    count.push("Closed: " + closed);
+                }
+
+                if ( statusBool ) message += ` With status = ${ status }`;
+                
+                return res.json({
+                    ok: true,
+                    message,
+                    data: offers,
+                    count
+                });
+
+            } else {
+                return res.status(400).json({
+                    ok: false,
+                    message: `It doesn't exist this user`
+                })
             }
-
-            return res.json({
-                ok: true,
-                message: `Listing all offers that applicated this user with id: ${ id }`,
-                data: offers
-            })
+            
+        } catch (error) {
+            next({ type: 'error', error: error });
         }
-
     });
 
     // GET one applicant by id

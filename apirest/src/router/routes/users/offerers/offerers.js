@@ -80,17 +80,23 @@ module.exports = (app, db) => {
         let page = Number(req.query.page);
         let status = Number(req.query.status);
         let offersWithStatus = [];
-        let statusName;
-        let statusBool = false;
-        if ( status >=0 && status <= 3 ) {
-            statusBool = true;
-        }
         let draft = 0;
         let open = 0;
         let selection = 0;
         let closed = 0;
         let pages = 0;
+        let statusBool = false;
 
+        if ( status >=0 && status <= 3 ) {
+            statusBool = true;
+        } else {
+            if ( status < 0 || status > 3 ){
+                return res.status(400).json({
+                    ok: false,
+                    message: 'Status should be between 0 and 3'
+                })
+            }
+        }
         
         try {
             await logger.saveLog('GET', 'offerer', id, res);
@@ -107,20 +113,49 @@ module.exports = (app, db) => {
                 
                 let count = offers.length;
 
-                for (let i = 0; i < count; i++) {
-                    if( statusBool ){
-                        if (offers[i].status == status ) {
-                            offersWithStatus.push(offers[i])
+                if ( statusBool || req.query.summary ) {
+                    for (let i = 0; i < count; i++) {
+                        if( statusBool ){
+                            if (offers[i].status == status ) {
+                                offersWithStatus.push(offers[i]);
+                            }
+                        }
+                        if( req.query.summary ){
+                            switch(offers[i].status){
+                                case 0: draft++; break;
+                                case 1: open++; break;
+                                case 2: selection++; break;
+                                case 3: closed++; break;
+                            }
                         }
                     }
-                    if( req.query.summary ){
-                        switch(offers[i].status){
-                            case 0: draft++; break;
-                            case 1: open++; break;
-                            case 2: selection++; break;
-                            case 3: closed++; break;
+                }
+
+                if( limit && page ) {
+                    offersWithStatus.length > 0 ? pages = Math.ceil(offersWithStatus.length / limit) : pages = Math.ceil(count / limit);
+
+                    offset = limit * (page - 1);
+                    
+                    if (page > pages) {
+                        return res.status(400).json({
+                            ok: false,
+                            message: `It doesn't exist ${ page } pages. Total of pages ${ pages }`
+                        })
+                    }
+
+                    statusBool ? offers = await db.offers.findAll({where: {fk_offerer: id, status }, limit, offset}) : offers = await offerer.getOffers({limit, offset});
+                    
+                    if (isNaN(pages)){
+                        message = `No results`;
+                    } else {
+                        if ( limit > offers.length ){
+                            message = `Listing ${ offers.length } offers of this user. Page ${ page } of ${ pages }.`;
+                        } else {
+                            message = `Listing ${ limit } offers of this user. Page ${ page } of ${ pages }.`;
                         }
                     }
+                } else {
+                    message = `Listing all offers of this user.`;
                 }
 
                 if( req.query.summary ){
@@ -131,40 +166,10 @@ module.exports = (app, db) => {
                     count.push("Open: " + open);
                     count.push("Selection: " + selection);
                     count.push("Closed: " + closed);
-                }
+                } 
 
-                if( limit && page ) {
-                    if ( offersWithStatus.length > 0 ) {
-                        console.log("offersWithStatus.length: ", offersWithStatus.length);
-                        pages = Math.ceil(offersWithStatus.length / limit);
-                    } else {
-                        console.log("offersWithStatus.length: ", offersWithStatus.length);
-                        pages = Math.ceil(totalOffers / limit);
-                    }
-                    
-                    offset = limit * (page - 1);
-                    
-                    if (page > pages) {
-                        return res.status(400).json({
-                            ok: false,
-                            message: `It doesn't exist ${ page } pages. Total of pages ${ pages }`
-                        })
-                    }
-                    if ( statusBool ){
-                        offers = await db.offers.findAll({where: {fk_offerer: id, status }, limit, offset})
-                    } else {
-                        offers = await offerer.getOffers({limit, offset});
-                    }
-                    message = `Listing ${ limit } of this user. Page ${ page } of ${ pages }.`;
-                } else {
-                    message = `Listing all offers of this user.`;
-                }
-
-                if ( statusBool ) {
-                    offers = offersWithStatus;
-                    message += ` With status = ${ status }`
-                }
-
+                if ( statusBool ) message += ` With status = ${ status }`;
+                
                 return res.json({
                     ok: true,
                     message,
