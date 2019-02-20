@@ -1,5 +1,5 @@
 const env = require('../../../tools/constants');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
 const auth = require('../../../middlewares/auth/auth');
@@ -13,7 +13,8 @@ module.exports = (app, db) => {
         let body = req.body;
 
         try {
-            let user = await db.users.findOne({ where: { email: body.email } })
+            let user = await db.users.findOne({ where: { email: body.email } });
+            let type;
 
             if (!user) {
                 logger.updateLog(logId, false);
@@ -44,6 +45,20 @@ module.exports = (app, db) => {
 
             let token = auth.auth.encode(userUpdated);
             logger.updateLog(logId, true, id);
+
+            if( user.root ){
+                type = 'admin';
+            } else {
+                let offerer = await db.offerers.findOne({
+                    where: { userId: id }
+                });
+                if ( offerer ) {
+                    type = 'offerer';
+                } else {
+                    type = 'applicant';
+                }
+            }
+
             return res.json({
                 ok: true,
                 message: 'Login successful',
@@ -56,6 +71,7 @@ module.exports = (app, db) => {
                     lastAccess: userUpdated.lastAccess,
                     index: userUpdated.index,
                     status: userUpdated.status,
+                    type
                 },
                 token
             });

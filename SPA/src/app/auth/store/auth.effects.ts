@@ -26,10 +26,19 @@ export class AuthEffects {
               email: string
               id: number
               name: string
-              root: boolean
+              type: string
               lastAccess: Date
             }
           }) => {
+            switch (res.data.type) {
+              case 'offerer':
+                res.data.type = 'business';
+                break;
+              case 'applicant':
+                res.data.type = 'candidate';
+                break;
+            }
+
             return [
               {
                 type: AuthActions.SIGNIN
@@ -44,7 +53,7 @@ export class AuthEffects {
                   email: res.data.email,
                   id: res.data.id,
                   name: res.data.name,
-                  root: res.data.root
+                  type: res.data.type
                 }
               }
             ];
@@ -94,6 +103,101 @@ export class AuthEffects {
           }),
           catchError((err: HttpErrorResponse) => {
             throwError(this.handleError('signUp', err));
+            const error = err.error.message ? err.error.message : err;
+            return [
+              {
+                type: AuthActions.AUTH_ERROR,
+                payload: error
+              }
+            ];
+          }),
+        );
+      }
+    ),
+    share()
+  );
+
+  @Effect()
+  authSignupGoogle = this.actions$.pipe(
+    ofType(AuthActions.TRY_SIGNUP_GOOGLE),
+    switchMap(
+      () => {
+        const headers = new HttpHeaders().set('Content-Type', 'application/json');
+        return this.httpClient.get(environment.apiUrl + 'auth/google', {headers: headers}).pipe(
+          mergeMap((res) => {
+            console.log(res);
+            return [
+              {
+                type: AuthActions.TRY_SIGNUP_GOOGLE,
+              }
+            ];
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('signUp', err));
+            console.log('ERRRROOOORRRR: ', err);
+            const error = err.error.message ? err.error.message : err;
+            return [
+              {
+                type: AuthActions.AUTH_ERROR,
+                payload: error
+              }
+            ];
+          }),
+        );
+      }
+    ),
+    share()
+  );
+
+  @Effect()
+  authSignupGitHub = this.actions$.pipe(
+    ofType(AuthActions.TRY_SIGNUP_GITHUB),
+    switchMap(
+      () => {
+        const headers = new HttpHeaders().set('Content-Type', 'application/json');
+        return this.httpClient.get(environment.apiUrl + 'auth/github', {headers: headers}).pipe(
+          mergeMap((res) => {
+            console.log(res);
+            return [
+              {
+                type: AuthActions.TRY_SIGNUP_GITHUB,
+              }
+            ];
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('signUp', err));
+            console.log('ERRRROOOORRRR: ', err);
+            const error = err.error.message ? err.error.message : err;
+            return [
+              {
+                type: AuthActions.AUTH_ERROR,
+                payload: error
+              }
+            ];
+          }),
+        );
+      }
+    ),
+    share()
+  );
+
+  @Effect()
+  authSignupLinkedIn = this.actions$.pipe(
+    ofType(AuthActions.TRY_SIGNUP_LINKEDIN),
+    switchMap(
+      () => {
+        return this.httpClient.get(environment.apiUrl + 'auth/linkedin').pipe(
+          mergeMap((res) => {
+            console.log(res);
+            return [
+              {
+                type: AuthActions.TRY_SIGNUP_LINKEDIN,
+              }
+            ];
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('signUp', err));
+            console.log('ERRRROOOORRRR: ', err);
             const error = err.error.message ? err.error.message : err;
             return [
               {
@@ -167,10 +271,12 @@ export class AuthEffects {
       // console.error(error); // log to console instead
 
       // better job of transforming error for user consumption
+
       console.log(`${operation} failed: ${error.message}`);
 
       // Let the app keep running by returning an empty result.
       return of(result as T);
     };
   }
+
 }

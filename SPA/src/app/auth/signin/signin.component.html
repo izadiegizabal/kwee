@@ -35,7 +35,13 @@
               records. Please double-check and try again.
             </mat-error>
           </mat-form-field>
-          <br *ngIf="user.get('password').invalid">
+          <span *ngIf="user.get('password').invalid && user.get('password').touched">
+            <br>
+            <br>
+          </span>
+          <p (click)="openResetModal()" class="resetLink">
+            I forgot my password.
+          </p>
           <div fxLayout="row" fxLayoutAlign="end">
             <button mat-button type="submit" color="accent" (click)="signIn()">Sign In</button>
           </div>

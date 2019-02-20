@@ -11,8 +11,10 @@ import {StoreModule} from '@ngrx/store';
 import {authReducer} from '../store/auth.reducers';
 import {EffectsModule} from '@ngrx/effects';
 import {AuthEffects} from '../store/auth.effects';
-import {ExperienceFormsComponent} from './signup-candidate/experience-forms/experience-forms.component';
-import {EducationFormsComponent} from './signup-candidate/education-forms/education-forms.component';
+import {EducationsFormsModule} from './signup-candidate/education-forms/educations-forms.module';
+import {ExperienceFormsModule} from './signup-candidate/experience-forms/experience-forms.module';
+import {ImageCropperModule} from 'ngx-image-cropper';
+import {DialogImageCropComponent} from './dialog-image-crop/dialog-image-crop.component';
 
 @NgModule({
   declarations: [
@@ -20,19 +22,22 @@ import {EducationFormsComponent} from './signup-candidate/education-forms/educat
     SignupCandidateComponent,
     SignupOffererComponent,
     DialogErrorComponent,
-    ExperienceFormsComponent,
-    EducationFormsComponent,
+    DialogImageCropComponent,
   ],
   imports: [
     SharedModule,
     HttpClientModule,
     SignupRoutingModule,
     ReactiveFormsModule,
+    EducationsFormsModule,
+    ExperienceFormsModule,
+    ImageCropperModule,
     StoreModule.forFeature('auth', authReducer),
     EffectsModule.forFeature([AuthEffects])
   ],
   entryComponents: [
-    DialogErrorComponent
+    DialogErrorComponent,
+    DialogImageCropComponent
   ],
 })
 export class SignupModule {

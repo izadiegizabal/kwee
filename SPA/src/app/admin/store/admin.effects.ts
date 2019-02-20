@@ -14,19 +14,24 @@ export class AdminEffects {
   @Effect()
   adminGetCandidates = this.actions$.pipe(
     ofType(AdminActions.TRY_GET_CANDIDATES),
+    map((action: AdminActions.TryGetCandidates) => {
+      return action.payload;
+    }),
     withLatestFrom(this.store$.pipe(select(state => state.auth))),
     switchMap(([payload, authState]) => {
-        const apiEndpointUrl = environment.apiUrl + 'applicants';
+        const apiEndpointUrl = environment.apiUrl + 'applicants/?page=' + payload.page + '&limit=' + payload.limit;
         const token = authState.token;
         const headers = new HttpHeaders().set('token', token);
+        // console.log(apiEndpointUrl);
         return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
           map((res: {
             ok: boolean,
-            data: any[]
+            data: any[],
+            total: number,
           }) => {
             return {
               type: AdminActions.SET_CANDIDATES,
-              payload: res.data
+              payload: res,
             };
           }),
           catchError((err: HttpErrorResponse) => {
@@ -48,19 +53,23 @@ export class AdminEffects {
   @Effect()
   adminGetBusinesses = this.actions$.pipe(
     ofType(AdminActions.TRY_GET_BUSINESSES),
+    map((action: AdminActions.TryGetBusinesses) => {
+      return action.payload;
+    }),
     withLatestFrom(this.store$.pipe(select(state => state.auth))),
     switchMap(([payload, authState]) => {
-        const apiEndpointUrl = environment.apiUrl + 'offerers';
+        const apiEndpointUrl = environment.apiUrl + 'offerers/?page=' + payload.page + '&limit=' + payload.limit;
         const token = authState.token;
         const headers = new HttpHeaders().set('token', token);
         return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
           map((res: {
             ok: boolean,
             data: any[],
+            total: number,
           }) => {
             return {
               type: AdminActions.SET_BUSINESSES,
-              payload: res.data
+              payload: res,
             };
           }),
           catchError((err: HttpErrorResponse) => {
@@ -127,7 +136,6 @@ export class AdminEffects {
         const token = authState.token;
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
         const body = JSON.stringify(payload.updatedBusiness);
-
         return this.httpClient.put(apiEndpointUrl, body, {headers: headers}).pipe(
           map(() => {
             return {

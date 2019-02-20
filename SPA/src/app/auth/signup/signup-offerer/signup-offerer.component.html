@@ -63,6 +63,32 @@
           <h4>Basic info</h4>
         </div>
 
+        <div fxLayout="column">
+          <h4>Profile picture</h4>
+          <p>In order to offer an excellent user experience, we require a profile photo to all the companies.</p>
+          <label for="file_profile"><img
+            alt="default profile picture"
+            fxFlex="200px"
+            fxlayout="column"
+            height="200px" id="photo_profile"
+            src="../../../../assets/defaut_profile.png"
+            width="200px"/></label>
+          <label for="file_profile">
+            <button (click)="profile.click()" class="photo-buttons" color="primary" mat-raised-button
+                    type="button">Upload photo
+            </button>
+          </label>
+          <input #profile (change)="previewFile($event)" accept="image/*"
+                 formControlName="profile" id="file_profile" style="width: 0px; height: 0px;" type="file">
+          <button (click)='previewFile(this.fileEvent)' [disabled]="! profile.value" class="photo-buttons" color="primary" mat-raised-button
+                  type="button">Crop again
+          </button>
+          <button (click)="deletePhoto()" class="photo-buttons" color="warn" mat-raised-button
+                  type="button">Delete Photo
+          </button>
+        </div>
+        <br>
+
 
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0px">
           <mat-form-field>
@@ -142,7 +168,13 @@
 
         <div class="line1" fxLayout="column">
           <mat-form-field>
-            <input formControlName="address1" matInput placeholder="Address line 1" required>
+            <input (keyup)="onKey($event)" [matAutocomplete]="auto" formControlName="address1" id="address" matInput
+                   placeholder="Street and City" required>
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+              <mat-option *ngFor="let option of options; index as i" [value]="option">
+                {{option.first}}, {{option.second}}
+              </mat-option>
+            </mat-autocomplete>
             <mat-icon color="primary" matPrefix svgIcon="place"></mat-icon>
             <mat-error *ngIf="!secondFormGroup.get('address1').valid ">
               Please enter a valid address
@@ -153,10 +185,15 @@
 
         <div class="line1" fxLayout="column">
           <mat-form-field>
-            <input formControlName="address2" matInput placeholder="Address line 2">
+            <input (keyup)="onKey($event)" formControlName="address2" id="administrative" matInput
+                   placeholder="Administrative and Postcode" required>
+            <mat-icon color="primary" matPrefix svgIcon="place"></mat-icon>
+            <mat-error *ngIf="!secondFormGroup.get('address2').valid ">
+              Please enter a valid address
+            </mat-error>
           </mat-form-field>
         </div>
-
+        <!--
         <br>
 
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="22px" fxLayoutGap.xs="0px">
@@ -190,7 +227,7 @@
             </mat-error>
           </mat-form-field>
         </div>
-
+        -->
         <br>
         <div fxLayout="row" fxLayoutAlign="end">
           <button color="primary" mat-button matStepperPrevious>Back</button>
@@ -256,15 +293,23 @@
         <br>
         <div fxLayout="row">
           <mat-form-field>
-            <input formControlName="year" matInput placeholder="Year founded">
-            <mat-icon color="primary" matPrefix svgIcon="cake"></mat-icon>
+            <input [matDatepicker]="picker" formControlName="year" matInput placeholder="Date funded" required>
+            <mat-datepicker-toggle [for]="picker" matPrefix></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <mat-error *ngIf="!thirdFormGroup.get('year').valid && !thirdFormGroup.get('year').hasError('tooOld')">
+              Please enter a valid date
+            </mat-error>
+            <mat-error
+              *ngIf="thirdFormGroup.get('year').hasError('tooOld')">
+              Your date is too old
+            </mat-error>
           </mat-form-field>
         </div>
 
 
         <br>
         <div fxLayout="row" fxLayoutAlign="end">
-          <button color="accent" mat-button routerLink="/">Done</button>
+          <button (click)="onUpdate()" color="accent" mat-button routerLink="/" type="button">Done</button>
         </div>
       </div>
     </form>

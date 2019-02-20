@@ -1,0 +1,39 @@
+<div
+  fxFlex="92%"
+  fxFlexOffset="4%"
+  fxLayout="column"
+  fxLayout.gt-lg="row"
+  style="padding: 16px 0 32px 0">
+  <div fxFlex.gt-lg="50" fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap.gt-xs="32px">
+    <div fxFlex="50" fxLayout="column">
+      <h4>Website</h4>
+      <a [href]="business.website" style="margin-bottom: 16px">{{business.website}}</a>
+      <h4>Company Size</h4>
+      <p>{{getSize()}}</p>
+    </div>
+    <div fxFlex="50" fxLayout="column">
+      <h4>Industry</h4>
+      <p>{{business.industry}}</p>
+      <h4>Foundation</h4>
+      <p>{{business.year | date:'longDate'}}</p>
+    </div>
+  </div>
+  <div fxFlex.gt-lg="50" fxLayout="row" fxLayout.gt-md="column">
+    <h4>Location</h4>
+    <p
+      style="margin: 0"
+    >{{business.address}}</p>
+    <mgl-map
+      [center]="[business.location.lat, business.location.long]"
+      [style]="'mapbox://styles/mapbox/streets-v9'"
+      [zoom]="[8]"
+      fxLayout="row"
+      style="margin-top: 16px"
+    >
+      <mgl-marker
+        [lngLat]="[business.location.lat, business.location.long]">
+        <mat-icon color="primary" svgIcon="place"></mat-icon>
+      </mgl-marker>
+    </mgl-map>
+  </div>
+</div>

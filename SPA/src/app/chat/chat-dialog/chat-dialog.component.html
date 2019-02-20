@@ -1,0 +1,41 @@
+<div>
+  <mat-card class="floating-chat" id="chat">
+    <div>
+      <div *ngFor="let message of messages | async">
+        <mat-card *ngIf="message.type==0" [ngClass]="{ 'from': message.sentBy === 'bot',
+                                            'to':   message.sentBy === 'user' }" class="message">
+          <mat-card-content>{{ message.content }}</mat-card-content>
+        </mat-card>
+
+        <mat-chip-list *ngIf="message.type==2" class="toLeft">
+          <mat-chip (click)="sendReply(chip)" *ngFor="let chip of message.obj.chips" color="primary">{{chip}}</mat-chip>
+        </mat-chip-list>
+
+        <mat-card *ngIf="message.type==1" class="example-card">
+          <mat-card-header>
+            <div class="example-header-image" mat-card-avatar></div>
+            <mat-card-title>{{message.content}}</mat-card-title>
+          </mat-card-header>
+          <img [src]='message.obj.img' alt="Photo of an offer" mat-card-image>
+          <mat-card-content>
+            <p>
+              {{message.obj.subtitle}}
+            </p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button (click)="openTab(message.obj.link)" mat-button>{{message.obj.button}}</button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+    <div class="input">
+      <mat-form-field class="example-full-width" style="width: 70%; margin-right: 0.5em;">
+        <input (keyup.enter)="sendMessage()" [(ngModel)]="formValue" id="nameField" matInput type="text">
+      </mat-form-field>
+
+      <button (click)="sendMessage()" align="end" color="accent" mat-raised-button style="width: 20%;">Send</button>
+    </div>
+  </mat-card>
+</div>
+
+<button color="accent" mat-fab (click)="openDialog()" class="float" *ngIf="!opened">Iwi</button>

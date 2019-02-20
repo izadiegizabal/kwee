@@ -14,6 +14,7 @@ export class UserMenuComponent implements OnInit {
   authState: Observable<fromAuth.State>;
   username = '';
   userId = '';
+  userType = '';
 
   constructor(private store$: Store<fromApp.AppState>) {
   }
@@ -28,6 +29,7 @@ export class UserMenuComponent implements OnInit {
         if (user && user.name && user.id) {
           this.username = user.name;
           this.userId = '' + user.id;
+          this.userType = user.type;
         }
       });
   }
@@ -36,4 +38,7 @@ export class UserMenuComponent implements OnInit {
     this.store$.dispatch(new AuthActions.Logout());
   }
 
+  urlfyUser() {
+    return this.username.toLowerCase().replace(/ /g, '-');
+  }
 }

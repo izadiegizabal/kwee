@@ -38,10 +38,14 @@
               }
             ],
             "styles": [
+              "./node_modules/cookieconsent/build/cookieconsent.min.css",
+              "./node_modules/mapbox-gl/dist/mapbox-gl.css",
               "src/kwee-themes.styles.scss",
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "./node_modules/cookieconsent/build/cookieconsent.min.js"
+            ]
           },
           "configurations": {
             "production": {
