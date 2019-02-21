@@ -12,14 +12,26 @@ import {MatDialog} from '@angular/material';
 })
 export class ChatDialogComponent implements OnInit {
 
-  public opened: boolean;
+  public opened = false;
 
+  clicked = false;
   messages: Observable<Message[]>;
   formValue: string;
 
   constructor(public chat: ChatService,
               public dialog: MatDialog) {
+  }
+
+  onClickedOutside(e: Event) {
+    if (this.clicked === false && this.opened) {
+      this.closeDialog();
+    }
+    this.clicked = false;
+  }
+
+  closeDialog() {
     this.opened = false;
+    document.getElementById('chat').classList.remove('expand');
   }
 
   ngOnInit() {
@@ -27,7 +39,6 @@ export class ChatDialogComponent implements OnInit {
     this.messages = this.chat.conversation.asObservable()
       .pipe(scan((acc, val) => acc.concat(val)));
   }
-
 
   sendReply(reply: string) {
     this.chat.converse(reply);
@@ -39,8 +50,9 @@ export class ChatDialogComponent implements OnInit {
 
   openDialog() {
     // this.dialog.open(DialogContentExampleDialogComponent);
-    document.getElementById('chat').classList.add('expand');
     this.opened = true;
+    this.clicked = true;
+    document.getElementById('chat').classList.add('expand');
   }
 
   sendMessage() {
@@ -73,6 +85,10 @@ export class DialogContentExampleDialogComponent implements OnInit {
     // appends to array after each new message is added to feedSource
     this.messages = this.chat.conversation.asObservable()
       .pipe(scan((acc, val) => acc.concat(val)));
+  }
+
+  onClickedOutside(e: Event) {
+    console.log('Clicked outside:', e);
   }
 
 
