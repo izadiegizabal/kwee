@@ -1,3 +1,5 @@
+@import "../../../common-utils";
+
 * {
   z-index: 10;
 }
@@ -64,6 +66,7 @@
   color: white;
 }
 
+
 .floating-chat {
 
   cursor: pointer;
@@ -90,9 +93,21 @@
   }
 }
 
+#container{
+  position: relative;
+}
+
 .input {
-  position: fixed;
-  bottom: 30px;
+  position: absolute;
+  bottom: 0%;
+  height: 15%;
+}
+
+#content{
+  position: absolute;
+  top: 4%;
+  max-height: 82%;
+  overflow-y: scroll;
 }
 
 .floating-chat:first-child {
