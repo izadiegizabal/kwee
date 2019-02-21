@@ -10,6 +10,10 @@ mat-card-title {
   font-size: 1.6rem !important;
 }
 
+::ng-deep app-offer-preview-card .mat-card-header-text {
+  margin: 0 8px;
+}
+
 app-icon-with-text {
   font-size: 0.85rem;
   color: mat-color($mat-blue-gray, 700);
@@ -39,7 +43,7 @@ mat-card-content {
   }
 
   .quickInfo {
-    margin-left: 16px;
+    margin-left: 8px;
     margin-top: -4px;
     margin-bottom: 16px !important;
   }

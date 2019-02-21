@@ -40,7 +40,7 @@ export enum ContractType {
   'Full-Time' = 0,
   'Part-Time' = 1,
   'Internship' = 2,
-  'End of Degree Project' = 3,
+  'EDP' = 3, // 'EDP'
   // 'Temporary' = 4,
   // 'Contract' = 5,
   // 'Other' = 6,

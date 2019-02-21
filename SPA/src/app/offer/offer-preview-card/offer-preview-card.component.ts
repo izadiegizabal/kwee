@@ -44,11 +44,14 @@ export class OfferPreviewCardComponent implements OnInit {
   }
 
   getOfferSalary() {
-    const salary =
-      this.offer.offer.salaryAmount +
+    let salaryNum;
+    if (this.offer.offer.salaryAmount > 10000) {
+      salaryNum = (Number(this.offer.offer.salaryAmount) / 1000).toFixed(1) + 'K';
+    }
+
+    return salaryNum + ' ' +
       this.offer.offer.salaryCurrency + ' ' +
       SalaryFrequency[this.offer.offer.salaryFrecuency];
-    return salary;
   }
 
   getOfferDuration() {

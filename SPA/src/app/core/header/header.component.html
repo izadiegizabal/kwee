@@ -1,13 +1,13 @@
-<mat-toolbar fxLayout="row" [ngClass]="{'business': (authState | async).authenticated && (authState | async).user.type !== 'candidate'}">
-  <div class="logo">
-    <a routerLink="/" *ngIf="!(authState | async).authenticated || (authState | async).user.type === 'candidate'; else business">
+<mat-toolbar fxLayout="row" [ngClass]="{'business': profileType !== 'candidate'}">
+  <div [ngClass]="{'logo': true, 'businessLogo': profileType !== 'candidate'}">
+    <a routerLink="/" *ngIf="profileType === 'candidate'; else business">
       <mat-icon fxHide.gt-xs svgIcon="kwee-icon"></mat-icon>
       <mat-icon fxHide.lt-sm svgIcon="kwee-logo"></mat-icon>
     </a>
     <ng-template #business>
-      <a routerLink="/">
-        <mat-icon fxHide.gt-xs svgIcon="kwee-icon-dark"></mat-icon>
-        <mat-icon fxHide.lt-sm svgIcon="kwee-logo-dark"></mat-icon>
+      <a routerLink="/" class="businessLogo">
+        <img class="bLogoDesktop" fxHide.lt-sm src="../../../assets/branding/logo-kwee-dark.svg" alt="dark Kwee logo"/>
+        <img class="bLogoMobile" fxHide.gt-xs src="../../../assets/branding/iconBnw.svg" alt="dark Kwee icon"/>
       </a>
     </ng-template>
   </div>
