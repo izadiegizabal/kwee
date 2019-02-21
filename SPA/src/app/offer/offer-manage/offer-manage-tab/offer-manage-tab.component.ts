@@ -16,27 +16,39 @@ export class OfferManageTabComponent implements OnInit {
   // @Input() offers: any;
   @Input() status: number;
   @Input() type: number;
+  id: number;
   pageSize = 2;
   pageSizeOptions: number[] = [2, 5, 10, 25, 100];
   pageEvent: PageEvent;
   public offerManageState: Observable<fromOfferManage.State>;
+  private authState: Observable<any>;
 
   constructor(private store$: Store<fromApp.AppState>, private activatedRoute: ActivatedRoute) {
   }
 
   ngOnInit() {
-    const params = this.activatedRoute.snapshot.params;
 
-    if (this.type === 0) {
+    this.authState = this.store$.pipe(select('auth'));
+    // Listen to changes on store
+    this.authState.pipe(
+      select(s => s.user)
+    ).subscribe(
+      (user) => {
+        if (user && user.name && user.id) {
+          this.id = user.id;
+        }
+      });
+
+    if (this.id && this.type === 0) {
       this.store$.dispatch(new OfferManageActions.TryGetOffersOfferer({
-        id: 5,
+        id: this.id,
         page: 1,
         limit: this.pageSize,
         status: this.status
       }));
     } else {
       this.store$.dispatch(new OfferManageActions.TryGetOffersApplicant({
-        id: 4,
+        id: this.id,
         page: 1,
         limit: this.pageSize,
         status: this.status
@@ -47,7 +59,6 @@ export class OfferManageTabComponent implements OnInit {
   }
 
   changePage() {
-    const params = this.activatedRoute.snapshot.params;
 
     if (this.type === 0) {
       this.store$.dispatch(new OfferManageActions.TryGetOffersOfferer({

@@ -19,9 +19,14 @@ export class OfferManageEffects {
     }),
     //  withLatestFrom(this.store$.pipe(select(state => state.auth))),
     switchMap((payload) => {
-        const apiEndpointUrl = environment.apiUrl + 'offerer/' + payload.id
-          + '/offers?page=' + payload.page + '&limit=' + payload.limit +
-          '&status=' + payload.status + '&summary=0';
+        let apiEndpointUrl = environment.apiUrl + 'offerer/' + payload.id
+          + '/offers?page=' + payload.page + '&limit=' + payload.limit
+          + '&summary=0';
+
+        if (payload.status !== -1) {
+          apiEndpointUrl = apiEndpointUrl + '&status=' + payload.status;
+        }
+
         // const token = authState.token;
         // const headers = new HttpHeaders().set('token', token);
         // console.log(apiEndpointUrl);
@@ -64,9 +69,12 @@ export class OfferManageEffects {
     }),
     withLatestFrom(this.store$.pipe(select(state => state.auth))),
     switchMap(([payload, authState]) => {
-        const apiEndpointUrl = environment.apiUrl + 'applicant/' + payload.id + '/applications/'
-          + '?page=' + payload.page + '&limit=' + payload.limit +
-          '&status=' + payload.status + '&summary=0';
+        let apiEndpointUrl = environment.apiUrl + 'applicant/' + payload.id + '/applications/'
+          + '?page=' + payload.page + '&limit=' + payload.limit + '&summary=0';
+        if (payload.status !== -1) {
+          apiEndpointUrl = apiEndpointUrl + '&status=' + payload.status;
+        }
+
         const token = authState.token;
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
         // console.log(apiEndpointUrl);
