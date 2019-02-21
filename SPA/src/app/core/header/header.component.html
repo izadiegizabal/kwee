@@ -1,4 +1,4 @@
-<mat-toolbar fxLayout="row" [ngClass]="{'business': profileType === 'business' || profileType === 'admin'}">
+<mat-toolbar fxLayout="row" [ngClass]="{'dark': profileType === 'business' || profileType === 'admin', 'white': profileType === '' || profileType === 'candidate'}">
   <div [ngClass]="{'logo': true, 'businessLogo': profileType !== 'candidate'}">
     <a routerLink="/" *ngIf="profileType !== 'business'; else business">
       <mat-icon fxHide.gt-xs svgIcon="kwee-icon"></mat-icon>
