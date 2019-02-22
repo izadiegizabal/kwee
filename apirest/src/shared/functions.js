@@ -370,6 +370,43 @@ function checkImg(data) {
     return false;
 }
 
+function prepareOffersToShow(offers, offersShow, user){
+    for (let i = 0; i < offers.length; i++) {
+        let offer = {};
+
+        offer.id = offers[i].id;
+        offer.fk_offerer = offers[i].fk_offerer;
+        offer.offererName = user.name;
+        offer.offererIndex = user.index;
+        offers[i].img ? offer.img = offers[i].img : offer.img = user.img;
+        offer.title = offers[i].title;
+        offer.description = offers[i].description;
+        offer.dateStart = offers[i].dateStart;
+        offer.dateEnd = offers[i].dateEnd;
+        offer.datePublished = offers[i].datePublished;
+        offer.location = offers[i].location;
+        offer.status = offers[i].status;
+        offer.salaryAmount = offers[i].salaryAmount;
+        offer.salaryFrecuency = offers[i].salaryFrecuency;
+        offer.salaryCurrency = offers[i].salaryCurrency;
+        offer.workLocation = offers[i].workLocation;
+        offer.seniority = offers[i].seniority;
+        offer.maxApplicants = offers[i].maxApplicants;
+        offer.currentApplications = offers[i].currentApplications;
+        offer.duration = offers[i].duration;
+        offer.durationUnit = offers[i].durationUnit;
+        offer.isIndefinite = offers[i].isIndefinite;
+        offer.contractType = offers[i].contractType;
+        offer.lat = offers[i].lat;
+        offer.lon = offers[i].lon;
+        offer.createdAt = offers[i].createdAt;
+        offer.updatedAt = offers[i].updatedAt;
+        offer.deletedAt = offers[i].deletedAt;
+        offersShow.push(offer);
+    }
+    return offersShow;
+}
+
 
 module.exports = {
     tokenId,
@@ -381,5 +418,6 @@ module.exports = {
     uploadFile,
     uploadImg,
     checkImg,
-    deleteFile
+    deleteFile,
+    prepareOffersToShow
 }
