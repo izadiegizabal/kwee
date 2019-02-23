@@ -1,7 +1,8 @@
 const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
-const { tokenId, logger, sendVerificationEmail, pagination, uploadImg, checkImg, deleteFile } = require('../../../../shared/functions');
+const { tokenId, logger, sendVerificationEmail, pagination, uploadImg, checkImg, deleteFile, prepareOffersToShow } = require('../../../../shared/functions');
 const bcrypt = require('bcryptjs');
 const fs = require('fs');
+const elastic = require('../../../../database/elasticsearch/elasticsearch');
 
 // ============================
 // ======== CRUD user =========
@@ -108,7 +109,11 @@ module.exports = (app, db) => {
                 where: { userId: id }
             });
             
+            
             if ( offerer ) {
+                let user = await db.users.findOne({
+                    where: { id }
+                });
                 let offers = await offerer.getOffers();
                 
                 let count = offers.length;
@@ -161,19 +166,23 @@ module.exports = (app, db) => {
                 if( req.query.summary ){
                     var totalOffers = count;
                     count = [];
-                    count.push("Total: " + totalOffers);
-                    count.push("Draft: " + draft);
-                    count.push("Open: " + open);
-                    count.push("Selection: " + selection);
-                    count.push("Closed: " + closed);
+                    count.push({Total: totalOffers});
+                    count.push({Draft: draft});
+                    count.push({Open: open});
+                    count.push({Selection: selection});
+                    count.push({Closed: closed});
                 } 
 
                 if ( statusBool ) message += ` With status = ${ status }`;
+
+                let offersShow = [];
+                
+                prepareOffersToShow(offers, offersShow, user);
                 
                 return res.json({
                     ok: true,
                     message,
-                    data: offers,
+                    data: offersShow,
                     count
                 });
 
@@ -272,11 +281,22 @@ module.exports = (app, db) => {
                     var imgName = uploadImg(req, res, next, 'offerers');
                     user.img = imgName;
                         return db.users.create(user, { transaction })
-                            .then(_user => {
+                            .then(async _user => {
                                 uservar = _user;
                                 return createOfferer(body, _user, next, transaction);
                             })
                             .then(ending => {
+                                delete body.password;
+                                elastic.index({
+                                    index: 'users',
+                                    id: uservar.id,
+                                    type: 'offerers',
+                                    body
+                                }, function (err, resp, status) {
+                                    console.log('error : ' + err);
+                                    console.log('resp :' + resp);
+                                    console.log('status :' + status);
+                                });
                                 sendVerificationEmail(body, uservar);
                                 return res.status(201).json({
                                     ok: true,
@@ -450,4 +470,5 @@ module.exports = (app, db) => {
             next({ type: 'error', error: err.message });
         }
     }
+
 }
