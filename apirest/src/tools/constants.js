@@ -10,6 +10,8 @@ const env = {
 
     URL: pass.URL,
 
+    ES_URL: pass.ES_URL,
+
     PROD,
 
     SIGNUP: URL + '/signup?',

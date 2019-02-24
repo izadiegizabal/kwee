@@ -1,7 +1,9 @@
 var elasticsearch = require('elasticsearch');
+const env = require('../tools/constants');
 
 var client = new elasticsearch.Client({  
-    host: 'localhost:9200',
+  //If you want to use this configuration on production server, just uncomment the commented part and comment 
+    host: env.ES_URL,
     log: 'trace'
 
     //configuration for production server

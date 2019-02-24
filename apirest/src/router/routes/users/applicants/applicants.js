@@ -1,13 +1,35 @@
-const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
 const { tokenId, logger, sendVerificationEmail, pagination, checkImg, deleteFile, uploadImg } = require('../../../../shared/functions');
+const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
+const elastic = require('../../../../database/elasticsearch');
 const bcrypt = require('bcryptjs');
-
 
 // ============================
 // ======== CRUD user =========
 // ============================
 
 module.exports = (app, db) => {
+
+    app.get('/applicants/search', async(req, res, next) => {
+
+        try {
+            // if req.query.keywords search OR (search)
+            // rest of req.query.params search AND (filter)
+            let query = req.query;
+            let page = Number(query.page);
+            let limit = Number(query.limit);
+            let keywords = query.keywords;
+            let index_gte = query.index_gte;
+            let index_gt = query.index_gt;
+            let index_lte = query.index_lte;
+            let index_lt = query.index_lt;
+            delete query.page;
+            delete query.limit;
+            delete query.keywords;
+        } catch (error) {
+            
+        }
+
+    });
 
     // GET all users applicants
     app.get('/applicants', async(req, res, next) => {
@@ -127,6 +149,7 @@ module.exports = (app, db) => {
                             offer.fk_offerer = allOffers[j].fk_offerer;
                             offer.offererName = offerer.name;
                             offer.offererIndex = offerer.index;
+                            allOffers[j].img ? offer.img = allOffers[j].img : offer.img = offerer.img;
                             offer.title = allOffers[j].title;
                             offer.description = allOffers[j].description;
                             offer.dateStart = allOffers[j].dateStart;
@@ -223,11 +246,11 @@ module.exports = (app, db) => {
                 if( req.query.summary ){
                     var totalOffers = count;
                     count = [];
-                    count.push("Total: " + totalOffers);
-                    count.push("Draft: " + draft);
-                    count.push("Open: " + open);
-                    count.push("Selection: " + selection);
-                    count.push("Closed: " + closed);
+                    count.push({Total: totalOffers});
+                    count.push({Draft: draft});
+                    count.push({Open: open});
+                    count.push({Selection: selection});
+                    count.push({Closed: closed});
                 }
 
                 if ( statusBool ) message += ` With status = ${ status }`;
@@ -332,6 +355,18 @@ module.exports = (app, db) => {
                     return createApplicant(body, user, next, transaction);
                 })
                 .then(ending => {
+                    console.log('body: ', body);
+                    delete body.password;
+                    elastic.index({
+                        index: 'applicants',
+                        id: uservar.id,
+                        type: 'applicants',
+                        body
+                    }, function (err, resp, status) {
+                        console.log('error : ' + err);
+                        console.log('resp :' + resp);
+                        console.log('status :' + status);
+                    });
                     sendVerificationEmail(body, uservar);
                     return res.status(201).json({
                         ok: true,

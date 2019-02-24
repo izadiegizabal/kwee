@@ -1,11 +1,11 @@
-const auth = require('../middlewares/auth/auth');
-const Log = require('../models/logs');
-const moment = require('moment');
-const fs = require('fs');
-const path = require('path');
-const nodemailer = require('nodemailer');
-const env = require('../tools/constants.js');
-const jwt = require('jsonwebtoken');
+const auth          = require('../middlewares/auth/auth');
+const env           = require('../tools/constants.js');
+const Log           = require('../models/logs');
+const jwt           = require('jsonwebtoken');
+const nodemailer    = require('nodemailer');
+const moment        = require('moment');
+const path          = require('path');
+const fs            = require('fs');
 
 
 

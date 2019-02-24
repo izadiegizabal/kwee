@@ -1,5 +1,6 @@
-const { checkToken, checkAdmin } = require('../../../middlewares/authentication');
 const { tokenId, logger, sendVerificationEmail, sendEmailResetPassword, pagination } = require('../../../shared/functions');
+const { checkToken, checkAdmin } = require('../../../middlewares/authentication');
+const elastic = require('../../../database/elasticsearch');
 const bcrypt = require('bcryptjs');
 
 
@@ -11,6 +12,10 @@ module.exports = (app, db) => {
 
 
     app.get('/users', async(req, res, next) => {
+        elastic.count({ index: 'users', type: 'users' }, function (err, resp, status) {
+            console.log("response :", resp);
+          });
+
         try {
 
             var attributes = {
@@ -83,6 +88,18 @@ module.exports = (app, db) => {
             }
 
             let user = await db.users.create(body);
+
+            elastic.index({
+                index: 'users',
+                id: user.id,
+                type: 'users',
+                body
+
+            }, function (err, resp, status) {
+                if ( err ) {
+                    return next({ type: 'error', error: err.message });
+                }
+            });
 
             if (user) {
                 sendVerificationEmail(body, user);
