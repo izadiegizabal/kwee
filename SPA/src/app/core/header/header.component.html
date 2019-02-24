@@ -1,6 +1,6 @@
-<mat-toolbar fxLayout="row" [ngClass]="{'dark': profileType === 'business' || profileType === 'admin', 'white': profileType === '' || profileType === 'candidate'}">
+<mat-toolbar fxLayout="row" [ngClass]="{'dark': auth && profileType !== 'candidate', 'white': !auth || profileType === 'candidate'}">
   <div [ngClass]="{'logo': true, 'businessLogo': profileType !== 'candidate'}">
-    <a routerLink="/" *ngIf="profileType !== 'business'; else business">
+    <a routerLink="/" *ngIf="!auth || profileType === 'candidate'; else business">
       <mat-icon fxHide.gt-xs svgIcon="kwee-icon"></mat-icon>
       <mat-icon fxHide.lt-sm svgIcon="kwee-logo"></mat-icon>
     </a>
@@ -13,8 +13,8 @@
   </div>
   <div fxFlex="grow"></div>
   <div class="user-section">
-    <app-user-menu *ngIf="(authState | async).authenticated"></app-user-menu>
-    <app-signupin-section *ngIf="!(authState | async).authenticated"></app-signupin-section>
+    <app-user-menu *ngIf="auth"></app-user-menu>
+    <app-signupin-section *ngIf="!auth"></app-signupin-section>
   </div>
 
 </mat-toolbar>

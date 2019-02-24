@@ -18,7 +18,7 @@
       <p>{{business.year | date:'longDate'}}</p>
     </div>
   </div>
-  <div fxFlex.gt-lg="50" fxLayout="row" fxLayout.gt-md="column">
+  <div fxFlex.gt-lg="50" fxLayout="column">
     <h4>Location</h4>
     <p
       style="margin: 0"
@@ -28,6 +28,7 @@
       [style]="'mapbox://styles/mapbox/streets-v9'"
       [zoom]="[8]"
       fxLayout="row"
+      fxFlex.lt-sm="100%"
       style="margin-top: 16px"
     >
       <mgl-marker

@@ -25,65 +25,65 @@ export class OfferPreviewCardComponent implements OnInit {
   }
 
   urlfyPosition() {
-    return '/offer/' + this.offer.offer.id + '/' + this.offer.offer.title.toLowerCase().replace(/ /g, '-');
+    return '/offer/' + this.offer.id + '/' + this.offer.title.toLowerCase().replace(/ /g, '-');
   }
 
 
   getPublishedDate() {
-    if (this.offer && this.offer.offer.datePublished) {
-      return this._utils.getTimePassed(new Date(this.offer.offer.datePublished));
+    if (this.offer && this.offer.datePublished) {
+      return this._utils.getTimePassed(new Date(this.offer.datePublished));
     }
   }
 
   openShareDialog() {
     this.dialog.open(SnsShareDialogComponent, {
       data: {
-        offer: {title: this.offer.offer.title, url: location.hostname + this.urlfyPosition()}
+        offer: {title: this.offer.title, url: location.hostname + this.urlfyPosition()}
       }
     });
   }
 
   getOfferSalary() {
     let salaryNum;
-    if (this.offer.offer.salaryAmount > 10000) {
-      salaryNum = (Number(this.offer.offer.salaryAmount) / 1000).toFixed(1) + 'K';
+    if (this.offer.salaryAmount > 10000) {
+      salaryNum = (Number(this.offer.salaryAmount) / 1000).toFixed(1) + 'K';
     }
 
     return salaryNum + ' ' +
-      this.offer.offer.salaryCurrency + ' ' +
-      SalaryFrequency[this.offer.offer.salaryFrecuency];
+      this.offer.salaryCurrency + ' ' +
+      SalaryFrequency[this.offer.salaryFrecuency];
   }
 
   getOfferDuration() {
-    if (this.offer.offer.isIndefinite) {
+    if (this.offer.isIndefinite) {
       return 'Indefinite';
     } else {
-      if (this.offer.offer.duration > 1) {
-        return this.offer.offer.duration + ' ' + JobDurationUnit[this.offer.offer.durationUnit];
+      if (this.offer.duration > 1) {
+        return this.offer.duration + ' ' + JobDurationUnit[this.offer.durationUnit];
       } else {
-        return this.offer.offer.duration + ' ' + JobDurationUnit[this.offer.offer.durationUnit].slice(0, -1);
+        return this.offer.duration + ' ' + JobDurationUnit[this.offer.durationUnit].slice(0, -1);
       }
     }
   }
 
   getOfferContractType() {
-    return ContractType[this.offer.offer.contractType];
+    return ContractType[this.offer.contractType];
   }
 
   getOfferLocation() {
-    let location = this.offer.offer.location ? this.offer.offer.location : '';
-    if (location !== '' && this.offer.offer.workLocation !== WorkLocationType['On Site']) {
+    let location = this.offer.location ? this.offer.location : '';
+    if (location !== '' && this.offer.workLocation !== WorkLocationType['On Site']) {
       location += ' - ';
-      location += WorkLocationType[this.offer.offer.workLocation];
+      location += WorkLocationType[this.offer.workLocation];
     } else if (location === '') {
-      location = WorkLocationType[this.offer.offer.workLocation];
+      location = WorkLocationType[this.offer.workLocation];
     }
 
     return location;
   }
 
   urlOfferer() {
-    const url = '/business/' + this.offer.user.id + '/' + this.offer.user.name.toLowerCase().replace(/ /g, '-');
+    const url = '/business/' + this.offer.fk_offerer + '/' + this.offer.offererName.toLowerCase().replace(/ /g, '-');
     return url;
   }
 
