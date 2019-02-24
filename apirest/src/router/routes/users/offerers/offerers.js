@@ -1,8 +1,7 @@
-const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
 const { tokenId, logger, sendVerificationEmail, pagination, uploadImg, checkImg, deleteFile, prepareOffersToShow } = require('../../../../shared/functions');
+const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
+const elastic = require('../../../../database/elasticsearch');
 const bcrypt = require('bcryptjs');
-const fs = require('fs');
-const elastic = require('../../../../database/elasticsearch/elasticsearch');
 
 // ============================
 // ======== CRUD user =========

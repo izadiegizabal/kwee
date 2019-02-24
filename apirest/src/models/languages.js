@@ -2,18 +2,30 @@ module.exports = (sequelize, DateTypes) => {
 
     const Language = sequelize.define('languages', {
 
-        language: {
-            type: DateTypes.STRING(20),
-            field: 'language',
+        fk_applicant: {
+            type: DateTypes.INTEGER,
             allowNull: false,
-            unique: true,
+        },
+
+        name: {
+            type: DateTypes.STRING(20),
+            allowNull: false,
             validate: {
                 notEmpty: {
                     args: true,
                     msg: "Language should not be empty."
                 } 
             }
+        },
+
+        level: {
+            type: DateTypes.STRING(50),
+            allowNull: false,
+            validate: {
+                notEmpty: true
+            }
         }
+
     });
 
     return Language;

@@ -1,6 +1,9 @@
+const { tokenId, logger, pagination, prepareOffersToShow } = require('../../shared/functions');
 const { checkToken } = require('../../middlewares/authentication');
-const { tokenId, logger, pagination, validateDate, prepareOffersToShow } = require('../../shared/functions');
-const elastic = require('../../database/elasticsearch/elasticsearch');
+const elastic = require('../../database/elasticsearch');
+const env =     require('../../tools/constants');
+const axios =   require('axios')
+
 
 // ============================
 // ======== CRUD offers =========
@@ -9,7 +12,7 @@ const elastic = require('../../database/elasticsearch/elasticsearch');
 module.exports = (app, db) => {
 
     app.get('/offers/search', async(req, res, next) => {
-        
+
         try {
             // if req.query.keywords search OR (search)
             // rest of req.query.params search AND (filter)
@@ -250,8 +253,6 @@ module.exports = (app, db) => {
             next({ type: 'error', error: 'Error getting data' });
         }
     });
-
-
     
     // POST single offer
     app.post('/offer', async(req, res, next) => {
@@ -270,10 +271,11 @@ module.exports = (app, db) => {
                     type: 'offers',
                     body
                 }, function (err, resp, status) {
-                    console.log('error : ' + err);
-                    console.log('resp :' + resp);
-                    console.log('status :' + status);
+                    if ( err ) {
+                        return next({ type: 'error', error: err.message });
+                    }
                 });
+
                 return res.status(201).json({
                     ok: true,
                     message: 'Offer created',
@@ -318,20 +320,22 @@ module.exports = (app, db) => {
 
         try {
             let fk_offerer = tokenId.getTokenId(req.get('token'));
-            let offerUpdate = await db.offers.update(updates, {
+            await db.offers.update(updates, {
                     where: { id, fk_offerer }
                 }).then(result => {
-                    // Comprobar return 
+                    axios.post(`http://${ env.ES_URL }/offers/offers/${ id }/_update?pretty=true`, {
+                        doc: updates
+                    }).then((resp) => {
+                        // updated from elasticsearch database too
+                    }).catch((error) => {
+                        return next({ type: 'error', error: error.message });
+                    })
+
                     return res.status(200).json({
                         ok: true,
-                        message: `Offer ${ id } updated ¿checkear si actualiza?`,
-                        data: result
+                        message: `Offer ${ id } updated`,
                     });
                 })
-                // json
-                // offer: [1] -> Updated
-                // offer: [0] -> Not updated
-                // empty body will change 'updateAt'
         } catch (err) {
             return next({ type: 'error', error: err.message });
         }
@@ -343,15 +347,22 @@ module.exports = (app, db) => {
 
         try {
             let fk_offerer = tokenId.getTokenId(req.get('token'));
-            res.json({
-                ok: true,
-                offer: await db.offers.destroy({
-                    where: { id, fk_offerer }
-                })
+
+            axios.delete(`http://${ env.ES_URL }/offers/offers/${ id }`)
+                .then((res) => {
+                    // deleted from elasticsearch database too
+            }).catch((error) => {
+                console.error(error)
             });
-            // Respuestas en json
-            // offer: 1 -> Deleted
-            // offer: 0 -> Offer doesn't exists
+
+            await db.offers.destroy({
+                where: { id, fk_offerer }
+            });
+
+            return res.json({
+                ok: true,
+                message: 'Offer deleted' 
+            });
         } catch (err) {
             next({ type: 'error', error: 'Error getting data' });
         }

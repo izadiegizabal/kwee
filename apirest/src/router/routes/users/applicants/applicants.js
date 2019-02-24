@@ -1,13 +1,35 @@
-const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
 const { tokenId, logger, sendVerificationEmail, pagination, checkImg, deleteFile, uploadImg } = require('../../../../shared/functions');
+const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
+const elastic = require('../../../../database/elasticsearch');
 const bcrypt = require('bcryptjs');
-
 
 // ============================
 // ======== CRUD user =========
 // ============================
 
 module.exports = (app, db) => {
+
+    app.get('/applicants/search', async(req, res, next) => {
+
+        try {
+            // if req.query.keywords search OR (search)
+            // rest of req.query.params search AND (filter)
+            let query = req.query;
+            let page = Number(query.page);
+            let limit = Number(query.limit);
+            let keywords = query.keywords;
+            let index_gte = query.index_gte;
+            let index_gt = query.index_gt;
+            let index_lte = query.index_lte;
+            let index_lt = query.index_lt;
+            delete query.page;
+            delete query.limit;
+            delete query.keywords;
+        } catch (error) {
+            
+        }
+
+    });
 
     // GET all users applicants
     app.get('/applicants', async(req, res, next) => {
@@ -127,6 +149,7 @@ module.exports = (app, db) => {
                             offer.fk_offerer = allOffers[j].fk_offerer;
                             offer.offererName = offerer.name;
                             offer.offererIndex = offerer.index;
+                            allOffers[j].img ? offer.img = allOffers[j].img : offer.img = offerer.img;
                             offer.title = allOffers[j].title;
                             offer.description = allOffers[j].description;
                             offer.dateStart = allOffers[j].dateStart;
@@ -223,11 +246,11 @@ module.exports = (app, db) => {
                 if( req.query.summary ){
                     var totalOffers = count;
                     count = [];
-                    count.push("Total: " + totalOffers);
-                    count.push("Draft: " + draft);
-                    count.push("Open: " + open);
-                    count.push("Selection: " + selection);
-                    count.push("Closed: " + closed);
+                    count.push({Total: totalOffers});
+                    count.push({Draft: draft});
+                    count.push({Open: open});
+                    count.push({Selection: selection});
+                    count.push({Closed: closed});
                 }
 
                 if ( statusBool ) message += ` With status = ${ status }`;
@@ -332,6 +355,18 @@ module.exports = (app, db) => {
                     return createApplicant(body, user, next, transaction);
                 })
                 .then(ending => {
+                    console.log('body: ', body);
+                    delete body.password;
+                    elastic.index({
+                        index: 'applicants',
+                        id: uservar.id,
+                        type: 'applicants',
+                        body
+                    }, function (err, resp, status) {
+                        if ( err ) {
+                            return next({ type: 'error', error: err.message });
+                        }
+                    });
                     sendVerificationEmail(body, uservar);
                     return res.status(201).json({
                         ok: true,
@@ -367,9 +402,9 @@ module.exports = (app, db) => {
                 applicantuser = await db.users.update(user, {
                     where: { id }
                 })
-                await setEducations(applicant, body, next).then( async () => {
-                    await setSkills(applicant, body, next).then( async () => {
-                        await setLanguages(applicant, body, next).then( async () => {
+                await setEducations(id, body, next).then( async () => {
+                    await setLanguages(id, body, next).then( async () => {
+                        await setSkills(applicant, body, next).then( async () => {
                             await setExperiences(id, body, next).then( async () => {
                                 return res.status(200).json({
                                     ok: true,
@@ -389,7 +424,6 @@ module.exports = (app, db) => {
 
     // Update applicant by themself
     app.put('/applicant', async(req, res, next) => {
-
         try {
             let logId = await logger.saveLog('PUT', 'applicant', null, res);
             let id = tokenId.getTokenId(req.get('token'));
@@ -459,7 +493,7 @@ module.exports = (app, db) => {
         if (applicant) {
             delete body.root;
 
-            let applicantuser = true;
+            let applicantUser = true;
             let userApp = {};
             body.city ? userApp.city = body.city : null;
             body.dateBorn ? userApp.dateBorn = body.dateBorn : null;
@@ -486,7 +520,7 @@ module.exports = (app, db) => {
                         body.img = imgName;
                 }
 
-                applicantuser = await db.users.update(body, {
+                applicantUser = await db.users.update(body, {
                     where: { id }
                 })
             }
@@ -494,7 +528,13 @@ module.exports = (app, db) => {
             let updated = await db.applicants.update(userApp, {
                 where: { userId: id }
             });
-            if (updated && applicantuser) {
+
+            body.experiences ? updateExperiences(body.experiences) : null;
+            body.educations ? updateEducations(body.educations) : null;
+            body.languages ? updateLanguages(body.languages) : null;
+            // body.skills ? updateSkills(body.skills) : null;
+
+            if (updated && applicantUser) {
                 return res.status(200).json({
                     ok: true,
                     message: `Applicant ${ id } data updated successfuly`,
@@ -505,6 +545,45 @@ module.exports = (app, db) => {
             }
         } else {
             return next({ type: 'error', error: 'Sorry, you are not applicant' });
+        }
+    }
+
+    async function updateLanguages(languages) {
+        let id = languages.id;
+        delete languages.id;
+        try {
+            await db.languages.update(languages, {
+                where: { id }
+            });
+            
+        } catch (error) {
+            return next({ type: 'error', error: 'Can\'t update language' });
+        }
+    }
+
+    async function updateExperiences(experiences) {
+        let id = experiences.id;
+        delete experiences.id;
+        try {
+            await db.experiences.update(experiences, {
+                where: { id }
+            });
+            
+        } catch (error) {
+            return next({ type: 'error', error: 'Can\'t update experience' });
+        }
+    }
+
+    async function updateEducations(educations) {
+        let id = educations.id;
+        delete educations.id;
+        try {
+            await db.educations.update(educations, {
+                where: { id }
+            });
+            
+        } catch (error) {
+            return next({ type: 'error', error: 'Can\'t update education' });
         }
     }
 
@@ -580,30 +659,19 @@ module.exports = (app, db) => {
         return data;
     }
 
-    async function setEducations( applicant, body, next ) {
+    async function setEducations( id, body, next ) {
         if( body.educations ) {
             try {
                 if ( body.educations.length > 0 ) {
-                    return new Promise(async(resolve, reject) => {
-                        for (let i = 0; i < body.educations.length; i++) {
-                            await applicant.addEducation(body.educations[i].fk_education, {
-                                through: {
-                                    description: body.educations[i].description,
-                                    date_start: body.educations[i].date_start,
-                                    date_end: body.educations[i].date_end,
-                                    institution: body.educations[i].institution
-                                }
-                            }).then(result => {
-                                if (result) {
-                                    return resolve('Education Added');
-                                } else {
-                                    return reject(new Error('Education not added'));
-                                }
-                            }).catch(err => {
-                                return next({ type: 'error', error: err.message });
-                            })
-                        }
-                    });
+                    for (let i = 0; i < body.educations.length; i++) {
+                        await db.educations.create({
+                            fk_applicant: id,
+                            title: body.educations[i].title,
+                            description: body.educations[i].description,
+                            date_start: body.educations[i].date_start,
+                            date_end: body.educations[i].date_end,
+                        });
+                    }
                 }
             } catch (err) {
                 return next({ type: 'error', error: err.message });
@@ -640,27 +708,17 @@ module.exports = (app, db) => {
         }
     }
 
-    async function setLanguages( applicant, body, next ) {
+    async function setLanguages( id, body, next ) {
         if( body.languages ) {
             try {
                 if ( body.languages.length > 0 ) {
-                    return new Promise(async(resolve, reject) => {
-                        for (let i = 0; i < body.languages.length; i++) {
-                            await applicant.addLanguage(body.languages[i].fk_language, {
-                                through: {
-                                    level: body.languages[i].level,
-                                }
-                            }).then(result => {
-                                if (result) {
-                                    return resolve('Language added');
-                                } else {
-                                    return reject(new Error('Language not added'));
-                                }
-                            }).catch(err => {
-                                return next({ type: 'error', error: err.message });
-                            })
-                        }
-                    });
+                    for (let i = 0; i < body.languages.length; i++) {
+                        await db.languages.create({
+                            fk_applicant: id,
+                            name: body.languages[i].title,
+                            level: body.languages[i].level
+                        });
+                    }
                 }
             } catch (err) {
                 return next({ type: 'error', error: err.message });
