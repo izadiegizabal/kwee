@@ -1,5 +1,5 @@
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
-const { logger } = require('../../shared/functions');
+const { tokenId, logger } = require('../../shared/functions');
 
 // ============================
 // ======== CRUD educations =========
@@ -73,58 +73,104 @@ module.exports = (app, db) => {
     });
 
     // POST single education
-    app.post('/education', [checkToken, checkAdmin], async(req, res, next) => {
+    app.post('/education', async(req, res, next) => {
         let body = req.body;
 
         try {
-            return res.status(201).json({
-                ok: true,
-                education: await db.educations.create({
-                    title: body.title,
-                }),
-                message: `Education has been created.`
+            let id = tokenId.getTokenId(req.get('token'));
+            let education = await db.educations.create({
+                fk_applicant: id,
+                title: body.title,
+                description: body.description,
+                dateStart: body.dateStart,
+                dateEnd: body.dateEnd,
             });
+
+            if ( education ) {
+                return res.status(201).json({
+                    ok: true,
+                    message: `Education has been created.`
+                });
+            }
+
         } catch (err) {
-            return next({ type: 'error', error: err.errors[0].message });
+            return next({ type: 'error', error: err.message });
         }
 
     });
 
-    // PUT single education
-    app.put('/education/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
+    // PUT single education by themself
+    app.put('/education/:id([0-9]+)', async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
 
         try {
+            let fk_applicant = tokenId.getTokenId(req.get('token'));
+
+            await db.educations.update(updates, {
+                where: { id, fk_applicant }
+            });
+
             return res.status(200).json({
                 ok: true,
-                education: await db.educations.update(updates, {
-                    where: { id }
-                })
+                message: 'Updated' 
             });
-            // json
-            // education: [1] -> Updated
-            // education: [0] -> Not updated
-            // empty body will change 'updateAt'
         } catch (err) {
             return next({ type: 'error', error: err.errors[0].message });
         }
     });
 
-    // DELETE single education
-    app.delete('/education/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
+    // PUT single education by admin
+    app.put('/education/admin/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
+        const id = req.params.id;
+        const updates = req.body;
+
+        try {
+            await db.educations.update(updates, {
+                where: { id }
+            });
+
+            return res.status(200).json({
+                ok: true,
+                message: 'Updated' 
+            });
+        } catch (err) {
+            return next({ type: 'error', error: err.errors[0].message });
+        }
+    });
+
+    // DELETE single education by themself
+    app.delete('/education/:id([0-9]+)', async(req, res, next) => {
+        const id = req.params.id;
+        try {
+            let fk_applicant = tokenId.getTokenId(req.get('token'));
+
+            await db.educations.destroy({
+                where: { id, fk_applicant }
+            });
+
+            return res.json({
+                ok: true,
+                message: 'Deleted' 
+            });
+        } catch (err) {
+            return next({ type: 'error', error: 'Error getting data' });
+        }
+    });
+
+    // DELETE single education by admin
+    app.delete('/education/admin/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
 
         try {
+            await db.educations.destroy({
+                where: { id: id }
+            });
+
             return res.json({
                 ok: true,
-                education: await db.educations.destroy({
-                    where: { id: id }
-                })
+                message: 'Deleted' 
             });
-            // Respuestas en json
-            // education: 1 -> Deleted
-            // education: 0 -> Education doesn't exists
         } catch (err) {
             return next({ type: 'error', error: 'Error getting data' });
         }

@@ -363,9 +363,9 @@ module.exports = (app, db) => {
                         type: 'applicants',
                         body
                     }, function (err, resp, status) {
-                        console.log('error : ' + err);
-                        console.log('resp :' + resp);
-                        console.log('status :' + status);
+                        if ( err ) {
+                            return next({ type: 'error', error: err.message });
+                        }
                     });
                     sendVerificationEmail(body, uservar);
                     return res.status(201).json({
@@ -402,9 +402,9 @@ module.exports = (app, db) => {
                 applicantuser = await db.users.update(user, {
                     where: { id }
                 })
-                await setEducations(applicant, body, next).then( async () => {
-                    await setSkills(applicant, body, next).then( async () => {
-                        await setLanguages(applicant, body, next).then( async () => {
+                await setEducations(id, body, next).then( async () => {
+                    await setLanguages(id, body, next).then( async () => {
+                        await setSkills(applicant, body, next).then( async () => {
                             await setExperiences(id, body, next).then( async () => {
                                 return res.status(200).json({
                                     ok: true,
@@ -424,7 +424,6 @@ module.exports = (app, db) => {
 
     // Update applicant by themself
     app.put('/applicant', async(req, res, next) => {
-
         try {
             let logId = await logger.saveLog('PUT', 'applicant', null, res);
             let id = tokenId.getTokenId(req.get('token'));
@@ -494,7 +493,7 @@ module.exports = (app, db) => {
         if (applicant) {
             delete body.root;
 
-            let applicantuser = true;
+            let applicantUser = true;
             let userApp = {};
             body.city ? userApp.city = body.city : null;
             body.dateBorn ? userApp.dateBorn = body.dateBorn : null;
@@ -521,7 +520,7 @@ module.exports = (app, db) => {
                         body.img = imgName;
                 }
 
-                applicantuser = await db.users.update(body, {
+                applicantUser = await db.users.update(body, {
                     where: { id }
                 })
             }
@@ -529,7 +528,13 @@ module.exports = (app, db) => {
             let updated = await db.applicants.update(userApp, {
                 where: { userId: id }
             });
-            if (updated && applicantuser) {
+
+            body.experiences ? updateExperiences(body.experiences) : null;
+            body.educations ? updateEducations(body.educations) : null;
+            body.languages ? updateLanguages(body.languages) : null;
+            // body.skills ? updateSkills(body.skills) : null;
+
+            if (updated && applicantUser) {
                 return res.status(200).json({
                     ok: true,
                     message: `Applicant ${ id } data updated successfuly`,
@@ -540,6 +545,45 @@ module.exports = (app, db) => {
             }
         } else {
             return next({ type: 'error', error: 'Sorry, you are not applicant' });
+        }
+    }
+
+    async function updateLanguages(languages) {
+        let id = languages.id;
+        delete languages.id;
+        try {
+            await db.languages.update(languages, {
+                where: { id }
+            });
+            
+        } catch (error) {
+            return next({ type: 'error', error: 'Can\'t update language' });
+        }
+    }
+
+    async function updateExperiences(experiences) {
+        let id = experiences.id;
+        delete experiences.id;
+        try {
+            await db.experiences.update(experiences, {
+                where: { id }
+            });
+            
+        } catch (error) {
+            return next({ type: 'error', error: 'Can\'t update experience' });
+        }
+    }
+
+    async function updateEducations(educations) {
+        let id = educations.id;
+        delete educations.id;
+        try {
+            await db.educations.update(educations, {
+                where: { id }
+            });
+            
+        } catch (error) {
+            return next({ type: 'error', error: 'Can\'t update education' });
         }
     }
 
@@ -615,30 +659,19 @@ module.exports = (app, db) => {
         return data;
     }
 
-    async function setEducations( applicant, body, next ) {
+    async function setEducations( id, body, next ) {
         if( body.educations ) {
             try {
                 if ( body.educations.length > 0 ) {
-                    return new Promise(async(resolve, reject) => {
-                        for (let i = 0; i < body.educations.length; i++) {
-                            await applicant.addEducation(body.educations[i].fk_education, {
-                                through: {
-                                    description: body.educations[i].description,
-                                    date_start: body.educations[i].date_start,
-                                    date_end: body.educations[i].date_end,
-                                    institution: body.educations[i].institution
-                                }
-                            }).then(result => {
-                                if (result) {
-                                    return resolve('Education Added');
-                                } else {
-                                    return reject(new Error('Education not added'));
-                                }
-                            }).catch(err => {
-                                return next({ type: 'error', error: err.message });
-                            })
-                        }
-                    });
+                    for (let i = 0; i < body.educations.length; i++) {
+                        await db.educations.create({
+                            fk_applicant: id,
+                            title: body.educations[i].title,
+                            description: body.educations[i].description,
+                            date_start: body.educations[i].date_start,
+                            date_end: body.educations[i].date_end,
+                        });
+                    }
                 }
             } catch (err) {
                 return next({ type: 'error', error: err.message });
@@ -675,27 +708,17 @@ module.exports = (app, db) => {
         }
     }
 
-    async function setLanguages( applicant, body, next ) {
+    async function setLanguages( id, body, next ) {
         if( body.languages ) {
             try {
                 if ( body.languages.length > 0 ) {
-                    return new Promise(async(resolve, reject) => {
-                        for (let i = 0; i < body.languages.length; i++) {
-                            await applicant.addLanguage(body.languages[i].fk_language, {
-                                through: {
-                                    level: body.languages[i].level,
-                                }
-                            }).then(result => {
-                                if (result) {
-                                    return resolve('Language added');
-                                } else {
-                                    return reject(new Error('Language not added'));
-                                }
-                            }).catch(err => {
-                                return next({ type: 'error', error: err.message });
-                            })
-                        }
-                    });
+                    for (let i = 0; i < body.languages.length; i++) {
+                        await db.languages.create({
+                            fk_applicant: id,
+                            name: body.languages[i].title,
+                            level: body.languages[i].level
+                        });
+                    }
                 }
             } catch (err) {
                 return next({ type: 'error', error: err.message });

@@ -43,6 +43,12 @@ module.exports = (sequelize, DateTypes) => {
             }
         },
 
+        img: {
+            type: DateTypes.STRING,
+            allowNull: true,
+            defaultValue: null,
+        },
+
         dateStart: {
             type: DateTypes.DATE,
             allowNull: false,
