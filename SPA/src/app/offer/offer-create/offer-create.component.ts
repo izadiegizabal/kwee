@@ -140,9 +140,9 @@ export class OfferCreateComponent implements OnInit {
       this.offerState.pipe(
         first()
       ).subscribe(
-        (data: { offer: { offer: any } }) => {
-          console.log(data.offer.offer);
-          this.offer = data.offer.offer;
+        (data: { offer: any }) => {
+          console.log(data.offer);
+          this.offer = data.offer;
           this.initForm();
         });
       this.offerEffects$.offerGetoffer.pipe(

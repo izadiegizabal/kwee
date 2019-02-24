@@ -25,10 +25,7 @@ export class OffersEffects {
           map((res: {
             ok: boolean,
             message: any,
-            data: {
-              offer: any[],
-              user: any[],
-            },
+            data: any,
             total: number,
           }) => {
             return {

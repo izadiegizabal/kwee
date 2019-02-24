@@ -56,7 +56,8 @@
 </mat-menu>
 
 
-<button mat-icon-button class="profileLogo" color="primary" [ngClass]="{'business': userType === 'business'}">
+<button mat-icon-button class="profileLogo" color="primary"
+        [ngClass]="{'business': userType === 'business' || userType === 'admin'}">
   <a [matMenuTriggerFor]="menu">
     <mat-icon svgIcon="account-circle"></mat-icon>
     <br>
