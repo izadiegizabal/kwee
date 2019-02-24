@@ -378,9 +378,9 @@ function prepareOffersToShow(offers, offersShow, user){
         offer.fk_offerer = offers[i].fk_offerer;
         offer.offererName = user.name;
         offer.offererIndex = user.index;
-        offers[i].img ? offer.img = offers[i].img : offer.img = user.img;
         offer.title = offers[i].title;
         offer.description = offers[i].description;
+        offers[i].img ? offer.img = offers[i].img : offer.img = user.img;
         offer.dateStart = offers[i].dateStart;
         offer.dateEnd = offers[i].dateEnd;
         offer.datePublished = offers[i].datePublished;
@@ -397,6 +397,9 @@ function prepareOffersToShow(offers, offersShow, user){
         offer.durationUnit = offers[i].durationUnit;
         offer.isIndefinite = offers[i].isIndefinite;
         offer.contractType = offers[i].contractType;
+        offer.responsabilities = offers[i].responsabilities;
+        offer.requeriments = offers[i].requeriments;
+        offer.skills = offers[i].skills;
         offer.lat = offers[i].lat;
         offer.lon = offers[i].lon;
         offer.createdAt = offers[i].createdAt;

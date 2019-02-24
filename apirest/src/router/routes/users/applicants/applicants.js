@@ -1,7 +1,9 @@
 const { tokenId, logger, sendVerificationEmail, pagination, checkImg, deleteFile, uploadImg } = require('../../../../shared/functions');
 const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
 const elastic = require('../../../../database/elasticsearch');
+const env =     require('../../../../tools/constants');
 const bcrypt = require('bcryptjs');
+const axios = require('axios');
 
 // ============================
 // ======== CRUD user =========
@@ -25,6 +27,14 @@ module.exports = (app, db) => {
             delete query.page;
             delete query.limit;
             delete query.keywords;
+            if (Object.keys(query).length === 0 && query.constructor === Object && !keywords){
+                res.status(400).json({
+                    ok: false,
+                    message: 'You must search something'
+                })
+            } else {
+
+            }
         } catch (error) {
             
         }
@@ -393,7 +403,7 @@ module.exports = (app, db) => {
                 where: { userId: id }
             });
             if ( applicant ) {
-                let user = {};
+                var user = {};
                 if ( body.img && checkImg(body.img) ) {
                     var imgName = uploadImg(req, res, next, 'applicants');
                         user.img = imgName;
@@ -406,6 +416,13 @@ module.exports = (app, db) => {
                     await setLanguages(id, body, next).then( async () => {
                         await setSkills(applicant, body, next).then( async () => {
                             await setExperiences(id, body, next).then( async () => {
+                                axios.post(`http://${ env.ES_URL }/applicants/applicants/${ id }/_update?pretty=true`, {
+                                    doc: body
+                                }).then((resp) => {
+                                    // updated from elasticsearch database too
+                                }).catch((error) => {
+                                    return next({ type: 'error', error: error.message });
+                                });
                                 return res.status(200).json({
                                     ok: true,
                                     message: "Added the info of this user"
@@ -668,8 +685,8 @@ module.exports = (app, db) => {
                             fk_applicant: id,
                             title: body.educations[i].title,
                             description: body.educations[i].description,
-                            date_start: body.educations[i].date_start,
-                            date_end: body.educations[i].date_end,
+                            dateStart: body.educations[i].dateStart,
+                            dateEnd: body.educations[i].dateEnd,
                         });
                     }
                 }
@@ -715,7 +732,7 @@ module.exports = (app, db) => {
                     for (let i = 0; i < body.languages.length; i++) {
                         await db.languages.create({
                             fk_applicant: id,
-                            name: body.languages[i].title,
+                            name: body.languages[i].name,
                             level: body.languages[i].level
                         });
                     }
@@ -735,8 +752,8 @@ module.exports = (app, db) => {
                             fk_applicant: id,
                             title: body.experiences[i].title,
                             description: body.experiences[i].description,
-                            date_start: body.experiences[i].date_start,
-                            date_end: body.experiences[i].date_end,
+                            dateStart: body.experiences[i].dateStart,
+                            dateEnd: body.experiences[i].dateEnd,
                         });
                     }
                 }

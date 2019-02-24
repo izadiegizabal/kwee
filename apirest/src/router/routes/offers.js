@@ -139,6 +139,9 @@ module.exports = (app, db) => {
                             offer.durationUnit = offers[i]._source.durationUnit;
                             offer.isIndefinite = offers[i]._source.isIndefinite;
                             offer.contractType = offers[i]._source.contractType;
+                            offer.responsabilities = offers[i].responsabilities;
+                            offer.requeriments = offers[i].requeriments;
+                            offer.skills = offers[i].skills;
                             offer.lat = offers[i]._source.lat;
                             offer.lon = offers[i]._source.lon;
                             offer.createdAt = offers[i]._source.createdAt;
@@ -164,14 +167,22 @@ module.exports = (app, db) => {
                                 throw error;
                             }
 
-                            return res.json({
-                                ok: false,
-                                message: 'No results but maybe this is interesting for you',
-                                data: response2.hits.hits,
-                                total: response2.hits.total,
-                                page: Number(page),
-                                pages: Math.ceil(response2.hits.total / limit)
-                            });
+                            if ( response2.hits.total > 0 ) {
+                                return res.json({
+                                    ok: true,
+                                    message: 'No results but maybe this is interesting for you',
+                                    data: response2.hits.hits,
+                                    total: response2.hits.total,
+                                    page: Number(page),
+                                    pages: Math.ceil(response2.hits.total / limit)
+                                });
+                            } else {
+                                return res.status(400).json({
+                                    ok: false,
+                                    message: 'No results',
+                                });
+                            }
+
                         });
                     }
                 });
@@ -329,7 +340,7 @@ module.exports = (app, db) => {
                         // updated from elasticsearch database too
                     }).catch((error) => {
                         return next({ type: 'error', error: error.message });
-                    })
+                    });
 
                     return res.status(200).json({
                         ok: true,
