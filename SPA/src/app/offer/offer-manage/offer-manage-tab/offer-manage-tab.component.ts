@@ -62,18 +62,42 @@ export class OfferManageTabComponent implements OnInit {
 
     if (this.type === 0) {
       this.store$.dispatch(new OfferManageActions.TryGetOffersOfferer({
-        id: 5,
+        id: this.id,
         page: this.pageEvent.pageIndex + 1,
         limit: this.pageEvent.pageSize,
         status: this.status
       }));
     } else {
       this.store$.dispatch(new OfferManageActions.TryGetOffersApplicant({
-        id: 4,
+        id: this.id,
         page: this.pageEvent.pageIndex + 1,
         limit: this.pageEvent.pageSize,
         status: this.status
       }));
+    }
+  }
+
+  totalOffers(count) {
+    switch (this.status) {
+      case -1:
+        return count[0].Total;
+        break;
+
+      case 0:
+        return count[2].Open;
+        break;
+
+      case 1:
+        return count[3].Selection;
+        break;
+
+      case 2:
+        return count[4].Closed;
+        break;
+
+      case 3:
+        return count[1].Draft;
+        break;
     }
   }
 }

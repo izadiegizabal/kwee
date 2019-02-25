@@ -13,6 +13,8 @@ export interface State {
       premium: number,
       index: number,
       status: number,
+      bio: string,
+      img: string,
     }[],
     total: number,
   };
@@ -28,6 +30,9 @@ export interface State {
       premium: number,
       lastAccess: Date,
       createdAt: Date,
+      bio: string,
+      img: string,
+      address: string,
     }[],
     total: number;
   };
