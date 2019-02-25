@@ -6,7 +6,6 @@ import {OfferManageComponent} from './offer-manage.component';
 import {OfferManageBusinessComponent} from './offer-manage-business/offer-manage-business.component';
 import {OfferManageTabComponent} from './offer-manage-tab/offer-manage-tab.component';
 import {OfferPreviewCardModule} from '../offer-preview-card/offer-preview-card.module';
-import {OfferPreviewCardManageModule} from './offer-preview-card-manage/offer-preview-card-manage.module';
 
 import {StoreModule} from '@ngrx/store';
 import {OfferManageReducer} from './store/offer-manage.reducers';
@@ -24,7 +23,6 @@ import {OfferManageEffects} from './store/offer-manage.effects';
     SharedModule,
     OfferManageRoutingModule,
     OfferPreviewCardModule,
-    OfferPreviewCardManageModule,
     StoreModule.forFeature('OfferManage', OfferManageReducer),
     EffectsModule.forFeature([OfferManageEffects])
   ]
