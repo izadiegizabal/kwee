@@ -24,19 +24,158 @@ module.exports = (app, db) => {
             let index_gt = query.index_gt;
             let index_lte = query.index_lte;
             let index_lt = query.index_lt;
+            let dateBorn_gte = query.dateBorn_gte;
+            let dateBorn_gt = query.dateBorn_gt;
+            let dateBorn_lte = query.dateBorn_lte;
+            let dateBorn_lt = query.dateBorn_lt;
+            let languages = query.languages;
+            let experiences = query.experiences;
+            let educations = query.educations;
+            let skills = query.skills;
+            
             delete query.page;
             delete query.limit;
             delete query.keywords;
             if (Object.keys(query).length === 0 && query.constructor === Object && !keywords){
-                res.status(400).json({
+                return res.status(400).json({
                     ok: false,
                     message: 'You must search something'
                 })
             } else {
+                prepareQuery(query);
+
+                let must = [];
+                let should = [];
+                let filter = [];
+
+                // Getting all filters in query
+                for(var prop in query) {
+                    if(query.hasOwnProperty(prop)){
+                        filter.push(
+                            { terms: {[prop]: query[prop]} }
+                        );
+                    }
+                }
+
+                // Casting string to array, necessary to work
+                for (let i = 0; i < filter.length; i++) {
+                    for(var val in filter[i].terms) {
+                        if(filter[i].terms.hasOwnProperty(val)){
+                            if ( typeof(filter[i].terms[val]) != 'object' ) {
+                                filter[i].terms[val] = Array(filter[i].terms[val]);
+                            }
+                        }
+                    }
+                }
+
+                // Must filter only with content when is filtered some value not as keyword
+                if ( filter.length > 0 ) {
+                    must.push(filter);
+                }
+
+                // should filter only with content when is searched some value as keyword
+                if ( keywords ){
+                    should.push({query_string: {query: keywords}});
+                }
+
+                // RANGE FIELDS
+                // If salaryAmount, dateStart, dateEnd or datePublished in query, add range to must filter
+                buildIndex(must, index_gte, index_gt, index_lte, index_lt);
+                buildDateBorn(must, dateBorn_gte, dateBorn_gt, dateBorn_lte, dateBorn_lt);
+
+                // Experiences, languages, skills, educations
+                buildLanguages(must, languages);
+
+                var searchParams = {
+                    index: 'applicants',
+                    from: (page - 1) * limit,
+                    size: limit,
+                    body: {
+                        query: {
+                            bool: {
+                                must,
+                                should
+                            }
+                        }
+                    }
+                };
+
+                await elastic.search(searchParams, async function (err, response) {
+                    if (err) {
+                        // handle error
+                        throw err;
+                    }
+
+                    if ( response.hits.total != 0 ) {
+
+                        let applicantsToShow = [];
+                        let applicants = response.hits.hits;
+
+                        for (let i = 0; i < applicants.length; i++) {
+                            let applicant = {};
+
+                            applicant.id = applicants[i]._id;
+                            applicant.index = applicants[i]._source.index;
+                            applicant.name = applicants[i]._source.name;
+                            applicant.email = applicants[i]._source.email;
+                            applicant.city = applicants[i]._source.city;
+                            applicant.dateBorn = applicants[i]._source.dateBorn;
+                            applicant.premium = applicants[i]._source.premium;
+                            applicant.status = applicants[i]._source.status;
+                            applicant.lastAccess = applicants[i]._source.lastAccess;
+                            applicant.img = applicants[i]._source.img;
+                            applicant.bio = applicants[i]._source.bio;
+                            applicant.social_networks = applicants[i]._source.social_networks;
+                            applicant.skills = applicants[i]._source.skills;
+                            applicant.educations = applicants[i]._source.educations;
+                            applicant.languages = applicants[i]._source.languages;
+                            applicant.experiences = applicants[i]._source.experiences;
+                            applicant.applications = applicants[i]._source.applications;
+                            
+                            applicantsToShow.push(applicant);
+                        }
+
+                        return res.json({
+                            ok: true,
+                            message: 'Results of search',
+                            data: applicantsToShow,
+                            total: response.hits.total,
+                            page: Number(page),
+                            pages: Math.ceil(response.hits.total / limit)
+                        });
+                        
+                    } else {
+                        delete searchParams.body.query.bool.must;
+                        searchParams.body.query.bool.should = must;
+
+                        await elastic.search(searchParams, function (error, response2) {
+                            if (error) {
+                                throw error;
+                            }
+
+                            if ( response2.hits.total > 0 ) {
+                                return res.json({
+                                    ok: true,
+                                    message: 'No results but maybe this is interesting for you',
+                                    data: response2.hits.hits,
+                                    total: response2.hits.total,
+                                    page: Number(page),
+                                    pages: Math.ceil(response2.hits.total / limit)
+                                });
+                            } else {
+                                return res.status(400).json({
+                                    ok: false,
+                                    message: 'No results',
+                                });
+                            }
+
+                        });
+                    }
+                });
 
             }
         } catch (error) {
-            
+            return next({ type: 'error', error });
         }
 
     });
@@ -139,7 +278,7 @@ module.exports = (app, db) => {
                 let offers = [];
                 let applications = await db.applications.findAll({where: { fk_applicant: id }});
                 let count = applications.length;
-                console.log('count: ', count);
+
                 let allOffers = await db.offers.findAll({
                     attributes: {
                         exclude: ['skills', 'requeriments', 'responsabilities']
@@ -365,8 +504,8 @@ module.exports = (app, db) => {
                     return createApplicant(body, user, next, transaction);
                 })
                 .then(ending => {
-                    console.log('body: ', body);
                     delete body.password;
+                    body.index = 50;
                     elastic.index({
                         index: 'applicants',
                         id: uservar.id,
@@ -408,14 +547,17 @@ module.exports = (app, db) => {
                     var imgName = uploadImg(req, res, next, 'applicants');
                         user.img = imgName;
                 }
+                
                 body.bio ? user.bio = body.bio : null;
                 applicantuser = await db.users.update(user, {
                     where: { id }
                 })
-                await setEducations(id, body, next).then( async () => {
-                    await setLanguages(id, body, next).then( async () => {
+
+                await setEducations(applicant, body, next).then( async () => {
+                    await setLanguages(applicant, body, next).then( async () => {
                         await setSkills(applicant, body, next).then( async () => {
                             await setExperiences(id, body, next).then( async () => {
+                                delete body.img;
                                 axios.post(`http://${ env.ES_URL }/applicants/applicants/${ id }/_update?pretty=true`, {
                                     doc: body
                                 }).then((resp) => {
@@ -434,7 +576,7 @@ module.exports = (app, db) => {
             }
         } catch (err) {
             deleteFile('uploads/applicants/' + user.img);
-            return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
+            return next({ type: 'error', error: err.message });
         }
 
     });
@@ -466,7 +608,47 @@ module.exports = (app, db) => {
         }
     });
 
-    // DELETE
+    // DELETE by themself
+    app.delete('/applicant', async(req, res, next) => {
+        try {
+            let id = tokenId.getTokenId(req.get('token'));
+            
+            await logger.saveLog('DELETE', 'applicant', id, res);
+
+            let applicant = await db.applicants.findOne({
+                where: { userId: id }
+            });
+
+            if (applicant) {
+                let applicantToDelete = await db.applicants.destroy({
+                    where: { userId: id }
+                });
+
+                axios.delete(`http://${ env.ES_URL }/applicants/applicants/${ id }`)
+                    .then((res) => {
+                        // deleted from elasticsearch database too
+                }).catch((error) => {
+                    console.error(error)
+                });
+
+                let user = await db.users.destroy({
+                    where: { id }
+                });
+                if (applicant && user) {
+                    return res.json({
+                        ok: true,
+                        message: 'Applicant deleted'
+                    });
+                }
+            } else {
+                return next({ type: 'error', error: 'Applicant doesn\'t exist' });
+            }
+        } catch (err) {
+            return next({ type: 'error', error: err.message });
+        }
+    });
+
+    // DELETE by admin
     app.delete('/applicant/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
 
@@ -481,6 +663,14 @@ module.exports = (app, db) => {
                 let applicantToDelete = await db.applicants.destroy({
                     where: { userId: id }
                 });
+
+                axios.delete(`http://${ env.ES_URL }/applicants/applicants/${ id }`)
+                    .then((res) => {
+                        // deleted from elasticsearch database too
+                }).catch((error) => {
+                    console.error(error)
+                });
+
                 let user = await db.users.destroy({
                     where: { id }
                 });
@@ -493,9 +683,6 @@ module.exports = (app, db) => {
             } else {
                 return next({ type: 'error', error: 'Applicant doesn\'t exist' });
             }
-            // Respuestas en json
-            // applicant: 1 -> Deleted
-            // applicant: 0 -> User don't exists
         } catch (err) {
             return next({ type: 'error', error: 'Error getting data' });
         }
@@ -503,6 +690,7 @@ module.exports = (app, db) => {
 
     async function updateApplicant(id, req, res, next) {
         let body = req.body;
+        var elasticsearch = {};
         let applicant = await db.applicants.findOne({
             where: { userId: id }
         });
@@ -512,19 +700,37 @@ module.exports = (app, db) => {
 
             let applicantUser = true;
             let userApp = {};
-            body.city ? userApp.city = body.city : null;
-            body.dateBorn ? userApp.dateBorn = body.dateBorn : null;
-            body.rol ? userApp.rol = body.rol : null;
-            body.premium ? userApp.premium = body.premium : null;
 
+            if ( body.city ) {
+                userApp.city = body.city;
+                elasticsearch.city = body.city;
+            }
             
+            if ( body.dateBorn ) {
+                userApp.dateBorn = body.dateBorn;
+                elasticsearch.dateBorn = body.dateBorn;
+            }
             
+            if ( body.rol ) {
+                userApp.rol = body.rol;
+                elasticsearch.rol = body.rol;
+            }
+            
+            if ( body.premium ) {
+                userApp.premium = body.premium;
+                elasticsearch.premium = body.premium;
+            }
+
             if (body.password || body.email || body.name || body.snSignIn || body.img || body.bio) {
                 // Update user values
                 delete body.city;
                 delete body.dateBorn;
                 delete body.rol;
                 delete body.premium;
+                if ( body.email ) elasticsearch.email = body.email;
+                if ( body.name ) elasticsearch.name = body.name;
+                if ( body.snSignIn ) elasticsearch.snSignIn = body.snSignIn;
+                if ( body.bio ) elasticsearch.bio = body.bio;
                 
                 if ( body.password ) body.password = bcrypt.hashSync(body.password, 10);
                 if ( body.img && checkImg(body.img) ) {
@@ -546,10 +752,18 @@ module.exports = (app, db) => {
                 where: { userId: id }
             });
 
-            body.experiences ? updateExperiences(body.experiences) : null;
-            body.educations ? updateEducations(body.educations) : null;
-            body.languages ? updateLanguages(body.languages) : null;
+            // body.experiences ? updateExperiences(applicantUser, body.experiences) : null;
+            // body.educations ? updateEducations(body.educations) : null;
+            body.languages ? updateLanguages(applicant, body.languages, elasticsearch, next) : null;
             // body.skills ? updateSkills(body.skills) : null;
+
+            // axios.post(`http://${ env.ES_URL }/applicants/applicants/${ id }/_update?pretty=true`, {
+            //         doc: elasticsearch
+            //     }).then((resp) => {
+            //         // updated from elasticsearch database too
+            //     }).catch((error) => {
+            //         return next({ type: 'error', error: error.message });
+            // });
 
             if (updated && applicantUser) {
                 return res.status(200).json({
@@ -565,16 +779,44 @@ module.exports = (app, db) => {
         }
     }
 
-    async function updateLanguages(languages) {
-        let id = languages.id;
-        delete languages.id;
+    async function updateLanguages(applicant, languages, elasticsearch, next) {
         try {
-            await db.languages.update(languages, {
-                where: { id }
-            });
-            
+            let applicant_languages = await applicant.getLanguages();
+
+            if ( applicant_languages ) {
+                var languagesArray = [];
+                for (let i = 0; i < languages.length; i++) {
+                    if ( languages[i].id ) {
+                        await db.applicant_languages.update({level: languages[i].level}, {
+                            where: { fk_language: languages[i].id, fk_applicant: applicant.userId }
+                        });
+                    } else {
+                        let newLanguage = await db.languages.create({
+                            language: languages[i].language
+                        });
+                        await applicant.addLanguage(newLanguage.id, {
+                            through: {
+                                level: languages[i].level,
+                            }
+                        });
+                    }
+                }
+                applicant_languages = await applicant.getLanguages();
+                applicant_languages.forEach(element => {
+                    languagesArray.push( {language: element.language} );
+                });
+
+                axios.post(`http://${ env.ES_URL }/applicants/applicants/${ applicant.userId }/_update?pretty=true`, {
+                        doc: {languages: languagesArray}
+                    }).then((resp) => {
+                        // updated from elasticsearch database too
+                    }).catch((error) => {
+                        console.log('error elastic: ', error);
+                        // return next({ type: 'error', error: error.message });
+                });
+            }
         } catch (error) {
-            return next({ type: 'error', error: 'Can\'t update language' });
+            return next({ type: 'error', error: error.message });
         }
     }
 
@@ -676,17 +918,46 @@ module.exports = (app, db) => {
         return data;
     }
 
-    async function setEducations( id, body, next ) {
+    async function setEducations( applicant, body, next ) {
         if( body.educations ) {
             try {
                 if ( body.educations.length > 0 ) {
                     for (let i = 0; i < body.educations.length; i++) {
-                        await db.educations.create({
-                            fk_applicant: id,
-                            title: body.educations[i].title,
-                            description: body.educations[i].description,
-                            dateStart: body.educations[i].dateStart,
-                            dateEnd: body.educations[i].dateEnd,
+                        // Search education in database, if not, create it
+                        let education = await db.educations.findOne({
+                            where: { title: body.educations[i].title }
+                        });
+
+                        let educationId;
+
+                        if ( education ) {
+                            educationId = education.id;
+                        } else {
+                            education = await db.educations.create({
+                                title: body.educations[i].title
+                            });
+                            if ( education ) {
+                                educationId = education.id;
+                            }
+                        }
+
+                        new Promise(async(resolve, reject) => {
+                            await applicant.addEducation(educationId, {
+                                through: {
+                                    description: body.educations[i].description,
+                                    dateStart: body.educations[i].dateStart,
+                                    dateEnd: body.educations[i].dateEnd,
+                                    institution: body.educations[i].institution
+                                }
+                            }).then(result => {
+                                if (result) {
+                                    return resolve('Education Added');
+                                } else {
+                                    return reject(new Error('Education not added'));
+                                }
+                            }).catch(err => {
+                                return next({ type: 'error', error: err.message });
+                            })
                         });
                     }
                 }
@@ -700,9 +971,27 @@ module.exports = (app, db) => {
         if( body.skills ) {
             try {
                 if ( body.skills.length > 0 ) {
-                    return new Promise(async(resolve, reject) => {
-                        for (let i = 0; i < body.skills.length; i++) {
-                            await applicant.addSkill(body.skills[i].fk_skill, {
+                    for (let i = 0; i < body.skills.length; i++) {
+                        // Search skill in database, if not, create it
+                        let skill = await db.skills.findOne({
+                            where: { name: body.skills[i].name }
+                        });
+
+                        let skillId;
+
+                        if ( skill ) {
+                            skillId = skill.id;
+                        } else {
+                            skill = await db.skills.create({
+                                name: body.skills[i].name
+                            });
+                            if ( skill ) {
+                                skillId = skill.id;
+                            }
+                        }
+
+                        new Promise(async(resolve, reject) => {
+                            await applicant.addSkill(skillId, {
                                 through: {
                                     description: body.skills[i].description,
                                     level: body.skills[i].level,
@@ -716,8 +1005,8 @@ module.exports = (app, db) => {
                             }).catch(err => {
                                 return next({ type: 'error', error: err.message });
                             })
-                        }
-                    });
+                        });
+                    }
                 }
             } catch (err) {
                 return next({ type: 'error', error: err.message });
@@ -725,15 +1014,43 @@ module.exports = (app, db) => {
         }
     }
 
-    async function setLanguages( id, body, next ) {
+    async function setLanguages( applicant, body, next ) {
         if( body.languages ) {
             try {
                 if ( body.languages.length > 0 ) {
                     for (let i = 0; i < body.languages.length; i++) {
-                        await db.languages.create({
-                            fk_applicant: id,
-                            name: body.languages[i].name,
-                            level: body.languages[i].level
+                        // Search language in database, if not, create it
+                        let language = await db.languages.findOne({
+                            where: { language: body.languages[i].language }
+                        });
+
+                        let languageId;
+
+                        if ( language ) {
+                            languageId = language.id;
+                        } else {
+                            language = await db.languages.create({
+                                language: body.languages[i].language
+                            });
+                            if ( language ) {
+                                languageId = language.id;
+                            }
+                        }
+
+                        new Promise(async(resolve, reject) => {
+                            await applicant.addLanguage(languageId, {
+                                through: {
+                                    level: body.languages[i].level,
+                                }
+                            }).then(result => {
+                                if (result) {
+                                    return resolve('Language added');
+                                } else {
+                                    return reject(new Error('Language not added'));
+                                }
+                            }).catch(err => {
+                                return next({ type: 'error', error: err.message });
+                            });
                         });
                     }
                 }
@@ -761,5 +1078,85 @@ module.exports = (app, db) => {
                 return next({ type: 'error', error: err.message });
             }
         }
+    }
+
+    function buildIndex (must, index_gte, index_gt, index_lte, index_lt) {
+        if ( index_gte || index_gt || index_lte || index_lt ) {
+
+            let index = {};
+
+            index_gte ? index.gte = index_gte : null;
+            index_gt ? index.gt = index_gt : null;
+            index_lte ? index.lte = index_lte : null;
+            index_lt ? index.lt = index_lt : null;
+            
+            must.push({
+                range: {
+                    index
+                }
+            });
+        }
+
+        return must;
+    }
+
+    function buildDateBorn (must, dateBorn_gte, dateBorn_gt, dateBorn_lte, dateBorn_lt) {
+        if ( dateBorn_gte || dateBorn_gt || dateBorn_lte || dateBorn_lt ) {
+
+            let dateBorn = {};
+
+            dateBorn_gte ? dateBorn.gte = dateBorn_gte : null;
+            dateBorn_gt ? dateBorn.gt = dateBorn_gt : null;
+            dateBorn_lte ? dateBorn.lte = dateBorn_lte : null;
+            dateBorn_lt ? dateBorn.lt = dateBorn_lt : null;
+            
+            must.push({
+                range: {
+                    dateBorn
+                }
+            });
+        }
+
+        return must;
+    }
+
+    function buildLanguages(must, languages) {
+        if ( languages ) {
+            if ( must.length > 0 ) {
+                must[0].push({
+                    terms: {
+                        languages: [{
+                            language: languages
+                        }]
+                    }
+                });
+            } else {
+                must.push({
+                    terms: {
+                        languages: [
+                            {"language": languages}
+                        ]
+                    }
+                });
+            }
+        }
+        return must;
+    }
+
+    function prepareQuery(query) {
+        delete query.index_gte;
+        delete query.index_gt;
+        delete query.index_lte;
+        delete query.index_lt;
+        delete query.dateBorn_gte;
+        delete query.dateBorn_gt;
+        delete query.dateBorn_lte;
+        delete query.dateBorn_lt;
+        delete query.languages;
+        delete query.educations;
+        delete query.experiences;
+        delete query.skills;
+
+        return query;
     }
 }
