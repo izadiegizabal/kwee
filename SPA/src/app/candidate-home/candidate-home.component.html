@@ -106,7 +106,7 @@
     </div>
 
 
-    <div fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">
+    <div fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column" *ngIf="(offersState | async).offers">
       <app-offer-preview-card *ngFor="let offer of (offersState | async).offers.data;" [offer]="offer">
       </app-offer-preview-card>
     </div>

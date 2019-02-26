@@ -47,6 +47,8 @@ export class OfferPreviewCardComponent implements OnInit {
     let salaryNum;
     if (this.offer.salaryAmount > 10000) {
       salaryNum = (Number(this.offer.salaryAmount) / 1000).toFixed(1) + 'K';
+    } else {
+      salaryNum = this.offer.salaryAmount;
     }
 
     return salaryNum + ' ' +

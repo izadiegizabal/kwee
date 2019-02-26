@@ -88,15 +88,15 @@ export class OfferManageTabComponent implements OnInit {
         break;
 
       case 1:
-        return count[3].Selection;
-        break;
-
-      case 2:
         return count[4].Closed;
         break;
 
-      case 3:
+      case 2:
         return count[1].Draft;
+        break;
+
+      case 3:
+        return count[3].Selection;
         break;
     }
   }

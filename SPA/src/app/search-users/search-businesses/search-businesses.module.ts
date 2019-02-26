@@ -3,6 +3,7 @@ import {SharedModule} from '../../shared/shared.module';
 import {RouterModule} from '@angular/router';
 import {SearchBusinessesComponent} from './search-businesses.component';
 import {SearchBusinessesRoutingModule} from './search-businesses-routing.module';
+import {UserPreviewCardModule} from '../user-preview-card/user-preview-card.module';
 
 
 @NgModule({
@@ -12,7 +13,8 @@ import {SearchBusinessesRoutingModule} from './search-businesses-routing.module'
   imports: [
     SharedModule,
     RouterModule,
-    SearchBusinessesRoutingModule
+    SearchBusinessesRoutingModule,
+    UserPreviewCardModule
   ],
   exports: [
     SearchBusinessesComponent

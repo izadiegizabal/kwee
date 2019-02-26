@@ -1,3 +1,22 @@
-<p>
-  search-businesses works!
-</p>
+<h2 class="mat-h1">Search Businesses</h2>
+
+<mat-sidenav-container
+  fxLayout="column">
+  <mat-sidenav-content
+    fxFlex="96%" fxFlex.gt-sm="75%"
+    fxLayout="column"
+    fxLayoutGap="16px" fxLayoutGap.gt-sm="32px">
+
+    <div fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">
+      <app-user-preview-card *ngFor="let user of (adminState | async).businesses.data;" [user]="user">
+      </app-user-preview-card>
+    </div>
+
+
+    <mat-paginator (page)="pageEvent = $event;  changepage();"
+                   [length]="(adminState | async).businesses.total"
+                   [pageSizeOptions]="pageSizeOptions"
+                   [pageSize]="pageSize">
+    </mat-paginator>
+  </mat-sidenav-content>
+</mat-sidenav-container>
