@@ -32,7 +32,7 @@ export class SearchCandidatesComponent implements OnInit {
     this.adminState = this.store$.pipe(select(state => state.admin));
   }
 
-  changepage() {
+  changePage() {
     this.store$.dispatch(new AdminActions.TryGetCandidates({page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize}));
   }
 }

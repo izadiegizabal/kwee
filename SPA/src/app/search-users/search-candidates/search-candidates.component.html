@@ -13,7 +13,7 @@
     </div>
 
 
-    <mat-paginator (page)="pageEvent = $event;  changepage();"
+    <mat-paginator (page)="pageEvent = $event;  changePage();"
                    [length]="(adminState | async).candidates.total"
                    [pageSizeOptions]="pageSizeOptions"
                    [pageSize]="pageSize">
