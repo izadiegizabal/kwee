@@ -14,11 +14,7 @@ module.exports = (sequelize, DateTypes) => {
 
         img: {
             type: DateTypes.STRING(50),
-            field: 'img',
-            allowNull: false,
-            validate: {
-                notEmpty: true
-            }
+            field: 'img'
         }
 
     });
