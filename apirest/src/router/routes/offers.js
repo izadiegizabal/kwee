@@ -71,14 +71,17 @@ module.exports = (app, db) => {
                         }
                     }
                 }
+
                 // Must filter only with content when is filtered some value not as keyword
                 if ( filter.length > 0 ) {
                     must.push(filter);
                 }
+
                 // should filter only with content when is searched some value as keyword
                 if ( keywords ){
                     should.push({query_string: {query: keywords}});
                 }
+
                 // If salaryAmount, dateStart, dateEnd or datePublished in query, add range to must filter
                 buildSalaryRange(must, salaryAmount_gte, salaryAmount_gt, salaryAmount_lte, salaryAmount_lt);
                 buildDateStartRange(must, dateStart_gte, dateStart_gt, dateStart_lte, dateStart_lt);
@@ -108,14 +111,14 @@ module.exports = (app, db) => {
 
                     if ( response.hits.total != 0 ) {
                         users = await db.users.findAll();
+
                         let offersToShow = [];
                         let offers = response.hits.hits;
-                        console.log('response.hits.hits.length: ', response.hits.hits.length);
-                        console.log('response.hits.hits0: ', response.hits.hits[0]._source.fk_offerer);
+
                         for (let i = 0; i < offers.length; i++) {
-                            console.log('offers[0]: ', offers[i]);
                             let user = users.find(element => offers[i]._source.fk_offerer == element.id);
                             let offer = {};
+
                             offer.id = offers[i]._id;
                             offer.fk_offerer = offers[i]._source.fk_offerer;
                             offer.offererName = user.name;
@@ -147,6 +150,7 @@ module.exports = (app, db) => {
                             offer.createdAt = offers[i]._source.createdAt;
                             offer.updatedAt = offers[i]._source.updatedAt;
                             offer.deletedAt = offers[i]._source.deletedAt;
+                            
                             offersToShow.push(offer);
                         }
 
@@ -158,6 +162,7 @@ module.exports = (app, db) => {
                             page: Number(page),
                             pages: Math.ceil(response.hits.total / limit)
                         });
+
                     } else {
                         delete searchParams.body.query.bool.must;
                         searchParams.body.query.bool.should = must;
@@ -188,7 +193,7 @@ module.exports = (app, db) => {
                 });
             }
         } catch (error) {
-            next({ type: 'error', error });
+            return next({ type: 'error', error });
         }
     });
 
