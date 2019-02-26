@@ -11,6 +11,8 @@ import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {DialogImageCropComponent} from '../dialog-image-crop/dialog-image-crop.component';
 import {environment} from '../../../../environments/environment';
 import {Router} from '@angular/router';
+import {BusinessIndustries, BusinessSize} from '../../../../models/Business.model';
+import {isStringNotANumber} from '../../../../models/Offer.model';
 
 interface City {
   first: string;
@@ -49,24 +51,15 @@ export class SignupOffererComponent implements OnInit {
   token;
   authState: any;
 
-  workFields: { value: number, viewValue: string }[] = [
-    {value: 0, viewValue: 'Software Engineering'},
-    {value: 1, viewValue: 'Engineering Management'},
-    {value: 2, viewValue: 'Design'},
-    {value: 3, viewValue: 'Data Analytics'},
-    {value: 4, viewValue: 'Developer Operations'},
-    {value: 5, viewValue: 'Quality Assurance'},
-    {value: 6, viewValue: 'Information Technology'},
-    {value: 7, viewValue: 'Project Management'},
-    {value: 8, viewValue: 'Product Management'},
-  ];
+  workFields = Object
+    .keys(BusinessIndustries)
+    .filter(isStringNotANumber)
+    .map(key => ({value: BusinessIndustries[key], viewValue: key}));
 
-  companySizes: { value: number, viewValue: string }[] = [
-    {value: 10, viewValue: '10'},
-    {value: 50, viewValue: '50'},
-    {value: 100, viewValue: '100'},
-    {value: 1000, viewValue: '1000'},
-  ];
+  companySizes = Object
+    .keys(BusinessSize)
+    .filter(isStringNotANumber)
+    .map(key => ({value: BusinessSize[key], viewValue: key}));
 
 
   private dialogShown = false;

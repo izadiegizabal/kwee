@@ -11,15 +11,15 @@
     <mat-card class="card">
       <mat-card-content fxLayout="column">
         <form [formGroup]="messageFormGroup">
-        <div class="line1" fxLayout="column">
-          <mat-form-field>
-            <input formControlName="email" matInput placeholder="Email" required>
-            <mat-icon color="primary" matPrefix svgIcon="email"></mat-icon>
-           <mat-error *ngIf="!messageFormGroup.get('email').valid ">
-              This field is required
-            </mat-error>
-          </mat-form-field>
-        </div>
+          <div class="line1" fxLayout="column">
+            <mat-form-field>
+              <input formControlName="email" matInput placeholder="Email" required>
+              <mat-icon color="primary" matPrefix svgIcon="email"></mat-icon>
+              <mat-error *ngIf="!messageFormGroup.get('email').valid ">
+                This field is required
+              </mat-error>
+            </mat-form-field>
+          </div>
 
           <div class="line1" fxLayout="column">
             <mat-form-field>

@@ -12,7 +12,8 @@
       <form [formGroup]="filters" fxLayout="column">
         <mat-form-field>
           <input formControlName="location" matInput placeholder="Location" type="text">
-          <button (click)="filters.controls['location'].reset('')" *ngIf="filters.controls['location'].value" aria-label="Clear" mat-button
+          <button (click)="filters.controls['location'].reset('')" *ngIf="filters.controls['location'].value"
+                  aria-label="Clear" mat-button
                   mat-icon-button
                   matSuffix>
             <mat-icon>close</mat-icon>
@@ -76,10 +77,15 @@
           </mat-select>
         </mat-form-field>
 
+        <h3>Minimum Business' Index</h3>
+        <section fxLayout="column">
+          <mat-slider formControlName="minBusinessIndex" max="100" min="0" thumbLabel></mat-slider>
+        </section>
+
       </form>
 
-      <div fxLayout="row" fxLayoutAlign="end end" style="margin-top: 16px" fxHide.gt-sm>
-        <button mat-raised-button color="primary" (click)="applyFilters()">Apply Filters</button>
+      <div fxHide.gt-sm fxLayout="row" fxLayoutAlign="end end" style="margin-top: 16px">
+        <button (click)="applyFilters()" color="primary" mat-raised-button>Apply Filters</button>
       </div>
     </div>
 
@@ -106,7 +112,7 @@
     </div>
 
 
-    <div fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column" *ngIf="(offersState | async).offers">
+    <div *ngIf="(offersState | async).offers" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="8px">
       <app-offer-preview-card *ngFor="let offer of (offersState | async).offers.data;" [offer]="offer">
       </app-offer-preview-card>
     </div>

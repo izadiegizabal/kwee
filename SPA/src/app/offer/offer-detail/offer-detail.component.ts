@@ -128,7 +128,7 @@ export class OfferDetailComponent implements OnInit {
   }
 
   goEdit() {
-    this.router.navigate(['/offer' , this.offerId , 'edit']);
+    this.router.navigate(['/offer', this.offerId, 'edit']);
   }
 
 

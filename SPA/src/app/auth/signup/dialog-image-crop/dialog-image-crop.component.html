@@ -1,25 +1,26 @@
 <h1 mat-dialog-title>Crop your image </h1>
 <div mat-dialog-content class="mat-typography">
   <div fxLayout="row" fxLayout.lt-md="column">
-  <image-cropper
-    [imageChangedEvent]="imageChangedEvent"
-    [maintainAspectRatio]="true"
-    [aspectRatio]="1"
-    [outputType]="'base64'"
-    [imageQuality]="50"
-    format="jpeg"
-    (imageCropped)="imageCropped($event)"
-    (imageLoaded)="imageLoaded()"
-    (loadImageFailed)="loadImageFailed()"
+    <image-cropper
+      [imageChangedEvent]="imageChangedEvent"
+      [maintainAspectRatio]="true"
+      [aspectRatio]="1"
+      [outputType]="'base64'"
+      [imageQuality]="50"
+      format="jpeg"
+      (imageCropped)="imageCropped($event)"
+      (imageLoaded)="imageLoaded()"
+      (loadImageFailed)="loadImageFailed()"
 
       fxFlex="50%"
       fxFlex.lt-sm="100%"
 
-  ></image-cropper>
-  <div id="float">
-  <h3>Result:</h3>
-  <img [src]="croppedImage" />
-  </div></div>
+    ></image-cropper>
+    <div id="float">
+      <h3>Result:</h3>
+      <img [src]="croppedImage"/>
+    </div>
+  </div>
 
 
 </div>

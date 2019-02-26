@@ -98,12 +98,12 @@
                fxLayoutAlign="center center"
                fxLayoutGap="8px"
                fxShow.gt-xs>
-            <a *ngIf="(offerState | async).offer.fk_offerer === this.id; else apply"
-               (click)="goEdit()">
+            <a (click)="goEdit()"
+               *ngIf="(offerState | async).offer.fk_offerer === this.id; else apply">
               <button
-                type="button"
                 color="accent"
-                mat-raised-button style="color: white">{{'Edit Offer' | uppercase }}</button>
+                mat-raised-button
+                style="color: white" type="button">{{'Edit Offer' | uppercase }}</button>
             </a>
             <ng-template #apply>
               <button (click)="postApplication()"

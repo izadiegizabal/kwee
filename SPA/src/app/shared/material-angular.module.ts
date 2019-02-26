@@ -21,10 +21,11 @@ import {
   MatRadioModule,
   MatSelectModule,
   MatSidenavModule,
+  MatSliderModule,
   MatSnackBarModule,
   MatStepperModule,
   MatTabsModule,
-  MatToolbarModule,
+  MatToolbarModule
 } from '@angular/material';
 import {DomSanitizer} from '@angular/platform-browser';
 import {CommonModule} from '@angular/common';
@@ -58,6 +59,7 @@ import {CommonModule} from '@angular/common';
     MatSnackBarModule,
     MatPaginatorModule,
     MatMenuModule,
+    MatSliderModule
   ],
 })
 export class MaterialAngularModule {

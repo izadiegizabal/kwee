@@ -1,13 +1,14 @@
-<mat-toolbar fxLayout="row" [ngClass]="{'dark': auth && profileType !== 'candidate', 'white': !auth || profileType === 'candidate'}">
+<mat-toolbar [ngClass]="{'dark': auth && profileType !== 'candidate', 'white': !auth || profileType === 'candidate'}"
+             fxLayout="row">
   <div [ngClass]="{'logo': true, 'businessLogo': profileType !== 'candidate'}">
-    <a routerLink="/" *ngIf="!auth || profileType === 'candidate'; else business">
+    <a *ngIf="!auth || profileType === 'candidate'; else business" routerLink="/">
       <mat-icon fxHide.gt-xs svgIcon="kwee-icon"></mat-icon>
       <mat-icon fxHide.lt-sm svgIcon="kwee-logo"></mat-icon>
     </a>
     <ng-template #business>
-      <a routerLink="/" class="businessLogo">
-        <img class="bLogoDesktop" fxHide.lt-sm src="../../../assets/branding/logo-kwee-dark.svg" alt="dark Kwee logo"/>
-        <img class="bLogoMobile" fxHide.gt-xs src="../../../assets/branding/iconBnw.svg" alt="dark Kwee icon"/>
+      <a class="businessLogo" routerLink="/">
+        <img alt="dark Kwee logo" class="bLogoDesktop" fxHide.lt-sm src="../../../assets/branding/logo-kwee-dark.svg"/>
+        <img alt="dark Kwee icon" class="bLogoMobile" fxHide.gt-xs src="../../../assets/branding/iconBnw.svg"/>
       </a>
     </ng-template>
   </div>

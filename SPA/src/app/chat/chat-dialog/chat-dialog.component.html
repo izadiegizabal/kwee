@@ -23,17 +23,20 @@
             </p>
           </mat-card-content>
           <mat-card-actions>
-            <button type="button" (click)="openTab(message.obj.link)" mat-button>{{message.obj.button}}</button>
+            <button (click)="openTab(message.obj.link)" mat-button type="button">{{message.obj.button}}</button>
           </mat-card-actions>
         </mat-card>
       </div>
     </div>
     <div class="input">
       <mat-form-field class="example-full-width" style="width: 70%; margin-right: 0.5em;">
-        <input autocomplete="off" (keyup.enter)="sendMessage()" [(ngModel)]="formValue" id="nameField" matInput type="text">
+        <input (keyup.enter)="sendMessage()" [(ngModel)]="formValue" autocomplete="off" id="nameField" matInput
+               type="text">
       </mat-form-field>
 
-      <button (click)="sendMessage()" align="end" color="accent" mat-raised-button><mat-icon color="primary" svgIcon="send"></mat-icon></button>
+      <button (click)="sendMessage()" align="end" color="accent" mat-raised-button>
+        <mat-icon color="primary" svgIcon="send"></mat-icon>
+      </button>
     </div>
   </mat-card>
   <!--<button id="close" mat-fab color="warn" type="button"><mat-icon color="primary" svgIcon="close"></mat-icon></button>-->

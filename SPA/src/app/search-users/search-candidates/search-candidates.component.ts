@@ -1,11 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import * as fromAdmin from '../../admin/store/admin.reducers';
 import {PageEvent} from '@angular/material';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
 import * as AdminActions from '../../admin/store/admin.actions';
-import {AdminEffects} from '../../admin/store/admin.effects';
 
 @Component({
   selector: 'app-search-candidates',
@@ -24,7 +23,8 @@ export class SearchCandidatesComponent implements OnInit {
 
   adminState: Observable<fromAdmin.State>;
 
-  constructor(private store$: Store<fromApp.AppState>) { }
+  constructor(private store$: Store<fromApp.AppState>) {
+  }
 
   ngOnInit() {
     console.log('init');

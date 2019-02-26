@@ -4,6 +4,8 @@ import {RouterModule} from '@angular/router';
 import {SearchBusinessesComponent} from './search-businesses.component';
 import {SearchBusinessesRoutingModule} from './search-businesses-routing.module';
 import {UserPreviewCardModule} from '../user-preview-card/user-preview-card.module';
+import {ReactiveFormsModule} from '@angular/forms';
+import {SearchbarModule} from '../../shared/searchbar/searchbar.module';
 
 
 @NgModule({
@@ -13,8 +15,10 @@ import {UserPreviewCardModule} from '../user-preview-card/user-preview-card.modu
   imports: [
     SharedModule,
     RouterModule,
+    ReactiveFormsModule,
     SearchBusinessesRoutingModule,
-    UserPreviewCardModule
+    UserPreviewCardModule,
+    SearchbarModule
   ],
   exports: [
     SearchBusinessesComponent

@@ -198,7 +198,8 @@
           </label>
           <input #profile (change)="previewFile($event)" accept="image/*"
                  formControlName="profile" id="file_profile" style="width: 0px; height: 0px;" type="file">
-          <button (click)='previewFile(this.fileEvent)' [disabled]="! profile.value" class="photo-buttons" color="primary" mat-raised-button
+          <button (click)='previewFile(this.fileEvent)' [disabled]="! profile.value" class="photo-buttons"
+                  color="primary" mat-raised-button
                   type="button">Crop again
           </button>
           <button (click)="deletePhoto()" class="photo-buttons" color="warn" mat-raised-button

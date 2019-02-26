@@ -10,10 +10,10 @@ import {FormControl, FormGroup} from '@angular/forms';
 import {
   ContractType,
   Distances,
+  isStringNotANumber,
   PublishTime,
   SalaryFrequency,
   SeniorityLevel,
-  isStringNotANumber,
   WorkLocationType
 } from '../../models/Offer.model';
 import {HttpClient} from '@angular/common/http';
@@ -27,19 +27,11 @@ import {HttpClient} from '@angular/common/http';
 export class CandidateHomeComponent implements OnInit {
 
 
-  constructor(
-    private store$: Store<fromApp.AppState>,
-    public media: BreakpointObserver,
-    private http: HttpClient) {
-  }
-
   offersState: Observable<fromOffers.State>;
-
   // MatPaginator
   pageSize = 2;
   pageSizeOptions: number[] = [5, 10, 25, 100];
   pageEvent: PageEvent;
-
   // Filter sidebar
   @ViewChild('drawer') drawer: MatSidenav;
   // Helper
@@ -64,6 +56,11 @@ export class CandidateHomeComponent implements OnInit {
     .filter(isStringNotANumber)
     .map(key => ({value: PublishTime[key], viewValue: key}));
 
+  constructor(
+    private store$: Store<fromApp.AppState>,
+    public media: BreakpointObserver,
+    private http: HttpClient) {
+  }
 
   ngOnInit() {
     this.store$.dispatch(new OffersActions.TryGetOffers({page: 1, limit: 5}));
@@ -76,6 +73,7 @@ export class CandidateHomeComponent implements OnInit {
         'currency': new FormControl('EUR'),
         'frequency': new FormControl(2),
         'publishDate': new FormControl(),
+        'minBusinessIndex': new FormControl(0),
         // TODO: complete this
       }
     );
@@ -100,12 +98,6 @@ export class CandidateHomeComponent implements OnInit {
 
   isMobile() {
     return !this.media.isMatched('screen and (min-width: 960px)'); // gt-sm
-  }
-
-  closeDrawerIfMobile() {
-    if (this.isMobile()) {
-      this.drawer.toggle();
-    }
   }
 
   applyFilters() {
