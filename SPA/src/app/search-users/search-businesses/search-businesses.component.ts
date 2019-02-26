@@ -6,23 +6,16 @@ import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
 import * as AdminActions from '../../admin/store/admin.actions';
 import {FormControl, FormGroup} from '@angular/forms';
-import {
-  ContractType,
-  Distances,
-  isStringNotANumber,
-  PublishTime,
-  SalaryFrequency,
-  SeniorityLevel,
-  WorkLocationType
-} from '../../../models/Offer.model';
+import {Distances, isStringNotANumber} from '../../../models/Offer.model';
 import {BreakpointObserver} from '@angular/cdk/layout';
+import {BusinessIndustries, BusinessSize} from '../../../models/Business.model';
 
 @Component({
   selector: 'app-search-businesses',
   templateUrl: './search-businesses.component.html',
   styleUrls: [
+    '../../candidate-home/candidate-home.component.scss',
     './search-businesses.component.scss',
-    '../../candidate-home/candidate-home.component.scss'
   ]
 })
 export class SearchBusinessesComponent implements OnInit {
@@ -32,28 +25,29 @@ export class SearchBusinessesComponent implements OnInit {
   // MatPaginator Output
   pageEvent: PageEvent;
   adminState: Observable<fromAdmin.State>;
-  // Helper
+
+
+  // FILTERS
   filters: FormGroup;
-  // -----
+
   distances = Object.keys(Distances)
     .filter(isStringNotANumber)
     .map(key => ({value: Distances[key], viewValue: key}));
-  workLocations = Object.keys(WorkLocationType)
+  industries = Object.keys(BusinessIndustries)
     .filter(isStringNotANumber)
-    .map(key => ({value: WorkLocationType[key], viewValue: key}));
-  jobTypes = Object.keys(ContractType)
+    .map(key => ({value: BusinessIndustries[key], viewValue: key}));
+  openOfferNum = [
+    {value: 0, viewValue: 'Doesn\'t matter'},
+    {value: 1, viewValue: 'More than 1'},
+    {value: 3, viewValue: 'More than 3'},
+    {value: 8, viewValue: 'More than 8'},
+    {value: 12, viewValue: 'More than 12'},
+  ];
+
+  companySizes = Object
+    .keys(BusinessSize)
     .filter(isStringNotANumber)
-    .map(key => ({value: ContractType[key], viewValue: key}));
-  frequencies = Object.keys(SalaryFrequency)
-    .filter(isStringNotANumber)
-    .map(key => ({value: SalaryFrequency[key], viewValue: key}));
-  auxCurrencies: any[];
-  experienceLevels = Object.keys(SeniorityLevel)
-    .filter(isStringNotANumber)
-    .map(key => ({value: SeniorityLevel[key], viewValue: key}));
-  publishTimes = Object.keys(PublishTime)
-    .filter(isStringNotANumber)
-    .map(key => ({value: PublishTime[key], viewValue: key}));
+    .map(key => ({value: BusinessSize[key], viewValue: key}));
 
   constructor(
     private store$: Store<fromApp.AppState>,
@@ -79,10 +73,12 @@ export class SearchBusinessesComponent implements OnInit {
     this.filters = new FormGroup({
         'location': new FormControl(),
         'distance': new FormControl(),
-        'salary': new FormControl(),
-        'currency': new FormControl('EUR'),
-        'frequency': new FormControl(2),
-        'publishDate': new FormControl(),
+        'industry': new FormControl(),
+        'foundationDate': new FormControl(),
+        'minIndex': new FormControl(0),
+        'minRatings': new FormControl(0),
+        'openOffers': new FormControl(),
+        'companySize': new FormControl(),
         // TODO: complete this
       }
     );
