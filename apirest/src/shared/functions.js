@@ -178,11 +178,13 @@ async function pagination( db, dbname, _limit, _page, attr, res, next){
             offset = limit * (page - 1);
     
             if (page > pages) {
-                return res.status(204).json({
+                return res.status(200).json({
                     ok: true,
                     message: `It doesn't exist ${ page } pages`
                 })
             }
+
+            console.log('DESPUÉS DEL RETURN');
             // if (attr.length == 0) attr = '';
             
             data = await db.findAll({
@@ -201,7 +203,7 @@ async function pagination( db, dbname, _limit, _page, attr, res, next){
 
     }
     catch(error){
-        next({ type: 'error', error: error });
+        return next({ type: 'error', error: error });
     }
     
 }

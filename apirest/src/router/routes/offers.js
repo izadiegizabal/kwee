@@ -41,7 +41,7 @@ module.exports = (app, db) => {
             delete query.keywords;
             
             if (Object.keys(query).length === 0 && query.constructor === Object && !keywords){
-                res.status(204).json({
+                res.status(200).json({
                     ok: true,
                     message: 'You must search something'
                 })
@@ -182,7 +182,7 @@ module.exports = (app, db) => {
                                     pages: Math.ceil(response2.hits.total / limit)
                                 });
                             } else {
-                                return res.status(204).json({
+                                return res.status(200).json({
                                     ok: true,
                                     message: 'No results',
                                 });
@@ -214,27 +214,29 @@ module.exports = (app, db) => {
                 next
             );
 
-            offers = output.data;
-            users = await db.users.findAll();
-
-            var offersShow = [];
-
-            for (var offer in offers) {
-                let offersAux = [],
+            if ( output.data ) {
+                offers = output.data;
+                users = await db.users.findAll();
+                
+                var offersShow = [];
+                
+                for (var offer in offers) {
+                    let offersAux = [],
                     offersToShowAux = [];
-                offersAux.push(offers[offer]);
-                offersShow.push(prepareOffersToShow(offersAux, offersToShowAux, users.find(element => offers[offer]['fk_offerer'] == element.id))[0]);
+                    offersAux.push(offers[offer]);
+                    offersShow.push(prepareOffersToShow(offersAux, offersToShowAux, users.find(element => offers[offer]['fk_offerer'] == element.id))[0]);
+                }
+                
+                return res.status(200).json({
+                    ok: true,
+                    message: output.message,
+                    data: offersShow,
+                    total: output.count,
+                    page: Number(req.query.page),
+                    pages: Math.ceil(output.count / req.query.limit)
+                });
             }
-
-            return res.status(200).json({
-                ok: true,
-                message: output.message,
-                data: offersShow,
-                total: output.count,
-                page: Number(req.query.page),
-                pages: Math.ceil(output.count / req.query.limit)
-            });
-
+   
         } catch (err) {
             next({ type: 'error', error: 'Error getting data' });
         }
@@ -374,7 +376,7 @@ module.exports = (app, db) => {
 
                     });
                 } else {
-                    return res.status(204).json({
+                    return res.status(200).json({
                         ok: true,
                         message: `No offers with this id`,
                     });

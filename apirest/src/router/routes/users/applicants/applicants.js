@@ -37,7 +37,7 @@ module.exports = (app, db) => {
             delete query.limit;
             delete query.keywords;
             if (Object.keys(query).length === 0 && query.constructor === Object && !keywords){
-                return res.status(204).json({
+                return res.status(200).json({
                     ok: true,
                     message: 'You must search something'
                 })
@@ -163,7 +163,7 @@ module.exports = (app, db) => {
                                     pages: Math.ceil(response2.hits.total / limit)
                                 });
                             } else {
-                                return res.status(204).json({
+                                return res.status(200).json({
                                     ok: true,
                                     message: 'No results',
                                 });
@@ -353,7 +353,7 @@ module.exports = (app, db) => {
                     offset = limit * (page - 1);
 
                     if (page > pages) {
-                        return res.status(204).json({
+                        return res.status(200).json({
                             ok: true,
                             message: `It doesn't exist ${ page } pages. Total of pages ${ pages }`
                         })
@@ -412,7 +412,7 @@ module.exports = (app, db) => {
                 });
 
             } else {
-                return res.status(204).json({
+                return res.status(200).json({
                     ok: true,
                     message: `It doesn't exist this user`
                 })
@@ -475,7 +475,7 @@ module.exports = (app, db) => {
                     });
                 });
             } else {
-                return res.status(204).json({
+                return res.status(200).json({
                     ok: true,
                     message: 'Applicant doesn\'t exist'
                 });

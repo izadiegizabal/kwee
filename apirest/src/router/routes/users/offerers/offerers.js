@@ -141,7 +141,7 @@ module.exports = (app, db) => {
                     offset = limit * (page - 1);
                     
                     if (page > pages) {
-                        return res.status(204).json({
+                        return res.status(200).json({
                             ok: true,
                             message: `It doesn't exist ${ page } pages. Total of pages ${ pages }`
                         })
@@ -186,7 +186,7 @@ module.exports = (app, db) => {
                 });
 
             } else {
-                return res.status(204).json({
+                return res.status(200).json({
                     ok: true,
                     message: `It doesn't exist this user`
                 })
@@ -250,7 +250,7 @@ module.exports = (app, db) => {
                     data: userOfferer
                 });
             } else {
-                return res.status(204).json({
+                return res.status(200).json({
                     ok: true,
                     message: 'Offerer doesn\'t exist'
                 });
