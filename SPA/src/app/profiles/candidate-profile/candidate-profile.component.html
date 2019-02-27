@@ -21,7 +21,7 @@
             alt="{{(profilesState | async).candidate.name + ' profile picture'}}'"
             fxFlex="200px"
             fxLayout="column" height="200px"
-            src="{{(profilesState | async).candidate.img}}"
+            src="{{getProfileImg()}}"
             width="200px"/>
           <p
             fxLayout="column"

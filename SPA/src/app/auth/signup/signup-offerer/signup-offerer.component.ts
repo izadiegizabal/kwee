@@ -312,7 +312,7 @@ export class SignupOffererComponent implements OnInit {
   }
 
   deletePhoto() {
-    (document.getElementById('photo_profile') as HTMLInputElement).src = '../../../../assets/defaut_profile.png';
+    (document.getElementById('photo_profile') as HTMLInputElement).src = '../../../../assets/defaultProfileImg.png';
     this.secondFormGroup.controls['profile'].setValue(null);
   }
 
