@@ -281,46 +281,54 @@ module.exports = (app, db) => {
 
             await db.offers.create(body)
             .then(result => {
-                elastic.index({
-                    index: 'offers',
-                    id: result.id,
-                    type: 'offers',
-                    body
-                }, function (err, resp, status) {
-                    if ( err ) {
-                        return next({ type: 'error', error: err.message });
-                    }
-                });
+                if ( result ) {
 
-                return res.status(201).json({
-                    ok: true,
-                    message: 'Offer created',
-                    data: {
+                    elastic.index({
+                        index: 'offers',
                         id: result.id,
-                        fk_offerer: id,
-                        status: result.status,
-                        title: result.title,
-                        description: result.description,
-                        datePublished: result.datePublished,
-                        dateStart: result.dateStart,
-                        dateEnd: result.dateEnd,
-                        location: result.location,
-                        salaryAmount: result.salaryAmount,
-                        salaryFrecuency: result.salaryFrecuency,
-                        salaryCurrency: result.salaryCurrency,
-                        workLocation: result.workLocation,
-                        seniority: result.seniority,
-                        responsabilities: result.responsabilities,
-                        requeriments: result.requeriments,
-                        skills: body.skills,
-                        maxApplicants: body.maxApplicants,
-                        currentApplications: body.currentApplications,
-                        duration: body.duration,
-                        durationUnit: body.durationUnit,
-                        contractType: body.contractType,
-                        isIndefinite: body.isIndefinite
-                    }
-                });
+                        type: 'offers',
+                        body
+                    }, function (err, resp, status) {
+                        if ( err ) {
+                            return next({ type: 'error', error: err.message });
+                        }
+                    });
+                    
+                    return res.status(201).json({
+                        ok: true,
+                        message: 'Offer created',
+                        data: {
+                            id: result.id,
+                            fk_offerer: id,
+                            status: result.status,
+                            title: result.title,
+                            description: result.description,
+                            datePublished: result.datePublished,
+                            dateStart: result.dateStart,
+                            dateEnd: result.dateEnd,
+                            location: result.location,
+                            salaryAmount: result.salaryAmount,
+                            salaryFrecuency: result.salaryFrecuency,
+                            salaryCurrency: result.salaryCurrency,
+                            workLocation: result.workLocation,
+                            seniority: result.seniority,
+                            responsabilities: result.responsabilities,
+                            requeriments: result.requeriments,
+                            skills: body.skills,
+                            maxApplicants: body.maxApplicants,
+                            currentApplications: body.currentApplications,
+                            duration: body.duration,
+                            durationUnit: body.durationUnit,
+                            contractType: body.contractType,
+                            isIndefinite: body.isIndefinite
+                        }
+                    });
+                } else {
+                    return res.status(400).json({
+                        ok: false,
+                        message: `No created`,
+                    });
+                }
             });
 
         } catch (err) {
