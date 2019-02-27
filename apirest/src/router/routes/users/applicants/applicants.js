@@ -307,7 +307,7 @@ module.exports = (app, db) => {
                             offer.location = allOffers[j].location;
                             offer.status = allOffers[j].status;
                             offer.salaryAmount = allOffers[j].salaryAmount;
-                            offer.salaryFrecuency = allOffers[j].salaryFrecuency;
+                            offer.salaryFrequency = allOffers[j].salaryFrequency;
                             offer.salaryCurrency = allOffers[j].salaryCurrency;
                             offer.workLocation = allOffers[j].workLocation;
                             offer.seniority = allOffers[j].seniority;

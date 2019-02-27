@@ -387,7 +387,7 @@ function prepareOffersToShow(offers, offersShow, user){
         offer.location = offers[i].location;
         offer.status = offers[i].status;
         offer.salaryAmount = offers[i].salaryAmount;
-        offer.salaryFrecuency = offers[i].salaryFrecuency;
+        offer.salaryFrequency = offers[i].salaryFrequency;
         offer.salaryCurrency = offers[i].salaryCurrency;
         offer.workLocation = offers[i].workLocation;
         offer.seniority = offers[i].seniority;

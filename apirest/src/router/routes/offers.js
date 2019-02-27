@@ -132,7 +132,7 @@ module.exports = (app, db) => {
                             offer.location = offers[i]._source.location;
                             offer.status = offers[i]._source.status;
                             offer.salaryAmount = offers[i]._source.salaryAmount;
-                            offer.salaryFrecuency = offers[i]._source.salaryFrecuency;
+                            offer.salaryFrequency = offers[i]._source.salaryFrequency;
                             offer.salaryCurrency = offers[i]._source.salaryCurrency;
                             offer.workLocation = offers[i]._source.workLocation;
                             offer.seniority = offers[i]._source.seniority;
@@ -308,7 +308,7 @@ module.exports = (app, db) => {
                             dateEnd: result.dateEnd,
                             location: result.location,
                             salaryAmount: result.salaryAmount,
-                            salaryFrecuency: result.salaryFrecuency,
+                            salaryFrequency: result.salaryFrequency,
                             salaryCurrency: result.salaryCurrency,
                             workLocation: result.workLocation,
                             seniority: result.seniority,
