@@ -31,14 +31,16 @@ module.exports = (app, db) => {
                 res,
                 next);
 
-            return res.status(200).json({
-                ok: true,
-                message: output.message,
-                data: output.data,
-                count: output.count
-            });
+            if ( output.data ) {   
+                return res.status(200).json({
+                    ok: true,
+                    message: output.message,
+                    data: output.data,
+                    count: output.count
+                });
+            }
         } catch {
-            next({ type: 'error', error: 'Error getting data' });
+            return next({ type: 'error', error: 'Error getting data' });
         }
     });
 
@@ -71,7 +73,7 @@ module.exports = (app, db) => {
                 });
             }
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            return next({ type: 'error', error: 'Error getting data' });
         }
     });
 
@@ -109,11 +111,11 @@ module.exports = (app, db) => {
                     message: `User '${user.name}' with id ${user.id} has been created.`
                 });
             } else {
-                next({ type: 'error', error: 'Error creating user' });
+                return next({ type: 'error', error: 'Error creating user' });
             }
 
         } catch (err) {
-            next({ type: 'error', error: (err.errors ? err.errors[0].message : err.message) });
+            return next({ type: 'error', error: (err.errors ? err.errors[0].message : err.message) });
         }
     });
 
@@ -129,7 +131,7 @@ module.exports = (app, db) => {
             updateUser(id, req, res, next);
 
         } catch (err) {
-            next({ type: 'error', error: (err.errors ? err.errors[0].message : err.message) });
+            return next({ type: 'error', error: (err.errors ? err.errors[0].message : err.message) });
         }
     });
 
@@ -143,7 +145,7 @@ module.exports = (app, db) => {
             updateUser(id, req, res, next);
 
         } catch (err) {
-            next({ type: 'error', error: (err.errors ? err.errors[0].message : err.message) });
+            return next({ type: 'error', error: (err.errors ? err.errors[0].message : err.message) });
         }
     });
 
@@ -176,7 +178,7 @@ module.exports = (app, db) => {
             // user: 1 -> Deleted
             // user: 0 -> User don't exists
         } catch (err) {
-            next({ type: 'error', error: 'Error deleting user.' });
+            return next({ type: 'error', error: 'Error deleting user.' });
         }
     });
 
@@ -194,7 +196,7 @@ module.exports = (app, db) => {
                 });
             }
         } catch (error) {
-            next({ type: 'error', error });
+            return next({ type: 'error', error });
         }
     });
     
@@ -229,7 +231,7 @@ module.exports = (app, db) => {
                 });
             }
         } catch (error) {
-            next({ type: 'error', error });
+            return next({ type: 'error', error });
         }
 
     });

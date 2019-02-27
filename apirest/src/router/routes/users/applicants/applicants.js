@@ -203,38 +203,39 @@ module.exports = (app, db) => {
                 next
             );
 
-            var applicants = output.data;
-            var applicantsView = [];
-
-            for (let i = 0; i < users.length; i++) {
-                for (let j = 0; j < applicants.length; j++) {
-                    
-                    if (users[i].id === applicants[j].userId) {
-                        applicantsView[j] = {
-                            id: applicants[j].userId,
-                            index: users[i].index,
-                            name: users[i].name,
-                            email: users[i].email,
-                            city: applicants[j].city,
-                            dateBorn: applicants[j].dateBorn,
-                            premium: applicants[j].premium,
-                            //createdAt: applicants[j].createdAt,
-                            lastAccess: users[i].lastAccess,
-                            status: users[i].status,
-                            img: users[i].img,
-                            bio: users[i].bio,
-                        }
+            if ( output.data ) {
+                var applicants = output.data;
+                var applicantsView = [];
+                
+                for (let i = 0; i < users.length; i++) {
+                    for (let j = 0; j < applicants.length; j++) {
                         
+                        if (users[i].id === applicants[j].userId) {
+                            applicantsView[j] = {
+                                id: applicants[j].userId,
+                                index: users[i].index,
+                                name: users[i].name,
+                                email: users[i].email,
+                                city: applicants[j].city,
+                                dateBorn: applicants[j].dateBorn,
+                                premium: applicants[j].premium,
+                                lastAccess: users[i].lastAccess,
+                                status: users[i].status,
+                                img: users[i].img,
+                                bio: users[i].bio,
+                            }
+                            
+                        }
                     }
                 }
+                
+                return res.status(200).json({
+                    ok: true,
+                    message: output.message,
+                    data: applicantsView,
+                    total: output.count
+                });
             }
-
-            return res.status(200).json({
-                ok: true,
-                message: output.message,
-                data: applicantsView,
-                total: output.count
-            });
 
         } catch (err) {
             next({ type: 'error', error: err.message });

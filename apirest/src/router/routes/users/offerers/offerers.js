@@ -32,40 +32,43 @@ module.exports = (app, db) => {
                 next
             )
 
-            var offerers = output.data;
-            var offerersView = [];
-
-            for (let i = 0; i < users.length; i++) {
-                for (let j = 0; j < offerers.length; j++) {
-                    if (users[i].id === offerers[j].userId) {
-                        offerersView[j] = {
-                            id: offerers[j].userId,
-                            index: users[i].index,
-                            name: users[i].name,
-                            email: users[i].email,
-                            address: offerers[j].address,
-                            workField: offerers[j].workField,
-                            cif: offerers[j].cif,
-                            dateVerification: offerers[j].dateVerification,
-                            website: offerers[j].website,
-                            companySize: offerers[j].companySize,
-                            year: offerers[j].year,
-                            premium: offerers[j].premium,
-                            createdAt: offerers[j].createdAt,
-                            lastAccess: users[i].lastAccess,
-                            status: users[i].status,
-                            img: users[i].img
+            if ( output.data ) {
+                
+                var offerers = output.data;
+                var offerersView = [];
+                
+                for (let i = 0; i < users.length; i++) {
+                    for (let j = 0; j < offerers.length; j++) {
+                        if (users[i].id === offerers[j].userId) {
+                            offerersView[j] = {
+                                id: offerers[j].userId,
+                                index: users[i].index,
+                                name: users[i].name,
+                                email: users[i].email,
+                                address: offerers[j].address,
+                                workField: offerers[j].workField,
+                                cif: offerers[j].cif,
+                                dateVerification: offerers[j].dateVerification,
+                                website: offerers[j].website,
+                                companySize: offerers[j].companySize,
+                                year: offerers[j].year,
+                                premium: offerers[j].premium,
+                                createdAt: offerers[j].createdAt,
+                                lastAccess: users[i].lastAccess,
+                                status: users[i].status,
+                                img: users[i].img
+                            }
                         }
                     }
                 }
+                
+                return res.status(200).json({
+                    ok: true,
+                    message: output.message,
+                    data: offerersView,
+                    total: output.count
+                });
             }
-
-            return res.status(200).json({
-                ok: true,
-                message: output.message,
-                data: offerersView,
-                total: output.count
-            });
 
         } catch (err) {
             next({ type: 'error', error: err.message });
