@@ -8,29 +8,54 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
 
-        efficience: {
+        efficiency: {
             type: DataTypes.INTEGER,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                max: 5,
+                min: 0,
+                isInt: true
+            }
         },
 
         skills: {
             type: DataTypes.INTEGER,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                max: 5,
+                min: 0,
+                isInt: true
+            }
         },
 
-        puntuality: {
+        punctuality: {
             type: DataTypes.INTEGER,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                max: 5,
+                min: 0,
+                isInt: true
+            }
         },
 
         hygiene: {
             type: DataTypes.INTEGER,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                max: 5,
+                min: 0,
+                isInt: true
+            }
         },
 
         teamwork: {
             type: DataTypes.INTEGER,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                max: 5,
+                min: 0,
+                isInt: true
+            }
         },
 
         // overall satisfaction --> FLOAT

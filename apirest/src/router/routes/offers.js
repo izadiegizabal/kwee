@@ -347,10 +347,6 @@ module.exports = (app, db) => {
                         return next({ type: 'error', error: error.message });
                     });
 
-                    return res.status(200).json({
-                        ok: true,
-                        message: `Offer ${ id } updated`,
-                    });
                 })
         } catch (err) {
             return next({ type: 'error', error: err.message });

@@ -1,6 +1,8 @@
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
 const { tokenId, logger } = require('../../shared/functions');
 
+const algorithm = require('../../shared/algorithm');
+
 // ============================
 // ======== CRUD experiences =========
 // ============================
@@ -175,5 +177,16 @@ module.exports = (app, db) => {
         } catch (err) {
             return next({ type: 'error', error: 'Error getting data' });
         }
+    });
+
+    app.get('/experiences/index/:id', async(req,res,next) => {
+        const id = req.params.id;
+
+        let index = await algorithm.indexAveragesUpdate(id);
+
+        return res.json({
+            ok: true,
+            index
+        });
     });
 }
