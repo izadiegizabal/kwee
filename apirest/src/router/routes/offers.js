@@ -336,18 +336,41 @@ module.exports = (app, db) => {
 
         try {
             let fk_offerer = tokenId.getTokenId(req.get('token'));
-            await db.offers.update(updates, {
-                    where: { id, fk_offerer }
-                }).then(result => {
-                    axios.post(`http://${ env.ES_URL }/offers/offers/${ id }/_update?pretty=true`, {
-                        doc: updates
-                    }).then((resp) => {
-                        // updated from elasticsearch database too
-                    }).catch((error) => {
-                        return next({ type: 'error', error: error.message });
-                    });
 
-                })
+            let offerToUpdate = await db.offers.findOne({
+                where: {id}
+            });
+            
+            if ( offerToUpdate ) {
+                await db.offers.update(updates, {
+                        where: { id, fk_offerer }
+                    }).then(result => {
+                        if ( result ) {
+                            axios.post(`http://${ env.ES_URL }/offers/offers/${ id }/_update?pretty=true`, {
+                                doc: updates
+                            }).then((resp) => {
+                                // updated from elasticsearch database too
+                            }).catch((error) => {
+                                console.log(error.message);
+                            });
+                            return res.status(200).json({
+                                ok: true,
+                                message: `Offer ${ id } updated`,
+                            });
+                        } else {
+                            return res.status(400).json({
+                                ok: false,
+                                message: `No updates`,
+                            });
+                        }
+
+                    });
+                } else {
+                    return res.status(400).json({
+                        ok: false,
+                        message: `No offers with this id`,
+                    });
+                }
         } catch (err) {
             return next({ type: 'error', error: err.message });
         }
