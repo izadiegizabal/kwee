@@ -8,6 +8,8 @@ import {Observable} from 'rxjs';
 import {filter} from 'rxjs/operators';
 import {AdminEffects} from '../../store/admin.effects';
 import {PageEvent} from '@angular/material';
+import {isStringNotANumber} from '../../../../models/Offer.model';
+import {CandidateAccountStatus} from '../../../../models/Candidate.model';
 
 @Component({
   selector: 'app-candidate-overview',
@@ -30,11 +32,10 @@ export class CandidateOverviewComponent implements OnInit {
 
   adminState: Observable<fromAdmin.State>;
 
-  states: { value: number, viewValue: string }[] = [
-    {value: 0, viewValue: 'Active'},
-    {value: 1, viewValue: 'Blocked'},
-    {value: 2, viewValue: 'Verification Pending'},
-  ];
+  states = Object
+    .keys(CandidateAccountStatus)
+    .filter(isStringNotANumber)
+    .map(key => ({value: CandidateAccountStatus[key], viewValue: key}));
   subscriptions: { value: number, viewValue: string }[] = [
     {value: 0, viewValue: 'Free'},
     {value: 1, viewValue: 'Premium'},

@@ -12,13 +12,13 @@ import {OfferEffects} from '../offer-detail/store/offer.effects';
 import * as OfferActions from '../offer-detail/store/offer.actions';
 import {filter, first} from 'rxjs/operators';
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import { ChangeEvent } from '@ckeditor/ckeditor5-angular/ckeditor.component';
+import {ChangeEvent} from '@ckeditor/ckeditor5-angular/ckeditor.component';
 import {
   ContractType,
+  isStringNotANumber,
+  JobDurationUnit,
   SalaryFrequency,
   SeniorityLevel,
-  JobDurationUnit,
-  isStringNotANumber,
   WorkLocationType
 } from '../../../models/Offer.model';
 
@@ -71,7 +71,7 @@ export class OfferCreateComponent implements OnInit {
   contractType = Object.keys(ContractType)
     .filter(isStringNotANumber)
     .map(key => ({value: ContractType[key], viewValue: key}));
-  salaryFrecuency = Object.keys(SalaryFrequency)
+  salaryFrequency = Object.keys(SalaryFrequency)
     .filter(isStringNotANumber)
     .map(key => ({value: SalaryFrequency[key], viewValue: key}));
   seniority = Object.keys(SeniorityLevel)
@@ -124,7 +124,7 @@ export class OfferCreateComponent implements OnInit {
   ngOnInit() {
     this.authState = this.store$.pipe(select('auth'));
     this.authState.pipe(
-      select((s: {token: string}) => s.token)
+      select((s: { token: string }) => s.token)
     ).subscribe(
       (token) => {
         this.token = token;
@@ -158,21 +158,21 @@ export class OfferCreateComponent implements OnInit {
 
   }
 
-  public onChangeDescription( { editor }: ChangeEvent ) {
+  public onChangeDescription({editor}: ChangeEvent) {
     this.form.controls['description'].setValue(editor.getData());
     if (this.form.controls['description'].value === '<p>&nbsp;</p>') {
       this.form.controls['description'].setValue(null);
     }
   }
 
-  public onChangeRequirements( { editor }: ChangeEvent ) {
+  public onChangeRequirements({editor}: ChangeEvent) {
     this.form.controls['requirements'].setValue(editor.getData());
     if (this.form.controls['requirements'].value === '<p>&nbsp;</p>') {
       this.form.controls['requirements'].setValue(null);
     }
   }
 
-  public onChangeResponsabilities( { editor }: ChangeEvent ) {
+  public onChangeResponsabilities({editor}: ChangeEvent) {
     this.form.controls['responsabilities'].setValue(editor.getData());
     if (this.form.controls['responsabilities'].value === '<p>&nbsp;</p>') {
       this.form.controls['responsabilities'].setValue(null);
@@ -205,7 +205,7 @@ export class OfferCreateComponent implements OnInit {
       'dateEnd': new FormControl(this.offer ? this.offer.dateEnd : null, Validators.required),
       'location': new FormControl(loc, Validators.required),
       'salary': new FormControl(this.offer ? this.offer.salaryAmount : null, Validators.required),
-      'salaryFrecuency': new FormControl(this.offer ? this.offer.salaryFrecuency : null, Validators.required),
+      'salaryFrequency': new FormControl(this.offer ? this.offer.salaryFrecuency : null, Validators.required),
       'salaryCurrency': new FormControl(this.offer ? this.offer.salaryCurrency : null, Validators.required),
       'seniority': new FormControl(this.offer ? this.offer.seniority : null, Validators.required),
       'maxApplicants': new FormControl(this.offer ? this.offer.maxApplicants : null, Validators.required),
@@ -277,7 +277,7 @@ export class OfferCreateComponent implements OnInit {
           ? (this.form.controls['location'].value as City).name
           : this.form.controls['location'].value,
         'salaryAmount': this.form.controls['salary'].value,
-        'salaryFrecuency': this.form.controls['salaryFrecuency'].value,
+        'salaryFrequency': this.form.controls['salaryFrecuency'].value,
         'salaryCurrency': this.form.controls['salaryCurrency'].value,
         'workLocation': this.form.controls['workLocation'].value,
         'seniority': this.form.controls['seniority'].value,

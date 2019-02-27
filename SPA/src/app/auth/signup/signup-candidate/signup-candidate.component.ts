@@ -11,6 +11,8 @@ import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {DialogImageCropComponent} from '../dialog-image-crop/dialog-image-crop.component';
 import {ActivatedRoute, Router} from '@angular/router';
 import {environment} from '../../../../environments/environment';
+import {isStringNotANumber} from '../../../../models/Offer.model';
+import {LanguageLevels, WorkFields} from '../../../../models/Candidate.model';
 
 interface City {
   name: string;
@@ -46,26 +48,14 @@ export class SignupCandidateComponent implements OnInit {
   authState: any;
   file: any;
 
-  roles: { value: number, viewValue: string }[] = [
-    {value: 0, viewValue: 'Software Engineering'},
-    {value: 1, viewValue: 'Engineering Management'},
-    {value: 2, viewValue: 'Design'},
-    {value: 3, viewValue: 'Data Analytics'},
-    {value: 4, viewValue: 'Developer Operations'},
-    {value: 5, viewValue: 'Quality Assurance'},
-    {value: 6, viewValue: 'Information Technology'},
-    {value: 7, viewValue: 'Project Management'},
-    {value: 8, viewValue: 'Product Management'},
-  ];
-  proficiencies: { value: number, viewValue: string }[] = [
-    {value: 0, viewValue: 'Native'},
-    {value: 1, viewValue: 'Begginer - A1'},
-    {value: 2, viewValue: 'Elementary - A2'},
-    {value: 3, viewValue: 'Intermediate - B1'},
-    {value: 4, viewValue: 'Upper Intermediate - B2'},
-    {value: 5, viewValue: 'Advanced - C1'},
-    {value: 6, viewValue: 'Proficient - C2'},
-  ];
+  roles = Object
+    .keys(WorkFields)
+    .filter(isStringNotANumber)
+    .map(key => ({value: WorkFields[key], viewValue: key}));
+  proficiencies = Object
+    .keys(LanguageLevels)
+    .filter(isStringNotANumber)
+    .map(key => ({value: LanguageLevels[key], viewValue: key}));
   private dialogShown = false;
 
   constructor(private _formBuilder: FormBuilder,

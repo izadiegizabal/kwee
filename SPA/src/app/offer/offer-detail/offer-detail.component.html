@@ -75,7 +75,7 @@
               [text]="getOfferDuration((offerState | async).offer.isIndefinite, (offerState | async).offer.duration, (offerState | async).offer.durationUnit) | lowercase"
               icon="date-range"></app-icon-with-text>
             <app-icon-with-text
-              [text]="getOfferSalary((offerState | async).offer.salaryAmount, (offerState | async).offer.salaryCurrency, (offerState | async).offer.salaryFrecuency)"
+              [text]="getOfferSalary((offerState | async).offer.salaryAmount, (offerState | async).offer.salaryCurrency, (offerState | async).offer.salaryFrequency)"
               icon="local-atm"></app-icon-with-text>
             <app-icon-with-text [text]="getOfferSeniorityLevel((offerState | async).offer.seniority)"
                                 icon="face"></app-icon-with-text>
@@ -98,12 +98,12 @@
                fxLayoutAlign="center center"
                fxLayoutGap="8px"
                fxShow.gt-xs>
-            <a *ngIf="(offerState | async).offer.fk_offerer === this.id; else apply"
-               (click)="goEdit()">
+            <a (click)="goEdit()"
+               *ngIf="(offerState | async).offer.fk_offerer === this.id; else apply">
               <button
-                type="button"
                 color="accent"
-                mat-raised-button style="color: white">{{'Edit Offer' | uppercase }}</button>
+                mat-raised-button
+                style="color: white" type="button">{{'Edit Offer' | uppercase }}</button>
             </a>
             <ng-template #apply>
               <button (click)="postApplication()"

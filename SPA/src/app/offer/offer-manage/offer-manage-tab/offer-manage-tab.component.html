@@ -1,4 +1,4 @@
-<div fxLayoutGap="8px" style="padding: 8px">
+<div *ngIf="(offerManageState | async).offers" fxLayoutGap="8px" style="padding: 8px">
   <app-offer-preview-card *ngFor="let offer of  (offerManageState | async).offers.data;" [offer]="offer">
   </app-offer-preview-card>
 

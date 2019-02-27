@@ -5,6 +5,8 @@ import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
 import {Observable} from 'rxjs';
 import * as fromAdmin from '../store/admin.reducers';
+import {BusinessAccountStates, BusinessAccountSubscriptions, BusinessIndustries} from '../../../models/Business.model';
+import {isStringNotANumber} from '../../../models/Offer.model';
 
 
 @Component({
@@ -25,28 +27,18 @@ export class AdminVerifyComponent implements OnInit {
   isPanelOpen = false;
 
 
-  workFields: { value: number, viewValue: string }[] = [
-    {value: 0, viewValue: 'Software Engineering'},
-    {value: 1, viewValue: 'Engineering Management'},
-    {value: 2, viewValue: 'Design'},
-    {value: 3, viewValue: 'Data Analytics'},
-    {value: 4, viewValue: 'Developer Operations'},
-    {value: 5, viewValue: 'Quality Assurance'},
-    {value: 6, viewValue: 'Information Technology'},
-    {value: 7, viewValue: 'Project Management'},
-    {value: 9, viewValue: 'Product Management'},
-  ];
-  states: { value: number, viewValue: string }[] = [
-    {value: 0, viewValue: 'Active'},
-    {value: 1, viewValue: 'Verification Pending'},
-    {value: 2, viewValue: 'Validation Pending'},
-    {value: 3, viewValue: 'Blocked'},
-  ];
-  subscriptions: { value: number, viewValue: string }[] = [
-    {value: 0, viewValue: 'Free / Pay-as-you-go'},
-    {value: 1, viewValue: 'Premium'},
-    {value: 2, viewValue: 'Elite'},
-  ];
+  workFields = Object
+    .keys(BusinessIndustries)
+    .filter(isStringNotANumber)
+    .map(key => ({value: BusinessIndustries[key], viewValue: key}));
+  states = Object
+    .keys(BusinessAccountStates)
+    .filter(isStringNotANumber)
+    .map(key => ({value: BusinessAccountStates[key], viewValue: key}));
+  subscriptions = Object
+    .keys(BusinessAccountSubscriptions)
+    .filter(isStringNotANumber)
+    .map(key => ({value: BusinessAccountSubscriptions[key], viewValue: key}));
 
   adminState: Observable<fromAdmin.State>;
 

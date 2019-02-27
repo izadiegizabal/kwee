@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
-import { SharedModule } from '../shared/shared.module';
-import { RouterModule } from '@angular/router';
+import {SharedModule} from '../shared/shared.module';
+import {RouterModule} from '@angular/router';
 import {ContactSupportComponent} from './contact-support.component';
 import {ContactSupportRoutingModule} from './contact-support-routing.module';
 import {ReactiveFormsModule} from '@angular/forms';
@@ -21,4 +21,5 @@ import {ReactiveFormsModule} from '@angular/forms';
   ]
 })
 
-export class ContactSupportModule {}
+export class ContactSupportModule {
+}

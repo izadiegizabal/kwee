@@ -13,7 +13,7 @@ export interface State {
         dateEnd: Date,
         location: string,
         salaryAmount: number,
-        salaryFrecuency: number,
+        salaryFrequency: number,
         salaryCurrency: string,
         workLocation: number,
         seniority: number,

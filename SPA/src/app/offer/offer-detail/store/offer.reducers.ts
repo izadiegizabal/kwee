@@ -18,7 +18,7 @@ export interface State {
     responsabilities: string,
     salaryAmount: number,
     salaryCurrency: string,
-    salaryFrecuency: number,
+    salaryFrequency: number,
     seniority: number,
     skills: string[],
     status: number,
