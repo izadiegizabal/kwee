@@ -26,7 +26,6 @@ async function mainR(){
 	gl.enable(gl.CULL_FACE);
 	gl.frontFace(gl.CCW);
 	gl.cullFace(gl.BACK);
-
 	
    
     // let meshMaterial = await manager.getResource('cube','material');
@@ -68,6 +67,20 @@ async function mainR(){
 	gl.useProgram(program);
 
 
+    //// matrices
+    var worldMatrix = new Float32Array(16);
+    var viewMatrix = new Float32Array(16);
+    var projMatrix = new Float32Array(16);
+    glMatrix.mat4.identity(worldMatrix);
+    glMatrix.mat4.lookAt(viewMatrix, [0, 0, -2], [0, 0, 0], [0, 1, 0]);
+    glMatrix.mat4.perspective(projMatrix, glMatrix.glMatrix.toRadian(45), canvas.clientWidth / canvas.clientHeight, 0.1, 1000.0);
+    var matWorldUniformLocation = gl.getUniformLocation(program, 'mWorld');
+    var matViewUniformLocation = gl.getUniformLocation(program, 'mView');
+    var matProjUniformLocation = gl.getUniformLocation(program, 'mProj');
+    gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
+    gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix);
+    gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
+
 
 	let Escena = new TNode();
 	let RotaLuz = new TNode(Escena);
@@ -96,7 +109,11 @@ async function mainR(){
 	let EntLuz = new TLight(); 
 	let EntCam = new TCamera(); 
 	let MallaChasis = new TMesh();
-	await MallaChasis.loadMesh('earth_decimated');
+	await MallaChasis.loadMesh('part1');
+
+
+    let MallaChasi2 = new TMesh();
+    await MallaChasi2.loadMesh('partt');
 
 	console.log(MallaChasis.mesh);
 
@@ -105,13 +122,16 @@ async function mainR(){
 	let NLuz = new TNode(TraslaLuz);
 	let NCam = new TNode(TraslaCam);
 	let NChasis = new TNode(TraslaCoche);
+    let NChasi2 = new TNode(TraslaCoche);
 
 	NLuz.setEntity(EntLuz);
 	NCam.setEntity(EntCam);
 	NChasis.setEntity(MallaChasis);
+    NChasi2.setEntity(MallaChasi2);
 
 	TraslaLuz.addChild(NLuz);
 	TraslaCoche.addChild(NChasis);
+    TraslaCoche.addChild(NChasi2);
 	TraslaCam.addChild(NCam);
 
 	TraslaLuz.setEntity(TransfRotaLuz);

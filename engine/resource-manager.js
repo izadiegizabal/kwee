@@ -112,12 +112,14 @@ class TResourceMesh extends TResource{
 
         this.nTris;
         this.nVertices;
+        this.alias;
     }
 
     async loadFile(file){
 
         // mesh file code
         const jsonMesh = await loadJSON(file);
+        this.alias = jsonMesh.alias;
         //const jsonMesh = await loadJSON(file);
         
         // update variables vertices, normals, textures...
@@ -193,21 +195,6 @@ class TResourceMesh extends TResource{
         );
         gl.enableVertexAttribArray(positionAttribLocation);
 
-        //// matrices
-        var worldMatrix = new Float32Array(16);
-        var viewMatrix = new Float32Array(16);
-        var projMatrix = new Float32Array(16);
-        glMatrix.mat4.identity(worldMatrix);
-        glMatrix.mat4.lookAt(viewMatrix, [0, 0, -2], [0, 0, 0], [0, 1, 0]);
-        glMatrix.mat4.perspective(projMatrix, glMatrix.glMatrix.toRadian(45), canvas.clientWidth / canvas.clientHeight, 0.1, 1000.0);
-        var matWorldUniformLocation = gl.getUniformLocation(program, 'mWorld');
-        var matViewUniformLocation = gl.getUniformLocation(program, 'mView');
-        var matProjUniformLocation = gl.getUniformLocation(program, 'mProj');
-        gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
-        gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix);
-        gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
-
-        /// dibujado
         gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
