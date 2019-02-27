@@ -8,6 +8,7 @@ import {StoreModule} from '@ngrx/store';
 import {adminReducer} from '../../admin/store/admin.reducers';
 import {EffectsModule} from '@ngrx/effects';
 import {AdminEffects} from '../../admin/store/admin.effects';
+import {ReactiveFormsModule} from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import {AdminEffects} from '../../admin/store/admin.effects';
     RouterModule,
     SearchCandidateRoutingModule,
     UserPreviewCardModule,
+    ReactiveFormsModule,
     StoreModule.forFeature('admin', adminReducer),
     EffectsModule.forFeature([AdminEffects])
   ],
