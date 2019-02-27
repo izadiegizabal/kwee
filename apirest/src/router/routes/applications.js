@@ -33,8 +33,8 @@ module.exports = (app, db) => {
             offset = limit * (page - 1);
 
             if (page > pages) {
-                return res.status(400).json({
-                    ok: false,
+                return res.status(200).json({
+                    ok: true,
                     message: `It doesn't exist ${ page } pages`
                 })
             }
@@ -189,8 +189,8 @@ module.exports = (app, db) => {
                                         });
                                     }
                                 } else {
-                                    return res.status(400).json({
-                                        ok: false,
+                                    return res.status(200).json({
+                                        ok: true,
                                         error: "Application with OfferId " + body.fk_offer + " on ApplicantId " + body.fk_applicant + " doesn't exist."
                                     });
                                 }

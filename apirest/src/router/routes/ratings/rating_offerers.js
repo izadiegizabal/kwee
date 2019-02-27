@@ -59,8 +59,8 @@ module.exports = (app, db) => {
             offset = limit * (page - 1);
 
             if (page > pages) {
-                return res.status(400).json({
-                    ok: false,
+                return res.status(200).json({
+                    ok: true,
                     message: `It doesn't exist ${ page } pages`
                 })
             }
@@ -113,8 +113,8 @@ module.exports = (app, db) => {
                     data: ratingRating_Offerer
                 });
             } else {
-                return res.status(400).json({
-                    ok: false,
+                return res.status(200).json({
+                    ok: true,
                     message: 'Rating_Offerer doesn\'t exist'
                 });
             }

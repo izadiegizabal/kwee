@@ -62,8 +62,8 @@ module.exports = (app, db) => {
                     data: applicant_education
                 });
             } else {
-                return res.status(400).json({
-                    ok: false,
+                return res.status(200).json({
+                    ok: true,
                     message: 'This applicant doesn\'t has educations'
                 });
             }
@@ -140,8 +140,8 @@ module.exports = (app, db) => {
 
 
             } else {
-                return res.status(400).json({
-                    ok: false,
+                return res.status(200).json({
+                    ok: true,
                     error: "Applicant doesn't exist"
                 });
             }
@@ -231,8 +231,8 @@ module.exports = (app, db) => {
                     message: "Deleted"
                 });
             } else {
-                return res.status(400).json({
-                    ok: false,
+                return res.status(200).json({
+                    ok: true,
                     error: "This Applicant doesn't exist"
                 });
             }
