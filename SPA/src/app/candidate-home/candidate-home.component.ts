@@ -29,9 +29,11 @@ export class CandidateHomeComponent implements OnInit {
 
   offersState: Observable<fromOffers.State>;
   // MatPaginator
-  pageSize = 2;
+  pageSize = 5;
   pageSizeOptions: number[] = [5, 10, 25, 100];
   pageEvent: PageEvent;
+  params = '';
+
   // Filter sidebar
   @ViewChild('drawer') drawer: MatSidenav;
   // Helper
@@ -63,7 +65,7 @@ export class CandidateHomeComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store$.dispatch(new OffersActions.TryGetOffers({page: 1, limit: 5}));
+    this.store$.dispatch(new OffersActions.TryGetOffers({page: 1, limit: 5, params: '&status=0'}));
     this.offersState = this.store$.pipe(select(state => state.offers));
 
     this.filters = new FormGroup({
@@ -93,7 +95,11 @@ export class CandidateHomeComponent implements OnInit {
   }
 
   changePage() {
-    this.store$.dispatch(new OffersActions.TryGetOffers({page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize}));
+    this.pageSize = this.pageEvent.pageSize;
+    this.store$.dispatch(new OffersActions.TryGetOffers({
+      page: this.pageEvent.pageIndex + 1,
+      limit: this.pageEvent.pageSize,
+      params: this.params}));
   }
 
   isMobile() {
@@ -103,5 +109,15 @@ export class CandidateHomeComponent implements OnInit {
   applyFilters() {
     this.drawer.toggle();
     window.scrollTo(0, 0);
+  }
+
+  onSearch(params: string) {
+    const searchParams = params.toLowerCase().replace(/ /g , '+');
+    this.params = '&status=0&keywords=' + searchParams;
+
+    this.store$.dispatch(new OffersActions.TryGetOffers({
+      page: 1,
+      limit: this.pageSize,
+      params: this.params}));
   }
 }

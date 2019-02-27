@@ -101,7 +101,7 @@
       fxLayoutAlign="center center"
       fxLayoutGap="8px">
       <app-searchbar
-        fxFlex="40%" fxFlex.lt-lg="60%">
+        fxFlex="40%" fxFlex.lt-lg="60%" (search)="onSearch($event)">
       </app-searchbar>
       <app-orderby-button></app-orderby-button>
       <button color="primary"
