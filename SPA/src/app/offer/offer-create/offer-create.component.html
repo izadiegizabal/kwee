@@ -111,12 +111,12 @@
               </mat-error>
             </mat-form-field>
             <mat-form-field>
-              <mat-select formControlName="salaryFrecuency" placeholder="Frequency" required>
-                <mat-option *ngFor="let value of salaryFrecuency" [value]="value.value">
+              <mat-select formControlName="salaryFrequency" placeholder="Frequency" required>
+                <mat-option *ngFor="let value of salaryFrequency" [value]="value.value">
                   {{value.viewValue}}
                 </mat-option>
               </mat-select>
-              <mat-error *ngIf="!form.get('salaryFrecuency').valid ">
+              <mat-error *ngIf="!form.get('salaryFrequency').valid ">
                 This field is required
               </mat-error>
             </mat-form-field>

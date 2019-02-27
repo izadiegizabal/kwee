@@ -53,7 +53,7 @@ export class OfferPreviewCardComponent implements OnInit {
 
     return salaryNum + ' ' +
       this.offer.salaryCurrency + ' ' +
-      SalaryFrequency[this.offer.salaryFrecuency];
+      SalaryFrequency[this.offer.salaryFrequency];
   }
 
   getOfferDuration() {

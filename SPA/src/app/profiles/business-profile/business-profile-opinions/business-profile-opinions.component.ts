@@ -25,10 +25,10 @@ export class BusinessProfileOpinionsComponent implements OnInit {
       opinion: 'Very nice working environment, nice salary and fantastic boss, really recommended!',
       details: {
         salary: 5,
-        enviroment: 3,
+        environment: 3,
         partners: 5,
         services: 2,
-        instalations: 4,
+        installations: 4,
       },
       replies: [
         {
@@ -53,10 +53,10 @@ export class BusinessProfileOpinionsComponent implements OnInit {
       opinion: 'Very nice working environment, nice salary and fantastic boss, really recommended!',
       details: {
         salary: 5,
-        enviroment: 3,
+        environment: 3,
         partners: 5,
         services: 2,
-        instalations: 4,
+        installations: 4,
       },
       replies: [
         {
