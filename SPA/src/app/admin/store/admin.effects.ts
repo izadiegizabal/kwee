@@ -17,13 +17,13 @@ export class AdminEffects {
     map((action: AdminActions.TryGetCandidates) => {
       return action.payload;
     }),
-    withLatestFrom(this.store$.pipe(select(state => state.auth))),
-    switchMap(([payload, authState]) => {
+   // withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    switchMap((payload) => {
         const apiEndpointUrl = environment.apiUrl + 'applicants/?page=' + payload.page + '&limit=' + payload.limit;
-        const token = authState.token;
-        const headers = new HttpHeaders().set('token', token);
+       // const token = authState.token;
+       // const headers = new HttpHeaders().set('token', token);
         // console.log(apiEndpointUrl);
-        return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
+        return this.httpClient.get(apiEndpointUrl, ).pipe(
           map((res: {
             ok: boolean,
             data: any[],
@@ -36,7 +36,7 @@ export class AdminEffects {
           }),
           catchError((err: HttpErrorResponse) => {
             throwError(this.handleError('getCandidates', err));
-            const error = err.error.message ? err.error.message : err;
+            const error = err.message ? err.message : err;
             return [
               {
                 type: AdminActions.OPERATION_ERROR,
@@ -56,12 +56,12 @@ export class AdminEffects {
     map((action: AdminActions.TryGetBusinesses) => {
       return action.payload;
     }),
-    withLatestFrom(this.store$.pipe(select(state => state.auth))),
-    switchMap(([payload, authState]) => {
+   // withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    switchMap((payload) => {
         const apiEndpointUrl = environment.apiUrl + 'offerers/?page=' + payload.page + '&limit=' + payload.limit;
-        const token = authState.token;
-        const headers = new HttpHeaders().set('token', token);
-        return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
+        // const token = authState.token;
+        // const headers = new HttpHeaders().set('token', token);
+        return this.httpClient.get(apiEndpointUrl, ).pipe(
           map((res: {
             ok: boolean,
             data: any[],
@@ -74,7 +74,7 @@ export class AdminEffects {
           }),
           catchError((err: HttpErrorResponse) => {
             throwError(this.handleError('getBusinesses', err));
-            const error = err.error.message ? err.error.message : err;
+            const error = err.message ? err.message : err;
             return [
               {
                 type: AdminActions.OPERATION_ERROR,

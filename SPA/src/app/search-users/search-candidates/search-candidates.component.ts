@@ -27,7 +27,6 @@ export class SearchCandidatesComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('init');
     this.store$.dispatch(new AdminActions.TryGetCandidates({page: 1, limit: 5}));
     this.adminState = this.store$.pipe(select(state => state.admin));
   }

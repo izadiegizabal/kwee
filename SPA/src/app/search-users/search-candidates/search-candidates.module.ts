@@ -4,7 +4,10 @@ import {RouterModule} from '@angular/router';
 import {SearchCandidatesComponent} from './search-candidates.component';
 import {SearchCandidateRoutingModule} from './search-candidates-routing.module';
 import {UserPreviewCardModule} from '../user-preview-card/user-preview-card.module';
-
+import {StoreModule} from '@ngrx/store';
+import {adminReducer} from '../../admin/store/admin.reducers';
+import {EffectsModule} from '@ngrx/effects';
+import {AdminEffects} from '../../admin/store/admin.effects';
 
 @NgModule({
   declarations: [
@@ -14,7 +17,9 @@ import {UserPreviewCardModule} from '../user-preview-card/user-preview-card.modu
     SharedModule,
     RouterModule,
     SearchCandidateRoutingModule,
-    UserPreviewCardModule
+    UserPreviewCardModule,
+    StoreModule.forFeature('admin', adminReducer),
+    EffectsModule.forFeature([AdminEffects])
   ],
   exports: [
     SearchCandidatesComponent

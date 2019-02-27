@@ -117,8 +117,14 @@
       </app-offer-preview-card>
     </div>
 
+    <div *ngIf="!(offersState | async).offers" fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">
+      <h4 class="mat-h3">No results found.</h4>
+      <p class="mat-typography">Your search returned no results. Try shortening or rephrasing your search.</p>
+    </div>
 
-    <mat-paginator (page)="pageEvent = $event; changePage();"
+
+
+    <mat-paginator *ngIf="(offersState | async).offers" (page)="pageEvent = $event; changePage();"
                    [length]="(offersState | async).offers.total"
                    [pageSizeOptions]="pageSizeOptions"
                    [pageSize]="pageSize">
