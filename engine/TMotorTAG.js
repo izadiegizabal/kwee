@@ -8,7 +8,7 @@ function render(now) {
     }
     window.requestAnimationFrame(render);
 }*/
-var manager = new TResourceManager();
+//var manager = new TResourceManager();
 
 var canvas = null;
 var gl = null;
@@ -360,11 +360,22 @@ class TMotorTAG{
 
     }
 
-    createCamera(){
+    createCamera( isPerspective, near, far, right, left, top, bottom ){
+        // isPerspective, near, far, right, left, top, bottom
+        let camera = new TCamera(isPerspective, near, far, right, left, top, bottom);
 
+        this.allCameras.push(camera);
+
+        return camera;
     }
 
     createLight(){
+        // typ, intensity, specular, direction, s
+        let light = new TLight(typ, intensity, specular, direction, s);
+
+        this.allLights.push(light);
+
+        return light;
 
     }
 
