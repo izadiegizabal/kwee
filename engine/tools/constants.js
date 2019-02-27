@@ -1,27 +1,29 @@
-class constants {
-    ENVIRONMENT = "LOCAL"
-    URL = '';
+export const constants = {
+    ENVIRONMENT: 'LOCAL',
+    URL: '',
+
 }
 
-function check() {
+
+export default function check() {
     console.log("Running on " + ENVIRONMENT);
     switch (ENVIRONMENT) {
         case 'LOCAL': {
-            URL = 'localhost/';
+            constants.URL = 'localhost/';
             break;
         }
         case 'DEVELOPMENT': {
-            URL = 'http://h203.eps.ua.es/'
+            constants.URL = 'http://h203.eps.ua.es/'
             break;
         }
         case 'PRODUCTION': {
-            URL = 'https://www.kwee.ovh/'
+            constants.URL = 'https://www.kwee.ovh/'
             break;
         }
     }
 }
 
-export {
+exports = {
     constants,
     check
 }
