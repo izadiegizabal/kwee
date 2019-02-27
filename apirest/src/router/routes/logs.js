@@ -46,11 +46,10 @@ module.exports = (app, db) => {
             }
 
             if (!logDeleted) {
-                return res.status(400).json({
-                    ok: false,
-                    error: {
-                        message: 'Log not found'
-                    }
+                return res.status(204).json({
+                    ok: true,
+                    message: 'Log not found'
+                    
                 });
             }
 

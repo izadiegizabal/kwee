@@ -65,8 +65,8 @@ module.exports = (app, db) => {
                     data: user
                 });
             } else {
-                return res.status(400).json({
-                    ok: false,
+                return res.status(204).json({
+                    ok: true,
                     message: 'User doesn\'t exist'
                 });
             }
@@ -223,8 +223,8 @@ module.exports = (app, db) => {
                     });
                 }
             } else {
-                return res.status(400).json({
-                    ok: false,
+                return res.status(204).json({
+                    ok: true,
                     message: "User not matched."
                 });
             }

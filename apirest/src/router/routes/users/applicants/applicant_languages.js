@@ -57,8 +57,8 @@ module.exports = (app, db) => {
                     data: applicant_languages
                 });
             } else {
-                return res.status(400).json({
-                    ok: false,
+                return res.status(204).json({
+                    ok: true,
                     message: 'This user doesn\'t has languages'
                 });
             }
@@ -116,8 +116,8 @@ module.exports = (app, db) => {
                 })
 
             } else {
-                return res.status(400).json({
-                    ok: false,
+                return res.status(204).json({
+                    ok: true,
                     error: "Applicant doesn't exist"
                 });
             }
@@ -170,8 +170,8 @@ module.exports = (app, db) => {
                                 }
                             })
                     } else {
-                        return res.status(400).json({
-                            ok: false,
+                        return res.status(204).json({
+                            ok: true,
                             error: "Applicant language doesn't exist"
                         });
                     }
@@ -203,8 +203,8 @@ module.exports = (app, db) => {
                     message: "Deleted"
                 });
             } else {
-                return res.status(400).json({
-                    ok: false,
+                return res.status(204).json({
+                    ok: true,
                     error: "This Applicant doesn't exist"
                 });
             }

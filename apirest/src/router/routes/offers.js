@@ -41,8 +41,8 @@ module.exports = (app, db) => {
             delete query.keywords;
             
             if (Object.keys(query).length === 0 && query.constructor === Object && !keywords){
-                res.status(400).json({
-                    ok: false,
+                res.status(204).json({
+                    ok: true,
                     message: 'You must search something'
                 })
             } else {
@@ -182,8 +182,8 @@ module.exports = (app, db) => {
                                     pages: Math.ceil(response2.hits.total / limit)
                                 });
                             } else {
-                                return res.status(400).json({
-                                    ok: false,
+                                return res.status(204).json({
+                                    ok: true,
                                     message: 'No results',
                                 });
                             }
@@ -374,8 +374,8 @@ module.exports = (app, db) => {
 
                     });
                 } else {
-                    return res.status(400).json({
-                        ok: false,
+                    return res.status(204).json({
+                        ok: true,
                         message: `No offers with this id`,
                     });
                 }
