@@ -143,7 +143,7 @@ module.exports = (sequelize, DateTypes) => {
                 }
             }
         },
-        salaryFrecuency: {
+        salaryFrequency: {
             type: DateTypes.INTEGER,
             allowNull: false,
             validate: {
@@ -283,7 +283,7 @@ module.exports = (sequelize, DateTypes) => {
         // * durationUnit --> enum 0,1,2 = (semana / mes / año)
         // * indefinite --> boolean
 
-        // salaryFrecuency --> enum 0,1,2,3 = (mes / proyecto / ?? )
+        // salaryFrequency --> enum 0,1,2,3 = (mes / proyecto / ?? )
 
         // salaryCurrency --> string
 

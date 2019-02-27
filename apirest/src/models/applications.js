@@ -40,8 +40,8 @@ module.exports = (sequelize, DataTypes) => {
         status: {
             type: DataTypes.ENUM,
             field: 'status',
-            values: ['active', 'pending', 'deleted'],
-            defaultValue: 'pending',
+            values: ['0', '1', '2'],
+            defaultValue: '1',
             allowNull: false,
             validate: {
                 notEmpty: {
@@ -49,8 +49,8 @@ module.exports = (sequelize, DataTypes) => {
                     "msg": "status shouldn't be empty."
                 },
                 isIn: {
-                    args: [['active', 'pending', 'deleted']],
-                    msg: "status value should be a valid one: 'active', 'pending' or 'deleted'."
+                    args: [['0', '1', '2']],
+                    msg: "status value should be a valid one: 0 (accepted), 1 (pending) or 2 (deleted)."
                 }
             }
         }

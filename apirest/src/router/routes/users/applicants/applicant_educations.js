@@ -51,15 +51,25 @@ module.exports = (app, db) => {
         const params = req.params;
 
         try {
-            return res.status(200).json({
-                ok: true,
-                applicant_education: await db.applicant_educations.findAll({
-                    where: { fk_applicant: params.fk_applicant }
-                })
-            });
+            let applicant_education = await db.applicant_educations.findAll({
+                where: { fk_applicant: params.fk_applicant }
+            })
+
+            if ( applicant_education ) {
+                return res.status(200).json({
+                    ok: true,
+                    message: 'Listing educations of this applicant',
+                    data: applicant_education
+                });
+            } else {
+                return res.status(400).json({
+                    ok: false,
+                    message: 'This applicant doesn\'t has educations'
+                });
+            }
 
         } catch (err) {
-            return next({ type: 'error', error: err });
+            return next({ type: 'error', error: err.message });
         }
     });
 
@@ -110,8 +120,8 @@ module.exports = (app, db) => {
                 await applicant.addEducation(fk_education, {
                     through: {
                         description: body.description,
-                        date_start: body.date_start,
-                        date_end: body.date_end,
+                        dateStart: body.dateStart,
+                        dateEnd: body.dateEnd,
                         institution: body.institution
                     }
                 }).then(result => {
@@ -162,8 +172,8 @@ module.exports = (app, db) => {
                                         let edu = education[0];
 
                                         if (body.description) edu.applicant_educations.description = body.description;
-                                        if (body.date_end) edu.applicant_educations.date_end = body.date_end;
-                                        if (body.date_start) edu.applicant_educations.date_start = body.date_start;
+                                        if (body.dateEnd) edu.applicant_educations.dateEnd = body.dateEnd;
+                                        if (body.dateStart) edu.applicant_educations.dateStart = body.dateStart;
                                         if (body.institution) edu.applicant_educations.institution = body.institution;
 
                                         edu.applicant_educations.save()

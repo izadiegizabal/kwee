@@ -71,14 +71,17 @@ module.exports = (app, db) => {
                         }
                     }
                 }
+
                 // Must filter only with content when is filtered some value not as keyword
                 if ( filter.length > 0 ) {
                     must.push(filter);
                 }
+
                 // should filter only with content when is searched some value as keyword
                 if ( keywords ){
                     should.push({query_string: {query: keywords}});
                 }
+
                 // If salaryAmount, dateStart, dateEnd or datePublished in query, add range to must filter
                 buildSalaryRange(must, salaryAmount_gte, salaryAmount_gt, salaryAmount_lte, salaryAmount_lt);
                 buildDateStartRange(must, dateStart_gte, dateStart_gt, dateStart_lte, dateStart_lt);
@@ -108,14 +111,14 @@ module.exports = (app, db) => {
 
                     if ( response.hits.total != 0 ) {
                         users = await db.users.findAll();
+
                         let offersToShow = [];
                         let offers = response.hits.hits;
-                        console.log('response.hits.hits.length: ', response.hits.hits.length);
-                        console.log('response.hits.hits0: ', response.hits.hits[0]._source.fk_offerer);
+
                         for (let i = 0; i < offers.length; i++) {
-                            console.log('offers[0]: ', offers[i]);
                             let user = users.find(element => offers[i]._source.fk_offerer == element.id);
                             let offer = {};
+
                             offer.id = offers[i]._id;
                             offer.fk_offerer = offers[i]._source.fk_offerer;
                             offer.offererName = user.name;
@@ -129,7 +132,7 @@ module.exports = (app, db) => {
                             offer.location = offers[i]._source.location;
                             offer.status = offers[i]._source.status;
                             offer.salaryAmount = offers[i]._source.salaryAmount;
-                            offer.salaryFrecuency = offers[i]._source.salaryFrecuency;
+                            offer.salaryFrequency = offers[i]._source.salaryFrequency;
                             offer.salaryCurrency = offers[i]._source.salaryCurrency;
                             offer.workLocation = offers[i]._source.workLocation;
                             offer.seniority = offers[i]._source.seniority;
@@ -147,6 +150,7 @@ module.exports = (app, db) => {
                             offer.createdAt = offers[i]._source.createdAt;
                             offer.updatedAt = offers[i]._source.updatedAt;
                             offer.deletedAt = offers[i]._source.deletedAt;
+                            
                             offersToShow.push(offer);
                         }
 
@@ -158,6 +162,7 @@ module.exports = (app, db) => {
                             page: Number(page),
                             pages: Math.ceil(response.hits.total / limit)
                         });
+
                     } else {
                         delete searchParams.body.query.bool.must;
                         searchParams.body.query.bool.should = must;
@@ -188,7 +193,7 @@ module.exports = (app, db) => {
                 });
             }
         } catch (error) {
-            next({ type: 'error', error });
+            return next({ type: 'error', error });
         }
     });
 
@@ -276,46 +281,54 @@ module.exports = (app, db) => {
 
             await db.offers.create(body)
             .then(result => {
-                elastic.index({
-                    index: 'offers',
-                    id: result.id,
-                    type: 'offers',
-                    body
-                }, function (err, resp, status) {
-                    if ( err ) {
-                        return next({ type: 'error', error: err.message });
-                    }
-                });
+                if ( result ) {
 
-                return res.status(201).json({
-                    ok: true,
-                    message: 'Offer created',
-                    data: {
+                    elastic.index({
+                        index: 'offers',
                         id: result.id,
-                        fk_offerer: id,
-                        status: result.status,
-                        title: result.title,
-                        description: result.description,
-                        datePublished: result.datePublished,
-                        dateStart: result.dateStart,
-                        dateEnd: result.dateEnd,
-                        location: result.location,
-                        salaryAmount: result.salaryAmount,
-                        salaryFrecuency: result.salaryFrecuency,
-                        salaryCurrency: result.salaryCurrency,
-                        workLocation: result.workLocation,
-                        seniority: result.seniority,
-                        responsabilities: result.responsabilities,
-                        requeriments: result.requeriments,
-                        skills: body.skills,
-                        maxApplicants: body.maxApplicants,
-                        currentApplications: body.currentApplications,
-                        duration: body.duration,
-                        durationUnit: body.durationUnit,
-                        contractType: body.contractType,
-                        isIndefinite: body.isIndefinite
-                    }
-                });
+                        type: 'offers',
+                        body
+                    }, function (err, resp, status) {
+                        if ( err ) {
+                            return next({ type: 'error', error: err.message });
+                        }
+                    });
+                    
+                    return res.status(201).json({
+                        ok: true,
+                        message: 'Offer created',
+                        data: {
+                            id: result.id,
+                            fk_offerer: id,
+                            status: result.status,
+                            title: result.title,
+                            description: result.description,
+                            datePublished: result.datePublished,
+                            dateStart: result.dateStart,
+                            dateEnd: result.dateEnd,
+                            location: result.location,
+                            salaryAmount: result.salaryAmount,
+                            salaryFrequency: result.salaryFrequency,
+                            salaryCurrency: result.salaryCurrency,
+                            workLocation: result.workLocation,
+                            seniority: result.seniority,
+                            responsabilities: result.responsabilities,
+                            requeriments: result.requeriments,
+                            skills: body.skills,
+                            maxApplicants: body.maxApplicants,
+                            currentApplications: body.currentApplications,
+                            duration: body.duration,
+                            durationUnit: body.durationUnit,
+                            contractType: body.contractType,
+                            isIndefinite: body.isIndefinite
+                        }
+                    });
+                } else {
+                    return res.status(400).json({
+                        ok: false,
+                        message: `No created`,
+                    });
+                }
             });
 
         } catch (err) {
@@ -331,22 +344,41 @@ module.exports = (app, db) => {
 
         try {
             let fk_offerer = tokenId.getTokenId(req.get('token'));
-            await db.offers.update(updates, {
-                    where: { id, fk_offerer }
-                }).then(result => {
-                    axios.post(`http://${ env.ES_URL }/offers/offers/${ id }/_update?pretty=true`, {
-                        doc: updates
-                    }).then((resp) => {
-                        // updated from elasticsearch database too
-                    }).catch((error) => {
-                        return next({ type: 'error', error: error.message });
-                    });
 
-                    return res.status(200).json({
-                        ok: true,
-                        message: `Offer ${ id } updated`,
+            let offerToUpdate = await db.offers.findOne({
+                where: {id}
+            });
+            
+            if ( offerToUpdate ) {
+                await db.offers.update(updates, {
+                        where: { id, fk_offerer }
+                    }).then(result => {
+                        if ( result ) {
+                            axios.post(`http://${ env.ES_URL }/offers/offers/${ id }/_update?pretty=true`, {
+                                doc: updates
+                            }).then((resp) => {
+                                // updated from elasticsearch database too
+                            }).catch((error) => {
+                                console.log(error.message);
+                            });
+                            return res.status(200).json({
+                                ok: true,
+                                message: `Offer ${ id } updated`,
+                            });
+                        } else {
+                            return res.status(400).json({
+                                ok: false,
+                                message: `No updates`,
+                            });
+                        }
+
                     });
-                })
+                } else {
+                    return res.status(400).json({
+                        ok: false,
+                        message: `No offers with this id`,
+                    });
+                }
         } catch (err) {
             return next({ type: 'error', error: err.message });
         }

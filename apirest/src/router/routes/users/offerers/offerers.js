@@ -126,10 +126,10 @@ module.exports = (app, db) => {
                         }
                         if( req.query.summary ){
                             switch(offers[i].status){
-                                case 0: draft++; break;
-                                case 1: open++; break;
-                                case 2: selection++; break;
-                                case 3: closed++; break;
+                                case 0: open++; break;
+                                case 1: closed++; break;
+                                case 2: draft++; break;
+                                case 3: selection++; break;
                             }
                         }
                     }

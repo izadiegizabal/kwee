@@ -79,11 +79,7 @@ module.exports = (app, db) => {
         try {
             let id = tokenId.getTokenId(req.get('token'));
             let education = await db.educations.create({
-                fk_applicant: id,
-                title: body.title,
-                description: body.description,
-                dateStart: body.dateStart,
-                dateEnd: body.dateEnd,
+                title: body.title
             });
 
             if ( education ) {
@@ -99,33 +95,13 @@ module.exports = (app, db) => {
 
     });
 
-    // PUT single education by themself
-    app.put('/education/:id([0-9]+)', async(req, res, next) => {
+    // PUT single education
+    app.put('/education/:id([0-9]+)', checkToken, async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
 
         try {
-            let fk_applicant = tokenId.getTokenId(req.get('token'));
 
-            await db.educations.update(updates, {
-                where: { id, fk_applicant }
-            });
-
-            return res.status(200).json({
-                ok: true,
-                message: 'Updated' 
-            });
-        } catch (err) {
-            return next({ type: 'error', error: err.errors[0].message });
-        }
-    });
-
-    // PUT single education by admin
-    app.put('/education/admin/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
-        const id = req.params.id;
-        const updates = req.body;
-
-        try {
             await db.educations.update(updates, {
                 where: { id }
             });
@@ -139,14 +115,12 @@ module.exports = (app, db) => {
         }
     });
 
-    // DELETE single education by themself
-    app.delete('/education/:id([0-9]+)', async(req, res, next) => {
+    // DELETE single education
+    app.delete('/education/:id([0-9]+)', checkToken, async(req, res, next) => {
         const id = req.params.id;
         try {
-            let fk_applicant = tokenId.getTokenId(req.get('token'));
-
             await db.educations.destroy({
-                where: { id, fk_applicant }
+                where: { id }
             });
 
             return res.json({
@@ -158,21 +132,4 @@ module.exports = (app, db) => {
         }
     });
 
-    // DELETE single education by admin
-    app.delete('/education/admin/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
-        const id = req.params.id;
-
-        try {
-            await db.educations.destroy({
-                where: { id: id }
-            });
-
-            return res.json({
-                ok: true,
-                message: 'Deleted' 
-            });
-        } catch (err) {
-            return next({ type: 'error', error: 'Error getting data' });
-        }
-    });
 }
