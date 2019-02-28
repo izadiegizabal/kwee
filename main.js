@@ -1,5 +1,6 @@
 /////////// AXIOS
-/*const axios = require('axios');
+/*
+
 
 
 axios.get('https://kwee.ovh/offers/')
@@ -19,10 +20,10 @@ axios.get('https://kwee.ovh/offers/')
  }
  log(body);
 });*/
-
 //////////////////////////////////////// imports
 const request = require('request-promise-native');
 const fs = require('fs');
+const axios = require('axios');
 ////////////////////////////////////////
 
 //////////////////////////////////////// colors
@@ -37,6 +38,9 @@ const error = chalk.bold.red;
 const warning = chalk.keyword('orange');
 ////////////////////////////////////////
 
+const url = 'https://www.kwee.ovh/api';
+const _url = 'http://localhost:3000';
+const __url = 'http://h203.eps.ua.es/api'
 let obj = 'No file';
 let headersOP = {  
     "content-type": "application/json",
@@ -49,7 +53,7 @@ function getFileJSON(path){
 }
 
 async function asyncForEach(array, callback) {
-  for (let index = 0; index < array.length; index++) {
+  for (let index = 0; index < 2; index++) {
     await callback(array[index], index, array);
   }
 }
@@ -70,7 +74,7 @@ const signupOfferersAndOffers = async(path) => {
 	// set the offere signup options
 	/*options = {
 	  headers: headersOP,
-	  uri: 'https://www.kwee.ovh/api/login',
+	  uri: url+'/api/login',
 	  method: 'POST',
 	  json: true,
 	  body: {
@@ -87,7 +91,7 @@ const signupOfferersAndOffers = async(path) => {
 		  headers: {  
 			    "content-type": "application/json",
 			},
-		  uri: 'https://www.kwee.ovh/api/offerer',
+		  uri: url+'/api/offerer',
 		  method: 'POST',
 		  json: true,
 		  body: {
@@ -110,7 +114,7 @@ const signupOfferersAndOffers = async(path) => {
 
 		optionss = {
 			  headers: headersOP,
-			  uri: 'https://www.kwee.ovh/api/login',
+			  uri: url+'/api/login',
 			  method: 'POST',
 			  json: true,
 			  body: {
@@ -149,7 +153,7 @@ const signupOfferersAndOffers = async(path) => {
 				"content-type": "application/json",
 				"token" : token
 			  },
-			  uri: 'https://www.kwee.ovh/api/offer',
+			  uri: url+'/api/offer',
 			  method: 'POST',
 			  json: true,
 			  body: {
@@ -203,7 +207,7 @@ const signupOfferersAndOffers = async(path) => {
 		  	log(`${good('Offerer created')}`);
 		  	options = {
 			  headers: headersOP,
-			  uri: 'https://www.kwee.ovh/api/login',
+			  uri: url+'/api/login',
 			  method: 'POST',
 			  json: true,
 			  body: {
@@ -223,7 +227,7 @@ const signupOfferersAndOffers = async(path) => {
 						"content-type": "application/json",
 						"token" : 'kjjkn'//body.token
 					  },
-					  uri: 'https://www.kwee.ovh/api/offer',
+					  uri: url+'/api/offer',
 					  method: 'POST',
 					  json: true,
 					  body: {
@@ -269,10 +273,67 @@ const signupOfferersAndOffers = async(path) => {
 	});
 }
 
+var instance = null;
+
+async function test( path ) {
+	getFileJSON(path);
+
+	await axios.get(url+'/users')
+	.then( res => console.log(res.data));
+
+	// axios.post(url+'/signup', {
+	// })
+
+	await asyncForEach( obj, async (e,i) => {
+			// sign up bussiness
+			axios.post(url+'/offerer', {
+				"name": e.name,
+				"password": e.password,
+				"email": e.email,
+				"cif": e.cif,
+				"address": e.address,
+				"workField": e.workField,
+				"year": e.year,
+				"premium": e.premium.toString(),
+				"companySize": e.companySize,
+				"bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sed scelerisque tellus. Curabitur nec erat lacus. Fusce mollis rhoncus nunc ut elementum. Praesent lobortis consequat imperdiet. Mauris rutrum, purus non luctus tristique, eros urna volutpat magna, et posuere diam diam convallis lorem. In sed nunc tortor. Donec magna justo, commodo eu commodo vitae, vehicula et nisl. Nunc malesuada lobortis elit et pretium. Aliquam dignissim enim sit amet ante suscipit ornare. Aliquam sit amet vehicula tortor. Sed non sagittis erat, eget placerat nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Praesent ante massa, porta ac sapien et, aliquet consectetur felis. Suspendisse vestibulum commodo turpis. Etiam blandit erat nec erat tincidunt tincidunt. \n\nEtiam accumsan erat non tincidunt commodo. Proin pharetra eu turpis nec finibus. Mauris pharetra, leo ut pharetra porta, purus purus commodo diam, eget aliquam metus elit nec lorem. Sed mollis purus ligula, eget vestibulum lectus consectetur et. Maecenas finibus at lorem imperdiet aliquet. Integer aliquam purus vel lorem suscipit, ac iaculis neque euismod. Sed ultricies ac lorem et tempor. Integer lacinia sem sapien, vitae bibendum lorem posuere at. Maecenas urna est, mollis in congue sit amet, sagittis varius velit. Sed ac feugiat ex, quis dignissim dolor. Sed mauris mauris, varius ac arcu quis, ornare finibus diam. Sed ac quam odio.",
+				"img": e.img,
+				"status": e.status,
+				"lon": e.lon,
+				"lat": e.lat
+			},{
+				headers: {
+					'Content-Type': 'application/json; charset=utf-8'
+				}
+			})
+			.then( res => { 
+				console.log(res.data) 
+				// login bussiness
+
+				// axios.post(url+'/login',{
+				// 	"name": e.name,
+				// 	"password": e.password
+				// })
+
+				// create offer
+				
+			})
+			.catch(e => {
+				log(error("error de mierda ")+e);
+			});
+	
+
+		
+	});
+
+
+
+}
 
 ////////////////////////////////////////// EXECUTE CODE
 
-signupOfferersAndOffers('./CreateOfferers.json');
+//signupOfferersAndOffers('./CreateOfferers.json');
+test('./CreateOfferers.json');
 
 
 
