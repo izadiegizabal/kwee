@@ -8,15 +8,13 @@ function render(now) {
     }
     window.requestAnimationFrame(render);
 }*/
-var manager = new TResourceManager();
+//var manager = new TResourceManager();
 
 var canvas = null;
 var gl = null;
 var program = null;
 
 async function mainR(){
-
-    
 
 	canvas = document.getElementById('game-surface');
 	gl = canvas.getContext('webgl');
@@ -31,14 +29,14 @@ async function mainR(){
 	
    
     // let meshMaterial = await manager.getResource('cube','material');
-    let VShader = await manager.getResource('shader.vs');
-    let FShader = await manager.getResource('shader.fs');
+    let VShader = await manager.getResource('shader.vs','shader');
+    let FShader = await manager.getResource('shader.fs','shader');
 
     var vertexShader = gl.createShader(gl.VERTEX_SHADER);
 	var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
 
-	gl.shaderSource(vertexShader, manager.map.get('shader.vs').shader);
-	gl.shaderSource(fragmentShader, manager.map.get('shader.fs').shader);
+	gl.shaderSource(vertexShader, manager.map.get('shader.vs shader').shader);
+	gl.shaderSource(fragmentShader, manager.map.get('shader.fs shader').shader);
 
 	gl.compileShader(vertexShader);
 	if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
@@ -111,11 +109,11 @@ async function mainR(){
 	let EntLuz = new TLight(); 
 	let EntCam = new TCamera(); 
 	let MallaChasis = new TMesh();
-	await MallaChasis.loadMesh('part1.json');
+	await MallaChasis.loadMesh('part1');
 
 
     let MallaChasi2 = new TMesh();
-    await MallaChasi2.loadMesh('partt.json');
+    await MallaChasi2.loadMesh('partt');
 
 	console.log(MallaChasis.mesh);
 
@@ -158,7 +156,7 @@ async function main(){
 	gl.cullFace(gl.BACK);
 
 	var manager = new TResourceManager();
-    let mesh = await manager.getResource('partt.json');
+    let mesh = await manager.getResource('part1.json');
     // let meshMaterial = await manager.getResource('cube','material');
     let VShader = await manager.getResource('shader.vs');
     let FShader = await manager.getResource('shader.fs');
@@ -202,8 +200,8 @@ async function main(){
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////// 										VERTEX BUFFERS & MORE.
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    var earthVertices = await manager.map.get('partt.json').vertices;
-    var earthIndices = await manager.map.get('partt.json').triVertices
+    var earthVertices = await manager.map.get('part1.json').vertices;
+    var earthIndices = await manager.map.get('part1.json').triVertices
     // var earthTexCoords = manager.map.get('earth mesh').textures;
     // var earthNormals = manager.map.get('earth mesh').normals;
 
@@ -352,6 +350,11 @@ class TMotorTAG{
         this.resourceManager = resourceManager;
     }
 
+    createRootNode(){
+        TMotorTAG.rootNode = new TNode(null,'root');
+        return TMotorTAG.rootNode;
+    }
+
     createNode(father, entity){
         var node = new TNode(father, entity);
         father.addChild(node);
@@ -362,29 +365,84 @@ class TMotorTAG{
 
     }
 
-    createCamera( isPerspective, near, far, right, left, top, bottom ){
+    createCamera( father, isPerspective, near, far, right, left, top, bottom ){
+
+        // node rotation
+        let TransfRotaCam = new TTransform();
+        let nodeRotation = createNode(father, TransfRotaCam );
+
+        // node traslation
+        let TransfTransCam = new TTransform();
+        let nodeTranslation = createNode(nodeRotation, TransfTransCam );
+          
         // isPerspective, near, far, right, left, top, bottom
-        let camera = new TCamera(isPerspective, near, far, right, left, top, bottom);
+        let cam = new TCamera(isPerspective, near, far, right, left, top, bottom);
+        createNode(nodeTranslation, cam);
 
-        this.allCameras.push(camera);
+        this.allCameras.push(cam);
 
-        return camera;
+        return cam;
     }
 
-    createLight(){
+    deleteCamera( TNodeCam ) {
+        let array = TMotorTAG.allCameras;
+        TNodeCam.father.father.father.remChild(TNodeCam.father.father);
+        array.splice(array.indexOf(TNodeCam),1);
+    }
+    /**
+     * 
+     * @param {*} TNodeCam Camera to rotate
+     * @param {*} angle Angle to rotate
+     * @param {*} axis Axis to rotate. If different for values 'x', 'y' or 'z', will use that axis
+     */
+    rotateCamera( TNodeCam, angle, axis ) {
+        switch (axis) {
+            case 'x':
+                TNodeCam.father.father.entity.rotateX(angle);
+                break;
+            case 'y':
+                TNodeCam.father.father.entity.rotateY(angle);
+                break;
+            case 'z':
+                TNodeCam.father.father.entity.rotateZ(angle);
+                break;
+            default:
+                TNodeCam.father.father.entity.rotate(angle, axis);
+                break;
+        }
+    }
+
+    translateCamera( TNodeCam, units ) {
+        TNodeCam.father.entity.translate(units);
+    }
+
+    lookAt( TNodeCam ) {
+        // to do
+    }
+
+    createLight(father, typ, intensity, specular, direction, s){
+
+        // node rotation
+        let TransfRotaLight = new TTransform();
+        let nodeRotation = createNode(father, TransfRotaLight );
+
+        // node traslation
+        let TransfTransLight = new TTransform();
+        let nodeTranslation = createNode(nodeRotation, TransfTransLight );
+          
         // typ, intensity, specular, direction, s
         let light = new TLight(typ, intensity, specular, direction, s);
+        createNode(nodeTranslation, light);
 
         this.allLights.push(light);
 
         return light;
-
     }
 
     async loadMesh(father, file){
 
-    //Crear la malla a partir del recurso malla y devolverla
-        let meshResource = await this.resourceManager.getResource(file, 'mesh');
+        //Crear la malla a partir del recurso malla y devolverla
+        let meshResource = await this.resourceManager.getResource(file); // WARNING: CORREGIR GETRESOURCE(FILE)
         let mesh = new TMesh(meshResource);
         return createNode(father, mesh);
     }
@@ -411,6 +469,9 @@ class TMotorTAG{
     y manejo de las luces Métodos para el registro y manejo de los viewports*/
 
 }
+
+// Static attributes of TMotorTag
+TMotorTAG.rootNode = null;
 
 
 
