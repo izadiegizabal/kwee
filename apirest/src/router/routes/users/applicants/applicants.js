@@ -13,170 +13,221 @@ module.exports = (app, db) => {
 
     app.get('/applicants/search', async(req, res, next) => {
 
-        try {
-            // if req.query.keywords search OR (search)
-            // rest of req.query.params search AND (filter)
-            let query = req.query;
-            let page = Number(query.page);
-            let limit = Number(query.limit);
-            let keywords = query.keywords;
-            let index_gte = query.index_gte;
-            let index_gt = query.index_gt;
-            let index_lte = query.index_lte;
-            let index_lt = query.index_lt;
-            let dateBorn_gte = query.dateBorn_gte;
-            let dateBorn_gt = query.dateBorn_gt;
-            let dateBorn_lte = query.dateBorn_lte;
-            let dateBorn_lt = query.dateBorn_lt;
-            let languages = query.languages;
-            let experiences = query.experiences;
-            let educations = query.educations;
-            let skills = query.skills;
-            
-            delete query.page;
-            delete query.limit;
-            delete query.keywords;
-            if (Object.keys(query).length === 0 && query.constructor === Object && !keywords){
-                return res.status(200).json({
-                    ok: true,
-                    message: 'You must search something'
-                })
-            } else {
-                prepareQuery(query);
+        console.log(req.query);
 
-                let must = [];
-                let should = [];
-                let filter = [];
+        // let name = req.query.skills.name;
 
-                // Getting all filters in query
-                for(var prop in query) {
-                    if(query.hasOwnProperty(prop)){
-                        filter.push(
-                            { terms: {[prop]: query[prop]} }
-                        );
+        // if ( req.query.skills.name ) {
+        //     console.log('hay skills que buscar');
+        // } else {
+        //     console.log('no');
+        // }
+
+        try {   
+            let search = await elastic.search({
+                index: "applicants",
+                body: {
+                    'query': {
+                    'bool': {
+                        'must': [
+                            {'nested': {
+                                'path': 'skills',
+                                'query': {
+                                    'bool': {
+                                        'must': [{'match_phrase': {'skills.name': {'query': "Java"}}}]
+                                    }  
+                                }
+                            }},
+                            {'nested': {
+                                'path': 'languages',
+                                'query': {
+                                    'bool': {
+                                        'must': [
+                                            {'match_phrase': {'languages.language': {'query': "English"}}},
+                                            {'match_phrase': {'languages.level': {'query': "C1"}}}
+                                        ]
+                                    }  
+                                }
+                            }}
+                        ]
                     }
-                }
-
-                // Casting string to array, necessary to work
-                for (let i = 0; i < filter.length; i++) {
-                    for(var val in filter[i].terms) {
-                        if(filter[i].terms.hasOwnProperty(val)){
-                            if ( typeof(filter[i].terms[val]) != 'object' ) {
-                                filter[i].terms[val] = Array(filter[i].terms[val]);
-                            }
-                        }
-                    }
-                }
-
-                // Must filter only with content when is filtered some value not as keyword
-                if ( filter.length > 0 ) {
-                    must.push(filter);
-                }
-
-                // should filter only with content when is searched some value as keyword
-                if ( keywords ){
-                    should.push({query_string: {query: keywords}});
-                }
-
-                // RANGE FIELDS
-                // If salaryAmount, dateStart, dateEnd or datePublished in query, add range to must filter
-                buildIndex(must, index_gte, index_gt, index_lte, index_lt);
-                buildDateBorn(must, dateBorn_gte, dateBorn_gt, dateBorn_lte, dateBorn_lt);
-
-                // Experiences, languages, skills, educations
-                buildLanguages(must, languages);
-
-                var searchParams = {
-                    index: 'applicants',
-                    from: (page - 1) * limit,
-                    size: limit,
-                    body: {
-                        query: {
-                            bool: {
-                                must,
-                                should
-                            }
-                        }
-                    }
-                };
-
-                await elastic.search(searchParams, async function (err, response) {
-                    if (err) {
-                        // handle error
-                        throw err;
-                    }
-
-                    if ( response.hits.total != 0 ) {
-
-                        let applicantsToShow = [];
-                        let applicants = response.hits.hits;
-
-                        for (let i = 0; i < applicants.length; i++) {
-                            let applicant = {};
-
-                            applicant.id = applicants[i]._id;
-                            applicant.index = applicants[i]._source.index;
-                            applicant.name = applicants[i]._source.name;
-                            applicant.email = applicants[i]._source.email;
-                            applicant.city = applicants[i]._source.city;
-                            applicant.dateBorn = applicants[i]._source.dateBorn;
-                            applicant.premium = applicants[i]._source.premium;
-                            applicant.status = applicants[i]._source.status;
-                            applicant.lastAccess = applicants[i]._source.lastAccess;
-                            applicant.img = applicants[i]._source.img;
-                            applicant.bio = applicants[i]._source.bio;
-                            applicant.social_networks = applicants[i]._source.social_networks;
-                            applicant.skills = applicants[i]._source.skills;
-                            applicant.educations = applicants[i]._source.educations;
-                            applicant.languages = applicants[i]._source.languages;
-                            applicant.experiences = applicants[i]._source.experiences;
-                            applicant.applications = applicants[i]._source.applications;
-                            
-                            applicantsToShow.push(applicant);
-                        }
-
-                        return res.json({
-                            ok: true,
-                            message: 'Results of search',
-                            data: applicantsToShow,
-                            total: response.hits.total,
-                            page: Number(page),
-                            pages: Math.ceil(response.hits.total / limit)
-                        });
-                        
-                    } else {
-                        delete searchParams.body.query.bool.must;
-                        searchParams.body.query.bool.should = must;
-
-                        await elastic.search(searchParams, function (error, response2) {
-                            if (error) {
-                                throw error;
-                            }
-
-                            if ( response2.hits.total > 0 ) {
-                                return res.json({
-                                    ok: true,
-                                    message: 'No results but maybe this is interesting for you',
-                                    data: response2.hits.hits,
-                                    total: response2.hits.total,
-                                    page: Number(page),
-                                    pages: Math.ceil(response2.hits.total / limit)
-                                });
-                            } else {
-                                return res.status(200).json({
-                                    ok: true,
-                                    message: 'No results',
-                                });
-                            }
-
-                        });
-                    }
-                });
-
-            }
+                 }}
+            });
+            console.log('respuesta: ', search);
         } catch (error) {
             return next({ type: 'error', error });
         }
+
+        // try {
+        //     // if req.query.keywords search OR (search)
+        //     // rest of req.query.params search AND (filter)
+        //     let query = req.query;
+        //     let page = Number(query.page);
+        //     let limit = Number(query.limit);
+        //     let keywords = query.keywords;
+        //     let index_gte = query.index_gte;
+        //     let index_gt = query.index_gt;
+        //     let index_lte = query.index_lte;
+        //     let index_lt = query.index_lt;
+        //     let dateBorn_gte = query.dateBorn_gte;
+        //     let dateBorn_gt = query.dateBorn_gt;
+        //     let dateBorn_lte = query.dateBorn_lte;
+        //     let dateBorn_lt = query.dateBorn_lt;
+        //     let languages = query.languages;
+        //     let experiences = query.experiences;
+        //     let educations = query.educations;
+        //     let skills = query.skills;
+            
+        //     delete query.page;
+        //     delete query.limit;
+        //     delete query.keywords;
+        //     if (Object.keys(query).length === 0 && query.constructor === Object && !keywords){
+        //         return res.status(200).json({
+        //             ok: true,
+        //             message: 'You must search something'
+        //         })
+        //     } else {
+        //         prepareQuery(query);
+
+        //         let must = [];
+        //         let should = [];
+        //         let filter = [];
+
+        //         // Getting all filters in query
+        //         for(var prop in query) {
+        //             if(query.hasOwnProperty(prop)){
+        //                 filter.push(
+        //                     { terms: {[prop]: query[prop]} }
+        //                 );
+        //             }
+        //         }
+
+        //         // Casting string to array, necessary to work
+        //         for (let i = 0; i < filter.length; i++) {
+        //             for(var val in filter[i].terms) {
+        //                 if(filter[i].terms.hasOwnProperty(val)){
+        //                     if ( typeof(filter[i].terms[val]) != 'object' ) {
+        //                         filter[i].terms[val] = Array(filter[i].terms[val]);
+        //                     }
+        //                 }
+        //             }
+        //         }
+
+        //         // Must filter only with content when is filtered some value not as keyword
+        //         if ( filter.length > 0 ) {
+        //             must.push(filter);
+        //         }
+
+        //         // should filter only with content when is searched some value as keyword
+        //         if ( keywords ){
+        //             should.push({query_string: {query: keywords}});
+        //         }
+
+        //         // RANGE FIELDS
+        //         // If salaryAmount, dateStart, dateEnd or datePublished in query, add range to must filter
+        //         buildIndex(must, index_gte, index_gt, index_lte, index_lt);
+        //         buildDateBorn(must, dateBorn_gte, dateBorn_gt, dateBorn_lte, dateBorn_lt);
+
+        //         // Experiences, languages, skills, educations
+        //         buildLanguages(must, languages);
+
+        //         var searchParams = {
+        //             index: 'applicants',
+        //             from: (page - 1) * limit,
+        //             size: limit,
+        //             body: {
+        //                 aggregations: {
+        //                     languages: {
+        //                         nested: { path: "languages" },
+        //                         aggregations: {
+        //                             language: {
+        //                             terms: {
+        //                                 field: "languages.language"
+        //                             }
+        //                             }
+        //                         }
+        //                     }   
+        //                 }
+        //             }
+        //         };
+
+        //         await elastic.search(searchParams, async function (err, response) {
+        //             if (err) {
+        //                 // handle error
+        //                 throw err;
+        //             }
+
+        //             if ( response.hits.total != 0 ) {
+        //                 console.log("HAY RESULTADOS");
+        //                 let applicantsToShow = [];
+        //                 let applicants = response.hits.hits;
+
+        //                 for (let i = 0; i < applicants.length; i++) {
+        //                     let applicant = {};
+
+        //                     applicant.id = applicants[i]._id;
+        //                     applicant.index = applicants[i]._source.index;
+        //                     applicant.name = applicants[i]._source.name;
+        //                     applicant.email = applicants[i]._source.email;
+        //                     applicant.city = applicants[i]._source.city;
+        //                     applicant.dateBorn = applicants[i]._source.dateBorn;
+        //                     applicant.premium = applicants[i]._source.premium;
+        //                     applicant.status = applicants[i]._source.status;
+        //                     applicant.lastAccess = applicants[i]._source.lastAccess;
+        //                     applicant.img = applicants[i]._source.img;
+        //                     applicant.bio = applicants[i]._source.bio;
+        //                     applicant.social_networks = applicants[i]._source.social_networks;
+        //                     applicant.skills = applicants[i]._source.skills;
+        //                     applicant.educations = applicants[i]._source.educations;
+        //                     applicant.languages = applicants[i]._source.languages;
+        //                     applicant.experiences = applicants[i]._source.experiences;
+        //                     applicant.applications = applicants[i]._source.applications;
+                            
+        //                     applicantsToShow.push(applicant);
+        //                 }
+
+        //                 return res.json({
+        //                     ok: true,
+        //                     message: 'Results of search',
+        //                     data: applicantsToShow,
+        //                     total: response.hits.total,
+        //                     page: Number(page),
+        //                     pages: Math.ceil(response.hits.total / limit)
+        //                 });
+                        
+        //             } else {
+        //                 // delete searchParams.body.query.bool.must;
+        //                 // searchParams.body.query.bool.should = must;
+
+        //                 // await elastic.search(searchParams, function (error, response2) {
+        //                 //     if (error) {
+        //                 //         throw error;
+        //                 //     }
+
+        //                 //     if ( response2.hits.total > 0 ) {
+        //                 //         return res.json({
+        //                 //             ok: true,
+        //                 //             message: 'No results but maybe this is interesting for you',
+        //                 //             data: response2.hits.hits,
+        //                 //             total: response2.hits.total,
+        //                 //             page: Number(page),
+        //                 //             pages: Math.ceil(response2.hits.total / limit)
+        //                 //         });
+        //                 //     } else {
+        //                         return res.status(200).json({
+        //                             ok: true,
+        //                             message: 'No results',
+        //                         });
+        //                     // }
+
+        //                 // });
+        //             }
+        //         });
+
+        //     }
+        // } catch (error) {
+        //     return next({ type: 'error', error });
+        // }
 
     });
 
@@ -510,7 +561,7 @@ module.exports = (app, db) => {
                     elastic.index({
                         index: 'applicants',
                         id: uservar.id,
-                        type: 'applicants',
+                        type: 'applicant',
                         body
                     }, function (err, resp, status) {
                         if ( err ) {
@@ -559,13 +610,34 @@ module.exports = (app, db) => {
                         await setSkills(applicant, body, next).then( async () => {
                             await setExperiences(id, body, next).then( async () => {
                                 delete body.img;
-                                axios.post(`http://${ env.ES_URL }/applicants/applicants/${ id }/_update?pretty=true`, {
-                                    doc: body
+                                axios.get(`http://${ env.ES_URL }/applicants/applicant/${ id }`, {
+                                    doc: {
+                                        mappings: {
+                                            applicant: {
+                                                properties: {
+                                                    name: "qwertyuikjhbvbjk"
+                                                }
+                                            }
+                                        }     
+                                    }
                                 }).then((resp) => {
                                     // updated from elasticsearch database too
+                                    let data = Object.assign(resp.data._source, body);
+
+                                    elastic.index({
+                                        index: 'applicants',
+                                        id,
+                                        type: 'applicant',
+                                        body: data
+                                    }, function (err, resp, status) {
+                                        if ( err ) {
+                                            console.log('ERROR: ', err);
+                                        }
+                                    });
                                 }).catch((error) => {
-                                    return next({ type: 'error', error: error.message });
+                                    console.log('ERROR:', error.message);
                                 });
+                                
                                 return res.status(200).json({
                                     ok: true,
                                     message: "Added the info of this user"
@@ -686,6 +758,62 @@ module.exports = (app, db) => {
             }
         } catch (err) {
             return next({ type: 'error', error: 'Error getting data' });
+        }
+    });
+
+    app.get('/applicants/:type', async(req, res, next) => {
+        const type = req.params.type;
+        const typeSing = type.substring(0, type.length - 1);
+        if ( type == 'languages' || type == 'educations' || type == 'skills' || type == 'experiences' ) {
+            let field = '';
+            switch ( type ) {
+                case 'languages': field = 'languages.language'; break;
+                case 'skills': field = 'skills.name'; break;
+                case 'educations': field = 'educations.title'; break;
+                case 'experiences': field = 'experiences.title'; break;
+            }
+            var searchParams = {
+                index: 'applicants',
+                body: {
+                    aggregations: {
+                        [type]: {
+                            nested: { path: type },
+                            aggregations: {
+                                [typeSing]: {
+                                    terms: {
+                                        field
+                                    }
+                                }
+                            }
+                        }   
+                    }
+                }
+            };
+    
+            await elastic.search(searchParams, async function (err, response) {
+                let objects;
+                let total;
+
+                switch ( type ) {
+                    case 'languages': objects = response.aggregations.languages.language.buckets; total = response.aggregations.languages.doc_count; break;
+                    case 'skills': objects = response.aggregations.skills.skill.buckets; total = response.aggregations.skills.doc_count; break;
+                    case 'educations': objects = response.aggregations.educations.education.buckets; total = response.aggregations.educations.doc_count; break;
+                    case 'experiences': objects = response.aggregations.experiences.experience.buckets; total = response.aggregations.experiences.doc_count; break;
+                }
+
+                return res.json({
+                    ok: true,
+                    message: 'Results',
+                    data: objects,
+                    total: total,
+                    [type]: objects.length
+                });
+            });
+        } else {
+            return res.status(400).json({
+                ok: false,
+                message: 'Type must be one of this: languages, educations, skills, experiences'
+            });
         }
     });
 
@@ -952,6 +1080,7 @@ module.exports = (app, db) => {
                                 }
                             }).then(result => {
                                 if (result) {
+                                    delete body.educations[i].description;
                                     return resolve('Education Added');
                                 } else {
                                     return reject(new Error('Education not added'));
@@ -999,6 +1128,7 @@ module.exports = (app, db) => {
                                 }
                             }).then(result => {
                                 if (result) {
+                                    delete body.skills[i].description;
                                     return resolve('Skill added');
                                 } else {
                                     return reject(new Error('Skill not added'));
@@ -1073,6 +1203,7 @@ module.exports = (app, db) => {
                             dateStart: body.experiences[i].dateStart,
                             dateEnd: body.experiences[i].dateEnd,
                         });
+                        delete body.experiences[i].description;
                     }
                 }
             } catch (err) {
