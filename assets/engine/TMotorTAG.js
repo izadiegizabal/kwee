@@ -24,10 +24,6 @@ class TMotorTAG{
         return node;
     }
 
-    createTransform(){
-
-    }
-
     createCamera( father, isPerspective, near, far, right, left, top, bottom ){
 
         // node rotation
