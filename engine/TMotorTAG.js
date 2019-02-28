@@ -8,13 +8,15 @@ function render(now) {
     }
     window.requestAnimationFrame(render);
 }*/
-//var manager = new TResourceManager();
+var manager = new TResourceManager();
 
 var canvas = null;
 var gl = null;
 var program = null;
 
 async function mainR(){
+
+    
 
 	canvas = document.getElementById('game-surface');
 	gl = canvas.getContext('webgl');
@@ -29,14 +31,14 @@ async function mainR(){
 	
    
     // let meshMaterial = await manager.getResource('cube','material');
-    let VShader = await manager.getResource('shader.vs','shader');
-    let FShader = await manager.getResource('shader.fs','shader');
+    let VShader = await manager.getResource('shader.vs');
+    let FShader = await manager.getResource('shader.fs');
 
     var vertexShader = gl.createShader(gl.VERTEX_SHADER);
 	var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
 
-	gl.shaderSource(vertexShader, manager.map.get('shader.vs shader').shader);
-	gl.shaderSource(fragmentShader, manager.map.get('shader.fs shader').shader);
+	gl.shaderSource(vertexShader, manager.map.get('shader.vs').shader);
+	gl.shaderSource(fragmentShader, manager.map.get('shader.fs').shader);
 
 	gl.compileShader(vertexShader);
 	if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
@@ -109,11 +111,11 @@ async function mainR(){
 	let EntLuz = new TLight(); 
 	let EntCam = new TCamera(); 
 	let MallaChasis = new TMesh();
-	await MallaChasis.loadMesh('part1');
+	await MallaChasis.loadMesh('part1.json');
 
 
     let MallaChasi2 = new TMesh();
-    await MallaChasi2.loadMesh('partt');
+    await MallaChasi2.loadMesh('partt.json');
 
 	console.log(MallaChasis.mesh);
 
@@ -156,10 +158,10 @@ async function main(){
 	gl.cullFace(gl.BACK);
 
 	var manager = new TResourceManager();
-    let mesh = await manager.getResource('part1', 'mesh');
+    let mesh = await manager.getResource('partt.json');
     // let meshMaterial = await manager.getResource('cube','material');
-    let VShader = await manager.getResource('shader.vs', 'shader');
-    let FShader = await manager.getResource('shader.fs', 'shader');
+    let VShader = await manager.getResource('shader.vs');
+    let FShader = await manager.getResource('shader.fs');
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////// 										SHADERS
@@ -168,8 +170,8 @@ async function main(){
     var vertexShader = gl.createShader(gl.VERTEX_SHADER);
     var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
 
-    gl.shaderSource(vertexShader, manager.map.get('shader.vs shader').shader);
-    gl.shaderSource(fragmentShader, manager.map.get('shader.fs shader').shader);
+    gl.shaderSource(vertexShader, manager.map.get('shader.vs').shader);
+    gl.shaderSource(fragmentShader, manager.map.get('shader.fs').shader);
 
     gl.compileShader(vertexShader);
     if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
@@ -200,8 +202,8 @@ async function main(){
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////// 										VERTEX BUFFERS & MORE.
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    var earthVertices = await manager.map.get('part1 mesh').vertices;
-    var earthIndices = await manager.map.get('part1 mesh').triVertices
+    var earthVertices = await manager.map.get('partt.json').vertices;
+    var earthIndices = await manager.map.get('partt.json').triVertices
     // var earthTexCoords = manager.map.get('earth mesh').textures;
     // var earthNormals = manager.map.get('earth mesh').normals;
 

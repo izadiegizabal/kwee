@@ -275,8 +275,8 @@ class TMesh extends TEntity {
     }
 
 	async loadMesh(file){
-		await manager.getResource(file, 'mesh');
-		this.mesh = manager.map.get(`${file} mesh`);
+		await manager.getResource(file);
+		this.mesh = manager.map.get(file);
 		
 	}
 
@@ -366,10 +366,10 @@ class TNode {
         this.children.splice(this.children.indexOf(child), 1);
         // WARNING: remove from the Lights and Cameras arrays
         if (this.entity instanceof TLight) {
-            TEntity.Lights.push(this);
+            TEntity.Lights.splice(TEntity.Lights.indexOf(child), 1);
         }
         if (this.entity instanceof TCamera) {
-            TEntity.Views.push(this);
+            TEntity.Views.splice(TEntity.Views.indexOf(child), 1);
         }
     }
 
