@@ -133,40 +133,12 @@ class TResourceMesh extends TResource{
     async loadFile(file){
 
         console.log("== loadFile(" + file + ") ==");
+
         // mesh file code
         const jsonMesh = await loadJSON(file);
+
         this.alias = jsonMesh.alias;
-        //const jsonMesh = await loadJSON(file);
-        
-        // update variables vertices, normals, textures...
-        /*this.triVertices = [];
-        
-        this.vertices = [].concat.apply([], jsonMesh.vertices);
-        
-        for (var i = 0; i < jsonMesh.faces.length; i++) {
-            let one =  jsonMesh.faces[i];
-            for (var j = 0; j < one.length; j++) {
-                let two = one[j];
-                for (var x = 0; x < two.length; x++) {
-                    this.triVertices.push(two[x]);
-                }
-            }
-        }
-        //this.triVertices = [].concat( [], ...jsonMesh.faces);
-        console.log(this.triVertices);
-        
-        this.textures = [].concat.apply([], jsonMesh.texCoords);
-        this.normals = [].concat.apply([], jsonMesh.normals);
 
-        // this.textures = jsonMesh.texcoords.UVMap;
-
-        this.nTris = this.triVertices.length;
-        this.nVertices = this.vertices.length;*/
-        
-        // update variables vertices, normals, textures...
-
-        // console.log(jsonMesh);
-        
         this.vertices = jsonMesh.vertices;
         this.triVertices = jsonMesh.indices;
 
@@ -187,8 +159,6 @@ class TResourceMesh extends TResource{
         output.push(this);
         output.push(material);
         return output;
-        
-        // return this;
     }
 
     draw(){
