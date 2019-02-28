@@ -11,9 +11,6 @@ module.exports = (app, db) => {
 
         let pathImage = path.resolve(`uploads/${ type }/${ img }`);
 
-        console.log('__dirname: ', __dirname);
-        console.log('pathImage: ', pathImage);
-
         if (fs.existsSync(pathImage)) {
             res.sendFile(pathImage);
         } else {
