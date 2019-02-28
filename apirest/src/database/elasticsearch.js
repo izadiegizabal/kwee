@@ -14,8 +14,66 @@ var client = new elasticsearch.Client({
         
 });
 
+client.indices.exists({
+	index: 'applicants'
+}).then(function (exists) {
+  	if (!exists) {
+		client.indices.create({
+			index: "applicants",
+			body: {
+				mappings: {
+					applicant: {
+						properties: {
+							name: { type: "text" },
+							email: { type: "text" },
+							city: { type: "text" },
+							dateBorn: { type: "date" },
+							premium: { type: "integer" },
+							rol: { type: "integer" },
+							index: { type: "integer" },
+							bio: { type: "text" },
+							skills: {
+								type: "nested",
+								properties: {
+									name: { type: "keyword" },
+									level: { type: "keyword"},
+								},
+							},
+							languages: {
+								type: "nested",
+								properties: {
+									language: { type: "keyword" },
+									level: { type: "keyword"},
+								},
+							},
+							educations: {
+								type: "nested",
+								properties: {
+									title: { type: "keyword" },
+									institution: { type: "text" },
+									dateStart: { type: "date" },
+									dateEnd: { type: "date" },
+								},
+							},
+							experiences: {
+								type: "nested",
+								properties: {
+									title: { type: "keyword" },
+									dateStart: { type: "date" },
+									dateEnd: { type: "date" },
+								},
+							},
+						},
+					},
+				},
+			},
+		})
+  	} 
+});
+
+
 client.cluster.health({},function(err,resp,status) {  
-    // console.log("-- Client Health --",resp);
+//     // console.log("-- Client Health --",resp);
   });
 
 module.exports = client;
