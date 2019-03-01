@@ -11,173 +11,110 @@ const axios = require('axios');
 
 module.exports = (app, db) => {
 
-    app.get('/applicants/search', async(req, res, next) => {
-
+    app.post('/applicants/search', async(req, res, next) => {
         try {
-            // if req.query.keywords search OR (search)
-            // rest of req.query.params search AND (filter)
             let query = req.query;
             let page = Number(query.page);
             let limit = Number(query.limit);
-            let keywords = query.keywords;
-            let index_gte = query.index_gte;
-            let index_gt = query.index_gt;
-            let index_lte = query.index_lte;
-            let index_lt = query.index_lt;
-            let dateBorn_gte = query.dateBorn_gte;
-            let dateBorn_gt = query.dateBorn_gt;
-            let dateBorn_lte = query.dateBorn_lte;
-            let dateBorn_lt = query.dateBorn_lt;
-            let languages = query.languages;
-            let experiences = query.experiences;
-            let educations = query.educations;
-            let skills = query.skills;
-            
-            delete query.page;
-            delete query.limit;
-            delete query.keywords;
-            if (Object.keys(query).length === 0 && query.constructor === Object && !keywords){
-                return res.status(200).json({
-                    ok: true,
-                    message: 'You must search something'
-                })
-            } else {
-                prepareQuery(query);
+            let body = req.body;
+            let must = [];
 
-                let must = [];
-                let should = [];
-                let filter = [];
+            buildLanguages(must, body.languages);
+            buildSkills(must, body.skills);
+            buildExperiences(must, body.experiences);
+            buildEducations(must, body.educations);
+            buildIndex(must, body.index);
+            buildDateBorn(must, body.dateBorn);
 
-                // Getting all filters in query
-                for(var prop in query) {
-                    if(query.hasOwnProperty(prop)){
-                        filter.push(
-                            { terms: {[prop]: query[prop]} }
-                        );
+            if ( body.name ) must.push({multi_match: {query: body.name, fields: [ "name" ] }});
+            if ( body.city ) must.push({multi_match: {query: body.city, fields: [ "city" ] }});
+            if ( body.premium ) must.push({multi_match: {query: body.premium, fields: [ "premium" ] }});
+            if ( body.bio ) must.push({multi_match: {query: body.bio, fields: [ "bio" ] }});
+
+            let searchParams = {
+                index: "applicants",
+                body: {
+                    query: {
+                    bool: {
+                        must
                     }
-                }
+                 }}
+            };
+            await elastic.search(searchParams, async function (err, response) {
+                if ( response.hits.total != 0 ) {
+                    let applicantsToShow = [];
+                    let applicants = response.hits.hits;
 
-                // Casting string to array, necessary to work
-                for (let i = 0; i < filter.length; i++) {
-                    for(var val in filter[i].terms) {
-                        if(filter[i].terms.hasOwnProperty(val)){
-                            if ( typeof(filter[i].terms[val]) != 'object' ) {
-                                filter[i].terms[val] = Array(filter[i].terms[val]);
-                            }
-                        }
-                    }
-                }
+                    for (let i = 0; i < applicants.length; i++) {
+                        let applicant = {};
 
-                // Must filter only with content when is filtered some value not as keyword
-                if ( filter.length > 0 ) {
-                    must.push(filter);
-                }
-
-                // should filter only with content when is searched some value as keyword
-                if ( keywords ){
-                    should.push({query_string: {query: keywords}});
-                }
-
-                // RANGE FIELDS
-                // If salaryAmount, dateStart, dateEnd or datePublished in query, add range to must filter
-                buildIndex(must, index_gte, index_gt, index_lte, index_lt);
-                buildDateBorn(must, dateBorn_gte, dateBorn_gt, dateBorn_lte, dateBorn_lt);
-
-                // Experiences, languages, skills, educations
-                buildLanguages(must, languages);
-
-                var searchParams = {
-                    index: 'applicants',
-                    from: (page - 1) * limit,
-                    size: limit,
-                    body: {
-                        query: {
-                            bool: {
-                                must,
-                                should
-                            }
-                        }
-                    }
-                };
-
-                await elastic.search(searchParams, async function (err, response) {
-                    if (err) {
-                        // handle error
-                        throw err;
-                    }
-
-                    if ( response.hits.total != 0 ) {
-
-                        let applicantsToShow = [];
-                        let applicants = response.hits.hits;
-
-                        for (let i = 0; i < applicants.length; i++) {
-                            let applicant = {};
-
-                            applicant.id = applicants[i]._id;
-                            applicant.index = applicants[i]._source.index;
-                            applicant.name = applicants[i]._source.name;
-                            applicant.email = applicants[i]._source.email;
-                            applicant.city = applicants[i]._source.city;
-                            applicant.dateBorn = applicants[i]._source.dateBorn;
-                            applicant.premium = applicants[i]._source.premium;
-                            applicant.status = applicants[i]._source.status;
-                            applicant.lastAccess = applicants[i]._source.lastAccess;
-                            applicant.img = applicants[i]._source.img;
-                            applicant.bio = applicants[i]._source.bio;
-                            applicant.social_networks = applicants[i]._source.social_networks;
-                            applicant.skills = applicants[i]._source.skills;
-                            applicant.educations = applicants[i]._source.educations;
-                            applicant.languages = applicants[i]._source.languages;
-                            applicant.experiences = applicants[i]._source.experiences;
-                            applicant.applications = applicants[i]._source.applications;
-                            
-                            applicantsToShow.push(applicant);
-                        }
-
-                        return res.json({
-                            ok: true,
-                            message: 'Results of search',
-                            data: applicantsToShow,
-                            total: response.hits.total,
-                            page: Number(page),
-                            pages: Math.ceil(response.hits.total / limit)
-                        });
+                        applicant.id = applicants[i]._id;
+                        applicant.index = applicants[i]._source.index;
+                        applicant.name = applicants[i]._source.name;
+                        applicant.email = applicants[i]._source.email;
+                        applicant.city = applicants[i]._source.city;
+                        applicant.dateBorn = applicants[i]._source.dateBorn;
+                        applicant.premium = applicants[i]._source.premium;
+                        applicant.status = applicants[i]._source.status;
+                        applicant.lastAccess = applicants[i]._source.lastAccess;
+                        applicant.img = applicants[i]._source.img;
+                        applicant.bio = applicants[i]._source.bio;
+                        applicant.social_networks = applicants[i]._source.social_networks;
+                        applicant.skills = applicants[i]._source.skills;
+                        applicant.educations = applicants[i]._source.educations;
+                        applicant.languages = applicants[i]._source.languages;
+                        applicant.experiences = applicants[i]._source.experiences;
+                        applicant.applications = applicants[i]._source.applications;
                         
-                    } else {
-                        delete searchParams.body.query.bool.must;
-                        searchParams.body.query.bool.should = must;
-
-                        await elastic.search(searchParams, function (error, response2) {
-                            if (error) {
-                                throw error;
-                            }
-
-                            if ( response2.hits.total > 0 ) {
-                                return res.json({
-                                    ok: true,
-                                    message: 'No results but maybe this is interesting for you',
-                                    data: response2.hits.hits,
-                                    total: response2.hits.total,
-                                    page: Number(page),
-                                    pages: Math.ceil(response2.hits.total / limit)
-                                });
-                            } else {
-                                return res.status(200).json({
-                                    ok: true,
-                                    message: 'No results',
-                                });
-                            }
-
-                        });
+                        applicantsToShow.push(applicant);
                     }
-                });
 
-            }
+                    return res.json({
+                        ok: true,
+                        message: 'Results of search',
+                        data: applicantsToShow,
+                        total: response.hits.total,
+                        page: Number(page),
+                        pages: Math.ceil(response.hits.total / limit)
+                    });
+                    
+                }  else {
+                    let searchParams = {
+                        index: "applicants",
+                        body: {
+                            query: {
+                            bool: {
+                                should: must
+                            }
+                         }}
+                    };
+
+                    await elastic.search(searchParams, function (error, response2) {
+                        if (error) {
+                            throw error;
+                        }
+
+                        if ( response2.hits.total > 0 ) {
+                            return res.json({
+                                ok: true,
+                                message: 'No results but maybe this is interesting for you',
+                                data: response2.hits.hits,
+                                total: response2.hits.total,
+                                page: Number(page),
+                                pages: Math.ceil(response2.hits.total / limit)
+                            });
+                        } else {
+                            return res.status(200).json({
+                                ok: true,
+                                message: 'No results',
+                            });
+                        }
+                    });
+                }
+            });
         } catch (error) {
             return next({ type: 'error', error });
         }
-
     });
 
     // GET all users applicants
@@ -510,7 +447,7 @@ module.exports = (app, db) => {
                     elastic.index({
                         index: 'applicants',
                         id: uservar.id,
-                        type: 'applicants',
+                        type: 'applicant',
                         body
                     }, function (err, resp, status) {
                         if ( err ) {
@@ -550,6 +487,7 @@ module.exports = (app, db) => {
                 }
                 
                 body.bio ? user.bio = body.bio : null;
+                body.index ? user.index = body.index : null;
                 applicantuser = await db.users.update(user, {
                     where: { id }
                 })
@@ -559,13 +497,34 @@ module.exports = (app, db) => {
                         await setSkills(applicant, body, next).then( async () => {
                             await setExperiences(id, body, next).then( async () => {
                                 delete body.img;
-                                axios.post(`http://${ env.ES_URL }/applicants/applicants/${ id }/_update?pretty=true`, {
-                                    doc: body
+                                axios.get(`http://${ env.ES_URL }/applicants/applicant/${ id }`, {
+                                    doc: {
+                                        mappings: {
+                                            applicant: {
+                                                properties: {
+                                                    name: "qwertyuikjhbvbjk"
+                                                }
+                                            }
+                                        }     
+                                    }
                                 }).then((resp) => {
                                     // updated from elasticsearch database too
+                                    let data = Object.assign(resp.data._source, body);
+
+                                    elastic.index({
+                                        index: 'applicants',
+                                        id,
+                                        type: 'applicant',
+                                        body: data
+                                    }, function (err, resp, status) {
+                                        if ( err ) {
+                                            console.log('ERROR: ', err);
+                                        }
+                                    });
                                 }).catch((error) => {
-                                    return next({ type: 'error', error: error.message });
+                                    console.log('ERROR:', error.message);
                                 });
+                                
                                 return res.status(200).json({
                                     ok: true,
                                     message: "Added the info of this user"
@@ -686,6 +645,62 @@ module.exports = (app, db) => {
             }
         } catch (err) {
             return next({ type: 'error', error: 'Error getting data' });
+        }
+    });
+
+    app.get('/applicants/:type', async(req, res, next) => {
+        const type = req.params.type;
+        const typeSing = type.substring(0, type.length - 1);
+        if ( type == 'languages' || type == 'educations' || type == 'skills' || type == 'experiences' ) {
+            let field = '';
+            switch ( type ) {
+                case 'languages': field = 'languages.language'; break;
+                case 'skills': field = 'skills.name'; break;
+                case 'educations': field = 'educations.title'; break;
+                case 'experiences': field = 'experiences.title'; break;
+            }
+            var searchParams = {
+                index: 'applicants',
+                body: {
+                    aggregations: {
+                        [type]: {
+                            nested: { path: type },
+                            aggregations: {
+                                [typeSing]: {
+                                    terms: {
+                                        field
+                                    }
+                                }
+                            }
+                        }   
+                    }
+                }
+            };
+    
+            await elastic.search(searchParams, async function (err, response) {
+                let objects;
+                let total;
+
+                switch ( type ) {
+                    case 'languages': objects = response.aggregations.languages.language.buckets; total = response.aggregations.languages.doc_count; break;
+                    case 'skills': objects = response.aggregations.skills.skill.buckets; total = response.aggregations.skills.doc_count; break;
+                    case 'educations': objects = response.aggregations.educations.education.buckets; total = response.aggregations.educations.doc_count; break;
+                    case 'experiences': objects = response.aggregations.experiences.experience.buckets; total = response.aggregations.experiences.doc_count; break;
+                }
+
+                return res.json({
+                    ok: true,
+                    message: 'Results',
+                    data: objects,
+                    total: total,
+                    [type]: objects.length
+                });
+            });
+        } else {
+            return res.status(400).json({
+                ok: false,
+                message: 'Type must be one of this: languages, educations, skills, experiences'
+            });
         }
     });
 
@@ -952,6 +967,7 @@ module.exports = (app, db) => {
                                 }
                             }).then(result => {
                                 if (result) {
+                                    delete body.educations[i].description;
                                     return resolve('Education Added');
                                 } else {
                                     return reject(new Error('Education not added'));
@@ -999,6 +1015,7 @@ module.exports = (app, db) => {
                                 }
                             }).then(result => {
                                 if (result) {
+                                    delete body.skills[i].description;
                                     return resolve('Skill added');
                                 } else {
                                     return reject(new Error('Skill not added'));
@@ -1073,6 +1090,7 @@ module.exports = (app, db) => {
                             dateStart: body.experiences[i].dateStart,
                             dateEnd: body.experiences[i].dateEnd,
                         });
+                        delete body.experiences[i].description;
                     }
                 }
             } catch (err) {
@@ -1081,83 +1099,142 @@ module.exports = (app, db) => {
         }
     }
 
-    function buildIndex (must, index_gte, index_gt, index_lte, index_lt) {
-        if ( index_gte || index_gt || index_lte || index_lt ) {
-
-            let index = {};
-
-            index_gte ? index.gte = index_gte : null;
-            index_gt ? index.gt = index_gt : null;
-            index_lte ? index.lte = index_lte : null;
-            index_lt ? index.lt = index_lt : null;
-            
-            must.push({
+    function buildIndex (must, index) {
+        if ( index ) {
+            let range = 
+            {
                 range: {
-                    index
+                  index: {}
                 }
-            });
-        }
+            };
 
+            index.gte ? range.range.index.gte = index.gte : null;
+            index.gt ? range.range.index.gt = index.gt : null;
+            index.lte ? range.range.index.lte = index.lte : null;
+            index.lt ? range.range.index.lt = index.lt : null;
+            
+            must.push(range);
+        }   
+        
         return must;
     }
 
-    function buildDateBorn (must, dateBorn_gte, dateBorn_gt, dateBorn_lte, dateBorn_lt) {
-        if ( dateBorn_gte || dateBorn_gt || dateBorn_lte || dateBorn_lt ) {
-
-            let dateBorn = {};
-
-            dateBorn_gte ? dateBorn.gte = dateBorn_gte : null;
-            dateBorn_gt ? dateBorn.gt = dateBorn_gt : null;
-            dateBorn_lte ? dateBorn.lte = dateBorn_lte : null;
-            dateBorn_lt ? dateBorn.lt = dateBorn_lt : null;
-            
-            must.push({
+    function buildDateBorn (must, dateBorn) {
+        if ( dateBorn ) {
+            let range = 
+            {
                 range: {
-                    dateBorn
+                  dateBorn: {}
                 }
-            });
-        }
+            };
 
+            dateBorn.gte ? range.range.dateBorn.gte = dateBorn.gte : null;
+            dateBorn.gt ? range.range.dateBorn.gt = dateBorn.gt : null;
+            dateBorn.lte ? range.range.dateBorn.lte = dateBorn.lte : null;
+            dateBorn.lt ? range.range.dateBorn.lt = dateBorn.lt : null;
+            
+            must.push(range);
+        }   
+        
         return must;
     }
 
     function buildLanguages(must, languages) {
         if ( languages ) {
-            if ( must.length > 0 ) {
-                must[0].push({
-                    terms: {
-                        languages: [{
-                            language: languages
-                        }]
+            languages.forEach(element => {
+                let mustInterno = [];
+                if ( element.language ) mustInterno.push({match_phrase: {'languages.language': {query: element.language}}})
+                if ( element.level ) mustInterno.push({match_phrase: {'languages.level': {query: element.level}}})
+                must.push(
+                {
+                    nested:
+                    {
+                        path: 'languages',
+                        query:
+                        {
+                            bool:
+                            {
+                                must: mustInterno
+                            }
+                        }
                     }
                 });
-            } else {
-                must.push({
-                    terms: {
-                        languages: [
-                            {"language": languages}
-                        ]
-                    }
-                });
-            }
+            });
         }
         return must;
     }
 
-    function prepareQuery(query) {
-        delete query.index_gte;
-        delete query.index_gt;
-        delete query.index_lte;
-        delete query.index_lt;
-        delete query.dateBorn_gte;
-        delete query.dateBorn_gt;
-        delete query.dateBorn_lte;
-        delete query.dateBorn_lt;
-        delete query.languages;
-        delete query.educations;
-        delete query.experiences;
-        delete query.skills;
+    function buildSkills(must, skills) {
+        if ( skills ) {
+            skills.forEach(element => {
+                let mustInterno = [];
+                if ( element.name ) mustInterno.push({match_phrase: {'skills.name': {query: element.name}}})
+                if ( element.level ) mustInterno.push({match_phrase: {'skills.level': {query: element.level}}})
+                must.push(
+                {
+                    nested:
+                    {
+                        path: 'skills',
+                        query:
+                        {
+                            bool:
+                            {
+                                must: mustInterno
+                            }
+                        }
+                    }
+                });
+            });
+        }
+        return must;
+    }
 
-        return query;
+    function buildEducations(must, educations) {
+        if ( educations ) {
+            educations.forEach(element => {
+                let mustInterno = [];
+                if ( element.title ) mustInterno.push({match_phrase: {'educations.title': {query: element.title}}})
+                if ( element.institution ) mustInterno.push({match_phrase: {'educations.institution': {query: element.institution}}})
+                must.push(
+                {
+                    nested:
+                    {
+                        path: 'educations',
+                        query:
+                        {
+                            bool:
+                            {
+                                must: mustInterno
+                            }
+                        }
+                    }
+                });
+            });
+        }
+        return must;
+    }
+
+    function buildExperiences(must, experiences) {
+        if ( experiences ) {
+            experiences.forEach(element => {
+                let mustInterno = [];
+                if ( element.title ) mustInterno.push({match_phrase: {'experiences.title': {query: element.title}}})
+                must.push(
+                {
+                    nested:
+                    {
+                        path: 'experiences',
+                        query:
+                        {
+                            bool:
+                            {
+                                must: mustInterno
+                            }
+                        }
+                    }
+                });
+            });
+        }
+        return must;
     }
 }
