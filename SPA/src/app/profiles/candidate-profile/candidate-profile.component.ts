@@ -13,6 +13,8 @@ import {ActivatedRoute, Router} from '@angular/router';
   styleUrls: ['./candidate-profile.component.scss']
 })
 export class CandidateProfileComponent implements OnInit {
+  imgPath = '../../../../assets/img/defaultProfileImg.png';
+
   candidate = {
     name: 'Shiba Inu Kawaii',
     kweeIndex: 99,
@@ -111,5 +113,17 @@ export class CandidateProfileComponent implements OnInit {
     if (tabIndex && tabIndex === 2) {
       this.router.navigate(['/my-offers']);
     }
+  }
+
+  getProfileImg() {
+    this.profilesState.subscribe(s => {
+      if (s.candidate.img) {
+        this.imgPath = s.candidate.img;
+      } else {
+        this.imgPath = '../../../../assets/img/defaultProfileImg.png';
+      }
+    });
+
+    return this.imgPath;
   }
 }
