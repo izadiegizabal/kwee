@@ -1,0 +1,42 @@
+.errorImg {
+  width: 100%;
+  max-width: 250px;
+  max-height: 250px;
+  vertical-align: center;
+}
+
+.errorDisplay {
+  min-height: 50vh;
+  color: #444B54;
+  text-align: center;
+
+  h2 {
+    font-size: 13rem;
+    margin: 16px 0;
+    font-family: 'IBM Plex Sans', sans-serif;
+  }
+
+  p {
+    margin-top: -32px;
+    position: relative;
+
+    a {
+      color: inherit;
+
+      div {
+        display: none;
+        position: absolute;
+        z-index: 99;
+      }
+
+      img {
+        height: 250px;
+        border: solid white 4px;
+      }
+    }
+
+    a:hover div {
+      display: block;
+    }
+  }
+}

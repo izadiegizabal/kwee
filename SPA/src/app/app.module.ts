@@ -23,7 +23,10 @@ import {PrivacyComponent} from './privacy/privacy.component';
 import {OfferCreateModule} from './offer/offer-create/offer-create.module';
 
 export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {
-  return localStorageSync({keys: ['auth', 'admin', 'offers', 'offer', 'profiles', 'OfferManage'], rehydrate: true})(reducer);
+  return localStorageSync({
+    keys: ['auth', 'admin', 'offers', 'offer', 'profiles', 'OfferManage'],
+    rehydrate: true
+  })(reducer);
 }
 
 const metaReducers: Array<MetaReducer<any, any>> = [localStorageSyncReducer];
