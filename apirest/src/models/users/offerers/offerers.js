@@ -48,7 +48,7 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
 
-      website: {
+	website: {
         type: DataTypes.STRING(),
         field: "website",
         validate: {
@@ -61,18 +61,17 @@ module.exports = (sequelize, DataTypes) => {
             msg: "website should not be empty."
           }
         }
-      },
+	},
 
-      companySize: {
+	companySize: {
         type: DataTypes.INTEGER,
-        allowNull: false,
         validate: {
           isIn: {
             args: [[10, 50, 100, 1000]],
             msg: "Invalid companySize value. Only valid 10, 50, 100, or 1.000"
           }
         }
-      },
+	},
 
       year: {
         type: DataTypes.DATE,
@@ -86,7 +85,7 @@ module.exports = (sequelize, DataTypes) => {
 
       premium: {
         type: DataTypes.INTEGER,
-        defaultValue: 0,
+		defaultValue: 0,
         validate: {
           isIn: {
             args: [[0, 1, 2]],

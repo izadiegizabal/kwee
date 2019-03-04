@@ -24,13 +24,13 @@ client.indices.exists({
 				mappings: {
 					applicant: {
 						properties: {
-							name: { type: "text" },
+							name: { type: "text", "fielddata": true },
 							email: { type: "text" },
-							city: { type: "text" },
+							status: { type: "integer", "doc_values": true },
+							city: { type: "text", "fielddata": true },
 							dateBorn: { type: "date" },
-							premium: { type: "integer" },
 							rol: { type: "integer" },
-							index: { type: "integer" },
+							index: { type: "integer", "doc_values": true },
 							bio: { type: "text" },
 							skills: {
 								type: "nested",
@@ -71,6 +71,63 @@ client.indices.exists({
   	} 
 });
 
+client.indices.exists({
+	index: 'offerers'
+}).then(function (exists) {
+  	if (!exists) {
+		client.indices.create({
+			index: "offerers",
+			body: {
+				mappings: {
+					offerer: {
+						properties: {
+							name: { type: "text", "fielddata": true },
+							email: { type: "text" },
+							status: { type: "integer", "doc_values": true },
+							address: { type: "text", "fielddata": true },
+							bio: { type: "text" },
+							index: { type: "integer", "doc_values": true },
+							companySize: { type: "integer", "doc_values": true },
+							year: { type: "date", "doc_values": true },
+							dateVerification: { type: "date", "doc_values": true },
+						},
+					},
+				},
+			},
+		})
+  	} 
+});
+
+client.indices.exists({
+	index: 'offers'
+}).then(function (exists) {
+  	if (!exists) {
+		client.indices.create({
+			index: "offers",
+			body: {
+				mappings: {
+					offer: {
+						properties: {
+							status: { type: "text", "fielddata": true },
+							title: { type: "text", "fielddata": true },
+							location: { type: "keyword", "doc_values": true },
+							dateStart: { type: "date", "doc_values": true },
+							dateEnd: { type: "date", "doc_values": true },
+							datePublished: { type: "date", "doc_values": true },
+							offererName: { type: "text", "fielddata": true },
+							offererIndex: { type: "integer", "doc_values": true },
+							salaryAmount: { type: "integer", "doc_values": true },
+							salaryCurrency: { type: "keyword", "doc_values": true },
+							bio: { type: "text" },
+							skills: { type: "text" },
+							workLocation: { type: "keyword", "doc_values": true },
+						},
+					},
+				},
+			},
+		})
+  	} 
+});
 
 client.cluster.health({},function(err,resp,status) {  
 //     // console.log("-- Client Health --",resp);

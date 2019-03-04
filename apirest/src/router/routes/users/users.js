@@ -12,14 +12,11 @@ module.exports = (app, db) => {
 
 
     app.get('/users', async(req, res, next) => {
-        elastic.count({ index: 'users', type: 'users' }, function (err, resp, status) {
-            console.log("response :", resp);
-          });
 
         try {
 
             var attributes = {
-                exclude: ['password']
+                exclude: ['password', 'root']
             };
 
             var output = await pagination(
@@ -30,7 +27,8 @@ module.exports = (app, db) => {
                 attributes,
                 res,
                 next);
-
+            
+                
             if ( output.data ) {   
                 return res.status(200).json({
                     ok: true,

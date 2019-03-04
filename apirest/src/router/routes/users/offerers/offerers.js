@@ -1,7 +1,10 @@
-const { tokenId, logger, sendVerificationEmail, pagination, uploadImg, checkImg, deleteFile, prepareOffersToShow } = require('../../../../shared/functions');
+const { tokenId, logger, sendVerificationEmail, pagination, uploadImg, checkImg, deleteFile, prepareOffersToShow, isEmpty } = require('../../../../shared/functions');
 const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
 const elastic = require('../../../../database/elasticsearch');
+const env =     require('../../../../tools/constants');
 const bcrypt = require('bcryptjs');
+const axios =   require('axios')
+
 
 // ============================
 // ======== CRUD user =========
@@ -9,13 +12,120 @@ const bcrypt = require('bcryptjs');
 
 module.exports = (app, db) => {
 
+    app.post('/offerers/search', async(req, res, next) => {
+        try {
+            let query = req.query;
+            let page = Number(query.page);
+            let limit = Number(query.limit);
+            let body = req.body;
+            let must = [];
+            let sort = 'index';
+            if (body.sort) sort = body.sort;
+
+            buildIndex(must, body.index);
+            buildYear(must, body.year);
+            buildCompanySize(must, body.companySize);
+            buildDateVerification(must, body.dateVerification);
+
+            if ( body.name ) must.push({multi_match : {query: body.name, fields: ["name"]}})
+            if ( body.email ) must.push({multi_match : {query: body.email, fields: ["email"]}})
+            if ( body.status ) must.push({multi_match : {query: body.status, fields: ["status"]}})
+            if ( body.address ) must.push({multi_match : {query: body.address, fields: ["address"]}})
+            if ( body.bio ) must.push({multi_match : {query: body.bio, fields: ["bio"]}})
+
+            let searchParams = {
+                index: "offerers",
+                body: {
+                    query: {
+                        bool: {
+                            must
+                        }
+                    },
+                    sort
+                }
+            };
+
+            await elastic.search(searchParams, async function (err, response) {
+                if (err) throw err;
+                
+                if ( response.hits.total != 0 ) {
+                    let offerersToShow = [];
+                    let offerers = response.hits.hits;
+
+                    for (let i = 0; i < offerers.length; i++) {
+                        let offerer = {};
+
+                        offerer.id = offerers[i]._id;
+                        offerer.name = offerers[i]._source.name;
+                        offerer.index = offerers[i]._source.index;
+                        offerer.bio = offerers[i]._source.bio;
+                        offerer.status = offerers[i]._source.status;
+                        offerer.email = offerers[i]._source.email;
+                        offerer.address = offerers[i]._source.address;
+                        offerer.companySize = offerers[i]._source.companySize;
+                        offerer.year = offerers[i]._source.year;
+                        offerer.dateVerification = offerers[i]._source.dateVerification;
+                        
+                        offerersToShow.push(offerer);
+                    }
+
+                    return res.json({
+                        ok: true,
+                        message: 'Results of search',
+                        data: offerersToShow,
+                        total: response.hits.total,
+                        page: Number(page),
+                        pages: Math.ceil(response.hits.total / limit)
+                    });
+                    
+                }  else {
+                    let searchParams = {
+                        index: "offerers",
+                        body: {
+                            query: {
+                            bool: {
+                                should: must
+                            }
+                         }}
+                    };
+
+                    await elastic.search(searchParams, function (error, response2) {
+                        if (error) {
+                            throw error;
+                        }
+
+                        if ( response2.hits.total > 0 ) {
+                            return res.json({
+                                ok: true,
+                                message: 'No results but maybe this is interesting for you',
+                                data: response2.hits.hits,
+                                total: response2.hits.total,
+                                page: Number(page),
+                                pages: Math.ceil(response2.hits.total / limit)
+                            });
+                        } else {
+                            return res.status(200).json({
+                                ok: true,
+                                message: 'No results',
+                            });
+                        }
+                    });
+                }
+            });
+
+
+        } catch (err) {
+            return next({ type: 'error', err });
+        }
+    });
+
     // GET all users offerers
     app.get('/offerers', async(req, res, next) => {
         try {
             await logger.saveLog('GET', 'offerers', null, res);
 
             var attributes = {
-                exclude: ['password']
+                exclude: ['password', 'root']
             };
 
             // Need USER values, so we get ALL USERS
@@ -287,19 +397,25 @@ module.exports = (app, db) => {
                                 uservar = _user;
                                 return createOfferer(body, _user, next, transaction);
                             })
-                            .then(ending => {
+                            .then(async ending => {
+                                await sendVerificationEmail(body, uservar);
                                 delete body.password;
+                                delete body.img;
+                                delete body.cif;
+                                delete lon;
+                                delete lat;
+                                body.index = 50;
+                                console.log('body: ', body);
                                 elastic.index({
-                                    index: 'users',
+                                    index: 'offerers',
+                                    type: 'offerer',
                                     id: uservar.id,
-                                    type: 'offerers',
                                     body
                                 }, function (err, resp, status) {
-                                    console.log('error : ' + err);
-                                    console.log('resp :' + resp);
-                                    console.log('status :' + status);
+                                    if ( err ) {
+                                        console.log(err.message);
+                                    }
                                 });
-                                sendVerificationEmail(body, uservar);
                                 return res.status(201).json({
                                     ok: true,
                                     message: `Offerer with id ${ending.userId} has been created.`
@@ -319,7 +435,7 @@ module.exports = (app, db) => {
 
         } catch (err) {
             //await transaction.rollback();
-            next({ type: 'error', error: 'eeeeeerroooorrr' });
+            return next({ type: 'error', error: err.message });
         }
     });
 
@@ -333,7 +449,7 @@ module.exports = (app, db) => {
             logger.updateLog(logId, true, id);
             updateOfferer(id, req, res, next);
         } catch (err) {
-            next({ type: 'error', error: err.message });
+            return next({ type: 'error', error: err.message });
         }
     });
 
@@ -346,11 +462,51 @@ module.exports = (app, db) => {
             console.log("body.status: " + req.body.status);
             updateOfferer(id, req, res, next);
         } catch (err) {
-            next({ type: 'error', error: err.message });
+            return next({ type: 'error', error: err.message });
         }
     });
 
-    // DELETE
+    // DELETE by themself
+    app.delete('/offerer', async(req, res, next) => {
+        try {
+            let id = tokenId.getTokenId(req.get('token'));
+            
+            await logger.saveLog('DELETE', 'offerer', id, res);
+
+            let offerer = await db.offerers.findOne({
+                where: { userId: id }
+            });
+
+            if (offerer) {
+                let offererToDelete = await db.offerers.destroy({
+                    where: { userId: id }
+                });
+
+                axios.delete(`http://${ env.ES_URL }/offerers/offerers/${ id }`)
+                    .then((res) => {
+                        // deleted from elasticsearch database too
+                }).catch((error) => {
+                    console.error(error)
+                });
+
+                let user = await db.users.destroy({
+                    where: { id }
+                });
+                if (offerer && user) {
+                    return res.json({
+                        ok: true,
+                        message: 'Offerer deleted'
+                    });
+                }
+            } else {
+                return next({ type: 'error', error: 'Offerer doesn\'t exist' });
+            }
+        } catch (err) {
+            return next({ type: 'error', error: err.message });
+        }
+    });
+
+    // DELETE by admin
     app.delete('/offerer/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
 
@@ -368,20 +524,28 @@ module.exports = (app, db) => {
                 let user = await db.users.destroy({
                     where: { id }
                 });
+
+                axios.delete(`http://${ env.ES_URL }/offerers/offerers/${ id }`)
+                    .then((res) => {
+                        // deleted from elasticsearch database too
+                }).catch((error) => {
+                    console.error(error)
+                });
+
                 if (offererToDelete && user) {
-                    res.json({
+                    return res.json({
                         ok: true,
                         message: 'Offerer deleted'
                     });
                 }
             } else {
-                next({ type: 'error', error: 'Offerer doesn\'t exist' });
+                return next({ type: 'error', error: 'Offerer doesn\'t exist' });
             }
             // Respuestas en json
             // offerer: 1 -> Deleted
             // offerer: 0 -> User don't exists
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            return next({ type: 'error', error: 'Error getting data' });
         }
     });
 
@@ -396,6 +560,7 @@ module.exports = (app, db) => {
             delete body.dateVerification;
             let offereruser = true;
             let userOff = {};
+
             body.cif ? userOff.cif = body.cif : null;
             body.address ? userOff.address = body.address : null;
             body.workField ? userOff.workField = body.workField : null;
@@ -429,7 +594,22 @@ module.exports = (app, db) => {
                     where: { id }
                 })
             }
+            let data = {};
+            if(!isEmpty(body) || !isEmpty(userOff)){
 
+                if(isEmpty(body)) data = userOff;
+                else if(isEmpty(userOff)) data = body;
+                else data = Object.assign(body, userOff);
+                
+                axios.post(`http://${ env.ES_URL }/offerers/offerers/${ id }/_update?pretty=true`, {
+                    doc: data
+                }).then((resp) => {
+                    // updated from elasticsearch database too
+                }).catch((error) => {
+                    console.log(error.message);
+                });
+            }
+                
             let updated = await db.offerers.update(userOff, {
                 where: { userId: id }
             });
@@ -458,7 +638,6 @@ module.exports = (app, db) => {
                 website: body.website ? body.website : null,
                 companySize: body.companySize ? body.companySize : null,
                 year: body.year ? body.year : null,
-                premium: body.premium ? body.premium : 'basic'
             }
 
             return db.offerers.create(offerer, { transaction: transaction })
@@ -473,4 +652,83 @@ module.exports = (app, db) => {
         }
     }
 
+    function buildIndex (must, index) {
+        if ( index ) {
+            let range = 
+            {
+                range: {
+                  index: {}
+                }
+            };
+
+            index.gte ? range.range.index.gte = index.gte : null;
+            index.gt ? range.range.index.gt = index.gt : null;
+            index.lte ? range.range.index.lte = index.lte : null;
+            index.lt ? range.range.index.lt = index.lt : null;
+            
+            must.push(range);
+        }   
+        
+        return must;
+    }
+
+    function buildYear (must, year) {
+        if ( year ) {
+            let range = 
+            {
+                range: {
+                  year: {}
+                }
+            };
+
+            year.gte ? range.range.year.gte = year.gte : null;
+            year.gt ? range.range.year.gt = year.gt : null;
+            year.lte ? range.range.year.lte = year.lte : null;
+            year.lt ? range.range.year.lt = year.lt : null;
+            
+            must.push(range);
+        }   
+        
+        return must;
+    }
+
+    function buildCompanySize (must, companySize) {
+        if ( companySize ) {
+            let range = 
+            {
+                range: {
+                  companySize: {}
+                }
+            };
+
+            companySize.gte ? range.range.companySize.gte = companySize.gte : null;
+            companySize.gt ? range.range.companySize.gt = companySize.gt : null;
+            companySize.lte ? range.range.companySize.lte = companySize.lte : null;
+            companySize.lt ? range.range.companySize.lt = companySize.lt : null;
+            
+            must.push(range);
+        }   
+        
+        return must;
+    }
+    
+    function buildDateVerification (must, dateVerification) {
+        if ( dateVerification ) {
+            let range = 
+            {
+                range: {
+                  dateVerification: {}
+                }
+            };
+
+            dateVerification.gte ? range.range.dateVerification.gte = dateVerification.gte : null;
+            dateVerification.gt ? range.range.dateVerification.gt = dateVerification.gt : null;
+            dateVerification.lte ? range.range.dateVerification.lte = dateVerification.lte : null;
+            dateVerification.lt ? range.range.dateVerification.lt = dateVerification.lt : null;
+            
+            must.push(range);
+        }   
+        
+        return must;
+    }
 }
