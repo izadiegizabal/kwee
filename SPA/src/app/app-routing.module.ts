@@ -24,7 +24,8 @@ const routes: Routes = [
   {path: 'contact-support', loadChildren: './contact-support/contact-support.module#ContactSupportModule'},
   {path: 'search-candidates', loadChildren: './search-users/search-candidates/search-candidates.module#SearchCandidatesModule'},
   {path: 'search-businesses', loadChildren: './search-users/search-businesses/search-businesses.module#SearchBusinessesModule'},
-  {path: '**', redirectTo: '/candidate-home'}
+  {path: 'error', loadChildren: './errors/errors.module#ErrorsModule'},
+  {path: '**', redirectTo: 'error/404'}
 ];
 
 @NgModule({
