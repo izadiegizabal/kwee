@@ -99,7 +99,8 @@ export class CandidateHomeComponent implements OnInit {
     this.store$.dispatch(new OffersActions.TryGetOffers({
       page: this.pageEvent.pageIndex + 1,
       limit: this.pageEvent.pageSize,
-      params: this.params}));
+      params: this.params
+    }));
   }
 
   isMobile() {
@@ -112,12 +113,13 @@ export class CandidateHomeComponent implements OnInit {
   }
 
   onSearch(params: string) {
-    const searchParams = params.toLowerCase().replace(/ /g , '+');
+    const searchParams = params.toLowerCase().replace(/ /g, '+');
     this.params = '&status=0&keywords=' + searchParams;
 
     this.store$.dispatch(new OffersActions.TryGetOffers({
       page: 1,
       limit: this.pageSize,
-      params: this.params}));
+      params: this.params
+    }));
   }
 }
