@@ -18,6 +18,8 @@ module.exports = (app, db) => {
             let limit = Number(query.limit);
             let body = req.body;
             let must = [];
+            let sort = 'index';
+            if (body.sort) sort = body.sort;
 
             buildLanguages(must, body.languages);
             buildSkills(must, body.skills);
@@ -35,12 +37,17 @@ module.exports = (app, db) => {
                 index: "applicants",
                 body: {
                     query: {
-                    bool: {
-                        must
-                    }
-                 }}
+                        bool: {
+                            must
+                        }
+                    },
+                    sort
+                }
             };
+
             await elastic.search(searchParams, async function (err, response) {
+                if (err) throw err;
+                
                 if ( response.hits.total != 0 ) {
                     let applicantsToShow = [];
                     let applicants = response.hits.hits;
@@ -54,12 +61,9 @@ module.exports = (app, db) => {
                         applicant.email = applicants[i]._source.email;
                         applicant.city = applicants[i]._source.city;
                         applicant.dateBorn = applicants[i]._source.dateBorn;
-                        applicant.premium = applicants[i]._source.premium;
                         applicant.status = applicants[i]._source.status;
-                        applicant.lastAccess = applicants[i]._source.lastAccess;
-                        applicant.img = applicants[i]._source.img;
+                        applicant.rol = applicants[i]._source.rol;
                         applicant.bio = applicants[i]._source.bio;
-                        applicant.social_networks = applicants[i]._source.social_networks;
                         applicant.skills = applicants[i]._source.skills;
                         applicant.educations = applicants[i]._source.educations;
                         applicant.languages = applicants[i]._source.languages;
@@ -112,8 +116,8 @@ module.exports = (app, db) => {
                     });
                 }
             });
-        } catch (error) {
-            return next({ type: 'error', error });
+        } catch (err) {
+            return next({ type: 'error', err });
         }
     });
 
@@ -123,7 +127,7 @@ module.exports = (app, db) => {
             await logger.saveLog('GET', 'applicant', null, res);
 
             var attributes = {
-                exclude: ['password']
+                exclude: ['password', 'root']
             };
 
             // Need USER values, so we get ALL USERS
@@ -442,8 +446,10 @@ module.exports = (app, db) => {
                     return createApplicant(body, user, next, transaction);
                 })
                 .then(ending => {
+                    sendVerificationEmail(body, uservar);
                     delete body.password;
                     body.index = 50;
+
                     elastic.index({
                         index: 'applicants',
                         id: uservar.id,
@@ -451,10 +457,9 @@ module.exports = (app, db) => {
                         body
                     }, function (err, resp, status) {
                         if ( err ) {
-                            return next({ type: 'error', error: err.message });
+                            console.log(err)
                         }
                     });
-                    sendVerificationEmail(body, uservar);
                     return res.status(201).json({
                         ok: true,
                         message: `Applicant with id ${ending.userId} has been created.`
@@ -498,15 +503,6 @@ module.exports = (app, db) => {
                             await setExperiences(id, body, next).then( async () => {
                                 delete body.img;
                                 axios.get(`http://${ env.ES_URL }/applicants/applicant/${ id }`, {
-                                    doc: {
-                                        mappings: {
-                                            applicant: {
-                                                properties: {
-                                                    name: "qwertyuikjhbvbjk"
-                                                }
-                                            }
-                                        }     
-                                    }
                                 }).then((resp) => {
                                     // updated from elasticsearch database too
                                     let data = Object.assign(resp.data._source, body);

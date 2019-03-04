@@ -36,6 +36,8 @@ module.exports = (app, db) => {
             let datePublished_gt = query.datePublished_gt;
             let datePublished_lte = query.datePublished_lte;
             let datePublished_lt = query.datePublished_lt;
+            let sort = 'offererIndex';
+            if (query.sort) sort = query.sort;
             delete query.page;
             delete query.limit;
             delete query.keywords;
@@ -99,15 +101,13 @@ module.exports = (app, db) => {
                                 must,
                                 should
                             }
-                        }
+                        },
+                        sort
                     }
                 };
 
                 await elastic.search(searchParams, async function (err, response) {
-                    if (err) {
-                        // handle error
-                        throw err;
-                    }
+                    if (err) throw err;
 
                     if ( response.hits.total != 0 ) {
                         users = await db.users.findAll();
@@ -282,48 +282,55 @@ module.exports = (app, db) => {
             body.fk_offerer = id;
 
             await db.offers.create(body)
-            .then(result => {
+            .then(async result => {
                 if ( result ) {
+
+                    let offerer = await db.users.findOne({ where: { id }});
+
+                    body.offererIndex = offerer.index;
+                    body.offererName = offerer.name;
 
                     elastic.index({
                         index: 'offers',
                         id: result.id,
-                        type: 'offers',
+                        type: 'offer',
                         body
                     }, function (err, resp, status) {
                         if ( err ) {
-                            return next({ type: 'error', error: err.message });
+                            console.log('ERROR:', err.message);
                         }
-                    });
-                    
-                    return res.status(201).json({
-                        ok: true,
-                        message: 'Offer created',
-                        data: {
-                            id: result.id,
-                            fk_offerer: id,
-                            status: result.status,
-                            title: result.title,
-                            description: result.description,
-                            datePublished: result.datePublished,
-                            dateStart: result.dateStart,
-                            dateEnd: result.dateEnd,
-                            location: result.location,
-                            salaryAmount: result.salaryAmount,
-                            salaryFrequency: result.salaryFrequency,
-                            salaryCurrency: result.salaryCurrency,
-                            workLocation: result.workLocation,
-                            seniority: result.seniority,
-                            responsabilities: result.responsabilities,
-                            requeriments: result.requeriments,
-                            skills: body.skills,
-                            maxApplicants: body.maxApplicants,
-                            currentApplications: body.currentApplications,
-                            duration: body.duration,
-                            durationUnit: body.durationUnit,
-                            contractType: body.contractType,
-                            isIndefinite: body.isIndefinite
-                        }
+
+                        return res.status(201).json({
+                            ok: true,
+                            message: 'Offer created',
+                            data: {
+                                id: result.id,
+                                fk_offerer: id,
+                                offererIndex: body.offererIndex,
+                                offererName: body.offererName,
+                                status: result.status,
+                                title: result.title,
+                                description: result.description,
+                                datePublished: result.datePublished,
+                                dateStart: result.dateStart,
+                                dateEnd: result.dateEnd,
+                                location: result.location,
+                                salaryAmount: result.salaryAmount,
+                                salaryFrequency: result.salaryFrequency,
+                                salaryCurrency: result.salaryCurrency,
+                                workLocation: result.workLocation,
+                                seniority: result.seniority,
+                                responsabilities: result.responsabilities,
+                                requeriments: result.requeriments,
+                                skills: body.skills,
+                                maxApplicants: body.maxApplicants,
+                                currentApplications: body.currentApplications,
+                                duration: body.duration,
+                                durationUnit: body.durationUnit,
+                                contractType: body.contractType,
+                                isIndefinite: body.isIndefinite
+                            }
+                        });
                     });
                 } else {
                     return res.status(400).json({

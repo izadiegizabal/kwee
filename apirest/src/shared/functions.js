@@ -152,6 +152,13 @@ function sendEmailResetPassword(user, res) {
     });
 }
 
+function isEmpty(obj) {
+    for(var key in obj) {
+        if(obj.hasOwnProperty(key))
+            return false;
+    }
+    return true;
+}
 
 async function pagination( db, dbname, _limit, _page, attr, res, next){
     var output = {};
@@ -161,9 +168,9 @@ async function pagination( db, dbname, _limit, _page, attr, res, next){
 
     try{
         var countTotal = await db.findAndCountAll();
-
+        
         if( _limit === undefined || _page === undefined ){
-            data = await db.findAll();
+            data = await db.findAll({attributes: attr});
             message = `Listing all ${dbname}`;
         } else {
             let limit = Number(_limit);
@@ -183,9 +190,6 @@ async function pagination( db, dbname, _limit, _page, attr, res, next){
                     message: `It doesn't exist ${ page } pages`
                 })
             }
-
-            console.log('DESPUÉS DEL RETURN');
-            // if (attr.length == 0) attr = '';
             
             data = await db.findAll({
                 attributes: attr,
@@ -203,7 +207,7 @@ async function pagination( db, dbname, _limit, _page, attr, res, next){
 
     }
     catch(error){
-        return next({ type: 'error', error: error });
+        return next({ type: 'error', error: error.message });
     }
     
 }
@@ -424,5 +428,6 @@ module.exports = {
     uploadImg,
     checkImg,
     deleteFile,
-    prepareOffersToShow
+    prepareOffersToShow,
+    isEmpty
 }
