@@ -1,0 +1,10 @@
+[{"fk_application":10,"salary":2,"environment":4,"partners":5,"services":1,"installations":1},
+{"fk_application":5,"salary":1,"environment":5,"partners":2,"services":4,"installations":5},
+{"fk_application":5,"salary":2,"environment":5,"partners":3,"services":4,"installations":4},
+{"fk_application":7,"salary":2,"environment":5,"partners":5,"services":3,"installations":4},
+{"fk_application":1,"salary":1,"environment":2,"partners":5,"services":1,"installations":1},
+{"fk_application":9,"salary":4,"environment":2,"partners":1,"services":3,"installations":1},
+{"fk_application":2,"salary":4,"environment":2,"partners":3,"services":1,"installations":1},
+{"fk_application":9,"salary":5,"environment":3,"partners":3,"services":3,"installations":2},
+{"fk_application":8,"salary":1,"environment":5,"partners":4,"services":2,"installations":4},
+{"fk_application":10,"salary":3,"environment":2,"partners":1,"services":5,"installations":1}]

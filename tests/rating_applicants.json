@@ -1,0 +1,10 @@
+[{"fk_application":3,"efficience":5,"skills":2,"punctuality":4,"hygiene":3,"teamwork":2},
+{"fk_application":8,"efficience":3,"skills":5,"punctuality":1,"hygiene":3,"teamwork":5},
+{"fk_application":3,"efficience":5,"skills":4,"punctuality":3,"hygiene":3,"teamwork":3},
+{"fk_application":4,"efficience":3,"skills":5,"punctuality":2,"hygiene":2,"teamwork":1},
+{"fk_application":3,"efficience":1,"skills":2,"punctuality":2,"hygiene":4,"teamwork":4},
+{"fk_application":3,"efficience":2,"skills":5,"punctuality":2,"hygiene":5,"teamwork":4},
+{"fk_application":1,"efficience":3,"skills":5,"punctuality":3,"hygiene":3,"teamwork":2},
+{"fk_application":8,"efficience":4,"skills":4,"punctuality":2,"hygiene":3,"teamwork":5},
+{"fk_application":2,"efficience":4,"skills":4,"punctuality":2,"hygiene":2,"teamwork":2},
+{"fk_application":3,"efficience":4,"skills":1,"punctuality":5,"hygiene":2,"teamwork":4}]

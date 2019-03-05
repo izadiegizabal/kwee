@@ -40,8 +40,11 @@ const warning = chalk.keyword('orange');
 
 const url = 'https://www.kwee.ovh/api';
 const _url = 'http://localhost:3000';
-const __url = 'http://h203.eps.ua.es/api'
+const __url = 'http://h203.eps.ua.es/api';
+
 let obj = 'No file';
+let offers = 'No file';
+
 let headersOP = {  
     "content-type": "application/json",
 };
@@ -49,11 +52,11 @@ let options = {};
 
 function getFileJSON(path){
 	// './CreateCandidates.json'
-	obj = JSON.parse(fs.readFileSync(path, 'utf8'));
+	return JSON.parse(fs.readFileSync(path, 'utf8'));
 }
 
-async function asyncForEach(array, callback) {
-  for (let index = 0; index < 2; index++) {
+async function asyncForEach(array, limit, callback) {
+  for (let index = 0; index < limit; index++) {
     await callback(array[index], index, array);
   }
 }
@@ -65,6 +68,8 @@ const start = async () => {
   });
   log('Done');
 }
+/////////////////////////////// ejemplo de for
+
 
 const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
 
@@ -273,20 +278,24 @@ const signupOfferersAndOffers = async(path) => {
 	});
 }
 
-var instance = null;
+function randomInt(min,max) // min and max included
+{
+    return Math.floor(Math.random()*(max-min+1)+min);
+}
 
-async function test( path ) {
-	getFileJSON(path);
+async function offerersAndOffers( path ) {
+	// offerers JSON
+	obj = getFileJSON('./CreateOfferers.json');
+	// offers JSON
+	offers = getFileJSON('./tests/offers.json');
 
-	await axios.get(url+'/users')
-	.then( res => console.log(res.data));
+	// Testing query
+		// await axios.get('/users')
+		// .then( res => console.log(res.data));
 
-	// axios.post(url+'/signup', {
-	// })
-
-	await asyncForEach( obj, async (e,i) => {
+	await asyncForEach( obj, 2, async (e,i) => {
 			// sign up bussiness
-			axios.post(url+'/offerer', {
+			await instance.post('/offerer', {
 				"name": e.name,
 				"password": e.password,
 				"email": e.email,
@@ -301,25 +310,75 @@ async function test( path ) {
 				"status": e.status,
 				"lon": e.lon,
 				"lat": e.lat
-			},{
-				headers: {
-					'Content-Type': 'application/json; charset=utf-8'
-				}
+	
 			})
-			.then( res => { 
+			.then( async res => { 
+				log(i + " " +success("SignUp Success"));
 				console.log(res.data) 
+				
 				// login bussiness
+				await instance.post('/login',{
+					"email": e.email,
+					"password": e.password
+				})
+				.then( async loginSuccess => {
+					log(" " + success("Login Success"))
+					let token = loginSuccess.data.token;
 
-				// axios.post(url+'/login',{
-				// 	"name": e.name,
-				// 	"password": e.password
-				// })
+					// create random number of offers
+					let limit = randomInt(0,10);
 
-				// create offer
+					await asyncForEach( offers, limit, async (offerElement, index) => {
+						await instance.post("/offer", {
+							// body
+							"status": offerElement.status,
+							"title": offerElement.title,
+							"description": offerElement.description,
+							"datePublished": offerElement.datePublished,
+							"dateStart": offerElement.dateStart,
+							"dateEnd": offerElement.dateEnd,
+							"location": offerElement.location,
+							"salaryAmount": offerElement.salaryAmount,
+							"salaryFrequency": offerElement.salaryFrequency,
+							"salaryCurrency": offerElement.salaryCurrency,
+							"workLocation": offerElement.workLocation,
+							"seniority": offerElement.seniority,
+							"maxApplicants": offerElement.maxApplicants,
+							"duration": offerElement.duration,
+							"durationUnit": offerElement.durationUnit,
+							"contractType": offerElement.contractType,
+							"isIndefinite": offerElement.isIndefinite,
+							"currentApplications": offerElement.currentApplications,
+							"responsabilities": offerElement.responsabilities,
+							"requeriments": offerElement.requeriments,
+							"skills": offerElement.skills,
+						},
+						{
+							// headers
+							headers: { 
+								token, 
+								'Content-Type': 'application/json; charset=utf-8'
+							}
+						})
+						.then( offerCreated => {
+							log(" " + success("Offer created"));
+							// console.log(offerCreated);
+						})
+						.catch( offerError => {
+							log(error("Error creating offer: ") + offerError.message);
+						})
+
+					});
+					console.log(warning("-----"));
+				})
+				.catch(login => {
+					log(error("Login error: ")+login.message)
+				})
+
 				
 			})
 			.catch(e => {
-				log(error("error de mierda ")+e);
+				log(error("SignUp error: ")+e.message);
 			});
 	
 
@@ -331,9 +390,29 @@ async function test( path ) {
 }
 
 ////////////////////////////////////////// EXECUTE CODE
-
+var instance = axios.create({
+  baseURL: url,
+  timeout: 4000,
+	headers: {
+		'Content-Type': 'application/json; charset=utf-8'
+	}
+});
 //signupOfferersAndOffers('./CreateOfferers.json');
-test('./CreateOfferers.json');
+
+// 1- SignUp Offerers and publish offers
+offerersAndOffers();
+
+// 2- Applicants apply to random offers
+// applicantsAndApplications();
+
+// 3- Offerers accepts random applications
+// offerersAccepts();
+
+// 4- Rate offerers
+// ratings();
+
+// 5- Rate applicants
+// ratings();
 
 
 
