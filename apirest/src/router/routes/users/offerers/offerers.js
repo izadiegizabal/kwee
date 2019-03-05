@@ -3,6 +3,7 @@ const { checkToken, checkAdmin } = require('../../../../middlewares/authenticati
 const elastic = require('../../../../database/elasticsearch');
 const env =     require('../../../../tools/constants');
 const bcrypt = require('bcryptjs');
+const moment = require('moment')
 const axios =   require('axios')
 
 
@@ -411,7 +412,9 @@ module.exports = (app, db) => {
                                 delete lon;
                                 delete lat;
                                 body.index = 50;
-                                console.log('body: ', body);
+                                body.companySize = 0;
+                                body.year = null;
+                                body.dateVerification = null;
                                 elastic.index({
                                     index: 'offerers',
                                     type: 'offerer',
@@ -560,6 +563,7 @@ module.exports = (app, db) => {
 
     async function updateOfferer(id, req, res, next) {
         let body = req.body;
+        var elasticsearch = {};
         const offerer = await db.offerers.findOne({
             where: { userId: id }
         });
@@ -567,17 +571,29 @@ module.exports = (app, db) => {
         if (offerer) {
             delete body.root;
             delete body.dateVerification;
-            let offereruser = true;
+            let offererUser = true;
             let userOff = {};
 
             body.cif ? userOff.cif = body.cif : null;
-            body.address ? userOff.address = body.address : null;
+            if ( body.address ) {
+                userOff.address = body.address;
+                elasticsearch.address = body.address;
+            }
             body.workField ? userOff.workField = body.workField : null;
             body.premium ? userOff.premium = body.premium : null;
             body.website ? userOff.website = body.website : null;
-            body.companySize ? userOff.companySize = body.companySize : null;
-            body.year ? userOff.year = body.year : null;
-            body.status ? userOff.status = body.status : null;
+            if ( body.companySize ) {
+                userOff.companySize = body.companySize;
+                elasticsearch.companySize = body.companySize;
+            }
+            if ( body.year ) {
+                userOff.year = body.year;
+                elasticsearch.year = body.year;
+            }
+            if ( body.status ) {
+                userOff.status = body.status;
+                elasticsearch.status = body.status;
+            }
 
             if (body.password || body.email || body.name || body.snSignIn || body.img || body.bio || body.status) {
                 delete body.cif;
@@ -587,6 +603,8 @@ module.exports = (app, db) => {
                 delete body.website;
                 delete body.companySize;
                 delete body.year;
+                if ( body.name ) elasticsearch.name = body.name;
+                if ( body.email ) elasticsearch.email = body.email;
                 // Update user values
                 if (body.password) body.password = bcrypt.hashSync(body.password, 10);
                 if ( body.img && checkImg(body.img) ) {
@@ -599,31 +617,23 @@ module.exports = (app, db) => {
                         body.img = imgName;
                 }
 
-                offereruser = await db.users.update(body, {
+                offererUser = await db.users.update(body, {
                     where: { id }
                 })
-            }
-            let data = {};
-            if(!isEmpty(body) || !isEmpty(userOff)){
-
-                if(isEmpty(body)) data = userOff;
-                else if(isEmpty(userOff)) data = body;
-                else data = Object.assign(body, userOff);
-                
-                axios.post(`http://${ env.ES_URL }/offerers/offerers/${ id }/_update?pretty=true`, {
-                    doc: data
-                }).then((resp) => {
-                    // updated from elasticsearch database too
-                }).catch((error) => {
-                    console.log(error.message);
-                });
             }
                 
             let updated = await db.offerers.update(userOff, {
                 where: { userId: id }
             });
 
-            if (updated && offereruser) {
+            axios.post(`http://${ env.ES_URL }/offerers/offerer/${ id }/_update?pretty=true`, {
+                    doc: elasticsearch
+                }).then(() => {}
+                    ).catch((error) => {
+                    console.log('error elastic: ', error.message);
+            }); 
+
+            if (updated && offererUser) {
                 return res.status(200).json({
                     ok: true,
                     message: `Values updated for offerer ${ id }`,

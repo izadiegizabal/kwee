@@ -85,7 +85,6 @@ client.indices.exists({
 							email: { type: "text" },
 							status: { type: "integer", "doc_values": true },
 							address: { type: "text", "fielddata": true },
-							bio: { type: "text" },
 							index: { type: "integer", "doc_values": true },
 							companySize: { type: "integer", "doc_values": true },
 							year: { type: "date", "doc_values": true },

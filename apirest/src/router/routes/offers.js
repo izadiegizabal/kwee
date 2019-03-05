@@ -1,4 +1,4 @@
-const { tokenId, logger, pagination, prepareOffersToShow } = require('../../shared/functions');
+const { tokenId, logger, pagination, prepareOffersToShow, saveLogES } = require('../../shared/functions');
 const { checkToken } = require('../../middlewares/authentication');
 const elastic = require('../../database/elasticsearch');
 const env =     require('../../tools/constants');
@@ -368,7 +368,7 @@ module.exports = (app, db) => {
                         where: { id, fk_offerer }
                     }).then(result => {
                         if ( result ) {
-                            axios.post(`http://${ env.ES_URL }/offers/offers/${ id }/_update?pretty=true`, {
+                            axios.post(`http://${ env.ES_URL }/offers/offer/${ id }/_update?pretty=true`, {
                                 doc: updates
                             }).then((resp) => {
                                 // updated from elasticsearch database too
