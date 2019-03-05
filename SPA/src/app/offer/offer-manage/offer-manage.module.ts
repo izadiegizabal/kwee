@@ -11,13 +11,15 @@ import {StoreModule} from '@ngrx/store';
 import {OfferManageReducer} from './store/offer-manage.reducers';
 import {EffectsModule} from '@ngrx/effects';
 import {OfferManageEffects} from './store/offer-manage.effects';
+import {OfferSelectionProcessComponent} from './offer-selection-process/offer-selection-process.component';
 
 @NgModule({
   declarations: [
     OfferManageComponent,
     OfferManageCandidateComponent,
     OfferManageBusinessComponent,
-    OfferManageTabComponent
+    OfferManageTabComponent,
+    OfferSelectionProcessComponent
   ],
   imports: [
     SharedModule,
