@@ -39,8 +39,8 @@ const warning = chalk.keyword('orange');
 ////////////////////////////////////////
 
 const url = 'https://www.kwee.ovh/api';
-const _url = 'http://localhost:3000';
-const __url = 'http://h203.eps.ua.es/api';
+const furl = 'http://localhost:3000';
+const _url = 'http://h203.eps.ua.es/api';
 
 let obj = 'No file';
 let offers = 'No file';
@@ -313,8 +313,8 @@ async function offerersAndOffers( path ) {
 	
 			})
 			.then( async res => { 
-				log(i + " " +success("SignUp Success"));
-				console.log(res.data) 
+				log(i + " " + res.data.message);
+				//console.log(res.data) 
 				
 				// login bussiness
 				await instance.post('/login',{
@@ -322,7 +322,7 @@ async function offerersAndOffers( path ) {
 					"password": e.password
 				})
 				.then( async loginSuccess => {
-					log(" " + success("Login Success"))
+					log(" " + success(loginSuccess.data.message))
 					let token = loginSuccess.data.token;
 
 					// create random number of offers
@@ -361,24 +361,24 @@ async function offerersAndOffers( path ) {
 							}
 						})
 						.then( offerCreated => {
-							log(" " + success("Offer created"));
+							log(" " + offerCreated.data.message);
 							// console.log(offerCreated);
 						})
 						.catch( offerError => {
-							log(error("Error creating offer: ") + offerError.message);
+							log(error("Error creating offer: ") + offerError.response.data.message);
 						})
 
 					});
 					console.log(warning("-----"));
 				})
 				.catch(login => {
-					log(error("Login error: ")+login.message)
+					log(error("Login error: ")+login.response.data.message)
 				})
 
 				
 			})
 			.catch(e => {
-				log(error("SignUp error: ")+e.message);
+				log(error("SignUp error: ")+e.response.data.message);
 			});
 	
 
