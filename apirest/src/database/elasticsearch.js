@@ -99,6 +99,29 @@ client.indices.exists({
 });
 
 client.indices.exists({
+	index: 'logs'
+}).then(function (exists) {
+  	if (!exists) {
+		client.indices.create({
+			index: "logs",
+			body: {
+				mappings: {
+					log: {
+						properties: {
+							action: { type: "keyword", "doc_values": true },
+							actionToRoute: { type: "keyword", "doc_values": true },
+							date: { type: "date", "doc_values": true },
+							hour: { type: "date", "format" : "HH:mm:ss", "doc_values": true },
+							status: { type: "boolean", "doc_values": true },
+						},
+					},
+				},
+			},
+		})
+  	} 
+});
+
+client.indices.exists({
 	index: 'offers'
 }).then(function (exists) {
   	if (!exists) {

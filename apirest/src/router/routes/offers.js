@@ -14,6 +14,7 @@ module.exports = (app, db) => {
     app.get('/offers/search', async(req, res, next) => {
 
         try {
+            saveLogES('GET', 'offers/search');
             // if req.query.keywords search OR (search)
             // rest of req.query.params search AND (filter)
             let query = req.query;
@@ -201,6 +202,7 @@ module.exports = (app, db) => {
     app.get('/offers', async(req, res, next) => {
         try {
             await logger.saveLog('GET', 'offers', null, res);
+            saveLogES('GET', 'offers');
 
             var offers;
 
@@ -247,6 +249,7 @@ module.exports = (app, db) => {
         const id = req.params.id;
 
         try {
+            saveLogES('GET', 'offer/id');
             offer = await db.offers.findOne({
                 where: { id }
             });
@@ -278,6 +281,7 @@ module.exports = (app, db) => {
         let body = req.body
 
         try {
+            saveLogES('POST', 'offer');
             let id = tokenId.getTokenId(req.get('token'));
             body.fk_offerer = id;
 
@@ -353,6 +357,7 @@ module.exports = (app, db) => {
 
         try {
             let fk_offerer = tokenId.getTokenId(req.get('token'));
+            saveLogES('PUT', 'offer/id');
 
             let offerToUpdate = await db.offers.findOne({
                 where: {id}
@@ -399,6 +404,7 @@ module.exports = (app, db) => {
 
         try {
             let fk_offerer = tokenId.getTokenId(req.get('token'));
+            saveLogES('DELETE', 'offer/id');
 
             axios.delete(`http://${ env.ES_URL }/offers/offers/${ id }`)
                 .then((res) => {

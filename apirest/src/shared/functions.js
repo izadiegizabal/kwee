@@ -1,6 +1,7 @@
 const auth          = require('../middlewares/auth/auth');
 const env           = require('../tools/constants.js');
 const Log           = require('../models/logs');
+const elastic       = require('../database/elasticsearch')
 const jwt           = require('jsonwebtoken');
 const nodemailer    = require('nodemailer');
 const moment        = require('moment');
@@ -416,6 +417,27 @@ function prepareOffersToShow(offers, offersShow, user){
     return offersShow;
 }
 
+function saveLogES(action, actionToRoute){
+    moment.locale('es');
+
+    let body = {
+        action, 
+        actionToRoute,
+        date: moment().format('YYYY-MM-DD'),
+        hour: moment().format('HH:mm:ss'),
+    }
+
+    elastic.index({
+        index: 'logs',
+        type: 'log',
+        body
+    }, function (err, resp, status) {
+        if ( err ) {
+            console.log(err)
+        }
+    });
+}
+
 
 module.exports = {
     tokenId,
@@ -429,5 +451,6 @@ module.exports = {
     checkImg,
     deleteFile,
     prepareOffersToShow,
-    isEmpty
+    isEmpty,
+    saveLogES
 }

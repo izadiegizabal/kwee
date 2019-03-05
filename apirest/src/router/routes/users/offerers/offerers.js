@@ -1,4 +1,4 @@
-const { tokenId, logger, sendVerificationEmail, pagination, uploadImg, checkImg, deleteFile, prepareOffersToShow, isEmpty } = require('../../../../shared/functions');
+const { tokenId, logger, sendVerificationEmail, pagination, uploadImg, checkImg, deleteFile, prepareOffersToShow, isEmpty, saveLogES } = require('../../../../shared/functions');
 const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
 const elastic = require('../../../../database/elasticsearch');
 const env =     require('../../../../tools/constants');
@@ -14,6 +14,8 @@ module.exports = (app, db) => {
 
     app.post('/offerers/search', async(req, res, next) => {
         try {
+            saveLogES('POST', 'offerers/search');
+
             let query = req.query;
             let page = Number(query.page);
             let limit = Number(query.limit);
@@ -122,6 +124,7 @@ module.exports = (app, db) => {
     // GET all users offerers
     app.get('/offerers', async(req, res, next) => {
         try {
+            saveLogES('GET', 'offerers');
             await logger.saveLog('GET', 'offerers', null, res);
 
             var attributes = {
@@ -213,6 +216,7 @@ module.exports = (app, db) => {
         
         try {
             await logger.saveLog('GET', 'offerer', id, res);
+            saveLogES('GET', 'offerer/id/offers');
             
             let message = ``;
 
@@ -315,6 +319,7 @@ module.exports = (app, db) => {
         const id = req.params.id;
         try {
             await logger.saveLog('GET', 'offerer', id, res);
+            saveLogES('GET', 'offerer/id');
 
             let user = await db.users.findOne({
                 where: { id }
@@ -378,6 +383,7 @@ module.exports = (app, db) => {
 
         try {
             await logger.saveLog('POST', 'offerer', null, res);
+            saveLogES('POST', 'offerer');
 
             const body = req.body;
             let user = {};
@@ -444,6 +450,7 @@ module.exports = (app, db) => {
 
         try {
             let logId = await logger.saveLog('PUT', 'offerer', null, res);
+            saveLogES('PUT', 'offerer');
 
             let id = tokenId.getTokenId(req.get('token'));
             logger.updateLog(logId, true, id);
@@ -472,6 +479,7 @@ module.exports = (app, db) => {
             let id = tokenId.getTokenId(req.get('token'));
             
             await logger.saveLog('DELETE', 'offerer', id, res);
+            saveLogES('DELETE', 'offerer');
 
             let offerer = await db.offerers.findOne({
                 where: { userId: id }
@@ -512,6 +520,7 @@ module.exports = (app, db) => {
 
         try {
             await logger.saveLog('DELETE', 'offerer', id, res);
+            saveLogES('DELETE', 'offerer/id');
 
             let offerer = await db.offerers.findOne({
                 where: { userId: id }
