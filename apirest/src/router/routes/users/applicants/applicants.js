@@ -774,6 +774,13 @@ module.exports = (app, db) => {
                 where: { userId: id }
             });
 
+            axios.post(`http://${ env.ES_URL }/applicants/applicant/${ applicant.userId }/_update?pretty=true`, {
+                            doc: elasticsearch
+                        }).then(() => {}
+                            ).catch((error) => {
+                            console.log('error elastic: ', error.message);
+                    }); 
+
             body.educations ? updateExperiences(applicant, body.experiences, elasticsearch, next) : null;
             body.educations ? updateEducations(applicant, body.educations, elasticsearch, next) : null;
             body.languages ? updateLanguages(applicant, body.languages, elasticsearch, next) : null;
