@@ -44,6 +44,7 @@ const _url = 'http://h203.eps.ua.es/api';
 
 let obj = 'No file';
 let offers = 'No file';
+let applicants = 'No file'
 
 let headersOP = {  
     "content-type": "application/json",
@@ -283,7 +284,7 @@ function randomInt(min,max) // min and max included
     return Math.floor(Math.random()*(max-min+1)+min);
 }
 
-async function offerersAndOffers( path ) {
+async function offerersAndOffers() {
 	// offerers JSON
 	obj = getFileJSON('./CreateOfferers.json');
 	// offers JSON
@@ -380,13 +381,44 @@ async function offerersAndOffers( path ) {
 			.catch(e => {
 				log(error("SignUp error: ")+e.response.data.message);
 			});
-	
-
-		
 	});
+}
 
+async function applicantsAndApplications() {
+	applicants = getFileJSON('./tests/applicants.json');
 
+	await asyncForEach( applicants, async (element, i) => {
+		// signUp applicant
+		await instance.post('/applicant', {
+			// body
+			"name": element.name,
+			"password": element.password,
+			"email": element.email,
+			"city": element.city,
+			"dateBorn": element.dateBorn,
+			"premium": element.premium,
+			"rol": element.rol
+		})
+		.then( async signUpSuccess => {
+			// signUp applicant successful
+			log(i + " " + signUpSuccess.data.message);
+			
+			// login applicant
+			await instance.post('/login', {
+				"email": element.email,
+				"password": element.password
+			})
+			.then( loginSuccess => {
+				log(" " + success(loginSuccess.data.message));
+				// login successful
 
+				let token = loginSuccess.data.token;
+
+				// apply to offer random
+
+			});
+		})
+	})
 }
 
 ////////////////////////////////////////// EXECUTE CODE
@@ -403,7 +435,7 @@ var instance = axios.create({
 offerersAndOffers();
 
 // 2- Applicants apply to random offers
-// applicantsAndApplications();
+applicantsAndApplications();
 
 // 3- Offerers accepts random applications
 // offerersAccepts();
