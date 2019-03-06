@@ -29,15 +29,15 @@
         </mat-form-field>
 
         <h3>Work Location</h3>
-        <section fxLayout="column">
-          <mat-checkbox *ngFor="let location of workLocations">
+        <section fxLayout="column" *ngFor="let location of workLocations; index as i" >
+          <mat-checkbox formControlName="workLocation{{i}}">
             {{location.viewValue}}
           </mat-checkbox>
         </section>
 
         <h3 style="margin-top: 16px">Job Type</h3>
-        <section fxLayout="column">
-          <mat-checkbox *ngFor="let type of jobTypes">
+        <section fxLayout="column" *ngFor="let type of jobTypes; index as i">
+          <mat-checkbox formControlName="jobType{{i}}">
             {{type.viewValue}}
           </mat-checkbox>
         </section>
@@ -63,8 +63,8 @@
         </div>
 
         <h3>Experience Level</h3>
-        <section fxLayout="column">
-          <mat-checkbox *ngFor="let level of experienceLevels">
+        <section fxLayout="column" *ngFor="let level of experienceLevels; index as i">
+          <mat-checkbox formControlName="seniority{{i}}">
             {{level.viewValue}}
           </mat-checkbox>
         </section>
@@ -123,7 +123,8 @@
       </div>
     </div>
     <div fxLayout="row" fxLayoutAlign="end end">
-      <mat-paginator *ngIf="(offersState | async).offers && (offersState | async).offers.data"
+      <mat-paginator #paginator
+                     *ngIf="(offersState | async).offers && (offersState | async).offers.data"
                      (page)="pageEvent = $event; changePage();"
                      [length]="(offersState | async).offers.total"
                      [pageSizeOptions]="pageSizeOptions"
