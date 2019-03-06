@@ -271,7 +271,7 @@ class TResourceShader extends TResource {
 
 async function loadJSON(filename){
 
-    let host = "http://localhost:4200";
+    let host = "https://kwee.ovh";
     let path = '/assets/assets/JSON/';
     let url = `${host + path + filename}`;
     
@@ -291,7 +291,7 @@ async function loadJSON(filename){
 
 async function load(filename){
 
-    let host = "http://localhost:4200";
+    let host = "https://kwee.ovh";
     let path = '/assets/engine/shaders/';
     let url = `${host + path + filename}`;
     
