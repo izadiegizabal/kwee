@@ -361,7 +361,7 @@ class Algorithm {
             let total = 0;
             let arr = [];
             let toUpdate = 0;
-            let offers = await db.offers.findAndCountAll({
+            await db.offers.findAndCountAll({
                 where: {
                     fk_applicant: id,
                     // status: 0, /* applications accepted */
@@ -371,7 +371,7 @@ class Algorithm {
                     'currentApplications'
                 ]
             })
-            .then( result => {
+            .then( async offers => {
                 for(let offer in offers) {
                     arr[i] = offer.currentApplications / maxApplicants;
                 }
