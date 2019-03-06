@@ -303,6 +303,8 @@ export class CandidateHomeComponent implements OnInit {
       params: query
     }));
 
-    // this.paginator.firstPage();
+    if (this.paginator) {
+      this.paginator.firstPage();
+    }
   }
 }
