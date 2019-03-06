@@ -108,4 +108,6 @@ export class OfferSelectionProcessComponent implements OnInit {
     this.isLang--;
   }
 
+  onSearch($event: string) {
+  }
 }
