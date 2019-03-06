@@ -103,7 +103,7 @@
                fxLayoutGap="8px"
                fxShow.gt-xs>
             <a (click)="goEdit()"
-               *ngIf="(offerState | async).offer.fk_offerer === this.id; else apply">
+               *ngIf="(offerState | async).offer.fk_offerer === this.id ; else apply">
               <button
                 color="accent"
                 mat-raised-button
