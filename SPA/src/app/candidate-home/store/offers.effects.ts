@@ -21,7 +21,7 @@ export class OffersEffects {
         const apiEndpointUrl = environment.apiUrl + 'offers/search?page=' + payload.page + '&limit=' + payload.limit + payload.params;
         // const token = authState.token;
         // const headers = new HttpHeaders().set('token', token);
-        console.log(apiEndpointUrl);
+        // console.log(apiEndpointUrl);
         return this.httpClient.get(apiEndpointUrl).pipe(
           map((res: {
             ok: boolean,

@@ -6,7 +6,7 @@ import * as fromOffer from './store/offer.reducers';
 import {Observable} from 'rxjs';
 import {OfferEffects} from './store/offer.effects';
 import {filter} from 'rxjs/operators';
-
+import {Location} from '@angular/common';
 
 import {ContractType, JobDurationUnit, OfferStatus, SalaryFrequency, SeniorityLevel, WorkLocationType} from '../../../models/Offer.model';
 import {getTimePassed, getUrlfiedString} from '../../shared/utils.service';
@@ -27,7 +27,8 @@ export class OfferDetailComponent implements OnInit {
   constructor(private store$: Store<fromApp.AppState>,
               private activatedRoute: ActivatedRoute,
               private offerEffects$: OfferEffects,
-              private router: Router) {
+              private router: Router,
+              private location: Location) {
   }
 
   ngOnInit() {
@@ -129,6 +130,11 @@ export class OfferDetailComponent implements OnInit {
   goEdit() {
     this.router.navigate(['/offer', this.offerId, 'edit']);
   }
+
+  backClicked() {
+    this.location.back();
+  }
+
 
 
 }
