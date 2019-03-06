@@ -14,36 +14,17 @@ class Algorithm {
         let role = checkRole( id );
 
         switch(role){
-            case 'applicant':{
-                // 1- get averages
-                await db.applicants.findOne(
-                    {
-                        where:
-                        {
-                           id 
-                        },
-                        attributes: [
-                            'nOpinions',
-                            'efficiencyAVG',
-                            'skillsAVG',
-                            'punctualityAVG',
-                            'hygieneAVG',
-                            'teamworkAVG'
-                        ]
-                    }
-                );
-                // 2- get ratio
+            case 'applicant':
 
-                break;
-            }
-            case 'offerer':{
+            break;
+            case 'offerer':
 
-                break;
-            }
+            break;
         }
         
+        // 1- get averages
         
-
+        // 2- get ratio
         
         // 3- get profile
         
@@ -70,120 +51,17 @@ class Algorithm {
             break;
         }
 
-       
-
-        // Applicants average
-        async function averagesApplicants( id ) {
-                
-            let efficiency = [];
-            let skills = [];
-            let punctuality = [];
-            let hygiene = [];
-            let teamwork = [];
-
-            // 1- find Offers ID: closed --> get IDs
-            let offersClosed = await db.offers.findAll({
-                where: {
-                    // status: '1' /* Closed */
-                },
-                attributes: [
-                    'id'
-                ]
-            });
-            //return offers;
+        function averagesApplicants( id ) {
             
-            // 2- find applications: status = accepted & offerId = id --> get IDs
-            // Get ID application of offersclosed and application accepted
-            for(let offerClosed in offersClosed){
-
-                let offerClosedID = offersClosed[offerClosed].id;
-
-                let applicationsAccepted = await db.applications.findAll({
-                    where: {
-                        // status: '0' /* status Accepted */,
-                        fk_offer: offerClosedID,
-                        fk_applicant: id
-                    },
-                    attributes: [
-                        'id'
-                    ]
-                });
-                if( applicationsAccepted ) {
-                    // has accepted applications
-                    // --> find ratingsID
-                    for(let applicationAccepted in applicationsAccepted) {
-                        
-                        let applicationAcceptedID = applicationsAccepted[applicationAccepted].id;
-                        
-                        let ratingId = await db.ratings.findOne({
-                            where: {
-                                fk_application: applicationAcceptedID
-                            },
-                            attributes: [
-                                'id'
-                            ]
-                        });
-                        console.log(ratingId.id);
-                        if( ratingId ) {
-                            let valoration = await db.rating_applicants.findOne({
-                                where: {
-                                    ratingId: ratingId.id
-                                },
-                                attributes: [
-                                    'efficiency',
-                                    'skills',
-                                    'punctuality',
-                                    'hygiene',
-                                    'teamwork'
-                                ]
-                            });
-                            
-                            efficiency.push(valoration.efficiency);
-                            skills.push(valoration.skills);
-                            punctuality.push(valoration.punctuality);
-                            hygiene.push(valoration.hygiene);
-                            teamwork.push(valoration.teamwork);
-
-                            totalOpinions++;
-
-                        }
-                    }
-                }
+        }
+        
+        function _averagesOfferers( id ) {
+            let ratings = db.rating_offerers.findAll({attributes: ['ratingId']});
+            for(let rating in ratings) {
 
             }
-            
-            console.log("totalOpinions: " + totalOpinions);
-
-            efficiency = await average(efficiency);
-            skills = await average(skills);
-            punctuality = await average(punctuality);
-            hygiene = await average(hygiene);
-            teamwork = await average(teamwork);
-
-            // todo 
-
-            // UPDATE AVERAGES
-            const values = await db.applicants.update(
-                {
-                    efficiencyAVG: efficiency,
-                    skillsAVG: skills,
-                    punctualityAVG: punctuality,
-                    hygieneAVG: hygiene,
-                    teamworkAVG: teamwork,
-                    nOpinions: totalOpinions
-                },
-                {
-                    where: {
-                        userId: id
-                    }
-                }
-            );
-
-            return values;
-
         }
 
-        // Offerers average
         async function averagesOfferers(id) {
             
             let salary = [];
@@ -273,25 +151,28 @@ class Algorithm {
             services = await average(services);
             installations = await average(installations);
 
+            let values = {
+                salary,
+                partners,
+                environment,
+                services,
+                installations
+            }
+
             // todo 
 
-            // UPDATE AVERAGES
-            const values = await db.offerers.update(
-                {
-                    salaryAVG: salary,
-                    partnersAVG: partners,
-                    environmentAVG: environment,
-                    servicesAVG: services,
-                    installationsAVG: installations,
-                    nOpinions: totalOpinions
-                },
-                {
-                    where: {
-                        userId: id
-                    }
+            // calculate average
+            async function average(arr) {
+                let accumulated = 0;
+                for(let i=0; i<arr.length; i++) {
+                    accumulated += arr[i];
                 }
-            );
+                accumulated = accumulated / arr.length;
 
+                return accumulated;
+            }
+            // UPDATE AVERAGES
+            
             return values;
         }
     }
@@ -315,44 +196,7 @@ class Algorithm {
         // and update
 
         async function ratioApplicants(id) {
-            // get applications ok
-            let applications = 0;
-            let applicationsOK = 0;
-            await db.applications.findAndCountAll({
-                where: {
-                    fk_applicant: id,
-                    // status: 0, /* applications accepted */
-                }
-            })
-            .then( result => {
-                applicationsOK = result.count;
-            });
-            // get total
-            await db.applications.findAndCountAll({
-                where: {
-                    fk_applicant: id
-                }
-            })
-            .then( result => {
-                applications = result.count;
-            });
-            // check GROUP BY !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            // calculate ratio
-            let total = applicationsOK / applications;
             
-            // update
-            let values = await db.applicants.update(
-                {
-                    where: {
-                        id
-                    }
-                },
-                {
-                    ratioSuccess: total
-                }
-            );
-
-            return values;
         }
 
         async function ratioOfferers(id) {
@@ -390,7 +234,6 @@ class Algorithm {
                 }
             );
 
-            return values;
         }
     }
 
@@ -401,10 +244,6 @@ class Algorithm {
     async indexProfileUpdate( id ) {
         // update profile %
     }
-
-    //////////////////////////
-    // Helper functions
-    //////////////////////////
 
     /**
      * Check user role (applicant or offerer)
@@ -437,17 +276,6 @@ class Algorithm {
             }
 
         }
-    }
-
-    // calculate average
-    async average(arr) {
-        let accumulated = 0;
-        for(let i=0; i<arr.length; i++) {
-            accumulated += arr[i];
-        }
-        accumulated = accumulated / arr.length;
-
-        return accumulated;
     }
 }
 
