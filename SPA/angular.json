@@ -45,7 +45,7 @@
             ],
             "scripts": [
               "./node_modules/cookieconsent/build/cookieconsent.min.js",
-              "./node_modules/gl-matrix/gl-matrix.min.js"
+              "./node_modules/gl-matrix/gl-matrix-min.js"
             ]
           },
           "configurations": {
