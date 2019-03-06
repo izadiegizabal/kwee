@@ -1,3 +1,206 @@
-<p>
-  offer-selection-process works!
-</p>
+<div fxLayout="column">
+  <div fxFlex="100%" style="margin: 8px 0 32px 16px">
+    <h2 class="mat-h1">Select the candidate that suits most the job</h2>
+  </div>
+  <mat-sidenav-container
+    fxLayout="column">
+
+    <mat-sidenav #drawer
+                 [autoFocus]="false"
+                 [mode]="!isMobile() ? 'side' : 'over'"
+                 [opened]="!isMobile()"
+                 class="mat-typography">
+
+      <div class="container">
+        <h2>Filters</h2>
+        <form [formGroup]="filters" fxLayout="column">
+
+          <h3>Minimum Index</h3>
+          <section fxLayout="column">
+            <mat-slider formControlName="minIndex" max="100" min="0" thumbLabel></mat-slider>
+          </section>
+
+          <h3>Minimum Amount of Ratings</h3>
+          <section fxLayout="column">
+            <mat-slider formControlName="minRatings" max="100" min="0" thumbLabel></mat-slider>
+          </section>
+
+          <h3>Required Skills</h3>
+          <div fxLayout="row" class="multipleInputDiv">
+            <div formArrayName="skills" fxFlex="80%" fxLayout="column" fxLayoutGap="-16px">
+              <mat-form-field *ngFor="let skill of formSkills.controls; let i =index;">
+                <input (keyup.enter)='addSkill()'
+                       [formControlName]="i"
+                       class="form-control"
+                       id="{{'skill'+i}}"
+                       matInput type="text">
+
+
+                <button (click)="deleteSkill(i)"
+                        *ngIf="this.formSkills.controls[i].value && this.formSkills.length-1!=i"
+                        aria-label="Clear"
+                        mat-button mat-icon-button matSuffix type="button">
+                  <mat-icon>close</mat-icon>
+                </button>
+
+                <button (click)="deleteSkill(i); addSkill()"
+                        *ngIf="this.formSkills.controls[i].value && this.formSkills.length-1==i" aria-label="Clear"
+                        mat-button mat-icon-button matSuffix type="button">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </mat-form-field>
+            </div>
+            <div class="divBtn" fxLayout="column" fxLayoutAlign="end">
+              <button (click)=" addSkill()" mat-button type="button">
+                Add
+              </button>
+            </div>
+          </div>
+
+          <h3>Required Languages</h3>
+          <div fxLayout="row" class="multipleInputDiv">
+            <div formArrayName="languages" fxFlex="80%" fxLayout="column" fxLayoutGap="-16px">
+              <mat-form-field *ngFor="let language of formLanguages.controls; let i =index;">
+                <input (keyup.enter)="addLang(i)"
+                       [formControlName]="i"
+                       class="form-control"
+                       id="{{'language'+i}}"
+                       matInput type="text">
+
+
+                <button (click)="delLang(i)"
+                        *ngIf="this.formLanguages.controls[i].value && this.formLanguages.length-1!=i"
+                        aria-label="Clear"
+                        mat-button mat-icon-button matSuffix type="button">
+                  <mat-icon>close</mat-icon>
+                </button>
+
+                <button (click)="delLang(i); addLang()"
+                        *ngIf="this.formLanguages.controls[i].value && this.formLanguages.length-1==i"
+                        aria-label="Clear"
+                        mat-button mat-icon-button matSuffix type="button">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </mat-form-field>
+            </div>
+            <div class="divBtn" fxLayout="column" fxLayoutAlign="end">
+              <button (click)=" addLang()" mat-button type="button">
+                Add
+              </button>
+            </div>
+          </div>
+
+          <h3 style="margin-top: 16px">Work Fields</h3>
+          <section fxLayout="column">
+            <mat-checkbox *ngFor="let workfield of workfields">
+              {{workfield.viewValue}}
+            </mat-checkbox>
+          </section>
+
+          <h3 style="margin-top: 16px">Profile Completion</h3>
+          <section fxLayout="column">
+            <mat-checkbox>
+              Complete Profiles
+            </mat-checkbox>
+            <mat-checkbox>
+              With Education
+            </mat-checkbox>
+            <mat-checkbox>
+              With Experience
+            </mat-checkbox>
+            <mat-checkbox>
+              With Languages
+            </mat-checkbox>
+            <mat-checkbox>
+              With Skills
+            </mat-checkbox>
+          </section>
+
+          <h3 style="margin-top: 16px">Age of the Candidate</h3>
+          <div fxLayout="row" fxFlex="100%" class="ageInputs" fxLayoutGap="4px">
+            <p>Between </p>
+            <mat-form-field fxFlex="40px">
+              <input matInput type="number" formControlName="minAge">
+            </mat-form-field>
+            <p> and </p>
+            <mat-form-field fxFlex="40px">
+              <input matInput type="number" formControlName="maxAge">
+            </mat-form-field>
+            <p>years old.</p>
+          </div>
+
+          <mat-form-field>
+            <input formControlName="location" matInput placeholder="Location" type="text">
+            <button (click)="filters.controls['location'].reset('')" *ngIf="filters.controls['location'].value"
+                    aria-label="Clear" mat-button
+                    mat-icon-button
+                    matSuffix>
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-select formControlName="distance" placeholder="Distance">
+              <mat-option *ngFor="let distance of distances" [value]="distance.value">
+                {{distance.viewValue}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+        </form>
+
+        <div fxLayout="row" fxLayoutAlign="end end" style="margin-top: 16px" fxHide.gt-sm>
+          <button mat-raised-button color="primary" (click)="applyFilters()">Apply Filters</button>
+        </div>
+      </div>
+
+    </mat-sidenav>
+
+    <mat-sidenav-content
+      fxFlex="96%" fxFlex.gt-sm="75%"
+      fxLayout="column"
+      fxLayoutAlign="start stretch"
+      fxLayoutGap="16px" fxLayoutGap.gt-sm="32px">
+      <div
+        fxLayout="row"
+        fxLayoutAlign="center"
+        fxLayoutGap="8px">
+        <app-searchbar
+          fxFlex="40%" fxFlex.lt-lg="60%" (search)="onSearch($event)">
+        </app-searchbar>
+        <app-orderby-button style="padding-top: 4px"></app-orderby-button>
+        <div style="padding-top: 4px">
+          <button color="primary"
+                  fxHide.gt-sm
+                  mat-raised-button>
+            <mat-icon (click)="drawer.toggle()" aria-label="Open filters" svgIcon="filter-list"></mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- ALL ENROLLED CANDIDATES -->
+      <div>
+
+      </div>
+
+      <!-- PRESELECTION -->
+
+      <!--<div *ngIf="(adminState | async).candidates" fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">-->
+      <!--<app-candidate-preview-card *ngFor="let user of (adminState | async).candidates.data;" [user]="user">-->
+      <!--</app-candidate-preview-card>-->
+      <!--</div>-->
+
+      <!--<div *ngIf="!(adminState | async).candidates" fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">-->
+      <!--<h4 class="mat-h3">No results found.</h4>-->
+      <!--<p class="mat-typography">Your search returned no results. Try shortening or rephrasing your search.</p>-->
+      <!--</div>-->
+
+
+      <!--<mat-paginator *ngIf="(adminState | async).candidates" (page)="pageEvent = $event;  changePage();"-->
+      <!--[length]="(adminState | async).candidates.total"-->
+      <!--[pageSizeOptions]="pageSizeOptions"-->
+      <!--[pageSize]="pageSize">-->
+      <!--</mat-paginator>-->
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

@@ -12,6 +12,9 @@ import {OfferManageReducer} from './store/offer-manage.reducers';
 import {EffectsModule} from '@ngrx/effects';
 import {OfferManageEffects} from './store/offer-manage.effects';
 import {OfferSelectionProcessComponent} from './offer-selection-process/offer-selection-process.component';
+import {ReactiveFormsModule} from '@angular/forms';
+import {CandidatePreviewCardModule} from '../../search-users/search-candidates/candidate-preview-card/candidate-preview-card.module';
+import {SearchbarModule} from '../../shared/searchbar/searchbar.module';
 
 @NgModule({
   declarations: [
@@ -23,6 +26,9 @@ import {OfferSelectionProcessComponent} from './offer-selection-process/offer-se
   ],
   imports: [
     SharedModule,
+    ReactiveFormsModule,
+    CandidatePreviewCardModule,
+    SearchbarModule,
     OfferManageRoutingModule,
     OfferPreviewCardModule,
     StoreModule.forFeature('OfferManage', OfferManageReducer),

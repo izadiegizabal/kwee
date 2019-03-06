@@ -109,6 +109,7 @@ export class MaterialAngularModule {
     matIconRegistry.addSvgIcon('mail', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-mail.svg'));
     matIconRegistry.addSvgIcon('archive', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-archive.svg'));
     matIconRegistry.addSvgIcon('send', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-send.svg'));
+    matIconRegistry.addSvgIcon('star', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-star_rate.svg'));
 
     // Branding icons
     matIconRegistry.addSvgIcon('kwee-logo', domSanitizer.bypassSecurityTrustResourceUrl('assets/branding/logo-kwee-light.svg'));

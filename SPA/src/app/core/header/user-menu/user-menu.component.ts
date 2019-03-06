@@ -4,6 +4,7 @@ import * as fromApp from '../../../store/app.reducers';
 import {select, Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
 import * as fromAuth from '../../../auth/store/auth.reducers';
+import {getUrlfiedString} from '../../../shared/utils.service';
 
 @Component({
   selector: 'app-user-menu',
@@ -39,6 +40,6 @@ export class UserMenuComponent implements OnInit {
   }
 
   urlfyUser() {
-    return this.username.toLowerCase().replace(/ /g, '-');
+    return getUrlfiedString(this.username);
   }
 }

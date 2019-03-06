@@ -12,18 +12,17 @@ export class AuthTokenGuard implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):
     Observable<boolean> | boolean {
 
-    const authedStateObservable = this.auth.isAuthenticated();
-    authedStateObservable.subscribe(
+    let isAuthed = false;
+
+    this.auth.isAuthenticated().subscribe(
       (authed) => {
         if (authed) {
-          return true;
+          isAuthed = true;
         } else {
           this.router.navigate(['signin']);
-          return false;
         }
       }
     );
-
-    return authedStateObservable;
+    return isAuthed;
   }
 }
