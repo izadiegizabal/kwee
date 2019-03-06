@@ -105,12 +105,15 @@ export class SignupOffererComponent implements OnInit {
       'password2': new FormControl(null, Validators.required),
       'workField': new FormControl(null, Validators.required),
       'address1': new FormControl(null, Validators.required),
-      'address2': new FormControl(null),
       'profile': new FormControl(null)
     });
 
     this.thirdFormGroup = this._formBuilder.group({
       'about': new FormControl(),
+      'twitter': new FormControl(null),
+      'linkedIn': new FormControl(null),
+      'github': new FormControl(null),
+      'telegram': new FormControl(null),
       'profile': new FormControl(),
       'website': new FormControl(),
       'companySize': new FormControl(),
@@ -142,18 +145,58 @@ export class SignupOffererComponent implements OnInit {
       }
     });
 
-    this.secondFormGroup.controls['address1'].valueChanges.subscribe(value => {
+    /*this.secondFormGroup.controls['address1'].valueChanges.subscribe(value => {
       if (this.secondFormGroup.controls['address1'].value) {
         const aux = this.secondFormGroup.controls['address1'].value;
         if (aux.second) {
           this.secondFormGroup.controls['address2'].setValue(aux.second);
         }
       }
-    });
+    });*/
 
     this.thirdFormGroup.controls['year'].setValidators([
       SignupOffererComponent.maxMinDate.bind(this.thirdFormGroup),
     ]);
+
+
+    this.thirdFormGroup.controls['twitter'].valueChanges.subscribe(() => {
+      const value = <String>this.thirdFormGroup.controls['twitter'].value;
+      if (value.includes('twitter.com/')) {
+        const arr = value.split('twitter.com/');
+        this.thirdFormGroup.controls['twitter'].setValue(arr[arr.length - 1]);
+      }
+    });
+
+    this.thirdFormGroup.controls['linkedIn'].valueChanges.subscribe(() => {
+      let value = this.thirdFormGroup.controls['linkedIn'].value;
+      if (value.includes('linkedin.com/in/')) {
+        let arr = value.split('linkedin.com/in/');
+        value = arr[arr.length - 1];
+        arr = value.split('/');
+        value = arr[0];
+        this.thirdFormGroup.controls['linkedIn'].setValue(value);
+      }
+    });
+
+    this.thirdFormGroup.controls['github'].valueChanges.subscribe(() => {
+      const value = <String>this.thirdFormGroup.controls['github'].value;
+      if (value.includes('github.com/')) {
+        const arr = value.split('github.com/');
+        this.thirdFormGroup.controls['github'].setValue(arr[arr.length - 1]);
+      }
+    });
+
+    this.thirdFormGroup.controls['telegram'].valueChanges.subscribe(() => {
+      const value = <String>this.thirdFormGroup.controls['telegram'].value;
+      if (value.includes('telegram.me/')) {
+        const arr = value.split('telegram.me/');
+        this.thirdFormGroup.controls['telegram'].setValue(arr[arr.length - 1]);
+      }
+      if (value.includes('t.me/')) {
+        const arr = value.split('t.me/');
+        this.thirdFormGroup.controls['telegram'].setValue(arr[arr.length - 1]);
+      }
+    });
 
   }
 
@@ -228,6 +271,10 @@ export class SignupOffererComponent implements OnInit {
 
     const update = {
       'about': this.thirdFormGroup.controls['about'].value,
+      'twitter': this.thirdFormGroup.controls['twitter'].value,
+      'linkedIn': this.thirdFormGroup.controls['linkedIn'].value,
+      'github': this.thirdFormGroup.controls['github'].value,
+      'telegram': this.thirdFormGroup.controls['telegram'].value,
       'website': this.thirdFormGroup.controls['website'].value,
       'companySize': this.thirdFormGroup.controls['companySize'].value,
       'year': this.thirdFormGroup.controls['year'].value
@@ -241,10 +288,10 @@ export class SignupOffererComponent implements OnInit {
       update
       , options)
       .subscribe((data: any) => {
-        console.log(data);
+        // console.log(data);
         this.router.navigate(['/']);
       }, (error: any) => {
-        console.log(error);
+        // console.log(error);
         /*if (!this.dialogShown) {
           this.dialog.open(DialogErrorComponent, {
             data: {
@@ -269,19 +316,19 @@ export class SignupOffererComponent implements OnInit {
       event.key !== 'ArrowLeft' &&
       event.key !== 'Enter') {
 
-      let ad1 = this.secondFormGroup.get('address1').value;
-      if (!ad1.first) {
+      const ad1 = this.secondFormGroup.get('address1').value;
+      /*if (!ad1.first) {
         ad1 = this.secondFormGroup.get('address1').value;
         this.secondFormGroup.get('address2').setValue(null);
       } else {
         ad1 = ad1.first;
-      }
+      }*/
 
-      const ad2 = this.secondFormGroup.get('address2').value;
+      // const ad2 = this.secondFormGroup.get('address2').value;
 
       if ((ad1 as string).length > 2) {
         const options = {
-          params: new HttpParams().set('query', ad1 + ', ' + ad2)
+          params: new HttpParams().set('query', ad1)
             .append('type', 'address'),
           headers: new HttpHeaders().append('X-Algolia-Application-Id', environment.algoliaAppId)
             .append('X-Algolia-API-Key', environment.algoliaAPIKey)
@@ -312,7 +359,7 @@ export class SignupOffererComponent implements OnInit {
   }
 
   deletePhoto() {
-    (document.getElementById('photo_profile') as HTMLInputElement).src = '../../../../assets/defaultProfileImg.png';
+    (document.getElementById('photo_profile') as HTMLInputElement).src = '../../../../assets/img/defaultProfileImg.png';
     this.secondFormGroup.controls['profile'].setValue(null);
   }
 
@@ -341,7 +388,7 @@ export class SignupOffererComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
           if (result) {
-            console.log(result);
+            // console.log(result);
             preview.src = result;
             this.file = result;
           }
