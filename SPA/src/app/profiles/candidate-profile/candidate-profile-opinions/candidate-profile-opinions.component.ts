@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {UtilsService} from '../../../shared/utils.service';
+import {getTimePassed} from '../../../shared/utils.service';
 
 @Component({
   selector: 'app-candidate-profile-opinions',
@@ -67,13 +67,13 @@ export class CandidateProfileOpinionsComponent implements OnInit {
     },
   ];
 
-  constructor(private _utils: UtilsService) {
+  constructor() {
   }
 
   ngOnInit() {
   }
 
   getPublishedDate(date: string) {
-    return this._utils.getTimePassed(new Date(date));
+    return getTimePassed(new Date(date));
   }
 }
