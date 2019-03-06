@@ -29,15 +29,15 @@
         </mat-form-field>
 
         <h3>Work Location</h3>
-        <section fxLayout="column">
-          <mat-checkbox *ngFor="let location of workLocations">
+        <section fxLayout="column" *ngFor="let location of workLocations; index as i" >
+          <mat-checkbox formControlName="workLocation{{i}}">
             {{location.viewValue}}
           </mat-checkbox>
         </section>
 
         <h3 style="margin-top: 16px">Job Type</h3>
-        <section fxLayout="column">
-          <mat-checkbox *ngFor="let type of jobTypes">
+        <section fxLayout="column" *ngFor="let type of jobTypes; index as i">
+          <mat-checkbox formControlName="jobType{{i}}">
             {{type.viewValue}}
           </mat-checkbox>
         </section>
@@ -63,8 +63,8 @@
         </div>
 
         <h3>Experience Level</h3>
-        <section fxLayout="column">
-          <mat-checkbox *ngFor="let level of experienceLevels">
+        <section fxLayout="column" *ngFor="let level of experienceLevels; index as i">
+          <mat-checkbox formControlName="seniority{{i}}">
             {{level.viewValue}}
           </mat-checkbox>
         </section>
@@ -94,41 +94,43 @@
   <mat-sidenav-content
     fxFlex="96%" fxFlex.gt-sm="75%"
     fxLayout="column"
+    fxLayoutAlign="start stretch"
     fxLayoutGap="16px" fxLayoutGap.gt-sm="32px">
     <div
-      fxFlex="100%"
       fxLayout="row"
-      fxLayoutAlign="center center"
+      fxLayoutAlign="center"
       fxLayoutGap="8px">
       <app-searchbar
         fxFlex="40%" fxFlex.lt-lg="60%" (search)="onSearch($event)">
       </app-searchbar>
-      <app-orderby-button></app-orderby-button>
-      <button color="primary"
-              fxHide.gt-sm
-              mat-raised-button>
-        <mat-icon (click)="drawer.toggle()" aria-label="Open filters" svgIcon="filter-list"></mat-icon>
-      </button>
+      <app-orderby-button style="padding-top: 4px"></app-orderby-button>
+      <div style="padding-top: 4px">
+        <button color="primary"
+                fxHide.gt-sm
+                mat-raised-button>
+          <mat-icon (click)="drawer.toggle()" aria-label="Open filters" svgIcon="filter-list"></mat-icon>
+        </button>
+      </div>
     </div>
-
-
     <div *ngIf="(offersState | async).offers" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="8px">
       <app-offer-preview-card *ngFor="let offer of (offersState | async).offers.data;" [offer]="offer">
       </app-offer-preview-card>
     </div>
-
-    <div *ngIf="!(offersState | async).offers" fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">
-      <h4 class="mat-h3">No results found.</h4>
-      <p class="mat-typography">Your search returned no results. Try shortening or rephrasing your search.</p>
+    <div fxLayout="row">
+      <div *ngIf="!(offersState | async).offers.data" fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">
+        <h4 class="mat-h3">No results found.</h4>
+        <p class="mat-typography">Your search returned no results. Try shortening or rephrasing your search.</p>
+      </div>
     </div>
-
-
-
-    <mat-paginator *ngIf="(offersState | async).offers" (page)="pageEvent = $event; changePage();"
-                   [length]="(offersState | async).offers.total"
-                   [pageSizeOptions]="pageSizeOptions"
-                   [pageSize]="pageSize">
-    </mat-paginator>
+    <div fxLayout="row" fxLayoutAlign="end end">
+      <mat-paginator #paginator
+                     *ngIf="(offersState | async).offers && (offersState | async).offers.data"
+                     (page)="pageEvent = $event; changePage();"
+                     [length]="(offersState | async).offers.total"
+                     [pageSizeOptions]="pageSizeOptions"
+                     [pageSize]="pageSize">
+      </mat-paginator>
+    </div>
   </mat-sidenav-content>
 </mat-sidenav-container>
 

@@ -11,7 +11,7 @@
     <mat-card-subtitle>
       <app-offerer-name-overview
         [index]="user.index"
-        [name]="user.name"
+        [name]="getWorkfield()"
         [routerLink]="urlfyPosition()"
         style="cursor: pointer">
       </app-offerer-name-overview>
@@ -21,15 +21,16 @@
       fxFlexAlign="start start"
       fxLayout="row"
       fxLayoutGap="16px">
-      <app-icon-with-text [text]="" icon="place"></app-icon-with-text>
-      <app-icon-with-text [text]="" icon="access-time"></app-icon-with-text>
+      <app-icon-with-text [text]="user.city" icon="place"></app-icon-with-text>
+      <app-icon-with-text [text]="getAge(user.dateBorn.toString())" icon="cake"></app-icon-with-text>
+      <app-icon-with-text [text]="getLatestExperience()" icon="work"></app-icon-with-text>
     </div>
   </mat-card-header>
 
   <mat-card-content>
     <img
       alt="Business Logo"
-      src="https://cdn.vox-cdn.com/thumbor/Pkmq1nm3skO0-j693JTMd7RL0Zk=/0x0:2012x1341/1200x800/filters:focal(0x0:2012x1341)/cdn.vox-cdn.com/uploads/chorus_image/image/47070706/google2.0.0.jpg">
+      [src]="getImg()">
     <p>
       {{ (user.bio | slice:0:280) + "..." }}
     </p>
@@ -44,15 +45,17 @@
       fxLayout.lt-sm="column"
       fxLayoutAlign="center center"
       fxLayoutGap="16px">
-      <div fxLayout="row" fxLayoutGap="16px">
-        <app-icon-with-text [text]="" icon="date-range"></app-icon-with-text>
-        <app-icon-with-text [text]="" icon="work"></app-icon-with-text>
-        <app-icon-with-text [text]="" icon="local-atm"></app-icon-with-text>
-      </div>
       <div>
         <button [routerLink]="userUrl" color="accent" mat-button>{{'More Info' | uppercase }}</button>
-        <button (click)="openShareDialog()" mat-icon-button>
+        <button (click)="openShareDialog()" mat-icon-button *ngIf="!selectionMode">
           <mat-icon aria-label="Share user in social networks" color="accent" svgIcon="share"></mat-icon>
+        </button>
+        <button (click)="selectCandidate()"
+                color="primary"
+                mat-raised-button
+                *ngIf="selectionMode">
+          <mat-icon svgIcon="star" style="margin-right: 8px"></mat-icon>
+          {{'Preselect' | uppercase }}
         </button>
       </div>
     </div>

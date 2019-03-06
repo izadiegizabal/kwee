@@ -4,7 +4,6 @@ import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
 import * as ProfilesActions from '../store/profiles.actions';
 import * as fromProfiles from '../store/profiles.reducers';
-import {UtilsService} from '../../shared/utils.service';
 import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
@@ -94,8 +93,7 @@ export class CandidateProfileComponent implements OnInit {
 
   profilesState: Observable<fromProfiles.State>;
 
-  constructor(private _utils: UtilsService,
-              private store$: Store<fromApp.AppState>,
+  constructor(private store$: Store<fromApp.AppState>,
               private activatedRoute: ActivatedRoute,
               private router: Router) {
   }

@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {UtilsService} from '../../shared/utils.service';
+import {getTimePassed, getUrlfiedString} from '../../shared/utils.service';
 import {MatDialog} from '@angular/material';
 import {SnsShareDialogComponent} from '../../shared/sns-share/sns-share-dialog/sns-share-dialog.component';
 import {ContractType, JobDurationUnit, SalaryFrequency, WorkLocationType} from '../../../models/Offer.model';
@@ -17,7 +17,7 @@ export class OfferPreviewCardComponent implements OnInit {
   @Input() offer: any;
 
 
-  constructor(private _utils: UtilsService, public dialog: MatDialog) {
+  constructor(public dialog: MatDialog) {
   }
 
   ngOnInit() {
@@ -25,13 +25,13 @@ export class OfferPreviewCardComponent implements OnInit {
   }
 
   urlfyPosition() {
-    return '/offer/' + this.offer.id + '/' + this.offer.title.toLowerCase().replace(/ /g, '-');
+    return '/offer/' + this.offer.id + '/' + getUrlfiedString(this.offer.title);
   }
 
 
   getPublishedDate() {
     if (this.offer && this.offer.datePublished) {
-      return this._utils.getTimePassed(new Date(this.offer.datePublished));
+      return getTimePassed(new Date(this.offer.datePublished));
     }
   }
 
@@ -85,7 +85,7 @@ export class OfferPreviewCardComponent implements OnInit {
   }
 
   urlOfferer() {
-    const url = '/business/' + this.offer.fk_offerer + '/' + this.offer.offererName.toLowerCase().replace(/ /g, '-');
+    const url = '/business/' + this.offer.fk_offerer + '/' + getUrlfiedString(this.offer.offererName);
     return url;
   }
 

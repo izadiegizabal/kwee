@@ -1,5 +1,5 @@
-@import "../../../common-utils";
-@import '../../../../node_modules/@angular/material/theming';
+@import "../../../../common-utils";
+@import '../../../../../node_modules/@angular/material/theming';
 
 
 mat-card {
@@ -11,9 +11,16 @@ mat-card-title {
   font-size: 1.6rem !important;
 }
 
-::ng-deep app-offer-preview-card .mat-card-header-text {
-  margin: 0 8px;
+::ng-deep app-candidate-preview-card {
+  .mat-card-header-text {
+    margin: 0 8px;
+  }
+
+  mat-card-content {
+    min-height: 48px !important;
+  }
 }
+
 
 app-icon-with-text {
   font-size: 0.85rem;

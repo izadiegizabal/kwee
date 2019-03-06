@@ -6,10 +6,10 @@ import * as fromOffer from './store/offer.reducers';
 import {Observable} from 'rxjs';
 import {OfferEffects} from './store/offer.effects';
 import {filter} from 'rxjs/operators';
-
+import {Location} from '@angular/common';
 
 import {ContractType, JobDurationUnit, OfferStatus, SalaryFrequency, SeniorityLevel, WorkLocationType} from '../../../models/Offer.model';
-import {UtilsService} from '../../shared/utils.service';
+import {getTimePassed, getUrlfiedString} from '../../shared/utils.service';
 import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
@@ -24,11 +24,11 @@ export class OfferDetailComponent implements OnInit {
   id: Number;
   offerId: Number;
 
-  constructor(private _utils: UtilsService,
-              private store$: Store<fromApp.AppState>,
+  constructor(private store$: Store<fromApp.AppState>,
               private activatedRoute: ActivatedRoute,
               private offerEffects$: OfferEffects,
-              private router: Router) {
+              private router: Router,
+              private location: Location) {
   }
 
   ngOnInit() {
@@ -60,7 +60,7 @@ export class OfferDetailComponent implements OnInit {
   }
 
   getTimePassed(publishDate) {
-    return this._utils.getTimePassed(new Date(publishDate));
+    return getTimePassed(new Date(publishDate));
   }
 
   getOfferStatus(status) {
@@ -123,13 +123,18 @@ export class OfferDetailComponent implements OnInit {
   }
 
   urlOfferer(id, name) {
-    const url = '/business/' + id + '/' + name.toLowerCase().replace(/ /g, '-');
+    const url = '/business/' + id + '/' + getUrlfiedString(name);
     return url;
   }
 
   goEdit() {
     this.router.navigate(['/offer', this.offerId, 'edit']);
   }
+
+  backClicked() {
+    this.location.back();
+  }
+
 
 
 }
