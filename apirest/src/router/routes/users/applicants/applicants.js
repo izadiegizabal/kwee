@@ -1,8 +1,9 @@
-const { tokenId, logger, sendVerificationEmail, pagination, checkImg, deleteFile, uploadImg } = require('../../../../shared/functions');
+const { tokenId, logger, sendVerificationEmail, pagination, checkImg, deleteFile, uploadImg, saveLogES } = require('../../../../shared/functions');
 const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
 const elastic = require('../../../../database/elasticsearch');
 const env =     require('../../../../tools/constants');
 const bcrypt = require('bcryptjs');
+const moment = require('moment')
 const axios = require('axios');
 
 // ============================
@@ -13,6 +14,7 @@ module.exports = (app, db) => {
 
     app.post('/applicants/search', async(req, res, next) => {
         try {
+            saveLogES('POST', 'applicants/search');
             let query = req.query;
             let page = Number(query.page);
             let limit = Number(query.limit);
@@ -125,6 +127,7 @@ module.exports = (app, db) => {
     app.get('/applicants', async(req, res, next) => {
         try {
             await logger.saveLog('GET', 'applicant', null, res);
+            saveLogES('GET', 'applicants');
 
             var attributes = {
                 exclude: ['password', 'root']
@@ -209,6 +212,7 @@ module.exports = (app, db) => {
         
         try {
             await logger.saveLog('GET', 'applicant', id, res);
+            saveLogES('GET', 'applicant/id/applications');
 
             let message = ``;
             
@@ -370,7 +374,7 @@ module.exports = (app, db) => {
         const id = req.params.id;
 
         try {
-            await logger.saveLog('GET', 'applicant', id, res);
+            await logger.saveLog('GET', 'applicant/id', id, res);
 
             let user = await db.users.findOne({
                 where: { id }
@@ -438,6 +442,8 @@ module.exports = (app, db) => {
             body.password ? user.password = bcrypt.hashSync(body.password, 10) : null;
             body.name ? user.name = body.name : null;
             body.email ? user.email = body.email : null;
+
+            saveLogES('POST', 'applicant');
             
             return db.sequelize.transaction(transaction => {
                 return db.users.create(user, { transaction: transaction })
@@ -471,20 +477,21 @@ module.exports = (app, db) => {
             })
 
         } catch (err) {
-            return next({ type: 'error', error: err.errors[0].message });
+            return next({ type: 'error', error: err.message });
         }
     });
 
     app.post('/applicant/info', async(req, res, next) => {
 
         const body = req.body;
-        let id = tokenId.getTokenId(req.get('token'));
         
         try {
+            let id = tokenId.getTokenId(req.get('token'));
             let applicant = await db.applicants.findOne({
                 where: { userId: id }
             });
             if ( applicant ) {
+                saveLogES('POST', 'applicant/info');
                 var user = {};
                 if ( body.img && checkImg(body.img) ) {
                     var imgName = uploadImg(req, res, next, 'applicants');
@@ -542,11 +549,9 @@ module.exports = (app, db) => {
         try {
             let logId = await logger.saveLog('PUT', 'applicant', null, res);
             let id = tokenId.getTokenId(req.get('token'));
-
             logger.updateLog(logId, true, id);
-
+            saveLogES('PUT', 'applicant');
             updateApplicant(id, req, res, next);
-
         } catch (err) {
             return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
         }
@@ -558,6 +563,7 @@ module.exports = (app, db) => {
 
         try {
             await logger.saveLog('PUT', 'applicant', id, res);
+            saveLogES('PUT', 'applicant/id');
             updateApplicant(id, req, res, next);
         } catch (err) {
             return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
@@ -570,6 +576,7 @@ module.exports = (app, db) => {
             let id = tokenId.getTokenId(req.get('token'));
             
             await logger.saveLog('DELETE', 'applicant', id, res);
+            saveLogES('DELETE', 'applicant');
 
             let applicant = await db.applicants.findOne({
                 where: { userId: id }
@@ -610,6 +617,7 @@ module.exports = (app, db) => {
 
         try {
             await logger.saveLog('DELETE', 'applicant', id, res);
+            saveLogES('DELETE', 'applicant/id');
 
             let applicant = await db.applicants.findOne({
                 where: { userId: id }
@@ -645,8 +653,10 @@ module.exports = (app, db) => {
     });
 
     app.get('/applicants/:type', async(req, res, next) => {
+        
         const type = req.params.type;
         const typeSing = type.substring(0, type.length - 1);
+
         if ( type == 'languages' || type == 'educations' || type == 'skills' || type == 'experiences' ) {
             let field = '';
             switch ( type ) {
@@ -764,18 +774,17 @@ module.exports = (app, db) => {
                 where: { userId: id }
             });
 
-            // body.experiences ? updateExperiences(applicantUser, body.experiences) : null;
-            // body.educations ? updateEducations(body.educations) : null;
-            body.languages ? updateLanguages(applicant, body.languages, elasticsearch, next) : null;
-            // body.skills ? updateSkills(body.skills) : null;
+            axios.post(`http://${ env.ES_URL }/applicants/applicant/${ applicant.userId }/_update?pretty=true`, {
+                    doc: elasticsearch
+                }).then(() => {}
+                    ).catch((error) => {
+                    console.log('error elastic: ', error.message);
+            }); 
 
-            // axios.post(`http://${ env.ES_URL }/applicants/applicants/${ id }/_update?pretty=true`, {
-            //         doc: elasticsearch
-            //     }).then((resp) => {
-            //         // updated from elasticsearch database too
-            //     }).catch((error) => {
-            //         return next({ type: 'error', error: error.message });
-            // });
+            body.educations ? updateExperiences(applicant, body.experiences, elasticsearch, next) : null;
+            body.educations ? updateEducations(applicant, body.educations, elasticsearch, next) : null;
+            body.languages ? updateLanguages(applicant, body.languages, elasticsearch, next) : null;
+            body.skills ? updateSkills(applicant, body.skills, elasticsearch, next) : null;
 
             if (updated && applicantUser) {
                 return res.status(200).json({
@@ -814,17 +823,27 @@ module.exports = (app, db) => {
                     }
                 }
                 applicant_languages = await applicant.getLanguages();
-                applicant_languages.forEach(element => {
-                    languagesArray.push( {language: element.language} );
-                });
+                
+                let buildArray = new Promise((resolve, reject) => {
+                    applicant_languages.forEach(async element => {
+                        let level = await db.applicant_languages.findOne({ 
+                            where: { fk_applicant: applicant.userId, fk_language: element.id } 
+                        });
 
-                axios.post(`http://${ env.ES_URL }/applicants/applicants/${ applicant.userId }/_update?pretty=true`, {
-                        doc: {languages: languagesArray}
-                    }).then((resp) => {
-                        // updated from elasticsearch database too
-                    }).catch((error) => {
-                        console.log('error elastic: ', error);
-                        // return next({ type: 'error', error: error.message });
+                        await languagesArray.push( {language: element.language, level: level.level} );
+                    })
+                    setTimeout(function(){
+                        resolve("¡Éxito!"); // ¡Todo salió bien!
+                      }, 250);
+                });
+                
+                buildArray.then(() => {
+                    axios.post(`http://${ env.ES_URL }/applicants/applicant/${ applicant.userId }/_update?pretty=true`, {
+                            doc: {languages: languagesArray}
+                        }).then(() => {}
+                            ).catch((error) => {
+                            console.log('error elastic: ', error.message);
+                    }); 
                 });
             }
         } catch (error) {
@@ -832,29 +851,161 @@ module.exports = (app, db) => {
         }
     }
 
-    async function updateExperiences(experiences) {
-        let id = experiences.id;
-        delete experiences.id;
+    async function updateSkills(applicant, skills, elasticsearch, next) {
         try {
-            await db.experiences.update(experiences, {
-                where: { id }
-            });
-            
+            let applicant_skills = await applicant.getSkills();
+
+            if ( applicant_skills ) {
+                var skillsArray = [];
+                for (let i = 0; i < skills.length; i++) {
+                    if ( skills[i].id ) {
+                        await db.applicant_skills.update({level: skills[i].level}, {
+                            where: { fk_skill: skills[i].id, fk_applicant: applicant.userId }
+                        });
+                    } else {
+                        let newSkill = await db.skills.create({
+                            name: skills[i].name
+                        });
+                        await applicant.addSkill(newSkill.id, {
+                            through: {
+                                level: skills[i].level,
+                            }
+                        });
+                    }
+                }
+                applicant_skills = await applicant.getSkills();
+                
+                let buildArray = new Promise((resolve, reject) => {
+                    applicant_skills.forEach(async element => {
+                        let level = await db.applicant_skills.findOne({ 
+                            where: { fk_applicant: applicant.userId, fk_skill: element.id } 
+                        });
+
+                        await skillsArray.push( {name: element.name, level: level.level} );
+                    })
+                    setTimeout(function(){
+                        resolve("¡Éxito!"); // ¡Todo salió bien!
+                      }, 250);
+                });
+                
+                buildArray.then(() => {
+                    axios.post(`http://${ env.ES_URL }/applicants/applicant/${ applicant.userId }/_update?pretty=true`, {
+                            doc: {skills: skillsArray}
+                        }).then(() => {}
+                            ).catch((error) => {
+                            console.log('error elastic: ', error.message);
+                    }); 
+                });
+            }
         } catch (error) {
-            return next({ type: 'error', error: 'Can\'t update experience' });
+            return next({ type: 'error', error: error.message });
         }
     }
 
-    async function updateEducations(educations) {
-        let id = educations.id;
-        delete educations.id;
+    async function updateExperiences(applicant, experiences, elasticsearch, next) {
         try {
-            await db.educations.update(educations, {
-                where: { id }
-            });
+            let applicantExperiences = await applicant.getExperiences();
+
+            if ( applicantExperiences ) {
+                var experiencesArray = [];
+                for (let i = 0; i < experiences.length; i++) {
+                    if ( experiences[i].id ) {
+                        await db.experiences.update(experiences[i], {
+                            where: { id: experiences[i].id }
+                        });
+                    } else {
+                        await db.experiences.create({
+                            title: experiences[i].title,
+                            dateStart: experiences[i].dateStart,
+                            dateEnd: experiences[i].dateEnd,
+                        });
+                    }
+                }
+                applicantExperiences = await applicant.getExperiences();
+                
+                let buildArray = new Promise((resolve, reject) => {
+                    applicantExperiences.forEach(async element => {
+                        await experiencesArray.push({
+                                title: element.title,
+                                dateStart: element.dateStart,
+                                dateEnd: element.dateEnd,
+                            });
+                    })
+                    setTimeout(function(){
+                        resolve("¡Éxito!"); // ¡Todo salió bien!
+                      }, 250);
+                });
+                
+                buildArray.then(() => {
+                    axios.post(`http://${ env.ES_URL }/applicants/applicant/${ applicant.userId }/_update?pretty=true`, {
+                            doc: {experiences: experiencesArray}
+                        }).then(() => {}
+                            ).catch((error) => {
+                            console.log('error elastic: ', error.message);
+                    }); 
+                });
+            }
             
         } catch (error) {
-            return next({ type: 'error', error: 'Can\'t update education' });
+            return next({ type: 'error', error: error.message });
+        }
+    }
+
+    async function updateEducations(applicant, educations, elasticsearch, next) {
+        try {
+            let applicant_educations = await applicant.getEducations();
+
+            if ( applicant_educations ) {
+                var educationsArray = [];
+                for (let i = 0; i < educations.length; i++) {
+                    if ( educations[i].id ) {
+                        await db.applicant_educations.update({institution: educations[i].institution}, {
+                            where: { fk_education: educations[i].id, fk_applicant: applicant.userId }
+                        });
+                    } else {
+                        let newEducation = await db.educations.create({
+                            title: educations[i].title
+                        });
+                        await applicant.addEducation(newEducation.id, {
+                            through: {
+                                dateStart: educations[i].dateStart,
+                                dateEnd: educations[i].dateEnd,
+                                institution: educations[i].institution,
+                            }
+                        });
+                    }
+                }
+                applicant_educations = await applicant.getEducations();
+                
+                let buildArray = new Promise((resolve, reject) => {
+                    applicant_educations.forEach(async element => {
+                        let edu = await db.applicant_educations.findOne({ 
+                            where: { fk_applicant: applicant.userId, fk_education: element.id } 
+                        });
+
+                        await educationsArray.push({
+                                title: element.title,
+                                dateStart: edu.dateStart,
+                                dateEnd: edu.dateEnd,
+                                institution: edu.institution
+                            });
+                    })
+                    setTimeout(function(){
+                        resolve("¡Éxito!"); // ¡Todo salió bien!
+                      }, 250);
+                });
+                
+                buildArray.then(() => {
+                    axios.post(`http://${ env.ES_URL }/applicants/applicant/${ applicant.userId }/_update?pretty=true`, {
+                            doc: {educations: educationsArray}
+                        }).then(() => {}
+                            ).catch((error) => {
+                            console.log('error elastic: ', error.message);
+                    }); 
+                });
+            }
+        } catch (error) {
+            return next({ type: 'error', error: error.message });
         }
     }
 

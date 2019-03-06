@@ -1,4 +1,4 @@
-const { tokenId, logger, pagination, prepareOffersToShow } = require('../../shared/functions');
+const { tokenId, logger, pagination, prepareOffersToShow, saveLogES } = require('../../shared/functions');
 const { checkToken } = require('../../middlewares/authentication');
 const elastic = require('../../database/elasticsearch');
 const env =     require('../../tools/constants');
@@ -14,6 +14,7 @@ module.exports = (app, db) => {
     app.get('/offers/search', async(req, res, next) => {
 
         try {
+            saveLogES('GET', 'offers/search');
             // if req.query.keywords search OR (search)
             // rest of req.query.params search AND (filter)
             let query = req.query;
@@ -109,50 +110,15 @@ module.exports = (app, db) => {
                 await elastic.search(searchParams, async function (err, response) {
                     if (err) throw err;
 
+                    let users = await db.users.findAll();
+                    let offersToShow = [];
+
                     if ( response.hits.total != 0 ) {
-                        users = await db.users.findAll();
+                        
 
-                        let offersToShow = [];
                         let offers = response.hits.hits;
-
-                        for (let i = 0; i < offers.length; i++) {
-                            let user = users.find(element => offers[i]._source.fk_offerer == element.id);
-                            let offer = {};
-
-                            offer.id = offers[i]._id;
-                            offer.fk_offerer = offers[i]._source.fk_offerer;
-                            offer.offererName = user.name;
-                            offer.offererIndex = user.index;
-                            offers[i]._source.img ? offer.img = offers[i]._source.img : offer.img = user.img;
-                            offer.title = offers[i]._source.title;
-                            offer.description = offers[i]._source.description;
-                            offer.dateStart = offers[i]._source.dateStart;
-                            offer.dateEnd = offers[i]._source.dateEnd;
-                            offer.datePublished = offers[i]._source.datePublished;
-                            offer.location = offers[i]._source.location;
-                            offer.status = offers[i]._source.status;
-                            offer.salaryAmount = offers[i]._source.salaryAmount;
-                            offer.salaryFrequency = offers[i]._source.salaryFrequency;
-                            offer.salaryCurrency = offers[i]._source.salaryCurrency;
-                            offer.workLocation = offers[i]._source.workLocation;
-                            offer.seniority = offers[i]._source.seniority;
-                            offer.maxApplicants = offers[i]._source.maxApplicants;
-                            offer.currentApplications = offers[i]._source.currentApplications;
-                            offer.duration = offers[i]._source.duration;
-                            offer.durationUnit = offers[i]._source.durationUnit;
-                            offer.isIndefinite = offers[i]._source.isIndefinite;
-                            offer.contractType = offers[i]._source.contractType;
-                            offer.responsabilities = offers[i].responsabilities;
-                            offer.requeriments = offers[i].requeriments;
-                            offer.skills = offers[i].skills;
-                            offer.lat = offers[i]._source.lat;
-                            offer.lon = offers[i]._source.lon;
-                            offer.createdAt = offers[i]._source.createdAt;
-                            offer.updatedAt = offers[i]._source.updatedAt;
-                            offer.deletedAt = offers[i]._source.deletedAt;
-                            
-                            offersToShow.push(offer);
-                        }
+                        
+                        buildOffersToShow(users, offersToShow, offers);
 
                         return res.json({
                             ok: true,
@@ -173,10 +139,12 @@ module.exports = (app, db) => {
                             }
 
                             if ( response2.hits.total > 0 ) {
+                                let offers = response2.hits.hits;
+                                buildOffersToShow(users, offersToShow, offers);
                                 return res.json({
                                     ok: true,
                                     message: 'No results but maybe this is interesting for you',
-                                    data: response2.hits.hits,
+                                    data: offersToShow,
                                     total: response2.hits.total,
                                     page: Number(page),
                                     pages: Math.ceil(response2.hits.total / limit)
@@ -201,6 +169,7 @@ module.exports = (app, db) => {
     app.get('/offers', async(req, res, next) => {
         try {
             await logger.saveLog('GET', 'offers', null, res);
+            saveLogES('GET', 'offers');
 
             var offers;
 
@@ -247,6 +216,7 @@ module.exports = (app, db) => {
         const id = req.params.id;
 
         try {
+            saveLogES('GET', 'offer/id');
             offer = await db.offers.findOne({
                 where: { id }
             });
@@ -278,6 +248,7 @@ module.exports = (app, db) => {
         let body = req.body
 
         try {
+            saveLogES('POST', 'offer');
             let id = tokenId.getTokenId(req.get('token'));
             body.fk_offerer = id;
 
@@ -353,6 +324,7 @@ module.exports = (app, db) => {
 
         try {
             let fk_offerer = tokenId.getTokenId(req.get('token'));
+            saveLogES('PUT', 'offer/id');
 
             let offerToUpdate = await db.offers.findOne({
                 where: {id}
@@ -363,7 +335,7 @@ module.exports = (app, db) => {
                         where: { id, fk_offerer }
                     }).then(result => {
                         if ( result ) {
-                            axios.post(`http://${ env.ES_URL }/offers/offers/${ id }/_update?pretty=true`, {
+                            axios.post(`http://${ env.ES_URL }/offers/offer/${ id }/_update?pretty=true`, {
                                 doc: updates
                             }).then((resp) => {
                                 // updated from elasticsearch database too
@@ -399,6 +371,7 @@ module.exports = (app, db) => {
 
         try {
             let fk_offerer = tokenId.getTokenId(req.get('token'));
+            saveLogES('DELETE', 'offer/id');
 
             axios.delete(`http://${ env.ES_URL }/offers/offers/${ id }`)
                 .then((res) => {
@@ -520,4 +493,44 @@ module.exports = (app, db) => {
         return query;
     }
 
+    function buildOffersToShow(users, offersToShow, offers) {
+        for (let i = 0; i < offers.length; i++) {
+            let user = users.find(element => offers[i]._source.fk_offerer == element.id);
+            let offer = {};
+
+            offer.id = offers[i]._id;
+            offer.fk_offerer = offers[i]._source.fk_offerer;
+            offer.offererName = user.name;
+            offer.offererIndex = user.index;
+            offers[i]._source.img ? offer.img = offers[i]._source.img : offer.img = user.img;
+            offer.title = offers[i]._source.title;
+            offer.description = offers[i]._source.description;
+            offer.dateStart = offers[i]._source.dateStart;
+            offer.dateEnd = offers[i]._source.dateEnd;
+            offer.datePublished = offers[i]._source.datePublished;
+            offer.location = offers[i]._source.location;
+            offer.status = offers[i]._source.status;
+            offer.salaryAmount = offers[i]._source.salaryAmount;
+            offer.salaryFrequency = offers[i]._source.salaryFrequency;
+            offer.salaryCurrency = offers[i]._source.salaryCurrency;
+            offer.workLocation = offers[i]._source.workLocation;
+            offer.seniority = offers[i]._source.seniority;
+            offer.maxApplicants = offers[i]._source.maxApplicants;
+            offer.currentApplications = offers[i]._source.currentApplications;
+            offer.duration = offers[i]._source.duration;
+            offer.durationUnit = offers[i]._source.durationUnit;
+            offer.isIndefinite = offers[i]._source.isIndefinite;
+            offer.contractType = offers[i]._source.contractType;
+            offer.responsabilities = offers[i].responsabilities;
+            offer.requeriments = offers[i].requeriments;
+            offer.skills = offers[i].skills;
+            offer.lat = offers[i]._source.lat;
+            offer.lon = offers[i]._source.lon;
+            offer.createdAt = offers[i]._source.createdAt;
+            offer.updatedAt = offers[i]._source.updatedAt;
+            offer.deletedAt = offers[i]._source.deletedAt;
+            
+            offersToShow.push(offer);
+        }
+    }
 }

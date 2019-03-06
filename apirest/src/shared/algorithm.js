@@ -200,6 +200,39 @@ class Algorithm {
         }
 
         async function ratioOfferers(id) {
+            // get applications ok
+            let offers = 0;
+            let total = 0;
+            let arr = [];
+            let toUpdate = 0;
+            await db.offers.findAndCountAll({
+                where: {
+                    fk_applicant: id,
+                    // status: 0, /* applications accepted */
+                },
+                attributes: [
+                    'maxApplicants',
+                    'currentApplications'
+                ]
+            })
+            .then( async offers => {
+                for(let offer in offers) {
+                    arr[i] = offer.currentApplications / maxApplicants;
+                }
+                toUpdate = await average(arr);
+            });
+
+            // update
+            let values = await db.applicants.update(
+                {
+                    where: {
+                        id
+                    }
+                },
+                {
+                    ratioSuccess: toUpdate
+                }
+            );
 
         }
     }
