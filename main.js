@@ -39,12 +39,14 @@ const warning = chalk.keyword('orange');
 ////////////////////////////////////////
 
 const url = 'https://www.kwee.ovh/api';
-const furl = 'http://localhost:3000';
+const __url = 'http://localhost:3000';
 const _url = 'http://h203.eps.ua.es/api';
 
 let obj = 'No file';
 let offers = 'No file';
-let applicants = 'No file'
+let applicants = 'No file';
+
+let totalOffers = 0;
 
 let headersOP = {  
     "content-type": "application/json",
@@ -284,7 +286,7 @@ function randomInt(min,max) // min and max included
     return Math.floor(Math.random()*(max-min+1)+min);
 }
 
-async function offerersAndOffers() {
+async function offerersAndOffers(limit) {
 	// offerers JSON
 	obj = getFileJSON('./CreateOfferers.json');
 	// offers JSON
@@ -294,7 +296,7 @@ async function offerersAndOffers() {
 		// await axios.get('/users')
 		// .then( res => console.log(res.data));
 
-	await asyncForEach( obj, 2, async (e,i) => {
+	await asyncForEach( obj, limit, async (e,i) => {
 			// sign up bussiness
 			await instance.post('/offerer', {
 				"name": e.name,
@@ -327,9 +329,9 @@ async function offerersAndOffers() {
 					let token = loginSuccess.data.token;
 
 					// create random number of offers
-					let limit = randomInt(0,10);
+					let _limit = randomInt(0,10);
 
-					await asyncForEach( offers, limit, async (offerElement, index) => {
+					await asyncForEach( offers, _limit, async (offerElement, index) => {
 						await instance.post("/offer", {
 							// body
 							"status": offerElement.status,
@@ -379,15 +381,24 @@ async function offerersAndOffers() {
 				
 			})
 			.catch(e => {
-				log(error("SignUp error: ")+e.response.data.message);
+				log(error("SignUp error: "));
+				console.log(e.response.data);
+				// console.log(e.response.data.message);
 			});
 	});
+
+	// get total number of offers to apply
+	await instance.get('/offers')
+	.then( res => {
+		totalOffers = res.data.total;
+	});
+
 }
 
-async function applicantsAndApplications() {
+async function applicantsAndApplications(limit) {
 	applicants = getFileJSON('./tests/applicants.json');
 
-	await asyncForEach( applicants, async (element, i) => {
+	await asyncForEach( applicants,limit, async (element, i) => {
 		// signUp applicant
 		await instance.post('/applicant', {
 			// body
@@ -408,17 +419,50 @@ async function applicantsAndApplications() {
 				"email": element.email,
 				"password": element.password
 			})
-			.then( loginSuccess => {
+			.then( async loginSuccess => {
 				log(" " + success(loginSuccess.data.message));
 				// login successful
-
 				let token = loginSuccess.data.token;
 
+				let randomApplications = randomInt(0,4);
+				let arrApplications = [];
+
+				for(let i=0;i<randomApplications;i++){
+					// Apply to random Offers (until MAX totalOffers)
+					arrApplications[i] = randomInt(0,totalOffers); // switch to totalOffers
+				}
 				// apply to offer random
+				await instance.post('/application', {
+					// body
+					"fk_offer": arrApplications
+				},
+				{
+					// headers
+					headers: {
+						token,
+						'Content-Type': 'application/json; charset=utf-8'
+					}
+
+				})
+				.then( application => {
+					log(" application success");
+				})
+				.catch( err => {
+					log(error("Error applying: "));
+					console.log(err.response.data);
+				})
 
 			});
 		})
+		.catch( signUpFailed => {
+			log(error("SignUpFailed"));
+			console.log(signUpFailed.response.data.message);
+		})
 	})
+}
+
+async function offerersAccepts(){
+	
 }
 
 ////////////////////////////////////////// EXECUTE CODE
@@ -429,23 +473,28 @@ var instance = axios.create({
 		'Content-Type': 'application/json; charset=utf-8'
 	}
 });
-//signupOfferersAndOffers('./CreateOfferers.json');
+async function main() {
+	//signupOfferersAndOffers('./CreateOfferers.json');
+	let max = 10;
+	// 1- SignUp Offerers and publish offers
+	await offerersAndOffers(max);
+	
+	// 2- Applicants apply to random offers
+	await applicantsAndApplications(max);
+	
+	// 3- Offerers accepts random applications
+	await offerersAccepts();
+	
+	// 4- Rate offerers
+	// ratings();
+	
+	// 5- Rate applicants
+	// ratings();
 
-// 1- SignUp Offerers and publish offers
-offerersAndOffers();
 
-// 2- Applicants apply to random offers
-applicantsAndApplications();
+}	
 
-// 3- Offerers accepts random applications
-// offerersAccepts();
-
-// 4- Rate offerers
-// ratings();
-
-// 5- Rate applicants
-// ratings();
-
+main();
 
 
 
