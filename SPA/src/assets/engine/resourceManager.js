@@ -14,6 +14,7 @@
 
 */
 
+import { MTLFile } from './dependencies/MTLFile.js';
 
 var vec3 = glMatrix.vec3;
 
@@ -64,18 +65,11 @@ class TResourceManager {
             }
             // load resource
             var file = await resource.loadFile(name);
-            if(file.length>1){
-                // Created more than 1 resource
-                for(let i=0;i<file.length;i++){
-                    // add to our map
-                    this.map.set(file[i].name,file[i]);
-                }
-            }
-            else{
-                // Created only 1 resource
-                // add to our map
-                resource = this.map.set(name, file);
-            }
+            
+            resource = this.map.set(name, file);
+        }
+        else{
+            resource = this.map.get(name);
         }
         console.log("end getResource map status:");
         console.log(this.map);
@@ -200,45 +194,55 @@ class TResourceMaterial extends TResource{
     constructor(name){
         super(name);
 
-        this.Ka = 0 // ambient color
-        this.Kd = 0 // diffuse reflectance
-        this.Ks = 0 // specular reflectance
+        this.name = undefined;
+        this.Ka = [] // ambient color
+        this.Kd = [] // diffuse reflectance
+        this.Ks = [] // specular reflectance
+        this.Ke = []
         this.Ni = 0 // 
         this.Ns = 0 // specular exponent
         this.d = 0  // dissolves
         this.illum = 0 // illumination model
+        this.map_Kd = null// @todo map_Kd
 
         return this;
     }
 
     async loadFile(file){
         
-        const mtl = await loadJSON(file);
-        
-        console.log(mtl.materials.length);
+        // const mtl = await loadJSON(file);
+        const mtl_file = loadMTL(file);
+        const mtl = new MTLFile(mtl_file);
+        console.log(mtl);
 
-        // this.color = mtl.color;
-        // this.draw_first = mtl.draw_first;
-        // this.draw_count = mtl.draw_count;
-        // this.emit = mtl.emit;
-        // this.fresnel = mtl.fresnel;
-        // this.fresnel_factor = mtl.fresnel_factor;
-        // this.hardness = mtl.hardness;
-        // this.intensity = mtl.intensity;
-        // this.roughness = mtl.roughness;
+        // material
+        this.name = mtl.name;
+        this.Ka = mtl.Ka;  // ambient color
+        this.Kd = mtl.Kd;  // diffuse reflectance
+        this.Ks = mtl.Ks;  // specular reflectance
+        this.Ke = mtl.Ke; 
+        this.Ni = mtl.Ni; // 
+        this.Ns = mtl.Ns; // specular exponent
+        this.d = mtl.d;  // dissolves
+        this.illum = mtl.illum; // illumination model
+        // @todo map_Kd
     
         return this;
     }
 
     async loadValues(material) {
+        
         // material
-        this.Ka = material.Ka // ambient color
-        this.Kd = material.Kd // diffuse reflectance
-        this.Ks = material.Ks // specular reflectance
-        this.Ni = material.Ni // 
-        this.Ns = material.Ns // specular exponent
-        this.d = material.d  // dissolves
-        this.illum = material.illum // illumination model
+        this.name = material.newmtl;
+        this.Ka = material.Ka;  // ambient color
+        this.Kd = material.Kd;  // diffuse reflectance
+        this.Ks = material.Ks;  // specular reflectance
+        this.Ke = material.Ke; 
+        this.Ni = material.Ni; // 
+        this.Ns = material.Ns; // specular exponent
+        this.d = material.d;  // dissolves
+        this.illum = material.illum; // illumination model
+        // @todo map_Kd
 
         return this;
     }
@@ -293,6 +297,26 @@ async function load(filename){
 
     let host = "http://localhost:4200";
     let path = '/assets/engine/shaders/';
+    let url = `${host + path + filename}`;
+    
+    console.log(`Fetching ${filename} resource from url: ${ url }`);
+    
+    let file;
+    await fetch( url )
+        .then( response => response.text() )
+        .then( res => {
+            console.log("== fetch file ok ==");
+            console.log(res);
+            file = Promise.resolve(res);
+        });
+
+    return file;
+}
+
+async function loadMTL(filename){
+
+    let host = "http://localhost:4200";
+    let path = '/assets/assets/JSON/';
     let url = `${host + path + filename}`;
     
     console.log(`Fetching ${filename} resource from url: ${ url }`);

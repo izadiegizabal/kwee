@@ -15,15 +15,15 @@ import {TTransform, TCamera, TLight, TAnimation, TMesh} from './TEntity.js';
 import {TResourceManager, TResourceMesh, TResourceMaterial, TResourceTexture, TResourceShader} from './resourceManager.js';
 
 
-var manager = new TResourceManager();
 
 var canvas = null;
 var gl = null;
 var program = null;
 
 async function mainR(){
+    var manager = new TResourceManager();
 
-	canvas = document.getElementById('game-surface');
+	canvas = document.getElementById('kweelive');
 	gl = canvas.getContext('webgl');
 
 	// gl.clearColor(0.266, 0.294, 0.329, 1.0); // our grey
@@ -165,6 +165,7 @@ async function main(){
 
 	var manager = new TResourceManager();
     let mesh = await manager.getResource('part1.json');
+    let material = await manager.getResource('earth.mtl');
     // let meshMaterial = await manager.getResource('cube','material');
     let VShader = await manager.getResource('shader.vs');
     let FShader = await manager.getResource('shader.fs');
@@ -306,7 +307,10 @@ async function main(){
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////// 										LIGHTNING
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	/*gl.useProgram(program);
+    
+
+    
+    /*gl.useProgram(program);
 
     var ambientUniformLocation = gl.getUniformLocation(program, 'ambientLightIntensity');
     var sunlightDirUniformLocation = gl.getUniformLocation(program, 'sun.direction');
@@ -418,5 +422,6 @@ var InitDemo = function () {
 
 
 export {
-    main
+    main,
+    mainR
 }
