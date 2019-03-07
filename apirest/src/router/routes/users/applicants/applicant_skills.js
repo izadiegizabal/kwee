@@ -42,12 +42,22 @@ module.exports = (app, db) => {
         const params = req.params;
 
         try {
-            return res.status(200).json({
-                ok: true,
-                applicant_skill: await db.applicant_skills.findAll({
-                    where: { fk_applicant: params.fk_applicant }
-                })
+            let applicant_skill = await db.applicant_skills.findAll({
+                where: { fk_applicant: params.fk_applicant }
             });
+
+            if ( applicant_skill ) {
+                return res.status(200).json({
+                    ok: true,
+                    message: 'Listing skills of this user',
+                    data: applicant_skill
+                });
+            } else {
+                return res.status(200).json({
+                    ok: true,
+                    message: 'This applicant doesn\'t has skills'
+                });
+            }
 
         } catch (err) {
             next({ type: 'error', error: 'Error getting data' });
@@ -104,8 +114,8 @@ module.exports = (app, db) => {
                     });
 
             } else {
-                return res.status(400).json({
-                    ok: false,
+                return res.status(200).json({
+                    ok: true,
                     error: "Applicant doesn't exist"
                 });
             }
@@ -201,8 +211,8 @@ module.exports = (app, db) => {
 
                             })
                     } else {
-                        return res.status(400).json({
-                            ok: false,
+                        return res.status(200).json({
+                            ok: true,
                             error: "This Applicant doesn't exist"
                         });
                     }

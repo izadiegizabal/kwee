@@ -200,6 +200,18 @@ export class SignupCandidateComponent implements OnInit {
       }
     });
 
+    this.thirdFormGroup.controls['telegram'].valueChanges.subscribe(() => {
+      const value = <String>this.thirdFormGroup.controls['telegram'].value;
+      if (value.includes('telegram.me/')) {
+        const arr = value.split('telegram.me/');
+        this.thirdFormGroup.controls['telegram'].setValue(arr[arr.length - 1]);
+      }
+      if (value.includes('t.me/')) {
+        const arr = value.split('t.me/');
+        this.thirdFormGroup.controls['telegram'].setValue(arr[arr.length - 1]);
+      }
+    });
+
     this.activatedRoute.queryParams.subscribe(params => {
       const token = params['token'];
       this.snToken = token;
@@ -467,7 +479,7 @@ export class SignupCandidateComponent implements OnInit {
   }
 
   deletePhoto() {
-    (document.getElementById('photo_profile') as HTMLInputElement).src = '../../../../assets/defaut_profile.png';
+    (document.getElementById('photo_profile') as HTMLInputElement).src = '../../../../assets/img/defaultProfileImg.png';
     this.thirdFormGroup.controls['profile'].setValue(null);
   }
 

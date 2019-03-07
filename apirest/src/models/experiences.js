@@ -12,31 +12,29 @@ module.exports = (sequelize, DateTypes) => {
             field: 'title',
             allowNull: false,
             validate: {
-                notEmpty: true
+                notEmpty: true,
+                is: {
+                    args: /^[A-Za-zÀ-ÖØ-öø-ÿ ]+$/,
+                    msg: "Title should be letters only (accented letters admitted)."
+                }
             }
         },
 
         description: {
             type: DateTypes.TEXT,
             field: 'description',
+        },
+
+        dateStart: {
+            type: DateTypes.DATE,
             allowNull: false,
             validate: {
                 notEmpty: true
             }
         },
 
-        date_start: {
+        dateEnd: {
             type: DateTypes.DATE,
-            field: 'date_start',
-            allowNull: false,
-            validate: {
-                notEmpty: true
-            }
-        },
-
-        date_end: {
-            type: DateTypes.DATE,
-            field: 'date_end',
             allowNull: false,
             validate: {
                 notEmpty: true

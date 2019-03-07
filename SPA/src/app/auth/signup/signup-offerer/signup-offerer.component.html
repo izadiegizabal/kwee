@@ -183,52 +183,52 @@
           </mat-form-field>
         </div>
         <br>
-
-        <div class="line1" fxLayout="column">
-          <mat-form-field>
-            <input (keyup)="onKey($event)" formControlName="address2" id="administrative" matInput
-                   placeholder="Administrative and Postcode" required>
-            <mat-icon color="primary" matPrefix svgIcon="place"></mat-icon>
-            <mat-error *ngIf="!secondFormGroup.get('address2').valid ">
-              Please enter a valid address
-            </mat-error>
-          </mat-form-field>
-        </div>
         <!--
-        <br>
+          <div class="line1" fxLayout="column">
+            <mat-form-field>
+              <input (keyup)="onKey($event)" formControlName="address2" id="administrative" matInput
+                     placeholder="Administrative and Postcode" required>
+              <mat-icon color="primary" matPrefix svgIcon="place"></mat-icon>
+              <mat-error *ngIf="!secondFormGroup.get('address2').valid ">
+                Please enter a valid address
+              </mat-error>
+            </mat-form-field>
+          </div>
 
-        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="22px" fxLayoutGap.xs="0px">
-          <mat-form-field>
-            <input formControlName="city" matInput placeholder="City" required>
-            <mat-error *ngIf="!secondFormGroup.get('city').valid">
-              Please enter a valid city
-            </mat-error>
-          </mat-form-field>
-          <mat-form-field>
-            <input formControlName="province" matInput placeholder="Province" required>
-            <mat-error *ngIf="!secondFormGroup.get('province').valid">
-              Please enter a valid province
-            </mat-error>
-          </mat-form-field>
-        </div>
+          <br>
+
+          <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="22px" fxLayoutGap.xs="0px">
+            <mat-form-field>
+              <input formControlName="city" matInput placeholder="City" required>
+              <mat-error *ngIf="!secondFormGroup.get('city').valid">
+                Please enter a valid city
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field>
+              <input formControlName="province" matInput placeholder="Province" required>
+              <mat-error *ngIf="!secondFormGroup.get('province').valid">
+                Please enter a valid province
+              </mat-error>
+            </mat-form-field>
+          </div>
 
 
-        <br>
-        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0px">
-          <mat-form-field>
-            <input formControlName="postalCode" matInput placeholder="Postal Code" required>
-            <mat-error *ngIf="!secondFormGroup.get('postalCode').valid">
-              Please enter a valid postal code
-            </mat-error>
-          </mat-form-field>
-          <mat-form-field>
-            <input formControlName="country" matInput placeholder="Country" required>
-            <mat-error *ngIf="!secondFormGroup.get('country').valid ">
-              Please enter a valid country
-            </mat-error>
-          </mat-form-field>
-        </div>
-        -->
+          <br>
+          <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0px">
+            <mat-form-field>
+              <input formControlName="postalCode" matInput placeholder="Postal Code" required>
+              <mat-error *ngIf="!secondFormGroup.get('postalCode').valid">
+                Please enter a valid postal code
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field>
+              <input formControlName="country" matInput placeholder="Country" required>
+              <mat-error *ngIf="!secondFormGroup.get('country').valid ">
+                Please enter a valid country
+              </mat-error>
+            </mat-form-field>
+          </div>
+          -->
         <br>
         <div fxLayout="row" fxLayoutAlign="end">
           <button color="primary" mat-button matStepperPrevious>Back</button>
@@ -306,6 +306,34 @@
             </mat-error>
           </mat-form-field>
         </div>
+
+        <h4>Social Media</h4>
+        <p>You can link your social media accouts to your profile. Just type your username</p>
+        <div class="line1" fxLayout="column">
+          <mat-form-field>
+            <input formControlName="twitter" matInput placeholder="Twitter username">
+            <mat-icon class="social-icons" color="primary" fontIcon="fa-twitter" fontSet="fab" matPrefix></mat-icon>
+          </mat-form-field>
+        </div>
+        <div class="line1" fxLayout="column">
+          <mat-form-field>
+            <input formControlName="github" matInput placeholder="Github username">
+            <mat-icon class="social-icons" color="primary" fontIcon="fa-github" fontSet="fab" matPrefix></mat-icon>
+          </mat-form-field>
+        </div>
+        <div class="line1" fxLayout="column">
+          <mat-form-field>
+            <input formControlName="linkedIn" matInput placeholder="LinkedIn username">
+            <mat-icon class="social-icons" color="primary" fontIcon="fa-linkedin-in" fontSet="fab" matPrefix></mat-icon>
+          </mat-form-field>
+        </div>
+        <div class="line1" fxLayout="column">
+          <mat-form-field>
+            <input formControlName="telegram" matInput placeholder="Telegram username">
+            <mat-icon class="social-icons" color="primary" fontIcon="fa-telegram" fontSet="fab" matPrefix></mat-icon>
+          </mat-form-field>
+        </div>
+        <br>
 
 
         <br>

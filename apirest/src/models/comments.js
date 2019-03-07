@@ -35,9 +35,9 @@ module.exports = (sequelize, DateTypes) => {
             }
         },
 
-        deleted_reason: {
+        deletedReason: {
             type: DateTypes.STRING,
-            field: 'deleted_reason',
+            field: 'deletedReason',
         },
 
     }, {

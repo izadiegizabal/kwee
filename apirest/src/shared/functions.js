@@ -1,11 +1,12 @@
-const auth = require('../middlewares/auth/auth');
-const Log = require('../models/logs');
-const moment = require('moment');
-const fs = require('fs');
-const path = require('path');
-const nodemailer = require('nodemailer');
-const env = require('../tools/constants.js');
-const jwt = require('jsonwebtoken');
+const auth          = require('../middlewares/auth/auth');
+const env           = require('../tools/constants.js');
+const Log           = require('../models/logs');
+const elastic       = require('../database/elasticsearch')
+const jwt           = require('jsonwebtoken');
+const nodemailer    = require('nodemailer');
+const moment        = require('moment');
+const path          = require('path');
+const fs            = require('fs');
 
 
 
@@ -152,6 +153,13 @@ function sendEmailResetPassword(user, res) {
     });
 }
 
+function isEmpty(obj) {
+    for(var key in obj) {
+        if(obj.hasOwnProperty(key))
+            return false;
+    }
+    return true;
+}
 
 async function pagination( db, dbname, _limit, _page, attr, res, next){
     var output = {};
@@ -161,9 +169,9 @@ async function pagination( db, dbname, _limit, _page, attr, res, next){
 
     try{
         var countTotal = await db.findAndCountAll();
-
+        
         if( _limit === undefined || _page === undefined ){
-            data = await db.findAll();
+            data = await db.findAll({attributes: attr});
             message = `Listing all ${dbname}`;
         } else {
             let limit = Number(_limit);
@@ -178,12 +186,11 @@ async function pagination( db, dbname, _limit, _page, attr, res, next){
             offset = limit * (page - 1);
     
             if (page > pages) {
-                return res.status(400).json({
-                    ok: false,
+                return res.status(200).json({
+                    ok: true,
                     message: `It doesn't exist ${ page } pages`
                 })
             }
-            // if (attr.length == 0) attr = '';
             
             data = await db.findAll({
                 attributes: attr,
@@ -201,7 +208,7 @@ async function pagination( db, dbname, _limit, _page, attr, res, next){
 
     }
     catch(error){
-        next({ type: 'error', error: error });
+        return next({ type: 'error', error: error.message });
     }
     
 }
@@ -370,6 +377,67 @@ function checkImg(data) {
     return false;
 }
 
+function prepareOffersToShow(offers, offersShow, user){
+    for (let i = 0; i < offers.length; i++) {
+        let offer = {};
+
+        offer.id = offers[i].id;
+        offer.fk_offerer = offers[i].fk_offerer;
+        offer.offererName = user.name;
+        offer.offererIndex = user.index;
+        offer.title = offers[i].title;
+        offer.description = offers[i].description;
+        offers[i].img ? offer.img = offers[i].img : offer.img = user.img;
+        offer.dateStart = offers[i].dateStart;
+        offer.dateEnd = offers[i].dateEnd;
+        offer.datePublished = offers[i].datePublished;
+        offer.location = offers[i].location;
+        offer.status = offers[i].status;
+        offer.salaryAmount = offers[i].salaryAmount;
+        offer.salaryFrequency = offers[i].salaryFrequency;
+        offer.salaryCurrency = offers[i].salaryCurrency;
+        offer.workLocation = offers[i].workLocation;
+        offer.seniority = offers[i].seniority;
+        offer.maxApplicants = offers[i].maxApplicants;
+        offer.currentApplications = offers[i].currentApplications;
+        offer.duration = offers[i].duration;
+        offer.durationUnit = offers[i].durationUnit;
+        offer.isIndefinite = offers[i].isIndefinite;
+        offer.contractType = offers[i].contractType;
+        offer.responsabilities = offers[i].responsabilities;
+        offer.requeriments = offers[i].requeriments;
+        offer.skills = offers[i].skills;
+        offer.lat = offers[i].lat;
+        offer.lon = offers[i].lon;
+        offer.createdAt = offers[i].createdAt;
+        offer.updatedAt = offers[i].updatedAt;
+        offer.deletedAt = offers[i].deletedAt;
+        offersShow.push(offer);
+    }
+    return offersShow;
+}
+
+function saveLogES(action, actionToRoute){
+    moment.locale('es');
+
+    let body = {
+        action, 
+        actionToRoute,
+        date: moment().format('YYYY-MM-DD'),
+        hour: moment().format('HH:mm:ss'),
+    }
+
+    elastic.index({
+        index: 'logs',
+        type: 'log',
+        body
+    }, function (err, resp, status) {
+        if ( err ) {
+            console.log(err)
+        }
+    });
+}
+
 
 module.exports = {
     tokenId,
@@ -381,5 +449,8 @@ module.exports = {
     uploadFile,
     uploadImg,
     checkImg,
-    deleteFile
+    deleteFile,
+    prepareOffersToShow,
+    isEmpty,
+    saveLogES
 }

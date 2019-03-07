@@ -27,10 +27,10 @@ module.exports = (app, db) => {
                             fk_offer: ratings[i].fk_offer,
                             overall: ratings[j].overall,
                             salary: rating_applicants[j].salary,
-                            enviroment: rating_applicants[j].enviroment,
+                            environment: rating_applicants[j].environment,
                             partners: rating_applicants[j].partners,
                             services: rating_applicants[j].services,
-                            instalations: rating_applicants[j].instalations,
+                            installations: rating_applicants[j].installations,
                             createdAt: ratings[j].createdAt
                         }
                     }
@@ -59,8 +59,8 @@ module.exports = (app, db) => {
             offset = limit * (page - 1);
 
             if (page > pages) {
-                return res.status(400).json({
-                    ok: false,
+                return res.status(200).json({
+                    ok: true,
                     message: `It doesn't exist ${ page } pages`
                 })
             }
@@ -100,10 +100,10 @@ module.exports = (app, db) => {
                     fk_offer: rating.fk_offer,
                     overall: rating.overall,
                     salary: rating_applicant.salary,
-                    enviroment: rating_applicant.enviroment,
+                    environment: rating_applicant.environment,
                     partners: rating_applicant.partners,
                     services: rating_applicant.services,
-                    instalations: rating_applicant.instalations,
+                    installations: rating_applicant.installations,
                     createdAt: rating.createdAt
                 };
 
@@ -113,8 +113,8 @@ module.exports = (app, db) => {
                     data: ratingRating_Offerer
                 });
             } else {
-                return res.status(400).json({
-                    ok: false,
+                return res.status(200).json({
+                    ok: true,
                     message: 'Rating_Offerer doesn\'t exist'
                 });
             }
@@ -170,7 +170,7 @@ module.exports = (app, db) => {
 
             return res.status(201).json({
                 ok: true,
-                message: `Rating_Offerer '${rating.name}' with id ${rating.id} has been created.`
+                message: `Rating_Offerer with id ${rating.id} has been created.`
             });
         } catch (err) {
             //await transaction.rollback();
@@ -249,10 +249,10 @@ module.exports = (app, db) => {
             let rating_offerer = {
                 ratingId: rating.id,
                 salary: body.salary,
-                enviroment: body.enviroment,
+                environment: body.environment,
                 partners: body.partners,
                 services: body.services,
-                instalations: body.instalations
+                installations: body.installations
             }
 
             let newRating_Offerer = await db.rating_offerers.create(rating_offerer, { transaction: transaction });

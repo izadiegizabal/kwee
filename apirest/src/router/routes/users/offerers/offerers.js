@@ -1,7 +1,11 @@
+const { tokenId, logger, sendVerificationEmail, pagination, uploadImg, checkImg, deleteFile, prepareOffersToShow, isEmpty, saveLogES } = require('../../../../shared/functions');
 const { checkToken, checkAdmin } = require('../../../../middlewares/authentication');
-const { tokenId, logger, sendVerificationEmail, pagination, uploadImg, checkImg, deleteFile } = require('../../../../shared/functions');
+const elastic = require('../../../../database/elasticsearch');
+const env =     require('../../../../tools/constants');
 const bcrypt = require('bcryptjs');
-const fs = require('fs');
+const moment = require('moment')
+const axios =   require('axios')
+
 
 // ============================
 // ======== CRUD user =========
@@ -9,13 +13,123 @@ const fs = require('fs');
 
 module.exports = (app, db) => {
 
+    app.post('/offerers/search', async(req, res, next) => {
+        try {
+            saveLogES('POST', 'offerers/search');
+
+            let query = req.query;
+            let page = Number(query.page);
+            let limit = Number(query.limit);
+            let body = req.body;
+            let must = [];
+            let sort = 'index';
+            if (body.sort) sort = body.sort;
+
+            buildIndex(must, body.index);
+            buildYear(must, body.year);
+            buildCompanySize(must, body.companySize);
+            buildDateVerification(must, body.dateVerification);
+
+            if ( body.name ) must.push({multi_match : {query: body.name, fields: ["name"]}})
+            if ( body.email ) must.push({multi_match : {query: body.email, fields: ["email"]}})
+            if ( body.status ) must.push({multi_match : {query: body.status, fields: ["status"]}})
+            if ( body.address ) must.push({multi_match : {query: body.address, fields: ["address"]}})
+            if ( body.bio ) must.push({multi_match : {query: body.bio, fields: ["bio"]}})
+
+            let searchParams = {
+                index: "offerers",
+                body: {
+                    query: {
+                        bool: {
+                            must
+                        }
+                    },
+                    sort
+                }
+            };
+
+            await elastic.search(searchParams, async function (err, response) {
+                if (err) throw err;
+                
+                if ( response.hits.total != 0 ) {
+                    let offerersToShow = [];
+                    let offerers = response.hits.hits;
+
+                    for (let i = 0; i < offerers.length; i++) {
+                        let offerer = {};
+
+                        offerer.id = offerers[i]._id;
+                        offerer.name = offerers[i]._source.name;
+                        offerer.index = offerers[i]._source.index;
+                        offerer.bio = offerers[i]._source.bio;
+                        offerer.status = offerers[i]._source.status;
+                        offerer.email = offerers[i]._source.email;
+                        offerer.address = offerers[i]._source.address;
+                        offerer.companySize = offerers[i]._source.companySize;
+                        offerer.year = offerers[i]._source.year;
+                        offerer.dateVerification = offerers[i]._source.dateVerification;
+                        
+                        offerersToShow.push(offerer);
+                    }
+
+                    return res.json({
+                        ok: true,
+                        message: 'Results of search',
+                        data: offerersToShow,
+                        total: response.hits.total,
+                        page: Number(page),
+                        pages: Math.ceil(response.hits.total / limit)
+                    });
+                    
+                }  else {
+                    let searchParams = {
+                        index: "offerers",
+                        body: {
+                            query: {
+                            bool: {
+                                should: must
+                            }
+                         }}
+                    };
+
+                    await elastic.search(searchParams, function (error, response2) {
+                        if (error) {
+                            throw error;
+                        }
+
+                        if ( response2.hits.total > 0 ) {
+                            return res.json({
+                                ok: true,
+                                message: 'No results but maybe this is interesting for you',
+                                data: response2.hits.hits,
+                                total: response2.hits.total,
+                                page: Number(page),
+                                pages: Math.ceil(response2.hits.total / limit)
+                            });
+                        } else {
+                            return res.status(200).json({
+                                ok: true,
+                                message: 'No results',
+                            });
+                        }
+                    });
+                }
+            });
+
+
+        } catch (err) {
+            return next({ type: 'error', err });
+        }
+    });
+
     // GET all users offerers
     app.get('/offerers', async(req, res, next) => {
         try {
+            saveLogES('GET', 'offerers');
             await logger.saveLog('GET', 'offerers', null, res);
 
             var attributes = {
-                exclude: ['password']
+                exclude: ['password', 'root']
             };
 
             // Need USER values, so we get ALL USERS
@@ -32,40 +146,43 @@ module.exports = (app, db) => {
                 next
             )
 
-            var offerers = output.data;
-            var offerersView = [];
-
-            for (let i = 0; i < users.length; i++) {
-                for (let j = 0; j < offerers.length; j++) {
-                    if (users[i].id === offerers[j].userId) {
-                        offerersView[j] = {
-                            id: offerers[j].userId,
-                            index: users[i].index,
-                            name: users[i].name,
-                            email: users[i].email,
-                            address: offerers[j].address,
-                            workField: offerers[j].workField,
-                            cif: offerers[j].cif,
-                            dateVerification: offerers[j].dateVerification,
-                            website: offerers[j].website,
-                            companySize: offerers[j].companySize,
-                            year: offerers[j].year,
-                            premium: offerers[j].premium,
-                            createdAt: offerers[j].createdAt,
-                            lastAccess: users[i].lastAccess,
-                            status: users[i].status,
-                            img: users[i].img
+            if ( output.data ) {
+                
+                var offerers = output.data;
+                var offerersView = [];
+                
+                for (let i = 0; i < users.length; i++) {
+                    for (let j = 0; j < offerers.length; j++) {
+                        if (users[i].id === offerers[j].userId) {
+                            offerersView[j] = {
+                                id: offerers[j].userId,
+                                index: users[i].index,
+                                name: users[i].name,
+                                email: users[i].email,
+                                address: offerers[j].address,
+                                workField: offerers[j].workField,
+                                cif: offerers[j].cif,
+                                dateVerification: offerers[j].dateVerification,
+                                website: offerers[j].website,
+                                companySize: offerers[j].companySize,
+                                year: offerers[j].year,
+                                premium: offerers[j].premium,
+                                createdAt: offerers[j].createdAt,
+                                lastAccess: users[i].lastAccess,
+                                status: users[i].status,
+                                img: users[i].img
+                            }
                         }
                     }
                 }
+                
+                return res.status(200).json({
+                    ok: true,
+                    message: output.message,
+                    data: offerersView,
+                    total: output.count
+                });
             }
-
-            return res.status(200).json({
-                ok: true,
-                message: output.message,
-                data: offerersView,
-                total: output.count
-            });
 
         } catch (err) {
             next({ type: 'error', error: err.message });
@@ -100,6 +217,7 @@ module.exports = (app, db) => {
         
         try {
             await logger.saveLog('GET', 'offerer', id, res);
+            saveLogES('GET', 'offerer/id/offers');
             
             let message = ``;
 
@@ -108,7 +226,11 @@ module.exports = (app, db) => {
                 where: { userId: id }
             });
             
+            
             if ( offerer ) {
+                let user = await db.users.findOne({
+                    where: { id }
+                });
                 let offers = await offerer.getOffers();
                 
                 let count = offers.length;
@@ -122,10 +244,10 @@ module.exports = (app, db) => {
                         }
                         if( req.query.summary ){
                             switch(offers[i].status){
-                                case 0: draft++; break;
-                                case 1: open++; break;
-                                case 2: selection++; break;
-                                case 3: closed++; break;
+                                case 0: open++; break;
+                                case 1: closed++; break;
+                                case 2: draft++; break;
+                                case 3: selection++; break;
                             }
                         }
                     }
@@ -137,8 +259,8 @@ module.exports = (app, db) => {
                     offset = limit * (page - 1);
                     
                     if (page > pages) {
-                        return res.status(400).json({
-                            ok: false,
+                        return res.status(200).json({
+                            ok: true,
                             message: `It doesn't exist ${ page } pages. Total of pages ${ pages }`
                         })
                     }
@@ -161,25 +283,29 @@ module.exports = (app, db) => {
                 if( req.query.summary ){
                     var totalOffers = count;
                     count = [];
-                    count.push("Total: " + totalOffers);
-                    count.push("Draft: " + draft);
-                    count.push("Open: " + open);
-                    count.push("Selection: " + selection);
-                    count.push("Closed: " + closed);
+                    count.push({Total: totalOffers});
+                    count.push({Draft: draft});
+                    count.push({Open: open});
+                    count.push({Selection: selection});
+                    count.push({Closed: closed});
                 } 
 
                 if ( statusBool ) message += ` With status = ${ status }`;
+
+                let offersShow = [];
+                
+                prepareOffersToShow(offers, offersShow, user);
                 
                 return res.json({
                     ok: true,
                     message,
-                    data: offers,
+                    data: offersShow,
                     count
                 });
 
             } else {
-                return res.status(400).json({
-                    ok: false,
+                return res.status(200).json({
+                    ok: true,
                     message: `It doesn't exist this user`
                 })
             }
@@ -194,6 +320,7 @@ module.exports = (app, db) => {
         const id = req.params.id;
         try {
             await logger.saveLog('GET', 'offerer', id, res);
+            saveLogES('GET', 'offerer/id');
 
             let user = await db.users.findOne({
                 where: { id }
@@ -242,8 +369,8 @@ module.exports = (app, db) => {
                     data: userOfferer
                 });
             } else {
-                return res.status(400).json({
-                    ok: false,
+                return res.status(200).json({
+                    ok: true,
                     message: 'Offerer doesn\'t exist'
                 });
             }
@@ -257,6 +384,7 @@ module.exports = (app, db) => {
 
         try {
             await logger.saveLog('POST', 'offerer', null, res);
+            saveLogES('POST', 'offerer');
 
             const body = req.body;
             let user = {};
@@ -272,12 +400,31 @@ module.exports = (app, db) => {
                     var imgName = uploadImg(req, res, next, 'offerers');
                     user.img = imgName;
                         return db.users.create(user, { transaction })
-                            .then(_user => {
+                            .then(async _user => {
                                 uservar = _user;
                                 return createOfferer(body, _user, next, transaction);
                             })
-                            .then(ending => {
-                                sendVerificationEmail(body, uservar);
+                            .then(async ending => {
+                                await sendVerificationEmail(body, uservar);
+                                delete body.password;
+                                delete body.img;
+                                delete body.cif;
+                                delete lon;
+                                delete lat;
+                                body.index = 50;
+                                body.companySize = 0;
+                                body.year = null;
+                                body.dateVerification = null;
+                                elastic.index({
+                                    index: 'offerers',
+                                    type: 'offerer',
+                                    id: uservar.id,
+                                    body
+                                }, function (err, resp, status) {
+                                    if ( err ) {
+                                        console.log(err.message);
+                                    }
+                                });
                                 return res.status(201).json({
                                     ok: true,
                                     message: `Offerer with id ${ending.userId} has been created.`
@@ -297,7 +444,7 @@ module.exports = (app, db) => {
 
         } catch (err) {
             //await transaction.rollback();
-            next({ type: 'error', error: 'eeeeeerroooorrr' });
+            return next({ type: 'error', error: err.message });
         }
     });
 
@@ -306,12 +453,13 @@ module.exports = (app, db) => {
 
         try {
             let logId = await logger.saveLog('PUT', 'offerer', null, res);
+            saveLogES('PUT', 'offerer');
 
             let id = tokenId.getTokenId(req.get('token'));
             logger.updateLog(logId, true, id);
             updateOfferer(id, req, res, next);
         } catch (err) {
-            next({ type: 'error', error: err.message });
+            return next({ type: 'error', error: err.message });
         }
     });
 
@@ -324,16 +472,58 @@ module.exports = (app, db) => {
             console.log("body.status: " + req.body.status);
             updateOfferer(id, req, res, next);
         } catch (err) {
-            next({ type: 'error', error: err.message });
+            return next({ type: 'error', error: err.message });
         }
     });
 
-    // DELETE
+    // DELETE by themself
+    app.delete('/offerer', async(req, res, next) => {
+        try {
+            let id = tokenId.getTokenId(req.get('token'));
+            
+            await logger.saveLog('DELETE', 'offerer', id, res);
+            saveLogES('DELETE', 'offerer');
+
+            let offerer = await db.offerers.findOne({
+                where: { userId: id }
+            });
+
+            if (offerer) {
+                let offererToDelete = await db.offerers.destroy({
+                    where: { userId: id }
+                });
+
+                axios.delete(`http://${ env.ES_URL }/offerers/offerers/${ id }`)
+                    .then((res) => {
+                        // deleted from elasticsearch database too
+                }).catch((error) => {
+                    console.error(error)
+                });
+
+                let user = await db.users.destroy({
+                    where: { id }
+                });
+                if (offerer && user) {
+                    return res.json({
+                        ok: true,
+                        message: 'Offerer deleted'
+                    });
+                }
+            } else {
+                return next({ type: 'error', error: 'Offerer doesn\'t exist' });
+            }
+        } catch (err) {
+            return next({ type: 'error', error: err.message });
+        }
+    });
+
+    // DELETE by admin
     app.delete('/offerer/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
 
         try {
             await logger.saveLog('DELETE', 'offerer', id, res);
+            saveLogES('DELETE', 'offerer/id');
 
             let offerer = await db.offerers.findOne({
                 where: { userId: id }
@@ -346,25 +536,34 @@ module.exports = (app, db) => {
                 let user = await db.users.destroy({
                     where: { id }
                 });
+
+                axios.delete(`http://${ env.ES_URL }/offerers/offerers/${ id }`)
+                    .then((res) => {
+                        // deleted from elasticsearch database too
+                }).catch((error) => {
+                    console.error(error)
+                });
+
                 if (offererToDelete && user) {
-                    res.json({
+                    return res.json({
                         ok: true,
                         message: 'Offerer deleted'
                     });
                 }
             } else {
-                next({ type: 'error', error: 'Offerer doesn\'t exist' });
+                return next({ type: 'error', error: 'Offerer doesn\'t exist' });
             }
             // Respuestas en json
             // offerer: 1 -> Deleted
             // offerer: 0 -> User don't exists
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            return next({ type: 'error', error: 'Error getting data' });
         }
     });
 
     async function updateOfferer(id, req, res, next) {
         let body = req.body;
+        var elasticsearch = {};
         const offerer = await db.offerers.findOne({
             where: { userId: id }
         });
@@ -372,16 +571,29 @@ module.exports = (app, db) => {
         if (offerer) {
             delete body.root;
             delete body.dateVerification;
-            let offereruser = true;
+            let offererUser = true;
             let userOff = {};
+
             body.cif ? userOff.cif = body.cif : null;
-            body.address ? userOff.address = body.address : null;
+            if ( body.address ) {
+                userOff.address = body.address;
+                elasticsearch.address = body.address;
+            }
             body.workField ? userOff.workField = body.workField : null;
             body.premium ? userOff.premium = body.premium : null;
             body.website ? userOff.website = body.website : null;
-            body.companySize ? userOff.companySize = body.companySize : null;
-            body.year ? userOff.year = body.year : null;
-            body.status ? userOff.status = body.status : null;
+            if ( body.companySize ) {
+                userOff.companySize = body.companySize;
+                elasticsearch.companySize = body.companySize;
+            }
+            if ( body.year ) {
+                userOff.year = body.year;
+                elasticsearch.year = body.year;
+            }
+            if ( body.status ) {
+                userOff.status = body.status;
+                elasticsearch.status = body.status;
+            }
 
             if (body.password || body.email || body.name || body.snSignIn || body.img || body.bio || body.status) {
                 delete body.cif;
@@ -391,6 +603,8 @@ module.exports = (app, db) => {
                 delete body.website;
                 delete body.companySize;
                 delete body.year;
+                if ( body.name ) elasticsearch.name = body.name;
+                if ( body.email ) elasticsearch.email = body.email;
                 // Update user values
                 if (body.password) body.password = bcrypt.hashSync(body.password, 10);
                 if ( body.img && checkImg(body.img) ) {
@@ -403,16 +617,23 @@ module.exports = (app, db) => {
                         body.img = imgName;
                 }
 
-                offereruser = await db.users.update(body, {
+                offererUser = await db.users.update(body, {
                     where: { id }
                 })
             }
-
+                
             let updated = await db.offerers.update(userOff, {
                 where: { userId: id }
             });
 
-            if (updated && offereruser) {
+            axios.post(`http://${ env.ES_URL }/offerers/offerer/${ id }/_update?pretty=true`, {
+                    doc: elasticsearch
+                }).then(() => {}
+                    ).catch((error) => {
+                    console.log('error elastic: ', error.message);
+            }); 
+
+            if (updated && offererUser) {
                 return res.status(200).json({
                     ok: true,
                     message: `Values updated for offerer ${ id }`,
@@ -436,7 +657,6 @@ module.exports = (app, db) => {
                 website: body.website ? body.website : null,
                 companySize: body.companySize ? body.companySize : null,
                 year: body.year ? body.year : null,
-                premium: body.premium ? body.premium : 'basic'
             }
 
             return db.offerers.create(offerer, { transaction: transaction })
@@ -449,5 +669,85 @@ module.exports = (app, db) => {
             await transaction.rollback();
             next({ type: 'error', error: err.message });
         }
+    }
+
+    function buildIndex (must, index) {
+        if ( index ) {
+            let range = 
+            {
+                range: {
+                  index: {}
+                }
+            };
+
+            index.gte ? range.range.index.gte = index.gte : null;
+            index.gt ? range.range.index.gt = index.gt : null;
+            index.lte ? range.range.index.lte = index.lte : null;
+            index.lt ? range.range.index.lt = index.lt : null;
+            
+            must.push(range);
+        }   
+        
+        return must;
+    }
+
+    function buildYear (must, year) {
+        if ( year ) {
+            let range = 
+            {
+                range: {
+                  year: {}
+                }
+            };
+
+            year.gte ? range.range.year.gte = year.gte : null;
+            year.gt ? range.range.year.gt = year.gt : null;
+            year.lte ? range.range.year.lte = year.lte : null;
+            year.lt ? range.range.year.lt = year.lt : null;
+            
+            must.push(range);
+        }   
+        
+        return must;
+    }
+
+    function buildCompanySize (must, companySize) {
+        if ( companySize ) {
+            let range = 
+            {
+                range: {
+                  companySize: {}
+                }
+            };
+
+            companySize.gte ? range.range.companySize.gte = companySize.gte : null;
+            companySize.gt ? range.range.companySize.gt = companySize.gt : null;
+            companySize.lte ? range.range.companySize.lte = companySize.lte : null;
+            companySize.lt ? range.range.companySize.lt = companySize.lt : null;
+            
+            must.push(range);
+        }   
+        
+        return must;
+    }
+    
+    function buildDateVerification (must, dateVerification) {
+        if ( dateVerification ) {
+            let range = 
+            {
+                range: {
+                  dateVerification: {}
+                }
+            };
+
+            dateVerification.gte ? range.range.dateVerification.gte = dateVerification.gte : null;
+            dateVerification.gt ? range.range.dateVerification.gt = dateVerification.gt : null;
+            dateVerification.lte ? range.range.dateVerification.lte = dateVerification.lte : null;
+            dateVerification.lt ? range.range.dateVerification.lt = dateVerification.lt : null;
+            
+            must.push(range);
+        }   
+        
+        return must;
     }
 }

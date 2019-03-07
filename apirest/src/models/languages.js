@@ -4,7 +4,6 @@ module.exports = (sequelize, DateTypes) => {
 
         language: {
             type: DateTypes.STRING(20),
-            field: 'language',
             allowNull: false,
             unique: true,
             validate: {
@@ -14,6 +13,7 @@ module.exports = (sequelize, DateTypes) => {
                 } 
             }
         }
+
     });
 
     return Language;

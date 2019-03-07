@@ -33,12 +33,11 @@ export class OfferDetailComponent implements OnInit {
 
   ngOnInit() {
     this.authState = this.store$.pipe(select('auth'));
-    // TODO: check first if authenticated
     this.authState.pipe(
-      select((s: { user: { id: Number } }) => s.user.id)
+      select((s: { user: { id: Number } }) => s.user ? s.user.id : undefined)
     ).subscribe(
       (id) => {
-        this.id = id;
+        this.id = id ? id : null;
       });
 
     const params = this.activatedRoute.snapshot.params;

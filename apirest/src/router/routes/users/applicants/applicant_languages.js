@@ -16,7 +16,7 @@ module.exports = (app, db) => {
                 applicant_languages: await db.applicant_languages.findAll()
             });
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            next({ type: 'error', error: err.message });
         }
     });
 
@@ -43,18 +43,29 @@ module.exports = (app, db) => {
 
     // GET one applicant_language by one id
     app.get("/applicant_language/:fk_applicant([0-9]+)", checkToken, async(req, res, next) => {
-        const params = req.params;
+        const fk_applicant = req.params.fk_applicant;
 
         try {
-            res.status(200).json({
-                ok: true,
-                applicant_language: await db.applicant_languages.findAll({
-                    where: { fk_applicant: params.fk_applicant }
-                })
+            let applicant_languages = await db.applicant_languages.findAll({
+                where: { fk_applicant }
             });
 
+            if ( applicant_languages ) {
+                return res.status(200).json({
+                    ok: true,
+                    message: 'Listing all languages of this user',
+                    data: applicant_languages
+                });
+            } else {
+                return res.status(200).json({
+                    ok: true,
+                    message: 'This user doesn\'t has languages'
+                });
+            }
+
+
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            next({ type: 'error', error: err.message });
         }
     });
 
@@ -105,8 +116,8 @@ module.exports = (app, db) => {
                 })
 
             } else {
-                return res.status(400).json({
-                    ok: false,
+                return res.status(200).json({
+                    ok: true,
                     error: "Applicant doesn't exist"
                 });
             }
@@ -159,8 +170,8 @@ module.exports = (app, db) => {
                                 }
                             })
                     } else {
-                        return res.status(400).json({
-                            ok: false,
+                        return res.status(200).json({
+                            ok: true,
                             error: "Applicant language doesn't exist"
                         });
                     }
@@ -192,8 +203,8 @@ module.exports = (app, db) => {
                     message: "Deleted"
                 });
             } else {
-                return res.status(400).json({
-                    ok: false,
+                return res.status(200).json({
+                    ok: true,
                     error: "This Applicant doesn't exist"
                 });
             }

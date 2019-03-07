@@ -33,8 +33,8 @@ db.experiences = require('../models/experiences')(sequelize, Sequelize);
 db.educations = require('../models/educations')(sequelize, Sequelize);
 db.skills = require('../models/skills')(sequelize, Sequelize);
 db.languages = require('../models/languages')(sequelize, Sequelize);
-db.applicant_educations = require('../models/users/applicants/applicant_educations')(sequelize, Sequelize);
 db.applicant_skills = require('../models/users/applicants/applicant_skills')(sequelize, Sequelize);
+db.applicant_educations = require('../models/users/applicants/applicant_educations')(sequelize, Sequelize);
 db.applicant_languages = require('../models/users/applicants/applicant_languages')(sequelize, Sequelize);
 db.ratings = require('../models/ratings/ratings')(sequelize, Sequelize);
 db.invoices = require('../models/invoices')(sequelize, Sequelize);
@@ -74,12 +74,11 @@ db.users.belongsToMany(db.users, { through: 'messages', as: 'receiver', foreignK
 
 db.applicants.belongsToMany(db.educations, { through: 'applicant_educations', foreignKey: 'fk_applicant' });
 db.educations.belongsToMany(db.applicants, { through: 'applicant_educations', foreignKey: 'fk_education' });
-
 db.applicants.belongsToMany(db.skills, { through: 'applicant_skills', foreignKey: 'fk_applicant' });
 db.skills.belongsToMany(db.applicants, { through: 'applicant_skills', foreignKey: 'fk_skill' });
-
 db.applicants.belongsToMany(db.languages, { through: 'applicant_languages', foreignKey: 'fk_applicant' });
 db.languages.belongsToMany(db.applicants, { through: 'applicant_languages', foreignKey: 'fk_language' });
+
 
 // 1:1
 db.social_networks.belongsTo(db.users);

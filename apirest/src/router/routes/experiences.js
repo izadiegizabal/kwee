@@ -1,6 +1,8 @@
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
 const { tokenId, logger } = require('../../shared/functions');
 
+const algorithm = require('../../shared/algorithm');
+
 // ============================
 // ======== CRUD experiences =========
 // ============================
@@ -17,7 +19,7 @@ module.exports = (app, db) => {
                 experiences: await db.experiences.findAll()
             });
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            return next({ type: 'error', error: 'Error getting data' });
         }
     });
 
@@ -34,8 +36,8 @@ module.exports = (app, db) => {
             offset = limit * (page - 1);
 
             if (page > pages) {
-                return res.status(400).json({
-                    ok: false,
+                return res.status(200).json({
+                    ok: true,
                     message: `It doesn't exist ${ page } pages`
                 })
             }
@@ -73,68 +75,118 @@ module.exports = (app, db) => {
     });
 
     // POST single experience
-    app.post('/experience', [checkToken, checkAdmin], async(req, res, next) => {
+    app.post('/experience', async(req, res, next) => {
         let body = req.body
 
-        
         try {
             let id = tokenId.getTokenId(req.get('token'));
-
-            res.status(201).json({
-                ok: true,
-                experience: await db.experiences.create({
-                    fk_applicant: id,
-                    title: body.title,
-                    description: body.description,
-                    date_start: body.date_start,
-                    date_end: body.date_end,
-                }),
-                message: `Experience has been created.`
+            let experience = await db.experiences.create({
+                fk_applicant: id,
+                title: body.title,
+                description: body.description,
+                dateStart: body.dateStart,
+                dateEnd: body.dateEnd,
             });
 
+            if ( experience ) {
+                return res.status(201).json({
+                    ok: true,
+                    message: `Experience has been created.`
+                });
+            }
+
         } catch (err) {
-            next({ type: 'error', error: err.errors[0].message });
+            return next({ type: 'error', error: err.errors[0].message });
         }
 
     });
 
-    // PUT single experience
-    app.put('/experience/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
+    // PUT single experience by themself
+    app.put('/experience/:id([0-9]+)', async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
 
         try {
-            res.status(200).json({
-                ok: true,
-                experience: await db.experiences.update(updates, {
-                    where: { id }
-                })
+            let fk_applicant = tokenId.getTokenId(req.get('token'));
+            
+            await db.experiences.update(updates, {
+                where: { id, fk_applicant }
             });
-            // json
-            // experience: [1] -> Updated
-            // experience: [0] -> Not updated
-            // empty body will change 'updateAt'
+
+            return res.status(200).json({
+                ok: true,
+                message: 'Updated' 
+            });
         } catch (err) {
-            next({ type: 'error', error: err.errors[0].message });
+            return next({ type: 'error', error: err.errors[0].message });
         }
     });
 
-    // DELETE single experience
-    app.delete('/experience/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
+    // PUT single experience by admin
+    app.put('/experience/admin/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
+        const id = req.params.id;
+        const updates = req.body;
+
+        try {
+            await db.experiences.update(updates, {
+                where: { id }
+            });
+
+            return res.status(200).json({
+                ok: true,
+                message: 'Updated' 
+            });
+        } catch (err) {
+            return next({ type: 'error', error: err.errors[0].message });
+        }
+    });
+
+    // DELETE single experience by themself
+    app.delete('/experience/:id([0-9]+)', async(req, res, next) => {
         const id = req.params.id;
 
         try {
-            res.json({
-                ok: true,
-                experience: await db.experiences.destroy({
-                    where: { id: id }
-                })
+            let fk_applicant = tokenId.getTokenId(req.get('token'));
+
+            await db.experiences.destroy({
+                where: { id, fk_applicant }
             });
-            // Respuestas en json
-            // experience: 1 -> Deleted
-            // experience: 0 -> Experience doesn't exists
+
+            return res.json({
+                ok: true,
+                message: 'Deleted' 
+            });
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            return next({ type: 'error', error: 'Error getting data' });
         }
+    });
+
+    // DELETE single experience by admin
+    app.delete('/experience/admin/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
+        const id = req.params.id;
+
+        try {
+            await db.experiences.destroy({
+                where: { id }
+            });
+
+            return res.json({
+                ok: true,
+                message: 'Deleted' 
+            });
+        } catch (err) {
+            return next({ type: 'error', error: 'Error getting data' });
+        }
+    });
+
+    app.get('/experiences/index/:id', async(req,res,next) => {
+        const id = req.params.id;
+
+        let index = await algorithm.indexAveragesUpdate(id);
+
+        return res.json({
+            ok: true,
+            index
+        });
     });
 }

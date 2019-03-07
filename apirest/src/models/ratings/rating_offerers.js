@@ -10,27 +10,52 @@ module.exports = (sequelize, DataTypes) => {
 
         salary: {
             type: DataTypes.INTEGER,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                min: 0,
+                max: 5,
+                isInt: true
+            }
         },
 
-        enviroment: {
+        environment: {
             type: DataTypes.INTEGER,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                min: 0,
+                max: 5,
+                isInt: true
+            }
         },
 
         partners: {
             type: DataTypes.INTEGER,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                min: 0,
+                max: 5,
+                isInt: true
+            }
         },
 
         services: {
             type: DataTypes.INTEGER,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                min: 0,
+                max: 5,
+                isInt: true
+            }
         },
 
-        instalations: {
+        installations: {
             type: DataTypes.INTEGER,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                min: 0,
+                max: 5,
+                isInt: true
+            }
         },
 
     }, {

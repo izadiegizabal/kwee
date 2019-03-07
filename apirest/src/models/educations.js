@@ -14,7 +14,7 @@ module.exports = (sequelize, DateTypes) => {
                     msg: "Title should be letters only (accented letters admitted)."
                 }
             }
-        }
+        },
 
     });
 

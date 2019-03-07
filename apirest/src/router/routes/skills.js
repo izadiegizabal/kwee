@@ -14,10 +14,11 @@ module.exports = (app, db) => {
 
             return res.status(200).json({
                 ok: true,
-                skills: await db.skills.findAll()
+                message: 'Listing all skills',
+                data: await db.skills.findAll()
             });
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            return next({ type: 'error', error: 'Error getting data' });
         }
     });
 
@@ -34,8 +35,8 @@ module.exports = (app, db) => {
             offset = limit * (page - 1);
 
             if (page > pages) {
-                return res.status(400).json({
-                    ok: false,
+                return res.status(200).json({
+                    ok: true,
                     message: `It doesn't exist ${ page } pages`
                 })
             }
@@ -62,7 +63,8 @@ module.exports = (app, db) => {
         try {
             res.status(200).json({
                 ok: true,
-                skill: await db.skills.findOne({
+                message: 'Listing skill',
+                data: await db.skills.findOne({
                     where: { id }
                 })
             });
@@ -73,36 +75,36 @@ module.exports = (app, db) => {
     });
 
     // POST single skill
-    app.post('/skill', checkAdmin, async(req, res, next) => {
+    app.post('/skill', checkToken, async(req, res, next) => {
         
         try {
-            if ( req.body.img && req.body.name ) {
-                var imgName = uploadImg(req, res, next, 'skills');
-                    req.body.img = imgName;
-                let skill = await db.skills.create({
-                    name: req.body.name,
-                    img: req.body.img
-                });
-                res.status(201).json({
+            if ( req.body.name ) {
+                if ( req.body.img ) {
+                    var imgName = uploadImg(req, res, next, 'skills');
+                        req.body.img = imgName;
+                }
+
+                await db.skills.create(req.body);
+                
+                return res.status(201).json({
                     ok: true,
                     message: `Skill has been created.`,
-                    skill
                 });
             } else {
-                res.status(400).json({
+                return res.status(400).json({
                     ok: false,
-                    message: 'Name and img are required'
+                    message: 'Name are required'
                 })
             }
         } catch (err) {
             deleteFile('uploads/skills/' + req.body.img);
-            next({ type: 'error', error: err.message });
+            return next({ type: 'error', error: err.message });
         }
 
     });
 
     // PUT single skill
-    app.put('/skill/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
+    app.put('/skill/:id([0-9]+)', checkToken, async(req, res, next) => {
         const id = req.params.id;
         const body = req.body;
 
@@ -116,18 +118,14 @@ module.exports = (app, db) => {
                 var imgName = uploadImg(req, res, next, 'skills');
                     body.img = imgName;
             }
-            res.status(200).json({
+            return res.status(200).json({
                 ok: true,
                 skill: await db.skills.update(body, {
                     where: { id }
                 })
             });
-            // json
-            // skill: [1] -> Updated
-            // skill: [0] -> Not updated
-            // empty body will change 'updateAt'
         } catch (err) {
-            next({ type: 'error', error: err.errors[0].message });
+            return next({ type: 'error', error: err.errors[0].message });
         }
     });
 
@@ -136,17 +134,16 @@ module.exports = (app, db) => {
         const id = req.params.id;
 
         try {
-            res.json({
-                ok: true,
-                skill: await db.skills.destroy({
-                    where: { id: id }
-                })
+            await db.skills.destroy({
+                where: { id: id }
             });
-            // Respuestas en json
-            // skill: 1 -> Deleted
-            // skill: 0 -> Skill doesn't exists
+
+            return res.json({
+                ok: true,
+                message: 'Skill created'
+            });
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            return next({ type: 'error', error: 'Error getting data' });
         }
     });
 }

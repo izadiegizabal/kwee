@@ -26,9 +26,9 @@ module.exports = (app, db) => {
                             fk_applicant: ratings[i].fk_applicant,
                             fk_offer: ratings[i].fk_offer,
                             overall: ratings[j].overall,
-                            efficience: rating_applicants[j].efficience,
+                            efficiency: rating_applicants[j].efficiency,
                             skills: rating_applicants[j].skills,
-                            puntuality: rating_applicants[j].puntuality,
+                            punctuality: rating_applicants[j].punctuality,
                             hygiene: rating_applicants[j].hygiene,
                             teamwork: rating_applicants[j].teamwork,
                             createdAt: ratings[j].createdAt
@@ -60,8 +60,8 @@ module.exports = (app, db) => {
             offset = limit * (page - 1);
 
             if (page > pages) {
-                return res.status(400).json({
-                    ok: false,
+                return res.status(200).json({
+                    ok: true,
                     message: `It doesn't exist ${ page } pages`
                 })
             }
@@ -98,9 +98,9 @@ module.exports = (app, db) => {
                 const ratingApplicant = {
                     id: rating.id,
                     overall: rating_applicant.overall,
-                    efficience: rating_applicant.efficience,
+                    efficiency: rating_applicant.efficiency,
                     skills: rating_applicant.skills,
-                    puntuality: rating_applicant.puntuality,
+                    punctuality: rating_applicant.punctuality,
                     hygiene: rating_applicant.hygiene,
                     teamwork: rating_applicant.teamwork,
                     createdAt: rating_applicant.createdAt
@@ -112,8 +112,8 @@ module.exports = (app, db) => {
                 });
             } else {
 
-                return res.status(400).json({
-                    ok: false,
+                return res.status(200).json({
+                    ok: true,
                     message: 'RatingApplicant doesn\'t exist',
                 });
             }
@@ -246,9 +246,9 @@ module.exports = (app, db) => {
             let rating_applicant = {};
 
             rating_applicant.ratingId = rating.id;
-            rating_applicant.efficience = body.efficience;
+            rating_applicant.efficiency = body.efficiency;
             rating_applicant.skills = body.skills;
-            rating_applicant.puntuality = body.puntuality;
+            rating_applicant.punctuality = body.punctuality;
             rating_applicant.hygiene = body.hygiene;
             rating_applicant.teamwork = body.teamwork;
 
