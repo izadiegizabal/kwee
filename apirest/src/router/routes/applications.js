@@ -153,55 +153,65 @@ module.exports = (app, db) => {
         try {
             let id = tokenId.getTokenId(req.get('token'));
 
-            let applicant = await db.applicants.findOne({
-                    where: { userId: id }
-                })
-                .then(_applicant => {
-                    if (_applicant) {
-                        _applicant.getOffers({ where: { id: body.fk_offer } })
-                            .then(offers => {
-                                if (offers) {
-                                    let offer = offers[0];
+            await db.users.findOne({where:{id}})
+            .then( async userExists => {
+                if( userExists ) {
+                    
+                    let applicant = await db.applicants.findOne({
+                            where: { userId: body.fk_applicant }
+                        })
+                        .then(async _applicant => {
+                            if (_applicant) {
+                                _applicant.getOffers({ where: { id: body.fk_offer } })
+                                    .then(offers => {
+                                        if (offers) {
+                                            let offer = offers[0];
+        
+                                            if (body.status) {
+                                                offer.applications.status = body.status;
+        
+                                                offer.applications.save()
+                                                    .then(ret => {
+                                                        if (ret.isRejected) {
+                                                            // Problems
+                                                            return res.status(400).json({
+                                                                ok: false,
+                                                                error: "Update REJECTED."
+                                                            });
+                                                        } else {
+                                                            // Everything ok
+                                                            return res.status(201).json({
+                                                                ok: true,
+                                                                error: "Application updated to " + body.status
+                                                            });
+                                                        }
+                                                    })
+                                            } else {
+                                                return res.status(400).json({
+                                                    ok: false,
+                                                    error: "Updating an application requires a status value."
+                                                });
+                                            }
+                                        } else {
+                                            return res.status(200).json({
+                                                ok: true,
+                                                error: "Application with OfferId " + body.fk_offer + " on ApplicantId " + body.fk_applicant + " doesn't exist."
+                                            });
+                                        }
+                                    })
+                            } else {
+        
+                            }
+                        })
+                }
+                else {
+                    return res.status(400).json({
+                        ok: false,
+                        error: "Sorry, user not exists."
+                    });
+                }
+            })
 
-                                    if (body.status) {
-                                        offer.applications.status = body.status;
-
-                                        offer.applications.save()
-                                            .then(ret => {
-                                                if (ret.isRejected) {
-                                                    // Problems
-                                                    return res.status(400).json({
-                                                        ok: false,
-                                                        error: "Update REJECTED."
-                                                    });
-                                                } else {
-                                                    // Everything ok
-                                                    return res.status(201).json({
-                                                        ok: true,
-                                                        error: "Application updated to " + body.status
-                                                    });
-                                                }
-                                            })
-                                    } else {
-                                        return res.status(400).json({
-                                            ok: false,
-                                            error: "Updating an application requires a status value."
-                                        });
-                                    }
-                                } else {
-                                    return res.status(200).json({
-                                        ok: true,
-                                        error: "Application with OfferId " + body.fk_offer + " on ApplicantId " + body.fk_applicant + " doesn't exist."
-                                    });
-                                }
-                            })
-                    } else {
-                        return res.status(400).json({
-                            ok: false,
-                            error: "Sorry, you are not applicant"
-                        });
-                    }
-                })
         } catch (err) {
             next({ type: 'error', error: err.toString() });
         }
