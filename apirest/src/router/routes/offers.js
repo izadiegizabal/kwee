@@ -91,6 +91,9 @@ module.exports = (app, db) => {
                 buildDateEndRange(must, dateEnd_gte, dateEnd_gt, dateEnd_lte, dateEnd_lt);
                 buildDatePublishedRange(must, datePublished_gte, datePublished_gt, datePublished_lte, datePublished_lt);
 
+                
+                // TODO: buildoffererIndex(must, datePublished_gte, datePublished_gt, datePublished_lte, datePublished_lt);
+
 
                 var searchParams = {
                     index: 'offers',
@@ -191,7 +194,7 @@ module.exports = (app, db) => {
                 
                 for (var offer in offers) {
                     let offersAux = [],
-                    offersToShowAux = [];
+                        offersToShowAux = [];
                     offersAux.push(offers[offer]);
                     offersShow.push(prepareOffersToShow(offersAux, offersToShowAux, users.find(element => offers[offer]['fk_offerer'] == element.id))[0]);
                 }
@@ -238,14 +241,90 @@ module.exports = (app, db) => {
             });
 
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            return next({ type: 'error', error: 'Error getting data' });
+        }
+    });
+
+    app.get('/offer/:id([0-9]+)/applications', async(req, res, next) => {
+        const id = req.params.id;
+        let status = req.query.status;
+        try {
+            saveLogES('GET', `offer/${id}/applications`);
+            
+            let applications = await db.applications.findAll({ where: { fk_offer: id } });
+
+            if ( applications ) {
+                var attributes = {
+                    exclude: ['password', 'root']
+                };
+                // But paginated APPLICANTS
+                var output = await pagination(
+                    db.applicants,
+                    "applicants",
+                    req.query.limit,
+                    req.query.page,
+                    attributes,
+                    res,
+                    next
+                );
+                    
+                if ( output.data ) {
+                    let users = await db.users.findAll();
+                    let offers = await db.offers.findAll();
+                    var applicantsToShow = [];
+                    let applicants = output.data;
+                    if ( status ) offers = offers.filter(o => o.status == status);
+
+                    applications.forEach(application => {
+                        applicants.forEach(applicant => {
+                            if ( application.fk_applicant === applicant.userId ) {
+                                let user = users.find(usu => applicant.userId == usu.id);
+                                let offer = offers.find(offer => application.fk_offer == offer.id);
+                                let app = {
+                                    applicantId: user.id,
+                                    applicationId: application.id,
+                                    offerId: offer.id,
+                                    applicantStatus: user.status,
+                                    applicationStatus: application.status,
+                                    offerStatus: offer.status,
+                                    index: user.index,
+                                    name: user.name,
+                                    email: user.email,
+                                    city: applicant.city,
+                                    dateBorn: applicant.dateBorn,
+                                    premium: applicant.premium,
+                                    lastAccess: user.lastAccess,
+                                    img: user.img,
+                                    bio: user.bio,
+                                };
+                                applicantsToShow.push(app);
+                            }
+                        });
+                    });
+
+                    return res.json({
+                        ok: true,
+                        message: 'Listing applicants applicating to this offer',
+                        data: applicantsToShow,
+                        total: applicantsToShow.length
+                    })
+                }
+            } else {
+                return res.json({
+                    ok: true,
+                    message: 'No applications to this offer'
+                })
+            }
+
+        } catch (err) {
+            return next({ type: 'error', error: err.message });
         }
     });
     
     // POST single offer
     app.post('/offer', async(req, res, next) => {
 
-        let body = req.body
+        let body = req.body;
 
         try {
             saveLogES('POST', 'offer');
@@ -306,7 +385,7 @@ module.exports = (app, db) => {
                 } else {
                     return res.status(400).json({
                         ok: false,
-                        message: `No created`,
+                        message: `No created`
                     });
                 }
             });
