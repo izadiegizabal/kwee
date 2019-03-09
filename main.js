@@ -517,7 +517,7 @@ async function offerersAccepts(){
 							await instance.put('/application',{
 								"fk_offer": applicationElement.offerId,
 								"fk_applicant": applicationElement.applicantId,
-								"status": 1
+								"status": 0
 							},
 							{
 								headers:{token,'Content-Type': 'application/json; charset=utf-8'}
@@ -537,7 +537,7 @@ async function offerersAccepts(){
 					// close offer
 					await instance.put('/offer/'+offerElement,
 					{
-						"status":1
+						"status": 1
 					},
 					{
 						headers:{token,'Content-Type': 'application/json; charset=utf-8'}
