@@ -38,8 +38,8 @@ const error = chalk.bold.red;
 const warning = chalk.keyword('orange');
 ////////////////////////////////////////
 
-const url = 'https://www.kwee.ovh/api';
-const __url = 'http://localhost:3000';
+const __url = 'https://www.kwee.ovh/api';
+const url = 'http://localhost:3000';
 const _url = 'http://h203.eps.ua.es/api';
 
 let obj = 'No file';
@@ -47,6 +47,10 @@ let offers = 'No file';
 let applicants = 'No file';
 
 let totalOffers = 0;
+let limit = null;
+let applicationsDone = [];
+let offersMap = new Map();
+
 
 let headersOP = {  
     "content-type": "application/json",
@@ -286,7 +290,7 @@ function randomInt(min,max) // min and max included
     return Math.floor(Math.random()*(max-min+1)+min);
 }
 
-async function offerersAndOffers(limit) {
+async function offerersAndOffers() {
 	// offerers JSON
 	obj = getFileJSON('./CreateOfferers.json');
 	// offers JSON
@@ -298,6 +302,7 @@ async function offerersAndOffers(limit) {
 
 	await asyncForEach( obj, limit, async (e,i) => {
 			// sign up bussiness
+			let offersCreated = [];
 			await instance.post('/offerer', {
 				"name": e.name,
 				"password": e.password,
@@ -316,7 +321,7 @@ async function offerersAndOffers(limit) {
 	
 			})
 			.then( async res => { 
-				log(i + " " + res.data.message);
+				log(" " + res.data.message);
 				//console.log(res.data) 
 				
 				// login bussiness
@@ -327,7 +332,7 @@ async function offerersAndOffers(limit) {
 				.then( async loginSuccess => {
 					log(" " + success(loginSuccess.data.message))
 					let token = loginSuccess.data.token;
-
+					let id = loginSuccess.data.data.id;
 					// create random number of offers
 					let _limit = randomInt(0,10);
 
@@ -365,12 +370,17 @@ async function offerersAndOffers(limit) {
 						})
 						.then( offerCreated => {
 							log(" " + offerCreated.data.message);
-							// console.log(offerCreated);
+							offersCreated.push(offerCreated.data.data.id);
+							
 						})
 						.catch( offerError => {
 							log(error("Error creating offer: ") + offerError.response.data.message);
 						})
 
+					})
+					.then( allOffersCreated => {
+						offersMap.set(id,offersCreated);
+						offersCreated = [];
 					});
 					console.log(warning("-----"));
 				})
@@ -382,9 +392,15 @@ async function offerersAndOffers(limit) {
 			})
 			.catch(e => {
 				log(error("SignUp error: "));
-				console.log(e.response.data);
+				if(e.response && e.response.data) {
+					console.log(e.response.data);
+				}
+				else{
+					console.log(e);
+				}
 				// console.log(e.response.data.message);
 			});
+			
 	});
 
 	// get total number of offers to apply
@@ -393,12 +409,14 @@ async function offerersAndOffers(limit) {
 		totalOffers = res.data.total;
 	});
 
+	console.log(offersMap);
+
 }
 
-async function applicantsAndApplications(limit) {
+async function applicantsAndApplications() {
 	applicants = getFileJSON('./tests/applicants.json');
 
-	await asyncForEach( applicants,limit, async (element, i) => {
+	await asyncForEach( applicants, limit, async (element, i) => {
 		// signUp applicant
 		await instance.post('/applicant', {
 			// body
@@ -412,7 +430,7 @@ async function applicantsAndApplications(limit) {
 		})
 		.then( async signUpSuccess => {
 			// signUp applicant successful
-			log(i + " " + signUpSuccess.data.message);
+			log(" " + signUpSuccess.data.message);
 			
 			// login applicant
 			await instance.post('/login', {
@@ -445,7 +463,8 @@ async function applicantsAndApplications(limit) {
 
 				})
 				.then( application => {
-					log(" application success");
+					log(" application success")//. ApplicantId:" + loginSuccess.data.data.id + " fk_offer:" + arrApplications);
+					log( application.data)
 				})
 				.catch( err => {
 					log(error("Error applying: "));
@@ -462,7 +481,120 @@ async function applicantsAndApplications(limit) {
 }
 
 async function offerersAccepts(){
-	
+	const offerers = getFileJSON('./CreateOfferers.json');
+	let closed = [];
+
+	await asyncForEach( offerers, limit, async (element, index ) => {
+		// login
+		let token = null;
+		await instance.post('/login',{
+			"email": element.email,
+			"password": element.password
+		})
+		.then( async loginOK => {
+			token = loginOK.data.token;
+			let offererId = loginOK.data.data.id; 
+			closed = [];
+			log(warning(" " + loginOK.data.data.id + " accepting applications"));
+			
+			// for each offer
+			offersArray = offersMap.get(offererId);
+			console.log("going to close: "+offersArray);
+			await asyncForEach(offersArray, offersArray.length, async (offerElement, index ) => {
+				await instance.get('/offer/' + offerElement + '/applications')
+				.then( async _applications => {
+					console.log("listing applications of offer: " + offerElement);
+					console.log(_applications.data);
+					if(_applications.data && _applications.data.data && _applications.data.data.length > 0){
+						// if exists applications
+						let applications = _applications.data.data;
+						
+						// for each application in the offer
+						await asyncForEach( applications, applications.length, async (applicationElement, index) => {
+							// console.log("offerId: " + applications[application].offerId);
+							// console.log("applicantId: " + applications[application].applicantId);
+
+							await instance.put('/application',{
+								"fk_offer": applicationElement.offerId,
+								"fk_applicant": applicationElement.applicantId,
+								"status": 1
+							},
+							{
+								headers:{token,'Content-Type': 'application/json; charset=utf-8'}
+							})
+							.then( applicationUpdated => { 
+								console.log( success(" application accepted") + " offerId:" + applicationElement.offerId + " applicantId:" + applicationElement.applicantId);
+								applicationsDone.push(applicationElement.applicationId);
+							})
+							.catch( e => { 
+								log(error("application not accepted"));
+								//console.log(e.response.data);
+							});
+						});
+
+					}
+					log(warning("closing offer: " + offerElement))
+					// close offer
+					await instance.put('/offer/'+offerElement,
+					{
+						"status":1
+					},
+					{
+						headers:{token,'Content-Type': 'application/json; charset=utf-8'}
+					})
+					.then( offerClosed => {
+						console.log(" offerClosed " + offerElement);
+						closed.push(offerElement);
+					})
+					.catch( e => {
+						//console.log(log(error("Error closing offer ")) + e)
+						console.log("error closing offer");
+					})
+
+				});
+			});
+		})
+		.then( x => {
+			console.log("offers closed: " + closed);
+		})
+		.catch( e => {
+			log( error("Problem login offerer:"));
+			//console.log(e);
+		})
+
+	});
+}
+
+async function ratings(type){
+	if(type=="applicants"){
+		await asyncForEach( applicationsDone, applicationsDone.length, async (application, index) => {
+			await instance.post('/rating_applicant',{
+				"fk_application": application,
+				"efficiency": randomInt(0,5),
+				"skills": randomInt(0,5),
+				"punctuality": randomInt(0,5),
+				"hygiene": randomInt(0,5),
+				"teamwork": randomInt(0,5),
+			})
+			.then( done => log(" Rating applicant " + success("ok")) )
+			.catch( x => log(error("Problem rating applicant")));
+		});
+	}
+	else if(type=="offerers"){
+		await asyncForEach( applicationsDone, applicationsDone.length, async (application, index) => {
+			await instance.post('/rating_offerer',{
+				"fk_application": application,
+				"salary": randomInt(0,5),
+				"environment": randomInt(0,5),
+				"partners": randomInt(0,5),
+				"services": randomInt(0,5),
+				"installations": randomInt(0,5)
+			})
+			.then( done => log(" Rating offerer " + success("ok")) )
+			.catch( x => log(error("Problem rating applicant")));
+		});
+		
+	}
 }
 
 ////////////////////////////////////////// EXECUTE CODE
@@ -475,21 +607,23 @@ var instance = axios.create({
 });
 async function main() {
 	//signupOfferersAndOffers('./CreateOfferers.json');
-	let max = 10;
+	limit = 10;
 	// 1- SignUp Offerers and publish offers
-	await offerersAndOffers(max);
+	await offerersAndOffers();
 	
 	// 2- Applicants apply to random offers
-	await applicantsAndApplications(max);
+	await applicantsAndApplications();
 	
 	// 3- Offerers accepts random applications
+	log(warning("--"));
+	log(warning("Offerers login"))
 	await offerersAccepts();
 	
 	// 4- Rate offerers
-	// ratings();
+	await ratings("offerers");
 	
 	// 5- Rate applicants
-	// ratings();
+	await ratings("applicants");
 
 
 }	
