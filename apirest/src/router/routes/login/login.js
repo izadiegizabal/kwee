@@ -77,7 +77,10 @@ module.exports = (app, db) => {
             });
 
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            if (err.message == 'Invalid token') {
+                return next({ type: 'error', error: 'Invalid token' });
+            }
+            return next({ type: 'error', error: 'Error getting data' });
         }
     });
 
