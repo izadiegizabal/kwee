@@ -93,42 +93,83 @@ module.exports = (app, db) => {
     // POST single application
     app.post("/application", async(req, res, next) => {
         const body = req.body;
+        const offerToAdd = body.fk_offer;
 
         try {
             let id = tokenId.getTokenId(req.get('token'));
-
+            
             let applicant = await db.applicants.findOne({
                 where: { userId: id }
             });
 
+            let user = await db.users.findOne({
+                where: { id }
+            });
+
+            let msg = 'Applicant ' + user.name + ' has applicated to offers ';
+            let offersToUpdate = [];
+
             if (applicant) {
+                let allOffers = await db.offers.findAll();
+                
+                for (let i = 0; i < offerToAdd.length; i++) {
+                    let checkApplications = allOffers.find(element => element.id == offerToAdd[i] );
+                    if ( checkApplications ) {
+                        if ( checkApplications.currentApplications < checkApplications.maxApplicants ) {
+                            let update = {};
+                            update.id = checkApplications.id;
+                            update.currentApplications = checkApplications.currentApplications + 1;
+                            offersToUpdate.push(update);
+                        } else {
+                            var index = offerToAdd.indexOf(checkApplications.id);
+                            if (index > -1) {
+                                offerToAdd.splice(index, 1);
+                            }
+                            i--;
+                        }
+                    }
+                }
+                
                 let offers = await applicant.getOffers();
 
                 if (offers.length > 0) {
                     for (let i = 0; i < offers.length; i++) {
-                        if (body.fk_offer == offers[i].id) {
-                            return res.status(400).json({
-                                ok: false,
-                                error: "Application already added"
-                            });
+                        for (let j = 0; j < offers.length; j++) {
+                            if (offerToAdd[j] == offers[i].id) {
+                                offerToAdd.splice(j, 1);
+                                offersToUpdate.splice(j, 1);
+                            }
                         }
                     }
                 }
 
-                await applicant.addOffer(body.fk_offer, {
+                await applicant.addOffer(offerToAdd, {
                     through: {
                         status: body.status
                     }
                 }).then(result => {
                     if (result) {
-                        return res.status(201).json({
-                            ok: true,
-                            application: result
-                        });
+                        if (offerToAdd.length > 0){
+                            offersToUpdate.forEach(async update => {
+                                msg += update.id + ' ';
+                                await db.offers.update({currentApplications: update.currentApplications}, { where: {id: update.id}});
+                            });
+
+                            return res.status(201).json({
+                                ok: true,
+                                message: msg,
+                                application: result
+                            });
+                        } else {
+                            return res.status(400).json({
+                                ok: false,
+                                message: "Application not added."
+                            });
+                        }
                     } else {
                         return res.status(400).json({
                             ok: false,
-                            application: "Application not added."
+                            message: "Application not added."
                         });
                     }
                 });
