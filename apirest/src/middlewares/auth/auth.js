@@ -5,7 +5,8 @@ const env = require('../../tools/constants')
 
 class Auth {
     encode(user, expires) {
-        return jwt.sign({ id: user.id }, env.JSONWEBTOKEN_SECRET, { expiresIn: expires ? expires : env.JSONWEBTOKEN_EXPIRES, issuer: env.JSONWEBTOKEN_ISSUER });
+        return jwt.sign({ id: user.id }, env.JSONWEBTOKEN_SECRET, 
+            { expiresIn: expires ? expires : env.JSONWEBTOKEN_EXPIRES, issuer: env.JSONWEBTOKEN_ISSUER });
     }
 
     decode(token) {
