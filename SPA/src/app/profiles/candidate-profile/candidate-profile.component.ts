@@ -5,6 +5,7 @@ import * as fromApp from '../../store/app.reducers';
 import * as ProfilesActions from '../store/profiles.actions';
 import * as fromProfiles from '../store/profiles.reducers';
 import {ActivatedRoute, Router} from '@angular/router';
+import {environment} from '../../../environments/environment';
 
 @Component({
   selector: 'app-candidate-profile',
@@ -116,7 +117,7 @@ export class CandidateProfileComponent implements OnInit {
   getProfileImg() {
     this.profilesState.subscribe(s => {
       if (s.candidate.img) {
-        this.imgPath = s.candidate.img;
+        this.imgPath = environment.apiUrl + 'image/applicants/' + s.candidate.img;
       } else {
         this.imgPath = '../../../../assets/img/defaultProfileImg.png';
       }

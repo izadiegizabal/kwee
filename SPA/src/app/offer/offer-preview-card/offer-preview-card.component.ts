@@ -3,6 +3,7 @@ import {getTimePassed, getUrlfiedString} from '../../shared/utils.service';
 import {MatDialog} from '@angular/material';
 import {SnsShareDialogComponent} from '../../shared/sns-share/sns-share-dialog/sns-share-dialog.component';
 import {ContractType, JobDurationUnit, SalaryFrequency, WorkLocationType} from '../../../models/Offer.model';
+import {environment} from '../../../environments/environment';
 
 
 @Component({
@@ -89,4 +90,9 @@ export class OfferPreviewCardComponent implements OnInit {
     return url;
   }
 
+  getImg() {
+    return this.offer.img ? environment.apiUrl + 'image/offerers/' + this.offer.img :
+      'https://cdn.vox-cdn.com/thumbor/Pkmq1nm3skO0-j693JTMd7RL0Zk=/0x0:2012x1341/1200x800/filters:focal(0x0:2012x1341)/' +
+      'cdn.vox-cdn.com/uploads/chorus_image/image/47070706/google2.0.0.jpg';
+  }
 }
