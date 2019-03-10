@@ -153,6 +153,55 @@ function sendEmailResetPassword(user, res) {
     });
 }
 
+function sendEmailSelected(user, res, offer) {
+    // Generate test SMTP service account from gmail
+    let data = fs.readFileSync(path.join(__dirname, '../templates/selected.html'), 'utf-8');
+    let token = auth.auth.encode(user, '1h');
+    
+    // let urlValidation = `${ env.URL }/email-verified/` + token;
+
+    let urlValidation = `${ env.URL }/reset-password/` + token;
+
+    //let urlValidation = `http://localhost:4200/reset-password/` + token;
+
+    nodemailer.createTestAccount((err, account) => {
+        // create reusable transporter object using the default SMTP transport
+
+        let transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false, // true for 465, false for other ports
+            auth: {
+                user: env.EMAIL,
+                pass: env.EMAIL_PASSWORD
+            }
+        });
+
+        // setup email data with unicode symbols
+        let mailOptions = {
+            from: '"Kwee 👻" <hello@kwee.ovh>', // sender address
+            to: user.email,
+            subject: 'You are selected! ✔', // Subject line
+            html: data.replace('@@name@@', user.email).replace('@@url@@', urlValidation).replace('@@offer@@', offer)
+        };
+
+        // send mail with defined transport object
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                return res.status(400).json({
+                    ok: false,
+                    message: "Error sending email reset password"
+                });
+            }
+            return res.status(200).json({
+                ok: true,
+                message: "Reset password email sended",
+                //token
+            });
+        });
+    });
+}
+
 function isEmpty(obj) {
     for(var key in obj) {
         if(obj.hasOwnProperty(key))
@@ -417,10 +466,11 @@ function prepareOffersToShow(offers, offersShow, user){
     return offersShow;
 }
 
-function saveLogES(action, actionToRoute){
+function saveLogES(action, actionToRoute, user){
     moment.locale('es');
 
     let body = {
+        user,
         action, 
         actionToRoute,
         date: moment().format('YYYY-MM-DD'),
@@ -444,6 +494,7 @@ module.exports = {
     logger,
     sendVerificationEmail,
     sendEmailResetPassword,
+    sendEmailSelected,
     pagination,
     validateDate,
     uploadFile,

@@ -14,7 +14,7 @@ module.exports = (app, db) => {
 
     app.post('/applicants/search', async(req, res, next) => {
         try {
-            saveLogES('POST', 'applicants/search');
+            saveLogES('POST', 'applicants/search', 'Visitor');
             let query = req.query;
             let page = Number(query.page);
             let limit = Number(query.limit);
@@ -127,7 +127,7 @@ module.exports = (app, db) => {
     app.get('/applicants', async(req, res, next) => {
         try {
             await logger.saveLog('GET', 'applicant', null, res);
-            saveLogES('GET', 'applicants');
+            saveLogES('GET', 'applicants', 'Visitor');
 
             var attributes = {
                 exclude: ['password', 'root']
@@ -212,7 +212,7 @@ module.exports = (app, db) => {
         
         try {
             await logger.saveLog('GET', 'applicant', id, res);
-            saveLogES('GET', 'applicant/id/applications');
+            saveLogES('GET', 'applicant/id/applications', 'Visitor');
 
             let message = ``;
             
@@ -443,7 +443,7 @@ module.exports = (app, db) => {
             body.name ? user.name = body.name : null;
             body.email ? user.email = body.email : null;
 
-            saveLogES('POST', 'applicant');
+            saveLogES('POST', 'applicant', body.name);
             
             return db.sequelize.transaction(transaction => {
                 return db.users.create(user, { transaction: transaction })
@@ -490,8 +490,12 @@ module.exports = (app, db) => {
             let applicant = await db.applicants.findOne({
                 where: { userId: id }
             });
+
+            let aUser = await db.users.findOne({
+                where: { id }
+            });
             if ( applicant ) {
-                saveLogES('POST', 'applicant/info');
+                saveLogES('POST', 'applicant/info', aUser.name);
                 var user = {};
                 if ( body.img && checkImg(body.img) ) {
                     var imgName = uploadImg(req, res, next, 'applicants');
@@ -549,8 +553,11 @@ module.exports = (app, db) => {
         try {
             let logId = await logger.saveLog('PUT', 'applicant', null, res);
             let id = tokenId.getTokenId(req.get('token'));
+            let user = await db.users.findOne({
+                where: { id }
+            });
             logger.updateLog(logId, true, id);
-            saveLogES('PUT', 'applicant');
+            saveLogES('PUT', 'applicant', user.name);
             updateApplicant(id, req, res, next);
         } catch (err) {
             return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
@@ -563,7 +570,7 @@ module.exports = (app, db) => {
 
         try {
             await logger.saveLog('PUT', 'applicant', id, res);
-            saveLogES('PUT', 'applicant/id');
+            saveLogES('PUT', 'applicant/id', 'Admin');
             updateApplicant(id, req, res, next);
         } catch (err) {
             return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
@@ -576,12 +583,16 @@ module.exports = (app, db) => {
             let id = tokenId.getTokenId(req.get('token'));
             
             await logger.saveLog('DELETE', 'applicant', id, res);
-            saveLogES('DELETE', 'applicant');
-
+            
             let applicant = await db.applicants.findOne({
                 where: { userId: id }
             });
-
+            
+            let user = await db.users.findOne({
+                where: { id }
+            });
+            saveLogES('DELETE', 'applicant', user.name);
+            
             if (applicant) {
                 let applicantToDelete = await db.applicants.destroy({
                     where: { userId: id }
@@ -617,7 +628,7 @@ module.exports = (app, db) => {
 
         try {
             await logger.saveLog('DELETE', 'applicant', id, res);
-            saveLogES('DELETE', 'applicant/id');
+            saveLogES('DELETE', 'applicant/id', 'Admin');
 
             let applicant = await db.applicants.findOne({
                 where: { userId: id }

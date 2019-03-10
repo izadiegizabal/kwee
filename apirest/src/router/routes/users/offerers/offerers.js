@@ -15,7 +15,7 @@ module.exports = (app, db) => {
 
     app.post('/offerers/search', async(req, res, next) => {
         try {
-            saveLogES('POST', 'offerers/search');
+            saveLogES('POST', 'offerers/search', 'Visitor');
 
             let query = req.query;
             let page = Number(query.page);
@@ -125,7 +125,7 @@ module.exports = (app, db) => {
     // GET all users offerers
     app.get('/offerers', async(req, res, next) => {
         try {
-            saveLogES('GET', 'offerers');
+            saveLogES('GET', 'offerers', 'Visitor');
             await logger.saveLog('GET', 'offerers', null, res);
 
             var attributes = {
@@ -217,7 +217,7 @@ module.exports = (app, db) => {
         
         try {
             await logger.saveLog('GET', 'offerer', id, res);
-            saveLogES('GET', 'offerer/id/offers');
+            saveLogES('GET', 'offerer/id/offers', 'Visitor');
             
             let message = ``;
 
@@ -320,7 +320,7 @@ module.exports = (app, db) => {
         const id = req.params.id;
         try {
             await logger.saveLog('GET', 'offerer', id, res);
-            saveLogES('GET', 'offerer/id');
+            saveLogES('GET', 'offerer/id', 'Visitor');
 
             let user = await db.users.findOne({
                 where: { id }
@@ -384,8 +384,7 @@ module.exports = (app, db) => {
 
         try {
             await logger.saveLog('POST', 'offerer', null, res);
-            saveLogES('POST', 'offerer');
-
+            
             const body = req.body;
             let user = {};
             body.password ? user.password = bcrypt.hashSync(body.password, 10) : null;
@@ -393,6 +392,7 @@ module.exports = (app, db) => {
             body.bio ? user.bio = body.bio : null;
             body.email ? user.email = body.email : null;
             var uservar;
+            saveLogES('POST', 'offerer', body.name);
 
             if ( body.img && checkImg(body.img) ) {
                 
@@ -453,9 +453,12 @@ module.exports = (app, db) => {
 
         try {
             let logId = await logger.saveLog('PUT', 'offerer', null, res);
-            saveLogES('PUT', 'offerer');
-
+            
             let id = tokenId.getTokenId(req.get('token'));
+            let user = await db.users.findOne({
+                where: { id }
+            });
+            saveLogES('PUT', 'offerer', user.name);
             logger.updateLog(logId, true, id);
             updateOfferer(id, req, res, next);
         } catch (err) {
@@ -482,11 +485,16 @@ module.exports = (app, db) => {
             let id = tokenId.getTokenId(req.get('token'));
             
             await logger.saveLog('DELETE', 'offerer', id, res);
-            saveLogES('DELETE', 'offerer');
-
+            
             let offerer = await db.offerers.findOne({
                 where: { userId: id }
             });
+            
+            let user = await db.users.findOne({
+                where: { id }
+            });
+            
+            saveLogES('DELETE', 'offerer', user.name);
 
             if (offerer) {
                 let offererToDelete = await db.offerers.destroy({
@@ -523,7 +531,7 @@ module.exports = (app, db) => {
 
         try {
             await logger.saveLog('DELETE', 'offerer', id, res);
-            saveLogES('DELETE', 'offerer/id');
+            saveLogES('DELETE', 'offerer/id', 'Admin');
 
             let offerer = await db.offerers.findOne({
                 where: { userId: id }
