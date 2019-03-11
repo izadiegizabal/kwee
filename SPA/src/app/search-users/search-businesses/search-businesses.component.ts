@@ -5,10 +5,8 @@ import * as fromAdmin from '../../admin/store/admin.reducers';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
 import * as AdminActions from '../../admin/store/admin.actions';
-import {FormControl, FormGroup} from '@angular/forms';
-import {Distances, isStringNotANumber} from '../../../models/Offer.model';
 import {BreakpointObserver} from '@angular/cdk/layout';
-import {BusinessIndustries, BusinessSize} from '../../../models/Business.model';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-search-businesses',
@@ -27,31 +25,11 @@ export class SearchBusinessesComponent implements OnInit {
   adminState: Observable<fromAdmin.State>;
 
 
-  // FILTERS
-  filters: FormGroup;
-
-  distances = Object.keys(Distances)
-    .filter(isStringNotANumber)
-    .map(key => ({value: Distances[key], viewValue: key}));
-  industries = Object.keys(BusinessIndustries)
-    .filter(isStringNotANumber)
-    .map(key => ({value: BusinessIndustries[key], viewValue: key}));
-  openOfferNum = [
-    {value: 0, viewValue: 'Doesn\'t matter'},
-    {value: 1, viewValue: 'More than 1'},
-    {value: 3, viewValue: 'More than 3'},
-    {value: 8, viewValue: 'More than 8'},
-    {value: 12, viewValue: 'More than 12'},
-  ];
-
-  companySizes = Object
-    .keys(BusinessSize)
-    .filter(isStringNotANumber)
-    .map(key => ({value: BusinessSize[key], viewValue: key}));
-
   constructor(
     private store$: Store<fromApp.AppState>,
-    public media: BreakpointObserver) {
+    public media: BreakpointObserver,
+    private router: Router,
+    private activatedRoute: ActivatedRoute) {
   }
 
   // Filter sidebar
@@ -69,21 +47,16 @@ export class SearchBusinessesComponent implements OnInit {
     this.store$.dispatch(new AdminActions.TryGetBusinesses({page: 1, limit: 5}));
     this.adminState = this.store$.pipe(select(state => state.admin));
 
-    this.filters = new FormGroup({
-        'location': new FormControl(),
-        'distance': new FormControl(),
-        'industry': new FormControl(),
-        'foundationDate': new FormControl(),
-        'minIndex': new FormControl(0),
-        'minRatings': new FormControl(0),
-        'openOffers': new FormControl(),
-        'companySize': new FormControl(),
-        // TODO: complete this
-      }
-    );
+    this.activatedRoute.queryParams
+      .subscribe(query => {
+        console.log(query);
+        this.searchCallApi();
+      });
+
   }
 
   changePage() {
+    // TODO: complete this
     this.store$.dispatch(new AdminActions.TryGetBusinesses({page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize}));
   }
 
@@ -94,5 +67,17 @@ export class SearchBusinessesComponent implements OnInit {
   applyFilters() {
     this.drawer.toggle();
     window.scrollTo(0, 0);
+  }
+
+  onSearch(params: string) {
+    let searchParams = params.toLowerCase().replace(/ /g, '+');
+    if (!searchParams) {
+      searchParams = null;
+    }
+    this.router.navigate(['/search-businesses'], {queryParams: {keywords: searchParams}, queryParamsHandling: 'merge'});
+  }
+
+  searchCallApi() {
+    // TODO: complete this
   }
 }

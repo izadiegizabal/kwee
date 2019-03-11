@@ -53,6 +53,7 @@ export class SearchCandidatesComponent implements OnInit {
   }
 
   changePage() {
+    // TODO: complete this
     // let query = '';
     // if (window.location.href.split('?')[1]) {
     //   query = '&' + window.location.href.split('?')[1];
@@ -87,6 +88,7 @@ export class SearchCandidatesComponent implements OnInit {
 
 
   searchCallApi() {
+    // TODO: complete this
     // let query = '';
     // if (window.location.href.split('?')[1]) {
     //   query = '&' + window.location.href.split('?')[1];

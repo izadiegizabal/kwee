@@ -10,6 +10,8 @@ import {StoreModule} from '@ngrx/store';
 import {adminReducer} from '../../admin/store/admin.reducers';
 import {EffectsModule} from '@ngrx/effects';
 import {AdminEffects} from '../../admin/store/admin.effects';
+import {FiltersBusinessesModule} from '../../shared/filters/filters-businesses/filters-businesses.module';
+
 
 
 @NgModule({
@@ -23,6 +25,7 @@ import {AdminEffects} from '../../admin/store/admin.effects';
     SearchBusinessesRoutingModule,
     CandidatePreviewCardModule,
     SearchbarModule,
+    FiltersBusinessesModule,
     StoreModule.forFeature('admin', adminReducer),
     EffectsModule.forFeature([AdminEffects])
   ],

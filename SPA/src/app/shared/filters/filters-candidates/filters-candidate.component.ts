@@ -2,9 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FormArray, FormControl, FormGroup} from '@angular/forms';
 import {WorkFields} from '../../../../models/Candidate.model';
 import {Distances, isStringNotANumber} from '../../../../models/Offer.model';
-import {BreakpointObserver} from '@angular/cdk/layout';
-import {ActivatedRoute, Router} from '@angular/router';
-import {HttpClient} from '@angular/common/http';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-filters-candidate',
@@ -27,10 +25,7 @@ export class FiltersCandidateComponent implements OnInit {
     .map(key => ({value: Distances[key], viewValue: key}));
 
 
-  constructor(private router: Router,
-              private activatedRoute: ActivatedRoute,
-              public media: BreakpointObserver,
-              private http: HttpClient) {
+  constructor(private router: Router) {
   }
 
   ngOnInit() {
@@ -70,7 +65,7 @@ export class FiltersCandidateComponent implements OnInit {
       this.router.navigate(['/search-candidates'],
         {
           queryParams: {
-            index: JSON.stringify({'gt': this.filters.controls['minIndex'].value})
+            index: JSON.stringify({'gte': this.filters.controls['minIndex'].value})
           }, queryParamsHandling: 'merge'
         });
     });

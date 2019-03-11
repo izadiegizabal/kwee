@@ -9,84 +9,7 @@
                [opened]="!isMobile()"
                class="mat-typography">
 
-    <div class="container">
-      <h2>Filters</h2>
-      <form [formGroup]="filters" fxLayout="column">
-
-        <h3>Minimum Index</h3>
-        <section fxLayout="column">
-          <mat-slider formControlName="minIndex" max="100" min="0" thumbLabel></mat-slider>
-        </section>
-
-        <h3>Minimum Amount of Ratings</h3>
-        <section fxLayout="column">
-          <mat-slider formControlName="minRatings" max="100" min="0" thumbLabel></mat-slider>
-        </section>
-
-        <mat-form-field>
-          <input formControlName="location" matInput placeholder="Location" type="text">
-          <button (click)="filters.controls['location'].reset('')" *ngIf="filters.controls['location'].value"
-                  aria-label="Clear" mat-button
-                  mat-icon-button
-                  matSuffix>
-            <mat-icon>close</mat-icon>
-          </button>
-        </mat-form-field>
-
-        <mat-form-field>
-          <mat-select formControlName="distance" placeholder="Distance">
-            <mat-option *ngFor="let distance of distances" [value]="distance.value">
-              {{distance.viewValue}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field>
-          <mat-select formControlName="openOffers" placeholder="Open Positions">
-            <mat-option *ngFor="let num of openOfferNum" [value]="num.value">
-              {{num.viewValue}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field>
-          <mat-select formControlName="companySize" placeholder="Size">
-            <mat-option *ngFor="let size of companySizes" [value]="size.value">
-              {{size.viewValue}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field>
-          <mat-select formControlName="foundationDate" placeholder="Foundation Date">
-            <mat-option value="1">
-              Less than a year ago
-            </mat-option>
-            <mat-option value="5">
-              Less than 5 years ago
-            </mat-option>
-            <mat-option value="10">
-              Less than 10 years ago
-            </mat-option>
-            <mat-option value="100">
-              More than 10 years ago
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <h3 style="margin-top: 16px">Industry</h3>
-        <section fxLayout="column">
-          <mat-checkbox *ngFor="let industry of industries">
-            {{industry.viewValue}}
-          </mat-checkbox>
-        </section>
-
-      </form>
-
-      <div fxLayout="row" fxLayoutAlign="end end" style="margin-top: 16px" fxHide.gt-sm>
-        <button mat-raised-button color="primary" (click)="applyFilters()">Apply Filters</button>
-      </div>
-    </div>
+    <app-filters-businesses></app-filters-businesses>
 
   </mat-sidenav>
 
@@ -101,7 +24,7 @@
       fxLayoutAlign="center center"
       fxLayoutGap="8px">
       <app-searchbar
-        fxFlex="40%" fxFlex.lt-lg="60%">
+        fxFlex="40%" fxFlex.lt-lg="60%" (search)="onSearch($event)">
       </app-searchbar>
       <app-orderby-button></app-orderby-button>
       <button color="primary"
@@ -112,8 +35,8 @@
     </div>
 
     <div *ngIf="(adminState | async).businesses" fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">
-      <app-candidate-preview-card *ngFor="let user of (adminState | async).businesses.data;" [user]="user">
-      </app-candidate-preview-card>
+      <!--<app-candidate-preview-card *ngFor="let user of (adminState | async).businesses.data;" [user]="user">-->
+      <!--</app-candidate-preview-card>-->
     </div>
 
     <div *ngIf="!(adminState | async).businesses" fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">
