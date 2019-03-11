@@ -9,6 +9,8 @@ import {BreakpointObserver} from '@angular/cdk/layout';
 import {FormArray, FormControl, FormGroup} from '@angular/forms';
 import {Distances, isStringNotANumber} from '../../../models/Offer.model';
 import {WorkFields} from '../../../models/Candidate.model';
+import {ActivatedRoute, Router} from '@angular/router';
+import * as OffersActions from '../../candidate-home/store/offers.actions';
 
 @Component({
   selector: 'app-search-candidates',
@@ -31,46 +33,39 @@ export class SearchCandidatesComponent implements OnInit {
   // MatPaginator Output
   pageEvent: PageEvent;
 
-  // FILTERS
-  filters: FormGroup;
-  isSkill = 0;
-  isLang = 0;
-
-  workfields = Object.keys(WorkFields)
-    .filter(isStringNotANumber)
-    .map(key => ({value: WorkFields[key], viewValue: key}));
-  distances = Object.keys(Distances)
-    .filter(isStringNotANumber)
-    .map(key => ({value: Distances[key], viewValue: key}));
 
   constructor(
     private store$: Store<fromApp.AppState>,
-    public media: BreakpointObserver) {
+    public media: BreakpointObserver,
+    private router: Router,
+    private activatedRoute: ActivatedRoute) {
   }
 
   ngOnInit() {
     this.store$.dispatch(new AdminActions.TryGetCandidates({page: 1, limit: 5}));
     this.adminState = this.store$.pipe(select(state => state.admin));
 
-    this.filters = new FormGroup({
-        'location': new FormControl(),
-        'distance': new FormControl(),
-        'workfield': new FormControl(),
-        'minAge': new FormControl(),
-        'maxAge': new FormControl(),
-        'minIndex': new FormControl(0),
-        'minRatings': new FormControl(0),
-        'openOffers': new FormControl(),
-        'companySize': new FormControl(),
-        'skills': new FormArray([new FormControl(null)]),
-        'languages': new FormArray([new FormControl(null)]),
-        // TODO: complete this
-      }
-    );
+    this.activatedRoute.queryParams
+      .subscribe(query => {
+        console.log(query);
+        this.searchCallApi();
+      });
   }
 
   changePage() {
-    this.store$.dispatch(new AdminActions.TryGetCandidates({page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize}));
+    // let query = '';
+    // if (window.location.href.split('?')[1]) {
+    //   query = '&' + window.location.href.split('?')[1];
+    // }
+    //
+    // query += '&status=0';
+    //
+    // this.pageSize = this.pageEvent.pageSize;
+    // this.store$.dispatch(new OffersActions.TryGetOffers({
+    //   page: this.pageEvent.pageIndex + 1,
+    //   limit: this.pageEvent.pageSize,
+    //   params: query
+    // }));
   }
 
   isMobile() {
@@ -82,38 +77,32 @@ export class SearchCandidatesComponent implements OnInit {
     window.scrollTo(0, 0);
   }
 
-  get formSkills() {
-    return <FormArray>this.filters.get('skills');
+  onSearch(params: string) {
+    let searchParams = params.toLowerCase().replace(/ /g, '+');
+    if (!searchParams) {
+      searchParams = null;
+    }
+    this.router.navigate(['/search-candidates'], {queryParams: {keywords: searchParams}, queryParamsHandling: 'merge'});
   }
 
-  get formLanguages() {
-    return <FormArray>this.filters.get('languages');
+
+  searchCallApi() {
+    // let query = '';
+    // if (window.location.href.split('?')[1]) {
+    //   query = '&' + window.location.href.split('?')[1];
+    // }
+    //
+    // query += '&status=0';
+    //
+    // this.store$.dispatch(new OffersActions.TryGetOffers({
+    //   page: 1,
+    //   limit: this.pageSize,
+    //   params: query
+    // }));
+    //
+    // if (this.paginator) {
+    //   this.paginator.firstPage();
+    // }
   }
 
-  addSkill() {
-    (<FormArray>this.filters.controls['skills']).push(new FormControl(null));
-    this.isSkill++;
-    // console.log(this.formSkills.length);
-    setTimeout(() => {
-      document.getElementById(`skill${this.isSkill}`).focus();
-    }, 1);
-  }
-
-  deleteSkill(i) {
-    (<FormArray>this.filters.controls['skills']).removeAt(i);
-    this.isSkill--;
-  }
-
-  addLang() {
-    (<FormArray>this.filters.controls['languages']).push(new FormControl(null));
-    this.isLang++;
-    setTimeout(() => {
-      document.getElementById(`language${this.isLang}`).focus();
-    }, 1);
-  }
-
-  delLang(i) {
-    (<FormArray>this.filters.controls['languages']).removeAt(i);
-    this.isLang--;
-  }
 }
