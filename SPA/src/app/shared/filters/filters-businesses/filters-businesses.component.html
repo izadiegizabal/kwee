@@ -63,12 +63,13 @@
       </mat-select>
     </mat-form-field>
 
-    <h3 style="margin-top: 16px">Industry</h3>
-    <section fxLayout="column">
-      <mat-checkbox *ngFor="let industry of industries">
-        {{industry.viewValue}}
-      </mat-checkbox>
-    </section>
+    <mat-form-field>
+      <mat-select formControlName="industry" placeholder="Industry">
+        <mat-option *ngFor="let industry of industries" [value]="industry.value">
+          {{industry.viewValue}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
 
   </form>
 

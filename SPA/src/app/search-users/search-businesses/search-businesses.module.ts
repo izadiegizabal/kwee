@@ -11,12 +11,14 @@ import {adminReducer} from '../../admin/store/admin.reducers';
 import {EffectsModule} from '@ngrx/effects';
 import {AdminEffects} from '../../admin/store/admin.effects';
 import {FiltersBusinessesModule} from '../../shared/filters/filters-businesses/filters-businesses.module';
+import { BusinessesPreviewCardComponent } from './businesses-preview-card/businesses-preview-card.component';
 
 
 
 @NgModule({
   declarations: [
-    SearchBusinessesComponent
+    SearchBusinessesComponent,
+    BusinessesPreviewCardComponent
   ],
   imports: [
     SharedModule,

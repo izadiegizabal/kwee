@@ -49,7 +49,6 @@ export class FiltersBusinessesComponent implements OnInit {
         'minRatings': new FormControl(0),
         'openOffers': new FormControl(),
         'companySize': new FormControl(),
-        // TODO: complete this
       }
     );
 
@@ -85,6 +84,13 @@ export class FiltersBusinessesComponent implements OnInit {
           queryParams: {
             year: JSON.stringify({'gte': this.filters.controls['foundationDate'].value})
           }, queryParamsHandling: 'merge'
+        });
+    });
+
+    this.filters.controls['industry'].valueChanges.subscribe(() => {
+      this.router.navigate(['/search-businesses'],
+        {
+          queryParams: {workfield: this.filters.controls['industry'].value}, queryParamsHandling: 'merge'
         });
     });
   }

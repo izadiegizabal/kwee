@@ -42,6 +42,18 @@ export class FiltersCandidateComponent implements OnInit {
         'workfield6': new FormControl(),
         'workfield7': new FormControl(),
         'workfield8': new FormControl(),
+        'workfield9': new FormControl(),
+        'workfield10': new FormControl(),
+        'workfield11': new FormControl(),
+        'workfield12': new FormControl(),
+        'workfield13': new FormControl(),
+        'workfield14': new FormControl(),
+        'workfield15': new FormControl(),
+        'workfield16': new FormControl(),
+        'workfield17': new FormControl(),
+        'workfield18': new FormControl(),
+        'workfield19': new FormControl(),
+        'workfield20': new FormControl(),
         'minAge': new FormControl(),
         'maxAge': new FormControl(),
         'minIndex': new FormControl(0),
@@ -95,6 +107,42 @@ export class FiltersCandidateComponent implements OnInit {
       this.countWorkField();
     });
     this.filters.controls['workfield8'].valueChanges.subscribe(() => {
+      this.countWorkField();
+    });
+    this.filters.controls['workfield9'].valueChanges.subscribe(() => {
+      this.countWorkField();
+    });
+    this.filters.controls['workfield10'].valueChanges.subscribe(() => {
+      this.countWorkField();
+    });
+    this.filters.controls['workfield11'].valueChanges.subscribe(() => {
+      this.countWorkField();
+    });
+    this.filters.controls['workfield12'].valueChanges.subscribe(() => {
+      this.countWorkField();
+    });
+    this.filters.controls['workfield13'].valueChanges.subscribe(() => {
+      this.countWorkField();
+    });
+    this.filters.controls['workfield14'].valueChanges.subscribe(() => {
+      this.countWorkField();
+    });
+    this.filters.controls['workfield15'].valueChanges.subscribe(() => {
+      this.countWorkField();
+    });
+    this.filters.controls['workfield16'].valueChanges.subscribe(() => {
+      this.countWorkField();
+    });
+    this.filters.controls['workfield17'].valueChanges.subscribe(() => {
+      this.countWorkField();
+    });
+    this.filters.controls['workfield18'].valueChanges.subscribe(() => {
+      this.countWorkField();
+    });
+    this.filters.controls['workfield19'].valueChanges.subscribe(() => {
+      this.countWorkField();
+    });
+    this.filters.controls['workfield20'].valueChanges.subscribe(() => {
       this.countWorkField();
     });
 
@@ -172,36 +220,72 @@ export class FiltersCandidateComponent implements OnInit {
   countWorkField() {
     const queryWorkF = [];
 
-    if (this.filters.controls['workLocation0'].value) {
+    if (this.filters.controls['workfield0'].value) {
       queryWorkF.push(0);
     }
-    if (this.filters.controls['workLocation1'].value) {
+    if (this.filters.controls['workfield1'].value) {
       queryWorkF.push(1);
     }
-    if (this.filters.controls['workLocation2'].value) {
+    if (this.filters.controls['workfield2'].value) {
       queryWorkF.push(2);
     }
-    if (this.filters.controls['workLocation3'].value) {
+    if (this.filters.controls['workfield3'].value) {
       queryWorkF.push(3);
     }
-    if (this.filters.controls['workLocation4'].value) {
+    if (this.filters.controls['workfield4'].value) {
       queryWorkF.push(4);
     }
-    if (this.filters.controls['workLocation5'].value) {
+    if (this.filters.controls['workfield5'].value) {
       queryWorkF.push(5);
     }
-    if (this.filters.controls['workLocation6'].value) {
+    if (this.filters.controls['workfield6'].value) {
       queryWorkF.push(6);
     }
-    if (this.filters.controls['workLocation7'].value) {
+    if (this.filters.controls['workfield7'].value) {
       queryWorkF.push(7);
     }
-    if (this.filters.controls['workLocation8'].value) {
+    if (this.filters.controls['workfield8'].value) {
       queryWorkF.push(8);
     }
+    if (this.filters.controls['workfield9'].value) {
+      queryWorkF.push(9);
+    }
+    if (this.filters.controls['workfield10'].value) {
+      queryWorkF.push(10);
+    }
+    if (this.filters.controls['workfield11'].value) {
+      queryWorkF.push(11);
+    }
+    if (this.filters.controls['workfield12'].value) {
+      queryWorkF.push(12);
+    }
+    if (this.filters.controls['workfield13'].value) {
+      queryWorkF.push(13);
+    }
+    if (this.filters.controls['workfield14'].value) {
+      queryWorkF.push(14);
+    }
+    if (this.filters.controls['workfield15'].value) {
+      queryWorkF.push(15);
+    }
+    if (this.filters.controls['workfield16'].value) {
+      queryWorkF.push(16);
+    }
+    if (this.filters.controls['workfield17'].value) {
+      queryWorkF.push(17);
+    }
+    if (this.filters.controls['workfield18'].value) {
+      queryWorkF.push(18);
+    }
+    if (this.filters.controls['workfield19'].value) {
+      queryWorkF.push(19);
+    }
+    if (this.filters.controls['workfield20'].value) {
+      queryWorkF.push(20);
+    }
 
-    this.router.navigate(['/candidate-home'],
-      {queryParams: {workLocation: queryWorkF}, queryParamsHandling: 'merge'});
+    this.router.navigate(['/search-candidates'],
+      {queryParams: {workfield: queryWorkF}, queryParamsHandling: 'merge'});
   }
 
   minDateSearch() {
