@@ -15,8 +15,7 @@ import {BusinessIndustries, BusinessSize} from '../../../../models/Business.mode
 import {isStringNotANumber} from '../../../../models/Offer.model';
 
 interface City {
-  first: string;
-  second: string;
+  name: string;
   geo: {
     lat: number,
     lng: number
@@ -80,6 +79,25 @@ export class SignupOffererComponent implements OnInit {
       return null;
     }
     return {'tooOld': {value: true}};
+  }
+
+  // LONGITUDE -180 to + 180
+  static generateRandomLong() {
+    let num = +(Math.random() * 180).toFixed(3);
+    const sign = Math.floor(Math.random());
+    if (sign === 0) {
+      num = num * -1;
+    }
+    return num;
+  }
+  // LATITUDE -90 to +90
+  static generateRandomLat() {
+    let num = +(Math.random() * 90).toFixed(3);
+    const sign = Math.floor(Math.random());
+    if (sign === 0) {
+      num = num * -1;
+    }
+    return num;
   }
 
   ngOnInit() {
@@ -223,14 +241,29 @@ export class SignupOffererComponent implements OnInit {
 
   onSave(stepper: MatStepper) {
     this.dialogShown = false;
-
+    // console.log(this.secondFormGroup);
     if (this.secondFormGroup.status === 'VALID') {
+
+      if ((this.secondFormGroup.controls['address1'].value as City).geo === undefined ) {
+        if (this.options.length > 0) {
+          this.secondFormGroup.controls['address1'].setValue(this.options[0]);
+        } else {
+          const auxCity = {
+            name: this.secondFormGroup.controls['address1'].value,
+            geo: {
+              lat: SignupOffererComponent.generateRandomLat(),
+              lng: SignupOffererComponent.generateRandomLong()
+            }
+          };
+          this.secondFormGroup.controls['address1'].setValue(auxCity);
+        }
+      }
 
       this.offerer = {
         'name': this.secondFormGroup.controls['businessName'].value,
         'password': this.secondFormGroup.controls['password'].value,
         'email': this.secondFormGroup.controls['email'].value,
-        'address': this.secondFormGroup.controls['address1'].value.first,
+        'address': this.secondFormGroup.controls['address1'].value.name,
         'cif': this.secondFormGroup.controls['vat'].value,
         'workField': this.secondFormGroup.controls['workField'].value,
         'year': new Date().toDateString(),
@@ -238,7 +271,9 @@ export class SignupOffererComponent implements OnInit {
         'companySize': '50',
         'bio': '',
         'img': this.file,
-        'status': '0'
+        'status': '0',
+        'lng' : (this.secondFormGroup.controls['address1'].value as City).geo.lng,
+        'lat' : (this.secondFormGroup.controls['address1'].value as City).geo.lat
       };
 
       // console.log(this.offerer);
@@ -304,7 +339,7 @@ export class SignupOffererComponent implements OnInit {
   }
 
   displayFn(city?: City): string | undefined {
-    return city ? city.first : undefined;
+    return city ? city.name : undefined;
   }
 
   onKey(event: any) { // without type info
@@ -338,15 +373,14 @@ export class SignupOffererComponent implements OnInit {
           .subscribe((data: any) => {
             data.hits.forEach((e, i) => {
               const auxCity = {
-                first: data.hits[i].locale_names.default
-                  + ', ' + (data.hits[i].city ? data.hits[i].city.default : ''),
-                second: data.hits[i].administrative
+                name: data.hits[i].locale_names.default
+                  + ', ' + (data.hits[i].city ? data.hits[i].city.default : '')
                   + ', ' + (data.hits[i].postcode ? data.hits[i].postcode[0] : '')
                   + ', ' + (data.hits[i].country ? data.hits[i].country.default : ''),
                 geo: data.hits[i]._geoloc ? data.hits[i]._geoloc : {}
               };
               if (data.hits[i].locale_names.default) {
-                if (!this.options.some(element => element.first === auxCity.first)) {
+                if (!this.options.some(element => element.name === auxCity.name)) {
                   this.options.push(auxCity);
                 }
               }

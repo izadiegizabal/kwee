@@ -173,7 +173,7 @@
                    placeholder="Street and City" required>
             <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
               <mat-option *ngFor="let option of options; index as i" [value]="option">
-                {{option.first}}, {{option.second}}
+                {{option.name}}
               </mat-option>
             </mat-autocomplete>
             <mat-icon color="primary" matPrefix svgIcon="place"></mat-icon>

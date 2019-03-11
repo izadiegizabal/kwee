@@ -30,6 +30,32 @@ interface City {
 })
 
 export class SignupCandidateComponent implements OnInit {
+
+  constructor(private _formBuilder: FormBuilder,
+              public dialog: MatDialog,
+              private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects,
+              private httpClient: HttpClient,
+              private activatedRoute: ActivatedRoute,
+              private router: Router) {
+    this.iskill = 0;
+    this.iskillang = 0;
+  }
+
+  get formSkills() {
+    return <FormArray>this.thirdFormGroup.get('skills');
+  }
+
+  get formLanguages() {
+    return <FormArray>this.thirdFormGroup.get('languages');
+  }
+
+  get formExperience() {
+    return <FormArray>this.thirdFormGroup.get('experience');
+  }
+
+  get formEducation() {
+    return <FormArray>this.thirdFormGroup.get('education');
+  }
   @ViewChild('stepper') stepper: MatStepper;
 
   options: City[] = [];
@@ -58,32 +84,6 @@ export class SignupCandidateComponent implements OnInit {
     .map(key => ({value: LanguageLevels[key], viewValue: key}));
   private dialogShown = false;
 
-  constructor(private _formBuilder: FormBuilder,
-              public dialog: MatDialog,
-              private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects,
-              private httpClient: HttpClient,
-              private activatedRoute: ActivatedRoute,
-              private router: Router) {
-    this.iskill = 0;
-    this.iskillang = 0;
-  }
-
-  get formSkills() {
-    return <FormArray>this.thirdFormGroup.get('skills');
-  }
-
-  get formLanguages() {
-    return <FormArray>this.thirdFormGroup.get('languages');
-  }
-
-  get formExperience() {
-    return <FormArray>this.thirdFormGroup.get('experience');
-  }
-
-  get formEducation() {
-    return <FormArray>this.thirdFormGroup.get('education');
-  }
-
   static minDate(control: FormControl): { [s: string]: { [s: string]: boolean } } {
     const today = new Date();
     const mdate = new Date(today.getFullYear() - 16, today.getMonth(), today.getDay());
@@ -102,6 +102,29 @@ export class SignupCandidateComponent implements OnInit {
       return null;
     }
     return {'tooOld': {value: true}};
+  }
+
+  // LONGITUDE -180 to + 180
+  static generateRandomLong() {
+    let num = +(Math.random() * 180).toFixed(3);
+    const sign = Math.floor(Math.random());
+    if (sign === 0) {
+      num = num * -1;
+    }
+    return num;
+  }
+  // LATITUDE -90 to +90
+  static generateRandomLat() {
+    let num = +(Math.random() * 90).toFixed(3);
+    const sign = Math.floor(Math.random());
+    if (sign === 0) {
+      num = num * -1;
+    }
+    return num;
+  }
+
+  static capitalizeFirstLetter(string: string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
   getProf(n: number) {
@@ -259,6 +282,20 @@ export class SignupCandidateComponent implements OnInit {
       console.log('form valid');
       if (!this.isSocialNetwork) {
         console.log('no viene por red social');
+        if ((this.secondFormGroup.controls['location'].value as City).geo === undefined ) {
+          if (this.options.length > 0) {
+            this.secondFormGroup.controls['location'].setValue(this.options[0]);
+          } else {
+            const auxCity = {
+              name: this.secondFormGroup.controls['location'].value,
+              geo: {
+                lat: SignupCandidateComponent.generateRandomLat(),
+                lng: SignupCandidateComponent.generateRandomLong()
+              }
+            };
+            this.secondFormGroup.controls['location'].setValue(auxCity);
+          }
+        }
         this.candidate = {
           'name': this.secondFormGroup.controls['name'].value,
           'password': this.secondFormGroup.controls['password'].value,
@@ -268,7 +305,9 @@ export class SignupCandidateComponent implements OnInit {
             : this.secondFormGroup.controls['location'].value,
           'dateBorn': this.secondFormGroup.controls['birthday'].value,
           'premium': '0',
-          'rol': this.secondFormGroup.controls['role'].value.toString()
+          'rol': this.secondFormGroup.controls['role'].value.toString(),
+          'lng' : (this.secondFormGroup.controls['location'].value as City).geo.lng,
+          'lat' : (this.secondFormGroup.controls['location'].value as City).geo.lat
         };
 
         // console.log(this.candidate);
@@ -393,10 +432,6 @@ export class SignupCandidateComponent implements OnInit {
     this.thirdFormGroup.setControl(name, form);
   }
 
-  capitalizeFirstLetter(string: string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  }
-
   displayFn(city?: City): string | undefined {
     return city ? city.name : undefined;
   }
@@ -424,7 +459,7 @@ export class SignupCandidateComponent implements OnInit {
             // console.log(data);
             data.hits.forEach((e, i) => {
               const auxCity = {
-                name: data.hits[i].locale_names.default + ', ' + this.capitalizeFirstLetter(data.hits[i].country_code),
+                name: data.hits[i].locale_names.default + ', ' + SignupCandidateComponent.capitalizeFirstLetter(data.hits[i].country_code),
                 geo: data.hits[i]._geoloc ? data.hits[i]._geoloc : {}
               };
               if (data.hits[i].is_city) {
