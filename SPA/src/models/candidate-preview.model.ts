@@ -13,7 +13,7 @@ export class CandidatePreview {
     public dateBorn: Date,
     public rol: WorkFields,
     public imgPath: string,
-    public lastExp: string,
+    public lastExp: string, // name of the business they worked in
     // for admin purposes
     public email: string,
     public lastAccess: Date,

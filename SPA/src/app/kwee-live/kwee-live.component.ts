@@ -18,7 +18,7 @@ import {
   TResourceTexture } from '../../assets/engine/resourceManager';
 import { TMotorTAG } from '../../assets/engine/TMotorTAG.js';
 
-import { main } from '../../assets/engine/main.js';
+import { main, mainR } from '../../assets/engine/main.js';
 
 // import * as test from '../../assets/test.js';
 
@@ -42,9 +42,7 @@ export class KweeLiveComponent implements OnInit {
   }
 
   ngOnInit() {
-    const resource = new TResourceManager();
-    const motor = new TMotorTAG(resource);
-    main();
+    mainR();
   }
 
 }

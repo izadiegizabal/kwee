@@ -28,7 +28,7 @@ export class ChatService {
 
     return this.client.textRequest(msg)
       .then(res => {
-        console.log(res);
+        // console.log(res);
         let speech;
         if (res.result.fulfillment.speech) {
           speech = res.result.fulfillment.speech;
@@ -39,7 +39,7 @@ export class ChatService {
         if (!res.result.fulfillment.speech &&
           res.result.fulfillment.messages !== 'undefined') {
           res.result.fulfillment.messages.forEach((e) => {
-              console.log(e);
+              // console.log(e);
               switch (e.type) {
                 case 0:
                   if (e.speech !== '') {
@@ -57,7 +57,7 @@ export class ChatService {
                   this.update(botCard);
                   break;
                 case 2:
-                  console.log(e.replies);
+                  // console.log(e.replies);
                   const botReply = new Message('chips', 'bot', 2, {chips: e.replies});
                   this.update(botReply);
                   /*

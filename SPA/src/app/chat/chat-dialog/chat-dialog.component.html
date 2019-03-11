@@ -1,6 +1,6 @@
 <div (clickOutside)="onClickedOutside($event)" id="container">
   <mat-card class="floating-chat" id="chat">
-    <div id="content">
+    <div #content id="content">
       <div *ngFor="let message of messages | async">
         <mat-card *ngIf="message.type==0" [ngClass]="{ 'from': message.sentBy === 'bot',
                                             'to':   message.sentBy === 'user' }" class="message">

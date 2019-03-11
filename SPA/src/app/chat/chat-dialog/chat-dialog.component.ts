@@ -1,6 +1,6 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ChatService, Message} from '../chat.service';
-import {Observable} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 import {scan} from 'rxjs/operators';
 import {MatDialog} from '@angular/material';
 
@@ -10,13 +10,18 @@ import {MatDialog} from '@angular/material';
   templateUrl: './chat-dialog.component.html',
   styleUrls: ['./chat-dialog.component.scss']
 })
-export class ChatDialogComponent implements OnInit {
+export class ChatDialogComponent implements OnInit, OnDestroy {
+
+  @ViewChild('content') private myScrollContainer: ElementRef;
 
   public opened = false;
 
   clicked = false;
   messages: Observable<Message[]>;
   formValue: string;
+  subscription: Subscription;
+
+  sdfasd = 0;
 
   constructor(public chat: ChatService,
               public dialog: MatDialog) {
@@ -30,6 +35,7 @@ export class ChatDialogComponent implements OnInit {
   }
 
   closeDialog() {
+    this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
     this.opened = false;
     document.getElementById('chat').classList.remove('expand');
   }
@@ -38,6 +44,16 @@ export class ChatDialogComponent implements OnInit {
     // appends to array after each new message is added to feedSource
     this.messages = this.chat.conversation.asObservable()
       .pipe(scan((acc, val) => acc.concat(val)));
+    this.messages.subscribe((holi) => {
+      this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
+      this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
+      document.getElementById('nameField').focus();
+      // this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
+    });
+    this.subscription = this.chat.conversation.subscribe(data => {
+      // this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
+      // window.scrollTo(0, window.document.getElementById('content').scrollHeight);
+    });
   }
 
   sendReply(reply: string) {
@@ -53,6 +69,8 @@ export class ChatDialogComponent implements OnInit {
     this.opened = true;
     this.clicked = true;
     document.getElementById('chat').classList.add('expand');
+    document.getElementById('nameField').focus();
+
   }
 
   sendMessage() {
@@ -60,6 +78,11 @@ export class ChatDialogComponent implements OnInit {
       this.chat.converse(this.formValue);
     }
     this.formValue = '';
+    document.getElementById('nameField').focus();
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
 }
@@ -88,7 +111,7 @@ export class DialogContentExampleDialogComponent implements OnInit {
   }
 
   onClickedOutside(e: Event) {
-    console.log('Clicked outside:', e);
+    // console.log('Clicked outside:', e);
   }
 
 
