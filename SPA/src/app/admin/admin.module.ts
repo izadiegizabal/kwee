@@ -16,6 +16,7 @@ import {StoreModule} from '@ngrx/store';
 import {adminReducer} from './store/admin.reducers';
 import {EffectsModule} from '@ngrx/effects';
 import {AdminEffects} from './store/admin.effects';
+import {AlertDialogComponent} from '../shared/alert-dialog/alert-dialog.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import {AdminEffects} from './store/admin.effects';
     AdminMessagesComponent,
     CandidateOverviewComponent,
     BusinessOverviewComponent,
+    AlertDialogComponent,
   ],
   imports: [
     AdminRoutingModule,
@@ -36,6 +38,9 @@ import {AdminEffects} from './store/admin.effects';
     OffererNameOverviewModule,
     StoreModule.forFeature('admin', adminReducer),
     EffectsModule.forFeature([AdminEffects])
+  ],
+  entryComponents: [
+    AlertDialogComponent,
   ],
 })
 export class AdminModule {

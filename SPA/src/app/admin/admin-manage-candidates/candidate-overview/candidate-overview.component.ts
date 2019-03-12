@@ -7,9 +7,10 @@ import * as AdminActions from '../../store/admin.actions';
 import {Observable} from 'rxjs';
 import {filter} from 'rxjs/operators';
 import {AdminEffects} from '../../store/admin.effects';
-import {PageEvent} from '@angular/material';
+import {MatDialog, PageEvent} from '@angular/material';
 import {isStringNotANumber} from '../../../../models/Offer.model';
 import {CandidateAccountStatus} from '../../../../models/Candidate.model';
+import {AlertDialogComponent} from '../../../shared/alert-dialog/alert-dialog.component';
 
 @Component({
   selector: 'app-candidate-overview',
@@ -30,6 +31,8 @@ export class CandidateOverviewComponent implements OnInit {
   isPanelOpen = false;
   updateuser: any;
 
+  dialogError = false;
+
   adminState: Observable<fromAdmin.State>;
 
   states = Object
@@ -45,7 +48,8 @@ export class CandidateOverviewComponent implements OnInit {
 
   constructor(
     private _formBuilder: FormBuilder,
-    private store$: Store<fromApp.AppState>, private adminEffects$: AdminEffects) {
+    private store$: Store<fromApp.AppState>, private adminEffects$: AdminEffects,
+    public dialog: MatDialog) {
   }
 
   ngOnInit() {
@@ -89,6 +93,19 @@ export class CandidateOverviewComponent implements OnInit {
     this.userForm.controls['premium'].setValue(user.premium);
   }
 
+  callAlertDialogUpdate(id) {
+    const dialogDelete = this.dialog.open(AlertDialogComponent, {
+      data: {
+        header: 'Are you sure you want to update this user?',
+      }
+    });
+
+    dialogDelete.afterClosed().subscribe(result => {
+      if (result) {
+        this.updateApplicant(id);
+      }
+    });
+  }
 
   updateApplicant(id) {
     if (this.userForm.status === 'VALID' && id) {
@@ -106,14 +123,25 @@ export class CandidateOverviewComponent implements OnInit {
         this.updateuser['password'] = this.userForm.controls['password'].value;
       }
 
-      // console.log(this.updateuser);
-
       this.store$.dispatch(new AdminActions.TryUpdateCandidate({id: id, updatedCandidate: this.updateuser}));
     } else {
       console.log(this.userForm);
     }
   }
 
+  callAlertDialogDelete(id) {
+    const dialogDelete = this.dialog.open(AlertDialogComponent, {
+      data: {
+        header: 'Are you sure you want to delete this user?',
+      }
+    });
+
+    dialogDelete.afterClosed().subscribe(result => {
+      if (result) {
+        this.deleteApplicant(id);
+      }
+    });
+  }
 
   deleteApplicant(id) {
     this.store$.dispatch(new AdminActions.TryDeleteCandidate(id));
@@ -121,7 +149,13 @@ export class CandidateOverviewComponent implements OnInit {
       filter((action: Action) => action.type === AdminActions.OPERATION_ERROR)
     ).subscribe((error: { payload: any, type: string }) => {
       console.log(error.payload);
+      // this.dialogError = true;
     });
+
+    // if (!this.dialogError) {
+    //   // mensaje de OK
+    //   this.dialogError = false;
+    // }
   }
 
   changepage() {

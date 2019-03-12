@@ -50,10 +50,10 @@ export class OfferDetailComponent implements OnInit {
       this.offerEffects$.offerGetoffer.pipe(
         filter((action: Action) => action.type === OfferActions.OPERATION_ERROR)
       ).subscribe((error: { payload: any, type: string }) => {
-        this.router.navigate(['/']);
+        this.router.navigate(['/error/404']);
       });
     } else {
-      this.router.navigate(['/']);
+      this.router.navigate(['/error/404']);
     }
 
   }
