@@ -21,7 +21,7 @@ export class OfferDetailComponent implements OnInit {
   offerSkills: [' '];
   offerState: Observable<fromOffer.State>;
   authState: any;
-  id: Number;
+  id: any;
   offerId: Number;
 
   constructor(private store$: Store<fromApp.AppState>,
