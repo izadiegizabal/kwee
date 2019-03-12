@@ -1,4 +1,4 @@
-const { tokenId, logger, pagination, prepareOffersToShow, saveLogES } = require('../../shared/functions');
+const { tokenId, logger, pagination, prepareOffersToShow, saveLogES, sendEmailOfferClosed } = require('../../shared/functions');
 const { checkToken } = require('../../middlewares/authentication');
 const elastic = require('../../database/elasticsearch');
 const env =     require('../../tools/constants');
@@ -360,6 +360,22 @@ module.exports = (app, db) => {
             saveLogES('PUT', 'offer/id', user.name);
             
             if ( offerToUpdate ) {
+                if ( updates.status && updates.status == 2 ) {
+                    // send mail to all applicants that applicated to this offer
+                    // to advise that the offer is closed
+                    let users = await db.users.findAll();
+                    let applications = await db.applications.findAll({where: {fk_offer: id}});
+                    let applicants = await offerToUpdate.getApplicants();
+                    applicants.forEach(applicant => {
+                        user = users.find(usu => applicant.userId == usu.id);
+                        sendEmailOfferClosed(user, res, offerToUpdate);
+                    });
+                    applications.forEach(async application => {
+                        await db.applications.update({status: 4}, {
+                            where: { id: application.id }
+                        });
+                    });
+                }
                 await db.offers.update(updates, {
                         where: { id, fk_offerer }
                     }).then(result => {

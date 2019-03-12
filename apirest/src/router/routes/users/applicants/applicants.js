@@ -50,30 +50,13 @@ module.exports = (app, db) => {
             await elastic.search(searchParams, async function (err, response) {
                 if (err) throw err;
                 
+                let applicantsToShow = [];
+                let allApplicants = await db.applicants.findAll();
+                let users = await db.users.findAll();
+
                 if ( response.hits.total != 0 ) {
-                    let applicantsToShow = [];
                     let applicants = response.hits.hits;
-
-                    for (let i = 0; i < applicants.length; i++) {
-                        let applicant = {};
-
-                        applicant.id = applicants[i]._id;
-                        applicant.index = applicants[i]._source.index;
-                        applicant.name = applicants[i]._source.name;
-                        applicant.email = applicants[i]._source.email;
-                        applicant.city = applicants[i]._source.city;
-                        applicant.dateBorn = applicants[i]._source.dateBorn;
-                        applicant.status = applicants[i]._source.status;
-                        applicant.rol = applicants[i]._source.rol;
-                        applicant.bio = applicants[i]._source.bio;
-                        applicant.skills = applicants[i]._source.skills;
-                        applicant.educations = applicants[i]._source.educations;
-                        applicant.languages = applicants[i]._source.languages;
-                        applicant.experiences = applicants[i]._source.experiences;
-                        applicant.applications = applicants[i]._source.applications;
-                        
-                        applicantsToShow.push(applicant);
-                    }
+                    buildApplicantsToShow(users, allApplicants, applicantsToShow, applicants);
 
                     return res.json({
                         ok: true,
@@ -101,10 +84,12 @@ module.exports = (app, db) => {
                         }
 
                         if ( response2.hits.total > 0 ) {
+                            let applicants = response2.hits.hits;
+                            buildApplicantsToShow(users, allApplicants, applicantsToShow, applicants);
                             return res.json({
                                 ok: true,
                                 message: 'No results but maybe this is interesting for you',
-                                data: response2.hits.hits,
+                                data: offersToShow,
                                 total: response2.hits.total,
                                 page: Number(page),
                                 pages: Math.ceil(response2.hits.total / limit)
@@ -162,8 +147,10 @@ module.exports = (app, db) => {
                                 email: users[i].email,
                                 city: applicants[j].city,
                                 dateBorn: applicants[j].dateBorn,
+                                rol: applicants[j].rol,
                                 premium: applicants[j].premium,
                                 lastAccess: users[i].lastAccess,
+                                createdAt: users[i].createdAt,
                                 status: users[i].status,
                                 img: users[i].img,
                                 bio: users[i].bio,
@@ -1394,5 +1381,34 @@ module.exports = (app, db) => {
             });
         }
         return must;
+    }
+
+    function buildApplicantsToShow(users, allApplicants, applicantsToShow, applicants) {
+        for (let i = 0; i < applicants.length; i++) {
+            let user = users.find(element => applicants[i]._id == element.id);
+            let userApplicant = allApplicants.find(element => applicants[i]._id == element.userId);
+            let applicant = {};
+
+            applicant.id = Number(applicants[i]._id);
+            applicant.index = Number(applicants[i]._source.index);
+            applicant.name = applicants[i]._source.name;
+            applicant.email = applicants[i]._source.email;
+            applicant.city = applicants[i]._source.city;
+            applicant.dateBorn = applicants[i]._source.dateBorn;
+            applicant.rol = Number(applicants[i]._source.rol);
+            applicant.premium = Number(userApplicant.premium);
+            applicant.skills = applicants[i]._source.skills;
+            applicant.educations = applicants[i]._source.educations;
+            applicant.languages = applicants[i]._source.languages;
+            applicant.experiences = applicants[i]._source.experiences;
+            applicant.lastAccess = user.lastAccess;
+            applicant.createdAt = user.createdAt;
+            applicant.status = Number(user.status);
+            applicant.img = user.img;
+            applicant.bio = user.bio;
+            
+            
+            applicantsToShow.push(applicant);
+        }
     }
 }

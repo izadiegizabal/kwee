@@ -199,20 +199,28 @@ module.exports = (app, db) => {
             let applicant = await db.applicants.findOne({where: { userId: user }});
 
             if ( applicant ) {
-                // applicants only may update to status 2
-                if ( status == 2 ) {
-                    if ( applicant.userId == application.fk_applicant ) {
-                        await db.applications.update({status}, {
-                            where: { id }
-                        });
-                        return res.status(201).json({
-                            ok: true,
-                            message: "Application updated to status " + status
-                        });
+                // applicants only may update to status 3 and 4 
+                //(accept or refuse application when is selected)
+                if ( status == 3 || status == 4 ) {
+                    if ( application.status == 2 ){
+                        if ( applicant.userId == application.fk_applicant ) {
+                            await db.applications.update({status}, {
+                                where: { id }
+                            });
+                            return res.status(201).json({
+                                ok: true,
+                                message: "Application updated to status " + status
+                            });
+                        } else {
+                            return res.status(401).json({
+                                ok: false,
+                                message: "Unauthorized to update applications of other user"
+                            });
+                        }
                     } else {
                         return res.status(401).json({
                             ok: false,
-                            message: "Unauthorized to update applications of other user"
+                            message: "You are not selected!"
                         });
                     }
                 } else {
@@ -232,7 +240,7 @@ module.exports = (app, db) => {
                         await db.applications.update({status}, {
                             where: { id }
                         });
-                        if ( status == 4 ) {
+                        if ( status == 2 ) {
                             //Send mail selected
                             let user = await db.users.findOne({where: { id: application.fk_applicant }});
                             sendEmailSelected(user, res, application.fk_offer);

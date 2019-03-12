@@ -51,26 +51,14 @@ module.exports = (app, db) => {
             await elastic.search(searchParams, async function (err, response) {
                 if (err) throw err;
                 
+                let offerersToShow = [];
+                let allOfferers = await db.offerers.findAll();
+                let users = await db.users.findAll();
+
                 if ( response.hits.total != 0 ) {
-                    let offerersToShow = [];
                     let offerers = response.hits.hits;
 
-                    for (let i = 0; i < offerers.length; i++) {
-                        let offerer = {};
-
-                        offerer.id = offerers[i]._id;
-                        offerer.name = offerers[i]._source.name;
-                        offerer.index = offerers[i]._source.index;
-                        offerer.bio = offerers[i]._source.bio;
-                        offerer.status = offerers[i]._source.status;
-                        offerer.email = offerers[i]._source.email;
-                        offerer.address = offerers[i]._source.address;
-                        offerer.companySize = offerers[i]._source.companySize;
-                        offerer.year = offerers[i]._source.year;
-                        offerer.dateVerification = offerers[i]._source.dateVerification;
-                        
-                        offerersToShow.push(offerer);
-                    }
+                    buildOfferersToShow(users, allOfferers, offerersToShow, offerers);
 
                     return res.json({
                         ok: true,
@@ -98,10 +86,13 @@ module.exports = (app, db) => {
                         }
 
                         if ( response2.hits.total > 0 ) {
+                            let offerers = response2.hits.hits;
+                            buildOfferersToShow(users, allOfferers, offerersToShow, offerers);
+
                             return res.json({
                                 ok: true,
                                 message: 'No results but maybe this is interesting for you',
-                                data: response2.hits.hits,
+                                data: offerersToShow,
                                 total: response2.hits.total,
                                 page: Number(page),
                                 pages: Math.ceil(response2.hits.total / limit)
@@ -170,7 +161,8 @@ module.exports = (app, db) => {
                                 createdAt: offerers[j].createdAt,
                                 lastAccess: users[i].lastAccess,
                                 status: users[i].status,
-                                img: users[i].img
+                                img: users[i].img,
+                                bio: users[i].bio
                             }
                         }
                     }
@@ -757,5 +749,34 @@ module.exports = (app, db) => {
         }   
         
         return must;
+    }
+
+    function buildOfferersToShow(users, allOfferers, offerersToShow, offerers) {
+        for (let i = 0; i < offerers.length; i++) {
+            let user = users.find(element => offerers[i]._id == element.id);
+            let userOfferer = allOfferers.find(element => offerers[i]._id == element.userId);
+            let offerer = {};
+
+            offerer.id = Number(offerers[i]._id);
+            offerer.index = Number(offerers[i]._source.index);
+            offerer.name = offerers[i]._source.name;
+            offerer.email = offerers[i]._source.email;
+            offerer.address = offerers[i]._source.address;
+            offerer.workField = Number(userOfferer.workField);
+            offerer.cif = userOfferer.cif;
+            offerer.dateVerification = offerers[i]._source.dateVerification;
+            offerer.website = userOfferer.website;
+            offerer.companySize = Number(offerers[i]._source.companySize);
+            offerer.year = userOfferer.year;
+            offerer.premium = Number(userOfferer.premium);
+            offerer.createdAt = user.createdAt;
+            offerer.lastAccess = user.lastAccess;
+            offerer.status = Number(offerers[i]._source.status);
+            offerer.img = user.img;
+            offerer.bio = user.bio;
+            
+            
+            offerersToShow.push(offerer);
+        }
     }
 }
