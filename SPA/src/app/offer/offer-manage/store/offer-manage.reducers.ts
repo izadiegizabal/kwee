@@ -1,4 +1,5 @@
 import * as OfferManageActions from './offer-manage.actions';
+import {CandidatePreview} from '../../../../models/candidate-preview.model';
 
 export interface State {
   offers: {
@@ -39,13 +40,19 @@ export interface State {
       Open: number,
       Selection: number,
       Closed: number,
-    }[],
+    }[]
+  };
+  selection: {
+    all: CandidatePreview[],
+    faved: CandidatePreview[],
+    selected: CandidatePreview[]
   };
 }
 
 
 const initialState: State = {
   offers: null,
+  selection: null
 };
 
 export function OfferManageReducer(state = initialState, action: OfferManageActions.OfferManageActions) {
@@ -59,6 +66,34 @@ export function OfferManageReducer(state = initialState, action: OfferManageActi
       return {
         ...state,
         offers: action.payload
+      };
+
+    case OfferManageActions.SET_OFFER_CANDIDATES:
+      let newSelection = null;
+      switch (action.payload.status) {
+        case 1:
+          newSelection = {
+            ...state.selection,
+            faved: action.payload.candidates
+          };
+          break;
+        case 2:
+          newSelection = {
+            ...state.selection,
+            selected: action.payload.candidates
+          };
+          break;
+        default:
+          newSelection = {
+            ...state.selection,
+            all: action.payload.candidates
+          };
+          break;
+      }
+
+      return {
+        ...state,
+        selection: newSelection
       };
     default:
       return state;

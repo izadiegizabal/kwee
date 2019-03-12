@@ -13,7 +13,7 @@ export interface AppState {
   offers: fromOffers.State;
   offer: fromOffer.State;
   profiles: fromProfiles.State;
-  OfferManage: fromOfferManage.State;
+  offerManage: fromOfferManage.State;
 }
 
 export const reducers: ActionReducerMap<AppState> = {
@@ -23,5 +23,5 @@ export const reducers: ActionReducerMap<AppState> = {
   offers: fromOffers.offersReducer,
   offer: fromOffer.offerReducer,
   profiles: fromProfiles.profilesReducer,
-  OfferManage: fromOfferManage.OfferManageReducer,
+  offerManage: fromOfferManage.OfferManageReducer,
 };

@@ -8,6 +8,7 @@ import * as OfferManageActions from './offer-manage.actions';
 import {environment} from '../../../../environments/environment';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
+import {CandidatePreview} from '../../../../models/candidate-preview.model';
 
 @Injectable()
 export class OfferManageEffects {
@@ -97,6 +98,59 @@ export class OfferManageEffects {
           }),
           catchError((err: HttpErrorResponse) => {
             throwError(this.handleError('getOffersApplicant', err));
+            return [
+              {
+                type: OfferManageActions.OPERATION_ERROR,
+                payload: err.error.error
+              }
+            ];
+          })
+        );
+      }
+    ),
+    share()
+  );
+
+  @Effect()
+  GetOfferCandidates = this.actions$.pipe(
+    ofType(OfferManageActions.TRY_GET_OFFER_CANDIDATES),
+    map((action: OfferManageActions.TryGetOfferCandidates) => {
+      return action.payload;
+    }),
+    switchMap((payload) => {
+        let apiEndpointUrl = environment.apiUrl + 'offer/' + payload.id +
+          '/applications?page=' + payload.page + '&limit=' + payload.limit;
+
+        if (payload.status !== -1) {
+          apiEndpointUrl = apiEndpointUrl + '&status=' + payload.status;
+        }
+
+
+      console.log(apiEndpointUrl);
+
+        return this.httpClient.get(apiEndpointUrl).pipe(
+          map((res: {
+            ok: boolean,
+            message: any,
+            data: any[],
+            total: number,
+          }) => {
+            if (res.ok) {
+              return {
+                type: OfferManageActions.SET_OFFER_CANDIDATES,
+                payload: {status: payload.status, candidates: res.data},
+              };
+            } else {
+              return [
+                {
+                  type: OfferManageActions.OPERATION_ERROR,
+                  payload: 'Error from API'
+                }
+              ];
+            }
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('getOffersOfferer', err));
             return [
               {
                 type: OfferManageActions.OPERATION_ERROR,

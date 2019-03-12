@@ -33,7 +33,7 @@ import {PreselectedCandidateCardComponent} from './offer-selection-process/prese
     SearchbarModule,
     OfferManageRoutingModule,
     OfferPreviewCardModule,
-    StoreModule.forFeature('OfferManage', OfferManageReducer),
+    StoreModule.forFeature('offerManage', OfferManageReducer),
     EffectsModule.forFeature([OfferManageEffects])
   ]
 })

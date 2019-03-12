@@ -60,3 +60,25 @@ mat-card-content {
     max-width: 88%;
   }
 }
+
+.fav-fab {
+  position: absolute;
+  top: -16px;
+  left: -16px;
+}
+
+::ng-deep app-candidate-preview-card .notSelected {
+  background-color: white !important;
+
+  mat-icon {
+    color: #f44336;
+  }
+}
+
+::ng-deep app-candidate-preview-card .selected {
+  background-color: #f44336 !important;
+
+  mat-icon {
+    color: white !important;
+  }
+}

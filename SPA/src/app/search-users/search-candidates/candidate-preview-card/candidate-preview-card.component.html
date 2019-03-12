@@ -1,4 +1,9 @@
 <mat-card fxFlex="100%" fxFlex.gt-xs="600px">
+  <button mat-mini-fab
+          (click)="onFaved()"
+          [ngClass]="['fav-fab', faved ? 'selected' : 'notSelected']">
+    <mat-icon svgIcon="favorite"></mat-icon>
+  </button>
   <mat-card-header
     fxLayout="row"
     fxLayout.lt-sm="column"
@@ -54,8 +59,8 @@
                 color="primary"
                 mat-raised-button
                 *ngIf="selectionMode">
-          <mat-icon svgIcon="star" style="margin-right: 8px"></mat-icon>
-          {{'Preselect' | uppercase }}
+          <mat-icon svgIcon="star"></mat-icon>
+          {{'Select' | uppercase }}
         </button>
       </div>
     </div>
