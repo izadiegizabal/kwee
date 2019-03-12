@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {SharedModule} from '../../../shared/shared.module';
-import {BusinessesPreviewCardComponent} from './businesses-preview-card.component';
+import {BusinessPreviewCardComponent} from './business-preview-card.component';
 import {IconWithTextModule} from '../../../shared/icon-with-text/icon-with-text.module';
 import {OffererNameOverviewModule} from '../../../shared/offerer-name-overview/offerer-name-overview.module';
 import {RouterModule} from '@angular/router';
@@ -8,7 +8,7 @@ import {SnsShareModule} from '../../../shared/sns-share/sns-share.module';
 
 @NgModule({
   declarations: [
-    BusinessesPreviewCardComponent
+    BusinessPreviewCardComponent
   ],
   imports: [
     SharedModule,
@@ -18,9 +18,9 @@ import {SnsShareModule} from '../../../shared/sns-share/sns-share.module';
     SnsShareModule
   ],
   exports: [
-    BusinessesPreviewCardComponent
+    BusinessPreviewCardComponent
   ]
 })
-export class BusinessesPreviewCardModule {
+export class BusinessPreviewCardModule {
 
 }

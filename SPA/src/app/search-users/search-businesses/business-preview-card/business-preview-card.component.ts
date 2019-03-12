@@ -2,21 +2,18 @@ import {Component, Input, OnInit, Output} from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {SnsShareDialogComponent} from '../../../shared/sns-share/sns-share-dialog/sns-share-dialog.component';
 import {getUrlfiedString} from '../../../shared/utils.service';
-import {CandidatePreview} from '../../../../models/candidate-preview.model';
-import {WorkFields} from '../../../../models/Candidate.model';
+import {BusinessPreview} from '../../../../models/business-preview.model';
+import {BusinessIndustries} from '../../../../models/Business.model';
 
 
 @Component({
-  selector: 'app-candidate-preview-card',
-  templateUrl: './candidate-preview-card.component.html',
-  styleUrls: ['./candidate-preview-card.component.scss']
+  selector: 'app-business-preview-card',
+  templateUrl: './business-preview-card.component.html',
+  styleUrls: ['./business-preview-card.component.scss']
 })
-export class CandidatePreviewCardComponent implements OnInit {
+export class BusinessPreviewCardComponent implements OnInit {
 
-  @Input() user: CandidatePreview;
-  @Input() selectionMode = false;
-  @Output() selected = false;
-
+  @Input() user: BusinessPreview;
 
   userUrl: string;
 
@@ -26,11 +23,10 @@ export class CandidatePreviewCardComponent implements OnInit {
 
   ngOnInit() {
     this.userUrl = this.urlfyPosition();
-    this.selected = false;
   }
 
   urlfyPosition() {
-    return '/candidate/' + this.user.id + '/' + getUrlfiedString(this.user.name);
+    return '/business/' + this.user.id + '/' + getUrlfiedString(this.user.name);
   }
 
 
@@ -44,22 +40,13 @@ export class CandidatePreviewCardComponent implements OnInit {
 
   getWorkfield() {
     // TODO: delete this dirty fix when api returns correctly
-    return (WorkFields[this.user.rol]) ? WorkFields[this.user.rol] : 'Designer';
+    return (BusinessIndustries[this.user.workfield]) ? BusinessIndustries[this.user.workfield] : 'Designer';
   }
 
-  getAge(dateBorn: string) {
-    const ageDifMs = Date.now() - (new Date(dateBorn)).getTime();
-    const ageDate = new Date(ageDifMs);
-    return Math.abs(ageDate.getUTCFullYear() - 1970) + ' y/o';
-  }
-
-  // getLatestExperience() {
-  //   // TODO: delete this dirty fix when api returns correctly
-  //   return (this.user.lastExp) ? this.user.lastExp : 'Facebook';
-  // }
-
-  selectCandidate() {
-    this.selected = !this.selected;
+  getSize() {
+    // TODO: delete this dirty fix when api returns correctly
+    const size = (BusinessIndustries[this.user.companySize]) ? BusinessIndustries[this.user.companySize] : '100'
+    return size + ' people';
   }
 
   getImg() {
