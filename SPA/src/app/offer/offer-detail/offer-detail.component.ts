@@ -32,15 +32,19 @@ export class OfferDetailComponent implements OnInit {
   }
 
   ngOnInit() {
+    const params = this.activatedRoute.snapshot.params;
+
     this.authState = this.store$.pipe(select('auth'));
     this.authState.pipe(
       select((s: { user: { id: Number } }) => s.user ? s.user.id : undefined)
     ).subscribe(
       (id) => {
         this.id = id ? id : null;
-      });
 
-    const params = this.activatedRoute.snapshot.params;
+        if (this.id) {
+          this.getApplications();
+        }
+      });
 
     if (Number(params.id)) {
       this.offerId = Number(params.id);
@@ -50,12 +54,18 @@ export class OfferDetailComponent implements OnInit {
       this.offerEffects$.offerGetoffer.pipe(
         filter((action: Action) => action.type === OfferActions.OPERATION_ERROR)
       ).subscribe((error: { payload: any, type: string }) => {
-        this.router.navigate(['/']);
+        this.router.navigate(['/error/404']);
       });
     } else {
-      this.router.navigate(['/']);
+      this.router.navigate(['/error/404']);
     }
 
+  }
+
+  getApplications() {
+    const params = this.activatedRoute.snapshot.params;
+
+    this.store$.dispatch(new OfferActions.TryGetApplication({id_applicant: this.id, id_offer: params.id}));
   }
 
   getTimePassed(publishDate) {
@@ -121,6 +131,11 @@ export class OfferDetailComponent implements OnInit {
     this.store$.dispatch(new OfferActions.TryPostApplication({fk_offer: params.id}));
   }
 
+  deleteApplication() {
+    console.log('delete');
+    // this.store$.dispatch(new OfferActions.TryDeleteApplication({fk_offer: params.id, fk_applicant: this.id}));
+  }
+
   urlOfferer(id, name) {
     const url = '/business/' + id + '/' + getUrlfiedString(name);
     return url;
@@ -133,7 +148,6 @@ export class OfferDetailComponent implements OnInit {
   backClicked() {
     this.location.back();
   }
-
 
 
 }

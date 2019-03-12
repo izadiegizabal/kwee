@@ -62,13 +62,13 @@ export class OfferEffects {
         const token = authState.token;
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
         const body = JSON.stringify(payload);
-
+        console.log(apiEndpointUrl);
         return this.httpClient.post(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res: {
             ok: boolean,
             application: [],
           }) => {
-            console.log(res);
+            // console.log(res);
             return {
               type: OfferActions.POST_APPLICATION,
               payload: res.application
@@ -76,6 +76,89 @@ export class OfferEffects {
           }),
           catchError((err: HttpErrorResponse) => {
             throwError(this.handleError('postApplication', err));
+            const error = err.error.message ? err.error.message : err;
+            return [
+              {
+                type: OfferActions.OPERATION_ERROR,
+                payload: error
+              }
+            ];
+          })
+        );
+      }
+    ),
+    share()
+  );
+
+  @Effect()
+  offerSetApplications = this.actions$.pipe(
+    ofType(OfferActions.TRY_GET_APPLICATION),
+    map((action: OfferActions.TryGetApplication) => {
+      return action.payload;
+    }),
+    withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    switchMap(([payload, authState]) => {
+        const apiEndpointUrl = environment.apiUrl + 'application/' + payload.id_applicant + '/' + payload.id_offer;
+        const token = authState.token;
+        const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+
+        return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
+          map((res: {
+            ok: boolean,
+            data: {
+              application: []
+            },
+          }) => {
+            // console.log(res);
+            return {
+              type: OfferActions.SET_APPLICATION,
+              payload: res.data
+            };
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('setApplication', err));
+            const error = err.error.message ? err.error.message : err;
+            return [
+              {
+                type: OfferActions.OPERATION_ERROR,
+                payload: error
+              }
+            ];
+          })
+        );
+      }
+    ),
+    share()
+  );
+
+  @Effect()
+  offerDeleteApplications = this.actions$.pipe(
+    ofType(OfferActions.TRY_DELETE_APPLICATION),
+    map((action: OfferActions.TryDeleteApplication) => {
+      return action.payload;
+    }),
+    withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    switchMap(([payload, authState]) => {
+        const apiEndpointUrl = environment.apiUrl + 'application';
+        const token = authState.token;
+        const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+        // const body = JSON.stringify(payload);
+        // pasar body
+
+        return this.httpClient.delete(apiEndpointUrl, {headers: headers}).pipe(
+          map((res: {
+            ok: boolean,
+            application: [],
+          }) => {
+            // console.log(res);
+            res.application = null;
+            return {
+              type: OfferActions.DELETE_APPLICATION,
+              payload: res.application
+            };
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('deleteApplication', err));
             const error = err.error.message ? err.error.message : err;
             return [
               {

@@ -114,9 +114,13 @@
                   style="color: white" type="button">{{'Edit Offer' | uppercase }}</button>
               </a>
               <ng-template #apply>
-                <button (click)="postApplication()"
+                <button *ngIf="(offerState | async).applications===null" (click)="postApplication()"
                         color="accent"
                         mat-raised-button style="color: white">{{'Apply Now!' | uppercase }}</button>
+
+                <button *ngIf="(offerState | async).applications" (click)="deleteApplication()"
+                        color="warn"
+                        mat-raised-button style="color: white">{{'Delete Application' | uppercase }}</button>
               </ng-template>
               <app-sns-share [offer]="getShareableOffer((offerState | async).offer.title)"></app-sns-share>
             </div>

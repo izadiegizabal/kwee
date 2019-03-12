@@ -7,9 +7,10 @@ import {Observable} from 'rxjs';
 import * as fromAdmin from '../../store/admin.reducers';
 import {filter} from 'rxjs/operators';
 import {AdminEffects} from '../../store/admin.effects';
-import {PageEvent} from '@angular/material';
+import {MatDialog, PageEvent} from '@angular/material';
 import {BusinessAccountStates, BusinessAccountSubscriptions, BusinessIndustries} from '../../../../models/Business.model';
 import {isStringNotANumber} from '../../../../models/Offer.model';
+import {AlertDialogComponent} from '../../../shared/alert-dialog/alert-dialog.component';
 
 @Component({
   selector: 'app-business-overview',
@@ -49,7 +50,8 @@ export class BusinessOverviewComponent implements OnInit {
 
   constructor(
     private _formBuilder: FormBuilder,
-    private store$: Store<fromApp.AppState>, private adminEffects$: AdminEffects) {
+    private store$: Store<fromApp.AppState>, private adminEffects$: AdminEffects,
+    public dialog: MatDialog) {
   }
 
   ngOnInit() {
@@ -100,6 +102,20 @@ export class BusinessOverviewComponent implements OnInit {
     return this.workFields.find(o => o.value === workField).viewValue;
   }
 
+  callAlertDialogUpdate(id) {
+    const dialogDelete = this.dialog.open(AlertDialogComponent, {
+      data: {
+        header: 'Are you sure you want to update this user?',
+      }
+    });
+
+    dialogDelete.afterClosed().subscribe(result => {
+      if (result) {
+        this.updateOfferer(id);
+      }
+    });
+  }
+
   updateOfferer(id) {
 
     if (this.userForm.status === 'VALID') {
@@ -124,6 +140,20 @@ export class BusinessOverviewComponent implements OnInit {
     }
   }
 
+
+  callAlertDialogDelete(id) {
+    const dialogDelete = this.dialog.open(AlertDialogComponent, {
+      data: {
+        header: 'Are you sure you want to delete this user?',
+      }
+    });
+
+    dialogDelete.afterClosed().subscribe(result => {
+      if (result) {
+        this.deleteOfferer(id);
+      }
+    });
+  }
 
   deleteOfferer(id) {
     this.store$.dispatch(new AdminActions.TryDeleteBusiness(id));
