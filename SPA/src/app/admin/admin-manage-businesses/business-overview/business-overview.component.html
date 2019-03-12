@@ -211,9 +211,9 @@
           <button (click)="edit(user)" color="accent" mat-button>Edit</button>
         </div>
         <div *ngIf="isInEditMode && isPanelOpen">
-          <button (click)="updateOfferer(user.id)" color="accent" mat-button>Done</button>
+          <button (click)="callAlertDialogUpdate(user.id)" color="accent" mat-button type="submit">Done</button>
         </div>
-        <button (click)="deleteOfferer(user.id)" color="warn" mat-button>Delete</button>
+        <button (click)="callAlertDialogDelete(user.id)" color="warn" mat-button>Delete</button>
       </div>
     </mat-expansion-panel>
   </mat-accordion>
