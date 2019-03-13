@@ -197,9 +197,7 @@ module.exports = (app, db) => {
         let status = req.query.status;
         try {
             saveLogES('GET', `offer/${id}/applications`, 'Visitor');
-            let where;
-            status ? where = { where: { fk_offer: id, status: status } } : where = { where: { fk_offer: id } };
-            let applications = await db.applications.findAll(where);
+            let applications = await db.applications.findAll({ where: { fk_offer: id } });
 
             if ( applications.length > 0 ) {
                 let users = await db.users.findAll();
