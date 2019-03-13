@@ -22,6 +22,7 @@ import {NgcCookieConsentConfig, NgcCookieConsentModule} from 'ngx-cookieconsent'
 import {PrivacyComponent} from './privacy/privacy.component';
 import {OfferCreateModule} from './offer/offer-create/offer-create.module';
 import {JWT_OPTIONS, JwtHelperService, JwtModule} from '@auth0/angular-jwt';
+import {LandingComponent} from "./landing/landing.component";
 
 export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {
   return localStorageSync({
@@ -64,6 +65,7 @@ const cookieConfig: NgcCookieConsentConfig = {
   declarations: [
     AppComponent,
     PrivacyComponent,
+    LandingComponent
   ],
   imports: [
     BrowserModule,

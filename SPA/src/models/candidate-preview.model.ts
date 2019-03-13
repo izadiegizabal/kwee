@@ -6,6 +6,8 @@ export class CandidatePreview {
 
   constructor(
     public id: number,
+    public applicationId: number = -1,
+    public applicationStatus: number = -1,
     public index: number,
     public name: string,
     public bio: string,
