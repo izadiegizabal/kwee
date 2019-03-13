@@ -1,7 +1,7 @@
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
 const { tokenId, logger } = require('../../shared/functions');
 
-const algorithm = require('../../shared/algorithm');
+const {algorithm} = require('../../shared/algorithm');
 
 // ============================
 // ======== CRUD experiences =========
@@ -182,7 +182,7 @@ module.exports = (app, db) => {
     app.get('/experiences/index/:id', async(req,res,next) => {
         const id = req.params.id;
 
-        let index = await algorithm.indexAveragesUpdate(id);
+        let index = await algorithm.indexUpdate(id);
 
         return res.json({
             ok: true,

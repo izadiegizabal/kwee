@@ -1,6 +1,7 @@
 const { checkToken, checkAdmin } = require('../../../middlewares/authentication');
 const { logger } = require('../../../shared/functions');
 const bcrypt = require('bcryptjs');
+const { algorithm } = require('../../../shared/algorithm');
 
 // ============================
 // ======== CRUD rating =========
@@ -167,6 +168,8 @@ module.exports = (app, db) => {
 
             // commit
             await transaction.commit();
+            
+            // await algorithm.indexUpdate(id);
 
             return res.status(201).json({
                 ok: true,
@@ -196,6 +199,8 @@ module.exports = (app, db) => {
                     where: { ratingId: id }
                 });
                 if (updated) {
+                    await algorithm.indexUpdate(id);
+
                     return res.status(200).json({
                         ok: true,
                         message: 'Updates successful',
@@ -228,6 +233,8 @@ module.exports = (app, db) => {
                 let rating = await db.ratings.destroy({ where: { id } });
 
                 if (rating_offererToDelete && rating && rating_applicant) {
+                    await algorithm.indexUpdate(id);
+
                     return res.json({
                         ok: true,
                         message: 'Rating_Offerer deleted'
@@ -252,7 +259,8 @@ module.exports = (app, db) => {
                 environment: body.environment,
                 partners: body.partners,
                 services: body.services,
-                installations: body.installations
+                installations: body.installations,
+                satisfaction: body.satisfaction
             }
 
             let newRating_Offerer = await db.rating_offerers.create(rating_offerer, { transaction: transaction });

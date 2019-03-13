@@ -5,6 +5,7 @@ const env =     require('../../../../tools/constants');
 const bcrypt = require('bcryptjs');
 const moment = require('moment')
 const axios = require('axios');
+const { algorithm } = require('../../../../shared/algorithm');
 
 // ============================
 // ======== CRUD user =========
@@ -438,7 +439,7 @@ module.exports = (app, db) => {
                     uservar = user;
                     return createApplicant(body, user, next, transaction);
                 })
-                .then(ending => {
+                .then(async ending => {
                     sendVerificationEmail(body, uservar);
                     delete body.password;
                     body.index = 50;
@@ -453,6 +454,8 @@ module.exports = (app, db) => {
                             console.log(err)
                         }
                     });
+                    // await algorithm.indexUpdate(ending.userId);
+
                     return res.status(201).json({
                         ok: true,
                         message: `Applicant with id ${ending.userId} has been created.`
@@ -518,6 +521,7 @@ module.exports = (app, db) => {
                                 }).catch((error) => {
                                     console.log('ERROR:', error.message);
                                 });
+                                await algorithm.indexUpdate(id);
                                 
                                 return res.status(200).json({
                                     ok: true,
@@ -785,6 +789,8 @@ module.exports = (app, db) => {
             body.skills ? updateSkills(applicant, body.skills, elasticsearch, next) : null;
 
             if (updated && applicantUser) {
+                await algorithm.indexUpdate(id);
+
                 return res.status(200).json({
                     ok: true,
                     message: `Applicant ${ id } data updated successfuly`,
