@@ -29,6 +29,11 @@ export class CandidatePreviewCardComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (this.user.applicationStatus === 1 ){  // if application status is 1 -> faved
+      this.faved = true;
+      this.changeFaved.emit(this.faved);
+    }
+
     this.userUrl = this.urlfyPosition();
     this.selected = false;
     if (this.isFaved) {
