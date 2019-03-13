@@ -15,23 +15,22 @@
 */
 
 import { MTLFile } from './dependencies/MTLFile.js';
+import { gl, program, TEntity, angle } from './commons';
+
 
 var vec3 = glMatrix.vec3;
 
 class TResourceManager {
     // map --> store resources
-    
     constructor() {
         this.map = new Map();
-        console.log("== Constructor ==");
-        console.log(this.map);
     }
     
     // getResource --> The resource filename must be the same as "name"
     async getResource(name) {
-        console.log("== getResource " + name + " ==");
-        var resource = this.map.has(name);
-        console.log("Does map have " + name + " ? => " + resource);
+        // console.log("== getResource " + name + " ==");
+
+        let resource = this.map.has(name);
 
         let type = name.split('.');
 
@@ -40,25 +39,25 @@ class TResourceManager {
             switch(type[1]){
                 case 'json': {
                     // Mesh
-                    console.log("-> Creating TResourceMesh " + name + "...");
+                    // console.log("-> Creating TResourceMesh " + name + "...");
                     resource = new TResourceMesh(name);
                     break;
                 }
                 case 'texture': {
-                    console.log("-> Creating TResourceTexture " + name + "...");
+                    // console.log("-> Creating TResourceTexture " + name + "...");
                     resource = new TResourceTexture(name);
                     break;
                 }
                 case 'mtl': {
                     // material
-                    console.log("-> Creating TResourceMaterial " + name + "...");
+                    // console.log("-> Creating TResourceMaterial " + name + "...");
                     resource = new TResourceMaterial(name);
                     break;
                 }
                 case 'vs': 
                 case 'fs': {
                     // shader
-                    console.log("-> Creating TResourceShader " + name + "...");
+                    // console.log("-> Creating TResourceShader " + name + "...");
                     resource = new TResourceShader(name);
                     break;
                 }
@@ -67,14 +66,45 @@ class TResourceManager {
             var file = await resource.loadFile(name);
             
             resource = this.map.set(name, file);
+
+            this.getResource(name);
         }
         else{
-            resource = this.map.get(name);
-        }
-        console.log("end getResource map status:");
-        console.log(this.map);
+            // return resource
+            
+            switch(type[1]){
+                case 'json': {
+                    let value = this.map.get(name); 
+                    resource = value.json;
+                    
+                    break;
+                }
+                case 'texture': {
+                    let value = this.map.get(name); 
+                    resource = value.texture;
+                    
+                    break;
+                }
+                case 'mtl': {
+                    let value = this.map.get(name); 
+                    resource = value.mtl;
+                    
+                    break;
+                }
+                case 'vs': 
+                case 'fs': {
+                    let value = this.map.get(name); 
+                    resource = value.shader;
 
-        return resource;
+                    break;
+                }
+            }
+            console.log("going to return: ");
+            console.log(resource);
+            
+            return resource;
+        }
+
     }
 }
 
@@ -126,7 +156,7 @@ class TResourceMesh extends TResource{
 
     async loadFile(file){
 
-        console.log("== loadFile(" + file + ") ==");
+        console.log("== loadFile TResourceMesh(" + file + ") ==");
 
         // mesh file code
         const jsonMesh = await loadJSON(file);
@@ -143,30 +173,54 @@ class TResourceMesh extends TResource{
         this.nTris = jsonMesh.indices.length;
         this.nVertices = jsonMesh.vertices.length;
 
-        // material
-        let name = jsonMesh.alias.split('_');
-        let material = new TResourceMaterial(name[1]);
-        console.log("Mesh material: " + material.name);
-        material.loadValues(jsonMesh);
+        // // material
+        // let name = jsonMesh.alias.split('_');
+        // let material = new TResourceMaterial(name[1]);
+        // console.log("Mesh material: " + material.name);
+        // material.loadValues(jsonMesh);
 
-        let output = [];
-        output.push(this);
-        output.push(material);
-        return output;
+        // let output = ;
+        // output.push(this);
+        // output.push(material);
+        return this;
     }
 
     draw(){
 
-        /// object buffers
+        // /// object buffers
+        // var meshPosVertexBufferObject = gl.createBuffer();
+        // gl.bindBuffer(gl.ARRAY_BUFFER, meshPosVertexBufferObject);
+        // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
+        // gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+        // var meshIndexBufferObject = gl.createBuffer();
+        // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, meshIndexBufferObject);
+        // gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triVertices), gl.STATIC_DRAW);
+        // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+
+        // gl.bindBuffer(gl.ARRAY_BUFFER, meshPosVertexBufferObject);
+        // var positionAttribLocation = gl.getAttribLocation(program, 'vertPosition');
+        // gl.vertexAttribPointer(
+        //     positionAttribLocation, // Attribute location
+        //     3, // Number of elements per attribute
+        //     gl.FLOAT, // Type of elements
+        //     gl.FALSE,
+        //     3 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+        //     0 // Offset from the beginning of a single vertex to this attribute
+        // );
+        // gl.enableVertexAttribArray(positionAttribLocation);
+
+        // gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
+        // gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, meshIndexBufferObject);
+        // gl.drawElements(gl.TRIANGLES, this.nTris, gl.UNSIGNED_SHORT, 0);
+
+
         var meshPosVertexBufferObject = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, meshPosVertexBufferObject);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-        var meshIndexBufferObject = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, meshIndexBufferObject);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triVertices), gl.STATIC_DRAW);
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, meshPosVertexBufferObject);
         var positionAttribLocation = gl.getAttribLocation(program, 'vertPosition');
@@ -180,8 +234,23 @@ class TResourceMesh extends TResource{
         );
         gl.enableVertexAttribArray(positionAttribLocation);
 
-        gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        var meshIndexBufferObject = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, meshIndexBufferObject);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triVertices), gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+
+        var worldMatrix = new Float32Array(16);
+        glMatrix.mat4.identity(worldMatrix);
+        worldMatrix = TEntity.Model;
+
+
+        // rotation stuff
+        var rotation = glMatrix.mat4.create();
+        glMatrix.mat4.rotate(rotation, worldMatrix, angle, [0, 1, 0]);
+
+        var matWorldUniformLocation = gl.getUniformLocation(program, 'mWorld');
+        gl.uniformMatrix4fv(matWorldUniformLocation, false, rotation);
+
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, meshIndexBufferObject);
         gl.drawElements(gl.TRIANGLES, this.nTris, gl.UNSIGNED_SHORT, 0);
@@ -211,9 +280,10 @@ class TResourceMaterial extends TResource{
     async loadFile(file){
         
         // const mtl = await loadJSON(file);
+        console.log("== loadFile TResourceMaterial(" + file + ") ==");
         const mtl_file = loadMTL(file);
         const mtl = new MTLFile(mtl_file);
-        console.log(mtl);
+        // console.log(mtl);
 
         // material
         this.name = mtl.name;
@@ -275,18 +345,18 @@ class TResourceShader extends TResource {
 
 async function loadJSON(filename){
 
-    let host = "https://kwee.ovh";
+    let host = "http://localhost:4200";
     let path = '/assets/assets/JSON/';
     let url = `${host + path + filename}`;
     
-    console.log(`Fetching JSON resource from url: ${ url }`);
+    // console.log(`Fetching JSON resource from url: ${ url }`);
     
     let json;
     await fetch( url )
         .then( function(response) { return response.json(); } )
         .then( responseJSON => {
-            console.log("== fetch JSON ok ==");
-            console.log(responseJSON);
+            // console.log("== fetch JSON ok ==");
+            // console.log(responseJSON);
             json = responseJSON;
         });
 
@@ -295,18 +365,18 @@ async function loadJSON(filename){
 
 async function load(filename){
 
-    let host = "https://kwee.ovh";
+    let host = "http://localhost:4200";
     let path = '/assets/engine/shaders/';
     let url = `${host + path + filename}`;
     
-    console.log(`Fetching ${filename} resource from url: ${ url }`);
+    // console.log(`Fetching ${filename} resource from url: ${ url }`);
     
     let file;
     await fetch( url )
         .then( response => response.text() )
         .then( res => {
-            console.log("== fetch file ok ==");
-            console.log(res);
+            // console.log("== fetch file ok ==");
+            // console.log(res);
             file = Promise.resolve(res);
         });
 
@@ -319,27 +389,18 @@ async function loadMTL(filename){
     let path = '/assets/assets/JSON/';
     let url = `${host + path + filename}`;
     
-    console.log(`Fetching ${filename} resource from url: ${ url }`);
+    // console.log(`Fetching ${filename} resource from url: ${ url }`);
     
     let file;
     await fetch( url )
         .then( response => response.text() )
         .then( res => {
-            console.log("== fetch file ok ==");
-            console.log(res);
+            // console.log("== fetch file ok ==");
+            // console.log(res);
             file = Promise.resolve(res);
         });
 
     return file;
-}
-
-var mainRM = async function () {
-    
-    var manager = new TResourceManager();
-
-    let mesh = await manager.getResource('part1.json');
-    let VShader = await manager.getResource('shader.vs');
-    let FShader = await manager.getResource('shader.fs');
 }
 
 export {

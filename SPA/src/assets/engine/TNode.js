@@ -1,5 +1,6 @@
 
 import {TCamera, TLight, TTransform} from './TEntity';
+import {TEntity} from './commons.js';
 
 class TNode {
     // WARNING: TE FATHER IS REQUIRED
@@ -49,8 +50,6 @@ class TNode {
     }
 
     draw() {
-        console.log('Nodo: ');
-        console.log(this);
         if (this.entity && this.entity != null) {
             this.entity.beginDraw();
         }
@@ -124,7 +123,8 @@ function calculateViews() {
     TEntity.Views.forEach((e) => {
         goToRoot(e);
         for (let i = TEntity.Aux.length - 1; i >= 0; i--) {
-            glMatrix.mat4.mul(aux, aux, TEntity.Aux[i])
+            glMatrix.mat4.mul(aux,  aux, TEntity.Aux[i])
+            glMatrix.mat4.invert(aux, aux);
         }
         TEntity.AuxViews.push(aux);
         TEntity.Aux = [];
@@ -142,6 +142,9 @@ function goToRoot(obj) {
 }
 
 export {
-    TNode
+    TNode,
+    calculateViews,
+    calculateLights,
+    goToRoot,
+    getLigthsViews
 }
-console.log("TNode loaded ok");
