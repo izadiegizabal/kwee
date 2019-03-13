@@ -4,6 +4,9 @@ import {MatDialog} from '@angular/material';
 import {SnsShareDialogComponent} from '../../shared/sns-share/sns-share-dialog/sns-share-dialog.component';
 import {ContractType, JobDurationUnit, SalaryFrequency, WorkLocationType} from '../../../models/Offer.model';
 import {environment} from '../../../environments/environment';
+import {RateCandidateComponent} from '../../rating/rate-candidate/rate-candidate.component';
+import {select, Store} from '@ngrx/store';
+import * as fromApp from '../../store/app.reducers';
 
 
 @Component({
@@ -14,15 +17,32 @@ import {environment} from '../../../environments/environment';
 export class OfferPreviewCardComponent implements OnInit {
 
   offerUrl: string;
+  authState: any;
+  candidate: boolean;
+  nameToRate: string;
 
   @Input() offer: any;
 
 
-  constructor(public dialog: MatDialog) {
+  constructor(public dialog: MatDialog,
+              private store$: Store<fromApp.AppState>) {
   }
 
   ngOnInit() {
     this.offerUrl = this.urlfyPosition();
+
+    this.authState = this.store$.pipe(select('auth'));
+    this.authState.pipe(
+      select((s: { user: any}) => s.user)
+    ).subscribe(
+      (user) => {
+        if (user) {
+          this.candidate = user.type === 'candidate';
+          if (this.candidate) {
+            this.nameToRate = this.offer.offererName;
+          }
+        }
+      });
   }
 
   urlfyPosition() {
@@ -94,5 +114,21 @@ export class OfferPreviewCardComponent implements OnInit {
     return this.offer.img ? environment.apiUrl + 'image/offerers/' + this.offer.img :
       'https://cdn.vox-cdn.com/thumbor/Pkmq1nm3skO0-j693JTMd7RL0Zk=/0x0:2012x1341/1200x800/filters:focal(0x0:2012x1341)/' +
       'cdn.vox-cdn.com/uploads/chorus_image/image/47070706/google2.0.0.jpg';
+  }
+
+  rateCandidate() {
+
+    const dialogRef = this.dialog.open(RateCandidateComponent, {
+      width: '95%',
+      maxHeight: '90%',
+      data: {candidate: !this.candidate, to: 1, list: [{name: this.nameToRate}]}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      if (result) {
+        console.log(result);
+      }
+    });
   }
 }

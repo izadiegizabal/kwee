@@ -57,7 +57,7 @@ export class SetOfferCandidates implements Action {
 export class TryChangeApplicationStatus implements Action {
   readonly type = TRY_CHANGE_APPLICATION_STATUS;
 
-  constructor(public payload: { fk_applicant: number, fk_offer: number, status: number }) {
+  constructor(public payload: { candidateId: number, applicationId: number, status: number }) {
   }
 }
 

@@ -8,6 +8,15 @@ import * as OfferManageActions from './offer-manage.actions';
 import {environment} from '../../../../environments/environment';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
+import {CandidatePreview} from "../../../../models/candidate-preview.model";
+
+function reformatCandidates(apiApplicationCandidates: any[]): CandidatePreview[] {
+  let correctCandidates: CandidatePreview[] = [];
+  for (let apiCandidate of apiApplicationCandidates) {
+    correctCandidates.push({...apiCandidate, id: apiCandidate.applicantId});
+  }
+  return correctCandidates;
+}
 
 @Injectable()
 export class OfferManageEffects {
@@ -132,9 +141,10 @@ export class OfferManageEffects {
             total: number,
           }) => {
             if (res.ok) {
+              const newCandidates = reformatCandidates(res.data);
               return {
                 type: OfferManageActions.SET_OFFER_CANDIDATES,
-                payload: {status: payload.status, candidates: res.data},
+                payload: {status: payload.status, candidates: newCandidates},
               };
             } else {
               return [
@@ -168,10 +178,10 @@ export class OfferManageEffects {
     }),
     withLatestFrom(this.store$.pipe(select(state => state.auth))),
     switchMap(([payload, authState]) => {
-        const apiEndpointUrl = environment.apiUrl + 'application';
+        const apiEndpointUrl = environment.apiUrl + 'application/' + payload.applicationId;
         const token = authState.token;
-        const headers = new HttpHeaders().set('token', token);
-        const body = JSON.stringify(payload);
+        const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+        const body = JSON.stringify({status: payload.status});
         return this.httpClient.put(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res: {
             ok: boolean,
@@ -179,7 +189,7 @@ export class OfferManageEffects {
             if (res.ok) {
               return {
                 type: OfferManageActions.SET_CHANGE_APPLICATION_STATUS,
-                payload: {status: payload.status, candidateId: payload.fk_applicant},
+                payload: {status: payload.status, candidateId: payload.candidateId},
               };
             } else {
               return [

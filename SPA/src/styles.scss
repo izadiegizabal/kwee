@@ -1,6 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
 @import "~@fortawesome/fontawesome-free/css/all.css";
 
+
+$color-negative-rating: #ff4536 !default;
+$color-ok-rating: #ffea57 !default;
+$color-positive-rating: #1de9b6 !default;
+$color-default-rating: #444B54 !default;
+@import '~css-star-rating/scss/star-rating';
+
 html {
   height: 100%;
 }

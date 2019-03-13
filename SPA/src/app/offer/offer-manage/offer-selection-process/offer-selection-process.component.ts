@@ -83,12 +83,13 @@ export class OfferSelectionProcessComponent implements OnInit {
     if (Number(params.id)) {
       this.offerId = Number(params.id);
       this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({id: this.offerId, page: 1, limit: 20, status: 0})); // pending
-      this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({id: this.offerId, page: 1, limit: 20, status: 1})); // faved
+      // this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({id: this.offerId, page: 1, limit: 20, status: 1})); // faved
 
       this.manageOfferEffects.GetOfferCandidates.pipe(
         filter((action: any) => action.type === OfferManageActions.OPERATION_ERROR)
       ).subscribe((error: { payload: any, type: string }) => {
-        this.router.navigate(['/error/404']);
+        // this.router.navigate(['/error/404']);
+        console.log(error);
       });
     } else {
       this.router.navigate(['/error/404']);
@@ -186,15 +187,16 @@ export class OfferSelectionProcessComponent implements OnInit {
   }
 
   isFaved(faved: boolean, candidate: CandidatePreview) {
-    console.log(candidate);
     if (faved) {
-      // TODO: add to faved
-      this.store$.dispatch(new OfferManageActions
-          .TryChangeApplicationStatus({fk_applicant: candidate.id, fk_offer: this.offerId, status: 1}));
+      if (candidate.applicationStatus !== 1){
+        this.store$.dispatch(new OfferManageActions
+          .TryChangeApplicationStatus({candidateId: candidate.id, applicationId: candidate.applicationId, status: 1}));
+      }
     } else {
-      // TODO: remove from faved
-      this.store$.dispatch(new OfferManageActions
-        .TryChangeApplicationStatus({fk_applicant: candidate.id, fk_offer: this.offerId, status: 0}));
+      if (candidate.applicationStatus !== 0){
+        this.store$.dispatch(new OfferManageActions
+          .TryChangeApplicationStatus({candidateId: candidate.id, applicationId: candidate.applicationId, status: 0}));
+      }
     }
   }
 }
