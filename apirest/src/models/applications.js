@@ -45,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
             validate: {
                 isIn: {
                     args: [[0, 1, 2, 3, 4]],
-                    msg: "status value should be a valid one: 0 (accepted), 1 (pending), 2 (deleted), 3 (fav) or 4 (selected)."
+                    msg: "status value should be a valid one: 0 (pending), 1 (fav), 2 (selected), 3 (accepted) or 4 (refused)."
                 }
             }
         }

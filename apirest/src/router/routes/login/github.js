@@ -33,13 +33,17 @@ module.exports = (app, db) => {
                         github: user.email
                     });
 
-                    // const query = querystring.stringify({
-                    //         user: user.id,
-                    //         name: user.name,
-                    //         email: user.email
-                    // });
-                    let token = 'token=' + auth.auth.encode(user);
-                    res.redirect(env.SIGNUP + token);
+                    let token = auth.auth.encode(user);
+                    const query = `token=${token}&id=${user.id}&name=${user.name}&email=${user.email}`;
+                    
+                    // JSON.stringify({
+                    //             user: user.id,
+                    //             name: user.name,
+                    //             email: user.email,
+                    //             token
+                    //     });
+
+                    res.redirect(env.SIGNUP + query);
 
                 } else {
                     // Existent user
@@ -47,7 +51,7 @@ module.exports = (app, db) => {
                     res.redirect('/');
                 }
             } catch (err) {
-                next({ type: 'error', error: 'Error getting data' });
+                return next({ type: 'error', error: err.message });
             }
         });
 
