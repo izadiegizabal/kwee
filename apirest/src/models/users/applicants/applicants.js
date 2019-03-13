@@ -97,6 +97,15 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
 
+      satisfactionAVG: {
+        type: DataTypes.FLOAT(3, 2),
+        allowNull: false,
+        defaultValue: 0,
+        validate: {
+          isFloat: true
+        }
+      },
+
       nOpinions: {
         type: DataTypes.INTEGER,
         allowNull: false,
