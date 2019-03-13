@@ -1,14 +1,13 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../store/app.reducers';
-import * as OffersActions from './store/offers.actions';
-import * as fromOffers from './store/offers.reducers';
+import * as OffersActions from '../offer/store/offers.actions';
+import * as fromOffers from '../offer/store/offers.reducers';
 import {Observable} from 'rxjs';
 import {MatPaginator, MatSidenav, PageEvent} from '@angular/material';
 import {BreakpointObserver} from '@angular/cdk/layout';
 import {HttpClient} from '@angular/common/http';
 import {ActivatedRoute, Router} from '@angular/router';
-
 
 @Component({
   selector: 'app-candidate-home',
@@ -17,7 +16,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 })
 export class CandidateHomeComponent implements OnInit {
 
-
+  query: any;
   offersState: Observable<fromOffers.State>;
   // MatPaginator
   pageSize = 5;
@@ -42,24 +41,20 @@ export class CandidateHomeComponent implements OnInit {
     this.offersState = this.store$.pipe(select(state => state.offers));
 
     this.activatedRoute.queryParams
-      .subscribe(query => {
+      .subscribe(params => {
+        this.query = params;
         this.searchCallApi();
       });
   }
 
   changePage() {
-    let query = '';
-    if (window.location.href.split('?')[1]) {
-      query = '&' + window.location.href.split('?')[1];
-    }
-
-    query += '&status=0';
-
     this.pageSize = this.pageEvent.pageSize;
+    this.query = {...this.query, status: '0'};
+
     this.store$.dispatch(new OffersActions.TryGetOffers({
       page: this.pageEvent.pageIndex + 1,
       limit: this.pageEvent.pageSize,
-      params: query
+      params: this.query
     }));
   }
 
@@ -67,10 +62,6 @@ export class CandidateHomeComponent implements OnInit {
     return !this.media.isMatched('screen and (min-width: 960px)'); // gt-sm
   }
 
-  applyFilters() {
-    this.drawer.toggle();
-    window.scrollTo(0, 0);
-  }
 
   onSearch(params: string) {
     let searchParams = params.toLowerCase().replace(/ /g, '+');
@@ -81,17 +72,20 @@ export class CandidateHomeComponent implements OnInit {
   }
 
   searchCallApi() {
-    let query = '';
-    if (window.location.href.split('?')[1]) {
-      query = '&' + window.location.href.split('?')[1];
-    }
+    // let query = '';
+    // if (window.location.href.split('?')[1]) {
+    //   query = '&' + window.location.href.split('?')[1];
+    // }
+    //
+    // query += '&status=0';
 
-    query += '&status=0';
+    this.query = {...this.query, status: '0'};
+    console.log(this.query);
 
     this.store$.dispatch(new OffersActions.TryGetOffers({
       page: 1,
       limit: this.pageSize,
-      params: query
+      params: this.query
     }));
 
     if (this.paginator) {

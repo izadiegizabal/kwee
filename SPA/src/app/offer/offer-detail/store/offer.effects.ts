@@ -62,7 +62,7 @@ export class OfferEffects {
         const token = authState.token;
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
         const body = JSON.stringify(payload);
-        console.log(apiEndpointUrl);
+        console.log(body);
         return this.httpClient.post(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res: {
             ok: boolean,
@@ -139,18 +139,16 @@ export class OfferEffects {
     }),
     withLatestFrom(this.store$.pipe(select(state => state.auth))),
     switchMap(([payload, authState]) => {
-        const apiEndpointUrl = environment.apiUrl + 'application';
+        const apiEndpointUrl = environment.apiUrl + 'application/' + payload.fk_application;
         const token = authState.token;
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
-        // const body = JSON.stringify(payload);
-        // pasar body
 
         return this.httpClient.delete(apiEndpointUrl, {headers: headers}).pipe(
           map((res: {
             ok: boolean,
             application: [],
           }) => {
-            // console.log(res);
+            console.log(res);
             res.application = null;
             return {
               type: OfferActions.DELETE_APPLICATION,

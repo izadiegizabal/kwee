@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, Output} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {SnsShareDialogComponent} from '../../../shared/sns-share/sns-share-dialog/sns-share-dialog.component';
 import {getUrlfiedString} from '../../../shared/utils.service';
@@ -13,7 +13,7 @@ import {BusinessIndustries} from '../../../../models/Business.model';
 })
 export class BusinessPreviewCardComponent implements OnInit {
 
-  @Input() user: BusinessPreview;
+  @Input() user: BusinessPreview = null;
 
   userUrl: string;
 

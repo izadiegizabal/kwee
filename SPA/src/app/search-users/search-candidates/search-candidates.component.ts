@@ -10,7 +10,7 @@ import {FormArray, FormControl, FormGroup} from '@angular/forms';
 import {Distances, isStringNotANumber} from '../../../models/Offer.model';
 import {WorkFields} from '../../../models/Candidate.model';
 import {ActivatedRoute, Router} from '@angular/router';
-import * as OffersActions from '../../candidate-home/store/offers.actions';
+import * as OffersActions from '../../offer/store/offers.actions';
 
 @Component({
   selector: 'app-search-candidates',

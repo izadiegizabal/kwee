@@ -1,8 +1,10 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {Distances, isStringNotANumber} from '../../../../models/Offer.model';
 import {BusinessIndustries, BusinessSize} from '../../../../models/Business.model';
 import {Router} from '@angular/router';
+import {BreakpointObserver} from '@angular/cdk/layout';
+import {MatSidenav} from '@angular/material';
 
 @Component({
   selector: 'app-filters-businesses',
@@ -11,6 +13,7 @@ import {Router} from '@angular/router';
 })
 export class FiltersBusinessesComponent implements OnInit {
 
+  @ViewChild('drawer') drawer: MatSidenav;
 
   // FILTERS
   filters: FormGroup;
@@ -35,7 +38,7 @@ export class FiltersBusinessesComponent implements OnInit {
     .map(key => ({value: BusinessSize[key], viewValue: key}));
 
 
-  constructor(private router: Router) {
+  constructor(private router: Router, public media: BreakpointObserver) {
   }
 
   ngOnInit() {
@@ -93,6 +96,15 @@ export class FiltersBusinessesComponent implements OnInit {
           queryParams: {workfield: this.filters.controls['industry'].value}, queryParamsHandling: 'merge'
         });
     });
+  }
+
+  applyFilters() {
+    this.drawer.toggle();
+    window.scrollTo(0, 0);
+  }
+
+  isMobile() {
+    return !this.media.isMatched('screen and (min-width: 960px)'); // gt-sm
   }
 
 }

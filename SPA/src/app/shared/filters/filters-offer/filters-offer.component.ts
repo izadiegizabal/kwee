@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {MatSidenav} from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -237,6 +237,15 @@ export class FiltersOfferComponent implements OnInit {
 
     this.router.navigate(['/candidate-home'],
       {queryParams: {seniority: queryS}, queryParamsHandling: 'merge'});
+  }
+
+  applyFilters() {
+    this.drawer.toggle();
+    window.scrollTo(0, 0);
+  }
+
+  isMobile() {
+    return !this.media.isMatched('screen and (min-width: 960px)'); // gt-sm
   }
 
 

@@ -5,8 +5,8 @@ import {OfferPreviewCardModule} from '../offer/offer-preview-card/offer-preview-
 import {SearchbarModule} from '../shared/searchbar/searchbar.module';
 import {StoreModule} from '@ngrx/store';
 import {EffectsModule} from '@ngrx/effects';
-import {offersReducer} from './store/offers.reducers';
-import {OffersEffects} from './store/offers.effects';
+import {offersReducer} from '../offer/store/offers.reducers';
+import {OffersEffects} from '../offer/store/offers.effects';
 import {ReactiveFormsModule} from '@angular/forms';
 import {FiltersOfferModule} from '../shared/filters/filters-offer/filters-offer.module';
 

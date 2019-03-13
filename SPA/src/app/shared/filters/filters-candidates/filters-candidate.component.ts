@@ -1,8 +1,10 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormArray, FormControl, FormGroup} from '@angular/forms';
 import {WorkFields} from '../../../../models/Candidate.model';
 import {Distances, isStringNotANumber} from '../../../../models/Offer.model';
 import {Router} from '@angular/router';
+import {MatSidenav} from '@angular/material';
+import {BreakpointObserver} from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-filters-candidate',
@@ -11,6 +13,7 @@ import {Router} from '@angular/router';
 })
 export class FiltersCandidateComponent implements OnInit {
 
+  @ViewChild('drawer') drawer: MatSidenav;
 
   // FILTERS
   filters: FormGroup;
@@ -25,7 +28,7 @@ export class FiltersCandidateComponent implements OnInit {
     .map(key => ({value: Distances[key], viewValue: key}));
 
 
-  constructor(private router: Router) {
+  constructor(private router: Router, public media: BreakpointObserver) {
   }
 
   ngOnInit() {
@@ -310,6 +313,15 @@ export class FiltersCandidateComponent implements OnInit {
           dateBorn: JSON.stringify({'gte': mdate})
         }, queryParamsHandling: 'merge'
       });
+  }
+
+  applyFilters() {
+    this.drawer.toggle();
+    window.scrollTo(0, 0);
+  }
+
+  isMobile() {
+    return !this.media.isMatched('screen and (min-width: 960px)'); // gt-sm
   }
 
 }

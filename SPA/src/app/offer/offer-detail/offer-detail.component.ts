@@ -23,6 +23,7 @@ export class OfferDetailComponent implements OnInit {
   authState: any;
   id: any;
   offerId: Number;
+  idApplication: Number;
 
   constructor(private store$: Store<fromApp.AppState>,
               private activatedRoute: ActivatedRoute,
@@ -35,16 +36,18 @@ export class OfferDetailComponent implements OnInit {
     const params = this.activatedRoute.snapshot.params;
 
     this.authState = this.store$.pipe(select('auth'));
-    this.authState.pipe(
-      select((s: { user: { id: Number } }) => s.user ? s.user.id : undefined)
-    ).subscribe(
-      (id) => {
-        this.id = id ? id : null;
+    if (this.authState) {
+      this.authState.pipe(
+        select((s: { user: { id: Number } }) => s.user ? s.user.id : undefined)
+      ).subscribe(
+        (id) => {
+          this.id = id ? id : null;
 
-        if (this.id) {
-          this.getApplications();
-        }
-      });
+          if (this.id) {
+            this.getApplications();
+          }
+        });
+    }
 
     if (Number(params.id)) {
       this.offerId = Number(params.id);
@@ -132,8 +135,16 @@ export class OfferDetailComponent implements OnInit {
   }
 
   deleteApplication() {
-    console.log('delete');
-    // this.store$.dispatch(new OfferActions.TryDeleteApplication({fk_offer: params.id, fk_applicant: this.id}));
+    this.offerState = this.store$.pipe(select(state => state.offer));
+      this.offerState.pipe(
+        select((s: { applications: { id: Number } }) => s.applications ? s.applications.id : undefined)
+      ).subscribe(
+        (id) => {
+          console.log(id);
+          this.idApplication = id;
+        });
+
+    this.store$.dispatch(new OfferActions.TryDeleteApplication({fk_application: this.idApplication}));
   }
 
   urlOfferer(id, name) {

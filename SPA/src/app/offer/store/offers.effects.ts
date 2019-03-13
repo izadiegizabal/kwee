@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Actions, Effect, ofType} from '@ngrx/effects';
 import {catchError, map, share, switchMap} from 'rxjs/operators';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {Observable, of, throwError} from 'rxjs';
 import * as OffersActions from './offers.actions';
@@ -18,11 +18,14 @@ export class OffersEffects {
       return action.payload;
     }),
     switchMap((payload) => {
-        const apiEndpointUrl = environment.apiUrl + 'offers/search?page=' + payload.page + '&limit=' + payload.limit + payload.params;
-        // const token = authState.token;
-        // const headers = new HttpHeaders().set('token', token);
-        // console.log(apiEndpointUrl);
-        return this.httpClient.get(apiEndpointUrl).pipe(
+      const apiEndpointUrl = environment.apiUrl + 'offers/search?page=' + payload.page + '&limit=' + payload.limit;
+      const headers = new HttpHeaders().set('Content-Type', 'application/json');
+      const body = JSON.stringify(payload.params);
+
+        console.log(apiEndpointUrl);
+        console.log(body);
+
+        return this.httpClient.post(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res: {
             ok: boolean,
             message: any,

@@ -5,7 +5,7 @@ export const SET_OFFER = 'SET_OFFER';
 export const TRY_POST_APPLICATION = 'TRY_POST_APPLICATION';
 export const POST_APPLICATION = 'POST_APPLICATION';
 export const SET_APPLICATION = 'SET_APPLICATION';
-export const TRY_GET_APPLICATION = 'TRY_DELETE_APPLICATION';
+export const TRY_GET_APPLICATION = 'TRY_GET_APPLICATION';
 export const DELETE_APPLICATION = 'DELETE_APPLICATION';
 export const TRY_DELETE_APPLICATION = 'TRY_DELETE_APPLICATION';
 export const OPERATION_ERROR = 'OPERATION_ERROR';
@@ -56,7 +56,7 @@ export class SetApplication implements Action {
 export class TryDeleteApplication implements Action {
   readonly type = TRY_DELETE_APPLICATION;
 
-  constructor(public payload: { fk_applicant: number, fk_offer: number }) {
+  constructor(public payload: {fk_application: Number}) {
   }
 }
 
