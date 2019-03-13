@@ -1,5 +1,6 @@
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
 const { tokenId, logger, sendEmailSelected } = require('../../shared/functions');
+const { algorithm } = require('../../shared/algorithm');
 
 // ============================
 // ===== CRUD application ======
@@ -110,7 +111,8 @@ module.exports = (app, db) => {
                         .then(async result => {
                         if (result) {
                                 await db.offers.update({currentApplications: offer.currentApplications + 1}, { where: {id: offerToAdd}});
-                                if ( result[0] ) {   
+                                if ( result[0] ) {  
+                                    await algorithm.indexUpdate(id); 
                                     return res.status(201).json({
                                         ok: true,
                                         message: 'Application done',
@@ -167,6 +169,8 @@ module.exports = (app, db) => {
                             await db.applications.update({status}, {
                                 where: { id }
                             });
+                            await algorithm.indexUpdate(user);
+
                             return res.status(201).json({
                                 ok: true,
                                 message: "Application updated to status " + status
@@ -205,6 +209,7 @@ module.exports = (app, db) => {
                             let user = await db.users.findOne({where: { id: application.fk_applicant }});
                             sendEmailSelected(user, res, application.fk_offer);
                         }
+                        await algorithm.indexUpdate(user);
                         return res.status(201).json({
                             ok: true,
                             message: "Application updated to status " + status
@@ -306,6 +311,9 @@ module.exports = (app, db) => {
                         let currentApplications = offer.currentApplications - 1;
                         await applicant.removeOffers(application.fk_offer);
                         await db.offers.update({currentApplications}, {where: { id: offer.id }});
+
+                        await algorithm.indexUpdate(id);
+
                         return res.json({
                             ok: true,
                             message: 'Application deleted' 

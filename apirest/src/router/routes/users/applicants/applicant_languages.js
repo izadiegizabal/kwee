@@ -1,5 +1,7 @@
 const { checkToken } = require('../../../../middlewares/authentication');
 const { tokenId, logger } = require('../../../../shared/functions');
+const { algorithm } = require('../../../../shared/algorithm');
+
 
 // ============================
 // ===== CRUD applicant_language ======
@@ -101,8 +103,10 @@ module.exports = (app, db) => {
                     through: {
                         level: body.level
                     }
-                }).then(created => {
+                }).then(async created => {
                     if (created) {
+                        await algorithm.indexUpdate(id);
+
                         return res.status(201).json({
                             ok: true,
                             message: "Added language to applicant"
@@ -148,7 +152,7 @@ module.exports = (app, db) => {
                                             language.applicant_languages.level = body.level;
 
                                             language.applicant_languages.save()
-                                                .then(rest => {
+                                                .then(async rest => {
                                                     if (rest.isRejected) {
                                                         // Problems
                                                         return res.status(400).json({
@@ -156,6 +160,8 @@ module.exports = (app, db) => {
                                                             msg: "Language not updated."
                                                         });
                                                     } else {
+                                                        await algorithm.indexUpdate(id);
+
                                                         // Everything ok
                                                         return res.status(201).json({
                                                             ok: true,
@@ -197,6 +203,8 @@ module.exports = (app, db) => {
 
             if (applicant) {
                 await applicant.removeLanguages(body.fk_language);
+                
+                await algorithm.indexUpdate(id);
 
                 res.status(201).json({
                     ok: true,

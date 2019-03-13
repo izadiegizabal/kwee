@@ -57,7 +57,7 @@ module.exports = (sequelize, DataTypes) => {
 
       // Index stuff
       efficiencyAVG: {
-        type: DataTypes.FLOAT(3, 2),
+        type: DataTypes.FLOAT(),
         allowNull: false,
         defaultValue: 0,
         validate: {
@@ -65,7 +65,7 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
       skillsAVG: {
-        type: DataTypes.FLOAT(3, 2),
+        type: DataTypes.FLOAT(),
         allowNull: false,
         defaultValue: 0,
         validate: {
@@ -73,7 +73,7 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
       punctualityAVG: {
-        type: DataTypes.FLOAT(3, 2),
+        type: DataTypes.FLOAT(),
         allowNull: false,
         defaultValue: 0,
         validate: {
@@ -81,7 +81,7 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
       hygieneAVG: {
-        type: DataTypes.FLOAT(3, 2),
+        type: DataTypes.FLOAT(),
         allowNull: false,
         defaultValue: 0,
         validate: {
@@ -89,7 +89,7 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
       teamworkAVG: {
-        type: DataTypes.FLOAT(3, 2),
+        type: DataTypes.FLOAT(),
         allowNull: false,
         defaultValue: 0,
         validate: {
@@ -98,7 +98,7 @@ module.exports = (sequelize, DataTypes) => {
       },
 
       satisfactionAVG: {
-        type: DataTypes.FLOAT(3, 2),
+        type: DataTypes.FLOAT(),
         allowNull: false,
         defaultValue: 0,
         validate: {
@@ -115,7 +115,7 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
       profileComplete: {
-        type: DataTypes.FLOAT(4, 2),
+        type: DataTypes.FLOAT(),
         allowNull: false,
         defaultValue: 0,
         validate: {

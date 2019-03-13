@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 const moment = require('moment')
 const axios =   require('axios')
 
+const { algorithm } = require('../../../../shared/algorithm');
 
 // ============================
 // ======== CRUD user =========
@@ -417,6 +418,8 @@ module.exports = (app, db) => {
                                         console.log(err.message);
                                     }
                                 });
+                                // await algorithm.indexUpdate(ending.userId);
+
                                 return res.status(201).json({
                                     ok: true,
                                     message: `Offerer with id ${ending.userId} has been created.`
@@ -634,6 +637,8 @@ module.exports = (app, db) => {
             }); 
 
             if (updated && offererUser) {
+                await algorithm.indexUpdate(id);
+
                 return res.status(200).json({
                     ok: true,
                     message: `Values updated for offerer ${ id }`,

@@ -2,6 +2,8 @@ const { checkToken, checkAdmin } = require('../../../middlewares/authentication'
 const { logger } = require('../../../shared/functions');
 const bcrypt = require('bcryptjs');
 
+const {algorithm} = require('../../../shared/algorithm');
+
 // ============================
 // ======== CRUD rating =========
 // ============================
@@ -126,6 +128,7 @@ module.exports = (app, db) => {
     app.post('/rating_applicant', async(req, res, next) => {
         let transaction;
         let rating;
+        // let id = tokenId.getTokenId(req.get('token'));
 
         try {
             const body = req.body;
@@ -166,6 +169,11 @@ module.exports = (app, db) => {
             // commit
             await transaction.commit();
 
+            // to check + clean
+            
+            // await algorithm.indexUpdate();
+
+
             return res.status(201).json({
                 ok: true,
                 message: `RatingApplicant '${rating.name}' with id ${rating.id} has been created.`
@@ -194,6 +202,8 @@ module.exports = (app, db) => {
                     where: { ratingId: id }
                 });
                 if (updated) {
+                    // await algorithm.indexUpdate();
+
                     res.status(200).json({
                         ok: true,
                         message: updates
@@ -225,6 +235,8 @@ module.exports = (app, db) => {
                 let rating = await db.ratings.destroy({ where: { id } });
 
                 if (rating_applicant && rating && rating_offerer) {
+                    await algorithm.indexUpdate(id);
+                    
                     res.json({
                         ok: true,
                         message: 'RatingApplicant deleted'
@@ -251,6 +263,7 @@ module.exports = (app, db) => {
             rating_applicant.punctuality = body.punctuality;
             rating_applicant.hygiene = body.hygiene;
             rating_applicant.teamwork = body.teamwork;
+            rating_applicant.satisfaction = body.satisfaction;
 
             let newRating_applicant = await db.rating_applicants.create(rating_applicant, { transaction: transaction });
 
