@@ -188,12 +188,12 @@ export class OfferSelectionProcessComponent implements OnInit {
 
   isFaved(faved: boolean, candidate: CandidatePreview) {
     if (faved) {
-      if (candidate.applicationStatus !== 1){
+      if (candidate.applicationStatus !== 1) {
         this.store$.dispatch(new OfferManageActions
           .TryChangeApplicationStatus({candidateId: candidate.id, applicationId: candidate.applicationId, status: 1}));
       }
     } else {
-      if (candidate.applicationStatus !== 0){
+      if (candidate.applicationStatus !== 0) {
         this.store$.dispatch(new OfferManageActions
           .TryChangeApplicationStatus({candidateId: candidate.id, applicationId: candidate.applicationId, status: 0}));
       }
