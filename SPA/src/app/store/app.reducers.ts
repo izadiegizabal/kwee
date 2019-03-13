@@ -1,7 +1,7 @@
 import {ActionReducerMap} from '@ngrx/store';
 import * as fromAuth from '../auth/store/auth.reducers';
 import * as fromAdmin from '../admin/store/admin.reducers';
-import * as fromOffers from '../candidate-home/store/offers.reducers';
+import * as fromOffers from '../offer/store/offers.reducers';
 import * as fromOffer from '../offer/offer-detail/store/offer.reducers';
 import * as fromProfiles from '../profiles/store/profiles.reducers';
 import * as fromOfferManage from '../offer/offer-manage/store/offer-manage.reducers';

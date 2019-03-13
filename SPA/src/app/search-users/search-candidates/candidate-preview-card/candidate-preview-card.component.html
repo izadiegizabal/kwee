@@ -1,5 +1,6 @@
 <mat-card fxFlex="100%" fxFlex.gt-xs="600px">
-  <button mat-mini-fab
+  <button *ngIf="selectionMode"
+          mat-mini-fab
           (click)="onFaved()"
           [ngClass]="['fav-fab', faved ? 'selected' : 'notSelected']">
     <mat-icon svgIcon="favorite"></mat-icon>

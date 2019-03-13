@@ -2,6 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {PayPalConfig, PayPalEnvironment, PayPalIntegrationType} from 'ngx-paypal';
 import {environment} from '../../environments/environment';
 import {of} from 'rxjs';
+import {RateCandidateComponent} from '../rating/rate-candidate/rate-candidate.component';
+import {MatDialog} from '@angular/material';
 
 
 @Component({
@@ -15,6 +17,25 @@ export class PaypalComponent implements OnInit {
 
   ngOnInit(): void {
     this.initConfig();
+  }
+
+  constructor(public dialog: MatDialog) {
+  }
+
+  rateCandidate() {
+
+    const dialogRef = this.dialog.open(RateCandidateComponent, {
+      width: '95%',
+      maxHeight: '90%',
+      data: {candidate: false, to: 1, list: [{name: 'Flaviu el italiano'}]}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      if (result) {
+        console.log(result);
+      }
+    });
   }
 
   private initConfig(): void {
