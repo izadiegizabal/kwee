@@ -178,7 +178,7 @@ module.exports = (app, db) => {
             } else {
                 return res.status(400).json({
                     ok: false,
-                    error: "Sorry, you are not applicant"
+                    message: "Sorry, you are not applicant"
                 });
             }
         } catch (err) {
@@ -325,29 +325,70 @@ module.exports = (app, db) => {
     });
 
     // DELETE single application
-    app.delete("/application", async(req, res, next) => {
-        const body = req.body;
+    app.delete("/application/:id([0-9]+)", async(req, res, next) => {
+        const applicationId = req.params.id;
 
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let application = await db.applications.findOne({where: { id: applicationId }});
+            if ( application ){
 
-            let applicant = await db.applicants.findOne({
-                where: { userId: id }
-            });
-
-            if (applicant) {
-                res.json({
-                    ok: true,
-                    application: await applicant.removeOffers(body.fk_offer)
+                let id = tokenId.getTokenId(req.get('token'));
+                
+                let applicant = await db.applicants.findOne({
+                    where: { userId: id }
                 });
+                
+                if (applicant) {
+                    if ( application.fk_applicant == id ) {
+                        let offer = await db.offers.findOne({
+                            where: { id: application.fk_offer }
+                        });
+                        let currentApplications = offer.currentApplications - 1;
+                        await applicant.removeOffers(application.fk_offer);
+                        await db.offers.update({currentApplications}, {where: { id: offer.id }});
+                        return res.json({
+                            ok: true,
+                            message: 'Application deleted' 
+                        });
+                    } else {
+                        return res.status(400).json({
+                            ok: false,
+                            message: "Sorry, this is not your application"
+                        });
+                    }
+                } else {
+                    let offerer = await db.offerers.findOne({
+                        where: { userId: id }
+                    });
+                    
+                    if ( offerer ) {
+                        offers = await offerer.getOffers();
+                        offers = offers.find(element => element.id == application.fk_offer );
+                        
+                        if ( offers ) {
+                            let currentApplications = offers.currentApplications - 1;
+                            await offers.removeApplicants(application.fk_applicant);
+                            await db.offers.update({currentApplications}, {where: { id: offers.id }});
+                            return res.json({
+                                ok: true,
+                                message: 'Application deleted' 
+                            });
+                        } else {
+                            return res.status(400).json({
+                                ok: false,
+                                message: "Sorry, this is not your application"
+                            });
+                        }
+                    }
+                }
             } else {
                 return res.status(400).json({
                     ok: false,
-                    error: "Sorry, you are not applicant"
+                    message: "This application does not exists"
                 });
             }
         } catch (err) {
-            next({ type: 'error', error: err.message });
+            return next({ type: 'error', error: err.message });
         }
 
     });
