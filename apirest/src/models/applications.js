@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
         status: {
             type: DataTypes.INTEGER,
             field: 'status',
-            defaultValue: 1,
+            defaultValue: 0,
             allowNull: false,
             validate: {
                 isIn: {
