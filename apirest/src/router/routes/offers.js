@@ -11,10 +11,10 @@ const axios =   require('axios')
 
 module.exports = (app, db) => {
 
-    app.get('/offers/search', async(req, res, next) => {
+    app.post('/offers/search', async(req, res, next) => {
 
         try {
-            saveLogES('GET', 'offers/search', 'Visitor');
+            saveLogES('POST', 'offers/search', 'Visitor');
             // if req.query.keywords search OR (search)
             // rest of req.query.params search AND (filter)
             let query = req.query;
@@ -195,72 +195,95 @@ module.exports = (app, db) => {
     app.get('/offer/:id([0-9]+)/applications', async(req, res, next) => {
         const id = req.params.id;
         let status = req.query.status;
+        let page = Number(req.query.page);
+        let limit = Number(req.query.limit);
+        let pages = 0;
         try {
             saveLogES('GET', `offer/${id}/applications`, 'Visitor');
-            
             let applications = await db.applications.findAll({ where: { fk_offer: id } });
 
-            if ( applications ) {
-                var attributes = {
-                    exclude: ['password', 'root']
-                };
-                // But paginated APPLICANTS
-                var output = await pagination(
-                    db.applicants,
-                    "applicants",
-                    req.query.limit,
-                    req.query.page,
-                    attributes,
-                    res,
-                    next
-                );
-                    
-                if ( output.data ) {
-                    let users = await db.users.findAll();
-                    let offers = await db.offers.findAll();
-                    var applicantsToShow = [];
-                    let applicants = output.data;
-                    if ( status ) offers = offers.filter(o => o.status == status);
+            if ( applications.length > 0 ) {
+                let users = await db.users.findAll();
+                let offers = await db.offers.findAll();
+                let applicants = await db.applicants.findAll();
+                var applicantsToShow = [];
 
-                    applications.forEach(application => {
-                        applicants.forEach(applicant => {
-                            if ( application.fk_applicant === applicant.userId ) {
-                                let user = users.find(usu => applicant.userId == usu.id);
-                                let offer = offers.find(offer => application.fk_offer == offer.id);
-                                let app = {
-                                    applicantId: user.id,
-                                    applicationId: application.id,
-                                    offerId: offer.id,
-                                    applicantStatus: user.status,
-                                    applicationStatus: application.status,
-                                    offerStatus: offer.status,
-                                    index: user.index,
-                                    name: user.name,
-                                    email: user.email,
-                                    city: applicant.city,
-                                    dateBorn: applicant.dateBorn,
-                                    premium: applicant.premium,
-                                    lastAccess: user.lastAccess,
-                                    img: user.img,
-                                    bio: user.bio,
-                                };
-                                applicantsToShow.push(app);
-                            }
-                        });
+                if(status) applications = applications.filter(element => element.status == status);
+
+                applications.forEach(application => {
+                    applicants.forEach(applicant => {
+                        if ( application.fk_applicant === applicant.userId ) {
+                            let user = users.find(usu => applicant.userId == usu.id);
+                            let offer = offers.find(offer => application.fk_offer == offer.id);
+                            let app = {
+                                applicantId: user.id,
+                                applicationId: application.id,
+                                offerId: offer.id,
+                                applicantStatus: user.status,
+                                applicationStatus: application.status,
+                                offerStatus: offer.status,
+                                index: user.index,
+                                name: user.name,
+                                email: user.email,
+                                city: applicant.city,
+                                dateBorn: applicant.dateBorn,
+                                premium: applicant.premium,
+                                rol: applicant.rol,
+                                lastAccess: user.lastAccess,
+                                createdAt: user.createdAt,
+                                img: user.img,
+                                bio: user.bio,
+                            };
+                            applicantsToShow.push(app);
+                        }
                     });
+                });
 
+                if ( applicantsToShow.length > 0 ) {
+                    let total = applicantsToShow.length;
+                    let msg = 'Listing applicants applicating to this offer';
+                    if (page && limit){
+                        pages = Math.ceil(applicantsToShow.length / limit);
+                        offset = Number(limit * (page - 1));
+                        if (page > pages) {
+                            return res.status(200).json({
+                                ok: true,
+                                message: `It doesn't exist ${ page } pages`
+                            })
+                        }
+                        let applicantsAux = [];
+                        console.log('applicantsToShow.length: ', applicantsToShow.length)
+                        console.log('limit: ', limit);
+                        console.log('page: ', page);
+                        console.log('pages: ', pages);
+                        console.log('offset: ', offset);
+                        let j = 0;
+                        for (let i = offset; i < limit + offset; i++) {
+                            applicantsAux[j] = applicantsToShow[i];
+                            j++;
+                        }
+                        applicantsToShow = applicantsAux;
+                        if (limit < applicantsToShow.length) limit = applicantsToShow.length;
+                        msg = `Listing ${ limit } applicants applicating to this offer. Page ${ page } of ${ pages }.`
+                    }
+                    console.log('applicantsToShow.length: ', applicantsToShow.length)
                     return res.json({
                         ok: true,
-                        message: 'Listing applicants applicating to this offer',
+                        message: msg,
                         data: applicantsToShow,
-                        total: applicantsToShow.length
-                    })
+                        total
+                    });
+                } else {
+                    return res.json({
+                        ok: true,
+                        message: 'There are no applications to this offer with this status'
+                    });
                 }
             } else {
                 return res.json({
                     ok: true,
-                    message: 'No applications to this offer'
-                })
+                    message: 'There are no applications to this offer'
+                });
             }
 
         } catch (err) {

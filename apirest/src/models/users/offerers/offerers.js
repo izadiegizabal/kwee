@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
         field: "workField",
         validate: {
           isIn: {
-            args: [[0, 1, 2, 3, 4, 5, 6, 7, 8]],
+            args: [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]],
             msg: "Unknown workField value."
           }
         }
@@ -112,7 +112,7 @@ module.exports = (sequelize, DataTypes) => {
 
       // Index stuff
       salaryAVG: {
-        type: DataTypes.FLOAT(3, 2),
+        type: DataTypes.FLOAT(),
         allowNull: false,
         defaultValue: 0,
         validate: {
@@ -120,7 +120,7 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
       environmentAVG: {
-        type: DataTypes.FLOAT(3, 2),
+        type: DataTypes.FLOAT(),
         allowNull: false,
         defaultValue: 0,
         validate: {
@@ -128,7 +128,7 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
       partnersAVG: {
-        type: DataTypes.FLOAT(3, 2),
+        type: DataTypes.FLOAT(),
         allowNull: false,
         defaultValue: 0,
         validate: {
@@ -136,7 +136,7 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
       servicesAVG: {
-        type: DataTypes.FLOAT(3, 2),
+        type: DataTypes.FLOAT(),
         allowNull: false,
         defaultValue: 0,
         validate: {
@@ -144,7 +144,7 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
       installationsAVG: {
-        type: DataTypes.FLOAT(3, 2),
+        type: DataTypes.FLOAT(),
         allowNull: false,
         defaultValue: 0,
         validate: {
@@ -152,6 +152,15 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
 
+      satisfactionAVG: {
+        type: DataTypes.FLOAT(3, 2),
+        allowNull: false,
+        defaultValue: 0,
+        validate: {
+          isFloat: true
+        }
+      },
+      
       nOpinions: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -161,7 +170,7 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
       profileComplete: {
-        type: DataTypes.FLOAT(4, 2),
+        type: DataTypes.FLOAT(),
         allowNull: false,
         defaultValue: 0,
         validate: {
@@ -169,7 +178,7 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
       ratioSuccess: {
-        type: DataTypes.FLOAT(4, 2),
+        type: DataTypes.FLOAT(),
         allowNull: false,
         defaultValue: 0,
         validate: {

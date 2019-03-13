@@ -278,7 +278,7 @@ async function pagination( db, dbname, _limit, _page, attr, res, next){
                 return res.status(200).json({
                     ok: true,
                     message: `It doesn't exist ${ page } pages`
-                })
+                });
             }
             
             data = await db.findAll({
