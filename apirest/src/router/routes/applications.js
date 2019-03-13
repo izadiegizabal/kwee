@@ -102,70 +102,19 @@ module.exports = (app, db) => {
                 where: { userId: id }
             });
 
-            let user = await db.users.findOne({
-                where: { id }
-            });
-
-            let msg = 'Applicant ' + user.name + ' has applicated to offers ';
-            let offersToUpdate = [];
-
             if (applicant) {
-                let allOffers = await db.offers.findAll();
-                
-                for (let i = 0; i < offerToAdd.length; i++) {
-                    let checkApplications = allOffers.find(element => element.id == offerToAdd[i] );
-                    if ( checkApplications ) {
-                        if ( checkApplications.currentApplications < checkApplications.maxApplicants ) {
-                            let update = {};
-                            update.id = checkApplications.id;
-                            update.currentApplications = checkApplications.currentApplications + 1;
-                            offersToUpdate.push(update);
-                        } else {
-                            var index = offerToAdd.indexOf(checkApplications.id);
-                            if (index > -1) {
-                                offerToAdd.splice(index, 1);
-                            }
-                            i--;
-                        }
-                    }
-                }
-                
-                let offers = await applicant.getOffers();
+                let offer = await db.offers.findOne({where: { id: offerToAdd }});
 
-                if (offers.length > 0) {
-                    for (let i = 0; i < offers.length; i++) {
-                        for (let j = 0; j < offers.length; j++) {
-                            if (offerToAdd[j] == offers[i].id) {
-                                offerToAdd.splice(j, 1);
-                                offersToUpdate.splice(j, 1);
-                            }
-                        }
-                    }
-                }
-
-                await applicant.addOffer(offerToAdd, {
-                    through: {
-                        status: body.status
-                    }
-                }).then(result => {
+                await applicant.addOffer(offerToAdd)
+                    .then(async result => {
                     if (result) {
-                        if (offerToAdd.length > 0){
-                            offersToUpdate.forEach(async update => {
-                                msg += update.id + ' ';
-                                await db.offers.update({currentApplications: update.currentApplications}, { where: {id: update.id}});
-                            });
+                            await db.offers.update({currentApplications: offer.currentApplications + 1}, { where: {id: offerToAdd}});
 
                             return res.status(201).json({
                                 ok: true,
-                                message: msg,
+                                message: 'Application done',
                                 application: result
                             });
-                        } else {
-                            return res.status(400).json({
-                                ok: false,
-                                message: "Application not added."
-                            });
-                        }
                     } else {
                         return res.status(400).json({
                             ok: false,
@@ -173,8 +122,6 @@ module.exports = (app, db) => {
                         });
                     }
                 });
-
-
             } else {
                 return res.status(400).json({
                     ok: false,
@@ -182,7 +129,7 @@ module.exports = (app, db) => {
                 });
             }
         } catch (err) {
-            next({ type: 'error', error: err.toString() });
+            return next({ type: 'error', error: err.toString() });
         }
 
     });
