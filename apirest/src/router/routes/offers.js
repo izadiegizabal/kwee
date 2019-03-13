@@ -240,10 +240,11 @@ module.exports = (app, db) => {
                 });
 
                 if ( applicantsToShow.length > 0 ) {
+                    let total = applicantsToShow.length;
                     let msg = 'Listing applicants applicating to this offer';
                     if (page && limit){
                         pages = Math.ceil(applicantsToShow.length / limit);
-                        offset = limit * (page - 1);
+                        offset = Number(limit * (page - 1));
                         if (page > pages) {
                             return res.status(200).json({
                                 ok: true,
@@ -251,18 +252,26 @@ module.exports = (app, db) => {
                             })
                         }
                         let applicantsAux = [];
-                        for (let i = offset; i < limit; i++) {
-                            applicantsAux = applicantsToShow[i];
+                        console.log('applicantsToShow.length: ', applicantsToShow.length)
+                        console.log('limit: ', limit);
+                        console.log('page: ', page);
+                        console.log('pages: ', pages);
+                        console.log('offset: ', offset);
+                        let j = 0;
+                        for (let i = offset; i < limit + offset; i++) {
+                            applicantsAux[j] = applicantsToShow[i];
+                            j++;
                         }
                         applicantsToShow = applicantsAux;
+                        if (limit < applicantsToShow.length) limit = applicantsToShow.length;
                         msg = `Listing ${ limit } applicants applicating to this offer. Page ${ page } of ${ pages }.`
                     }
-
+                    console.log('applicantsToShow.length: ', applicantsToShow.length)
                     return res.json({
                         ok: true,
                         message: msg,
                         data: applicantsToShow,
-                        total: applicantsToShow.length
+                        total
                     });
                 } else {
                     return res.json({
