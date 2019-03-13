@@ -104,24 +104,37 @@ module.exports = (app, db) => {
 
             if (applicant) {
                 let offer = await db.offers.findOne({where: { id: offerToAdd }});
+                if ( offer ) {
 
-                await applicant.addOffer(offerToAdd)
-                    .then(async result => {
-                    if (result) {
-                            await db.offers.update({currentApplications: offer.currentApplications + 1}, { where: {id: offerToAdd}});
-
-                            return res.status(201).json({
-                                ok: true,
-                                message: 'Application done',
-                                application: result
+                    await applicant.addOffer(offerToAdd)
+                        .then(async result => {
+                        if (result) {
+                                await db.offers.update({currentApplications: offer.currentApplications + 1}, { where: {id: offerToAdd}});
+                                if ( result[0] ) {   
+                                    return res.status(201).json({
+                                        ok: true,
+                                        message: 'Application done',
+                                        application: result[0][0]
+                                    });
+                                } else {
+                                    return res.status(400).json({
+                                        ok: false,
+                                        message: "You already applicated to this offer."
+                                    });
+                                }
+                        } else {
+                            return res.status(400).json({
+                                ok: false,
+                                message: "Application not added."
                             });
-                    } else {
-                        return res.status(400).json({
-                            ok: false,
-                            message: "Application not added."
-                        });
-                    }
-                });
+                        }
+                    });
+                } else {
+                    return res.status(400).json({
+                        ok: false,
+                        message: "Sorry, this offers does not exists"
+                    });
+                }
             } else {
                 return res.status(400).json({
                     ok: false,
