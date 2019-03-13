@@ -11,10 +11,10 @@ const axios =   require('axios')
 
 module.exports = (app, db) => {
 
-    app.get('/offers/search', async(req, res, next) => {
+    app.post('/offers/search', async(req, res, next) => {
 
         try {
-            saveLogES('GET', 'offers/search', 'Visitor');
+            saveLogES('POST', 'offers/search', 'Visitor');
             // if req.query.keywords search OR (search)
             // rest of req.query.params search AND (filter)
             let query = req.query;
@@ -195,6 +195,9 @@ module.exports = (app, db) => {
     app.get('/offer/:id([0-9]+)/applications', async(req, res, next) => {
         const id = req.params.id;
         let status = req.query.status;
+        let page = Number(req.query.page);
+        let limit = Number(req.query.limit);
+        let pages = 0;
         try {
             saveLogES('GET', `offer/${id}/applications`, 'Visitor');
             let applications = await db.applications.findAll({ where: { fk_offer: id } });
@@ -237,9 +240,27 @@ module.exports = (app, db) => {
                 });
 
                 if ( applicantsToShow.length > 0 ) {
+                    let msg = 'Listing applicants applicating to this offer';
+                    if (page && limit){
+                        pages = Math.ceil(applicantsToShow.length / limit);
+                        offset = limit * (page - 1);
+                        if (page > pages) {
+                            return res.status(200).json({
+                                ok: true,
+                                message: `It doesn't exist ${ page } pages`
+                            })
+                        }
+                        let applicantsAux = [];
+                        for (let i = offset; i < limit; i++) {
+                            applicantsAux = applicantsToShow[i];
+                        }
+                        applicantsToShow = applicantsAux;
+                        msg = `Listing ${ limit } applicants applicating to this offer. Page ${ page } of ${ pages }.`
+                    }
+
                     return res.json({
                         ok: true,
-                        message: 'Listing applicants applicating to this offer',
+                        message: msg,
                         data: applicantsToShow,
                         total: applicantsToShow.length
                     });
