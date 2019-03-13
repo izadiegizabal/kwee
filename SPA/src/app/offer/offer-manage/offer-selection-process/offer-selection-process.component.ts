@@ -44,11 +44,6 @@ export class OfferSelectionProcessComponent implements OnInit {
   // SELECTION DATA
   private offerId: number;
   private manageOfferState: Observable<fromOfferManage.State>;
-  private candidates: {
-    all: CandidatePreview[],
-    faved: CandidatePreview[],
-    selected: CandidatePreview[]
-  };
 
   // Stepper forms
   selectFormGroup: FormGroup;
@@ -67,6 +62,9 @@ export class OfferSelectionProcessComponent implements OnInit {
 
     // TODO: check if offer is in selection process and that the owner of the offer is the one logged in
 
+    // Empty previous states
+    this.store$.dispatch(new OfferManageActions.EmptyState());
+
     // Initialise stepper form
     this.selectFormGroup = this._formBuilder.group({
       selectionCtrl: ['', Validators.required]
@@ -83,7 +81,7 @@ export class OfferSelectionProcessComponent implements OnInit {
     if (Number(params.id)) {
       this.offerId = Number(params.id);
       this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({id: this.offerId, page: 1, limit: 20, status: 0})); // pending
-      // this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({id: this.offerId, page: 1, limit: 20, status: 1})); // faved
+      this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({id: this.offerId, page: 1, limit: 20, status: 1})); // faved
 
       this.manageOfferEffects.GetOfferCandidates.pipe(
         filter((action: any) => action.type === OfferManageActions.OPERATION_ERROR)
@@ -94,19 +92,6 @@ export class OfferSelectionProcessComponent implements OnInit {
     } else {
       this.router.navigate(['/error/404']);
     }
-
-    // Store candidates
-    this.candidates = {
-      all: [],
-      faved: [],
-      selected: []
-    };
-    this.manageOfferState
-      .pipe(select(state => state.selection))
-      .subscribe(newSelection => {
-          this.candidates = newSelection;
-        }
-      );
 
     // Initialise filters
     this.filters = new FormGroup({

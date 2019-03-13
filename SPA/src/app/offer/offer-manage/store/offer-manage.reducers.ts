@@ -61,6 +61,8 @@ const initialState: State = {
 
 export function OfferManageReducer(state = initialState, action: OfferManageActions.OfferManageActions) {
   switch (action.type) {
+    case OfferManageActions.EMPTY_STATE:
+      return {offers: null, selection: null};
     case OfferManageActions.SET_OFFERS_OFFERER:
       return {
         ...state,
@@ -80,14 +82,14 @@ export function OfferManageReducer(state = initialState, action: OfferManageActi
         case 0:
           newSelection = {
             ...state.selection,
-            all: {...state.selection.all, ...action.payload.candidates},
+            all: action.payload.candidates,
           };
           break;
         // Fav
         case 1:
           newSelection = {
             ...state.selection,
-            faved: {...state.selection.faved, ...action.payload.candidates},
+            faved: action.payload.candidates,
           };
           break;
         // Selected / accepted / refused
@@ -96,7 +98,7 @@ export function OfferManageReducer(state = initialState, action: OfferManageActi
         case 4:
           newSelection = {
             ...state.selection,
-            selected: {...state.selection.selected, ...action.payload.candidates},
+            selected: action.payload.candidates,
           };
           break;
       }
@@ -116,14 +118,14 @@ export function OfferManageReducer(state = initialState, action: OfferManageActi
         case 0:
           newSelection = {
             ...newSelection,
-            all: {...newSelection.all, changingCandidate}
+            all: [...newSelection.all, changingCandidate]
           };
           break;
         // to faved
         case 1:
           newSelection = {
             ...newSelection,
-            faved: {...newSelection.all, changingCandidate}
+            faved: [...newSelection.all, changingCandidate]
           };
           break;
       }
@@ -150,27 +152,28 @@ export function OfferManageReducer(state = initialState, action: OfferManageActi
     return changingCandidate;
   }
 
-  function removedSelection(changingCandidate: CandidatePreview): { all: CandidatePreview[], faved: CandidatePreview[], selected: CandidatePreview[] } {
+  function removedSelection(changingCandidate: CandidatePreview):
+    { all: CandidatePreview[], faved: CandidatePreview[], selected: CandidatePreview[] } {
     let foundCandidate = state.selection.all.find(test => test.id === changingCandidate.id);
     if (foundCandidate) {
-      let index = state.selection.all.indexOf(foundCandidate);
-      let candidates = state.selection.all.splice(index, 1);
+      const index = state.selection.all.indexOf(foundCandidate);
+      const candidates = state.selection.all.splice(index, 1);
       return {
         ...state.selection, all: candidates,
       };
     } else {
       foundCandidate = state.selection.faved.find(test => test.id === changingCandidate.id);
       if (foundCandidate) {
-        let index = state.selection.faved.indexOf(foundCandidate);
-        let candidates = state.selection.faved.splice(index, 1);
+        const index = state.selection.faved.indexOf(foundCandidate);
+        const candidates = state.selection.faved.splice(index, 1);
         return {
           ...state.selection, faved: candidates,
         };
       } else {
         foundCandidate = state.selection.selected.find(test => test.id === changingCandidate.id);
         if (foundCandidate) {
-          let index = state.selection.selected.indexOf(foundCandidate);
-          let candidates = state.selection.selected.splice(index, 1);
+          const index = state.selection.selected.indexOf(foundCandidate);
+          const candidates = state.selection.selected.splice(index, 1);
           return {
             ...state.selection, selected: candidates,
           };
