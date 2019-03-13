@@ -82,7 +82,8 @@ export class OfferSelectionProcessComponent implements OnInit {
     const params = this.activatedRoute.snapshot.params;
     if (Number(params.id)) {
       this.offerId = Number(params.id);
-      this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({id: this.offerId, page: 1, limit: 20, status: -1}));
+      this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({id: this.offerId, page: 1, limit: 20, status: 0})); // pending
+      this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({id: this.offerId, page: 1, limit: 20, status: 1})); // faved
 
       this.manageOfferEffects.GetOfferCandidates.pipe(
         filter((action: any) => action.type === OfferManageActions.OPERATION_ERROR)
@@ -188,8 +189,12 @@ export class OfferSelectionProcessComponent implements OnInit {
     console.log(candidate);
     if (faved) {
       // TODO: add to faved
+      this.store$.dispatch(new OfferManageActions
+          .TryChangeApplicationStatus({fk_applicant: candidate.id, fk_offer: this.offerId, status: 1}));
     } else {
       // TODO: remove from faved
+      this.store$.dispatch(new OfferManageActions
+        .TryChangeApplicationStatus({fk_applicant: candidate.id, fk_offer: this.offerId, status: 0}));
     }
   }
 }

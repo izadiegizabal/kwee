@@ -8,7 +8,6 @@ import * as OfferManageActions from './offer-manage.actions';
 import {environment} from '../../../../environments/environment';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
-import {CandidatePreview} from '../../../../models/candidate-preview.model';
 
 @Injectable()
 export class OfferManageEffects {
@@ -125,9 +124,6 @@ export class OfferManageEffects {
           apiEndpointUrl = apiEndpointUrl + '&status=' + payload.status;
         }
 
-
-      console.log(apiEndpointUrl);
-
         return this.httpClient.get(apiEndpointUrl).pipe(
           map((res: {
             ok: boolean,
@@ -139,6 +135,51 @@ export class OfferManageEffects {
               return {
                 type: OfferManageActions.SET_OFFER_CANDIDATES,
                 payload: {status: payload.status, candidates: res.data},
+              };
+            } else {
+              return [
+                {
+                  type: OfferManageActions.OPERATION_ERROR,
+                  payload: 'Error from API'
+                }
+              ];
+            }
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('getOffersOfferer', err));
+            return [
+              {
+                type: OfferManageActions.OPERATION_ERROR,
+                payload: err.error.error
+              }
+            ];
+          })
+        );
+      }
+    ),
+    share()
+  );
+
+  @Effect()
+  ChangeApplicationStatus = this.actions$.pipe(
+    ofType(OfferManageActions.TRY_CHANGE_APPLICATION_STATUS),
+    map((action: OfferManageActions.TryChangeApplicationStatus) => {
+      return action.payload;
+    }),
+    withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    switchMap(([payload, authState]) => {
+        const apiEndpointUrl = environment.apiUrl + 'application';
+        const token = authState.token;
+        const headers = new HttpHeaders().set('token', token);
+        const body = JSON.stringify(payload);
+        return this.httpClient.put(apiEndpointUrl, body, {headers: headers}).pipe(
+          map((res: {
+            ok: boolean,
+          }) => {
+            if (res.ok) {
+              return {
+                type: OfferManageActions.SET_CHANGE_APPLICATION_STATUS,
+                payload: {status: payload.status, candidateId: payload.fk_applicant},
               };
             } else {
               return [
