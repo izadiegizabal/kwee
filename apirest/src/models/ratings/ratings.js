@@ -15,6 +15,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DOUBLE,
             field: 'overall',
             allowNull: true
+        },
+
+        opinion: {
+            type: DataTypes.TEXT,
+            allowNull: true
         }
 
     }, {

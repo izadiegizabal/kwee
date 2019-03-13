@@ -58,7 +58,15 @@ module.exports = (sequelize, DataTypes) => {
             }
         },
 
-        // overall satisfaction --> FLOAT
+        satisfaction: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            validate: {
+                max: 5,
+                min: 0,
+                isInt: true
+            }
+        }
 
     }, {
         paranoid: true
