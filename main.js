@@ -415,7 +415,6 @@ async function offerersAndOffers() {
 
 async function applicantsAndApplications() {
 	applicants = getFileJSON('./tests/applicants.json');
-
 	await asyncForEach( applicants, limit, async (element, i) => {
 		// signUp applicant
 		await instance.post('/applicant', {
@@ -444,33 +443,38 @@ async function applicantsAndApplications() {
 
 				let randomApplications = randomInt(0,4);
 				let arrApplications = [];
-
-				for(let i=0;i<randomApplications;i++){
-					// Apply to random Offers (until MAX totalOffers)
-					arrApplications[i] = randomInt(0,totalOffers); // switch to totalOffers
-				}
-				// apply to offer random
-				await instance.post('/application', {
-					// body
-					"fk_offer": arrApplications
-				},
-				{
-					// headers
-					headers: {
-						token,
-						'Content-Type': 'application/json; charset=utf-8'
+				console.log("totalOffers: " + totalOffers);
+				console.log("randomApplications: " + randomApplications);
+				if(randomApplications > 0 ){
+					for(let i=0;i<randomApplications;i++){
+						// Apply to random Offers (until MAX totalOffers)
+						arrApplications[i] = randomInt(0,totalOffers); 
 					}
+					console.log("arrAplications: "+arrApplications);
+				}
+				await asyncForEach(arrApplications, arrApplications.length, async (application) => {
+					// apply to offer random
+					await instance.post('/application', {
+						// body
+						"fk_offer": application
+					},
+					{
+						// headers
+						headers: {
+							token,
+							'Content-Type': 'application/json; charset=utf-8'
+						}
 
-				})
-				.then( application => {
-					log(" application success")//. ApplicantId:" + loginSuccess.data.data.id + " fk_offer:" + arrApplications);
-					log( application.data)
-				})
-				.catch( err => {
-					log(error("Error applying: "));
-					console.log(err.response.data);
-				})
-
+					})
+					.then( application => {
+						log(" application success")//. ApplicantId:" + loginSuccess.data.data.id + " fk_offer:" + arrApplications);
+						log( application.data)
+					})
+					.catch( err => {
+						log(error("Error applying: "));
+						console.log(err.response.data);
+					})
+				});
 			});
 		})
 		.catch( signUpFailed => {
@@ -503,21 +507,24 @@ async function offerersAccepts(){
 			await asyncForEach(offersArray, offersArray.length, async (offerElement, index ) => {
 				await instance.get('/offer/' + offerElement + '/applications')
 				.then( async _applications => {
-					console.log("listing applications of offer: " + offerElement);
-					console.log(_applications.data);
+					
 					if(_applications.data && _applications.data.data && _applications.data.data.length > 0){
+						console.log("Applications of offer " + offerElement + ": " + _applications.data.data.length);
+						// console.log(_applications.data.data);
 						// if exists applications
 						let applications = _applications.data.data;
+						console.log("applications: " + applications.length);
+						//console.log(applications);
 						
 						// for each application in the offer
 						await asyncForEach( applications, applications.length, async (applicationElement, index) => {
-							// console.log("offerId: " + applications[application].offerId);
-							// console.log("applicantId: " + applications[application].applicantId);
+							 console.log("offerId: " + applicationElement.offerId);
+							 console.log("applicantId: " + applicationElement.applicantId);
 
-							await instance.put('/application',{
-								"fk_offer": applicationElement.offerId,
-								"fk_applicant": applicationElement.applicantId,
-								"status": 0
+							await instance.put('/application/' + applicationElement.applicationId,{
+								// "fk_offer": applicationElement.offerId,
+								// "fk_applicant": applicationElement.applicantId, // checks on token
+								"status": "0"
 							},
 							{
 								headers:{token,'Content-Type': 'application/json; charset=utf-8'}
@@ -527,8 +534,9 @@ async function offerersAccepts(){
 								applicationsDone.push(applicationElement.applicationId);
 							})
 							.catch( e => { 
+								log(error("PUT application/"+applicationElement.applicationId))
 								log(error("application not accepted"));
-								//console.log(e.response.data);
+								console.log(e.response.data);
 							});
 						});
 
@@ -559,7 +567,7 @@ async function offerersAccepts(){
 		})
 		.catch( e => {
 			log( error("Problem login offerer:"));
-			//console.log(e);
+			console.log(e);
 		})
 
 	});
@@ -575,9 +583,18 @@ async function ratings(type){
 				"punctuality": randomInt(0,5),
 				"hygiene": randomInt(0,5),
 				"teamwork": randomInt(0,5),
+				"satisfaction": randomInt(0,5)
 			})
 			.then( done => log(" Rating applicant " + success("ok")) )
-			.catch( x => log(error("Problem rating applicant")));
+			.catch( x => {
+				log(error("Problem rating applicant"))
+				if(x && x.response && x.response.data!=undefined){
+					console.log(x.response.data);	
+				}
+				else {
+					console.log(x);
+				}
+			});
 		});
 	}
 	else if(type=="offerers"){
@@ -588,13 +605,53 @@ async function ratings(type){
 				"environment": randomInt(0,5),
 				"partners": randomInt(0,5),
 				"services": randomInt(0,5),
-				"installations": randomInt(0,5)
+				"installations": randomInt(0,5),
+				"satisfaction": randomInt(0,5)
 			})
 			.then( done => log(" Rating offerer " + success("ok")) )
 			.catch( x => log(error("Problem rating applicant")));
 		});
 		
 	}
+}
+
+async function algorithm(){
+	
+	await asyncForEach( obj, limit, async (element,index) => {
+		await instance.post('/login', {
+			"email": element.email,
+			"password": element.password
+		})
+		.then( async result => {
+			console.log("login ok");
+			// console.log(result.data);
+			await instance.get('/experiences/index/'+result.data.data.id)
+			.then( ok => {
+				log(success("algorithm updated") + " offerer " + result.data.data.id);
+			})
+		})
+		.catch( error => {
+			console.log(error);
+		})
+	});
+
+	await asyncForEach( applicants, limit, async (element,index) => {
+		await instance.post('/login', {
+			"email": element.email,
+			"password": element.password
+		})
+		.then( async result => {
+			// console.log(result.data);
+			console.log("login ok");
+			await instance.get('/experiences/index/'+result.data.data.id)
+			.then( ok => {
+				log(success("algorithm updated") + " applicant " + result.data.data.id);
+			})
+		})
+		.catch( error => {
+			console.log(error);
+		})
+	})
 }
 
 ////////////////////////////////////////// EXECUTE CODE
@@ -619,12 +676,24 @@ async function main() {
 	log(warning("Offerers login"))
 	await offerersAccepts();
 	
+
+	//////
+	// ratings
+	//////
+	// --> when routes updated to require TOKEN ==>> update ratings functions too!!
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+	console.log(applicationsDone);
 	// 4- Rate offerers
 	await ratings("offerers");
 	
 	// 5- Rate applicants
 	await ratings("applicants");
 
+	
+	// console.log("doing algorithm things xd");
+	// update algorithm (TO FIX in API and avoid doing here)
+	await algorithm();
 
 }	
 
