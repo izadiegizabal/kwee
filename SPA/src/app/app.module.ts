@@ -25,7 +25,7 @@ import {JWT_OPTIONS, JwtHelperService, JwtModule} from '@auth0/angular-jwt';
 
 export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {
   return localStorageSync({
-    keys: ['auth', 'admin', 'offers', 'offer', 'profiles', 'OfferManage'],
+    keys: ['auth', 'admin', 'offers', 'offer', 'profiles', 'offerManage'],
     rehydrate: true
   })(reducer);
 }

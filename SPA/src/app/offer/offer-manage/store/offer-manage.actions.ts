@@ -1,9 +1,14 @@
 import {Action} from '@ngrx/store';
+import {CandidatePreview} from '../../../../models/candidate-preview.model';
 
 export const TRY_GET_OFFERS_OFFERER = 'TRY_GET_OFFERS_OFFERER';
 export const SET_OFFERS_OFFERER = 'SET_OFFERS_OFFERER';
 export const TRY_GET_OFFERS_APPLICANT = 'TRY_GET_OFFERS_APPLICANT';
 export const SET_OFFERS_APPLICANT = 'SET_OFFERS_APPLICANT';
+export const TRY_GET_OFFER_CANDIDATES = 'TRY_GET_OFFER_CANDIDATES';
+export const SET_OFFER_CANDIDATES = 'SET_OFFER_CANDIDATES';
+export const TRY_CHANGE_APPLICATION_STATUS = 'TRY_CHANGE_APPLICATION_STATUS';
+export const SET_CHANGE_APPLICATION_STATUS = 'SET_CHANGE_APPLICATION_STATUS';
 export const OPERATION_ERROR = 'OPERATION_ERROR';
 
 
@@ -35,6 +40,34 @@ export class SetOffersApplicant implements Action {
   }
 }
 
+export class TryGetOfferCandidates implements Action {
+  readonly type = TRY_GET_OFFER_CANDIDATES;
+
+  constructor(public payload: { id: number, page: number, limit: number, status: number }) {
+  }
+}
+
+export class SetOfferCandidates implements Action {
+  readonly type = SET_OFFER_CANDIDATES;
+
+  constructor(public payload: {status: number, candidates: [CandidatePreview]}) {
+  }
+}
+
+export class TryChangeApplicationStatus implements Action {
+  readonly type = TRY_CHANGE_APPLICATION_STATUS;
+
+  constructor(public payload: { fk_applicant: number, fk_offer: number, status: number }) {
+  }
+}
+
+export class SetChangeApplicationStatus implements Action {
+  readonly type = SET_CHANGE_APPLICATION_STATUS;
+
+  constructor(public payload: {status: number, candidateId: number}) {
+  }
+}
+
 export class OperationError implements Action {
   readonly type = OPERATION_ERROR;
 
@@ -47,4 +80,8 @@ export type OfferManageActions =
   SetOffersOfferer |
   TryGetOffersApplicant |
   SetOffersApplicant |
+  TryGetOfferCandidates |
+  SetOfferCandidates |
+  TryChangeApplicationStatus |
+  SetChangeApplicationStatus |
   OperationError;

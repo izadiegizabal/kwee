@@ -55,7 +55,7 @@ export class OfferManageTabComponent implements OnInit {
       }));
     }
 
-    this.offerManageState = this.store$.pipe(select(state => state.OfferManage));
+    this.offerManageState = this.store$.pipe(select(state => state.offerManage));
   }
 
   changePage() {

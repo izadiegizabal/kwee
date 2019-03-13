@@ -1,9 +1,4 @@
 <mat-card fxFlex="100%" fxFlex.gt-xs="600px">
-  <button mat-mini-fab
-          (click)="onFaved()"
-          [ngClass]="['fav-fab', faved ? 'selected' : 'notSelected']">
-    <mat-icon svgIcon="favorite"></mat-icon>
-  </button>
   <mat-card-header
     fxLayout="row"
     fxLayout.lt-sm="column"
@@ -26,9 +21,8 @@
       fxFlexAlign="start start"
       fxLayout="row"
       fxLayoutGap="16px">
-      <app-icon-with-text [text]="user.city" icon="place"></app-icon-with-text>
-      <app-icon-with-text [text]="getAge(user.dateBorn.toString())" icon="cake"></app-icon-with-text>
-      <!--<app-icon-with-text [text]="getLatestExperience()" icon="work"></app-icon-with-text>-->
+      <app-icon-with-text [text]="user.address" icon="place"></app-icon-with-text>
+      <app-icon-with-text [text]="getSize(user.companySize)" icon="domain"></app-icon-with-text>
     </div>
   </mat-card-header>
 
@@ -52,16 +46,10 @@
       fxLayoutGap="16px">
       <div>
         <button [routerLink]="userUrl" color="accent" mat-button>{{'More Info' | uppercase }}</button>
-        <button (click)="openShareDialog()" mat-icon-button *ngIf="!selectionMode">
+        <button (click)="openShareDialog()" mat-icon-button >
           <mat-icon aria-label="Share user in social networks" color="accent" svgIcon="share"></mat-icon>
         </button>
-        <button (click)="selectCandidate()"
-                color="primary"
-                mat-raised-button
-                *ngIf="selectionMode">
-          <mat-icon svgIcon="star"></mat-icon>
-          {{'Select' | uppercase }}
-        </button>
+
       </div>
     </div>
   </mat-card-actions>

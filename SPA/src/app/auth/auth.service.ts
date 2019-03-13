@@ -5,6 +5,8 @@ import * as fromApp from '../store/app.reducers';
 import {map, take} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 import * as fromAuth from './store/auth.reducers';
+import * as AuthActions from './store/auth.actions';
+import {Router} from '@angular/router';
 
 @Injectable({providedIn: 'root'})
 export class AuthService implements OnInit {
@@ -15,6 +17,7 @@ export class AuthService implements OnInit {
 
   constructor(
     private store$: Store<fromApp.AppState>,
+    private router: Router
   ) {
     this.helper = new JwtHelperService();
   }
@@ -27,7 +30,15 @@ export class AuthService implements OnInit {
       select(state => state.auth),
       map(authed => {
         if (authed && authed.token) {
-          return !this.helper.isTokenExpired(authed.token);
+          if (this.helper.isTokenExpired(authed.token)) {
+            // if token expired -> logout
+            this.store$.dispatch(new AuthActions.Logout());
+            this.router.navigate(['signin']);
+            // redirect to login
+            return false;
+          } else {
+            return true;
+          }
         } else {
           return false;
         }

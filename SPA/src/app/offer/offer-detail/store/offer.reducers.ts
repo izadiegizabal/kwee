@@ -30,10 +30,22 @@ export interface State {
     offererIndex: number,
     img: string,
   };
+
+  applications: {
+    id: number,
+    fk_applicant: number,
+    fk_offer: number,
+    status: number,
+    createdAt: Date,
+    updatedAt: Date,
+    deletedAt: Date,
+  };
+
 }
 
 const initialState: State = {
   offer: null,
+  applications: null,
 };
 
 export function offerReducer(state = initialState, action: OfferActions.OfferActions) {
@@ -46,6 +58,17 @@ export function offerReducer(state = initialState, action: OfferActions.OfferAct
     case OfferActions.POST_APPLICATION:
       return {
         ...state,
+        applications: action.payload
+      };
+    case OfferActions.SET_APPLICATION:
+      return {
+        ...state,
+        applications: action.payload
+      };
+    case OfferActions.DELETE_APPLICATION:
+      return {
+        ...state,
+        applications: action.payload
       };
     default:
       return state;

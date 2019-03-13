@@ -35,8 +35,8 @@
     </div>
 
     <div *ngIf="(adminState | async).businesses" fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">
-      <!--<app-candidate-preview-card *ngFor="let user of (adminState | async).businesses.data;" [user]="user">-->
-      <!--</app-candidate-preview-card>-->
+      <app-business-preview-card *ngFor="let user of (adminState | async).businesses.data;" [user]="user">
+      </app-business-preview-card>
     </div>
 
     <div *ngIf="!(adminState | async).businesses" fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">

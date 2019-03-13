@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, Output} from '@angular/core';
+import {Component, Input, OnInit, Output, EventEmitter} from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {SnsShareDialogComponent} from '../../../shared/sns-share/sns-share-dialog/sns-share-dialog.component';
 import {getUrlfiedString} from '../../../shared/utils.service';
@@ -15,7 +15,11 @@ export class CandidatePreviewCardComponent implements OnInit {
 
   @Input() user: CandidatePreview;
   @Input() selectionMode = false;
-  @Output() selected = false;
+  @Input() isFaved;
+  @Output() changeSelected = new EventEmitter();
+  @Output() changeFaved = new EventEmitter();
+  faved = false;
+  selected = false;
 
 
   userUrl: string;
@@ -27,6 +31,9 @@ export class CandidatePreviewCardComponent implements OnInit {
   ngOnInit() {
     this.userUrl = this.urlfyPosition();
     this.selected = false;
+    if (this.isFaved) {
+      this.faved = this.isFaved;
+    }
   }
 
   urlfyPosition() {
@@ -53,19 +60,24 @@ export class CandidatePreviewCardComponent implements OnInit {
     return Math.abs(ageDate.getUTCFullYear() - 1970) + ' y/o';
   }
 
-  getLatestExperience() {
-    // TODO: delete this dirty fix when api returns correctly
-    return (this.user.lastExp) ? this.user.lastExp : 'Facebook';
-  }
+  // getLatestExperience() {
+  //   // TODO: delete this dirty fix when api returns correctly
+  //   return (this.user.lastExp) ? this.user.lastExp : 'Facebook';
+  // }
 
   selectCandidate() {
     this.selected = !this.selected;
+    this.changeSelected.emit(this.selected);
   }
 
   getImg() {
     // TODO: delete this dirty fix when api returns correctly
-    const defaultImg = 'https://cdn.vox-cdn.com/thumbor/Pkmq1nm3skO0-j693JTMd7RL0Zk=/0x0:2012x1341/1200x800/' +
-      'filters:focal(0x0:2012x1341)/cdn.vox-cdn.com/uploads/chorus_image/image/47070706/google2.0.0.jpg';
+    const defaultImg = '../../../../../assets/img/defaultProfileImg.png';
     return this.user.imgPath ? this.user.imgPath : defaultImg;
+  }
+
+  onFaved() {
+    this.faved = !this.faved;
+    this.changeFaved.emit(this.faved);
   }
 }
