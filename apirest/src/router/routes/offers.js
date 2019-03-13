@@ -23,30 +23,37 @@ module.exports = (app, db) => {
             let body = req.body;
             let must = [];
             let sort = 'offererIndex';
-            if (query.sort) sort = query.sort;
-            
-            if (Object.keys(query).length === 0 && query.constructor === Object && !keywords){
+            let from;
+            if ( query.sort ) sort = query.sort;
+            if ( page > 0 && limit > 0 ) from = (page - 1) * limit;
+
+            // If salaryAmount, dateStart, dateEnd or datePublished in query, add range to must filter
+            buildSalaryRange(must, body.salaryAmount);
+            buildDateStartRange(must, body.dateStart);
+            buildDateEndRange(must, body.dateEnd);
+            buildDatePublishedRange(must, body.datePublished);
+            buildOffererIndexRange(must, body.offererIndex);
+
+            if ( body.title ) must.push({multi_match: {query: body.title, fields: [ "title" ] }});
+            if ( body.status ) must.push({multi_match: {query: body.status, fields: [ "status" ] }});
+            if ( body.location ) must.push({multi_match: {query: body.location, fields: [ "location" ] }});
+            if ( body.skills ) must.push({multi_match: {query: body.skills, fields: [ "skills" ] }});
+            if ( body.offererName ) must.push({multi_match: {query: body.offererName, fields: [ "offererName" ] }});
+            if ( body.workLocation ) must.push({multi_match: {query: body.workLocation, fields: [ "workLocation" ] }});
+            if ( body.seniority ) must.push({multi_match: {query: body.seniority, fields: [ "seniority" ] }});
+            if ( body.contractType ) must.push({multi_match: {query: body.contractType, fields: [ "contractType" ] }});
+            if ( body.keywords ) must.push({multi_match: {query: body.keywords, fields: [ "*" ] }});
+
+            if ( must.length == 0 ){
                 return res.status(200).json({
                     ok: true,
                     message: 'You must search something'
                 })
             } else {
-                // If salaryAmount, dateStart, dateEnd or datePublished in query, add range to must filter
-                buildSalaryRange(must, body.salaryAmount);
-                buildDateStartRange(must, body.dateStart);
-                buildDateEndRange(must, body.dateEnd);
-                buildDatePublishedRange(must, body.datePublished);
-                buildOffererIndexRange(must, body.offererIndex);
-
-                if ( body.title ) must.push({multi_match: {query: body.title, fields: [ "title" ] }});
-                if ( body.status ) must.push({multi_match: {query: body.status, fields: [ "status" ] }});
-                if ( body.location ) must.push({multi_match: {query: body.location, fields: [ "location" ] }});
-                if ( body.skills ) must.push({multi_match: {query: body.skills, fields: [ "skills" ] }});
-                if ( body.offererName ) must.push({multi_match: {query: body.offererName, fields: [ "offererName" ] }});
-                
-    
                 let searchParams = {
                     index: "offers",
+                    from: from ? from : null,
+                    size: limit ? limit : null,
                     body: {
                         query: {
                             bool: {
@@ -252,21 +259,17 @@ module.exports = (app, db) => {
                             })
                         }
                         let applicantsAux = [];
-                        console.log('applicantsToShow.length: ', applicantsToShow.length)
-                        console.log('limit: ', limit);
-                        console.log('page: ', page);
-                        console.log('pages: ', pages);
-                        console.log('offset: ', offset);
+                        let until;
                         let j = 0;
-                        for (let i = offset; i < limit + offset; i++) {
+                        page < pages ? until = limit + offset : until = applicantsToShow.length;
+                        for (let i = offset; i < until; i++) {
                             applicantsAux[j] = applicantsToShow[i];
                             j++;
                         }
                         applicantsToShow = applicantsAux;
-                        if (limit < applicantsToShow.length) limit = applicantsToShow.length;
+                        if (applicantsToShow.length < limit) limit = applicantsToShow.length;
                         msg = `Listing ${ limit } applicants applicating to this offer. Page ${ page } of ${ pages }.`
                     }
-                    console.log('applicantsToShow.length: ', applicantsToShow.length)
                     return res.json({
                         ok: true,
                         message: msg,
@@ -476,7 +479,7 @@ module.exports = (app, db) => {
             let range = 
             {
                 range: {
-                    index: {}
+                    salaryAmount: {}
                 }
             };
 
@@ -493,10 +496,11 @@ module.exports = (app, db) => {
 
     function buildOffererIndexRange (must, offererIndex) {
         if ( offererIndex ) {
+            console.log("offererIndex: ", offererIndex);
             let range = 
             {
                 range: {
-                    index: {}
+                    offererIndex: {}
                 }
             };
 

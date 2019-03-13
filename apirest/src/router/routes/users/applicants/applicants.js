@@ -22,7 +22,9 @@ module.exports = (app, db) => {
             let body = req.body;
             let must = [];
             let sort = 'index';
+            let from;
             if (body.sort) sort = body.sort;
+            if ( page > 0 && limit > 0 ) from = (page - 1) * limit;
 
             buildLanguages(must, body.languages);
             buildSkills(must, body.skills);
@@ -38,6 +40,8 @@ module.exports = (app, db) => {
 
             let searchParams = {
                 index: "applicants",
+                from: from ? from : null,
+                size: limit ? limit : null,
                 body: {
                     query: {
                         bool: {
