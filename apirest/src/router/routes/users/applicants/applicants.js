@@ -380,12 +380,12 @@ module.exports = (app, db) => {
                     city: applicant.city,
                     dateBorn: applicant.dateBorn,
                     premium: applicant.premium,
-                    //createdAt: applicant.createdAt,
+                    createdAt: user.createdAt,
                     status: user.status,
                     lastAccess: user.lastAccess,
                     img: user.img,
-                    bio: user.bio,
-                    social_networks: []
+                    bio: user.bio,            
+                    rol: applicant.rol
                 };
 
                 let networks = await db.social_networks.findOne({
