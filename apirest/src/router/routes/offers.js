@@ -11,10 +11,10 @@ const axios =   require('axios')
 
 module.exports = (app, db) => {
 
-    app.get('/offers/search', async(req, res, next) => {
+    app.post('/offers/search', async(req, res, next) => {
 
         try {
-            saveLogES('GET', 'offers/search', 'Visitor');
+            saveLogES('POST', 'offers/search', 'Visitor');
             // if req.query.keywords search OR (search)
             // rest of req.query.params search AND (filter)
             let query = req.query;
@@ -257,6 +257,7 @@ module.exports = (app, db) => {
                         applicantsToShow = applicantsAux;
                         msg = `Listing ${ limit } applicants applicating to this offer. Page ${ page } of ${ pages }.`
                     }
+
                     return res.json({
                         ok: true,
                         message: msg,
