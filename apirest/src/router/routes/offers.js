@@ -197,79 +197,59 @@ module.exports = (app, db) => {
         let status = req.query.status;
         try {
             saveLogES('GET', `offer/${id}/applications`, 'Visitor');
-            let applications = await db.applications.findAll({ where: { fk_offer: id } });
+            let where;
+            status ? where = { where: { fk_offer: id, status: status } } : where = { where: { fk_offer: id } };
+            let applications = await db.applications.findAll(where);
 
             if ( applications.length > 0 ) {
-                var attributes = {
-                    exclude: ['password', 'root']
-                };
-                // But paginated APPLICANTS
-                var output = await pagination(
-                    db.applicants,
-                    "applicants",
-                    req.query.limit,
-                    req.query.page,
-                    attributes,
-                    res,
-                    next
-                );
-                    
-                if ( output.data ) {
-                    let users = await db.users.findAll();
-                    let offers = await db.offers.findAll();
-                    var applicantsToShow = [];
-                    let applicants = output.data;
+                let users = await db.users.findAll();
+                let offers = await db.offers.findAll();
+                let applicants = await db.applicants.findAll();
+                var applicantsToShow = [];
 
-                    console.log('output.data:', output.data.length );
+                if(status) applications = applications.filter(element => element.status == status);
 
-                    if(status) applications = applications.filter(element => element.status == status);
-
-                    console.log('applications.length: ', applications.length);
-
-                    applications.forEach(application => {
-                        applicants.forEach(applicant => {
-                            console.log('application.fk_applicant: ', application.fk_applicant);
-                            console.log('applicant.userId: ', applicant.userId);
-                            if ( application.fk_applicant === applicant.userId ) {
-                                let user = users.find(usu => applicant.userId == usu.id);
-                                let offer = offers.find(offer => application.fk_offer == offer.id);
-                                let app = {
-                                    applicantId: user.id,
-                                    applicationId: application.id,
-                                    offerId: offer.id,
-                                    applicantStatus: user.status,
-                                    applicationStatus: application.status,
-                                    offerStatus: offer.status,
-                                    index: user.index,
-                                    name: user.name,
-                                    email: user.email,
-                                    city: applicant.city,
-                                    dateBorn: applicant.dateBorn,
-                                    premium: applicant.premium,
-                                    lastAccess: user.lastAccess,
-                                    img: user.img,
-                                    bio: user.bio,
-                                };
-                                applicantsToShow.push(app);
-                            }
-                        });
+                applications.forEach(application => {
+                    applicants.forEach(applicant => {
+                        if ( application.fk_applicant === applicant.userId ) {
+                            let user = users.find(usu => applicant.userId == usu.id);
+                            let offer = offers.find(offer => application.fk_offer == offer.id);
+                            let app = {
+                                applicantId: user.id,
+                                applicationId: application.id,
+                                offerId: offer.id,
+                                applicantStatus: user.status,
+                                applicationStatus: application.status,
+                                offerStatus: offer.status,
+                                index: user.index,
+                                name: user.name,
+                                email: user.email,
+                                city: applicant.city,
+                                dateBorn: applicant.dateBorn,
+                                premium: applicant.premium,
+                                rol: applicant.rol,
+                                lastAccess: user.lastAccess,
+                                createdAt: user.createdAt,
+                                img: user.img,
+                                bio: user.bio,
+                            };
+                            applicantsToShow.push(app);
+                        }
                     });
+                });
 
-                    if ( applicantsToShow.length > 0 ) {
-                        return res.json({
-                            ok: true,
-                            message: 'Listing applicants applicating to this offer',
-                            data: applicantsToShow,
-                            total: applicantsToShow.length
-                        });
-                    } else {
-                        return res.json({
-                            ok: true,
-                            message: 'There are no applications to this offer with this status'
-                        });
-                    }
-                    
-                    
+                if ( applicantsToShow.length > 0 ) {
+                    return res.json({
+                        ok: true,
+                        message: 'Listing applicants applicating to this offer',
+                        data: applicantsToShow,
+                        total: applicantsToShow.length
+                    });
+                } else {
+                    return res.json({
+                        ok: true,
+                        message: 'There are no applications to this offer with this status'
+                    });
                 }
             } else {
                 return res.json({
