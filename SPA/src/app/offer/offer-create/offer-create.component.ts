@@ -277,7 +277,7 @@ export class OfferCreateComponent implements OnInit {
           ? (this.form.controls['location'].value as City).name
           : this.form.controls['location'].value,
         'salaryAmount': this.form.controls['salary'].value,
-        'salaryFrequency': this.form.controls['salaryFrecuency'].value,
+        'salaryFrequency': this.form.controls['salaryFrequency'].value,
         'salaryCurrency': this.form.controls['salaryCurrency'].value,
         'workLocation': this.form.controls['workLocation'].value,
         'seniority': this.form.controls['seniority'].value,

@@ -1,0 +1,53 @@
+<mat-dialog-content>
+<h1>Rate {{selected}}</h1>
+  <form [formGroup]="form">
+    <h2>Opinion</h2>
+    <mat-form-field class="example-full-width">
+      <textarea matInput placeholder="Opinion" formControlName="opinion"></textarea>
+    </mat-form-field>
+    <h2>Details</h2>
+    <p id="required">All the detail star ratings are required.</p>
+    <div
+      id="stars"
+      fxLayout="row"
+      fxLayout.lt-sm="column">
+    <div
+      fxLayout="column"
+      fxFlex="33%"
+      fxFlex.lt-sm="100%">
+      <h4 *ngIf="data.candidate">Efficiency</h4>
+      <h4 *ngIf="!data.candidate">Facilities</h4>
+      <star-rating-control [starType]="'svg'" [hoverEnabled]="true" formControlName="one"></star-rating-control>
+      <h4 *ngIf="data.candidate">Punctuality</h4>
+      <h4 *ngIf="!data.candidate">Working Environment</h4>
+      <star-rating-control [starType]="'svg'" [hoverEnabled]="true" formControlName="two"></star-rating-control>
+    </div>
+    <div
+      fxLayout="column"
+      fxFlex="33%"
+      fxFlex.lt-sm="100%">
+      <h4 *ngIf="data.candidate">Skills</h4>
+      <h4 *ngIf="!data.candidate">Salary</h4>
+      <star-rating-control [starType]="'svg'" [hoverEnabled]="true" formControlName="three"></star-rating-control>
+      <h4 *ngIf="data.candidate">Hygiene</h4>
+      <h4 *ngIf="!data.candidate">Coworkers</h4>
+      <star-rating-control [starType]="'svg'" [hoverEnabled]="true" formControlName="four"></star-rating-control>
+    </div>
+    <div
+      fxLayout="column"
+      fxFlex="33%"
+      fxFlex.lt-sm="100%">
+    <h4 *ngIf="data.candidate">Teamwork</h4>
+      <h4 *ngIf="!data.candidate">Services</h4>
+    <star-rating-control [starType]="'svg'" [hoverEnabled]="true" formControlName="five"></star-rating-control>
+    <h4>Overall Satisfaction</h4>
+    <star-rating-control [starType]="'svg'" [hoverEnabled]="true" formControlName="six"></star-rating-control>
+    </div>
+    </div>
+  </form>
+</mat-dialog-content>
+<br>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button color="primary" type="button"  mat-raised-button cdkFocusInitial (click)="rate()">Publish</button>
+</mat-dialog-actions>
