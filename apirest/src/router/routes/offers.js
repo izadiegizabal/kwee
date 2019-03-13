@@ -197,10 +197,9 @@ module.exports = (app, db) => {
         let status = req.query.status;
         try {
             saveLogES('GET', `offer/${id}/applications`, 'Visitor');
-            
             let applications = await db.applications.findAll({ where: { fk_offer: id } });
 
-            if ( applications ) {
+            if ( applications.length > 0 ) {
                 var attributes = {
                     exclude: ['password', 'root']
                 };
@@ -220,10 +219,17 @@ module.exports = (app, db) => {
                     let offers = await db.offers.findAll();
                     var applicantsToShow = [];
                     let applicants = output.data;
-                    if ( status ) offers = offers.filter(o => o.status == status);
+
+                    console.log('output.data:', output.data.length );
+
+                    if(status) applications = applications.filter(element => element.status == status);
+
+                    console.log('applications.length: ', applications.length);
 
                     applications.forEach(application => {
                         applicants.forEach(applicant => {
+                            console.log('application.fk_applicant: ', application.fk_applicant);
+                            console.log('applicant.userId: ', applicant.userId);
                             if ( application.fk_applicant === applicant.userId ) {
                                 let user = users.find(usu => applicant.userId == usu.id);
                                 let offer = offers.find(offer => application.fk_offer == offer.id);
@@ -249,18 +255,27 @@ module.exports = (app, db) => {
                         });
                     });
 
-                    return res.json({
-                        ok: true,
-                        message: 'Listing applicants applicating to this offer',
-                        data: applicantsToShow,
-                        total: applicantsToShow.length
-                    })
+                    if ( applicantsToShow.length > 0 ) {
+                        return res.json({
+                            ok: true,
+                            message: 'Listing applicants applicating to this offer',
+                            data: applicantsToShow,
+                            total: applicantsToShow.length
+                        });
+                    } else {
+                        return res.json({
+                            ok: true,
+                            message: 'There are no applications to this offer with this status'
+                        });
+                    }
+                    
+                    
                 }
             } else {
                 return res.json({
                     ok: true,
-                    message: 'No applications to this offer'
-                })
+                    message: 'There are no applications to this offer'
+                });
             }
 
         } catch (err) {
