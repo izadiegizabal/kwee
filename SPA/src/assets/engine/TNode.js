@@ -1,5 +1,6 @@
 
 import {TCamera, TLight, TTransform} from './TEntity';
+import {TEntity, getEntity, setEntity} from './commons.js';
 
 class TNode {
     // WARNING: TE FATHER IS REQUIRED
@@ -19,25 +20,29 @@ class TNode {
     }
 
     remChild(child) {
+        let entity = getEntity();
         this.children.splice(this.children.indexOf(child), 1);
         // WARNING: remove from the Lights and Cameras arrays
         if (this.entity instanceof TLight) {
-            TEntity.Lights.splice(TEntity.Lights.indexOf(child), 1);
+            entity.Lights.splice(entity.Lights.indexOf(child), 1);
         }
         if (this.entity instanceof TCamera) {
-            TEntity.Views.splice(TEntity.Views.indexOf(child), 1);
+            entity.Views.splice(entity.Views.indexOf(child), 1);
         }
+        setEntity(entity);
     }
 
-    setEntity(entity) {
-        this.entity = entity;
+    setEntity(_entity) {
+        let entity = getEntity();
+        this.entity = _entity;
         // WARNING: add to the Lights and Cameras arrays
         if (this.entity instanceof TLight) {
-            TEntity.Lights.push(this);
+            entity.Lights.push(this);
         }
         if (this.entity instanceof TCamera) {
-            TEntity.Views.push(this);
+            entity.Views.push(this);
         }
+        setEntity(entity);
     }
 
     getEntity() {
@@ -49,8 +54,6 @@ class TNode {
     }
 
     draw() {
-        console.log('Nodo: ');
-        console.log(this);
         if (this.entity && this.entity != null) {
             this.entity.beginDraw();
         }
@@ -94,54 +97,67 @@ function copy(obj) {
 
 // WARNING: Go over the tree and get all the lights and cameras // DO NOT REMOVE
 function getLigthsViews(obj) {
+    let entity = getEntity();
     if (obj.entity instanceof TLight) {
         TEntity.Lights.push(obj);
     }
     if (obj.entity instanceof TCamera) {
-        TEntity.Views.push(obj);
+        entity.Views.push(obj);
     }
     obj.children.forEach((e) => {
         getLigthsViews(e);
     });
+    setEntity(entity);
 }
 
 // calculate all the light matices from the Lighs static array and drop them into the AuxLights array
 function calculateLights() {
     let aux = glMatrix.mat4.create();
-    TEntity.Lights.forEach((e) => {
+    let entity = getEntity();
+    entity.Lights.forEach((e) => {
         goToRoot(e);
-        for (let i = TEntity.Aux.length - 1; i >= 0; i--) {
-            glMatrix.mat4.mul(aux, aux, TEntity.Aux[i])
+        for (let i = entity.Aux.length - 1; i >= 0; i--) {
+            glMatrix.mat4.mul(aux, aux, entity.Aux[i])
         }
-        TEntity.AuxLights.push(aux);
-        TEntity.Aux = [];
+        entity.AuxLights.push(aux);
+        entity.Aux = [];
     });
+    setEntity(entity);
 }
 
 // same as calculateLights but for the Cameras
 function calculateViews() {
     let aux = glMatrix.mat4.create();
-    TEntity.Views.forEach((e) => {
+    let entity = getEntity();    
+    entity.Views.forEach((e) => {
         goToRoot(e);
-        for (let i = TEntity.Aux.length - 1; i >= 0; i--) {
-            glMatrix.mat4.mul(aux, aux, TEntity.Aux[i])
+        for (let i = entity.Aux.length - 1; i >= 0; i--) {
+            glMatrix.mat4.mul(aux,  aux, entity.Aux[i])
+            glMatrix.mat4.invert(aux, aux);
         }
-        TEntity.AuxViews.push(aux);
-        TEntity.Aux = [];
+        entity.AuxViews.push(aux);
+        entity.Aux = [];
     });
+    setEntity(entity)
 }
 
 // go from the leaf to the root
 function goToRoot(obj) {
+    let entity = getEntity();
+
     if (obj.entity instanceof TTransform) {
-        TEntity.Aux.push(obj.entity.matrix);
+        entity.Aux.push(obj.entity.matrix);
     }
     if (obj.father) {
         goToRoot(obj.father);
     }
+    setEntity(entity);
 }
 
 export {
-    TNode
+    TNode,
+    calculateViews,
+    calculateLights,
+    goToRoot,
+    getLigthsViews
 }
-console.log("TNode loaded ok");

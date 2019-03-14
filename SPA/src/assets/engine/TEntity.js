@@ -2,30 +2,12 @@
 ///////
 ////
 
-// Virtual class
- class TEntity {
+import {TResourceManager, TResourceMesh, TResourceMaterial, TResourceTexture, TResourceShader} from './resourceManager.js';
+import {TEntity} from './commons.js';
 
-    beginDraw() {
-    }
-
-    endDraw() {
-    }
-
-}
-
-// Static attributes
-// WARNING: current matrix in the drawing process
-TEntity.Model = glMatrix.mat4.create();
-TEntity.View = [];
-TEntity.Views = [];
-TEntity.AuxViews = [];
-TEntity.Light = [];
-TEntity.Lights = [];
-TEntity.AuxLights = [];
-TEntity.Aux = [];
 
 // Our stack class
- class Stack {
+class Stack {
 
     constructor() {
         this.items = [TEntity.Model];
@@ -54,7 +36,7 @@ TEntity.Aux = [];
 
 }
 
-// Static attribute stack
+
 TEntity.stack = new Stack();
 
 // Structures and entities
@@ -135,6 +117,24 @@ TEntity.stack = new Stack();
     }
 
 
+    setTranslation(t){
+        this.matrix[12] = t[0];
+        this.matrix[13] = t[1];
+        this.matrix[14] = t[2];
+    }
+
+    setRotation(t){
+        this.matrix[0] = t[0];
+        this.matrix[1] = t[1];
+        this.matrix[2] = t[2];
+        this.matrix[4] = t[3];
+        this.matrix[5] = t[4];
+        this.matrix[6] = t[5];
+        this.matrix[8] = t[6];
+        this.matrix[9] = t[7];
+        this.matrix[10] = t[8];
+    }
+
     beginDraw() {
         // push the model matrix
         TEntity.stack.push(TEntity.Model);
@@ -148,7 +148,7 @@ TEntity.stack = new Stack();
         console.log('-----------------------------------');
         console.log('----------------------');
         console.log('-------');*/
-        console.log(this);
+        // console.log(this);
     }
 
     endDraw() {
@@ -165,7 +165,7 @@ TEntity.stack = new Stack();
     // specular vec4: r g b a ?
     // direction vec4: x y z ?
     // s coeficient
-    constructor(typ, intensity, specular, direction, s) {
+    constructor(typ, intensity /* = ambient */, specular, diffuse, direction, s) {
         super();
         this.typ = typ;
         this.intensity = glMatrix.vec4.create();
@@ -186,10 +186,16 @@ TEntity.stack = new Stack();
                 ? glMatrix.vec4.fromValues(...direction)
                 : glMatrix.vec4.fromValues(...direction, 1.0);
         }
+        this.diffuse = glMatrix.vec4.create();
+        if (diffuse) {
+            this.diffuse = (diffuse.length === 4)
+                ? glMatrix.vec4.fromValues(...diffuse)
+                : glMatrix.vec4.fromValues(...diffuse, 1.0);
+        }
 
 
     }
-
+// diffuse, ambient=intensity and specular
     setIntensity(intensity) {
         this.intensity = intensity;
     }
@@ -214,6 +220,14 @@ TEntity.stack = new Stack();
         return this.specular;
     }
 
+    setDiffuse(diffuse) {
+        this.diffuse = diffuse;
+    }
+
+    getDiffuse() {
+        return this.diffuse;
+    }
+
     setS(s) {
         this.s = s;
     }
@@ -227,12 +241,11 @@ TEntity.stack = new Stack();
     }
 
     beginDraw() {
-        console.log(this);
+        // console.log(this);
     }
 
     endDraw() {
     }
-
 }
 
  class TAnimation extends TEntity {
@@ -243,7 +256,7 @@ TEntity.stack = new Stack();
     }
 
     beginDraw() {
-        console.log(this);
+        // console.log(this);
     }
 
     endDraw() {
@@ -255,20 +268,31 @@ TEntity.stack = new Stack();
 
     constructor(mesh) {
         super();
-        this.mesh = mesh;
+        return (async () => {
+            // Mesh = TResourceMesh();
+            if(mesh == undefined){
+                console.log("NO MESH in constructor TMesh(undefined)");
+            }
+            else{
+                this.mesh = await this.loadMesh(mesh);
+            }
+            return this;
+        })();
+        
+
     }
 
 	async loadMesh(file){
-		await manager.getResource(file);
-		this.mesh = manager.map.get(file);
-		
+        let resourceMesh = new TResourceMesh();
+        await resourceMesh.loadFile(file);
+        return resourceMesh;
 	}
 
 	beginDraw() {
-		console.log(this);
 		if(this.mesh !== null){
 			this.mesh.draw();
-		}
+        }
+        // console.log(this);
 
 	}
 
@@ -322,7 +346,7 @@ class TCamera extends TEntity {
     }
 
     beginDraw() {
-        console.log(this);
+        // console.log(this);
     }
 
     endDraw() {
@@ -338,7 +362,6 @@ export {
     TEntity
 }
 
-console.log("TEntity loaded ok");
 
 
 

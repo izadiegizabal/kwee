@@ -1,14 +1,21 @@
 import {Action} from '@ngrx/store';
 import {CandidatePreview} from '../../../../models/candidate-preview.model';
 
+
+
 export const TRY_GET_OFFERS_OFFERER = 'TRY_GET_OFFERS_OFFERER';
 export const SET_OFFERS_OFFERER = 'SET_OFFERS_OFFERER';
+
 export const TRY_GET_OFFERS_APPLICANT = 'TRY_GET_OFFERS_APPLICANT';
 export const SET_OFFERS_APPLICANT = 'SET_OFFERS_APPLICANT';
+
 export const TRY_GET_OFFER_CANDIDATES = 'TRY_GET_OFFER_CANDIDATES';
 export const SET_OFFER_CANDIDATES = 'SET_OFFER_CANDIDATES';
+
 export const TRY_CHANGE_APPLICATION_STATUS = 'TRY_CHANGE_APPLICATION_STATUS';
 export const SET_CHANGE_APPLICATION_STATUS = 'SET_CHANGE_APPLICATION_STATUS';
+
+export const EMPTY_STATE = 'EMPTY_STATE';
 export const OPERATION_ERROR = 'OPERATION_ERROR';
 
 
@@ -75,6 +82,10 @@ export class OperationError implements Action {
   }
 }
 
+export class EmptyState implements Action {
+  readonly type = EMPTY_STATE;
+}
+
 export type OfferManageActions =
   TryGetOffersOfferer |
   SetOffersOfferer |
@@ -84,4 +95,5 @@ export type OfferManageActions =
   SetOfferCandidates |
   TryChangeApplicationStatus |
   SetChangeApplicationStatus |
+  EmptyState |
   OperationError;

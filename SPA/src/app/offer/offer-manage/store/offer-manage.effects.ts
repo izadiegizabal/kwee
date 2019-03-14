@@ -8,12 +8,14 @@ import * as OfferManageActions from './offer-manage.actions';
 import {environment} from '../../../../environments/environment';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
-import {CandidatePreview} from "../../../../models/candidate-preview.model";
+import {CandidatePreview} from '../../../../models/candidate-preview.model';
 
 function reformatCandidates(apiApplicationCandidates: any[]): CandidatePreview[] {
-  let correctCandidates: CandidatePreview[] = [];
-  for (let apiCandidate of apiApplicationCandidates) {
-    correctCandidates.push({...apiCandidate, id: apiCandidate.applicantId});
+  const correctCandidates: CandidatePreview[] = [];
+  for (const apiCandidate of apiApplicationCandidates) {
+    if (apiCandidate) {
+      correctCandidates.push({...apiCandidate, id: apiCandidate.applicantId});
+    }
   }
   return correctCandidates;
 }
@@ -140,6 +142,7 @@ export class OfferManageEffects {
             data: any[],
             total: number,
           }) => {
+            console.log(res);
             if (res.ok) {
               const newCandidates = reformatCandidates(res.data);
               return {
@@ -157,10 +160,11 @@ export class OfferManageEffects {
           }),
           catchError((err: HttpErrorResponse) => {
             throwError(this.handleError('getOffersOfferer', err));
+            const error = err ? err : '';
             return [
               {
                 type: OfferManageActions.OPERATION_ERROR,
-                payload: err.error.error
+                payload: error
               }
             ];
           })

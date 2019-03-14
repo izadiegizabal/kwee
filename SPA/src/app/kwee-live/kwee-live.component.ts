@@ -17,8 +17,9 @@ import {
   TResourceShader,
   TResourceTexture } from '../../assets/engine/resourceManager';
 import { TMotorTAG } from '../../assets/engine/TMotorTAG.js';
+import { shared, canvas } from '../../assets/engine/commons.js';
 
-import { main, mainR } from '../../assets/engine/main.js';
+import { main, mainR, init } from '../../assets/engine/main.js';
 
 // import * as test from '../../assets/test.js';
 
@@ -37,12 +38,13 @@ import { main, mainR } from '../../assets/engine/main.js';
 export class KweeLiveComponent implements OnInit {
   @ViewChild('rendererContainer') rendererContainer: ElementRef;
 
-
   constructor() {
   }
 
   ngOnInit() {
+    shared();
     mainR();
+    // init();
   }
 
 }

@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, Output, EventEmitter} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {SnsShareDialogComponent} from '../../../shared/sns-share/sns-share-dialog/sns-share-dialog.component';
 import {getUrlfiedString} from '../../../shared/utils.service';
@@ -29,9 +29,8 @@ export class CandidatePreviewCardComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.user.applicationStatus === 1 ){  // if application status is 1 -> faved
+    if (this.user.applicationStatus === 1) {  // if application status is 1 -> faved
       this.faved = true;
-      this.changeFaved.emit(this.faved);
     }
 
     this.userUrl = this.urlfyPosition();

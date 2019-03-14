@@ -9,25 +9,52 @@ function render(now) {
     window.requestAnimationFrame(render);
 }*/
 
+// TNode
+import {
+    TNode,
+    calculateViews,
+    calculateLights,
+    goToRoot,
+    getLigthsViews
+} from './TNode.js';
+// TEntity
+import {
+    TTransform,
+    TCamera,
+    TLight,
+    TAnimation,
+    TMesh
+} from './TEntity.js';
+// TResourceManager
+import {
+    TResourceManager,
+    TResourceMesh,
+    TResourceMaterial,
+    TResourceTexture,
+    TResourceShader
+} from './resourceManager.js';
+// TMotor
+import { TMotorTAG } from './TMotorTAG.js';
 
-import {TNode} from './TNode.js';
-import {TTransform, TCamera, TLight, TAnimation, TMesh} from './TEntity.js';
-import {TResourceManager, TResourceMesh, TResourceMaterial, TResourceTexture, TResourceShader} from './resourceManager.js';
+// Commons
+import {
+    canvas,
+    gl,
+    program,
+    TEntity,
+    angle,
+    changeAngle
+} from './commons.js';
 
-
-
-var canvas = null;
-var gl = null;
-var program = null;
 
 async function mainR(){
-    var manager = new TResourceManager();
-
-	canvas = document.getElementById('kweelive');
-	gl = canvas.getContext('webgl');
+   
+    const manager = new TResourceManager();
+	// canvas = document.getElementById('kweelive');
+	// gl = canvas.getContext('webgl');
 
 	// gl.clearColor(0.266, 0.294, 0.329, 1.0); // our grey
-	gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
+	gl.clearColor(0.435, 0.909, 0.827, 0.0) // our blue
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	gl.enable(gl.DEPTH_TEST);
 	gl.enable(gl.CULL_FACE);
@@ -36,14 +63,16 @@ async function mainR(){
 	
    
     // let meshMaterial = await manager.getResource('cube','material');
+
     let VShader = await manager.getResource('shader.vs');
     let FShader = await manager.getResource('shader.fs');
+
 
     var vertexShader = gl.createShader(gl.VERTEX_SHADER);
 	var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
 
-	gl.shaderSource(vertexShader, manager.map.get('shader.vs').shader);
-	gl.shaderSource(fragmentShader, manager.map.get('shader.fs').shader);
+	gl.shaderSource(vertexShader, VShader);
+	gl.shaderSource(fragmentShader, FShader);
 
 	gl.compileShader(vertexShader);
 	if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
@@ -57,7 +86,6 @@ async function mainR(){
 		return;
 	}
 
-	program = gl.createProgram();
 	gl.attachShader(program, vertexShader);
 	gl.attachShader(program, fragmentShader);
 	gl.linkProgram(program);
@@ -74,79 +102,136 @@ async function mainR(){
 	gl.useProgram(program);
 
 
-    //// matrices
-    var worldMatrix = new Float32Array(16);
-    var viewMatrix = new Float32Array(16);
-    var projMatrix = new Float32Array(16);
-    glMatrix.mat4.identity(worldMatrix);
-    glMatrix.mat4.lookAt(viewMatrix, [0, 0, -2], [0, 0, 0], [0, 1, 0]);
-    glMatrix.mat4.perspective(projMatrix, glMatrix.glMatrix.toRadian(45), canvas.clientWidth / canvas.clientHeight, 0.1, 1000.0);
-    var matWorldUniformLocation = gl.getUniformLocation(program, 'mWorld');
-    var matViewUniformLocation = gl.getUniformLocation(program, 'mView');
-    var matProjUniformLocation = gl.getUniformLocation(program, 'mProj');
-    gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
-    gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix);
-    gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
-
-
 	let Escena = new TNode();
 	let RotaLuz = new TNode(Escena);
 	let RotaCam = new TNode(Escena);
 	let RotaCoche = new TNode(Escena);
+    let RotaCoche2 = new TNode(Escena);
 	Escena.addChild(RotaLuz);
 	Escena.addChild(RotaCam);
-	Escena.addChild(RotaCoche);
+    Escena.addChild(RotaCoche);
+	Escena.addChild(RotaCoche2);
 	let TraslaLuz = new TNode(RotaLuz);
-	let TraslaCoche = new TNode(RotaCam);
-	let TraslaCam = new TNode(RotaCoche);
+	let TraslaCam = new TNode(RotaCam);
+    let TraslaCoche = new TNode(RotaCoche);
+	let TraslaCoche2 = new TNode(RotaCoche2);
 	RotaLuz.addChild(TraslaLuz);
 	RotaCam.addChild(TraslaCam);
-	RotaCoche.addChild(TraslaCoche);
+    RotaCoche.addChild(TraslaCoche);
+	RotaCoche2.addChild(TraslaCoche2);
 
 	//---- Añadir las entidades a los nodos ----
 
 	let TransfRotaLuz = new TTransform();
 	let TransfRotaCam = new TTransform();
+    let TransfRotaCam2 = new TTransform();
 	let TransfRotaCoche = new TTransform();
+    let TransfRotaCoche2 = new TTransform();
+    let TransfRotaCoche3 = new TTransform();
 
 	RotaLuz.setEntity(TransfRotaLuz);
-	RotaCam.setEntity(TransfRotaCam);
-	RotaCoche.setEntity(TransfRotaCoche);
+	RotaCam.setEntity(TransfRotaCam2);
+    RotaCoche.setEntity(TransfRotaCoche);
+	RotaCoche2.setEntity(TransfRotaCoche2);
 
 	let EntLuz = new TLight(); 
-	let EntCam = new TCamera(); 
-	let MallaChasis = new TMesh();
-	await MallaChasis.loadMesh('part1.json');
+    let EntCam = new TCamera(); 
+    let MallaChasis = await new TMesh('partt.json');
+
+    //let MallaChasi2 = await new TMesh('partt.json');
 
 
-    let MallaChasi2 = new TMesh();
-    await MallaChasi2.loadMesh('partt.json');
+    // await loadImage('guitars.png', await function (imgErr, img) {
+    //     if (imgErr) {
+    //         alert('Fatal error getting Susan texture (see console)');
+    //         console.error(imgErr);
+    //     } else { 
 
-	console.log(MallaChasis.mesh);
+    //         image = img;
+    //         console.log(image);
+    //     }
+    // });
+
+    //image = await loadImage('guitars.png');
 
 	/// Esto no estaba en las transparencias
 
 	let NLuz = new TNode(TraslaLuz);
 	let NCam = new TNode(TraslaCam);
 	let NChasis = new TNode(TraslaCoche);
-    let NChasi2 = new TNode(TraslaCoche);
+    //let NChasi2 = new TNode(TraslaCoche2);
 
 	NLuz.setEntity(EntLuz);
 	NCam.setEntity(EntCam);
 	NChasis.setEntity(MallaChasis);
-    NChasi2.setEntity(MallaChasi2);
+    // NChasi2.setEntity(MallaChasi2);
 
 	TraslaLuz.addChild(NLuz);
 	TraslaCoche.addChild(NChasis);
-    TraslaCoche.addChild(NChasi2);
+    // TraslaCoche2.addChild(NChasi2);
 	TraslaCam.addChild(NCam);
 
 	TraslaLuz.setEntity(TransfRotaLuz);
+    //TransfRotaLuz.translate([2, 0, 0]);
 	TraslaCoche.setEntity(TransfRotaCoche);
 	TraslaCam.setEntity(TransfRotaCam);
+    // TraslaCoche2.setEntity(TransfRotaCoche3);
+    // TraslaCoche2.entity.translate([2, -1, 0]);
 
+    /*var motor = new TMotorTAG();
+    motor.lookAt(NCam, [0, 0, -10], [0, 0, 0], [0, 1, 0]); 
 
-	Escena.draw();
+    //// matrices
+    var viewMatrix = new Float32Array(16);
+    var projMatrix = new Float32Array(16);
+    viewMatrix = TEntity.AuxViews[0];
+    glMatrix.mat4.perspective(projMatrix, glMatrix.glMatrix.toRadian(45), canvas.clientWidth / canvas.clientHeight, 0.1, 1000.0);
+    var matViewUniformLocation = gl.getUniformLocation(program, 'mView');
+    var matProjUniformLocation = gl.getUniformLocation(program, 'mProj');
+    gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix);
+    gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
+    */
+
+    var motor = new TMotorTAG();
+    console.log("node cam:");
+    console.log(NCam);
+    motor.lookAt(NCam, [0, 0, 2], [0, 0, 0], [0, 1, 0]); 
+
+    calculateLights();
+    calculateViews();
+    console.log("========= scene setup =========");
+    console.log('Lights : ');
+    console.log(TEntity.Lights);
+    console.log('Views/cameras: ');
+    console.log(TEntity.Views);
+    console.log('Lights array: ');
+    console.log(TEntity.AuxLights);
+    console.log('Views/cameras array: ');
+    console.log(TEntity.AuxViews);
+
+    console.log(Escena);
+    console.log("========= scene setup =========");
+    
+
+    var viewMatrix = new Float32Array(16);
+    var projMatrix = new Float32Array(16);
+    viewMatrix = TEntity.AuxViews[0];
+    glMatrix.mat4.perspective(projMatrix, glMatrix.glMatrix.toRadian(45), canvas.clientWidth / canvas.clientHeight, 0.1, 1000.0);
+    var matViewUniformLocation = gl.getUniformLocation(program, 'mView');
+    var matProjUniformLocation = gl.getUniformLocation(program, 'mProj');
+    gl.uniformMatrix4fv(matViewUniformLocation, false, viewMatrix);
+    gl.uniformMatrix4fv(matProjUniformLocation, false, projMatrix);
+
+    
+    var loop = function () {
+        gl.clearColor(0.435, 0.909, 0.827, 0.0) // our blue
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        changeAngle(performance.now() / 1000 / 6 * 2 * Math.PI);   
+        Escena.draw();
+
+        requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
 
 }
 
@@ -325,7 +410,7 @@ async function main(){
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     var identityMatrix = new Float32Array(16);
     glMatrix.mat4.identity(identityMatrix);
-    var angle = 0;
+    
     var loop = function () {
         angle = performance.now() / 1000 / 6 * 2 * Math.PI;
         glMatrix.mat4.rotate(worldMatrix, identityMatrix, angle, [0, 1, 0]);
@@ -343,6 +428,160 @@ async function main(){
     };
     requestAnimationFrame(loop);
 
+
+}
+
+async function init(){
+
+    const manager = new TResourceManager();    
+
+    // Clear screen things
+	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	gl.enable(gl.DEPTH_TEST);
+	gl.enable(gl.CULL_FACE);
+	gl.frontFace(gl.CCW);
+    gl.cullFace(gl.BACK);
+    
+    let vShader = await manager.getResource('shader.vs');
+    let fShader = await manager.getResource('shader.fs');
+
+
+    var vertexShader = gl.createShader(gl.VERTEX_SHADER);
+	var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+
+    /////////////////////
+    // LINKING SHADERS
+    /////////////////////
+	gl.shaderSource(vertexShader, vShader);
+	gl.shaderSource(fragmentShader, fShader);
+    
+    // VERTEX SHADER
+	gl.compileShader(vertexShader);
+	if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
+		console.error('ERROR compiling vertex shader', gl.getShaderInfoLog(vertexShader));
+		return;
+	}
+    
+    // FRAGMENT SHADER
+	gl.compileShader(fragmentShader);
+	if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
+		console.error('ERROR compiling fragment shader', gl.getShaderInfoLog(fragmentShader));
+		return;
+	}
+
+	gl.attachShader(program, vertexShader);
+	gl.attachShader(program, fragmentShader);
+	gl.linkProgram(program);
+	if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+		console.error('ERROR linking program', gl.getProgramInfoLog(program));
+		return;
+	}
+	gl.validateProgram(program);
+	if (!gl.getProgramParameter(program, gl.VALIDATE_STATUS)) {
+		console.error('ERROR validating program', gl.getProgramInfoLog(program));
+		return;
+	}
+
+    gl.useProgram(program);
+    
+    //////////////
+    // SCENE
+
+    let Escena = new TNode();
+    let nRotaLuz = new TNode(Escena);
+    let nRotaCam = new TNode(Escena);
+    let nRotaMalla = new TNode(Escena);
+    Escena.addChild(nRotaLuz);
+    Escena.addChild(nRotaCam);
+    Escena.addChild(nRotaMalla);
+    let nTraslaLuz = new TNode(nRotaLuz)
+    let nTraslaCam = new TNode(nRotaCam);
+    let nTraslaMalla = new TNode(nRotaMalla);
+    nRotaLuz.addChild(nTraslaLuz);
+    nRotaCam.addChild(nTraslaCam);
+    nRotaMalla.addChild(nTraslaMalla);
+    let nLuz = new TNode(nTraslaLuz);
+    let nCam = new TNode(nTraslaCam);
+    let nMalla = new TNode(nTraslaMalla);
+
+    let TransfRotaLuz = new TTransform(); 
+    let TransfRotaCam = new TTransform(); 
+    let TransfRotaMalla = new TTransform(); 
+
+    let TransfTraslaLuz = new TTransform(); 
+    let TransfTraslaCam = new TTransform(); 
+    let TransfTraslaMalla = new TTransform(); 
+
+    let EntLuz = new TLight();
+    let EntCam = new TCamera();
+    let EntMalla = await new TMesh('part1.json');
+
+    nRotaLuz.setEntity(TransfRotaLuz);
+    nRotaCam.setEntity(TransfRotaCam);
+    nRotaMalla.setEntity(TransfRotaMalla);
+
+    nTraslaLuz.setEntity(TransfTraslaLuz);
+    nTraslaCam.setEntity(TransfTraslaCam);
+    nTraslaMalla.setEntity(TransfTraslaMalla);
+
+    nLuz.setEntity(EntLuz);
+    nCam.setEntity(EntCam);
+    nMalla.setEntity(EntMalla);
+
+
+
+
+    var motor = new TMotorTAG();
+    console.log("node cam:");
+    console.log(nCam);
+    motor.lookAt(nCam, [0, 0, 2], [0, 0, 0], [0, 1, 0]); 
+    console.log("========= scene setup =========");
+    console.log('Lights : ');
+    console.log(TEntity.Lights);
+    console.log('Views/cameras: ');
+    console.log(TEntity.Views);
+    console.log('Lights array: ');
+    console.log(TEntity.AuxLights);
+    console.log('Views/cameras array: ');
+    console.log(TEntity.AuxViews);
+    console.log("calculating.......");
+    calculateLights();
+    calculateViews();
+    console.log("========= scene setup =========");
+    console.log('Lights : ');
+    console.log(TEntity.Lights);
+    console.log('Views/cameras: ');
+    console.log(TEntity.Views);
+    console.log('Lights array: ');
+    console.log(TEntity.AuxLights);
+    console.log('Views/cameras array: ');
+    console.log(TEntity.AuxViews);
+
+    console.log(Escena);
+    console.log("========= scene setup =========");
+    
+
+    var viewMatrix = new Float32Array(16);
+    var projMatrix = new Float32Array(16);
+    viewMatrix = TEntity.AuxViews[0];
+    glMatrix.mat4.perspective(projMatrix, glMatrix.glMatrix.toRadian(45), canvas.clientWidth / canvas.clientHeight, 0.1, 1000.0);
+    var matViewUniformLocation = gl.getUniformLocation(program, 'mView');
+    var matProjUniformLocation = gl.getUniformLocation(program, 'mProj');
+    gl.uniformMatrix4fv(matViewUniformLocation, false, viewMatrix);
+    gl.uniformMatrix4fv(matProjUniformLocation, false, projMatrix);
+
+
+    /////////
+    // LOOP    
+    var loop = function () {
+        gl.clearColor(0.435, 0.909, 0.827, 0.0) // our blue
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        changeAngle(performance.now() / 1000 / 6 * 2 * Math.PI);   
+        Escena.draw();
+
+        requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
 
 }
 
@@ -423,5 +662,6 @@ var InitDemo = function () {
 
 export {
     main,
-    mainR
+    mainR,
+    init
 }
