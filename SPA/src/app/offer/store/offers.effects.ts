@@ -22,8 +22,8 @@ export class OffersEffects {
       const headers = new HttpHeaders().set('Content-Type', 'application/json');
       const body = JSON.stringify(payload.params);
 
-        console.log(apiEndpointUrl);
-        console.log(body);
+        // console.log(apiEndpointUrl);
+        // console.log(body);
 
         return this.httpClient.post(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res: {
