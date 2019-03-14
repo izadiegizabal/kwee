@@ -178,21 +178,48 @@ module.exports = (app, db) => {
                 where: { id }
             });
 
-            user = await db.users.findOne({
-                where: { id: offer['fk_offerer'] }
-            });
-
-            let offers = [],
+            if ( offer ) {
+                let users = await db.users.findAll();
+                let user = users.find(usu => usu.id === offer.fk_offerer);
+                
+                let offers = [],
                 offersShow = [];
-
-            offers.push(offer);
-            
-            prepareOffersToShow(offers, offersShow, user);
-
-            return res.status(200).json({
-                ok: true,
-                data: offersShow[0]
-            });
+                
+                offers.push(offer);
+                
+                prepareOffersToShow(offers, offersShow, user);
+                
+                let applicants = await offer.getApplicants();
+                if ( applicants.length > 0 ) {
+                    let applications = await db.applications.findAll({where: {fk_offer: id}});
+                    applicants.forEach(applicant => {
+                            let application = applications.find(apli => apli.fk_applicant == applicant.userId);
+                            let applicantUser = users.find(usu => usu.id === applicant.userId);
+                            let applicantShow = {};
+                            applicantShow.applicationId = application.id;
+                            applicantShow.applicationStatus = application.status;
+                            applicantShow.aHasRated = application.aHasRated;
+                            applicantShow.applicantId = applicantUser.id;
+                            applicantShow.applicantName = applicantUser.name;
+                            applicantShow.applicantStatus = applicantUser.status;
+                            
+                            offersShow[0].applications.push(applicantShow);
+                        
+                    });
+                } else {
+                    offersShow[0].applications = null;
+                }
+                
+                return res.status(200).json({
+                    ok: true,
+                    data: offersShow[0]
+                });
+            } else {
+                return res.status(400).json({
+                    ok: false,
+                    message: `Offer does not exists`
+                });
+            }
 
         } catch (err) {
             return next({ type: 'error', error: 'Error getting data' });

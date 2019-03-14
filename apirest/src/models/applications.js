@@ -48,7 +48,19 @@ module.exports = (sequelize, DataTypes) => {
                     msg: "status value should be a valid one: 0 (pending), 1 (fav), 2 (selected), 3 (accepted) or 4 (refused)."
                 }
             }
-        }
+        },
+
+        aHasRated: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
+        },
+
+        oHasRated: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
+        },
     });
     return Application;
 };

@@ -63,10 +63,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false
-
         },
-
-        /////////////////
 
         img: {
             type: DataTypes.STRING,
@@ -79,7 +76,6 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: "Here you have a place to define yourself"
         },
-
 
         // Last access not saved by query (¿¿auto updated??)
         lastAccess: {
@@ -142,11 +138,6 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true,
             defaultValue: null,
         }
-
-        
-
-
-
 
     }, {
         paranoid: true

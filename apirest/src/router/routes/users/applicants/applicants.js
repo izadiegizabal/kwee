@@ -234,6 +234,7 @@ module.exports = (app, db) => {
                             
                             offer.id = allOffers[j].id;
                             offer.fk_offerer = allOffers[j].fk_offerer;
+                            offer.fk_application = applications[i].id;
                             offer.offererName = offerer.name;
                             offer.offererIndex = offerer.index;
                             allOffers[j].img ? offer.img = allOffers[j].img : offer.img = offerer.img;
@@ -244,6 +245,8 @@ module.exports = (app, db) => {
                             offer.datePublished = allOffers[j].datePublished;
                             offer.location = allOffers[j].location;
                             offer.status = allOffers[j].status;
+                            offer.applicationStatus = applications[i].status;
+                            offer.aHasRated = applications[i].aHasRated;
                             offer.salaryAmount = allOffers[j].salaryAmount;
                             offer.salaryFrequency = allOffers[j].salaryFrequency;
                             offer.salaryCurrency = allOffers[j].salaryCurrency;
