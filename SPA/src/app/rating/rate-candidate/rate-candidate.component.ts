@@ -5,6 +5,7 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
+import {ChangeEvent} from '@ckeditor/ckeditor5-angular/ckeditor.component';
 
 export interface DialogData {
   candidate: boolean;
@@ -43,27 +44,44 @@ export class RateCandidateComponent implements OnInit {
     this.form = new FormGroup({
       opinion: new FormControl(null),
       one: new FormControl('', Validators.required),
+      one_aux: new FormControl(null, Validators.required),
       two: new FormControl('', Validators.required),
+      two_aux: new FormControl(null, Validators.required),
       three: new FormControl('', Validators.required),
+      three_aux: new FormControl(null, Validators.required),
       four: new FormControl('', Validators.required),
+      four_aux: new FormControl(null, Validators.required),
       five: new FormControl('', Validators.required),
-      six: new FormControl('', Validators.required)
+      five_aux: new FormControl(null, Validators.required),
+      six: new FormControl('', Validators.required),
+      six_aux: new FormControl(null, Validators.required)
     });
 
     this.selected = this.data.list[0].name;
 
-    /*
-      efficiency: new FormControl('', Validators.required),
-      punctuality: new FormControl('', Validators.required),
-      skills: new FormControl('', Validators.required),
-      hygiene: new FormControl('', Validators.required),
-      teamwork: new FormControl('', Validators.required),
-      overall: new FormControl('', Validators.required)
-     */
+    this.form.controls['one'].valueChanges.subscribe(value => {
+      this.form.controls['one_aux']. setValue(value);
+    });
 
-    console.log(this.data);
+    this.form.controls['two'].valueChanges.subscribe(value => {
+      this.form.controls['two_aux']. setValue(value);
+    });
 
+    this.form.controls['three'].valueChanges.subscribe(value => {
+      this.form.controls['three_aux']. setValue(value);
+    });
 
+    this.form.controls['four'].valueChanges.subscribe(value => {
+      this.form.controls['four_aux']. setValue(value);
+    });
+
+    this.form.controls['five'].valueChanges.subscribe(value => {
+      this.form.controls['five_aux']. setValue(value);
+    });
+
+    this.form.controls['six'].valueChanges.subscribe(value => {
+      this.form.controls['six_aux']. setValue(value);
+    });
   }
 
   rate() {
@@ -120,7 +138,9 @@ export class RateCandidateComponent implements OnInit {
 
       // this.dialogRef.close(this.form);
     } else {
-      document.getElementById('required').style.color = 'red';
+      for (const i of Object.keys(this.form.controls)) {
+        this.form.controls[i].markAsTouched();
+      }
     }
   }
 
