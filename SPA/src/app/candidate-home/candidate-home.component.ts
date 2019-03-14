@@ -8,7 +8,6 @@ import {MatPaginator, MatSidenav, PageEvent} from '@angular/material';
 import {BreakpointObserver} from '@angular/cdk/layout';
 import {HttpClient} from '@angular/common/http';
 import {ActivatedRoute, Router} from '@angular/router';
-import {query} from '@angular/animations';
 
 @Component({
   selector: 'app-candidate-home',

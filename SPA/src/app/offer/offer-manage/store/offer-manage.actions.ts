@@ -1,7 +1,6 @@
 import {Action} from '@ngrx/store';
 import {CandidatePreview} from '../../../../models/candidate-preview.model';
 
-
 export const TRY_GET_OFFERS_OFFERER = 'TRY_GET_OFFERS_OFFERER';
 export const SET_OFFERS_OFFERER = 'SET_OFFERS_OFFERER';
 

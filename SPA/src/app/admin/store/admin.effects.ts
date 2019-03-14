@@ -24,8 +24,9 @@ export class AdminEffects {
       const body = JSON.stringify(payload.params);
 
       // const token = authState.token;
-       // const headers = new HttpHeaders().set('token', token);
-        // console.log(apiEndpointUrl);
+      // const headers = new HttpHeaders().set('token', token);
+      // console.log(apiEndpointUrl);
+      // console.log(body);
         return this.httpClient.post(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res: {
             ok: boolean,
