@@ -29,7 +29,6 @@ class TResourceManager {
     // getResource --> The resource filename must be the same as "name"
     async getResource(name) {
         // console.log("== getResource " + name + " ==");
-
         let resource = this.map.has(name);
 
         let type = name.split('.');
@@ -57,7 +56,7 @@ class TResourceManager {
                 case 'vs': 
                 case 'fs': {
                     // shader
-                    // console.log("-> Creating TResourceShader " + name + "...");
+                    console.log("-> Creating TResourceShader " + name + "...");
                     resource = new TResourceShader(name);
                     break;
                 }
@@ -67,7 +66,7 @@ class TResourceManager {
             
             resource = this.map.set(name, file);
 
-            this.getResource(name);
+            return this.getResource(name);
         }
         else{
             // return resource
@@ -99,8 +98,6 @@ class TResourceManager {
                     break;
                 }
             }
-            console.log("going to return: ");
-            console.log(resource);
             
             return resource;
         }

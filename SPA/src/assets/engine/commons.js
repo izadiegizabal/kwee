@@ -42,6 +42,13 @@ TEntity.Aux = [];
 // Static attribute stack
 TEntity.stack = null;
 
+function getEntity(){
+    return TEntity;
+}
+
+function setEntity(ent){
+    TEntity = ent;
+}
 
 export {
     shared,
@@ -49,6 +56,8 @@ export {
     gl,
     program,
     TEntity,
+    getEntity,
+    setEntity,
     changeAngle,
     angle
 }
