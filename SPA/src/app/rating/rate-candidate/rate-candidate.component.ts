@@ -124,6 +124,7 @@ export class RateCandidateComponent implements OnInit {
         , options)
         .subscribe((data: any) => {
           console.log(data);
+          this.dialogRef.close(this.form);
         }, (error: any) => {
           console.log(error);
           /*if (!this.dialogShown) {
