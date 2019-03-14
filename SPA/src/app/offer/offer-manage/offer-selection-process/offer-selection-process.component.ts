@@ -1,9 +1,9 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {select, Store} from '@ngrx/store';
-import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormArray, FormBuilder, FormControl, FormGroup} from '@angular/forms';
 import {WorkFields} from '../../../../models/Candidate.model';
 import {Distances, isStringNotANumber} from '../../../../models/Offer.model';
-import {MatSidenav, PageEvent} from '@angular/material';
+import {MatSidenav, MatStepper, PageEvent} from '@angular/material';
 import {BreakpointObserver} from '@angular/cdk/layout';
 import * as fromApp from '../../../store/app.reducers';
 import * as fromOfferManage from '../store/offer-manage.reducers';
@@ -23,6 +23,9 @@ export class OfferSelectionProcessComponent implements OnInit {
 
   // Filter sidebar
   @ViewChild('drawer') private drawer: MatSidenav;
+
+  // Selection process Stepper
+  @ViewChild('stepper') private stepper: MatStepper;
 
   // PAGINATOR
   pageSize = 5;
@@ -48,6 +51,8 @@ export class OfferSelectionProcessComponent implements OnInit {
   // Stepper forms
   selectFormGroup: FormGroup;
   waitFormGroup: FormGroup;
+  firstStepCompletion = false;
+  private secondStepCompletion = false;
 
   constructor(
     private store$: Store<fromApp.AppState>,
@@ -66,12 +71,8 @@ export class OfferSelectionProcessComponent implements OnInit {
     this.store$.dispatch(new OfferManageActions.EmptyState());
 
     // Initialise stepper form
-    this.selectFormGroup = this._formBuilder.group({
-      selectionCtrl: ['', Validators.required]
-    });
-    this.waitFormGroup = this._formBuilder.group({
-      waitCtrl: ['', Validators.required]
-    });
+    this.selectFormGroup = this._formBuilder.group({});
+    this.waitFormGroup = this._formBuilder.group({});
 
     // Get Manage Offer store
     this.manageOfferState = this.store$.pipe(select(state => state.offerManage));
@@ -82,6 +83,39 @@ export class OfferSelectionProcessComponent implements OnInit {
       this.offerId = Number(params.id);
       this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({id: this.offerId, page: 1, limit: 20, status: 0})); // pending
       this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({id: this.offerId, page: 1, limit: 20, status: 1})); // faved
+      this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({id: this.offerId, page: 1, limit: 20, status: 2})); // selected
+      this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({id: this.offerId, page: 1, limit: 20, status: 3})); // accepted
+      this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({id: this.offerId, page: 1, limit: 20, status: 4})); // refused
+
+      this.store$.select(state => state.offerManage).subscribe(offerManage => {
+          if (offerManage.selection && (
+            (offerManage.selection.selected && offerManage.selection.selected.length > 0) ||
+            (offerManage.selection.accepted && offerManage.selection.accepted.length > 0)
+          )) {
+            this.firstStepCompletion = true;
+            if (this.stepper.selectedIndex < 1) {
+              this.stepper.next();
+            }
+            if (offerManage.selection && offerManage.selection.accepted && offerManage.selection.accepted.length > 0) {
+              this.secondStepCompletion = true;
+              if (this.stepper.selectedIndex < 2) {
+                this.stepper.next();
+              }
+            } else {
+              if (this.stepper.selectedIndex < 1) {
+                this.stepper.next();
+              } else if (this.stepper.selectedIndex > 1) {
+                this.stepper.previous();
+              }
+            }
+          } else {
+            this.firstStepCompletion = false;
+            if (this.stepper.selectedIndex !== 0) {
+              this.stepper.previous();
+            }
+          }
+        }
+      );
 
       this.manageOfferEffects.GetOfferCandidates.pipe(
         filter((action: any) => action.type === OfferManageActions.OPERATION_ERROR)
@@ -89,6 +123,14 @@ export class OfferSelectionProcessComponent implements OnInit {
         // this.router.navigate(['/error/404']);
         console.log(error);
       });
+
+      this.manageOfferEffects.ChangeApplicationStatus.pipe(
+        filter((action: any) => action.type === OfferManageActions.SET_CHANGE_APPLICATION_STATUS)
+      ).subscribe((next: { payload: any, type: string }) => {
+          console.log('selected');
+          this.stepper.next();
+        }
+      );
     } else {
       this.router.navigate(['/error/404']);
     }
@@ -168,6 +210,7 @@ export class OfferSelectionProcessComponent implements OnInit {
 
   // Interacion with stepper methods
   closeSelectionProcess() {
+    this.router.navigate(['my-offers']);
     // TODO: change state of offer from selection to closed
   }
 
@@ -175,13 +218,41 @@ export class OfferSelectionProcessComponent implements OnInit {
     if (faved) {
       if (candidate.applicationStatus !== 1) {
         this.store$.dispatch(new OfferManageActions
-          .TryChangeApplicationStatus({candidateId: candidate.id, applicationId: candidate.applicationId, status: 1}));
+          .TryChangeApplicationStatus({
+            candidateId: candidate.id,
+            applicationId: candidate.applicationId,
+            status: 1
+          }));
       }
     } else {
       if (candidate.applicationStatus !== 0) {
         this.store$.dispatch(new OfferManageActions
-          .TryChangeApplicationStatus({candidateId: candidate.id, applicationId: candidate.applicationId, status: 0}));
+          .TryChangeApplicationStatus({
+            candidateId: candidate.id,
+            applicationId: candidate.applicationId,
+            status: 0
+          }));
       }
+    }
+  }
+
+  isSelected(selected: boolean, candidate: CandidatePreview) {
+    if (selected) {
+      if (candidate.applicationStatus !== 2) {
+        this.store$.dispatch(new OfferManageActions
+          .TryChangeApplicationStatus({
+            candidateId: candidate.id,
+            applicationId: candidate.applicationId,
+            status: 2
+          }));
+      }
+    }
+  }
+
+  isRejected(rejected: boolean, candidate: CandidatePreview) {
+    if (rejected) {
+      this.store$.dispatch(new OfferManageActions.TryRejectApplication(candidate.applicationId));
+      console.log('Reject application ' + candidate.applicationId);
     }
   }
 }

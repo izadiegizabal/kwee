@@ -15,11 +15,14 @@ export class CandidatePreviewCardComponent implements OnInit {
 
   @Input() user: CandidatePreview;
   @Input() selectionMode = false;
+  @Input() applicationStatus = -1;
   @Input() isFaved;
   @Output() changeSelected = new EventEmitter();
   @Output() changeFaved = new EventEmitter();
+  @Output() changeRejected = new EventEmitter();
   faved = false;
   selected = false;
+  rejected = false;
 
 
   userUrl: string;
@@ -70,7 +73,7 @@ export class CandidatePreviewCardComponent implements OnInit {
   // }
 
   selectCandidate() {
-    this.selected = !this.selected;
+    this.selected = true;
     this.changeSelected.emit(this.selected);
   }
 
@@ -83,5 +86,21 @@ export class CandidatePreviewCardComponent implements OnInit {
   onFaved() {
     this.faved = !this.faved;
     this.changeFaved.emit(this.faved);
+  }
+
+  rejectCandidate() {
+    this.rejected = true;
+    this.changeRejected.emit(this.rejected);
+  }
+
+  getApplicationStatus() {
+    switch (this.applicationStatus) {
+      case 0: return 'Pending';
+      case 1: return 'Faved';
+      case 2: return 'Selected';
+      case 3: return 'Accepted';
+      case 4: return 'Refused';
+      default: return 'IDK';
+    }
   }
 }
