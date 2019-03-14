@@ -8,6 +8,7 @@ import {MatPaginator, MatSidenav, PageEvent} from '@angular/material';
 import {BreakpointObserver} from '@angular/cdk/layout';
 import {HttpClient} from '@angular/common/http';
 import {ActivatedRoute, Router} from '@angular/router';
+import {query} from '@angular/animations';
 
 @Component({
   selector: 'app-candidate-home',
@@ -72,15 +73,20 @@ export class CandidateHomeComponent implements OnInit {
   }
 
   searchCallApi() {
-    // let query = '';
-    // if (window.location.href.split('?')[1]) {
-    //   query = '&' + window.location.href.split('?')[1];
-    // }
-    //
-    // query += '&status=0';
-
     this.query = {...this.query, status: '0'};
-    console.log(this.query);
+    if (this.query.salaryAmount) {
+      this.query = {...this.query, salaryAmount: {'gte': this.query.salaryAmount}};
+    }
+
+    if (this.query.offererIndex) {
+      this.query = {...this.query, offererIndex: {'gte': this.query.offererIndex}};
+    }
+
+    if (this.query.datePublished) {
+      this.query = {...this.query, datePublished: {'gte': this.query.datePublished}};
+    }
+
+   // console.log(this.query);
 
     this.store$.dispatch(new OffersActions.TryGetOffers({
       page: 1,

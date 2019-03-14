@@ -1,6 +1,12 @@
   <div class="container, filters">
     <h2>Filters</h2>
     <form [formGroup]="filters" fxLayout="column">
+
+      <h3>Minimum Business' Index</h3>
+      <section fxLayout="column">
+        <mat-slider formControlName="minBusinessIndex" max="100" min="0" thumbLabel></mat-slider>
+      </section>
+
       <mat-form-field>
         <input formControlName="location" matInput placeholder="Location" type="text">
         <button (click)="filters.controls['location'].reset('')" *ngIf="filters.controls['location'].value"
@@ -68,10 +74,6 @@
         </mat-select>
       </mat-form-field>
 
-      <h3>Minimum Business' Index</h3>
-      <section fxLayout="column">
-        <mat-slider formControlName="minBusinessIndex" max="100" min="0" thumbLabel></mat-slider>
-      </section>
 
     </form>
 
