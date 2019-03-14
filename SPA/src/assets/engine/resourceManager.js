@@ -158,32 +158,32 @@ class TResourceMesh extends TResource{
         // mesh file code
         const jsonMesh = await loadJSON(file);
 
-        this.alias = jsonMesh.alias;
+        if( file == "earth_fbx.json"){
+            this.alias = jsonMesh.alias;
+
+            this.vertices = jsonMesh.meshes[0].vertices;
+            this.triVertices = [].concat.apply([], jsonMesh.meshes[0].faces);
+            this.textures = jsonMesh.meshes[0].texturecoords[0];
+            this.normals = jsonMesh.meshes[0].normals;
+    
+    
+            this.nTris = this.triVertices.length;
+            this.nVertices = this.vertices.length;
+        }
+        else{
+            console.log("sin mat");
+            this.alias = jsonMesh.alias;
 
 
-        // this.vertices = jsonMesh.vertices;
-        // this.triVertices = jsonMesh.indices;
-        // this.textures = jsonMesh.uvs;
-        // this.normals = jsonMesh.normals;
+            this.vertices = jsonMesh.vertices;
+            this.triVertices = jsonMesh.indices;
+            this.textures = jsonMesh.uvs;
+            this.normals = jsonMesh.normals;
+    
+            this.nTris = this.triVertices.length;
+            this.nVertices = this.vertices.length;
+        }
 
-        this.vertices = jsonMesh.meshes[0].vertices;
-        this.triVertices = [].concat.apply([], jsonMesh.meshes[0].faces);
-        this.textures = jsonMesh.meshes[0].texturecoords[0];
-        this.normals = jsonMesh.meshes[0].normals;
-
-
-        this.nTris = this.triVertices.length;
-        this.nVertices = this.vertices.length;
-
-        // // material
-        // let name = jsonMesh.alias.split('_');
-        // let material = new TResourceMaterial(name[1]);
-        // console.log("Mesh material: " + material.name);
-        // material.loadValues(jsonMesh);
-
-        // let output = ;
-        // output.push(this);
-        // output.push(material);
         return this;
     }
 
@@ -516,12 +516,11 @@ async function loadImage(filename){
   img.src = '../assets/assets/textures/'+filename;
   img.id = 'image';
 
-  let host = "http://localhost";
-  let path = '/kwee-live/assets/assets/textures/';
+  let host = "http://localhost:4200";
+  let path = '/assets/assets/textures/';
   let url = `${host + path + filename}`;
 
   console.log(`Fetching ${filename} resource from url: ${ url }`);
-
   let file;
   await fetch( url )
     .then( response => response.blob() )

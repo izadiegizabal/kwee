@@ -145,10 +145,10 @@ async function mainR(){
 
   let EntLuz = new TLight();
   let EntCam = new TCamera();
-  let MallaChasis = await new TMesh('earth.json');
+  let MallaChasis = await new TMesh('earth_fbx.json');
 
 
-  let MallaChasi2 = new TMesh();
+  //let MallaChasi2 = new TMesh();
   //await MallaChasi2.loadMesh('earth.json');
 
   console.log(MallaChasis.mesh);
@@ -328,64 +328,79 @@ async function init(){
     //////////////
     // SCENE
 
-    let Escena = new TNode();
-    let nRotaLuz = new TNode(Escena);
-    let nRotaCam = new TNode(Escena);
-    let nRotaMalla = new TNode(Escena);
-    Escena.addChild(nRotaLuz);
-    Escena.addChild(nRotaCam);
-    Escena.addChild(nRotaMalla);
-    let nTraslaLuz = new TNode(nRotaLuz)
-    let nTraslaCam = new TNode(nRotaCam);
-    let nTraslaMalla = new TNode(nRotaMalla);
-    nRotaLuz.addChild(nTraslaLuz);
-    nRotaCam.addChild(nTraslaCam);
-    nRotaMalla.addChild(nTraslaMalla);
-    let nLuz = new TNode(nTraslaLuz);
-    let nCam = new TNode(nTraslaCam);
-    let nMalla = new TNode(nTraslaMalla);
 
-    let TransfRotaLuz = new TTransform(); 
-    let TransfRotaCam = new TTransform(); 
-    let TransfRotaMalla = new TTransform(); 
+	let Escena = new TNode();
+	let RotaLuz = new TNode(Escena);
+	let RotaCam = new TNode(Escena);
+	let RotaMalla = new TNode(Escena);
+	Escena.addChild(RotaLuz);
+	Escena.addChild(RotaCam);
+    Escena.addChild(RotaMalla);
+	let TraslaLuz = new TNode(RotaLuz);
+	let TraslaCam = new TNode(RotaCam);
+    let TraslaMalla = new TNode(RotaMalla);
+	RotaLuz.addChild(TraslaLuz);
+	RotaCam.addChild(TraslaCam);
+    RotaMalla.addChild(TraslaMalla);
 
-    let TransfTraslaLuz = new TTransform(); 
-    let TransfTraslaCam = new TTransform(); 
-    let TransfTraslaMalla = new TTransform(); 
+	//---- Añadir las entidades a los nodos ----
 
-    let EntLuz = new TLight();
-    let EntCam = new TCamera();
-    let EntMalla = await new TMesh('part1.json');
+	let TransfRotaLuz = new TTransform();
+	let TransfRotaCam = new TTransform();
+    let TransfRotaCam2 = new TTransform();
+	let TransfRotaMalla = new TTransform();
 
-    nRotaLuz.setEntity(TransfRotaLuz);
-    nRotaCam.setEntity(TransfRotaCam);
-    nRotaMalla.setEntity(TransfRotaMalla);
+	RotaLuz.setEntity(TransfRotaLuz);
+	RotaCam.setEntity(TransfRotaCam2);
+    RotaMalla.setEntity(TransfRotaMalla);
 
-    nTraslaLuz.setEntity(TransfTraslaLuz);
-    nTraslaCam.setEntity(TransfTraslaCam);
-    nTraslaMalla.setEntity(TransfTraslaMalla);
-
-    nLuz.setEntity(EntLuz);
-    nCam.setEntity(EntCam);
-    nMalla.setEntity(EntMalla);
+    // type, ambient = intensity, specular, diffuse
+    let EntLuz = new TLight('type1',[0.0,0.0,0.0],[0.8,0.8,0.8],[0.4,1.4,0.4]); 
+    let EntCam = new TCamera(); 
+    let MallaChasis = await new TMesh('simplest.json');
 
 
 
+
+
+
+	/// Esto no estaba en las transparencias
+
+	let NLuz = new TNode(TraslaLuz);
+	let NCam = new TNode(TraslaCam);
+	let NChasis = new TNode(TraslaMalla);
+
+	NLuz.setEntity(EntLuz);
+	NCam.setEntity(EntCam);
+	NChasis.setEntity(MallaChasis);
+
+	TraslaLuz.addChild(NLuz);
+	TraslaMalla.addChild(NChasis);
+	TraslaCam.addChild(NCam);
+
+	TraslaLuz.setEntity(TransfRotaLuz);
+	TraslaMalla.setEntity(TransfRotaMalla);
+	TraslaCam.setEntity(TransfRotaCam);
+
+    /*var motor = new TMotorTAG();
+    motor.lookAt(NCam, [0, 0, -10], [0, 0, 0], [0, 1, 0]); 
+
+    //// matrices
+    var viewMatrix = new Float32Array(16);
+    var projMatrix = new Float32Array(16);
+    viewMatrix = TEntity.AuxViews[0];
+    glMatrix.mat4.perspective(projMatrix, glMatrix.glMatrix.toRadian(45), canvas.clientWidth / canvas.clientHeight, 0.1, 1000.0);
+    var matViewUniformLocation = gl.getUniformLocation(program, 'mView');
+    var matProjUniformLocation = gl.getUniformLocation(program, 'mProj');
+    gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix);
+    gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
+    */
 
     var motor = new TMotorTAG();
     console.log("node cam:");
-    console.log(nCam);
-    motor.lookAt(nCam, [0, 0, 2], [0, 0, 0], [0, 1, 0]); 
-    console.log("========= scene setup =========");
-    console.log('Lights : ');
-    console.log(TEntity.Lights);
-    console.log('Views/cameras: ');
-    console.log(TEntity.Views);
-    console.log('Lights array: ');
-    console.log(TEntity.AuxLights);
-    console.log('Views/cameras array: ');
-    console.log(TEntity.AuxViews);
-    console.log("calculating.......");
+    console.log(NCam);
+    motor.lookAt(NCam, [0, 0, 2], [0, 0, 0], [0, 1, 0]); 
+
     calculateLights();
     calculateViews();
     console.log("========= scene setup =========");
@@ -411,9 +426,7 @@ async function init(){
     gl.uniformMatrix4fv(matViewUniformLocation, false, viewMatrix);
     gl.uniformMatrix4fv(matProjUniformLocation, false, projMatrix);
 
-
-    /////////
-    // LOOP    
+    
     var loop = function () {
         gl.clearColor(0.435, 0.909, 0.827, 0.0) // our blue
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
