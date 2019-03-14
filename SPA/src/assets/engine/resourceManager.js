@@ -263,13 +263,13 @@ class TResourceMesh extends TResource{
         gl.drawElements(gl.TRIANGLES, this.nTris, gl.UNSIGNED_SHORT, 0);*/
 
 
-        /// object buffers
+        ///////////////////////////////////////////////////////////////////////////////////////////     Vertex
         var meshPosVertexBufferObject = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, meshPosVertexBufferObject);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
-        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.DYNAMIC_DRAW);
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, meshPosVertexBufferObject);
+
+        // gl.bindBuffer(gl.ARRAY_BUFFER, meshPosVertexBufferObject);
         var positionAttribLocation = gl.getAttribLocation(program, 'vertPosition');
         gl.vertexAttribPointer(
           positionAttribLocation, // Attribute location
@@ -280,33 +280,23 @@ class TResourceMesh extends TResource{
           0 // Offset from the beginning of a single vertex to this attribute
         );
         gl.enableVertexAttribArray(positionAttribLocation);
-
+      ///////////////////////////////////////////////////////////////////////////////////////////     Index
         var meshIndexBufferObject = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, meshIndexBufferObject);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triVertices), gl.STATIC_DRAW);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triVertices), gl.DYNAMIC_DRAW);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 
-
+      ///////////////////////////////////////////////////////////////////////////////////////////     Normals & TexCoords
         var susanTexCoords = this.textures;
         var susanNormals = this.normals;
 
         var susanTexCoordVertexBufferObject = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, susanTexCoordVertexBufferObject);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(susanTexCoords), gl.STATIC_DRAW);
-        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(susanTexCoords), gl.DYNAMIC_DRAW);
 
-
-
-        var susanNormalBufferObject = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, susanNormalBufferObject);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(susanNormals), gl.STATIC_DRAW);
-        gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, susanTexCoordVertexBufferObject);
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.uniform1i(program.sampler, 0);
+        //gl.activeTexture(gl.TEXTURE0);
+        //gl.bindTexture(gl.TEXTURE_2D, texture);
+        //gl.uniform1i(program.sampler, 0);
         var texCoordAttribLocation = gl.getAttribLocation(program, 'vertTexCoord');
         gl.vertexAttribPointer(
           texCoordAttribLocation, // Attribute location
@@ -318,7 +308,12 @@ class TResourceMesh extends TResource{
         );
         gl.enableVertexAttribArray(texCoordAttribLocation);
 
+
+
+        var susanNormalBufferObject = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, susanNormalBufferObject);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(susanNormals), gl.DYNAMIC_DRAW);
+
         var normalAttribLocation = gl.getAttribLocation(program, 'vertNormal');
         gl.vertexAttribPointer(
           normalAttribLocation,
@@ -350,9 +345,7 @@ class TResourceMesh extends TResource{
         //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 
-        var worldMatrix = new Float32Array(16);
-        glMatrix.mat4.identity(worldMatrix);
-        worldMatrix = TEntity.Model;
+        var worldMatrix = TEntity.Model;
 
 
         // rotation stuff
@@ -366,6 +359,9 @@ class TResourceMesh extends TResource{
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, meshIndexBufferObject);
         gl.drawElements(gl.TRIANGLES, this.nTris, gl.UNSIGNED_SHORT, 0);
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+
 
 
     }

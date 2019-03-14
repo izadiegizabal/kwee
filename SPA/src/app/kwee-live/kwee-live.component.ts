@@ -19,7 +19,7 @@ import {
 import { TMotorTAG } from '../../assets/engine/TMotorTAG.js';
 import { shared, canvas } from '../../assets/engine/commons.js';
 
-import { main, mainR, init } from '../../assets/engine/main.js';
+import { main, mainInit, init } from '../../assets/engine/main.js';
 
 // import * as test from '../../assets/test.js';
 
@@ -43,7 +43,7 @@ export class KweeLiveComponent implements OnInit {
 
   ngOnInit() {
     shared();
-    mainR();
+    mainInit();
     // init();
   }
 

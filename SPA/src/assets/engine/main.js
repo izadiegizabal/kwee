@@ -51,6 +51,31 @@ import {
     texture
 } from './commons.js';
 
+async function mainInit(){
+  console.log('== Loading Image ==');
+  const image = new Image();
+  image.onload = function(){
+    console.log('== Image loaded ==');
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+
+
+
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.uniform1i(program.sampler, 0);
+
+    console.log('== Ready to run ==');
+    mainR();
+  }
+  image.src = '../assets/assets/textures/continents.jpg';
+}
+
 
 async function mainR(){
 
@@ -153,7 +178,7 @@ async function mainR(){
 
   console.log(MallaChasis.mesh);
 
-  await loadImage('continents.jpg', await function (imgErr, img) {
+  /*await loadImage('continents.jpg', await function (imgErr, img) {
     if (imgErr) {
       alert('Fatal error getting texture (see console)');
       console.error(imgErr);
@@ -162,26 +187,7 @@ async function mainR(){
       image = img;
       console.log(image);
     }
-  });
-
-
-  var image = new Image();
-  image.onload = function(){
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.bindTexture(gl.TEXTURE_2D, null);
-
-
-
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.uniform1i(program.sampler, 0);
-  }
-  image.src = '../assets/assets/textures/continents.jpg';
+  });*/
 
 
   let NLuz = new TNode(TraslaLuz);
@@ -264,7 +270,7 @@ async function mainR(){
   var loop = function () {
     gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    //changeAngle(performance.now() / 1000 / 6 * 2 * Math.PI);
+    // changeAngle(performance.now() / 1000 / 6 * 2 * Math.PI);
     Escena.draw();
     requestAnimationFrame(loop);
   };
@@ -440,6 +446,7 @@ async function init(){
 }
 
 export {
+    mainInit,
     mainR,
     init
 }
