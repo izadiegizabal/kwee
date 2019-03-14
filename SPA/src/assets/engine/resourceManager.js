@@ -158,31 +158,36 @@ class TResourceMesh extends TResource{
         // mesh file code
         const jsonMesh = await loadJSON(file);
 
+        this.alias = jsonMesh.alias;
+
         if( file == "earth_fbx.json"){
-            this.alias = jsonMesh.alias;
 
             this.vertices = jsonMesh.meshes[0].vertices;
             this.triVertices = [].concat.apply([], jsonMesh.meshes[0].faces);
             this.textures = jsonMesh.meshes[0].texturecoords[0];
             this.normals = jsonMesh.meshes[0].normals;
-    
-    
-            this.nTris = this.triVertices.length;
-            this.nVertices = this.vertices.length;
+
+        } else if (file == "test.json") {
+            this.alias = file;
+
+            this.vertices = jsonMesh.model.vertices[0].position.data;
+            this.triVertices = jsonMesh.model.meshes[0].indices;
+            this.textures = jsonMesh.model.vertices[0].texCoord0.data;
+            this.normals = jsonMesh.model.vertices[0].normal.data;
+
         }
         else{
             console.log("sin mat");
-            this.alias = jsonMesh.alias;
-
 
             this.vertices = jsonMesh.vertices;
             this.triVertices = jsonMesh.indices;
             this.textures = jsonMesh.uvs;
             this.normals = jsonMesh.normals;
-    
-            this.nTris = this.triVertices.length;
-            this.nVertices = this.vertices.length;
+
         }
+
+        this.nTris = this.triVertices.length;
+        this.nVertices = this.vertices.length;
 
         return this;
     }
