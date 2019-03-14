@@ -1,16 +1,12 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {Observable} from 'rxjs';
 import * as fromAdmin from '../../admin/store/admin.reducers';
-import {MatSidenav, PageEvent} from '@angular/material';
+import {MatPaginator, MatSidenav, PageEvent} from '@angular/material';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
 import * as AdminActions from '../../admin/store/admin.actions';
 import {BreakpointObserver} from '@angular/cdk/layout';
-import {FormArray, FormControl, FormGroup} from '@angular/forms';
-import {Distances, isStringNotANumber} from '../../../models/Offer.model';
-import {WorkFields} from '../../../models/Candidate.model';
 import {ActivatedRoute, Router} from '@angular/router';
-import * as OffersActions from '../../offer/store/offers.actions';
 
 @Component({
   selector: 'app-search-candidates',
@@ -21,9 +17,12 @@ import * as OffersActions from '../../offer/store/offers.actions';
   ]
 })
 export class SearchCandidatesComponent implements OnInit {
+
   // Filter sidebar
   @ViewChild('drawer') private drawer: MatSidenav;
+  @ViewChild('paginator') paginator: MatPaginator;
 
+  query: any;
   adminState: Observable<fromAdmin.State>;
 
   // paging
@@ -42,31 +41,22 @@ export class SearchCandidatesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store$.dispatch(new AdminActions.TryGetCandidates({page: 1, limit: 5}));
+    this.store$.dispatch(new AdminActions.TryGetCandidates({page: 1, limit: 5, params: this.query}));
     this.adminState = this.store$.pipe(select(state => state.admin));
 
     this.activatedRoute.queryParams
-      .subscribe(query => {
-        console.log(query);
+      .subscribe(params => {
+        this.query = params;
         this.searchCallApi();
       });
   }
 
   changePage() {
-    // TODO: complete this
-    // let query = '';
-    // if (window.location.href.split('?')[1]) {
-    //   query = '&' + window.location.href.split('?')[1];
-    // }
-    //
-    // query += '&status=0';
-    //
-    // this.pageSize = this.pageEvent.pageSize;
-    // this.store$.dispatch(new OffersActions.TryGetOffers({
-    //   page: this.pageEvent.pageIndex + 1,
-    //   limit: this.pageEvent.pageSize,
-    //   params: query
-    // }));
+    this.store$.dispatch(new AdminActions.TryGetCandidates({
+      page: this.pageEvent.pageIndex + 1,
+      limit: this.pageEvent.pageSize,
+      params: this.query
+    }));
   }
 
   isMobile() {
@@ -83,28 +73,33 @@ export class SearchCandidatesComponent implements OnInit {
     if (!searchParams) {
       searchParams = null;
     }
-    this.router.navigate(['/search-candidates'], {queryParams: {keywords: searchParams}, queryParamsHandling: 'merge'});
+    this.router.navigate(['/search-candidates'], {queryParams: {name: searchParams}, queryParamsHandling: 'merge'});
   }
 
 
   searchCallApi() {
-    // TODO: complete this
-    // let query = '';
-    // if (window.location.href.split('?')[1]) {
-    //   query = '&' + window.location.href.split('?')[1];
+    if (this.query.index) {
+      this.query = {...this.query, index: {'gte': this.query.index}};
+    }
+
+    // if (this.query.offererIndex) {
+    //   this.query = {...this.query, offererIndex: {'gte': this.query.offererIndex}};
     // }
-    //
-    // query += '&status=0';
-    //
-    // this.store$.dispatch(new OffersActions.TryGetOffers({
-    //   page: 1,
-    //   limit: this.pageSize,
-    //   params: query
-    // }));
-    //
-    // if (this.paginator) {
-    //   this.paginator.firstPage();
+
+    // if (this.query.datePublished) {
+    //   this.query = {...this.query, datePublished: {'gte': this.query.datePublished}};
     // }
+
+
+    this.store$.dispatch(new AdminActions.TryGetCandidates({
+      page: 1,
+      limit: this.pageSize,
+      params: this.query
+    }));
+
+    if (this.paginator) {
+      this.paginator.firstPage();
+    }
   }
 
 }

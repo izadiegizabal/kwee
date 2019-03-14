@@ -53,7 +53,7 @@ export class CandidateOverviewComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store$.dispatch(new AdminActions.TryGetCandidates({page: 1, limit: 2}));
+    this.store$.dispatch(new AdminActions.TryGetCandidates({page: 1, limit: 2, params: ''}));
     this.adminState = this.store$.pipe(select(state => state.admin));
 
     this.userForm = this._formBuilder.group({
@@ -159,7 +159,8 @@ export class CandidateOverviewComponent implements OnInit {
   }
 
   changepage() {
-    this.store$.dispatch(new AdminActions.TryGetCandidates({page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize}));
+    this.store$.dispatch(new AdminActions.TryGetCandidates(
+      {page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize, params: ''}));
   }
 
 }

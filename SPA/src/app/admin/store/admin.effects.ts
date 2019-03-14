@@ -19,11 +19,14 @@ export class AdminEffects {
     }),
    // withLatestFrom(this.store$.pipe(select(state => state.auth))),
     switchMap((payload) => {
-        const apiEndpointUrl = environment.apiUrl + 'applicants/?page=' + payload.page + '&limit=' + payload.limit;
-       // const token = authState.token;
+        const apiEndpointUrl = environment.apiUrl + 'applicants/search?page=' + payload.page + '&limit=' + payload.limit;
+      const headers = new HttpHeaders().set('Content-Type', 'application/json');
+      const body = JSON.stringify(payload.params);
+
+      // const token = authState.token;
        // const headers = new HttpHeaders().set('token', token);
         // console.log(apiEndpointUrl);
-        return this.httpClient.get(apiEndpointUrl, ).pipe(
+        return this.httpClient.post(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res: {
             ok: boolean,
             data: any[],
@@ -58,10 +61,11 @@ export class AdminEffects {
     }),
    // withLatestFrom(this.store$.pipe(select(state => state.auth))),
     switchMap((payload) => {
-        const apiEndpointUrl = environment.apiUrl + 'offerers/?page=' + payload.page + '&limit=' + payload.limit;
-        // const token = authState.token;
-        // const headers = new HttpHeaders().set('token', token);
-        return this.httpClient.get(apiEndpointUrl, ).pipe(
+        const apiEndpointUrl = environment.apiUrl + 'offerers/search?page=' + payload.page + '&limit=' + payload.limit;
+      const headers = new HttpHeaders().set('Content-Type', 'application/json');
+      const body = JSON.stringify(payload.params);
+      // console.log(body);
+      return this.httpClient.post(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res: {
             ok: boolean,
             data: any[],
