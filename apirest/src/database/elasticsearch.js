@@ -138,6 +138,8 @@ client.indices.exists({
 							offererName: { type: "text", "fielddata": true },
 							offererIndex: { type: "integer", "doc_values": true },
 							salaryAmount: { type: "integer", "doc_values": true },
+							seniority: { type: "integer", "doc_values": true },
+							contractType: { type: "integer", "doc_values": true },
 							salaryCurrency: { type: "keyword", "doc_values": true },
 							bio: { type: "text" },
 							skills: { type: "text" },

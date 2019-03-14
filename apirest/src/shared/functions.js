@@ -501,6 +501,7 @@ function prepareOffersToShow(offers, offersShow, user){
         offer.createdAt = offers[i].createdAt;
         offer.updatedAt = offers[i].updatedAt;
         offer.deletedAt = offers[i].deletedAt;
+        offer.applications = [];
         offersShow.push(offer);
     }
     return offersShow;
