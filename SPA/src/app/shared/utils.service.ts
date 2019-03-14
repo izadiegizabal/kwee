@@ -31,3 +31,21 @@ export function getTimePassed(publishDate: Date): string {
 export function getUrlfiedString(uglyString: string): string {
   return uglyString.toLowerCase().replace(/ /g, '-');
 }
+
+export function getColourFromIndex(index: number): string {
+  let colour = '';
+
+  if (index < 10) {
+    colour = '#ef5350'; // red
+  } else if (index < 30) {
+    colour = '#ffa726'; // orange
+  } else if (index < 60) {
+    colour = '#ffee58'; // yellow
+  } else if (index < 80) {
+    colour = '#66bb6a'; // red
+  } else {
+    colour = '#26c6da'; // blue
+  }
+
+  return colour;
+}

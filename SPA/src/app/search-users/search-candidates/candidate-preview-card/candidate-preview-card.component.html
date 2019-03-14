@@ -51,18 +51,28 @@
       fxLayout.lt-sm="column"
       fxLayoutAlign="center center"
       fxLayoutGap="16px">
-      <div>
-        <button [routerLink]="userUrl" color="accent" mat-button>{{'More Info' | uppercase }}</button>
-        <button (click)="openShareDialog()" mat-icon-button *ngIf="!selectionMode">
-          <mat-icon aria-label="Share user in social networks" color="accent" svgIcon="share"></mat-icon>
-        </button>
-        <button (click)="selectCandidate()"
-                color="primary"
-                mat-raised-button
-                *ngIf="selectionMode">
-          <mat-icon svgIcon="star"></mat-icon>
-          {{'Select' | uppercase }}
-        </button>
+      <button [routerLink]="userUrl" color="accent" mat-button>{{'More Info' | uppercase }}</button>
+      <button (click)="openShareDialog()" mat-icon-button *ngIf="!selectionMode && applicationStatus === -1">
+        <mat-icon aria-label="Share user in social networks" color="accent" svgIcon="share"></mat-icon>
+      </button>
+      <button (click)="rejectCandidate()"
+              color="primary"
+              mat-raised-button
+              *ngIf="selectionMode">
+        <mat-icon>close</mat-icon>
+        {{'Reject' | uppercase }}
+      </button>
+      <button (click)="selectCandidate()"
+              color="primary"
+              mat-raised-button
+              *ngIf="selectionMode">
+        <mat-icon svgIcon="star"></mat-icon>
+        {{'Select' | uppercase }}
+      </button>
+      <div *ngIf="applicationStatus !== -1">
+        <mat-chip-list>
+          <mat-chip color="accent">{{getApplicationStatus()}}</mat-chip>
+        </mat-chip-list>
       </div>
     </div>
   </mat-card-actions>
