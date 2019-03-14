@@ -97,61 +97,52 @@ function copy(obj) {
 
 // WARNING: Go over the tree and get all the lights and cameras // DO NOT REMOVE
 function getLigthsViews(obj) {
-    let entity = getEntity();
-    if (obj.entity instanceof TLight) {
-        TEntity.Lights.push(obj);
-    }
-    if (obj.entity instanceof TCamera) {
-        entity.Views.push(obj);
-    }
-    obj.children.forEach((e) => {
-        getLigthsViews(e);
-    });
-    setEntity(entity);
+  if (obj.entity instanceof TLight) {
+    TEntity.Lights.push(obj);
+  }
+  if (obj.entity instanceof TCamera) {
+    TEntity.Views.push(obj);
+  }
+  obj.children.forEach((e) => {
+    getLigthsViews(e);
+  });
 }
 
 // calculate all the light matices from the Lighs static array and drop them into the AuxLights array
 function calculateLights() {
-    let aux = glMatrix.mat4.create();
-    let entity = getEntity();
-    entity.Lights.forEach((e) => {
-        goToRoot(e);
-        for (let i = entity.Aux.length - 1; i >= 0; i--) {
-            glMatrix.mat4.mul(aux, aux, entity.Aux[i])
-        }
-        entity.AuxLights.push(aux);
-        entity.Aux = [];
-    });
-    setEntity(entity);
+  let aux = glMatrix.mat4.create();
+  TEntity.Lights.forEach((e) => {
+    goToRoot(e);
+    for (let i = TEntity.Aux.length - 1; i >= 0; i--) {
+      glMatrix.mat4.mul(aux, aux, TEntity.Aux[i])
+    }
+    TEntity.AuxLights.push(aux);
+    TEntity.Aux = [];
+  });
 }
 
 // same as calculateLights but for the Cameras
 function calculateViews() {
-    let aux = glMatrix.mat4.create();
-    let entity = getEntity();    
-    entity.Views.forEach((e) => {
-        goToRoot(e);
-        for (let i = entity.Aux.length - 1; i >= 0; i--) {
-            glMatrix.mat4.mul(aux,  aux, entity.Aux[i])
-            glMatrix.mat4.invert(aux, aux);
-        }
-        entity.AuxViews.push(aux);
-        entity.Aux = [];
-    });
-    setEntity(entity)
+  let aux = glMatrix.mat4.create();
+  TEntity.Views.forEach((e) => {
+    goToRoot(e);
+    for (let i = TEntity.Aux.length - 1; i >= 0; i--) {
+      glMatrix.mat4.mul(aux,  aux, TEntity.Aux[i])
+      glMatrix.mat4.invert(aux, aux);
+    }
+    TEntity.AuxViews.push(aux);
+    TEntity.Aux = [];
+  });
 }
 
 // go from the leaf to the root
 function goToRoot(obj) {
-    let entity = getEntity();
-
-    if (obj.entity instanceof TTransform) {
-        entity.Aux.push(obj.entity.matrix);
-    }
-    if (obj.father) {
-        goToRoot(obj.father);
-    }
-    setEntity(entity);
+  if (obj.entity instanceof TTransform) {
+    TEntity.Aux.push(obj.entity.matrix);
+  }
+  if (obj.father) {
+    goToRoot(obj.father);
+  }
 }
 
 export {
