@@ -45,7 +45,9 @@ export interface State {
   selection: {
     all: CandidatePreview[],
     faved: CandidatePreview[],
-    selected: CandidatePreview[]
+    selected: CandidatePreview[],
+    accepted: CandidatePreview[],
+    refused: CandidatePreview[],
   };
 }
 
@@ -56,6 +58,8 @@ const initialState: State = {
     all: [],
     faved: [],
     selected: [],
+    accepted: [],
+    refused: [],
   }
 };
 
@@ -63,6 +67,7 @@ export function OfferManageReducer(state = initialState, action: OfferManageActi
   switch (action.type) {
     case OfferManageActions.EMPTY_STATE:
       return {offers: null, selection: null};
+
     case OfferManageActions.SET_OFFERS_OFFERER:
       return {
         ...state,
@@ -76,7 +81,6 @@ export function OfferManageReducer(state = initialState, action: OfferManageActi
       };
 
     case OfferManageActions.SET_OFFER_CANDIDATES:
-      console.log(action.payload);
       let newSelection = null;
       switch (action.payload.status) {
         case 0:
@@ -92,13 +96,25 @@ export function OfferManageReducer(state = initialState, action: OfferManageActi
             faved: action.payload.candidates,
           };
           break;
-        // Selected / accepted / refused
+        // Selected
         case 2:
-        case 3:
-        case 4:
           newSelection = {
             ...state.selection,
             selected: action.payload.candidates,
+          };
+          break;
+        // Accepted
+        case 3:
+          newSelection = {
+            ...state.selection,
+            accepted: action.payload.candidates,
+          };
+          break;
+        // refused
+        case 4:
+          newSelection = {
+            ...state.selection,
+            refused: action.payload.candidates,
           };
           break;
       }
@@ -107,32 +123,34 @@ export function OfferManageReducer(state = initialState, action: OfferManageActi
         ...state,
         selection: newSelection
       };
-    case OfferManageActions.SET_CHANGE_APPLICATION_STATUS:
-      newSelection = null;
-      const changingCandidate = findCandidate(action.payload.candidateId);
-      newSelection = removedSelection(changingCandidate);
-      console.log(state.selection);
-      console.log(newSelection);
-      switch (action.payload.status) {
-        // to pending
-        case 0:
-          newSelection = {
-            ...newSelection,
-            all: [...newSelection.all, changingCandidate]
-          };
-          break;
-        // to faved
-        case 1:
-          newSelection = {
-            ...newSelection,
-            faved: [...newSelection.all, changingCandidate]
-          };
-          break;
-      }
-      return {
-        ...state,
-        selection: newSelection
-      };
+
+    // case OfferManageActions.SET_CHANGE_APPLICATION_STATUS:
+    //   newSelection = null;
+    //   const changingCandidate = findCandidate(action.payload.candidateId);
+    //   newSelection = removedSelection(changingCandidate);
+    //   console.log(changingCandidate);
+    //   console.log(state.selection);
+    //   console.log(newSelection);
+    //   switch (action.payload.status) {
+    //     // to pending
+    //     case 0:
+    //       newSelection = {
+    //         ...newSelection,
+    //         all: [...newSelection.all, changingCandidate]
+    //       };
+    //       break;
+    //     // to faved
+    //     case 1:
+    //       newSelection = {
+    //         ...newSelection,
+    //         faved: [...newSelection.all, changingCandidate]
+    //       };
+    //       break;
+    //   }
+    //   return {
+    //     ...state,
+    //     selection: newSelection
+    //   };
     default:
       return state;
   }
@@ -143,6 +161,9 @@ export function OfferManageReducer(state = initialState, action: OfferManageActi
 
   function findCandidate(candidateId: number) {
     let changingCandidate = state.selection.all.find(test => test.id === candidateId);
+    if (!changingCandidate) {
+      changingCandidate = state.selection.faved.find(test => test.id === candidateId);
+    }
     if (!changingCandidate) {
       changingCandidate = state.selection.selected.find(test => test.id === candidateId);
     }
