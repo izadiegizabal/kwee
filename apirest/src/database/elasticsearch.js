@@ -29,27 +29,27 @@ client.indices.exists({
 							status: { type: "integer", "doc_values": true },
 							city: { type: "text", "fielddata": true },
 							dateBorn: { type: "date" },
-							rol: { type: "integer" },
+							rol: { type: "integer", "doc_values": true },
 							index: { type: "integer", "doc_values": true },
 							bio: { type: "text" },
 							skills: {
 								type: "nested",
 								properties: {
-									name: { type: "keyword" },
+									name: { type: "text" },
 									level: { type: "keyword"},
 								},
 							},
 							languages: {
 								type: "nested",
 								properties: {
-									language: { type: "keyword" },
+									language: { type: "text" },
 									level: { type: "keyword"},
 								},
 							},
 							educations: {
 								type: "nested",
 								properties: {
-									title: { type: "keyword" },
+									title: { type: "text" },
 									institution: { type: "text" },
 									dateStart: { type: "date" },
 									dateEnd: { type: "date" },
@@ -58,7 +58,7 @@ client.indices.exists({
 							experiences: {
 								type: "nested",
 								properties: {
-									title: { type: "keyword" },
+									title: { type: "text" },
 									dateStart: { type: "date" },
 									dateEnd: { type: "date" },
 								},
@@ -87,6 +87,8 @@ client.indices.exists({
 							address: { type: "text", "fielddata": true },
 							index: { type: "integer", "doc_values": true },
 							companySize: { type: "integer", "doc_values": true },
+							workField: { type: "integer", "doc_values": true },
+							year: { type: "integer", "doc_values": true },
 							dateVerification: { type: "date", "doc_values": true },
 						},
 					},
@@ -106,8 +108,8 @@ client.indices.exists({
 				mappings: {
 					log: {
 						properties: {
-							action: { type: "keyword", "doc_values": true },
-							actionToRoute: { type: "keyword", "doc_values": true },
+							action: { type: "text", "fielddata": true },
+							actionToRoute: { type: "text", "fielddata": true },
 							date: { type: "date", "doc_values": true },
 							hour: { type: "date", "format" : "HH:mm:ss", "doc_values": true },
 							status: { type: "boolean", "doc_values": true },
@@ -131,7 +133,7 @@ client.indices.exists({
 						properties: {
 							status: { type: "text", "fielddata": true },
 							title: { type: "text", "fielddata": true },
-							location: { type: "keyword", "doc_values": true },
+							location: { type: "text", "fielddata": true },
 							dateStart: { type: "date", "doc_values": true },
 							dateEnd: { type: "date", "doc_values": true },
 							datePublished: { type: "date", "doc_values": true },
