@@ -21,6 +21,7 @@ export class OfferPreviewCardComponent implements OnInit {
 
   offerUrl: string;
   authState: any;
+  offerManageState: any;
   candidate: boolean;
   nameToRate: string;
   user: number;
@@ -29,8 +30,7 @@ export class OfferPreviewCardComponent implements OnInit {
 
 
   constructor(public dialog: MatDialog,
-              private store$: Store<fromApp.AppState>,
-              private manageOfferEffects: OfferManageEffects) {
+              private store$: Store<fromApp.AppState>) {
   }
 
   ngOnInit() {
@@ -176,7 +176,9 @@ export class OfferPreviewCardComponent implements OnInit {
         candidateId: this.user,
         applicationId: this.offer.fk_application,
         status: status,
-        refresh: false
+        refresh: false,
+        refreshStatus: this.offer.status
       }));
+
   }
 }

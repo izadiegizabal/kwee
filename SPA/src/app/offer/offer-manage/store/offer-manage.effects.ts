@@ -43,6 +43,8 @@ export class OfferManageEffects {
           + '/offers?page=' + payload.page + '&limit=' + payload.limit
           + '&summary=0';
 
+        console.log(apiEndpointUrl);
+
         if (payload.status !== -1) {
           apiEndpointUrl = apiEndpointUrl + '&status=' + payload.status;
         }
@@ -206,13 +208,25 @@ export class OfferManageEffects {
           }) => {
             if (res.ok) {
               // If change okay get all the candidates
-              if (payload.refresh){
+              if (payload.refresh) {
                 this.refreshCandidates();
+
+                return {
+                  type: OfferManageActions.SET_CHANGE_APPLICATION_STATUS,
+                  payload: {status: payload.status, candidateId: payload.candidateId},
+                };
+              } else {
+                return [
+                  {
+                    type: OfferManageActions.SET_CHANGE_APPLICATION_STATUS,
+                    payload: {status: payload.status, candidateId: payload.candidateId},
+                  },
+                  {
+                    type: OfferManageActions.SET_OFFERS_APPLICANT,
+                    payload: {status: payload.status, candidateId: payload.candidateId},
+                  },
+                ];
               }
-              return {
-                type: OfferManageActions.SET_CHANGE_APPLICATION_STATUS,
-                payload: {status: payload.status, candidateId: payload.candidateId},
-              };
             } else {
               return [
                 {

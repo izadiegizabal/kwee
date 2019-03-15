@@ -255,6 +255,7 @@ export class OfferSelectionProcessComponent implements OnInit {
             applicationId: candidate.applicationId,
             status: 1,
             refresh: true,
+            refreshStatus: -1
           }));
       }
     } else {
@@ -264,7 +265,8 @@ export class OfferSelectionProcessComponent implements OnInit {
             candidateId: candidate.id,
             applicationId: candidate.applicationId,
             status: 0,
-            refresh: true
+            refresh: true,
+            refreshStatus: -1
           }));
       }
     }
@@ -278,7 +280,8 @@ export class OfferSelectionProcessComponent implements OnInit {
             candidateId: candidate.id,
             applicationId: candidate.applicationId,
             status: 2,
-            refresh: true
+            refresh: true,
+            refreshStatus: -1
           }));
       }
     }
