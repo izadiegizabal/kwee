@@ -37,6 +37,7 @@ module.exports = (app, db) => {
             if ( body.city ) must.push({multi_match: {query: body.city, fields: [ "city" ] }});
             if ( body.premium ) must.push({multi_match: {query: body.premium, fields: [ "premium" ] }});
             if ( body.bio ) must.push({multi_match: {query: body.bio, fields: [ "bio" ] }});
+            if ( body.rol ) must.push({multi_match: {query: body.rol, fields: [ "rol" ] }});
 
             let searchParams = {
                 index: "applicants",

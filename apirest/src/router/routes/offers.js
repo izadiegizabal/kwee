@@ -212,6 +212,7 @@ module.exports = (app, db) => {
                 
                 return res.status(200).json({
                     ok: true,
+                    message: 'Listing..',
                     data: offersShow[0]
                 });
             } else {

@@ -3,8 +3,8 @@ const { checkToken, checkAdmin } = require('../../../../middlewares/authenticati
 const elastic = require('../../../../database/elasticsearch');
 const env =     require('../../../../tools/constants');
 const bcrypt = require('bcryptjs');
-const moment = require('moment')
-const axios =   require('axios')
+const moment = require('moment');
+const axios =   require('axios');
 
 const { algorithm } = require('../../../../shared/algorithm');
 
@@ -33,11 +33,12 @@ module.exports = (app, db) => {
             buildCompanySize(must, body.companySize);
             buildDateVerification(must, body.dateVerification);
 
-            if ( body.name ) must.push({multi_match : {query: body.name, fields: ["name"]}})
-            if ( body.email ) must.push({multi_match : {query: body.email, fields: ["email"]}})
-            if ( body.status ) must.push({multi_match : {query: body.status, fields: ["status"]}})
-            if ( body.address ) must.push({multi_match : {query: body.address, fields: ["address"]}})
-            if ( body.bio ) must.push({multi_match : {query: body.bio, fields: ["bio"]}})
+            if ( body.name ) must.push({multi_match : {query: body.name, fields: ["name"]}});
+            if ( body.email ) must.push({multi_match : {query: body.email, fields: ["email"]}});
+            if ( body.status ) must.push({multi_match : {query: body.status, fields: ["status"]}});
+            if ( body.address ) must.push({multi_match : {query: body.address, fields: ["address"]}});
+            if ( body.bio ) must.push({multi_match : {query: body.bio, fields: ["bio"]}});
+            if ( body.workField ) must.push({multi_match : {query: body.workField, fields: ["workField"]}});
 
             let searchParams = {
                 index: "offerers",
@@ -225,9 +226,8 @@ module.exports = (app, db) => {
             
             
             if ( offerer ) {
-                let user = await db.users.findOne({
-                    where: { id }
-                });
+                let users = await db.users.findAll();
+                let user = users.find( u => u.id == id);
                 let offers = await offerer.getOffers();
                 
                 let count = offers.length;
@@ -292,6 +292,26 @@ module.exports = (app, db) => {
                 let offersShow = [];
                 
                 prepareOffersToShow(offers, offersShow, user);
+
+                let applicants = await db.applicants.findAll();
+                let applications = await db.applications.findAll();
+                offersShow.forEach(offer => {
+                    let applicationsOffers = applications.filter(application => application.fk_offer === offer.id);
+                    applicationsOffers.forEach(a => {
+                        let applicant = applicants.find(apli => a.fk_applicant == apli.userId);
+                        let applicantUser = users.find(usu => usu.id == applicant.userId);
+                        let applicantShow = {};
+                        applicantShow.applicationId = a.id;
+                        applicantShow.applicationStatus = a.status;
+                        applicantShow.aHasRated = a.aHasRated;
+                        applicantShow.applicantId = applicantUser.id;
+                        applicantShow.applicantName = applicantUser.name;
+                        applicantShow.applicantStatus = applicantUser.status;
+
+                        offer.applications.push(applicantShow);
+                        
+                    });
+                });
                 
                 return res.json({
                     ok: true,
@@ -739,7 +759,7 @@ module.exports = (app, db) => {
         
         return must;
     }
-    
+
     function buildDateVerification (must, dateVerification) {
         if ( dateVerification ) {
             let range = 
