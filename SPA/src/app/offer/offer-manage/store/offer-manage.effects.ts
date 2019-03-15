@@ -206,7 +206,9 @@ export class OfferManageEffects {
           }) => {
             if (res.ok) {
               // If change okay get all the candidates
-              this.refreshCandidates();
+              if (payload.refresh){
+                this.refreshCandidates();
+              }
               return {
                 type: OfferManageActions.SET_CHANGE_APPLICATION_STATUS,
                 payload: {status: payload.status, candidateId: payload.candidateId},

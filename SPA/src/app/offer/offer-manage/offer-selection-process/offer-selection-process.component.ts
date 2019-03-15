@@ -53,6 +53,7 @@ export class OfferSelectionProcessComponent implements OnInit {
   waitFormGroup: FormGroup;
   firstStepCompletion = false;
   private secondStepCompletion = false;
+  showStepper = false;
 
   constructor(
     private store$: Store<fromApp.AppState>,
@@ -64,7 +65,6 @@ export class OfferSelectionProcessComponent implements OnInit {
   }
 
   ngOnInit() {
-
     // TODO: check if offer is in selection process and that the owner of the offer is the one logged in
 
     // Empty previous states
@@ -79,39 +79,69 @@ export class OfferSelectionProcessComponent implements OnInit {
 
     // Get Candidates
     const params = this.activatedRoute.snapshot.params;
+
     if (Number(params.id)) {
       this.offerId = Number(params.id);
-      this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({id: this.offerId, page: 1, limit: 20, status: 0})); // pending
-      this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({id: this.offerId, page: 1, limit: 20, status: 1})); // faved
-      this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({id: this.offerId, page: 1, limit: 20, status: 2})); // selected
-      this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({id: this.offerId, page: 1, limit: 20, status: 3})); // accepted
-      this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({id: this.offerId, page: 1, limit: 20, status: 4})); // refused
+      this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({
+        id: this.offerId,
+        page: 1,
+        limit: 20,
+        status: 0
+      })); // pending
+      this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({
+        id: this.offerId,
+        page: 1,
+        limit: 20,
+        status: 1
+      })); // faved
+      this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({
+        id: this.offerId,
+        page: 1,
+        limit: 20,
+        status: 2
+      })); // selected
+      this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({
+        id: this.offerId,
+        page: 1,
+        limit: 20,
+        status: 3
+      })); // accepted
+      this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({
+        id: this.offerId,
+        page: 1,
+        limit: 20,
+        status: 4
+      })); // refused
 
       this.store$.select(state => state.offerManage).subscribe(offerManage => {
-          if (offerManage.selection && (
-            (offerManage.selection.selected && offerManage.selection.selected.length > 0) ||
-            (offerManage.selection.accepted && offerManage.selection.accepted.length > 0)
-          )) {
-            this.firstStepCompletion = true;
-            if (this.stepper.selectedIndex < 1) {
-              this.stepper.next();
-            }
-            if (offerManage.selection && offerManage.selection.accepted && offerManage.selection.accepted.length > 0) {
-              this.secondStepCompletion = true;
-              if (this.stepper.selectedIndex < 2) {
+          if (offerManage.selection) {
+            if ((offerManage.selection.selected && offerManage.selection.selected.length > 0) ||
+              (offerManage.selection.accepted && offerManage.selection.accepted.length > 0)) {
+              this.firstStepCompletion = true;
+              if (this.stepper.selectedIndex < 1) {
+                this.showStepper = true;
                 this.stepper.next();
+              }
+              if (offerManage.selection && offerManage.selection.accepted && offerManage.selection.accepted.length > 0) {
+                this.secondStepCompletion = true;
+                if (this.stepper.selectedIndex < 2) {
+                  this.showStepper = true;
+                  this.stepper.next();
+                }
+              } else {
+                if (this.stepper.selectedIndex < 1) {
+                  this.stepper.next();
+                } else if (this.stepper.selectedIndex > 1) {
+                  this.showStepper = true;
+                  this.stepper.previous();
+                }
               }
             } else {
-              if (this.stepper.selectedIndex < 1) {
-                this.stepper.next();
-              } else if (this.stepper.selectedIndex > 1) {
+              this.firstStepCompletion = false;
+              if (this.stepper.selectedIndex !== 0) {
                 this.stepper.previous();
               }
-            }
-          } else {
-            this.firstStepCompletion = false;
-            if (this.stepper.selectedIndex !== 0) {
-              this.stepper.previous();
+              this.showStepper = true;
             }
           }
         }
@@ -127,8 +157,10 @@ export class OfferSelectionProcessComponent implements OnInit {
       this.manageOfferEffects.ChangeApplicationStatus.pipe(
         filter((action: any) => action.type === OfferManageActions.SET_CHANGE_APPLICATION_STATUS)
       ).subscribe((next: { payload: any, type: string }) => {
-          console.log('selected');
-          this.stepper.next();
+          console.log(next.payload);
+          if (next.payload.status === 2) {
+            this.stepper.next();
+          }
         }
       );
     } else {
@@ -221,7 +253,8 @@ export class OfferSelectionProcessComponent implements OnInit {
           .TryChangeApplicationStatus({
             candidateId: candidate.id,
             applicationId: candidate.applicationId,
-            status: 1
+            status: 1,
+            refresh: true,
           }));
       }
     } else {
@@ -230,7 +263,8 @@ export class OfferSelectionProcessComponent implements OnInit {
           .TryChangeApplicationStatus({
             candidateId: candidate.id,
             applicationId: candidate.applicationId,
-            status: 0
+            status: 0,
+            refresh: true
           }));
       }
     }
@@ -243,7 +277,8 @@ export class OfferSelectionProcessComponent implements OnInit {
           .TryChangeApplicationStatus({
             candidateId: candidate.id,
             applicationId: candidate.applicationId,
-            status: 2
+            status: 2,
+            refresh: true
           }));
       }
     }
