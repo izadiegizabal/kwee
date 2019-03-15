@@ -18,7 +18,7 @@ module.exports = (app, db) => {
                 data: await db.ratings.findAll()
             });
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            return next({ type: 'error', error: 'Error getting data' });
         }
 
     });
@@ -53,7 +53,7 @@ module.exports = (app, db) => {
                 total: count.count
             });
         } catch (err) {
-            next({ type: 'error', error: err });
+            return next({ type: 'error', error: err });
         }
     });
 
@@ -85,7 +85,7 @@ module.exports = (app, db) => {
 
 
             } catch (err) {
-                next({ type: 'error', error: 'Error getting data' });
+                return next({ type: 'error', error: 'Error getting data' });
             }
         });
 
@@ -107,11 +107,11 @@ module.exports = (app, db) => {
                     message: `Rating has been created.`
                 });
             } else {
-                next({ type: 'error', error: 'Error creating rating' });
+                return next({ type: 'error', error: 'Error creating rating' });
             }
 
         } catch (err) {
-            next({ type: 'error', error: err.message });
+            return next({ type: 'error', error: err.message });
         }
     });
 
@@ -133,7 +133,7 @@ module.exports = (app, db) => {
             }
 
         } catch (err) {
-            next({ type: 'error', error: err.errors[0].message });
+            return next({ type: 'error', error: err.errors[0].message });
         }
     });
 
@@ -156,7 +156,7 @@ module.exports = (app, db) => {
             // rating: 1 -> Deleted
             // rating: 0 -> Rating don't exists
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            return next({ type: 'error', error: 'Error getting data' });
         }
     });
 
