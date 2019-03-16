@@ -36,7 +36,7 @@ module.exports = (app, db) => {
 
             if ( body.title ) must.push({multi_match: {query: body.title, fields: [ "title" ] }});
             if ( body.status ) must.push({multi_match: {query: body.status, fields: [ "status" ] }});
-            if ( body.location ) must.push({multi_match: {query: body.location, fields: [ "location" ] }});
+            if ( body.location ) must.push({multi_match: { query: body.location, fields: [ "location" ] }});
             if ( body.skills ) must.push({multi_match: {query: body.skills, fields: [ "skills" ] }});
             if ( body.offererName ) must.push({multi_match: {query: body.offererName, fields: [ "offererName" ] }});
             if ( body.workLocation ) must.push({multi_match: {query: body.workLocation, fields: [ "workLocation" ] }});
@@ -495,7 +495,7 @@ module.exports = (app, db) => {
 
             return res.json({
                 ok: true,
-                message: 'Offer deleted' 
+                message: 'Offer deleted'
             });
         } catch (err) {
             next({ type: 'error', error: 'Error getting data' });
@@ -504,7 +504,7 @@ module.exports = (app, db) => {
 
     function buildSalaryRange (must, salaryAmount) {
         if ( salaryAmount ) {
-            let range = 
+            let range =
             {
                 range: {
                     salaryAmount: {}
@@ -515,17 +515,17 @@ module.exports = (app, db) => {
             salaryAmount.gt ? range.range.salaryAmount.gt = salaryAmount.gt : null;
             salaryAmount.lte ? range.range.salaryAmount.lte = salaryAmount.lte : null;
             salaryAmount.lt ? range.range.salaryAmount.lt = salaryAmount.lt : null;
-            
+
             must.push(range);
-        }   
-        
+        }
+
         return must;
     }
 
     function buildOffererIndexRange (must, offererIndex) {
         if ( offererIndex ) {
             console.log("offererIndex: ", offererIndex);
-            let range = 
+            let range =
             {
                 range: {
                     offererIndex: {}
@@ -536,17 +536,17 @@ module.exports = (app, db) => {
             offererIndex.gt ? range.range.offererIndex.gt = offererIndex.gt : null;
             offererIndex.lte ? range.range.offererIndex.lte = offererIndex.lte : null;
             offererIndex.lt ? range.range.offererIndex.lt = offererIndex.lt : null;
-            
+   
             must.push(range);
-        }   
-        
+        }
+
         return must;
     }
 
     function buildDateStartRange (must, dateStart) {
-            
+
         if ( dateStart ) {
-            let range = 
+            let range =
             {
                 range: {
                   dateStart: {}
@@ -557,17 +557,17 @@ module.exports = (app, db) => {
             dateStart.gt ? range.range.dateStart.gt = dateStart.gt : null;
             dateStart.lte ? range.range.dateStart.lte = dateStart.lte : null;
             dateStart.lt ? range.range.dateStart.lt = dateStart.lt : null;
-            
+
             must.push(range);
-        }   
-        
+        }
+
         return must;
     }
-    
+
     function buildDateEndRange (must, dateEnd) {
-            
+
         if ( dateEnd ) {
-            let range = 
+            let range =
             {
                 range: {
                   dateEnd: {}
@@ -578,17 +578,17 @@ module.exports = (app, db) => {
             dateEnd.gt ? range.range.dateEnd.gt = dateEnd.gt : null;
             dateEnd.lte ? range.range.dateEnd.lte = dateEnd.lte : null;
             dateEnd.lt ? range.range.dateEnd.lt = dateEnd.lt : null;
-            
+
             must.push(range);
-        }   
-        
+        }
+
         return must;
     }
-    
+
     function buildDatePublishedRange (must, datePublished) {
-            
+
         if ( datePublished ) {
-            let range = 
+            let range =
             {
                 range: {
                   datePublished: {}
@@ -599,10 +599,10 @@ module.exports = (app, db) => {
             datePublished.gt ? range.range.datePublished.gt = datePublished.gt : null;
             datePublished.lte ? range.range.datePublished.lte = datePublished.lte : null;
             datePublished.lt ? range.range.datePublished.lt = datePublished.lt : null;
-            
+
             must.push(range);
-        }   
-        
+        }
+
         return must;
     }
 
