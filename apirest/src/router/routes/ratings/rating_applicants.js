@@ -216,34 +216,61 @@ module.exports = (app, db) => {
     });
 
     // PUT single rating_applicant
-    app.put('/rating_applicant/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
-        const id = req.params.id;
-        const updates = req.body;
-
-        if (updates.password)
-            updates.password = bcrypt.hashSync(req.body.password, 10);
+    app.put('/rating_applicant/:id([0-9]+)', async(req, res, next) => {
+        const ratingId = req.params.id;
+        const body = req.body;
+        let opinion;
+        if ( req.body.opinion ) opinion = req.body.opinion;
+        delete body.opinion;
 
         try {
+            let id = tokenId.getTokenId(req.get('token'));
+
+            let offerer = await db.offerers.findOne( { where: { userId: id } } );
+            let offers = await offerer.getOffers();
+
             let rating_applicant = await db.rating_applicants.findOne({
-                where: { ratingId: id }
+                where: { ratingId }
             });
 
             if (rating_applicant) {
-                let updated = await db.rating_applicants.update(updates, {
-                    where: { ratingId: id }
-                });
-                if (updated) {
-                    // await algorithm.indexUpdate();
+                let fk_application = await db.ratings.findOne({ where: { id: ratingId }});
+                let application = await db.applications.findOne({ where: { id: fk_application.fk_application }});
+                let offer = offers.find(element => element.id == application.fk_offer);
+                if ( application.fk_offer == offer.id ){
+                    let rating = {};
+                    let efficiency = body.efficiency ? body.efficiency : rating_applicant.efficiency;
+                    let skills = body.skills ? body.skills : rating_applicant.skills;
+                    let punctuality = body.punctuality ? body.punctuality : rating_applicant.punctuality;
+                    let hygiene = body.hygiene ? body.hygiene : rating_applicant.hygiene;
+                    let teamwork = body.teamwork ? body.teamwork : rating_applicant.teamwork;
+                    let satisfaction = body.satisfaction ? body.satisfaction : rating_applicant.satisfaction;
+                    rating.overall = (efficiency + skills + punctuality + hygiene + teamwork + satisfaction) / 6;
 
-                    res.status(200).json({
-                        ok: true,
-                        message: updates
-                    })
-                } else {
-                    return next({ type: 'error', error: 'Can\'t update RatingApplicant' });
+                    if ( opinion ) rating.opinion = opinion;
+                    await db.ratings.update(rating, {
+                        where: { id: ratingId }
+                    });
+                    
+                    let updated = await db.rating_applicants.update(body, {
+                        where: { ratingId }
+                    });
+                    
+                    if (updated) {
+                        await algorithm.indexUpdate(id);
+                        
+                        return res.status(200).json({
+                            ok: true,
+                            message: 'Update successful'
+                        })
+                    } else {
+                        return next({ type: 'error', error: 'Can\'t update rating_applicant' });
+                    }
+                }  else {
+                    return next({ type: 'error', error: 'You are not applicant of this application' });
                 }
             } else {
-                return next({ type: 'error', error: 'RatingApplicant doesn\'t exist' });
+                return next({ type: 'error', error: 'This rate does not exist' });
             }
 
         } catch (err) {
@@ -251,8 +278,47 @@ module.exports = (app, db) => {
         }
     });
 
-    // DELETE
-    app.delete('/rating_applicant/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
+    // DELETE by themeself
+    app.delete('/rating_applicant/:id([0-9]+)', async(req, res, next) => {
+        const ratingId = req.params.id;
+
+        try {
+            let id = tokenId.getTokenId(req.get('token'));
+            
+            let offerer = await db.offerers.findOne( { where: { userId: id } } );
+            let offers = await offerer.getOffers();
+
+            let rating_applicant = await db.rating_applicants.findOne({
+                where: { ratingId }
+            });
+
+            if (rating_applicant) {
+                let fk_application = await db.ratings.findOne({ where: { id: ratingId }});
+                let application = await db.applications.findOne({ where: { id: fk_application.fk_application }});
+                let offer = offers.find(element => element.id == application.fk_offer);
+
+                if ( application.fk_offer == offer.id ){
+                    await db.rating_applicants.destroy({ where: { ratingId } });
+                    await db.ratings.destroy({ where: { id: ratingId } });
+                    await algorithm.indexUpdate(id);
+                        
+                    return res.json({
+                        ok: true,
+                        message: 'RatingApplicant deleted'
+                    });
+                } else {
+                    return next({ type: 'error', error: 'You may not delete ratings of others users' });
+                }
+            } else {
+                return next({ type: 'error', error: 'RatingApplicant doesn\'t exist' });
+            }
+        } catch (err) {
+            return next({ type: 'error', error: 'Error getting data' });
+        }
+    });
+
+    // DELETE by admin
+    app.delete('/rating_applicant/admin/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
 
         try {

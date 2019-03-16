@@ -576,22 +576,31 @@ module.exports = (app, db) => {
         }
     });
 
+    app.delete('/applicant/applications', async(req, res, next) => {
+        try {
+            let id = tokenId.getTokenId(req.get('token'));
+
+        } catch (err) {
+            return next({ type: 'error', error: err.message });
+        }
+    });
+
     // DELETE by themself
     app.delete('/applicant', async(req, res, next) => {
         try {
             let id = tokenId.getTokenId(req.get('token'));
-            
+
             await logger.saveLog('DELETE', 'applicant', id, res);
-            
+
             let applicant = await db.applicants.findOne({
                 where: { userId: id }
             });
-            
+
             let user = await db.users.findOne({
                 where: { id }
             });
             saveLogES('DELETE', 'applicant', user.name);
-            
+
             if (applicant) {
                 let applicantToDelete = await db.applicants.destroy({
                     where: { userId: id }
@@ -1420,8 +1429,7 @@ module.exports = (app, db) => {
             applicant.status = Number(user.status);
             applicant.img = user.img;
             applicant.bio = user.bio;
-            
-            
+
             applicantsToShow.push(applicant);
         }
     }

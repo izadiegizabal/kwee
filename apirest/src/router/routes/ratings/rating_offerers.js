@@ -213,32 +213,55 @@ module.exports = (app, db) => {
     });
 
     // PUT single rating_offerer
-    app.put('/rating_offerer/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
-        const id = req.params.id;
-        const updates = req.body;
-
-        if (updates.password)
-            updates.password = bcrypt.hashSync(req.body.password, 10);
+    app.put('/rating_offerer/:id([0-9]+)', async(req, res, next) => {
+        const ratingId = req.params.id;
+        const body = req.body;
+        let opinion;
+        if ( req.body.opinion ) opinion = req.body.opinion;
+        delete body.opinion;
 
         try {
+            let id = tokenId.getTokenId(req.get('token'));
+
             let rating_offerer = await db.rating_offerers.findOne({
-                where: { ratingId: id }
+                where: { ratingId }
             });
 
             if (rating_offerer) {
-                let updated = await db.rating_offerers.update(updates, {
-                    where: { ratingId: id }
-                });
-                if (updated) {
-                    await algorithm.indexUpdate(id);
+                let fk_application = await db.ratings.findOne({ where: { id: ratingId }});
+                let application = await db.applications.findOne({ where: { id: fk_application.fk_application }});
 
-                    return res.status(200).json({
-                        ok: true,
-                        message: 'Updates successful',
-                        data: updates
-                    })
-                } else {
-                    return next({ type: 'error', error: 'Can\'t update rating_offerer' });
+                if ( application.fk_applicant == id ){
+                    let rating = {};
+                    let satisfaction = body.satisfaction ? body.satisfaction : rating_offerer.satisfaction;
+                    let salary = body.salary ? body.salary : rating_offerer.salary;
+                    let environment = body.environment ? body.environment : rating_offerer.environment;
+                    let partners = body.partners ? body.partners : rating_offerer.partners;
+                    let services = body.services ? body.services : rating_offerer.services;
+                    let installations = body.installations ? body.installations : rating_offerer.installations;
+                    rating.overall = (satisfaction + salary + environment + partners + services + installations) / 6;
+                    
+                    if ( opinion ) rating.opinion = opinion;
+                    await db.ratings.update(rating, {
+                        where: { id: ratingId }
+                    });
+                    
+                    let updated = await db.rating_offerers.update(body, {
+                        where: { ratingId }
+                    });
+                    
+                    if (updated) {
+                        await algorithm.indexUpdate(id);
+                        
+                        return res.status(200).json({
+                            ok: true,
+                            message: 'Update successful'
+                        })
+                    } else {
+                        return next({ type: 'error', error: 'Can\'t update rating_offerer' });
+                    }
+                }  else {
+                    return next({ type: 'error', error: 'You are not applicant of this application' });
                 }
             } else {
                 return next({ type: 'error', error: 'Rating_Offerer doesn\'t exist' });
@@ -249,8 +272,44 @@ module.exports = (app, db) => {
         }
     });
 
-    // DELETE
-    app.delete('/rating_offerer/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
+    // DELETE by themeself
+    app.delete('/rating_offerer/:id([0-9]+)', async(req, res, next) => {
+        const ratingId = req.params.id;
+
+        try {
+            let id = tokenId.getTokenId(req.get('token'));
+            let rating_offerer = await db.rating_offerers.findOne({
+                where: { ratingId }
+            });
+
+            if (rating_offerer) {
+                console.log("encontrada");
+                let fk_application = await db.ratings.findOne({ where: { id: ratingId }});
+                let application = await db.applications.findOne({ where: { id: fk_application.fk_application }});
+
+                if ( application.fk_applicant == id ){
+
+                    await db.rating_offerers.destroy({ where: { ratingId } });
+                    await db.ratings.destroy({ where: { id: ratingId } });
+                    await algorithm.indexUpdate(id);
+                    
+                    return res.json({
+                        ok: true,
+                        message: 'Rating_Offerer deleted'
+                    });
+                } else {
+                    return next({ type: 'error', error: 'You are not applicant of this application' });
+                }
+            } else {
+                return next({ type: 'error', error: 'Rating_Offerer doesn\'t exist' });
+            }
+        } catch (err) {
+            return next({ type: 'error', error: 'Error getting data' });
+        }
+    });
+
+    // DELETE by admin
+    app.delete('/rating_offerer/admin/:id([0-9]+/)', [checkToken, checkAdmin], async(req, res, next) => {
         const id = req.params.id;
 
         try {
