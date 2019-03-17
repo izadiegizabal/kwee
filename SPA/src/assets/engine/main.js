@@ -180,6 +180,9 @@ async function resetCanvas(){
 
 async function mainR( model ){
   draw = true;
+
+  let motor = new TMotorTAG(manager);
+  let scene = motor.createRootNode();
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////                                         INIT CONFIG
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -200,7 +203,12 @@ async function mainR( model ){
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     let cam = motor.createCamera(scene);
     let light = motor.createLight(scene);
-    let mesh = await motor.loadMesh(scene, 'simplest.json');
+    let mesh = null
+    if (model === 'hollow') {
+      mesh = await motor.loadMesh(scene, 'earth_fbx.json');
+    } else {
+      mesh = await motor.loadMesh(scene, 'textured_earth.json');
+    }
 
   //---- Añadir las entidades a los nodos ----
 
@@ -212,7 +220,7 @@ async function mainR( model ){
   // let TransfRotaCoche2 = new TTransform();
   // let TransfRotaCoche3 = new TTransform();
 
-  RotaLuz.setEntity(TransfRotaLuz);
+  /*RotaLuz.setEntity(TransfRotaLuz);
   RotaCam.setEntity(TransfRotaCam2);
   RotaCoche.setEntity(TransfRotaCoche);
   RotaCoche2.setEntity(TransfRotaCoche2);
@@ -223,14 +231,13 @@ async function mainR( model ){
     MallaChasis = await new TMesh('earth_fbx.json');
   } else {
     MallaChasis = await new TMesh('textured_earth.json');
-  }
+  }*/
 
 
 
   //let MallaChasi2 = new TMesh();
   //await MallaChasi2.loadMesh('earth.json');
 
-  console.log(MallaChasis.mesh);
 
   /*await loadImage('continents.jpg', await function (imgErr, img) {
     if (imgErr) {
@@ -340,7 +347,7 @@ async function mainR( model ){
       gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       changeAngle(performance.now() / 1000 / 6 * 2 * Math.PI);
-      Escena.draw();
+      scene.draw();
       requestAnimationFrame(loop);
     }
   };
@@ -348,7 +355,7 @@ async function mainR( model ){
 
 }
 
-async function mainR(){
+async function init(){
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         INIT CONFIG
