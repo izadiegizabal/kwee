@@ -77,7 +77,7 @@ async function mainInit(){
 }
 
 
-async function mainR(){
+async function main(){
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////                                         INIT CONFIG
@@ -144,18 +144,18 @@ async function mainR(){
 
   //---- Añadir las entidades a los nodos ----
 
-  let TransfRotaLuz = new TTransform();
-  let TransfRotaCam = new TTransform();
-  let TransfRotaCam2 = new TTransform();
-  let TransfRotaCoche = new TTransform();
-  TransfRotaCoche.rotateZ(135);
-  let TransfRotaCoche2 = new TTransform();
-  let TransfRotaCoche3 = new TTransform();
+  // let TransfRotaLuz = new TTransform();
+  // let TransfRotaCam = new TTransform();
+  // let TransfRotaCam2 = new TTransform();
+  // let TransfRotaCoche = new TTransform();
+  // TransfRotaCoche.rotateZ(135);
+  // let TransfRotaCoche2 = new TTransform();
+  // let TransfRotaCoche3 = new TTransform();
 
-  RotaLuz.setEntity(TransfRotaLuz);
-  RotaCam.setEntity(TransfRotaCam2);
-  RotaCoche.setEntity(TransfRotaCoche);
-  RotaCoche2.setEntity(TransfRotaCoche2);
+  // RotaLuz.setEntity(TransfRotaLuz);
+  // RotaCam.setEntity(TransfRotaCam2);
+  // RotaCoche.setEntity(TransfRotaCoche);
+  // RotaCoche2.setEntity(TransfRotaCoche2);
 
   let EntLuz = new TLight();
   let EntCam = new TCamera();
@@ -179,25 +179,25 @@ async function mainR(){
   });*/
 
 
-  let NLuz = new TNode(TraslaLuz);
-  let NCam = new TNode(TraslaCam);
-  let NChasis = new TNode(TraslaCoche);
-  //let NChasi2 = new TNode(TraslaCoche2);
+  // let NLuz = new TNode(TraslaLuz);
+  // let NCam = new TNode(TraslaCam);
+  // let NChasis = new TNode(TraslaCoche);
+  // //let NChasi2 = new TNode(TraslaCoche2);
 
-  NLuz.setEntity(EntLuz);
-  NCam.setEntity(EntCam);
-  NChasis.setEntity(MallaChasis);
-  //NChasi2.setEntity(MallaChasi2);
+  // NLuz.setEntity(EntLuz);
+  // NCam.setEntity(EntCam);
+  // NChasis.setEntity(MallaChasis);
+  // //NChasi2.setEntity(MallaChasi2);
 
-  TraslaLuz.addChild(NLuz);
-  TraslaCoche.addChild(NChasis);
-  //TraslaCoche2.addChild(NChasi2);
-  TraslaCam.addChild(NCam);
+  // TraslaLuz.addChild(NLuz);
+  // TraslaCoche.addChild(NChasis);
+  // //TraslaCoche2.addChild(NChasi2);
+  // TraslaCam.addChild(NCam);
 
-  TraslaLuz.setEntity(TransfRotaLuz);
-  //TransfRotaLuz.translate([2, 0, 0]);
-  TraslaCoche.setEntity(TransfRotaCoche);
-  TraslaCam.setEntity(TransfRotaCam);
+  // TraslaLuz.setEntity(TransfRotaLuz);
+  // //TransfRotaLuz.translate([2, 0, 0]);
+  // TraslaCoche.setEntity(TransfRotaCoche);
+  // TraslaCam.setEntity(TransfRotaCam);
   //TraslaCoche2.setEntity(TransfRotaCoche3);
   //TraslaCoche2.entity.translate([2, -1, 0]);
 
@@ -274,7 +274,7 @@ async function mainR(){
     gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     // changeAngle(performance.now() / 1000 / 6 * 2 * Math.PI);
-    Escena.draw();
+    scene.draw();
     requestAnimationFrame(loop);
   };
   requestAnimationFrame(loop);
@@ -484,5 +484,5 @@ async function mainR(){
 export {
     mainInit,
     mainR,
-    mainTest
+    main
 }
