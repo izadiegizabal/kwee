@@ -65,24 +65,42 @@
     fxLayoutGap="24px" fxLayoutGap.lt-sm="16px">
     <div fxLayout="row"
          fxLayoutAlign="end center">
-      <p *ngIf="candidate">Click to rate the candidate</p>
-      <p *ngIf="!candidate">Click to rate the offerer</p>
+      <p *ngIf="!candidate">Click to rate the candidate</p>
+      <p *ngIf="candidate">Click to rate the offerer</p>
       <button (click)="rateCandidate()" mat-raised-button color="primary">{{'Rate' | uppercase }}</button>
     </div>
   </mat-card-actions>
 
   <mat-card-actions
-    *ngIf="this.offer.status === 1 && candidate"
+    *ngIf="this.offer.status === 3 && candidate && this.offer.applicationStatus === 2"
     fxLayout="row" fxLayout.lt-sm="column"
     fxLayoutAlign="end center"
     fxLayoutGap="24px" fxLayoutGap.lt-sm="16px">
     <div fxLayout="row"
          fxLayoutAlign="end center">
       <p *ngIf="candidate">You have been selected! What do you want to do?</p>
-      <button (click)="rateCandidate()" mat-raised-button color="warn">{{'Reject' | uppercase }}</button>
-      <button (click)="rateCandidate()" mat-raised-button color="accent">{{'Accept' | uppercase }}</button>
+      <button (click)="reject()" mat-raised-button color="warn">{{'Reject' | uppercase }}</button>
+      <button (click)="accept()" mat-raised-button color="accent">{{'Accept' | uppercase }}</button>
     </div>
   </mat-card-actions>
+
+  <div
+    *ngIf="(this.offer.status === 3 || this.offer.status === 1) && candidate && this.offer.applicationStatus === 4"
+    fxLayout="row"
+    fxLayoutAlign="end center"
+    fxLayoutGap="16px">
+    <p>You have rejected your selection to this offer!</p>
+    <mat-chip-list><mat-chip color="warn" selected>Rejected</mat-chip></mat-chip-list>
+  </div>
+
+  <div
+    *ngIf="(this.offer.status === 3 || this.offer.status === 1) && candidate && this.offer.applicationStatus === 3"
+    fxLayout="row"
+    fxLayoutAlign="end center"
+    fxLayoutGap="16px">
+    <p>You have accepted your selection to this offer!</p>
+    <mat-chip-list><mat-chip color="accent" selected>Accepted</mat-chip></mat-chip-list>
+  </div>
 
 
 </mat-card>

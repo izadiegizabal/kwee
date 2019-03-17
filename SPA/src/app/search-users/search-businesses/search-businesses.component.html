@@ -16,22 +16,24 @@
   <mat-sidenav-content
     fxFlex="96%" fxFlex.gt-sm="75%"
     fxLayout="column"
+    fxLayoutAlign="start stretch"
     fxLayoutGap="16px" fxLayoutGap.gt-sm="32px">
 
     <div
-      fxFlex="100%"
       fxLayout="row"
-      fxLayoutAlign="center center"
+      fxLayoutAlign="center"
       fxLayoutGap="8px">
       <app-searchbar
         fxFlex="40%" fxFlex.lt-lg="60%" (search)="onSearch($event)">
       </app-searchbar>
-      <app-orderby-button></app-orderby-button>
-      <button color="primary"
-              fxHide.gt-sm
-              mat-raised-button>
-        <mat-icon (click)="drawer.toggle()" aria-label="Open filters" svgIcon="filter-list"></mat-icon>
-      </button>
+      <app-orderby-button style="padding-top: 4px"></app-orderby-button>
+      <div style="padding-top: 4px">
+        <button color="primary"
+                fxHide.gt-sm
+                mat-raised-button>
+          <mat-icon (click)="drawer.toggle()" aria-label="Open filters" svgIcon="filter-list"></mat-icon>
+        </button>
+      </div>
     </div>
 
     <div *ngIf="(adminState | async).businesses" fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">

@@ -1,7 +1,6 @@
 import {Action} from '@ngrx/store';
 import {CandidatePreview} from '../../../../models/candidate-preview.model';
 
-
 export const TRY_GET_OFFERS_OFFERER = 'TRY_GET_OFFERS_OFFERER';
 export const SET_OFFERS_OFFERER = 'SET_OFFERS_OFFERER';
 
@@ -66,7 +65,7 @@ export class SetOfferCandidates implements Action {
 export class TryChangeApplicationStatus implements Action {
   readonly type = TRY_CHANGE_APPLICATION_STATUS;
 
-  constructor(public payload: { candidateId: number, applicationId: number, status: number }) {
+  constructor(public payload: { candidateId: number, applicationId: number, status: number, refresh: boolean }) {
   }
 }
 

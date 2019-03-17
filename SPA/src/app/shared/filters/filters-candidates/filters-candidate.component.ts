@@ -78,10 +78,7 @@ export class FiltersCandidateComponent implements OnInit {
 
     this.filters.controls['minIndex'].valueChanges.subscribe(() => {
       this.router.navigate(['/search-candidates'],
-        {
-          queryParams: {
-            index: JSON.stringify({'gte': this.filters.controls['minIndex'].value})
-          }, queryParamsHandling: 'merge'
+        {queryParams: {index: this.filters.controls['minIndex'].value }, queryParamsHandling: 'merge'
         });
     });
 

@@ -8,7 +8,6 @@ import {MatPaginator, MatSidenav, PageEvent} from '@angular/material';
 import {BreakpointObserver} from '@angular/cdk/layout';
 import {HttpClient} from '@angular/common/http';
 import {ActivatedRoute, Router} from '@angular/router';
-import {query} from '@angular/animations';
 
 @Component({
   selector: 'app-candidate-home',
@@ -38,7 +37,8 @@ export class CandidateHomeComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store$.dispatch(new OffersActions.TryGetOffers({page: 1, limit: 5, params: '&status=0'}));
+    this.query = {...this.query, status: '0'};
+    this.store$.dispatch(new OffersActions.TryGetOffers({page: 1, limit: 5, params: this.query}));
     this.offersState = this.store$.pipe(select(state => state.offers));
 
     this.activatedRoute.queryParams
@@ -49,9 +49,6 @@ export class CandidateHomeComponent implements OnInit {
   }
 
   changePage() {
-    this.pageSize = this.pageEvent.pageSize;
-    this.query = {...this.query, status: '0'};
-
     this.store$.dispatch(new OffersActions.TryGetOffers({
       page: this.pageEvent.pageIndex + 1,
       limit: this.pageEvent.pageSize,
@@ -69,7 +66,7 @@ export class CandidateHomeComponent implements OnInit {
     if (!searchParams) {
       searchParams = null;
     }
-    this.router.navigate(['/candidate-home'], {queryParams: {keywords: searchParams}, queryParamsHandling: 'merge'});
+    this.router.navigate(['/candidate-home'], {queryParams: {title: searchParams}, queryParamsHandling: 'merge'});
   }
 
   searchCallApi() {

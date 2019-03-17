@@ -67,11 +67,7 @@ export class FiltersBusinessesComponent implements OnInit {
 
     this.filters.controls['minIndex'].valueChanges.subscribe(() => {
       this.router.navigate(['/search-businesses'],
-        {
-          queryParams: {
-            index: JSON.stringify({'gte': this.filters.controls['minIndex'].value})
-          }, queryParamsHandling: 'merge'
-        });
+        {queryParams: {index: this.filters.controls['minIndex'].value}, queryParamsHandling: 'merge'});
     });
 
     this.filters.controls['companySize'].valueChanges.subscribe(() => {
@@ -83,10 +79,7 @@ export class FiltersBusinessesComponent implements OnInit {
 
     this.filters.controls['foundationDate'].valueChanges.subscribe(() => {
       this.router.navigate(['/search-businesses'],
-        {
-          queryParams: {
-            year: JSON.stringify({'gte': this.filters.controls['foundationDate'].value})
-          }, queryParamsHandling: 'merge'
+        {queryParams: {year:  this.filters.controls['foundationDate'].value}, queryParamsHandling: 'merge'
         });
     });
 

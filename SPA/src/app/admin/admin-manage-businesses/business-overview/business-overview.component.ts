@@ -30,6 +30,7 @@ export class BusinessOverviewComponent implements OnInit {
   isPanelOpen = false;
   isInEditMode = false;
   updateuser: any;
+  query: any;
 
   workFields = Object
     .keys(BusinessIndustries)
@@ -55,7 +56,7 @@ export class BusinessOverviewComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store$.dispatch(new AdminActions.TryGetBusinesses({page: 1, limit: 2}));
+    this.store$.dispatch(new AdminActions.TryGetBusinesses({page: 1, limit: 2, params: this.query}));
     this.adminState = this.store$.pipe(select(s => s.admin));
 
     this.userForm = this._formBuilder.group({
@@ -165,6 +166,7 @@ export class BusinessOverviewComponent implements OnInit {
   }
 
   changepage() {
-    this.store$.dispatch(new AdminActions.TryGetBusinesses({page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize}));
+    this.store$.dispatch(new AdminActions.TryGetBusinesses(
+      {page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize, params: this.query}));
   }
 }

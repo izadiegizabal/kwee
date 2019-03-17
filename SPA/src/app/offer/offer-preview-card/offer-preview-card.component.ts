@@ -7,6 +7,9 @@ import {environment} from '../../../environments/environment';
 import {RateCandidateComponent} from '../../rating/rate-candidate/rate-candidate.component';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
+import {AlertDialogComponent} from '../../shared/alert-dialog/alert-dialog.component';
+import {OfferManageEffects} from '../offer-manage/store/offer-manage.effects';
+import * as OfferManageActions from '../offer-manage/store/offer-manage.actions';
 
 
 @Component({
@@ -20,15 +23,19 @@ export class OfferPreviewCardComponent implements OnInit {
   authState: any;
   candidate: boolean;
   nameToRate: string;
+  user: number;
 
   @Input() offer: any;
 
 
   constructor(public dialog: MatDialog,
-              private store$: Store<fromApp.AppState>) {
+              private store$: Store<fromApp.AppState>,
+              private manageOfferEffects: OfferManageEffects) {
   }
 
   ngOnInit() {
+    // console.log(this.offer);
+
     this.offerUrl = this.urlfyPosition();
 
     this.authState = this.store$.pipe(select('auth'));
@@ -36,10 +43,12 @@ export class OfferPreviewCardComponent implements OnInit {
       select((s: { user: any}) => s.user)
     ).subscribe(
       (user) => {
+        // console.log(user);
         if (user) {
           this.candidate = user.type === 'candidate';
           if (this.candidate) {
             this.nameToRate = this.offer.offererName;
+            this.user = user.id;
           }
         }
       });
@@ -117,11 +126,10 @@ export class OfferPreviewCardComponent implements OnInit {
   }
 
   rateCandidate() {
-
     const dialogRef = this.dialog.open(RateCandidateComponent, {
       width: '95%',
       maxHeight: '90%',
-      data: {candidate: !this.candidate, to: 1, list: [{name: this.nameToRate}]}
+      data: {candidate: !this.candidate, to: this.offer.fk_application, list: [{name: this.nameToRate}]}
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -130,5 +138,45 @@ export class OfferPreviewCardComponent implements OnInit {
         console.log(result);
       }
     });
+  }
+
+  reject() {
+
+    const dialog = this.dialog.open(AlertDialogComponent, {
+      data: {
+        header: 'Are you sure you want to reject this offer?',
+      }
+    });
+
+    dialog.afterClosed().subscribe(result => {
+      if (result) {
+        this.changeAplicationStatus(4);
+      }
+    });
+  }
+
+  accept() {
+
+    const dialog = this.dialog.open(AlertDialogComponent, {
+      data: {
+        header: 'Are you sure you want to accept this offer?',
+      }
+    });
+
+    dialog.afterClosed().subscribe(result => {
+      if (result) {
+        this.changeAplicationStatus(3);
+      }
+    });
+  }
+
+  changeAplicationStatus(status: number) {
+    this.store$.dispatch(new OfferManageActions
+      .TryChangeApplicationStatus({
+        candidateId: this.user,
+        applicationId: this.offer.fk_application,
+        status: status,
+        refresh: false
+      }));
   }
 }
