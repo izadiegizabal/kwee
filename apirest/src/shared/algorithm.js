@@ -1,5 +1,6 @@
-
+const env =     require('../tools/constants');
 const db = require('../database/sequelize');
+const axios =   require('axios');
 
 class Algorithm {
 
@@ -101,11 +102,17 @@ class Algorithm {
         let res = await db.users.update({index: index},{where:{id}})
                 .then( ok => {
                     console.log("index updated");
-                    return ok
+                    axios.post(`http://${ env.ES_URL }/offerers/offerer/${ id }/_update?pretty=true`, {
+                        doc: {index}
+                    }).then(() => {}
+                        ).catch((error) => {
+                        console.log('error elastic: ', error.message);
+                }); 
+                    return ok;
                 })
                 .catch( wrong => {
                     console.log(wrong);
-                    return wrong
+                    return wrong;
                 });
         return res;
         

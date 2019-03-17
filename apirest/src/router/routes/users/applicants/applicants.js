@@ -37,6 +37,7 @@ module.exports = (app, db) => {
             if ( body.city ) must.push({multi_match: {query: body.city, fields: [ "city" ] }});
             if ( body.premium ) must.push({multi_match: {query: body.premium, fields: [ "premium" ] }});
             if ( body.bio ) must.push({multi_match: {query: body.bio, fields: [ "bio" ] }});
+            if ( body.rol ) must.push({multi_match: {query: body.rol, fields: [ "rol" ] }});
 
             let searchParams = {
                 index: "applicants",
@@ -575,22 +576,52 @@ module.exports = (app, db) => {
         }
     });
 
+    app.delete('/applicant/applications', async(req, res, next) => {
+        try {
+            let id = tokenId.getTokenId(req.get('token'));
+            let applicant = await db.applicants.findOne({ where: { userId: id }});
+            let applications = await db.applications.findAll();
+
+            if ( applicant ) {
+                applications = applications.filter(
+                    application => application.fk_applicant == id && (application.status == 0 || application.status == 1)
+                );
+                if ( applications.length > 0 ){
+                    applications.forEach(async element => {
+                        await db.applications.update({status: 5}, {where: { id: element.id }});
+                    });
+                    return res.status(200).json({
+                        ok: true,
+                        message: "Applications with status pending or fav are now with status closed"
+                    });
+                } else {
+                    return next({ type: 'error', error: 'No applications pending or fav in this applicant'});
+                }
+            } else {
+                return next({ type: 'error', error: 'You are not applicant'});
+            }
+
+        } catch (err) {
+            return next({ type: 'error', error: err.message });
+        }
+    });
+
     // DELETE by themself
     app.delete('/applicant', async(req, res, next) => {
         try {
             let id = tokenId.getTokenId(req.get('token'));
-            
+
             await logger.saveLog('DELETE', 'applicant', id, res);
-            
+
             let applicant = await db.applicants.findOne({
                 where: { userId: id }
             });
-            
+
             let user = await db.users.findOne({
                 where: { id }
             });
             saveLogES('DELETE', 'applicant', user.name);
-            
+
             if (applicant) {
                 let applicantToDelete = await db.applicants.destroy({
                     where: { userId: id }
@@ -1419,8 +1450,7 @@ module.exports = (app, db) => {
             applicant.status = Number(user.status);
             applicant.img = user.img;
             applicant.bio = user.bio;
-            
-            
+
             applicantsToShow.push(applicant);
         }
     }

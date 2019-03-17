@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
       },
 
       address: {
-        type: DataTypes.STRING(50),
+        type: DataTypes.STRING(),
         field: "address",
         allowNull: false,
         validate: {
@@ -21,15 +21,9 @@ module.exports = (sequelize, DataTypes) => {
       },
 
       workField: {
-        type: DataTypes.INTEGER(),
+        type: DataTypes.INTEGER,
         allowNull: false,
-        field: "workField",
-        validate: {
-          isIn: {
-            args: [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]],
-            msg: "Unknown workField value."
-          }
-        }
+        field: "workField"
       },
 
       cif: {
@@ -74,25 +68,20 @@ module.exports = (sequelize, DataTypes) => {
 	},
 
       year: {
-        type: DataTypes.DATE,
-        validate: {
-          isDate: {
-            args: true,
-            msg: "year should be a valid date."
-          }
-        }
+        type: DataTypes.INTEGER,
+        allowNull: true,
       },
 
       premium: {
         type: DataTypes.INTEGER,
-		defaultValue: 0,
-        validate: {
-          isIn: {
-            args: [[0, 1, 2]],
-            msg:
-              "Invalid premium type. Only valid 'basic' (0), 'premium' (1) or 'elite' (2)."
-          }
-        }
+        defaultValue: 0,
+            validate: {
+              isIn: {
+                args: [[0, 1, 2]],
+                msg:
+                  "Invalid premium type. Only valid 'basic' (0), 'premium' (1) or 'elite' (2)."
+              }
+            }
       },
 
       dateVerification: {
