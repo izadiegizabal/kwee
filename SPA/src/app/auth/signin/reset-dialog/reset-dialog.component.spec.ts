@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ResetDialogComponent } from './reset-dialog.component';
+import {ResetDialogComponent} from './reset-dialog.component';
 
 describe('ResetDialogComponent', () => {
   let component: ResetDialogComponent;
@@ -8,9 +8,9 @@ describe('ResetDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ResetDialogComponent ]
+      declarations: [ResetDialogComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

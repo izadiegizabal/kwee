@@ -17,19 +17,22 @@ export class AdminEffects {
     map((action: AdminActions.TryGetCandidates) => {
       return action.payload;
     }),
-    withLatestFrom(this.store$.pipe(select(state => state.auth))),
-    switchMap(([payload, authState]) => {
-        const apiEndpointUrl = environment.apiUrl + 'applicants/?page=' + payload.page + '&limit=' + payload.limit;
-        const token = authState.token;
-        const headers = new HttpHeaders().set('token', token);
-        console.log(apiEndpointUrl);
-        return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
+   // withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    switchMap((payload) => {
+        const apiEndpointUrl = environment.apiUrl + 'applicants/search?page=' + payload.page + '&limit=' + payload.limit;
+      const headers = new HttpHeaders().set('Content-Type', 'application/json');
+      const body = JSON.stringify(payload.params);
+
+      // const token = authState.token;
+      // const headers = new HttpHeaders().set('token', token);
+      // console.log(apiEndpointUrl);
+      // console.log(body);
+        return this.httpClient.post(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res: {
             ok: boolean,
             data: any[],
             total: number,
           }) => {
-            console.log(res);
             return {
               type: AdminActions.SET_CANDIDATES,
               payload: res,
@@ -37,7 +40,7 @@ export class AdminEffects {
           }),
           catchError((err: HttpErrorResponse) => {
             throwError(this.handleError('getCandidates', err));
-            const error = err.error.message ? err.error.message : err;
+            const error = err.message ? err.message : err;
             return [
               {
                 type: AdminActions.OPERATION_ERROR,
@@ -57,12 +60,13 @@ export class AdminEffects {
     map((action: AdminActions.TryGetBusinesses) => {
       return action.payload;
     }),
-    withLatestFrom(this.store$.pipe(select(state => state.auth))),
-    switchMap(([payload, authState]) => {
-        const apiEndpointUrl = environment.apiUrl + 'offerers/?page=' + payload.page + '&limit=' + payload.limit;
-        const token = authState.token;
-        const headers = new HttpHeaders().set('token', token);
-        return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
+   // withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    switchMap((payload) => {
+        const apiEndpointUrl = environment.apiUrl + 'offerers/search?page=' + payload.page + '&limit=' + payload.limit;
+      const headers = new HttpHeaders().set('Content-Type', 'application/json');
+      const body = JSON.stringify(payload.params);
+      // console.log(body);
+      return this.httpClient.post(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res: {
             ok: boolean,
             data: any[],
@@ -75,7 +79,7 @@ export class AdminEffects {
           }),
           catchError((err: HttpErrorResponse) => {
             throwError(this.handleError('getBusinesses', err));
-            const error = err.error.message ? err.error.message : err;
+            const error = err.message ? err.message : err;
             return [
               {
                 type: AdminActions.OPERATION_ERROR,
@@ -137,7 +141,6 @@ export class AdminEffects {
         const token = authState.token;
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
         const body = JSON.stringify(payload.updatedBusiness);
-
         return this.httpClient.put(apiEndpointUrl, body, {headers: headers}).pipe(
           map(() => {
             return {

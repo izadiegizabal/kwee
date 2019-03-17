@@ -1,6 +1,21 @@
 /* You can add global styles to this file, and also import other style files */
 @import "~@fortawesome/fontawesome-free/css/all.css";
 
+.rating {
+  align-items: start !important;
+  justify-content: start !important;
+}
+
+.star-container {
+  margin-left: 0 !important;
+}
+
+$color-negative-rating: #ff4536 !default;
+$color-ok-rating: #ffce0f !default;
+$color-positive-rating: #1de9b6 !default;
+$color-default-rating: #444B54 !default;
+@import '~css-star-rating/scss/star-rating';
+
 html {
   height: 100%;
 }
@@ -9,6 +24,7 @@ body {
   margin: 0;
 }
 
-p a {
+p a, mat-tab-body a {
   color: #1de9b6;
 }
+

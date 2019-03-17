@@ -17,46 +17,21 @@ import {
   MatListModule,
   MatMenuModule,
   MatNativeDateModule,
+  MatPaginatorModule,
+  MatProgressSpinnerModule,
   MatRadioModule,
   MatSelectModule,
   MatSidenavModule,
+  MatSliderModule,
   MatSnackBarModule,
   MatStepperModule,
   MatTabsModule,
-  MatToolbarModule,
-  MatPaginatorModule,
+  MatToolbarModule
 } from '@angular/material';
 import {DomSanitizer} from '@angular/platform-browser';
 import {CommonModule} from '@angular/common';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    MatCardModule,
-    MatIconModule,
-    MatDividerModule,
-    MatButtonModule,
-    MatToolbarModule,
-    MatMenuModule,
-    MatTabsModule,
-    MatCheckboxModule,
-    MatStepperModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatSelectModule,
-    MatExpansionModule,
-    MatDividerModule,
-    MatSidenavModule,
-    MatRadioModule,
-    MatListModule,
-    MatBadgeModule,
-    MatChipsModule,
-    MatAutocompleteModule,
-    MatDialogModule,
-    MatPaginatorModule,
-  ],
   exports: [
     CommonModule,
     MatCardModule,
@@ -84,6 +59,9 @@ import {CommonModule} from '@angular/common';
     MatDialogModule,
     MatSnackBarModule,
     MatPaginatorModule,
+    MatMenuModule,
+    MatSliderModule,
+    MatProgressSpinnerModule
   ],
 })
 export class MaterialAngularModule {
@@ -122,8 +100,19 @@ export class MaterialAngularModule {
       'insert-drive-file', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-insert_drive_file.svg'));
     matIconRegistry.addSvgIcon('thumb-up', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-thumb_up.svg'));
     matIconRegistry.addSvgIcon('thumb-down', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-thumb_down.svg'));
+    matIconRegistry.addSvgIcon('close', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-close.svg'));
+    matIconRegistry.addSvgIcon('money', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-money.svg'));
+    matIconRegistry.addSvgIcon('attach-money', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-attach_money.svg'));
     matIconRegistry.addSvgIcon('error', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-error.svg'));
-
+    matIconRegistry.addSvgIcon('favorite', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-favorite.svg'));
+    matIconRegistry.addSvgIcon('drafts', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-drafts.svg'));
+    matIconRegistry.addSvgIcon('inbox', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-inbox.svg'));
+    matIconRegistry.addSvgIcon('move-to-inbox', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-move_to_inbox.svg'));
+    matIconRegistry.addSvgIcon('mail', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-mail.svg'));
+    matIconRegistry.addSvgIcon('archive', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-archive.svg'));
+    matIconRegistry.addSvgIcon('send', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-send.svg'));
+    matIconRegistry.addSvgIcon('star', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-star_rate.svg'));
+    matIconRegistry.addSvgIcon('back', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-arrow_back_ios.svg'));
     // Branding icons
     matIconRegistry.addSvgIcon('kwee-logo', domSanitizer.bypassSecurityTrustResourceUrl('assets/branding/logo-kwee-light.svg'));
     matIconRegistry.addSvgIcon('kwee-logo-dark', domSanitizer.bypassSecurityTrustResourceUrl('assets/branding/logo-kwee-dark.svg'));

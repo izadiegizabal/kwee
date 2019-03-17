@@ -1,0 +1,93 @@
+@import "../../../common-utils";
+
+* {
+  font-family: IBM Plex Sans, sans-serif;
+}
+
+:host ::ng-deep .ck-editor {
+  max-width: 600px;
+}
+
+.noUnderline ::ng-deep .mat-form-field-underline {
+  display: none;
+}
+
+.signupButton button {
+  width: 250px;
+
+  mat-icon {
+    margin-right: 16px;
+    margin-top: 4px;
+    font-size: 1.1rem;
+  }
+}
+
+.svg {
+  margin-top: 0 !important;
+}
+
+h2 {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+mat-form-field mat-icon {
+  margin-right: 8px;
+}
+
+mat-datepicker-toggle {
+  font-size: 1.5rem;
+  color: #546e7a;
+  margin-left: -4;
+}
+
+#googleBtn.mat-button, #googleBtn.mat-raised-button {
+  background-color: #4285F4;
+}
+
+#twitterBtn.mat-button, #twitterBtn.mat-raised-button {
+  background-color: #1da1f2;
+}
+
+#linkedinBtn.mat-button, #linkedinBtn.mat-raised-button {
+  background-color: #0077b5;
+}
+
+.btnAdd {
+  max-height: 30px;
+}
+
+.divBtn {
+  padding-bottom: 20px;
+}
+
+.line1 {
+  max-width: 500px;
+}
+
+.line2 {
+  max-width: 600px;
+}
+
+.divskill {
+  padding: 0 !important;
+}
+
+img {
+  cursor: pointer;
+  object-fit: cover;
+  float: left;
+  margin: 0 16px 16px 0;
+  border-radius: 4px;
+}
+
+.social-icons {
+  font-size: 1.1rem;
+}
+
+.photo-buttons {
+  max-width: 200px;
+  min-width: 150px;
+  width: 30%;
+  margin: .5em 0;
+}

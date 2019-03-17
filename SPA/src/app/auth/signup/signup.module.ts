@@ -13,6 +13,8 @@ import {EffectsModule} from '@ngrx/effects';
 import {AuthEffects} from '../store/auth.effects';
 import {EducationsFormsModule} from './signup-candidate/education-forms/educations-forms.module';
 import {ExperienceFormsModule} from './signup-candidate/experience-forms/experience-forms.module';
+import {ImageCropperModule} from 'ngx-image-cropper';
+import {DialogImageCropComponent} from './dialog-image-crop/dialog-image-crop.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +22,7 @@ import {ExperienceFormsModule} from './signup-candidate/experience-forms/experie
     SignupCandidateComponent,
     SignupOffererComponent,
     DialogErrorComponent,
+    DialogImageCropComponent,
   ],
   imports: [
     SharedModule,
@@ -28,11 +31,13 @@ import {ExperienceFormsModule} from './signup-candidate/experience-forms/experie
     ReactiveFormsModule,
     EducationsFormsModule,
     ExperienceFormsModule,
+    ImageCropperModule,
     StoreModule.forFeature('auth', authReducer),
     EffectsModule.forFeature([AuthEffects])
   ],
   entryComponents: [
-    DialogErrorComponent
+    DialogErrorComponent,
+    DialogImageCropComponent
   ],
 })
 export class SignupModule {

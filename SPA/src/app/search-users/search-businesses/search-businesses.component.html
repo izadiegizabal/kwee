@@ -1,0 +1,56 @@
+<h2 class="mat-h1">Search Businesses</h2>
+
+<mat-sidenav-container
+  fxLayout="column">
+
+  <mat-sidenav #drawer
+               [autoFocus]="false"
+               [mode]="!isMobile() ? 'side' : 'over'"
+               [opened]="!isMobile()"
+               class="mat-typography">
+
+    <app-filters-businesses></app-filters-businesses>
+
+  </mat-sidenav>
+
+  <mat-sidenav-content
+    fxFlex="96%" fxFlex.gt-sm="75%"
+    fxLayout="column"
+    fxLayoutAlign="start stretch"
+    fxLayoutGap="16px" fxLayoutGap.gt-sm="32px">
+
+    <div
+      fxLayout="row"
+      fxLayoutAlign="center"
+      fxLayoutGap="8px">
+      <app-searchbar
+        fxFlex="40%" fxFlex.lt-lg="60%" (search)="onSearch($event)">
+      </app-searchbar>
+      <app-orderby-button style="padding-top: 4px"></app-orderby-button>
+      <div style="padding-top: 4px">
+        <button color="primary"
+                fxHide.gt-sm
+                mat-raised-button>
+          <mat-icon (click)="drawer.toggle()" aria-label="Open filters" svgIcon="filter-list"></mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="(adminState | async).businesses" fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">
+      <app-business-preview-card *ngFor="let user of (adminState | async).businesses.data;" [user]="user">
+      </app-business-preview-card>
+    </div>
+
+    <div *ngIf="!(adminState | async).businesses" fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">
+      <h4 class="mat-h3">No results found.</h4>
+      <p class="mat-typography">Your search returned no results. Try shortening or rephrasing your search.</p>
+    </div>
+
+
+    <mat-paginator *ngIf="(adminState | async).businesses" (page)="pageEvent = $event;  changePage();"
+                   [length]="(adminState | async).businesses.total"
+                   [pageSizeOptions]="pageSizeOptions"
+                   [pageSize]="pageSize">
+    </mat-paginator>
+  </mat-sidenav-content>
+</mat-sidenav-container>

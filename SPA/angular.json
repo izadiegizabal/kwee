@@ -39,11 +39,13 @@
             ],
             "styles": [
               "./node_modules/cookieconsent/build/cookieconsent.min.css",
+              "./node_modules/mapbox-gl/dist/mapbox-gl.css",
               "src/kwee-themes.styles.scss",
               "src/styles.scss"
             ],
             "scripts": [
-              "./node_modules/cookieconsent/build/cookieconsent.min.js"
+              "./node_modules/cookieconsent/build/cookieconsent.min.js",
+              "./node_modules/gl-matrix/gl-matrix-min.js"
             ]
           },
           "configurations": {

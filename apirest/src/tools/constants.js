@@ -31,13 +31,6 @@ const env = {
     // Gmail
     EMAIL: pass.EMAIL,
     EMAIL_PASSWORD: pass.EMAIL_PASSWORD,
-    message: {
-        from: pass.EMAIL,
-        to: 'carlosaldaravi@gmail.com',
-        subject: 'Prueba de verificación',
-        text: 'Plaintext version of the message',
-        html: '<p>HTML version of the message</p>'
-    },
 
     //Instagram API
     INSTAGRAM_ID: pass.INSTAGRAM_ID,

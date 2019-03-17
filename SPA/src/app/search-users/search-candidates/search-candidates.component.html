@@ -1,0 +1,58 @@
+<div fxLayout="column">
+  <div fxFlex="100%" style="margin: 8px 0 32px 16px">
+    <h2 class="mat-h1">Search Candidates</h2>
+  </div>
+  <mat-sidenav-container
+    fxLayout="column">
+
+    <mat-sidenav #drawer
+                 [autoFocus]="false"
+                 [mode]="!isMobile() ? 'side' : 'over'"
+                 [opened]="!isMobile()"
+                 class="mat-typography">
+
+      <app-filters-candidate></app-filters-candidate>
+
+    </mat-sidenav>
+
+    <mat-sidenav-content
+      fxFlex="96%" fxFlex.gt-sm="75%"
+      fxLayout="column"
+      fxLayoutGap="16px" fxLayoutGap.gt-sm="32px">
+
+      <div
+        fxLayout="row"
+        fxLayoutAlign="center"
+        fxLayoutGap="8px">
+        <app-searchbar
+          fxFlex="40%" fxFlex.lt-lg="60%" (search)="onSearch($event)">
+        </app-searchbar>
+        <app-orderby-button style="padding-top: 4px"></app-orderby-button>
+        <div style="padding-top: 4px">
+          <button color="primary"
+                  fxHide.gt-sm
+                  mat-raised-button>
+            <mat-icon (click)="drawer.toggle()" aria-label="Open filters" svgIcon="filter-list"></mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="(adminState | async).candidates" fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">
+        <app-candidate-preview-card *ngFor="let user of (adminState | async).candidates.data;" [user]="user">
+        </app-candidate-preview-card>
+      </div>
+
+      <div *ngIf="!(adminState | async).candidates" fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">
+        <h4 class="mat-h3">No results found.</h4>
+        <p class="mat-typography">Your search returned no results. Try shortening or rephrasing your search.</p>
+      </div>
+
+
+      <mat-paginator *ngIf="(adminState | async).candidates" (page)="pageEvent = $event;  changePage();"
+                     [length]="(adminState | async).candidates.total"
+                     [pageSizeOptions]="pageSizeOptions"
+                     [pageSize]="pageSize">
+      </mat-paginator>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

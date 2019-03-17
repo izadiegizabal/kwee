@@ -1,42 +1,45 @@
+<div (clickOutside)="onClickedOutside($event)" id="container">
+  <mat-card class="floating-chat" id="chat">
+    <div #content id="content">
+      <div *ngFor="let message of messages | async">
+        <mat-card *ngIf="message.type==0" [ngClass]="{ 'from': message.sentBy === 'bot',
+                                            'to':   message.sentBy === 'user' }" class="message">
+          <mat-card-content>{{ message.content }}</mat-card-content>
+        </mat-card>
 
-  <div >
-    <mat-card class="floating-chat" id="chat">
-      <div>
-        <div *ngFor="let message of messages | async">
-          <mat-card *ngIf="message.type==0" class="message" [ngClass]="{ 'from': message.sentBy === 'bot',
-                                            'to':   message.sentBy === 'user' }">
-            <mat-card-content>{{ message.content }}</mat-card-content>
-          </mat-card>
+        <mat-chip-list *ngIf="message.type==2" class="toLeft">
+          <mat-chip (click)="sendReply(chip)" *ngFor="let chip of message.obj.chips" color="primary">{{chip}}</mat-chip>
+        </mat-chip-list>
 
-          <mat-chip-list *ngIf="message.type==2" class="toLeft">
-            <mat-chip color="primary" *ngFor="let chip of message.obj.chips" (click)="sendReply(chip)">{{chip}}</mat-chip>
-          </mat-chip-list>
-
-          <mat-card class="example-card" *ngIf="message.type==1">
-            <mat-card-header>
-              <div mat-card-avatar class="example-header-image"></div>
-              <mat-card-title>{{message.content}}</mat-card-title>
-            </mat-card-header>
-            <img mat-card-image [src]='message.obj.img' alt="Photo of an offer">
-            <mat-card-content>
-              <p>
-                {{message.obj.subtitle}}
-              </p>
-            </mat-card-content>
-            <mat-card-actions>
-              <button mat-button (click)="openTab(message.obj.link)">{{message.obj.button}}</button>
-            </mat-card-actions>
-          </mat-card>
-        </div>
+        <mat-card *ngIf="message.type==1" class="example-card">
+          <mat-card-header>
+            <div class="example-header-image" mat-card-avatar></div>
+            <mat-card-title>{{message.content}}</mat-card-title>
+          </mat-card-header>
+          <img [src]='message.obj.img' alt="Photo of an offer" mat-card-image>
+          <mat-card-content>
+            <p>
+              {{message.obj.subtitle}}
+            </p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button (click)="openTab(message.obj.link)" mat-button type="button">{{message.obj.button}}</button>
+          </mat-card-actions>
+        </mat-card>
       </div>
-      <div class="input">
-        <mat-form-field class="example-full-width" style="width: 70%; margin-right: 0.5em;">
-          <input [(ngModel)]="formValue" matInput  (keyup.enter)="sendMessage()" type="text" id="nameField">
-        </mat-form-field>
+    </div>
+    <div class="input">
+      <mat-form-field class="example-full-width" style="width: 70%; margin-right: 0.5em;">
+        <input (keyup.enter)="sendMessage()" [(ngModel)]="formValue" autocomplete="off" id="nameField" matInput
+               type="text">
+      </mat-form-field>
 
-        <button color="accent" mat-raised-button (click)="sendMessage()" align="end" style="width: 20%;">Send</button>
-      </div>
-    </mat-card>
-  </div>
+      <button (click)="sendMessage()" align="end" color="accent" mat-raised-button>
+        <mat-icon color="primary" svgIcon="send"></mat-icon>
+      </button>
+    </div>
+  </mat-card>
+  <!--<button id="close" mat-fab color="warn" type="button"><mat-icon color="primary" svgIcon="close"></mat-icon></button>-->
+</div>
 
 <button color="accent" mat-fab (click)="openDialog()" class="float" *ngIf="!opened">Iwi</button>

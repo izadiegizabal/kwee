@@ -7,7 +7,10 @@ import * as AdminActions from '../../store/admin.actions';
 import {Observable} from 'rxjs';
 import {filter} from 'rxjs/operators';
 import {AdminEffects} from '../../store/admin.effects';
-import {PageEvent} from '@angular/material';
+import {MatDialog, PageEvent} from '@angular/material';
+import {isStringNotANumber} from '../../../../models/Offer.model';
+import {CandidateAccountStatus} from '../../../../models/Candidate.model';
+import {AlertDialogComponent} from '../../../shared/alert-dialog/alert-dialog.component';
 
 @Component({
   selector: 'app-candidate-overview',
@@ -28,13 +31,15 @@ export class CandidateOverviewComponent implements OnInit {
   isPanelOpen = false;
   updateuser: any;
 
-  adminState: Observable<fromAdmin.State>;
+  dialogError = false;
 
-  states: { value: number, viewValue: string }[] = [
-    {value: 0, viewValue: 'Active'},
-    {value: 1, viewValue: 'Blocked'},
-    {value: 2, viewValue: 'Verification Pending'},
-  ];
+  adminState: Observable<fromAdmin.State>;
+  query: any;
+
+  states = Object
+    .keys(CandidateAccountStatus)
+    .filter(isStringNotANumber)
+    .map(key => ({value: CandidateAccountStatus[key], viewValue: key}));
   subscriptions: { value: number, viewValue: string }[] = [
     {value: 0, viewValue: 'Free'},
     {value: 1, viewValue: 'Premium'},
@@ -44,11 +49,12 @@ export class CandidateOverviewComponent implements OnInit {
 
   constructor(
     private _formBuilder: FormBuilder,
-    private store$: Store<fromApp.AppState>, private adminEffects$: AdminEffects) {
+    private store$: Store<fromApp.AppState>, private adminEffects$: AdminEffects,
+    public dialog: MatDialog) {
   }
 
   ngOnInit() {
-    this.store$.dispatch(new AdminActions.TryGetCandidates({page: 1, limit: 2}));
+    this.store$.dispatch(new AdminActions.TryGetCandidates({page: 1, limit: 2, params: this.query}));
     this.adminState = this.store$.pipe(select(state => state.admin));
 
     this.userForm = this._formBuilder.group({
@@ -84,10 +90,23 @@ export class CandidateOverviewComponent implements OnInit {
     this.isInEditMode = true;
     this.userForm.controls['name'].setValue(user.name);
     this.userForm.controls['email'].setValue(user.email);
-    // this.userForm.controls['accountState'].setValue(user.state);
+    this.userForm.controls['accountState'].setValue(user.status);
     this.userForm.controls['premium'].setValue(user.premium);
   }
 
+  callAlertDialogUpdate(id) {
+    const dialogDelete = this.dialog.open(AlertDialogComponent, {
+      data: {
+        header: 'Are you sure you want to update this user?',
+      }
+    });
+
+    dialogDelete.afterClosed().subscribe(result => {
+      if (result) {
+        this.updateApplicant(id);
+      }
+    });
+  }
 
   updateApplicant(id) {
     if (this.userForm.status === 'VALID' && id) {
@@ -97,7 +116,7 @@ export class CandidateOverviewComponent implements OnInit {
       this.updateuser = {
         'name': this.userForm.controls['name'].value,
         'email': this.userForm.controls['email'].value,
-        // 'status': this.userForm.controls['accountState'].value,
+        'status': this.userForm.controls['accountState'].value,
         'premium': this.userForm.controls['premium'].value,
       };
 
@@ -105,14 +124,25 @@ export class CandidateOverviewComponent implements OnInit {
         this.updateuser['password'] = this.userForm.controls['password'].value;
       }
 
-      // console.log(this.updateuser);
-
       this.store$.dispatch(new AdminActions.TryUpdateCandidate({id: id, updatedCandidate: this.updateuser}));
     } else {
       console.log(this.userForm);
     }
   }
 
+  callAlertDialogDelete(id) {
+    const dialogDelete = this.dialog.open(AlertDialogComponent, {
+      data: {
+        header: 'Are you sure you want to delete this user?',
+      }
+    });
+
+    dialogDelete.afterClosed().subscribe(result => {
+      if (result) {
+        this.deleteApplicant(id);
+      }
+    });
+  }
 
   deleteApplicant(id) {
     this.store$.dispatch(new AdminActions.TryDeleteCandidate(id));
@@ -120,12 +150,18 @@ export class CandidateOverviewComponent implements OnInit {
       filter((action: Action) => action.type === AdminActions.OPERATION_ERROR)
     ).subscribe((error: { payload: any, type: string }) => {
       console.log(error.payload);
+      // this.dialogError = true;
     });
+
+    // if (!this.dialogError) {
+    //   // mensaje de OK
+    //   this.dialogError = false;
+    // }
   }
 
   changepage() {
-    this.store$.dispatch(new AdminActions.TryGetCandidates({page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize}));
-    this.adminState = this.store$.pipe(select(state => state.admin));
+    this.store$.dispatch(new AdminActions.TryGetCandidates(
+      {page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize, params: this.query}));
   }
 
 }

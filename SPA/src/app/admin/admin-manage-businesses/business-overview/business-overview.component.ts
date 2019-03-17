@@ -7,7 +7,10 @@ import {Observable} from 'rxjs';
 import * as fromAdmin from '../../store/admin.reducers';
 import {filter} from 'rxjs/operators';
 import {AdminEffects} from '../../store/admin.effects';
-import {PageEvent} from '@angular/material';
+import {MatDialog, PageEvent} from '@angular/material';
+import {BusinessAccountStates, BusinessAccountSubscriptions, BusinessIndustries} from '../../../../models/Business.model';
+import {isStringNotANumber} from '../../../../models/Offer.model';
+import {AlertDialogComponent} from '../../../shared/alert-dialog/alert-dialog.component';
 
 @Component({
   selector: 'app-business-overview',
@@ -27,29 +30,20 @@ export class BusinessOverviewComponent implements OnInit {
   isPanelOpen = false;
   isInEditMode = false;
   updateuser: any;
+  query: any;
 
-  workFields: { value: number, viewValue: string }[] = [
-    {value: 0, viewValue: 'Software Engineering'},
-    {value: 1, viewValue: 'Engineering Management'},
-    {value: 2, viewValue: 'Design'},
-    {value: 3, viewValue: 'Data Analytics'},
-    {value: 4, viewValue: 'Developer Operations'},
-    {value: 5, viewValue: 'Quality Assurance'},
-    {value: 6, viewValue: 'Information Technology'},
-    {value: 7, viewValue: 'Project Management'},
-    {value: 9, viewValue: 'Product Management'},
-  ];
-  states: { value: number, viewValue: string }[] = [
-    {value: 0, viewValue: 'Active'},
-    {value: 1, viewValue: 'Verification Pending'},
-    {value: 2, viewValue: 'Validation Pending'},
-    {value: 3, viewValue: 'Blocked'},
-  ];
-  subscriptions: { value: number, viewValue: string }[] = [
-    {value: 0, viewValue: 'Free / Pay-as-you-go'},
-    {value: 1, viewValue: 'Premium'},
-    {value: 2, viewValue: 'Elite'},
-  ];
+  workFields = Object
+    .keys(BusinessIndustries)
+    .filter(isStringNotANumber)
+    .map(key => ({value: BusinessIndustries[key], viewValue: key}));
+  states = Object
+    .keys(BusinessAccountStates)
+    .filter(isStringNotANumber)
+    .map(key => ({value: BusinessAccountStates[key], viewValue: key}));
+  subscriptions = Object
+    .keys(BusinessAccountSubscriptions)
+    .filter(isStringNotANumber)
+    .map(key => ({value: BusinessAccountSubscriptions[key], viewValue: key}));
 
   userForm: FormGroup;
 
@@ -57,11 +51,12 @@ export class BusinessOverviewComponent implements OnInit {
 
   constructor(
     private _formBuilder: FormBuilder,
-    private store$: Store<fromApp.AppState>, private adminEffects$: AdminEffects) {
+    private store$: Store<fromApp.AppState>, private adminEffects$: AdminEffects,
+    public dialog: MatDialog) {
   }
 
   ngOnInit() {
-    this.store$.dispatch(new AdminActions.TryGetBusinesses({page: 1, limit: 2}));
+    this.store$.dispatch(new AdminActions.TryGetBusinesses({page: 1, limit: 2, params: this.query}));
     this.adminState = this.store$.pipe(select(s => s.admin));
 
     this.userForm = this._formBuilder.group({
@@ -99,13 +94,27 @@ export class BusinessOverviewComponent implements OnInit {
     this.userForm.controls['name'].setValue(user.name);
     this.userForm.controls['email'].setValue(user.email);
     this.userForm.controls['vat'].setValue(user.cif);
-    // this.userForm.controls['accountState'].setValue(user.status);
+    this.userForm.controls['accountState'].setValue(user.status);
     this.userForm.controls['premium'].setValue(user.premium);
     this.userForm.controls['workField'].setValue(user.workField);
   }
 
   getWorkField(workField: number) {
     return this.workFields.find(o => o.value === workField).viewValue;
+  }
+
+  callAlertDialogUpdate(id) {
+    const dialogDelete = this.dialog.open(AlertDialogComponent, {
+      data: {
+        header: 'Are you sure you want to update this user?',
+      }
+    });
+
+    dialogDelete.afterClosed().subscribe(result => {
+      if (result) {
+        this.updateOfferer(id);
+      }
+    });
   }
 
   updateOfferer(id) {
@@ -119,22 +128,33 @@ export class BusinessOverviewComponent implements OnInit {
         'email': this.userForm.controls['email'].value,
         'cif': this.userForm.controls['vat'].value,
         'workField': this.userForm.controls['workField'].value,
-        // 'status': this.userForm.controls['accountState'].value,
+        'status': this.userForm.controls['accountState'].value,
         'premium': this.userForm.controls['premium'].value,
       };
 
       if (this.userForm.controls['password'].value !== null && this.userForm.controls['password'].value !== '') {
         this.updateuser['password'] = this.userForm.controls['password'].value;
       }
-
-      // console.log(this.updateuser);
-
       this.store$.dispatch(new AdminActions.TryUpdateBusiness({id: id, updatedBusiness: this.updateuser}));
     } else {
       console.log(this.userForm);
     }
   }
 
+
+  callAlertDialogDelete(id) {
+    const dialogDelete = this.dialog.open(AlertDialogComponent, {
+      data: {
+        header: 'Are you sure you want to delete this user?',
+      }
+    });
+
+    dialogDelete.afterClosed().subscribe(result => {
+      if (result) {
+        this.deleteOfferer(id);
+      }
+    });
+  }
 
   deleteOfferer(id) {
     this.store$.dispatch(new AdminActions.TryDeleteBusiness(id));
@@ -146,7 +166,7 @@ export class BusinessOverviewComponent implements OnInit {
   }
 
   changepage() {
-    this.store$.dispatch(new AdminActions.TryGetBusinesses({page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize}));
-    this.adminState = this.store$.pipe(select(s => s.admin));
+    this.store$.dispatch(new AdminActions.TryGetBusinesses(
+      {page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize, params: this.query}));
   }
 }

@@ -1,4 +1,4 @@
-  <div fxLayout="row">
+<div fxLayout="row">
   <mat-accordion fxFlex="99%">
     <mat-expansion-panel
       (closed)="isPanelOpen = !isPanelOpen; isInEditMode = false; userForm.reset()"
@@ -29,7 +29,8 @@
             <span>{{user.lastAccess | date:'d/M/y, HH:mm'}}</span>
           </div>
           <mat-chip-list fxHide fxShow.gt-sm>
-            <mat-chip color="primary" selected style="pointer-events: none">{{ user.state | titlecase}}</mat-chip>
+            <mat-chip color="primary" selected
+                      style="pointer-events: none">{{states[user.status].viewValue  | titlecase }}</mat-chip>
           </mat-chip-list>
         </mat-panel-description>
       </mat-expansion-panel-header>
@@ -150,11 +151,11 @@
             <span class="mat-small">{{'Account State' | uppercase}}</span>
             <br>
             <div *ngIf="!isInEditMode || !isPanelOpen">
-              Active <!--{{state[user.status].viewValue  | titlecase }}-->
+              {{states[user.status].viewValue  | titlecase }}
             </div>
             <div *ngIf="isInEditMode && isPanelOpen">
               <mat-form-field>
-                <mat-select [(value)]="user.state" formControlName="accountState">
+                <mat-select [(value)]="user.status" formControlName="accountState">
                   <mat-option *ngFor="let state of states" [value]="state.value">
                     {{state.viewValue}}
                   </mat-option>
@@ -210,9 +211,9 @@
           <button (click)="edit(user)" color="accent" mat-button>Edit</button>
         </div>
         <div *ngIf="isInEditMode && isPanelOpen">
-          <button (click)="updateOfferer(user.id)" color="accent" mat-button>Done</button>
+          <button (click)="callAlertDialogUpdate(user.id)" color="accent" mat-button type="submit">Done</button>
         </div>
-        <button (click)="deleteOfferer(user.id)" color="warn" mat-button>Delete</button>
+        <button (click)="callAlertDialogDelete(user.id)" color="warn" mat-button>Delete</button>
       </div>
     </mat-expansion-panel>
   </mat-accordion>

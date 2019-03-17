@@ -1,9 +1,9 @@
 <div
-  fxLayout="row"
   [ngClass]="{
   big: size === 'title',
   'mat-card-title': size === 'title'
-}">
-  <div class="index"><span>{{index}}</span></div>
+}"
+  fxLayout="row">
+  <div class="index" [style.background-color]="getBGColour()"><span>{{index}}</span></div>
   <p>{{name}}</p>
 </div>

@@ -6,6 +6,9 @@ import {Actions, Effect, ofType} from '@ngrx/effects';
 import {Observable, of, throwError} from 'rxjs';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
+import * as OfferManageActions from '../../offer/offer-manage/store/offer-manage.actions';
+import {Store} from '@ngrx/store';
+import * as fromApp from '../../store/app.reducers';
 
 @Injectable()
 export class AuthEffects {
@@ -257,11 +260,14 @@ export class AuthEffects {
   authLogout = this.actions$.pipe(
     ofType(AuthActions.LOGOUT),
     tap(
-      () => this.router.navigate(['/'])
+      () => {
+        this.router.navigate(['/']);
+        this.store$.dispatch(new OfferManageActions.EmptyState());
+      }
     )
   );
 
-  constructor(private actions$: Actions, private router: Router, private httpClient: HttpClient) {
+  constructor(private actions$: Actions, private router: Router, private httpClient: HttpClient, private store$: Store<fromApp.AppState>) {
   }
 
   private handleError<T>(operation = 'operation', result?: T) {

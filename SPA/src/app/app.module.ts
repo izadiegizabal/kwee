@@ -15,22 +15,28 @@ import {EffectsModule} from '@ngrx/effects';
 import {environment} from '../environments/environment';
 import {StoreDevtoolsModule} from '@ngrx/store-devtools';
 import {localStorageSync} from 'ngrx-store-localstorage';
-import {OfferDetailModule} from './shared/offer-detail/offer-detail.module';
+import {OfferDetailModule} from './offer/offer-detail/offer-detail.module';
 import {ChatModule} from './chat/chat.module';
 import {CookieService} from 'ngx-cookie-service';
 import {NgcCookieConsentConfig, NgcCookieConsentModule} from 'ngx-cookieconsent';
 import {PrivacyComponent} from './privacy/privacy.component';
-import { PaginatorModule } from './shared/paginator/paginator.module';
+import {OfferCreateModule} from './offer/offer-create/offer-create.module';
+import {JWT_OPTIONS, JwtHelperService, JwtModule} from '@auth0/angular-jwt';
+import {LandingComponent} from "./landing/landing.component";
+import {RatingModule} from './rating/rating.module';
 
 export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {
-  return localStorageSync({keys: ['auth', 'admin', 'offers', 'offer', 'profiles'], rehydrate: true})(reducer);
+  return localStorageSync({
+    keys: ['auth', 'admin', 'offers', 'offer', 'profiles', 'offerManage'],
+    rehydrate: true
+  })(reducer);
 }
 
 const metaReducers: Array<MetaReducer<any, any>> = [localStorageSyncReducer];
 
 const cookieConfig: NgcCookieConsentConfig = {
   'cookie': {
-    'domain': 'tinesoft.github.io'
+    'domain': window.location.hostname
   },
   'position': 'bottom',
   'theme': 'edgeless',
@@ -60,6 +66,7 @@ const cookieConfig: NgcCookieConsentConfig = {
   declarations: [
     AppComponent,
     PrivacyComponent,
+    LandingComponent
   ],
   imports: [
     BrowserModule,
@@ -69,8 +76,9 @@ const cookieConfig: NgcCookieConsentConfig = {
     CoreModule,
     CandidateHomeModule,
     OfferDetailModule,
-    PaginatorModule,
+    OfferCreateModule,
     AppRoutingModule,
+    RatingModule,
     FormsModule,
     ChatModule,
     ReactiveFormsModule,

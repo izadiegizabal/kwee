@@ -63,6 +63,33 @@
           <h4>Basic info</h4>
         </div>
 
+        <div fxLayout="column">
+          <h4>Profile picture</h4>
+          <p>In order to offer an excellent user experience, we require a profile photo to all the companies.</p>
+          <label for="file_profile"><img
+            alt="default profile picture"
+            fxFlex="200px"
+            fxlayout="column"
+            height="200px" id="photo_profile"
+            src="../../../../assets/img/defaultProfileImg.png"
+            width="200px"/></label>
+          <label for="file_profile">
+            <button (click)="profile.click()" class="photo-buttons" color="primary" mat-raised-button
+                    type="button">Upload photo
+            </button>
+          </label>
+          <input #profile (change)="previewFile($event)" accept="image/*"
+                 formControlName="profile" id="file_profile" style="width: 0px; height: 0px;" type="file">
+          <button (click)='previewFile(this.fileEvent)' [disabled]="! profile.value" class="photo-buttons"
+                  color="primary" mat-raised-button
+                  type="button">Crop again
+          </button>
+          <button (click)="deletePhoto()" class="photo-buttons" color="warn" mat-raised-button
+                  type="button">Delete Photo
+          </button>
+        </div>
+        <br>
+
 
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0px">
           <mat-form-field>
@@ -142,10 +169,11 @@
 
         <div class="line1" fxLayout="column">
           <mat-form-field>
-            <input [matAutocomplete]="auto" (keyup)="onKey($event)" id="address" formControlName="address1" matInput placeholder="Street and City" required>
+            <input (keyup)="onKey($event)" [matAutocomplete]="auto" formControlName="address1" id="address" matInput
+                   placeholder="Street and City" required>
             <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-              <mat-option *ngFor="let option of options; index as i" [value]="option" >
-                {{option.first}}, {{option.second}}
+              <mat-option *ngFor="let option of options; index as i" [value]="option">
+                {{option.name}}
               </mat-option>
             </mat-autocomplete>
             <mat-icon color="primary" matPrefix svgIcon="place"></mat-icon>
@@ -155,51 +183,52 @@
           </mat-form-field>
         </div>
         <br>
-
-        <div class="line1" fxLayout="column">
-          <mat-form-field>
-            <input (keyup)="onKey($event)" id="administrative" formControlName="address2" matInput placeholder="Administrative and Postcode" required>
-            <mat-icon color="primary" matPrefix svgIcon="place"></mat-icon>
-            <mat-error *ngIf="!secondFormGroup.get('address2').valid ">
-              Please enter a valid address
-            </mat-error>
-          </mat-form-field>
-        </div>
         <!--
-        <br>
+          <div class="line1" fxLayout="column">
+            <mat-form-field>
+              <input (keyup)="onKey($event)" formControlName="address2" id="administrative" matInput
+                     placeholder="Administrative and Postcode" required>
+              <mat-icon color="primary" matPrefix svgIcon="place"></mat-icon>
+              <mat-error *ngIf="!secondFormGroup.get('address2').valid ">
+                Please enter a valid address
+              </mat-error>
+            </mat-form-field>
+          </div>
 
-        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="22px" fxLayoutGap.xs="0px">
-          <mat-form-field>
-            <input formControlName="city" matInput placeholder="City" required>
-            <mat-error *ngIf="!secondFormGroup.get('city').valid">
-              Please enter a valid city
-            </mat-error>
-          </mat-form-field>
-          <mat-form-field>
-            <input formControlName="province" matInput placeholder="Province" required>
-            <mat-error *ngIf="!secondFormGroup.get('province').valid">
-              Please enter a valid province
-            </mat-error>
-          </mat-form-field>
-        </div>
+          <br>
+
+          <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="22px" fxLayoutGap.xs="0px">
+            <mat-form-field>
+              <input formControlName="city" matInput placeholder="City" required>
+              <mat-error *ngIf="!secondFormGroup.get('city').valid">
+                Please enter a valid city
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field>
+              <input formControlName="province" matInput placeholder="Province" required>
+              <mat-error *ngIf="!secondFormGroup.get('province').valid">
+                Please enter a valid province
+              </mat-error>
+            </mat-form-field>
+          </div>
 
 
-        <br>
-        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0px">
-          <mat-form-field>
-            <input formControlName="postalCode" matInput placeholder="Postal Code" required>
-            <mat-error *ngIf="!secondFormGroup.get('postalCode').valid">
-              Please enter a valid postal code
-            </mat-error>
-          </mat-form-field>
-          <mat-form-field>
-            <input formControlName="country" matInput placeholder="Country" required>
-            <mat-error *ngIf="!secondFormGroup.get('country').valid ">
-              Please enter a valid country
-            </mat-error>
-          </mat-form-field>
-        </div>
-        -->
+          <br>
+          <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0px">
+            <mat-form-field>
+              <input formControlName="postalCode" matInput placeholder="Postal Code" required>
+              <mat-error *ngIf="!secondFormGroup.get('postalCode').valid">
+                Please enter a valid postal code
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field>
+              <input formControlName="country" matInput placeholder="Country" required>
+              <mat-error *ngIf="!secondFormGroup.get('country').valid ">
+                Please enter a valid country
+              </mat-error>
+            </mat-form-field>
+          </div>
+          -->
         <br>
         <div fxLayout="row" fxLayoutAlign="end">
           <button color="primary" mat-button matStepperPrevious>Back</button>
@@ -265,15 +294,51 @@
         <br>
         <div fxLayout="row">
           <mat-form-field>
-            <input formControlName="year" matInput placeholder="Year founded">
-            <mat-icon color="primary" matPrefix svgIcon="cake"></mat-icon>
+            <input [matDatepicker]="picker" formControlName="year" matInput placeholder="Date funded" required>
+            <mat-datepicker-toggle [for]="picker" matPrefix></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <mat-error *ngIf="!thirdFormGroup.get('year').valid && !thirdFormGroup.get('year').hasError('tooOld')">
+              Please enter a valid date
+            </mat-error>
+            <mat-error
+              *ngIf="thirdFormGroup.get('year').hasError('tooOld')">
+              Your date is too old
+            </mat-error>
           </mat-form-field>
         </div>
+
+        <h4>Social Media</h4>
+        <p>You can link your social media accouts to your profile. Just type your username</p>
+        <div class="line1" fxLayout="column">
+          <mat-form-field>
+            <input formControlName="twitter" matInput placeholder="Twitter username">
+            <mat-icon class="social-icons" color="primary" fontIcon="fa-twitter" fontSet="fab" matPrefix></mat-icon>
+          </mat-form-field>
+        </div>
+        <div class="line1" fxLayout="column">
+          <mat-form-field>
+            <input formControlName="github" matInput placeholder="Github username">
+            <mat-icon class="social-icons" color="primary" fontIcon="fa-github" fontSet="fab" matPrefix></mat-icon>
+          </mat-form-field>
+        </div>
+        <div class="line1" fxLayout="column">
+          <mat-form-field>
+            <input formControlName="linkedIn" matInput placeholder="LinkedIn username">
+            <mat-icon class="social-icons" color="primary" fontIcon="fa-linkedin-in" fontSet="fab" matPrefix></mat-icon>
+          </mat-form-field>
+        </div>
+        <div class="line1" fxLayout="column">
+          <mat-form-field>
+            <input formControlName="telegram" matInput placeholder="Telegram username">
+            <mat-icon class="social-icons" color="primary" fontIcon="fa-telegram" fontSet="fab" matPrefix></mat-icon>
+          </mat-form-field>
+        </div>
+        <br>
 
 
         <br>
         <div fxLayout="row" fxLayoutAlign="end">
-          <button color="accent" mat-button routerLink="/">Done</button>
+          <button (click)="onUpdate()" color="accent" mat-button routerLink="/" type="button">Done</button>
         </div>
       </div>
     </form>

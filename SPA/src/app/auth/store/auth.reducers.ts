@@ -1,4 +1,5 @@
 import * as AuthActions from './auth.actions';
+import * as OfferManageActions from '../../offer/offer-manage/store/offer-manage.actions';
 
 export interface State {
   token: string;

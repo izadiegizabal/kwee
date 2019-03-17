@@ -6,13 +6,15 @@ export interface State {
       city: string
       createdAt: Date,
       dateBorn: Date,
-      // lastAccess: Date,
+      lastAccess: Date,
       email: string,
       id: number,
       name: string,
       premium: number,
-      // index: number,
-      // state: number,
+      index: number,
+      status: number,
+      bio: string,
+      img: string,
     }[],
     total: number,
   };
@@ -24,10 +26,13 @@ export interface State {
       email: string,
       cif: string,
       workField: number,
-      state: number,
+      status: number,
       premium: number,
       lastAccess: Date,
       createdAt: Date,
+      bio: string,
+      img: string,
+      address: string,
     }[],
     total: number;
   };
@@ -51,22 +56,25 @@ export function adminReducer(state = initialState, action: AdminActions.AdminAct
         businesses: action.payload
       };
     case AdminActions.UPDATE_CANDIDATE:
-      const updatedCandidates = [...state.candidates.data];
-      for (const i in updatedCandidates) {
-        if (updatedCandidates[i].id === action.payload.id) {
-          updatedCandidates[i] = {
-            ...updatedCandidates[i],
+      const updatedCandidate = [...state.candidates.data];
+      const totalCandidates = state.candidates.total;
+      for (const i in updatedCandidate) {
+        if (updatedCandidate[i].id === action.payload.id) {
+          updatedCandidate[i] = {
+            ...updatedCandidate[i],
             ...action.payload.updatedCandidate
           };
           break;
         }
       }
+      const dataCandidates = {data: updatedCandidate, total: totalCandidates};
       return {
         ...state,
-        candidates: updatedCandidates
+        candidates: dataCandidates
       };
     case AdminActions.UPDATE_BUSINESS:
       const updatedBusinesses = [...state.businesses.data];
+      const totalBusinesses = state.businesses.total;
       for (const i in updatedBusinesses) {
         if (updatedBusinesses[i].id === action.payload.id) {
           updatedBusinesses[i] = {
@@ -76,9 +84,10 @@ export function adminReducer(state = initialState, action: AdminActions.AdminAct
           break;
         }
       }
+      const dataBusinessess = {data: updatedBusinesses, total: totalBusinesses};
       return {
         ...state,
-        businesses: updatedBusinesses
+        businesses: dataBusinessess
       };
     case AdminActions.DELETE_CANDIDATE:
       const candidatesDel = [...state.candidates.data];

@@ -7,7 +7,8 @@
       <mat-expansion-panel-header>
         <mat-panel-title fxFlex="75%"
                          fxFlex.gt-lg="30%" fxFlex.gt-md="35%" fxFlex.gt-sm="40%" fxLayoutAlign="start center">
-          <app-offerer-name-overview [index]="user.index? user.index: 88" [name]="user.name"></app-offerer-name-overview>
+          <app-offerer-name-overview [index]="user.index? user.index: 88"
+                                     [name]="user.name"></app-offerer-name-overview>
         </mat-panel-title>
         <mat-panel-description
           fxFlex="25%"
@@ -28,7 +29,8 @@
             <span>{{user.lastAccess| date:'d/M/y, HH:mm'}}</span>
           </div>
           <mat-chip-list fxHide fxShow.gt-sm>
-            <mat-chip color="primary" selected style="pointer-events: none">{{user.state + '' | titlecase}}</mat-chip>
+            <mat-chip color="primary" selected
+                      style="pointer-events: none">{{states[user.status].viewValue  | titlecase }}</mat-chip>
           </mat-chip-list>
         </mat-panel-description>
       </mat-expansion-panel-header>
@@ -108,11 +110,11 @@
             <span class="mat-small">{{'Account State' | uppercase}}</span>
             <br>
             <div *ngIf="!isInEditMode || !isPanelOpen">
-              Active<!--{{ states[user.status].viewValue| titlecase}}-->
+              {{ states[user.status].viewValue| titlecase}}
             </div>
             <div *ngIf="isInEditMode && isPanelOpen">
               <mat-form-field>
-                <mat-select [(value)]="user.state" formControlName="accountState">
+                <mat-select [(value)]="user.status" formControlName="accountState">
                   <mat-option *ngFor="let state of states" [value]="state.value">
                     {{state.viewValue}}
                   </mat-option>
@@ -164,9 +166,9 @@
           <button (click)="edit(user)" color="accent" mat-button>Edit</button>
         </div>
         <div *ngIf="isInEditMode && isPanelOpen">
-          <button (click)="updateApplicant(user.id)" color="accent" mat-button type="submit">Done</button>
+          <button (click)="callAlertDialogUpdate(user.id)" color="accent" mat-button type="submit">Done</button>
         </div>
-        <button (click)="deleteApplicant(user.id)" color="warn" mat-button>Delete</button>
+        <button (click)="callAlertDialogDelete(user.id)" color="warn" mat-button>Delete</button>
       </div>
     </mat-expansion-panel>
   </mat-accordion>
@@ -178,3 +180,4 @@
                (page)="pageEvent = $event; changepage();">
 </mat-paginator>
 
+<!--deleteApplicant(user.id)-->

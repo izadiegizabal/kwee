@@ -1,3 +1,5 @@
+@import "~src/common-utils";
+
 .signupButton button {
   width: 250px;
 
@@ -53,4 +55,23 @@ mat-datepicker-toggle {
 
 .divskill {
   padding: 0 !important;
+}
+
+img {
+  cursor: pointer;
+  object-fit: cover;
+  float: left;
+  margin: 0 16px 16px 0;
+  border-radius: 4px;
+}
+
+.social-icons {
+  font-size: 1.1rem;
+}
+
+.photo-buttons {
+  max-width: 200px;
+  min-width: 150px;
+  width: 30%;
+  margin: .5em 0;
 }
