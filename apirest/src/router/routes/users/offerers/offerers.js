@@ -498,6 +498,46 @@ module.exports = (app, db) => {
         }
     });
 
+    app.delete('/offerer/applications', async(req, res, next) => {
+        try {
+            let id = tokenId.getTokenId(req.get('token'));
+            let offerer = await db.offerers.findOne({ where: { userId: id }});
+            let offers = await offerer.getOffers();
+            let applications = await db.applications.findAll();
+
+            if ( offerer ) {
+                let applicationsAux = [];
+                let num = 1;
+                offers.forEach(offer => {
+                    applications.forEach(application => {
+                        if ( offer.id == application.fk_offer && (application.status == 0 || application.status == 1) ){
+                            applicationsAux.push(application);
+                        }
+                    });
+                });
+
+                applications = applicationsAux;
+
+                if ( applications.length > 0 ){
+                    applications.forEach(async element => {
+                        await db.applications.update({status: 5}, {where: { id: element.id }});
+                    });
+                    return res.status(200).json({
+                        ok: true,
+                        message: "Applications with status pending or fav are now with status closed"
+                    });
+                } else {
+                    return next({ type: 'error', error: 'No applications pending or fav in this offer'});
+                }
+            } else {
+                return next({ type: 'error', error: 'You are not offerer'});
+            }
+
+        } catch (err) {
+            return next({ type: 'error', error: err.message });
+        }
+    });
+
     // DELETE by themself
     app.delete('/offerer', async(req, res, next) => {
         try {
