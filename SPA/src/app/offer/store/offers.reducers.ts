@@ -28,6 +28,7 @@ export interface State {
       offererIndex: number,
     }[],
     total: number,
+    message: string;
   };
 }
 

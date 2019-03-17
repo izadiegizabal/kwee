@@ -83,7 +83,7 @@ export class CandidateHomeComponent implements OnInit {
       this.query = {...this.query, datePublished: {'gte': this.query.datePublished}};
     }
 
-   // console.log(this.query);
+    console.log(this.query);
 
     this.store$.dispatch(new OffersActions.TryGetOffers({
       page: 1,
