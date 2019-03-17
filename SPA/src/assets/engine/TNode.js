@@ -5,7 +5,7 @@ import {TEntity, getEntity, setEntity} from './commons.js';
 class TNode {
     // WARNING: TE FATHER IS REQUIRED
     constructor(father, entity, children) {
-        this.entity = entity;
+        this.entity = this.setEntity(entity);
         this.father = father;
         this.children = [];
         if (children) {
@@ -35,6 +35,7 @@ class TNode {
     setEntity(_entity) {
         let entity = getEntity();
         this.entity = _entity;
+        
         // WARNING: add to the Lights and Cameras arrays
         if (this.entity instanceof TLight) {
             entity.Lights.push(this);
@@ -43,6 +44,7 @@ class TNode {
             entity.Views.push(this);
         }
         setEntity(entity);
+        return this.entity;
     }
 
     getEntity() {
@@ -111,6 +113,8 @@ function getLigthsViews(obj) {
 // calculate all the light matices from the Lighs static array and drop them into the AuxLights array
 function calculateLights() {
   let aux = glMatrix.mat4.create();
+  console.log("TNode allLights:");
+  console.log( TEntity.Lights);
   TEntity.Lights.forEach((e) => {
     goToRoot(e);
     for (let i = TEntity.Aux.length - 1; i >= 0; i--) {
@@ -124,6 +128,8 @@ function calculateLights() {
 // same as calculateLights but for the Cameras
 function calculateViews() {
   let aux = glMatrix.mat4.create();
+  console.log("TNode allCameras:");
+  console.log(TEntity.Views);
   TEntity.Views.forEach((e) => {
     goToRoot(e);
     for (let i = TEntity.Aux.length - 1; i >= 0; i--) {
@@ -138,6 +144,7 @@ function calculateViews() {
 // go from the leaf to the root
 function goToRoot(obj) {
   if (obj.entity instanceof TTransform) {
+      console.log("pusheo mat TNode");
     TEntity.Aux.push(obj.entity.matrix);
   }
   if (obj.father) {

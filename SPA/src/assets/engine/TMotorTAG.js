@@ -10,16 +10,21 @@ class TMotorTAG{
         
         this.allLights = [];
         this.activeLights = [];
+        this.positionLights = [];
 
         this.allCameras = [];
         this.activeCamera = -1;
+        this.positionCameras = [];
+
+        this.aux = [];
 
         this.resourceManager = resourceManager;
-        console.log('TMotor creado');
     }
 
     createRootNode(){
-        TMotorTAG.scene = new TNode(null,'root',null);
+        if(this.scene==null){
+            TMotorTAG.scene = new TNode(null,null,null);
+        }
         return TMotorTAG.scene;
     }
 
@@ -33,19 +38,19 @@ class TMotorTAG{
 
         // node rotation
         let TransfRotaCam = new TTransform();
-        let nodeRotation = createNode(father, TransfRotaCam );
+        let nodeRotation = this.createNode(father, TransfRotaCam );
 
         // node traslation
         let TransfTransCam = new TTransform();
-        let nodeTranslation = createNode(nodeRotation, TransfTransCam );
-          
+        let nodeTranslation = this.createNode(nodeRotation, TransfTransCam );
+
         // isPerspective, near, far, right, left, top, bottom
         let cam = new TCamera(isPerspective, near, far, right, left, top, bottom);
-        createNode(nodeTranslation, cam);
+        let NCam = this.createNode(nodeTranslation, cam);
 
-        this.allCameras.push(cam);
+        this.allCameras.push(NCam);
 
-        return cam;
+        return NCam;
     }
 
     deleteCamera( TNodeCam ) {
@@ -134,20 +139,14 @@ class TMotorTAG{
   
         var coso = [x0, y0, z0, 0 , x1, y1, z1, 0 , x2, y2, z2, 0,  -(x0 * eyex + x1 * eyey + x2 * eyez), -(y0 * eyex + y1 * eyey + y2 * eyez), -(z0 * eyex + z1 * eyey + z2 * eyez), 1];
   
-        
-  
-  
-        
-  
+
         var out = glMatrix.mat4.create();
         out = glMatrix.mat4.set(out, x0, y0, z0, 0, x1, y1, z1, 0, x2, y2, z2, 0, -(x0 * eyex + x1 * eyey + x2 * eyez), -(y0 * eyex + y1 * eyey + y2 * eyez), -(z0 * eyex + z1 * eyey + z2 * eyez), 1);   
   
         out = glMatrix.mat4.invert(out, out);
   
         TNodeCam.father.entity.setTranslation([out[12], out[13], out[14]]);
-        console.log(TNodeCam.father.entity);
         TNodeCam.father.father.entity.setRotation([out[0], out[1], out[2], out[4], out[5], out[6], out[8], out[9], out[10]]);
-        console.log(TNodeCam.father.father.entity);
   
   
   
@@ -164,27 +163,29 @@ class TMotorTAG{
 
         // node rotation
         let TransfRotaLight = new TTransform();
-        let nodeRotation = createNode(father, TransfRotaLight );
+        let nodeRotation = this.createNode(father, TransfRotaLight );
 
         // node traslation
         let TransfTransLight = new TTransform();
-        let nodeTranslation = createNode(nodeRotation, TransfTransLight );
+        let nodeTranslation = this.createNode(nodeRotation, TransfTransLight );
           
         // typ, intensity, specular, direction, s
         let light = new TLight(typ, intensity, specular, direction, s);
-        createNode(nodeTranslation, light);
+        let NLight = this.createNode(nodeTranslation, light);
 
-        this.allLights.push(light);
+        this.allLights.push(NLight);
 
-        return light;
+        return NLight;
     }
 
+    // returns TNodeMesh
     async loadMesh(father, file){
 
         //Crear la malla a partir del recurso malla y devolverla
         let meshResource = await this.resourceManager.getResource(file); 
+
         let mesh = new TMesh(meshResource);
-        return createNode(father, mesh);
+        return this.createNode(father, mesh);
     }
 
     draw(){
@@ -207,6 +208,50 @@ class TMotorTAG{
 
     /*Métodos para el registro y manejo de las cámaras Métodos para el registro 
     y manejo de las luces Métodos para el registro y manejo de los viewports*/
+
+
+    // calculate all the light matices from the Lighs static array and drop them into the AuxLights array
+    calculateLights() {
+        let aux = glMatrix.mat4.create();
+        
+        this.allLights.forEach((e) => {
+            this.goToRoot(e);
+            
+            for (let i = this.aux.length - 1; i >= 0; i--) {
+                glMatrix.mat4.mul(aux, aux, this.aux[i])
+            }
+            this.allLights.push(aux);
+
+            this.aux = [];
+        });
+    }
+    
+    // same as calculateLights but for the Cameras
+    calculateViews() {
+        let aux = glMatrix.mat4.create();
+        
+        this.allCameras.forEach((e) => {
+        this.goToRoot(e);
+        for (let i = this.aux.length - 1; i >= 0; i--) {
+            glMatrix.mat4.mul(aux,  aux, this.aux[i])
+            glMatrix.mat4.invert(aux, aux);
+        }
+        this.positionCameras.push(aux);
+
+        this.aux = [];
+        });
+    }
+    
+    // go from the leaf to the root
+    goToRoot(obj) {
+        if (obj.entity instanceof TTransform) {
+            this.aux.push(obj.entity.matrix);
+        }
+        if (obj.father) {
+            this.goToRoot(obj.father);
+        }
+    }
+  
 
 }
 

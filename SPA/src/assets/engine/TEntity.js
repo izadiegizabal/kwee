@@ -268,25 +268,9 @@ TEntity.stack = new Stack();
 
     constructor(mesh) {
         super();
-        return (async () => {
-            // Mesh = TResourceMesh();
-            if(mesh == undefined){
-                console.log("NO MESH in constructor TMesh(undefined)");
-            }
-            else{
-                this.mesh = await this.loadMesh(mesh);
-            }
-            return this;
-        })();
-        
-
+        this.mesh = mesh;
+        return this;
     }
-
-	async loadMesh(file){
-        let resourceMesh = new TResourceMesh();
-        await resourceMesh.loadFile(file);
-        return resourceMesh;
-	}
 
 	beginDraw() {
 		if(this.mesh !== null){

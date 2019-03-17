@@ -8,11 +8,11 @@ var angle = 30;
 
 function shared() {
     canvas = document.getElementById('kweelive');
-    // console.log(canvas);
-    gl = canvas.getContext('webgl');
-    // console.log(gl);
+    
+    gl = canvas.getContext('webgl2');
+    
     program = gl.createProgram();
-    // console.log(program);
+    
     texture = gl.createTexture();
 }
 

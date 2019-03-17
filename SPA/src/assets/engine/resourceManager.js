@@ -34,6 +34,7 @@ class TResourceManager {
         let type = name.split('.');
 
         if( resource == false ){
+            // console.log(name + " DOESN'T EXISTS. Creating...");
             // create resource
             switch(type[1]){
                 case 'json': {
@@ -56,7 +57,7 @@ class TResourceManager {
                 case 'vs': 
                 case 'fs': {
                     // shader
-                    console.log("-> Creating TResourceShader " + name + "...");
+                    // console.log("-> Creating TResourceShader " + name + "...");
                     resource = new TResourceShader(name);
                     break;
                 }
@@ -70,29 +71,30 @@ class TResourceManager {
         }
         else{
             // return resource
+            // console.log(name + " EXISTS. Returning...");
             
             switch(type[1]){
                 case 'json': {
-                    let value = this.map.get(name); 
-                    resource = value.json;
-                    
+                    let value = await this.map.get(name); 
+                    resource = value;
+
                     break;
                 }
                 case 'texture': {
-                    let value = this.map.get(name); 
+                    let value = await this.map.get(name); 
                     resource = value.texture;
                     
                     break;
                 }
                 case 'mtl': {
-                    let value = this.map.get(name); 
+                    let value = await this.map.get(name); 
                     resource = value.mtl;
                     
                     break;
                 }
                 case 'vs': 
                 case 'fs': {
-                    let value = this.map.get(name); 
+                    let value = await this.map.get(name); 
                     resource = value.shader;
 
                     break;
@@ -177,7 +179,6 @@ class TResourceMesh extends TResource{
 
         }
         else{
-            console.log("sin mat");
 
             this.vertices = jsonMesh.vertices;
             this.triVertices = jsonMesh.indices;
@@ -188,7 +189,7 @@ class TResourceMesh extends TResource{
 
         this.nTris = this.triVertices.length;
         this.nVertices = this.vertices.length;
-
+        
         return this;
     }
 
@@ -286,7 +287,8 @@ class TResourceMesh extends TResource{
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triVertices), gl.DYNAMIC_DRAW);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 
-      ///////////////////////////////////////////////////////////////////////////////////////////     Normals & TexCoords
+
+/* Textures
         var susanTexCoords = this.textures;
         var susanNormals = this.normals;
 
@@ -323,7 +325,7 @@ class TResourceMesh extends TResource{
           0
         );
         gl.enableVertexAttribArray(normalAttribLocation);
-
+*/
         //
         // Create texture
         //
@@ -351,7 +353,7 @@ class TResourceMesh extends TResource{
         // rotation stuff
 
         var rotation = glMatrix.mat4.create();
-        glMatrix.mat4.rotate(rotation, worldMatrix, angle, [1, 0, 0]);
+        glMatrix.mat4.rotate(rotation, worldMatrix, angle, [0, 1, 0]);
 
         var matWorldUniformLocation = gl.getUniformLocation(program, 'mWorld');
         gl.uniformMatrix4fv(matWorldUniformLocation, false, rotation);
