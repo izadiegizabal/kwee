@@ -51,10 +51,20 @@ import {
     texture
 } from './commons.js';
 
+let draw = true;
+let manager = null;
+let allowActions = {
+  value: false
+};
+
 async function mainInit(){
+  return new Promise(resolve => {
+
+  gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   console.log('== Loading Image ==');
   const image = new Image();
-  image.onload = function(){
+  image.onload = async function(){
     console.log('== Image loaded ==');
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
@@ -70,22 +80,109 @@ async function mainInit(){
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.uniform1i(program.sampler, 0);
 
+
+
+    manager = new TResourceManager();
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         SHADERS
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    let VShader = await manager.getResource('shader.vs');
+    let FShader = await manager.getResource('shader.fs');
+
+    var vertexShader = gl.createShader(gl.VERTEX_SHADER);
+    var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+
+    gl.shaderSource(vertexShader, manager.map.get('shader.vs').shader);
+    gl.shaderSource(fragmentShader, manager.map.get('shader.fs').shader);
+
+    gl.compileShader(vertexShader);
+    if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
+      console.error('ERROR compiling vertex shader', gl.getShaderInfoLog(vertexShader));
+      return;
+    }
+
+    gl.compileShader(fragmentShader);
+    if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
+      console.error('ERROR compiling fragment shader', gl.getShaderInfoLog(fragmentShader));
+      return;
+    }
+
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      console.error('ERROR linking program', gl.getProgramInfoLog(program));
+      return;
+    }
+    gl.validateProgram(program);
+    if (!gl.getProgramParameter(program, gl.VALIDATE_STATUS)) {
+      console.error('ERROR validating program', gl.getProgramInfoLog(program));
+      return;
+    }
     console.log('== Ready to run ==');
-    mainR();
+    draw = true;
+    allowActions.value = true;
+    resolve(allowActions.value);
   }
   image.src = '../assets/assets/textures/continents.jpg';
+  });
+}
+
+function pls (){
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve('asd');
+    }, 2000);
+  });
+}
+
+async function resetCanvas(){
+  draw = false;
+  gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+
+  /*
+    ///////// DELETE BUFFERS
+    var numTextureUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
+    for (var unit = 0; unit < numTextureUnits; ++unit) {
+      gl.activeTexture(gl.TEXTURE0 + unit);
+      gl.bindTexture(gl.TEXTURE_2D, null);
+      gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+    }
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+    gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+    // Delete all your resources
+    // Note!!!: You'd have to change this code to delete the resources YOU created.
+    gl.deleteTexture(someTexture);
+    gl.deleteTexture(someOtherTexture);
+    gl.deleteBuffer(someBuffer);
+    gl.deleteBuffer(someOtherBuffer);
+    gl.deleteRenderbuffer(someRenderbuffer);
+    gl.deleteFramebuffer(someFramebuffer);
+
+    ///////// DELETE ATTRIBUTES
+    // var buf = gl.createBuffer();
+    // gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    // var numAttributes = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
+    // for (var attrib = 0; attrib < numAttributes; ++attrib) {
+    //     gl.vertexAttribPointer(attrib, 1, gl.FLOAT, false, 0, 0);
+    // }
+
+    ///////// LOOSE ALL
+    // gl.getExtension('WEBGL_lose_context').loseContext();
+  */
 }
 
 
-async function main(){
-
+async function mainR( model ){
+  draw = true;
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////                                         INIT CONFIG
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  
-  let manager = new TResourceManager();
-  let motor = new TMotorTAG(manager);
-  let scene = motor.createRootNode();
 
   // gl.clearColor(0.266, 0.294, 0.329, 1.0); // our grey
   gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
@@ -95,43 +192,6 @@ async function main(){
   gl.frontFace(gl.CCW);
   gl.cullFace(gl.BACK);
 
-
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////                                         SHADERS
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  let VShader = await manager.getResource('shader.vs');
-  let FShader = await manager.getResource('shader.fs');
-
-  var vertexShader = gl.createShader(gl.VERTEX_SHADER);
-  var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-
-  gl.shaderSource(vertexShader, manager.map.get('shader.vs').shader);
-  gl.shaderSource(fragmentShader, manager.map.get('shader.fs').shader);
-
-  gl.compileShader(vertexShader);
-  if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
-    console.error('ERROR compiling vertex shader', gl.getShaderInfoLog(vertexShader));
-    return;
-  }
-
-  gl.compileShader(fragmentShader);
-  if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
-    console.error('ERROR compiling fragment shader', gl.getShaderInfoLog(fragmentShader));
-    return;
-  }
-
-  gl.attachShader(program, vertexShader);
-  gl.attachShader(program, fragmentShader);
-  gl.linkProgram(program);
-  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    console.error('ERROR linking program', gl.getProgramInfoLog(program));
-    return;
-  }
-  gl.validateProgram(program);
-  if (!gl.getProgramParameter(program, gl.VALIDATE_STATUS)) {
-    console.error('ERROR validating program', gl.getProgramInfoLog(program));
-    return;
-  }
 
   gl.useProgram(program);
 
@@ -152,14 +212,19 @@ async function main(){
   // let TransfRotaCoche2 = new TTransform();
   // let TransfRotaCoche3 = new TTransform();
 
-  // RotaLuz.setEntity(TransfRotaLuz);
-  // RotaCam.setEntity(TransfRotaCam2);
-  // RotaCoche.setEntity(TransfRotaCoche);
-  // RotaCoche2.setEntity(TransfRotaCoche2);
-
+  RotaLuz.setEntity(TransfRotaLuz);
+  RotaCam.setEntity(TransfRotaCam2);
+  RotaCoche.setEntity(TransfRotaCoche);
+  RotaCoche2.setEntity(TransfRotaCoche2);
+  let MallaChasis = null;
   let EntLuz = new TLight();
   let EntCam = new TCamera();
-  let MallaChasis = await new TMesh('earth_fbx.json');
+  if (model === 'hollow') {
+    MallaChasis = await new TMesh('earth_fbx.json');
+  } else {
+    MallaChasis = await new TMesh('textured_earth.json');
+  }
+
 
 
   //let MallaChasi2 = new TMesh();
@@ -264,18 +329,20 @@ async function main(){
   var sunlightDirUniformLocation = gl.getUniformLocation(program, 'sun.direction');
   var sunlightIntUniformLocation = gl.getUniformLocation(program, 'sun.color');
 
-  gl.uniform3f(ambientUniformLocation, 0.4, 0.4, 0.4);
-  gl.uniform3f(sunlightDirUniformLocation, 3.0, 4.0, -2.0);
-  gl.uniform3f(sunlightIntUniformLocation, 0.9, 0.9, 0.9);
+  gl.uniform3f(ambientUniformLocation, 0.266, 0.294, 0.329);
+  gl.uniform3f(sunlightDirUniformLocation, 0.0, 0.0, 2.0);
+  gl.uniform3f(sunlightIntUniformLocation, 1, 1, 1);
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////                                         LOOP
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   var loop = function () {
-    gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    // changeAngle(performance.now() / 1000 / 6 * 2 * Math.PI);
-    scene.draw();
-    requestAnimationFrame(loop);
+    if(draw) {
+      gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+      changeAngle(performance.now() / 1000 / 6 * 2 * Math.PI);
+      Escena.draw();
+      requestAnimationFrame(loop);
+    }
   };
   requestAnimationFrame(loop);
 
@@ -484,5 +551,8 @@ async function mainR(){
 export {
     mainInit,
     mainR,
-    main
+    init,
+    resetCanvas,
+    allowActions,
+  pls
 }

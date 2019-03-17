@@ -19,7 +19,8 @@ import {
 import { TMotorTAG } from '../../assets/engine/TMotorTAG.js';
 import { shared, canvas } from '../../assets/engine/commons.js';
 
-import { mainR, mainTest, main } from '../../assets/engine/main.js';
+import { main, mainInit, mainR, mainTest, resetCanvas, allowActions, pls} from '../../assets/engine/main.js';
+import {__await} from 'tslib';
 
 // import { main } from '../../assets/engine/run.js'
 
@@ -38,15 +39,37 @@ import { mainR, mainTest, main } from '../../assets/engine/main.js';
   styleUrls: ['./kwee-live.component.scss']
 })
 export class KweeLiveComponent implements OnInit {
+
+  disabled: boolean;
+
   @ViewChild('rendererContainer') rendererContainer: ElementRef;
 
   constructor() {
+    this.disabled = true;
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    this.disabled = false;
     shared();
-    // mainR();
-    main();
+    await mainInit();
+  }
+
+  getAllow() {
+    return !allowActions.value;
+  }
+
+  drawHollow() {
+    resetCanvas();
+    mainR('hollow');
+  }
+
+  drawThicc() {
+    resetCanvas();
+    mainR('notHollow');
+  }
+
+  async reset() {
+    resetCanvas();
   }
 
 }

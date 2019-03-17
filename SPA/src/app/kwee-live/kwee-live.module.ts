@@ -3,6 +3,7 @@ import {SharedModule} from '../shared/shared.module';
 import {RouterModule} from '@angular/router';
 import {KweeLiveComponent} from './kwee-live.component';
 import {KweeLiveRoutingModule} from './kwee-live-routing.module';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 
 @NgModule({
@@ -12,7 +13,8 @@ import {KweeLiveRoutingModule} from './kwee-live-routing.module';
   imports: [
     SharedModule,
     RouterModule,
-    KweeLiveRoutingModule
+    KweeLiveRoutingModule,
+    MatProgressSpinnerModule
   ],
   exports: [
     KweeLiveComponent
