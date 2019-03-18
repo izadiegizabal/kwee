@@ -72,6 +72,7 @@ export class AdminEffects {
             ok: boolean,
             data: any[],
             total: number,
+            message: string,
           }) => {
             return {
               type: AdminActions.SET_BUSINESSES,
