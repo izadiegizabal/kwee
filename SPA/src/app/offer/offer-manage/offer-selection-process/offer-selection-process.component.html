@@ -1,5 +1,5 @@
-<div fxLayout="column">
-  <div fxFlex="100%" style="margin: 8px 0 32px 16px">
+<div fxFlex="100%" fxLayout="column">
+  <div style="margin: 8px 0 32px 16px">
     <h2 class="mat-h1">Select the candidate that suits most the job</h2>
   </div>
   <mat-sidenav-container
@@ -8,7 +8,7 @@
     <mat-sidenav-content
       fxFlex="96%" fxFlex.gt-sm="75%"
       fxLayout="column"
-      fxLayoutAlign="start stretch"
+      fxLayoutAlign="start center"
       fxLayoutGap="16px" fxLayoutGap.gt-sm="32px">
 
       <div [ngClass]="{'hide': showStepper}" fxLayout="row" fxLayoutAlign="center center" fxFlex="100%">
@@ -185,8 +185,6 @@
           </div>
         </mat-step>
       </mat-horizontal-stepper>
-
-      <!-- PRESELECTION -->
 
       <!--<div *ngIf="(adminState | async).candidates" fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">-->
       <!--<app-candidate-preview-card *ngFor="let user of (adminState | async).candidates.data;" [user]="user">-->

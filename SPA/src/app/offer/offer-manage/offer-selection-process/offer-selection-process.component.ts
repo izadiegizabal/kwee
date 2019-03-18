@@ -273,6 +273,7 @@ export class OfferSelectionProcessComponent implements OnInit {
   isSelected(selected: boolean, candidate: CandidatePreview) {
     if (selected) {
       if (candidate.applicationStatus !== 2) {
+        // TODO: Show dialog of confirmation
         this.store$.dispatch(new OfferManageActions
           .TryChangeApplicationStatus({
             candidateId: candidate.id,
@@ -286,6 +287,7 @@ export class OfferSelectionProcessComponent implements OnInit {
 
   isRejected(rejected: boolean, candidate: CandidatePreview) {
     if (rejected) {
+      // TODO: show dialog of confirmation
       this.store$.dispatch(new OfferManageActions.TryRejectApplication(candidate.applicationId));
       console.log('Reject application ' + candidate.applicationId);
     }
