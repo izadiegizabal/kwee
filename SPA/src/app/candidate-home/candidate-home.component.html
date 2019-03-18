@@ -11,8 +11,6 @@
   </mat-sidenav>
 
 
-
-
   <mat-sidenav-content
     fxFlex="96%" fxFlex.gt-sm="75%"
     fxLayout="column"
@@ -25,7 +23,7 @@
       <app-searchbar
         fxFlex="40%" fxFlex.lt-lg="60%" (search)="onSearch($event)">
       </app-searchbar>
-      <app-orderby-button style="padding-top: 4px"></app-orderby-button>
+      <app-orderby-button [orderBy]="order" style="padding-top: 4px" (changeSelectedValue) = "getOrderby($event)"></app-orderby-button>
       <div style="padding-top: 4px">
         <button color="primary"
                 fxHide.gt-sm
@@ -34,7 +32,7 @@
         </button>
       </div>
     </div>
-      <div *ngIf="!(offersState | async).offers.data" fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">
+      <div *ngIf="!(offersState | async).offers.data && (offersState | async).offers.message === 'No results'" fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">
         <h4 class="mat-h3">No results found.</h4>
         <p class="mat-typography">Your search returned no results. Try shortening or rephrasing your search.</p>
       </div>
