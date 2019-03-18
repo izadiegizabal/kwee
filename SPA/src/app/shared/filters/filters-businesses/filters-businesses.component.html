@@ -14,7 +14,7 @@
 
     <mat-form-field>
       <input formControlName="location" matInput placeholder="Location" type="text">
-      <button (click)="filters.controls['location'].reset('')" *ngIf="filters.controls['location'].value"
+      <button type="button" (click)="filters.controls['location'].reset('')" *ngIf="filters.controls['location'].value"
               aria-label="Clear" mat-button
               mat-icon-button
               matSuffix>
@@ -74,6 +74,6 @@
   </form>
 
   <div fxLayout="row" fxLayoutAlign="end end" style="margin-top: 16px" fxHide.gt-sm>
-    <button mat-raised-button color="primary" (click)="applyFilters()">Apply Filters</button>
+    <button type="button" mat-raised-button color="primary" (click)="applyFilters()">Apply Filters</button>
   </div>
 </div>
