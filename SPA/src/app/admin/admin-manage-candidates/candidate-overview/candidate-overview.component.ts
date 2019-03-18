@@ -35,6 +35,7 @@ export class CandidateOverviewComponent implements OnInit {
 
   adminState: Observable<fromAdmin.State>;
   query: any;
+  orderby = '0';
 
   states = Object
     .keys(CandidateAccountStatus)
@@ -54,7 +55,7 @@ export class CandidateOverviewComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store$.dispatch(new AdminActions.TryGetCandidates({page: 1, limit: 2, params: this.query}));
+    this.store$.dispatch(new AdminActions.TryGetCandidates({page: 1, limit: 2, params: this.query, order: this.orderby}));
     this.adminState = this.store$.pipe(select(state => state.admin));
 
     this.userForm = this._formBuilder.group({
@@ -161,7 +162,7 @@ export class CandidateOverviewComponent implements OnInit {
 
   changepage() {
     this.store$.dispatch(new AdminActions.TryGetCandidates(
-      {page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize, params: this.query}));
+      {page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize, params: this.query, order: this.orderby}));
   }
 
 }

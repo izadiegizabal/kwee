@@ -7,6 +7,7 @@ import * as fromApp from '../../store/app.reducers';
 import * as AdminActions from '../../admin/store/admin.actions';
 import {BreakpointObserver} from '@angular/cdk/layout';
 import {ActivatedRoute, Router} from '@angular/router';
+import * as OffersActions from '../../offer/store/offers.actions';
 
 @Component({
   selector: 'app-search-candidates',
@@ -32,6 +33,16 @@ export class SearchCandidatesComponent implements OnInit {
   // MatPaginator Output
   pageEvent: PageEvent;
 
+  orderby = '0';
+
+  order: { value: string, viewValue: string }[] =
+    [
+      {value: '0', viewValue: 'Relevance'},
+      {value: 'index', viewValue: 'Kwee Index'},
+      {value: 'name', viewValue: 'Name'},
+      {value: 'dateBorn', viewValue: 'Date Born'},
+    ];
+
 
   constructor(
     private store$: Store<fromApp.AppState>,
@@ -41,7 +52,7 @@ export class SearchCandidatesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store$.dispatch(new AdminActions.TryGetCandidates({page: 1, limit: 5, params: this.query}));
+    this.store$.dispatch(new AdminActions.TryGetCandidates({page: 1, limit: 5, params: this.query, order: this.orderby}));
     this.adminState = this.store$.pipe(select(state => state.admin));
 
     this.activatedRoute.queryParams
@@ -55,7 +66,8 @@ export class SearchCandidatesComponent implements OnInit {
     this.store$.dispatch(new AdminActions.TryGetCandidates({
       page: this.pageEvent.pageIndex + 1,
       limit: this.pageEvent.pageSize,
-      params: this.query
+      params: this.query,
+      order: this.orderby
     }));
   }
 
@@ -74,6 +86,18 @@ export class SearchCandidatesComponent implements OnInit {
       searchParams = null;
     }
     this.router.navigate(['/search-candidates'], {queryParams: {name: searchParams}, queryParamsHandling: 'merge'});
+  }
+
+  getOrderby(order: string) {
+    // console.log(order);
+    this.orderby = order;
+
+    this.store$.dispatch(new AdminActions.TryGetCandidates({
+      page: 1,
+      limit: this.pageSize,
+      params: this.query,
+      order: this.orderby
+    }));
   }
 
 
@@ -140,7 +164,8 @@ export class SearchCandidatesComponent implements OnInit {
     this.store$.dispatch(new AdminActions.TryGetCandidates({
       page: 1,
       limit: this.pageSize,
-      params: this.query
+      params: this.query,
+      order: this.orderby
     }));
 
     if (this.paginator) {

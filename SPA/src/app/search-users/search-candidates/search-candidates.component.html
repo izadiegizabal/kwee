@@ -27,7 +27,7 @@
         <app-searchbar
           fxFlex="40%" fxFlex.lt-lg="60%" (search)="onSearch($event)">
         </app-searchbar>
-        <app-orderby-button style="padding-top: 4px"></app-orderby-button>
+        <app-orderby-button [orderBy]="order" style="padding-top: 4px" (changeSelectedValue) = "getOrderby($event)"></app-orderby-button>
         <div style="padding-top: 4px">
           <button color="primary"
                   fxHide.gt-sm
