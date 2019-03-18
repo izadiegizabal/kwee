@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {select, Store} from '@ngrx/store';
+import {Action, select, Store} from '@ngrx/store';
 import {FormArray, FormBuilder, FormControl, FormGroup} from '@angular/forms';
 import {WorkFields} from '../../../../models/Candidate.model';
 import {Distances, isStringNotANumber} from '../../../../models/Offer.model';
@@ -13,6 +13,9 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import {OfferManageEffects} from '../store/offer-manage.effects';
 import {CandidatePreview} from '../../../../models/candidate-preview.model';
+import * as OfferActions from "../../offer-detail/store/offer.actions";
+import * as fromOffer from "../../offer-detail/store/offer.reducers";
+import {OfferEffects} from "../../offer-detail/store/offer.effects";
 
 @Component({
   selector: 'app-offer-selection-process',
@@ -43,6 +46,8 @@ export class OfferSelectionProcessComponent implements OnInit {
     .filter(isStringNotANumber)
     .map(key => ({value: Distances[key], viewValue: key}));
 
+  // Offer state
+  offerState: Observable<fromOffer.State>;
 
   // SELECTION DATA
   private offerId: number;
@@ -51,12 +56,17 @@ export class OfferSelectionProcessComponent implements OnInit {
   // Stepper forms
   selectFormGroup: FormGroup;
   waitFormGroup: FormGroup;
-  firstStepCompletion = false;
+  private firstStepCompletion = false;
   private secondStepCompletion = false;
+  private firstStepOkay = false;
+  private secondStepOkay = false;
   showStepper = false;
+  private offer: any;
+  private currentSelected: number;
 
   constructor(
     private store$: Store<fromApp.AppState>,
+    private offerEffects$: OfferEffects,
     public media: BreakpointObserver,
     private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -81,6 +91,23 @@ export class OfferSelectionProcessComponent implements OnInit {
     const params = this.activatedRoute.snapshot.params;
 
     if (Number(params.id)) {
+
+      // Get offer
+      this.store$.dispatch(new OfferActions.TryGetOffer({id: params.id}));
+      this.offerState = this.store$.pipe(select(state => state.offer));
+      this.offerState.subscribe(
+        offer => {
+          this.offer = offer.offer;
+        }
+      );
+
+      this.offerEffects$.offerGetoffer.pipe(
+        filter((action: Action) => action.type === OfferActions.OPERATION_ERROR)
+      ).subscribe((error: { payload: any, type: string }) => {
+        this.router.navigate(['/error/404']);
+      });
+
+      // Get applications
       this.offerId = Number(params.id);
       this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({
         id: this.offerId,
@@ -113,35 +140,51 @@ export class OfferSelectionProcessComponent implements OnInit {
         status: 4
       })); // refused
 
+      // Restore Stepper position
       this.store$.select(state => state.offerManage).subscribe(offerManage => {
-          if (offerManage.selection) {
-            if ((offerManage.selection.selected && offerManage.selection.selected.length > 0) ||
-              (offerManage.selection.accepted && offerManage.selection.accepted.length > 0)) {
+          // If applications loaded
+          if (offerManage.selection &&
+            offerManage.selection.all &&
+            offerManage.selection.faved &&
+            offerManage.selection.selected &&
+            offerManage.selection.accepted &&
+            offerManage.selection.refused &&
+            this.offer) {
+
+            this.currentSelected = offerManage.selection.selected.length + offerManage.selection.accepted.length;
+
+            this.showStepper = true;
+
+            // First stepper step completion control
+            if (offerManage.selection.selected.length + offerManage.selection.accepted.length >= this.offer.maxApplicants) {
               this.firstStepCompletion = true;
-              if (this.stepper.selectedIndex < 1) {
-                this.showStepper = true;
-                this.stepper.next();
-              }
-              if (offerManage.selection && offerManage.selection.accepted && offerManage.selection.accepted.length > 0) {
-                this.secondStepCompletion = true;
-                if (this.stepper.selectedIndex < 2) {
-                  this.showStepper = true;
-                  this.stepper.next();
-                }
-              } else {
-                if (this.stepper.selectedIndex < 1) {
-                  this.stepper.next();
-                } else if (this.stepper.selectedIndex > 1) {
-                  this.showStepper = true;
-                  this.stepper.previous();
-                }
-              }
+              this.firstStepOkay = true;
+            } else if (offerManage.selection.selected.length + offerManage.selection.accepted.length > 0) {
+              this.firstStepCompletion = false;
+              this.firstStepOkay = true;
             } else {
               this.firstStepCompletion = false;
-              if (this.stepper.selectedIndex !== 0) {
-                this.stepper.previous();
-              }
-              this.showStepper = true;
+              this.firstStepOkay = false;
+            }
+
+            if (this.firstStepCompletion && this.stepper.selectedIndex < 1) {
+              this.stepper.next();
+            }
+
+            // Second stepper step control
+            if (offerManage.selection.accepted.length >= this.offer.maxApplicants) {
+              this.secondStepCompletion = true;
+              this.secondStepOkay = true;
+            } else if (offerManage.selection.accepted.length > 0) {
+              this.secondStepCompletion = false;
+              this.secondStepOkay = true;
+            } else {
+              this.secondStepCompletion = false;
+              this.secondStepOkay = false;
+            }
+
+            if (this.secondStepCompletion && this.stepper.selectedIndex < 2) {
+              this.stepper.next();
             }
           }
         }
@@ -153,16 +196,6 @@ export class OfferSelectionProcessComponent implements OnInit {
         // this.router.navigate(['/error/404']);
         console.log(error);
       });
-
-      this.manageOfferEffects.ChangeApplicationStatus.pipe(
-        filter((action: any) => action.type === OfferManageActions.SET_CHANGE_APPLICATION_STATUS)
-      ).subscribe((next: { payload: any, type: string }) => {
-          console.log(next.payload);
-          if (next.payload.status === 2) {
-            this.stepper.next();
-          }
-        }
-      );
     } else {
       this.router.navigate(['/error/404']);
     }
@@ -291,5 +324,16 @@ export class OfferSelectionProcessComponent implements OnInit {
       this.store$.dispatch(new OfferManageActions.TryRejectApplication(candidate.applicationId));
       console.log('Reject application ' + candidate.applicationId);
     }
+  }
+
+  getSelection(selection: any) {
+    let selectTot = 0;
+    if (selection.selected){
+      selectTot += selection.selected.lenght;
+    }
+    if (selection.accepted){
+      selectTot += selection.accepted.length;
+    }
+    return selectTot;
   }
 }
