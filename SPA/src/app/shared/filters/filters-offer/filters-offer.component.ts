@@ -89,77 +89,32 @@ export class FiltersOfferComponent implements OnInit {
     });
 
     this.filters.controls['workLocation0'].valueChanges.subscribe(() => {
-      // this.countWorkLocation();
-      if (this.filters.controls['workLocation0'].value) {
-        this.router.navigate(['/candidate-home'],
-          {queryParams: {workLocation: 0}, queryParamsHandling: 'merge'});
-      } else {
-        this.router.navigate(['/candidate-home'],
-          {queryParams: {workLocation: null}, queryParamsHandling: 'merge'});
-      }
+      this.countWorkLocation();
     });
 
     this.filters.controls['workLocation1'].valueChanges.subscribe(() => {
-      // this.countWorkLocation();
-      if (this.filters.controls['workLocation1'].value) {
-        this.router.navigate(['/candidate-home'],
-          {queryParams: {workLocation: 1}, queryParamsHandling: 'merge'});
-      } else {
-        this.router.navigate(['/candidate-home'],
-          {queryParams: {workLocation: null}, queryParamsHandling: 'merge'});
-      }
+      this.countWorkLocation();
     });
 
     this.filters.controls['workLocation2'].valueChanges.subscribe(() => {
-      // this.countWorkLocation();
-      if (this.filters.controls['workLocation2'].value) {
-        this.router.navigate(['/candidate-home'],
-          {queryParams: {workLocation: 2}, queryParamsHandling: 'merge'});
-      } else {
-        this.router.navigate(['/candidate-home'],
-          {queryParams: {workLocation: null}, queryParamsHandling: 'merge'});
-      }
+      this.countWorkLocation();
     });
 
     this.filters.controls['jobType0'].valueChanges.subscribe(() => {
-      // this.countContractType();
-      if (this.filters.controls['jobType0'].value) {
-        this.router.navigate(['/candidate-home'],
-          {queryParams: {contractType: 0}, queryParamsHandling: 'merge'});
-      } else {
-        this.router.navigate(['/candidate-home'],
-          {queryParams: {contractType: null}, queryParamsHandling: 'merge'});
-      }
+      this.countContractType();
     });
 
     this.filters.controls['jobType1'].valueChanges.subscribe(() => {
-      if (this.filters.controls['jobType1'].value) {
-        this.router.navigate(['/candidate-home'],
-          {queryParams: {contractType: 1}, queryParamsHandling: 'merge'});
-      } else {
-        this.router.navigate(['/candidate-home'],
-          {queryParams: {contractType: null}, queryParamsHandling: 'merge'});
-      }
+      this.countContractType();
     });
 
     this.filters.controls['jobType2'].valueChanges.subscribe(() => {
-      if (this.filters.controls['jobType2'].value) {
-        this.router.navigate(['/candidate-home'],
-          {queryParams: {contractType: 2}, queryParamsHandling: 'merge'});
-      } else {
-        this.router.navigate(['/candidate-home'],
-          {queryParams: {contractType: null}, queryParamsHandling: 'merge'});
-      }
+      this.countContractType();
+
     });
 
     this.filters.controls['jobType3'].valueChanges.subscribe(() => {
-      if (this.filters.controls['jobType3'].value) {
-        this.router.navigate(['/candidate-home'],
-          {queryParams: {contractType: 3}, queryParamsHandling: 'merge'});
-      } else {
-        this.router.navigate(['/candidate-home'],
-          {queryParams: {contractType: null}, queryParamsHandling: 'merge'});
-      }
+      this.countContractType();
     });
 
 
@@ -169,43 +124,19 @@ export class FiltersOfferComponent implements OnInit {
     });
 
     this.filters.controls['seniority0'].valueChanges.subscribe(() => {
-      if (this.filters.controls['seniority0'].value) {
-        this.router.navigate(['/candidate-home'],
-          {queryParams: {seniority: 0}, queryParamsHandling: 'merge'});
-      } else {
-        this.router.navigate(['/candidate-home'],
-          {queryParams: {seniority: null}, queryParamsHandling: 'merge'});
-      }
+      this.countSeniority();
     });
 
     this.filters.controls['seniority1'].valueChanges.subscribe(() => {
-      if (this.filters.controls['seniority1'].value) {
-        this.router.navigate(['/candidate-home'],
-          {queryParams: {seniority: 1}, queryParamsHandling: 'merge'});
-      } else {
-        this.router.navigate(['/candidate-home'],
-          {queryParams: {seniority: null}, queryParamsHandling: 'merge'});
-      }
+      this.countSeniority();
     });
 
     this.filters.controls['seniority2'].valueChanges.subscribe(() => {
-      if (this.filters.controls['seniority2'].value) {
-        this.router.navigate(['/candidate-home'],
-          {queryParams: {seniority: 2}, queryParamsHandling: 'merge'});
-      } else {
-        this.router.navigate(['/candidate-home'],
-          {queryParams: {seniority: null}, queryParamsHandling: 'merge'});
-      }
+      this.countSeniority();
     });
 
     this.filters.controls['seniority3'].valueChanges.subscribe(() => {
-      if (this.filters.controls['seniority3'].value) {
-        this.router.navigate(['/candidate-home'],
-          {queryParams: {seniority: 3}, queryParamsHandling: 'merge'});
-      } else {
-        this.router.navigate(['/candidate-home'],
-          {queryParams: {seniority: null}, queryParamsHandling: 'merge'});
-      }
+      this.countSeniority();
     });
 
     this.filters.controls['publishDate'].valueChanges.subscribe(() => {
@@ -236,69 +167,69 @@ export class FiltersOfferComponent implements OnInit {
   }
 
 
-  // countWorkLocation() {
-  //   const queryWorkL = [];
-  //
-  //   if (this.filters.controls['workLocation0'].value) {
-  //     queryWorkL.push(0);
-  //   }
-  //   if (this.filters.controls['workLocation1'].value) {
-  //     queryWorkL.push(1);
-  //   }
-  //   if (this.filters.controls['workLocation2'].value) {
-  //     queryWorkL.push(2);
-  //   }
-  //
-  //   this.router.navigate(['/candidate-home'],
-  //     {queryParams: {workLocation: queryWorkL}, queryParamsHandling: 'merge'});
-  // }
+  countWorkLocation() {
+    let queryWorkL = '';
 
-  // countContractType() {
-  //   const queryCT = [];
-  //
-  //   if (this.filters.controls['jobType0'].value) {
-  //     queryCT.push(0);
-  //   }
-  //   if (this.filters.controls['jobType1'].value) {
-  //     queryCT.push(1);
-  //   }
-  //   if (this.filters.controls['jobType2'].value) {
-  //     queryCT.push(2);
-  //   }
-  //   if (this.filters.controls['jobType3'].value) {
-  //     queryCT.push(3);
-  //   }
-  //
-  //   this.router.navigate(['/candidate-home'],
-  //     {queryParams: {contractType: queryCT}, queryParamsHandling: 'merge'});
-  // }
+    if (this.filters.controls['workLocation0'].value) {
+      queryWorkL += '0 ';
+    }
+    if (this.filters.controls['workLocation1'].value) {
+      queryWorkL += '1 ';
+    }
+    if (this.filters.controls['workLocation2'].value) {
+      queryWorkL += '2 ';
+    }
 
-  // countSeniority() {
-  //   const queryS = [];
-  //
-  //   if (this.filters.controls['seniority0'].value) {
-  //     queryS.push(0);
-  //   }
-  //   if (this.filters.controls['seniority1'].value) {
-  //     queryS.push(1);
-  //   }
-  //   if (this.filters.controls['seniority2'].value) {
-  //     queryS.push(2);
-  //   }
-  //   if (this.filters.controls['seniority3'].value) {
-  //     queryS.push(3);
-  //   }
-  //
-  //   this.router.navigate(['/candidate-home'],
-  //     {queryParams: {seniority: queryS}, queryParamsHandling: 'merge'});
-  // }
+    this.router.navigate(['/candidate-home'],
+      {queryParams: {workLocation: queryWorkL}, queryParamsHandling: 'merge'});
+  }
+
+  countContractType() {
+    let queryCT = '';
+
+    if (this.filters.controls['jobType0'].value) {
+      queryCT += '0 ';
+    }
+    if (this.filters.controls['jobType1'].value) {
+      queryCT += '1 ';
+    }
+    if (this.filters.controls['jobType2'].value) {
+      queryCT += '2 ';
+    }
+    if (this.filters.controls['jobType3'].value) {
+      queryCT += '3 ';
+    }
+
+    this.router.navigate(['/candidate-home'],
+      {queryParams: {contractType: queryCT}, queryParamsHandling: 'merge'});
+  }
+
+  countSeniority() {
+    let queryS = '';
+
+    if (this.filters.controls['seniority0'].value) {
+      queryS += '0 ';
+    }
+    if (this.filters.controls['seniority1'].value) {
+      queryS += '1 ';
+    }
+    if (this.filters.controls['seniority2'].value) {
+      queryS += '2 ';
+    }
+    if (this.filters.controls['seniority3'].value) {
+      queryS += '3 ';
+    }
+
+    this.router.navigate(['/candidate-home'],
+      {queryParams: {seniority: queryS}, queryParamsHandling: 'merge'});
+  }
 
 
   getDate() {
     const today = new Date();
     let mdate;
     let month = today.getMonth();
-    let day = today.getDay();
+    let day = today.getDate();
 
     switch (this.filters.controls['publishDate'].value) {
       case 0: {
@@ -310,11 +241,11 @@ export class FiltersOfferComponent implements OnInit {
         month = month - 1;
         let mes = '' + month;
         if (month < 10) {
-           mes = '0' + month;
+          mes = '0' + month;
         }
-        let dia = '' + today.getDay();
-        if (today.getDay() < 10) {
-          dia = '0' + today.getDay();
+        let dia = '' + today.getDate();
+        if (today.getDate() < 10) {
+          dia = '0' + today.getDate();
         }
         mdate = today.getFullYear() + '-' + mes + '-' + dia;
         break;

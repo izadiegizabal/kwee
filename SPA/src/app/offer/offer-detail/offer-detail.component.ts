@@ -11,6 +11,7 @@ import {Location} from '@angular/common';
 import {ContractType, JobDurationUnit, OfferStatus, SalaryFrequency, SeniorityLevel, WorkLocationType} from '../../../models/Offer.model';
 import {getTimePassed, getUrlfiedString} from '../../shared/utils.service';
 import {ActivatedRoute, Router} from '@angular/router';
+import {environment} from "../../../environments/environment";
 
 @Component({
   selector: 'app-offer-detail',
@@ -24,6 +25,7 @@ export class OfferDetailComponent implements OnInit {
   id: any;
   offerId: Number;
   idApplication: Number;
+  environment = environment;
 
   constructor(private store$: Store<fromApp.AppState>,
               private activatedRoute: ActivatedRoute,
@@ -159,6 +161,4 @@ export class OfferDetailComponent implements OnInit {
   backClicked() {
     this.location.back();
   }
-
-
 }

@@ -7,6 +7,9 @@ export const SET_OFFERS_OFFERER = 'SET_OFFERS_OFFERER';
 export const TRY_GET_OFFERS_APPLICANT = 'TRY_GET_OFFERS_APPLICANT';
 export const SET_OFFERS_APPLICANT = 'SET_OFFERS_APPLICANT';
 
+export const TRY_CHANGE_OFFER_STATUS = 'TRY_CHANGE_OFFER_STATUS';
+export const SET_CHANGE_OFFER_STATUS = 'SET_CHANGE_OFFER_STATUS';
+
 export const TRY_GET_OFFER_CANDIDATES = 'TRY_GET_OFFER_CANDIDATES';
 export const SET_OFFER_CANDIDATES = 'SET_OFFER_CANDIDATES';
 
@@ -45,6 +48,20 @@ export class SetOffersApplicant implements Action {
   readonly type = SET_OFFERS_APPLICANT;
 
   constructor(public payload: any) {
+  }
+}
+
+export class TryChangeOfferStatus implements Action {
+  readonly type = TRY_CHANGE_OFFER_STATUS;
+
+  constructor(public payload: { offerId: number, newStatus: number }) {
+  }
+}
+
+export class SetChangeOfferStatus implements Action {
+  readonly type = SET_CHANGE_OFFER_STATUS;
+
+  constructor(public payload: { offerId: number, newStatus: number }) {
   }
 }
 
@@ -106,6 +123,8 @@ export type OfferManageActions =
   SetOffersOfferer |
   TryGetOffersApplicant |
   SetOffersApplicant |
+  TryChangeOfferStatus |
+  SetChangeOfferStatus |
   TryGetOfferCandidates |
   SetOfferCandidates |
   TryChangeApplicationStatus |

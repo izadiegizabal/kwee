@@ -22,10 +22,23 @@ export class CandidateHomeComponent implements OnInit {
   pageSize = 5;
   pageSizeOptions: number[] = [5, 10, 25, 100];
   pageEvent: PageEvent;
+  orderby = '0';
   @ViewChild('paginator') paginator: MatPaginator;
 
   // Filter sidebar
   @ViewChild('drawer') drawer: MatSidenav;
+
+  order: { value: string , viewValue: string }[] =
+    [
+      { value: '0', viewValue: 'Relevance' },
+      { value: 'index', viewValue: 'Kwee Index' },
+      { value: 'title', viewValue: 'Title' },
+      { value: 'salaryAmount', viewValue: 'Salary' },
+      { value: 'dateStart', viewValue: 'Start Date' },
+      { value: 'datePublished', viewValue: 'Published Date' },
+      { value: 'dateEnd', viewValue: 'Selection Date' },
+      { value: 'seniority', viewValue: 'Seniority' },
+    ];
 
 
   constructor(
@@ -38,7 +51,7 @@ export class CandidateHomeComponent implements OnInit {
 
   ngOnInit() {
     this.query = {...this.query, status: '0'};
-    this.store$.dispatch(new OffersActions.TryGetOffers({page: 1, limit: 5, params: this.query}));
+    this.store$.dispatch(new OffersActions.TryGetOffers({page: 1, limit: 5, params: this.query, order: this.orderby}));
     this.offersState = this.store$.pipe(select(state => state.offers));
 
     this.activatedRoute.queryParams
@@ -52,7 +65,8 @@ export class CandidateHomeComponent implements OnInit {
     this.store$.dispatch(new OffersActions.TryGetOffers({
       page: this.pageEvent.pageIndex + 1,
       limit: this.pageEvent.pageSize,
-      params: this.query
+      params: this.query,
+      order: this.orderby
     }));
   }
 
@@ -69,6 +83,19 @@ export class CandidateHomeComponent implements OnInit {
     this.router.navigate(['/candidate-home'], {queryParams: {title: searchParams}, queryParamsHandling: 'merge'});
   }
 
+  getOrderby(order: string) {
+    // console.log(order);
+    this.orderby = order;
+
+    this.store$.dispatch(new OffersActions.TryGetOffers({
+      page: 1,
+      limit: this.pageSize,
+      params: this.query,
+      order: this.orderby
+    }));
+  }
+
+
   searchCallApi() {
     this.query = {...this.query, status: '0'};
     if (this.query.salaryAmount) {
@@ -83,12 +110,11 @@ export class CandidateHomeComponent implements OnInit {
       this.query = {...this.query, datePublished: {'gte': this.query.datePublished}};
     }
 
-   // console.log(this.query);
-
     this.store$.dispatch(new OffersActions.TryGetOffers({
       page: 1,
       limit: this.pageSize,
-      params: this.query
+      params: this.query,
+      order: this.orderby
     }));
 
     if (this.paginator) {

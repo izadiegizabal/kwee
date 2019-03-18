@@ -18,9 +18,13 @@ export class OffersEffects {
       return action.payload;
     }),
     switchMap((payload) => {
-      const apiEndpointUrl = environment.apiUrl + 'offers/search?page=' + payload.page + '&limit=' + payload.limit;
-      const headers = new HttpHeaders().set('Content-Type', 'application/json');
-      const body = JSON.stringify(payload.params);
+        let apiEndpointUrl = environment.apiUrl + 'offers/search?page=' + payload.page + '&limit=' + payload.limit;
+        const headers = new HttpHeaders().set('Content-Type', 'application/json');
+        const body = JSON.stringify(payload.params);
+
+        if (payload.order !== '0') {
+          apiEndpointUrl += '&sort=' + payload.order;
+        }
 
         // console.log(apiEndpointUrl);
         // console.log(body);

@@ -72,6 +72,30 @@
   </mat-card-actions>
 
   <mat-card-actions
+    *ngIf="!candidate && offer.status === 3"
+    fxLayout="row" fxLayout.lt-sm="column"
+    fxLayoutAlign="end center"
+    fxLayoutGap="24px" fxLayoutGap.lt-sm="16px">
+    <div fxLayout="row"
+         fxLayoutAlign="end center">
+      <p>All applications received!</p>
+      <button [routerLink]="'/my-offers/' + offer.id + '/selection'" mat-raised-button color="primary">{{'Go to Selection Process' | uppercase }}</button>
+    </div>
+  </mat-card-actions>
+
+  <mat-card-actions
+    *ngIf="!candidate && offer.status === 0 && (authState | async).user && offer.fk_offerer === (authState | async).user.id"
+    fxLayout="row" fxLayout.lt-sm="column"
+    fxLayoutAlign="end center"
+    fxLayoutGap="24px" fxLayoutGap.lt-sm="16px">
+    <div fxLayout="row"
+         fxLayoutAlign="end center">
+      <p>Do you want to start the selection process?</p>
+      <button (click)="startSelectionProcess()" mat-raised-button color="primary">{{'Start Selection Process' | uppercase }}</button>
+    </div>
+  </mat-card-actions>
+
+  <mat-card-actions
     *ngIf="this.offer.status === 3 && candidate && this.offer.applicationStatus === 2"
     fxLayout="row" fxLayout.lt-sm="column"
     fxLayoutAlign="end center"

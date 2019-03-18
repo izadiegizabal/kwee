@@ -17,6 +17,7 @@ export interface State {
       img: string,
     }[],
     total: number,
+    message: string;
   };
   businesses: {
     data: {
@@ -35,6 +36,7 @@ export interface State {
       address: string,
     }[],
     total: number;
+    message: string;
   };
 }
 
