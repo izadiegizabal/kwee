@@ -82,13 +82,59 @@ export class SearchCandidatesComponent implements OnInit {
       this.query = {...this.query, index: {'gte': this.query.index}};
     }
 
-    // if (this.query.offererIndex) {
-    //   this.query = {...this.query, offererIndex: {'gte': this.query.offererIndex}};
-    // }
+    if (this.query.dateBorn) {
+      const dateBorn = this.query.dateBorn.split(':');
+      let paramDate;
 
-    // if (this.query.datePublished) {
-    //   this.query = {...this.query, datePublished: {'gte': this.query.datePublished}};
-    // }
+      if (dateBorn.length === 4) {
+        paramDate = {
+          lte: dateBorn[1],
+          gte: dateBorn[3],
+        };
+      } else {
+        if (dateBorn[0] === 'lte') {
+          paramDate = {
+            lte: dateBorn[1],
+          };
+        } else {
+          paramDate = {
+            gte: dateBorn[1],
+          };
+        }
+      }
+
+      this.query = {...this.query, dateBorn: paramDate};
+    }
+
+    console.log(this.query);
+
+    if (this.query.skills) {
+      const skills = [];
+      const aux = [];
+      aux.push(this.query.skills);
+
+      for (let i = 0; i < aux.length; i++) {
+        skills.push({
+          name: aux[i]
+        });
+      }
+
+      this.query = {...this.query, skills: skills};
+    }
+
+    if (this.query.languages) {
+      const languages = [];
+      const aux = [];
+      aux.push(this.query.languages);
+
+      for (let i = 0; i < aux.length; i++) {
+        languages.push({
+          name: aux[i]
+        });
+      }
+
+      this.query = {...this.query, languages: languages};
+    }
 
 
     this.store$.dispatch(new AdminActions.TryGetCandidates({

@@ -23,14 +23,14 @@
                  matInput type="text">
 
 
-          <button (click)="deleteSkill(i)"
+          <button type="button" (click)="deleteSkill(i)"
                   *ngIf="this.formSkills.controls[i].value && this.formSkills.length-1!=i"
                   aria-label="Clear"
                   mat-button mat-icon-button matSuffix type="button">
             <mat-icon>close</mat-icon>
           </button>
 
-          <button (click)="deleteSkill(i); addSkill()"
+          <button type="button" (click)="deleteSkill(i); addSkill()"
                   *ngIf="this.formSkills.controls[i].value && this.formSkills.length-1==i" aria-label="Clear"
                   mat-button mat-icon-button matSuffix type="button">
             <mat-icon>close</mat-icon>
@@ -55,14 +55,14 @@
                  matInput type="text">
 
 
-          <button (click)="delLang(i)"
+          <button type="button" (click)="delLang(i)"
                   *ngIf="this.formLanguages.controls[i].value && this.formLanguages.length-1!=i"
                   aria-label="Clear"
                   mat-button mat-icon-button matSuffix type="button">
             <mat-icon>close</mat-icon>
           </button>
 
-          <button (click)="delLang(i); addLang()"
+          <button type="button" (click)="delLang(i); addLang()"
                   *ngIf="this.formLanguages.controls[i].value && this.formLanguages.length-1==i"
                   aria-label="Clear"
                   mat-button mat-icon-button matSuffix type="button">
@@ -118,7 +118,7 @@
 
     <mat-form-field>
       <input formControlName="location" matInput placeholder="Location" type="text">
-      <button (click)="filters.controls['location'].reset('')" *ngIf="filters.controls['location'].value"
+      <button type="button" (click)="filters.controls['location'].reset('')" *ngIf="filters.controls['location'].value"
               aria-label="Clear" mat-button
               mat-icon-button
               matSuffix>
@@ -137,6 +137,6 @@
   </form>
 
   <div fxLayout="row" fxLayoutAlign="end end" style="margin-top: 16px" fxHide.gt-sm>
-    <button mat-raised-button color="primary" (click)="applyFilters()">Apply Filters</button>
+    <button type="button" mat-raised-button color="primary" (click)="applyFilters()">Apply Filters</button>
   </div>
 </div>

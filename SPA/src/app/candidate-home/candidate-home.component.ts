@@ -8,7 +8,6 @@ import {MatPaginator, MatSidenav, PageEvent} from '@angular/material';
 import {BreakpointObserver} from '@angular/cdk/layout';
 import {HttpClient} from '@angular/common/http';
 import {ActivatedRoute, Router} from '@angular/router';
-import {query} from '@angular/animations';
 
 @Component({
   selector: 'app-candidate-home',
@@ -84,7 +83,7 @@ export class CandidateHomeComponent implements OnInit {
       this.query = {...this.query, datePublished: {'gte': this.query.datePublished}};
     }
 
-   // console.log(this.query);
+    console.log(this.query);
 
     this.store$.dispatch(new OffersActions.TryGetOffers({
       page: 1,

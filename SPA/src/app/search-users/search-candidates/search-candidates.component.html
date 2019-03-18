@@ -37,15 +37,22 @@
         </div>
       </div>
 
+      <div *ngIf="!(adminState | async).candidates || (adminState | async).candidates.message === 'No results'" fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">
+        <h4 class="mat-h3">No results found.</h4>
+        <p class="mat-typography">Your search returned no results. Try shortening or rephrasing your search.</p>
+      </div>
+
+      <div *ngIf="(adminState | async).candidates.data && (adminState | async).candidates.message === 'No results but maybe this is interesting for you'" fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">
+        <h4 class="mat-h3">No results found.</h4>
+        <p class="mat-typography">But maybe this is interesting for you</p>
+      </div>
+
       <div *ngIf="(adminState | async).candidates" fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">
         <app-candidate-preview-card *ngFor="let user of (adminState | async).candidates.data;" [user]="user">
         </app-candidate-preview-card>
       </div>
 
-      <div *ngIf="!(adminState | async).candidates" fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">
-        <h4 class="mat-h3">No results found.</h4>
-        <p class="mat-typography">Your search returned no results. Try shortening or rephrasing your search.</p>
-      </div>
+
 
 
       <mat-paginator *ngIf="(adminState | async).candidates" (page)="pageEvent = $event;  changePage();"

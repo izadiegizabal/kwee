@@ -6,7 +6,7 @@ import {PrivacyComponent} from './privacy/privacy.component';
 import {AuthTokenGuard} from './auth/guards/auth-token-guard.service';
 import {AdminGuard} from './auth/guards/admin-guard.service';
 import {VisitorGuard} from './auth/guards/visitor-guard.service';
-import {LandingComponent} from "./landing/landing.component";
+import {LandingComponent} from './landing/landing.component';
 
 const routes: Routes = [
 

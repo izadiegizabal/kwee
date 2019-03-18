@@ -24,13 +24,15 @@ export class AdminEffects {
       const body = JSON.stringify(payload.params);
 
       // const token = authState.token;
-       // const headers = new HttpHeaders().set('token', token);
-        // console.log(apiEndpointUrl);
+      // const headers = new HttpHeaders().set('token', token);
+      // console.log(apiEndpointUrl);
+      // console.log(body);
         return this.httpClient.post(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res: {
             ok: boolean,
             data: any[],
             total: number,
+            message: string,
           }) => {
             return {
               type: AdminActions.SET_CANDIDATES,
@@ -70,6 +72,7 @@ export class AdminEffects {
             ok: boolean,
             data: any[],
             total: number,
+            message: string,
           }) => {
             return {
               type: AdminActions.SET_BUSINESSES,

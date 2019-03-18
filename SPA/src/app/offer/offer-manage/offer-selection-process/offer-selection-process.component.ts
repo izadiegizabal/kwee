@@ -240,10 +240,10 @@ export class OfferSelectionProcessComponent implements OnInit {
   onSearch($event: string) {
   }
 
-  // Interacion with stepper methods
+  // Interaction with stepper methods
   closeSelectionProcess() {
+    this.store$.dispatch(new OfferManageActions.TryChangeOfferStatus({offerId: this.offerId, newStatus: 1}));
     this.router.navigate(['my-offers']);
-    // TODO: change state of offer from selection to closed
   }
 
   isFaved(faved: boolean, candidate: CandidatePreview) {
