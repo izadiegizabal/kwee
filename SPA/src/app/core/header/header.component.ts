@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import * as fromApp from '../../store/app.reducers';
 import * as fromAuth from '../../auth/store/auth.reducers';
 import {select, Store} from '@ngrx/store';
@@ -10,6 +10,8 @@ import {Observable} from 'rxjs';
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
+  @Input() isLanding = false;
+
   authState: Observable<fromAuth.State>;
   profileType = '';
   auth = false;

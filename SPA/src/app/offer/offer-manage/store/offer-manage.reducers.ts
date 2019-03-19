@@ -25,6 +25,7 @@ export interface State {
         contractType: number,
         maxApplicants: number,
         currentApplications: number,
+        applications: any[]
       },
       user: {
         id: number,
@@ -69,11 +70,6 @@ export function OfferManageReducer(state = initialState, action: OfferManageActi
       return {offers: null, selection: null};
 
     case OfferManageActions.SET_OFFERS_OFFERER:
-      return {
-        ...state,
-        offers: action.payload
-      };
-
     case OfferManageActions.SET_OFFERS_APPLICANT:
       return {
         ...state,
