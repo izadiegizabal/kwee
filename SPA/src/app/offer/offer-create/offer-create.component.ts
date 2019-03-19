@@ -133,6 +133,7 @@ export class OfferCreateComponent implements OnInit {
     const params = this.activatedRoute.snapshot.params;
 
     if (Number(params.id)) {
+      console.log(Number(params.id));
       this.edit = true;
       this.editOffer = Number(params.id);
       this.store$.dispatch(new OfferActions.TryGetOffer({id: params.id}));

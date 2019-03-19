@@ -23,6 +23,7 @@ export class OfferPreviewCardComponent implements OnInit {
 
   offerUrl: string;
   authState: any;
+  offerManageState: any;
   candidate: boolean;
   nameToRate: string;
   userId: number;
@@ -186,8 +187,10 @@ export class OfferPreviewCardComponent implements OnInit {
         candidateId: this.userId,
         applicationId: this.offer.fk_application,
         status: status,
-        refresh: false
+        refresh: false,
+        refreshStatus: this.offer.status
       }));
+
   }
 
   startSelectionProcess() {
