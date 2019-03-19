@@ -15,15 +15,24 @@
 */
 
 import { MTLFile } from './dependencies/MTLFile.js';
-import { gl, program, TEntity, angle } from './commons';
-
+import { gl, program, TEntity, angle, texture } from './commons';
+import { constants } from './tools/constants.js';
 
 var vec3 = glMatrix.vec3;
+
+let meshPosVertexBufferObject = null;
+var meshIndexBufferObject = null;
+var texCoordVertexBufferObject = null;
+var normalBufferObject = null;
 
 class TResourceManager {
     // map --> store resources
     constructor() {
         this.map = new Map();
+        meshPosVertexBufferObject = gl.createBuffer();
+        meshIndexBufferObject = gl.createBuffer();
+        texCoordVertexBufferObject = gl.createBuffer();
+        normalBufferObject = gl.createBuffer();
     }
     
     // getResource --> The resource filename must be the same as "name"
@@ -34,6 +43,7 @@ class TResourceManager {
         let type = name.split('.');
 
         if( resource == false ){
+            // console.log(name + " DOESN'T EXISTS. Creating...");
             // create resource
             switch(type[1]){
                 case 'json': {
@@ -56,7 +66,7 @@ class TResourceManager {
                 case 'vs': 
                 case 'fs': {
                     // shader
-                    console.log("-> Creating TResourceShader " + name + "...");
+                    // console.log("-> Creating TResourceShader " + name + "...");
                     resource = new TResourceShader(name);
                     break;
                 }
@@ -70,29 +80,30 @@ class TResourceManager {
         }
         else{
             // return resource
+            // console.log(name + " EXISTS. Returning...");
             
             switch(type[1]){
                 case 'json': {
-                    let value = this.map.get(name); 
-                    resource = value.json;
-                    
+                    let value = await this.map.get(name); 
+                    resource = value;
+
                     break;
                 }
                 case 'texture': {
-                    let value = this.map.get(name); 
+                    let value = await this.map.get(name); 
                     resource = value.texture;
                     
                     break;
                 }
                 case 'mtl': {
-                    let value = this.map.get(name); 
+                    let value = await this.map.get(name); 
                     resource = value.mtl;
                     
                     break;
                 }
                 case 'vs': 
                 case 'fs': {
-                    let value = this.map.get(name); 
+                    let value = await this.map.get(name); 
                     resource = value.shader;
 
                     break;
@@ -149,6 +160,11 @@ class TResourceMesh extends TResource{
         this.nTris;
         this.nVertices;
         this.alias;
+
+        this.cbo;
+        this.nbo;
+        this.ibo;
+        this.vbo;
     }
 
     async loadFile(file){
@@ -158,100 +174,158 @@ class TResourceMesh extends TResource{
         // mesh file code
         const jsonMesh = await loadJSON(file);
 
+      ///////////////////////////////////////////////////////////////////////////////// GET INFO FROM FILE
+
         this.alias = jsonMesh.alias;
 
-        this.vertices = jsonMesh.vertices;
-        this.triVertices = jsonMesh.indices;
+        if( file == "earth_fbx.json"){
 
-        this.normals = jsonMesh.normals;
+            this.vertices = jsonMesh.meshes[0].vertices;
+            this.triVertices = [].concat.apply([], jsonMesh.meshes[0].faces);
+            this.textures = jsonMesh.meshes[0].texturecoords[0];
+            this.normals = jsonMesh.meshes[0].normals;
 
-        // this.textures = jsonMesh.texcoords.UVMap;
+        } else if (file == "test.json") {
+            this.alias = file;
 
-        this.nTris = jsonMesh.indices.length;
-        this.nVertices = jsonMesh.vertices.length;
+            this.vertices = jsonMesh.model.vertices[0].position.data;
+            this.triVertices = jsonMesh.model.meshes[0].indices;
+            this.textures = jsonMesh.model.vertices[0].texCoord0.data;
+            this.normals = jsonMesh.model.vertices[0].normal.data;
 
-        // // material
-        // let name = jsonMesh.alias.split('_');
-        // let material = new TResourceMaterial(name[1]);
-        // console.log("Mesh material: " + material.name);
-        // material.loadValues(jsonMesh);
+        }
+        else if (file == "test1.json" ||
+          file == "test2.json" ||
+          file == "ballNormals.json" ||
+          file == "ballNoNormals.json" ||
+          file == "textured_earth.json" ||
+          file == "sea.json" ||
+          file == "earth.json") {
+          this.alias = file;
 
-        // let output = ;
-        // output.push(this);
-        // output.push(material);
+          this.vertices = jsonMesh.positions;
+          this.triVertices = jsonMesh.indices;
+          this.textures = jsonMesh.texcoords ? jsonMesh.texcoords.UVMap : null;
+          this.normals = jsonMesh.normals;
+
+        }
+        else{
+
+            this.vertices = jsonMesh.vertices;
+            this.triVertices = jsonMesh.indices;
+            this.textures = jsonMesh.uvs;
+            this.normals = jsonMesh.normals;
+
+        }
+
+        this.nTris = this.triVertices.length;
+        this.nVertices = this.vertices.length;
+
+      ///////////////////////////////////////////////////////////////////////////////// CREATE BUFFERS
+        var vertexBufferObject = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBufferObject);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
+
+        var normalBufferObject = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, normalBufferObject);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.normals), gl.STATIC_DRAW);
+
+        var indexBufferObject = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBufferObject);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triVertices), gl.STATIC_DRAW);
+
+        this.vbo = vertexBufferObject;
+        this.ibo = indexBufferObject;
+        this.nbo = normalBufferObject;
+
+        if (this.textures !== null) {
+          var colorBufferObject = gl.createBuffer();
+          gl.bindBuffer(gl.ARRAY_BUFFER, colorBufferObject);
+          gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.textures), gl.STATIC_DRAW);
+          this.cbo = colorBufferObject;
+        }
+
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+        gl.bindBuffer(gl.ARRAY_BUFFER,null);
+
         return this;
     }
 
     draw(){
+      ///////////////////////////////////////////////////////////////////////////////////////////// ""MATERIALS"" (NOPE)
+      let uMaterialDiffuse = gl.getUniformLocation(program, 'uMaterialDiffuse');
+      let uMaterialAmbient = gl.getUniformLocation(program, 'uMaterialAmbient');
+      /// CHAPUZA CHANGE COLORS
+      if (this.name === 'sea.json'){
+        gl.uniform4fv(uMaterialDiffuse, [0.313, 0.678, 0.949,1.0]);
+        gl.uniform4fv(uMaterialAmbient, [1.0,1.0,1.0,1.0]);
+      }
+      else {
+        gl.uniform4fv(uMaterialDiffuse, [0.258, 0.960, 0.6,1.0]);
+        gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+      }
+      ///// BOTH FALSE
+      var uWireframe = gl.getUniformLocation(program, 'uWireframe');
+      gl.uniform1i(uWireframe, false);
+      var uUseVertexColor = gl.getUniformLocation(program, 'uUseVertexColor');
+      gl.uniform1i(uUseVertexColor, false);
 
-        // /// object buffers
-        // var meshPosVertexBufferObject = gl.createBuffer();
-        // gl.bindBuffer(gl.ARRAY_BUFFER, meshPosVertexBufferObject);
-        // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
-        // gl.bindBuffer(gl.ARRAY_BUFFER, null);
+      ///// TRUE IF TEXTURES ARE NEEDED
+      var uUseTextures = gl.getUniformLocation(program, 'uUseTextures');
+      gl.uniform1i(uUseTextures, false);
 
-        // var meshIndexBufferObject = gl.createBuffer();
-        // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, meshIndexBufferObject);
-        // gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triVertices), gl.STATIC_DRAW);
-        // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-
-        // gl.bindBuffer(gl.ARRAY_BUFFER, meshPosVertexBufferObject);
-        // var positionAttribLocation = gl.getAttribLocation(program, 'vertPosition');
-        // gl.vertexAttribPointer(
-        //     positionAttribLocation, // Attribute location
-        //     3, // Number of elements per attribute
-        //     gl.FLOAT, // Type of elements
-        //     gl.FALSE,
-        //     3 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
-        //     0 // Offset from the beginning of a single vertex to this attribute
-        // );
-        // gl.enableVertexAttribArray(positionAttribLocation);
-
-        // gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
-        // gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-        // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, meshIndexBufferObject);
-        // gl.drawElements(gl.TRIANGLES, this.nTris, gl.UNSIGNED_SHORT, 0);
-
-
-        var meshPosVertexBufferObject = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, meshPosVertexBufferObject);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
-        gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, meshPosVertexBufferObject);
-        var positionAttribLocation = gl.getAttribLocation(program, 'vertPosition');
-        gl.vertexAttribPointer(
-            positionAttribLocation, // Attribute location
-            3, // Number of elements per attribute
-            gl.FLOAT, // Type of elements
-            gl.FALSE,
-            3 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
-            0 // Offset from the beginning of a single vertex to this attribute
-        );
-        gl.enableVertexAttribArray(positionAttribLocation);
-
-        var meshIndexBufferObject = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, meshIndexBufferObject);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triVertices), gl.STATIC_DRAW);
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-
-        var worldMatrix = new Float32Array(16);
-        glMatrix.mat4.identity(worldMatrix);
-        worldMatrix = TEntity.Model;
+      ///////////////////////////////////////////////////////////////////////////////////////////// BIND BUFFERS
+      var positionAttribLocation = gl.getAttribLocation(program, 'aVertexPosition');
+      var texCoordAttribLocation = gl.getAttribLocation(program, 'aVertexTextureCoords');
+      var normalAttribLocation = gl.getAttribLocation(program, 'aVertexNormal');
+      gl.enableVertexAttribArray(positionAttribLocation);
+      gl.enableVertexAttribArray(normalAttribLocation);
 
 
-        // rotation stuff
-        var rotation = glMatrix.mat4.create();
-        glMatrix.mat4.rotate(rotation, worldMatrix, angle, [0, 1, 0]);
-
-        var matWorldUniformLocation = gl.getUniformLocation(program, 'mWorld');
-        gl.uniformMatrix4fv(matWorldUniformLocation, false, rotation);
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
+      gl.vertexAttribPointer(positionAttribLocation, 3, gl.FLOAT, gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
+      gl.enableVertexAttribArray(positionAttribLocation);
 
 
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, meshIndexBufferObject);
-        gl.drawElements(gl.TRIANGLES, this.nTris, gl.UNSIGNED_SHORT, 0);
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.nbo);
+      gl.vertexAttribPointer(normalAttribLocation, 3, gl.FLOAT, gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
+      gl.enableVertexAttribArray(normalAttribLocation);
 
+
+      if (this.textures !== null) {
+        gl.enableVertexAttribArray(texCoordAttribLocation);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.cbo);
+        gl.vertexAttribPointer(texCoordAttribLocation,2,gl.FLOAT, gl.FALSE, 2 * Float32Array.BYTES_PER_ELEMENT,0);
+        gl.enableVertexAttribArray(texCoordAttribLocation);
+      }
+
+
+      ///////////////////////////////////////////////////////////////////////////////// POSITION & ROTATION STUFF
+      var worldMatrix = TEntity.Model;
+      var rotation = glMatrix.mat4.create();
+      glMatrix.mat4.rotate(rotation, worldMatrix, angle, [1, 0, 0]);
+
+
+      var matWorldUniformLocation = gl.getUniformLocation(program, 'uMVMatrix');
+      gl.uniformMatrix4fv(matWorldUniformLocation, false, rotation);
+
+      let aux = glMatrix.mat4.create();
+      /// SORRRRRY, I HAD TO
+      glMatrix.mat4.set( aux,1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -2, 1);
+      let auxAux = glMatrix.mat4.create();
+      glMatrix.mat4.multiply(auxAux, rotation, aux);
+
+      glMatrix.mat4.invert(auxAux, auxAux);
+      glMatrix.mat4.transpose(auxAux, auxAux);
+
+      var normal = gl.getUniformLocation(program, 'uNMatrix');
+      gl.uniformMatrix4fv(normal, false, auxAux);
+      ///////////////////////////////////////////////////////////////////////////////// DRAW
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
+      gl.drawElements(gl.TRIANGLES, this.nTris, gl.UNSIGNED_SHORT,0);
+      ///////////////////////////////////////////////////////////////////////////////// CLEAR ALL BUFFERS
+      gl.bindBuffer(gl.ARRAY_BUFFER, null);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 
     }
 }
@@ -342,7 +416,8 @@ class TResourceShader extends TResource {
 
 async function loadJSON(filename){
 
-    let host = "http://localhost:4200";
+    //let host = "http://localhost:4200";
+    let host = constants.URL;
     let path = '/assets/assets/JSON/';
     let url = `${host + path + filename}`;
     
@@ -362,7 +437,8 @@ async function loadJSON(filename){
 
 async function load(filename){
 
-    let host = "http://localhost:4200";
+    // let host = "http://localhost:4200";
+    let host = constants.URL;    
     let path = '/assets/engine/shaders/';
     let url = `${host + path + filename}`;
     
@@ -382,7 +458,8 @@ async function load(filename){
 
 async function loadMTL(filename){
 
-    let host = "http://localhost:4200";
+    // let host = "http://localhost:4200";
+    let host = constants.URL;    
     let path = '/assets/assets/JSON/';
     let url = `${host + path + filename}`;
     
@@ -400,10 +477,43 @@ async function loadMTL(filename){
     return file;
 }
 
+async function loadImage(filename){
+
+  let img = new Image();
+  img.src = '../assets/assets/textures/'+filename;
+  img.id = 'image';
+
+  // let host = "http://localhost:4200";
+  let host = constants.URL;  
+  let path = '/assets/assets/textures/';
+  let url = `${host + path + filename}`;
+
+  console.log(`Fetching ${filename} resource from url: ${ url }`);
+  let file;
+  await fetch( url )
+    .then( response => response.blob() )
+    .then( res => {
+      console.log("== fetch file ok ==");
+      var objectURL = URL.createObjectURL(res);
+      //img.src = '../assets/textures/'+filename;
+    });
+
+  return file;
+}
+
+var loadImg = async function (url, callback) {
+  var image = new Image();
+  image.onload = async function () {
+    await callback(null, image);
+  };
+  image.src = url;
+};
+
 export {
     TResourceManager,
     TResourceMaterial,
     TResourceMesh,
     TResourceShader,
-    TResourceTexture
+    TResourceTexture,
+    loadImage
 }
