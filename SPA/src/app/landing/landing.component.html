@@ -1,0 +1,18 @@
+<div fxLayout="column" fxFlex="100%" class="container">
+  <div
+    fxLayout="column"
+    fxFlex="100%"
+    fxLayoutAlign="center center"
+    fxLayoutGap="16px">
+    <app-searchbar style="margin-top: 64px; width: 60%"></app-searchbar>
+    <div
+      fxLayout="column"
+      fxLayoutAlign="center center">
+      <mat-spinner color="accent" style="margin-top: 256px" *ngIf="getAllow()"></mat-spinner>
+      <canvas
+        id="kweelive"
+        width="700px"
+        height="700px"></canvas>
+    </div>
+  </div>
+</div>
