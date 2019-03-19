@@ -70,8 +70,15 @@
         {{'Select' | uppercase }}
       </button>
       <div *ngIf="applicationStatus !== -1">
-        <mat-chip-list>
-          <mat-chip color="accent">{{getApplicationStatus()}}</mat-chip>
+        <button (click)="rejectCandidate()"
+                color="primary"
+                mat-raised-button
+                *ngIf="applicationStatus === 2">
+          <mat-icon>close</mat-icon>
+          Cancel Selection
+        </button>
+        <mat-chip-list *ngIf="applicationStatus !== 2">
+          <mat-chip [color]="getColor()" selected>{{getApplicationStatus()}}</mat-chip>
         </mat-chip-list>
       </div>
     </div>

@@ -11,7 +11,6 @@ import {KweeLiveRoutingModule} from './kwee-live-routing.module';
   ],
   imports: [
     SharedModule,
-    RouterModule,
     KweeLiveRoutingModule
   ],
   exports: [

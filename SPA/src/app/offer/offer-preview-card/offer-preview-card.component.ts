@@ -10,6 +10,8 @@ import * as fromApp from '../../store/app.reducers';
 import {AlertDialogComponent} from '../../shared/alert-dialog/alert-dialog.component';
 import {OfferManageEffects} from '../offer-manage/store/offer-manage.effects';
 import * as OfferManageActions from '../offer-manage/store/offer-manage.actions';
+import {filter} from 'rxjs/operators';
+import {Router} from '@angular/router';
 
 
 @Component({
@@ -24,13 +26,15 @@ export class OfferPreviewCardComponent implements OnInit {
   offerManageState: any;
   candidate: boolean;
   nameToRate: string;
-  user: number;
+  userId: number;
 
   @Input() offer: any;
 
 
   constructor(public dialog: MatDialog,
-              private store$: Store<fromApp.AppState>) {
+              private store$: Store<fromApp.AppState>,
+              private router: Router,
+              private manageOfferEffects: OfferManageEffects) {
   }
 
   ngOnInit() {
@@ -48,10 +52,17 @@ export class OfferPreviewCardComponent implements OnInit {
           this.candidate = user.type === 'candidate';
           if (this.candidate) {
             this.nameToRate = this.offer.offererName;
-            this.user = user.id;
+            this.userId = user.id;
           }
         }
       });
+
+    this.manageOfferEffects.ChangeOfferStatus.pipe(
+      filter((action: any) => action.type === OfferManageActions.SET_CHANGE_OFFER_STATUS)
+    ).subscribe((next: { payload: any, type: string }) => {
+        this.router.navigate(['/my-offers/' + this.offer.id + '/selection']);
+      }
+    );
   }
 
   urlfyPosition() {
@@ -173,12 +184,16 @@ export class OfferPreviewCardComponent implements OnInit {
   changeAplicationStatus(status: number) {
     this.store$.dispatch(new OfferManageActions
       .TryChangeApplicationStatus({
-        candidateId: this.user,
+        candidateId: this.userId,
         applicationId: this.offer.fk_application,
         status: status,
         refresh: false,
         refreshStatus: this.offer.status
       }));
 
+  }
+
+  startSelectionProcess() {
+    this.store$.dispatch(new OfferManageActions.TryChangeOfferStatus({offerId: this.offer.id, newStatus: 3}));
   }
 }

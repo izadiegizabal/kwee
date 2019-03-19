@@ -103,4 +103,12 @@ export class CandidatePreviewCardComponent implements OnInit {
       default: return 'IDK';
     }
   }
+
+  getColor() {
+    switch (this.applicationStatus) {
+      case 3: return 'accent';
+      case 4: return 'warn';
+      default: return 'primary';
+    }
+  }
 }

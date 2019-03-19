@@ -133,6 +133,53 @@ export class OfferManageEffects {
   );
 
   @Effect()
+  ChangeOfferStatus = this.actions$.pipe(
+    ofType(OfferManageActions.TRY_CHANGE_OFFER_STATUS),
+    map((action: OfferManageActions.TryChangeOfferStatus) => {
+      return action.payload;
+    }),
+    withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    switchMap(([payload, authState]) => {
+        const apiEndpointUrl = environment.apiUrl + 'offer/' + payload.offerId;
+        const token = authState.token;
+        const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+        const body = JSON.stringify({status: payload.newStatus});
+        return this.httpClient.put(apiEndpointUrl, body, {headers: headers}).pipe(
+          map((res: {
+            ok: boolean,
+          }) => {
+            if (res.ok) {
+              console.log(res);
+              return {
+                type: OfferManageActions.SET_CHANGE_OFFER_STATUS,
+                payload: { offerId: payload.offerId, newStatus: payload.newStatus },
+              };
+            } else {
+              return [
+                {
+                  type: OfferManageActions.OPERATION_ERROR,
+                  payload: 'Error from API'
+                }
+              ];
+            }
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('getOffersOfferer', err));
+            console.log(err);
+            return [
+              {
+                type: OfferManageActions.OPERATION_ERROR,
+                payload: err.error.error
+              }
+            ];
+          })
+        );
+      }
+    ),
+    share()
+  );
+
+  @Effect()
   GetOfferCandidates = this.actions$.pipe(
     ofType(OfferManageActions.TRY_GET_OFFER_CANDIDATES),
     map((action: OfferManageActions.TryGetOfferCandidates) => {

@@ -17,20 +17,22 @@ export class AdminEffects {
     map((action: AdminActions.TryGetCandidates) => {
       return action.payload;
     }),
-   // withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    // withLatestFrom(this.store$.pipe(select(state => state.auth))),
     switchMap((payload) => {
-        const apiEndpointUrl = environment.apiUrl + 'applicants/search?page=' + payload.page + '&limit=' + payload.limit;
-      const headers = new HttpHeaders().set('Content-Type', 'application/json');
-      const body = JSON.stringify(payload.params);
+        let apiEndpointUrl = environment.apiUrl + 'applicants/search?page=' + payload.page + '&limit=' + payload.limit;
+        const headers = new HttpHeaders().set('Content-Type', 'application/json');
+        const body = JSON.stringify(payload.params);
 
-      // const token = authState.token;
-       // const headers = new HttpHeaders().set('token', token);
-        // console.log(apiEndpointUrl);
+        if (payload.order !== '0') {
+          apiEndpointUrl += '&sort=' + payload.order;
+        }
+
         return this.httpClient.post(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res: {
             ok: boolean,
             data: any[],
             total: number,
+            message: string,
           }) => {
             return {
               type: AdminActions.SET_CANDIDATES,
@@ -59,18 +61,27 @@ export class AdminEffects {
     map((action: AdminActions.TryGetBusinesses) => {
       return action.payload;
     }),
-   // withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    // withLatestFrom(this.store$.pipe(select(state => state.auth))),
     switchMap((payload) => {
-        const apiEndpointUrl = environment.apiUrl + 'offerers/search?page=' + payload.page + '&limit=' + payload.limit;
-      const headers = new HttpHeaders().set('Content-Type', 'application/json');
-      const body = JSON.stringify(payload.params);
-      // console.log(body);
-      return this.httpClient.post(apiEndpointUrl, body, {headers: headers}).pipe(
+        let apiEndpointUrl = environment.apiUrl + 'offerers/search?page=' + payload.page + '&limit=' + payload.limit;
+        const headers = new HttpHeaders().set('Content-Type', 'application/json');
+        const body = JSON.stringify(payload.params);
+
+        if (payload.order !== '0') {
+          apiEndpointUrl += '&sort=' + payload.order;
+        }
+
+        // console.log(apiEndpointUrl);
+        // console.log(body);
+
+        return this.httpClient.post(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res: {
             ok: boolean,
             data: any[],
             total: number,
+            message: string,
           }) => {
+            console.log(res);
             return {
               type: AdminActions.SET_BUSINESSES,
               payload: res,
