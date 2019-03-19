@@ -267,11 +267,7 @@ export class OfferManageEffects {
                   {
                     type: OfferManageActions.SET_CHANGE_APPLICATION_STATUS,
                     payload: {status: payload.status, candidateId: payload.candidateId},
-                  },
-                  {
-                    type: OfferManageActions.SET_OFFERS_APPLICANT,
-                    payload: {status: payload.status, candidateId: payload.candidateId},
-                  },
+                  }
                 ];
               }
             } else {
