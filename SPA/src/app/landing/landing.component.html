@@ -4,15 +4,24 @@
     fxFlex="100%"
     fxLayoutAlign="center center"
     fxLayoutGap="16px">
-    <app-searchbar style="margin-top: 64px; width: 60%"></app-searchbar>
+    <app-searchbar
+      (search)="onSearch($event)"
+      [ngStyle.lt-sm]="{'padding-top':'32px', 'width': '85%'}"
+      [ngStyle]="{'padding-top':'64px', 'width': '50%'}"
+    ></app-searchbar>
     <div
+      [ngClass.lt-sm]="{'worldContainerXS': true}"
+      [ngClass]="{'worldContainer': true}"
       fxLayout="column"
+      style="overflow-x: hidden;"
       fxLayoutAlign="center center">
       <mat-spinner color="accent" style="margin-top: 256px" *ngIf="getAllow()"></mat-spinner>
       <canvas
+        [ngStyle.lt-sm]="{'width': '200%'}"
+        [ngStyle]="{'width': '123%'}"
         id="kweelive"
-        width="700px"
-        height="700px"></canvas>
+        width="1400px"
+        height="1400px"></canvas>
     </div>
   </div>
 </div>

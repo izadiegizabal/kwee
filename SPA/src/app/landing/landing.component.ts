@@ -6,8 +6,7 @@ import {TResourceManager, TResourceMaterial, TResourceMesh, TResourceShader, TRe
 import {main, mainTest, pls} from '../../assets/engine/main.js';
 import {shared} from '../../assets/engine/commons';
 import {allowActions, mainInit, mainR, resetCanvas} from '../../assets/engine/main';
-
-// import {glMatrix, mat2, mat2d, mat3, mat4, quat, quat2, vec2, vec3, vec4} from 'gl-matrix';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-landing',
@@ -21,7 +20,7 @@ export class LandingComponent implements OnInit {
 
   @ViewChild('rendererContainer') rendererContainer: ElementRef;
 
-  constructor() {
+  constructor(private router: Router) {
     this.disabled = true;
   }
 
@@ -45,4 +44,7 @@ export class LandingComponent implements OnInit {
     resetCanvas();
   }
 
+  onSearch(query: string) {
+    this.router.navigate(['/candidate-home'], {queryParams: {title: query}});
+  }
 }
