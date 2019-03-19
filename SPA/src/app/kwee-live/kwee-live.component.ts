@@ -19,8 +19,8 @@ import {
 import { TMotorTAG } from '../../assets/engine/TMotorTAG.js';
 import { shared, canvas } from '../../assets/engine/commons.js';
 
-import { main, mainInit, mainR, mainTest, resetCanvas, allowActions} from '../../assets/engine/main.js';
-import {__await} from 'tslib';
+import { main, mainInit, mainR, mainTest, resetCanvas, allowActions, pls} from '../../assets/engine/main.js';
+
 
 // import { main } from '../../assets/engine/run.js'
 
@@ -41,6 +41,7 @@ import {__await} from 'tslib';
 export class KweeLiveComponent implements OnInit {
 
   disabled: boolean;
+  particles: boolean;
 
   @ViewChild('rendererContainer') rendererContainer: ElementRef;
 
@@ -60,16 +61,21 @@ export class KweeLiveComponent implements OnInit {
 
   drawHollow() {
     resetCanvas();
-    mainR('hollow');
+    mainR('hollow', this.particles);
   }
 
   drawThicc() {
     resetCanvas();
-    mainR('notHollow');
+    mainR('notHollow', this.particles);
   }
 
   async reset() {
     resetCanvas();
+  }
+
+  drawParticles() {
+    this.particles = !this.particles;
+    console.log('Particles ' + this.particles);
   }
 
 }

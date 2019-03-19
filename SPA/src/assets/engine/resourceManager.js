@@ -16,7 +16,7 @@
 
 import { MTLFile } from './dependencies/MTLFile.js';
 import { gl, program, TEntity, angle, texture } from './commons';
-
+import { constants } from './tools/constants.js';
 
 var vec3 = glMatrix.vec3;
 
@@ -416,7 +416,8 @@ class TResourceShader extends TResource {
 
 async function loadJSON(filename){
 
-    let host = "http://localhost:4200";
+    //let host = "http://localhost:4200";
+    let host = constants.URL;
     let path = '/assets/assets/JSON/';
     let url = `${host + path + filename}`;
     
@@ -436,7 +437,8 @@ async function loadJSON(filename){
 
 async function load(filename){
 
-    let host = "http://localhost:4200";
+    // let host = "http://localhost:4200";
+    let host = constants.URL;    
     let path = '/assets/engine/shaders/';
     let url = `${host + path + filename}`;
     
@@ -456,7 +458,8 @@ async function load(filename){
 
 async function loadMTL(filename){
 
-    let host = "http://localhost:4200";
+    // let host = "http://localhost:4200";
+    let host = constants.URL;    
     let path = '/assets/assets/JSON/';
     let url = `${host + path + filename}`;
     
@@ -480,7 +483,8 @@ async function loadImage(filename){
   img.src = '../assets/assets/textures/'+filename;
   img.id = 'image';
 
-  let host = "http://localhost:4200";
+  // let host = "http://localhost:4200";
+  let host = constants.URL;  
   let path = '/assets/assets/textures/';
   let url = `${host + path + filename}`;
 
