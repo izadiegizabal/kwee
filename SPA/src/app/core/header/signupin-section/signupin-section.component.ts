@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-signupin-section',
@@ -6,6 +6,7 @@ import {Component, OnInit} from '@angular/core';
   styleUrls: ['./signupin-section.component.scss']
 })
 export class SignupinSectionComponent implements OnInit {
+  @Input() isLanding = false;
 
   constructor() {
   }

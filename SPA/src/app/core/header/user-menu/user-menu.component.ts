@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import * as AuthActions from '../../../auth/store/auth.actions';
 import * as fromApp from '../../../store/app.reducers';
 import {select, Store} from '@ngrx/store';
@@ -12,6 +12,8 @@ import {getUrlfiedString} from '../../../shared/utils.service';
   styleUrls: ['./user-menu.component.scss']
 })
 export class UserMenuComponent implements OnInit {
+  @Input() isLanding = false;
+
   authState: Observable<fromAuth.State>;
   username = '';
   userId = '';
