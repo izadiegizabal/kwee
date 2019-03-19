@@ -10,18 +10,18 @@
     fxLayout="column"
     fxLayoutAlign="center center"
     style="margin: 64px 0">
-    <!--<mat-spinner></mat-spinner>-->
     <canvas
     id="kweelive"
     width="700px"
     height="700px"></canvas>
+    <mat-spinner *ngIf="getAllow()"></mat-spinner>
   </div>
   <div
     fxLayout="column"
     fxLayoutAlign="start start"
     fxLayoutGap="16px">
-    <button mat-raised-button (click)="drawHollow()" color="primary" [disabled]="getAllow()">Draw Hollow</button>
-    <button mat-raised-button (click)="drawThicc()" color="primary" [disabled]="getAllow()">Draw Sphere</button>
+    <button mat-raised-button (click)="drawHollow()" color="primary" [disabled]="getAllow()">Draw Earth</button>
+    <!--<button mat-raised-button (click)="drawThicc()" color="primary" [disabled]="getAllow()">Draw Sphere</button>-->
     <button mat-raised-button (click)="reset()" color="warn" [disabled]="getAllow()">Reset</button>
   </div>
 </div>

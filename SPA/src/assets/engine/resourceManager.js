@@ -174,6 +174,8 @@ class TResourceMesh extends TResource{
         // mesh file code
         const jsonMesh = await loadJSON(file);
 
+      ///////////////////////////////////////////////////////////////////////////////// GET INFO FROM FILE
+
         this.alias = jsonMesh.alias;
 
         if( file == "earth_fbx.json"){
@@ -196,12 +198,14 @@ class TResourceMesh extends TResource{
           file == "test2.json" ||
           file == "ballNormals.json" ||
           file == "ballNoNormals.json" ||
-          file == "textured_earth.json") {
+          file == "textured_earth.json" ||
+          file == "sea.json" ||
+          file == "earth.json") {
           this.alias = file;
 
           this.vertices = jsonMesh.positions;
           this.triVertices = jsonMesh.indices;
-          this.textures = jsonMesh.texcoords.UVMap;
+          this.textures = jsonMesh.texcoords ? jsonMesh.texcoords.UVMap : null;
           this.normals = jsonMesh.normals;
 
         }
@@ -217,7 +221,7 @@ class TResourceMesh extends TResource{
         this.nTris = this.triVertices.length;
         this.nVertices = this.vertices.length;
 
-
+      ///////////////////////////////////////////////////////////////////////////////// CREATE BUFFERS
         var vertexBufferObject = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, vertexBufferObject);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
@@ -226,10 +230,6 @@ class TResourceMesh extends TResource{
         gl.bindBuffer(gl.ARRAY_BUFFER, normalBufferObject);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.normals), gl.STATIC_DRAW);
 
-        var colorBufferObject = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, colorBufferObject);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.textures), gl.STATIC_DRAW);
-
         var indexBufferObject = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBufferObject);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triVertices), gl.STATIC_DRAW);
@@ -237,7 +237,13 @@ class TResourceMesh extends TResource{
         this.vbo = vertexBufferObject;
         this.ibo = indexBufferObject;
         this.nbo = normalBufferObject;
-        this.cbo = colorBufferObject;
+
+        if (this.textures !== null) {
+          var colorBufferObject = gl.createBuffer();
+          gl.bindBuffer(gl.ARRAY_BUFFER, colorBufferObject);
+          gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.textures), gl.STATIC_DRAW);
+          this.cbo = colorBufferObject;
+        }
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
         gl.bindBuffer(gl.ARRAY_BUFFER,null);
@@ -246,83 +252,35 @@ class TResourceMesh extends TResource{
     }
 
     draw(){
+      ///////////////////////////////////////////////////////////////////////////////////////////// ""MATERIALS"" (NOPE)
+      let uMaterialDiffuse = gl.getUniformLocation(program, 'uMaterialDiffuse');
+      let uMaterialAmbient = gl.getUniformLocation(program, 'uMaterialAmbient');
+      /// CHAPUZA CHANGE COLORS
+      if (this.name === 'sea.json'){
+        gl.uniform4fv(uMaterialDiffuse, [0.313, 0.678, 0.949,1.0]);
+        gl.uniform4fv(uMaterialAmbient, [1.0,1.0,1.0,1.0]);
+      }
+      else {
+        gl.uniform4fv(uMaterialDiffuse, [0.258, 0.960, 0.6,1.0]);
+        gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+      }
+      ///// BOTH FALSE
+      var uWireframe = gl.getUniformLocation(program, 'uWireframe');
+      gl.uniform1i(uWireframe, false);
+      var uUseVertexColor = gl.getUniformLocation(program, 'uUseVertexColor');
+      gl.uniform1i(uUseVertexColor, false);
 
-        // /// object buffers
-        // var meshPosVertexBufferObject = gl.createBuffer();
-        // gl.bindBuffer(gl.ARRAY_BUFFER, meshPosVertexBufferObject);
-        // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
-        // gl.bindBuffer(gl.ARRAY_BUFFER, null);
+      ///// TRUE IF TEXTURES ARE NEEDED
+      var uUseTextures = gl.getUniformLocation(program, 'uUseTextures');
+      gl.uniform1i(uUseTextures, false);
 
-        // var meshIndexBufferObject = gl.createBuffer();
-        // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, meshIndexBufferObject);
-        // gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triVertices), gl.STATIC_DRAW);
-        // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-
-        // gl.bindBuffer(gl.ARRAY_BUFFER, meshPosVertexBufferObject);
-        // var positionAttribLocation = gl.getAttribLocation(program, 'vertPosition');
-        // gl.vertexAttribPointer(
-        //     positionAttribLocation, // Attribute location
-        //     3, // Number of elements per attribute
-        //     gl.FLOAT, // Type of elements
-        //     gl.FALSE,
-        //     3 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
-        //     0 // Offset from the beginning of a single vertex to this attribute
-        // );
-        // gl.enableVertexAttribArray(positionAttribLocation);
-
-        // gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
-        // gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-        // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, meshIndexBufferObject);
-        // gl.drawElements(gl.TRIANGLES, this.nTris, gl.UNSIGNED_SHORT, 0);
-
-
-        /*var meshPosVertexBufferObject = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, meshPosVertexBufferObject);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
-        gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, meshPosVertexBufferObject);
-        var positionAttribLocation = gl.getAttribLocation(program, 'vertPosition');
-        gl.vertexAttribPointer(
-            positionAttribLocation, // Attribute location
-            3, // Number of elements per attribute
-            gl.FLOAT, // Type of elements
-            gl.FALSE,
-            3 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
-            0 // Offset from the beginning of a single vertex to this attribute
-        );
-        gl.enableVertexAttribArray(positionAttribLocation);
-
-        var meshIndexBufferObject = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, meshIndexBufferObject);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triVertices), gl.STATIC_DRAW);
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-
-        var worldMatrix = new Float32Array(16);
-        glMatrix.mat4.identity(worldMatrix);
-        worldMatrix = TEntity.Model;
-
-
-        // rotation stuff
-        var rotation = glMatrix.mat4.create();
-        glMatrix.mat4.rotate(rotation, worldMatrix, angle, [0, 1, 0]);
-
-        var matWorldUniformLocation = gl.getUniformLocation(program, 'mWorld');
-        gl.uniformMatrix4fv(matWorldUniformLocation, false, rotation);
-
-
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, meshIndexBufferObject);
-        gl.drawElements(gl.TRIANGLES, this.nTris, gl.UNSIGNED_SHORT, 0);*/
-
-
-        /////////////////////////////////////////////////////////////////////////////////////////// BUFFERS
-      var positionAttribLocation = gl.getAttribLocation(program, 'vertPosition');
-      var texCoordAttribLocation = gl.getAttribLocation(program, 'vertTexCoord');
-      var normalAttribLocation = gl.getAttribLocation(program, 'vertNormal');
+      ///////////////////////////////////////////////////////////////////////////////////////////// BIND BUFFERS
+      var positionAttribLocation = gl.getAttribLocation(program, 'aVertexPosition');
+      var texCoordAttribLocation = gl.getAttribLocation(program, 'aVertexTextureCoords');
+      var normalAttribLocation = gl.getAttribLocation(program, 'aVertexNormal');
       gl.enableVertexAttribArray(positionAttribLocation);
       gl.enableVertexAttribArray(normalAttribLocation);
-      gl.enableVertexAttribArray(texCoordAttribLocation);
+
 
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
       gl.vertexAttribPointer(positionAttribLocation, 3, gl.FLOAT, gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
@@ -334,138 +292,40 @@ class TResourceMesh extends TResource{
       gl.enableVertexAttribArray(normalAttribLocation);
 
 
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.cbo);
-      gl.vertexAttribPointer(texCoordAttribLocation,2,gl.FLOAT, gl.FALSE, 2 * Float32Array.BYTES_PER_ELEMENT,0);
-      gl.enableVertexAttribArray(texCoordAttribLocation);
+      if (this.textures !== null) {
+        gl.enableVertexAttribArray(texCoordAttribLocation);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.cbo);
+        gl.vertexAttribPointer(texCoordAttribLocation,2,gl.FLOAT, gl.FALSE, 2 * Float32Array.BYTES_PER_ELEMENT,0);
+        gl.enableVertexAttribArray(texCoordAttribLocation);
+      }
+
 
       ///////////////////////////////////////////////////////////////////////////////// POSITION & ROTATION STUFF
       var worldMatrix = TEntity.Model;
       var rotation = glMatrix.mat4.create();
       glMatrix.mat4.rotate(rotation, worldMatrix, angle, [1, 0, 0]);
-      var matWorldUniformLocation = gl.getUniformLocation(program, 'mWorld');
+
+
+      var matWorldUniformLocation = gl.getUniformLocation(program, 'uMVMatrix');
       gl.uniformMatrix4fv(matWorldUniformLocation, false, rotation);
+
+      let aux = glMatrix.mat4.create();
+      /// SORRRRRY, I HAD TO
+      glMatrix.mat4.set( aux,1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -2, 1);
+      let auxAux = glMatrix.mat4.create();
+      glMatrix.mat4.multiply(auxAux, rotation, aux);
+
+      glMatrix.mat4.invert(auxAux, auxAux);
+      glMatrix.mat4.transpose(auxAux, auxAux);
+
+      var normal = gl.getUniformLocation(program, 'uNMatrix');
+      gl.uniformMatrix4fv(normal, false, auxAux);
       ///////////////////////////////////////////////////////////////////////////////// DRAW
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
       gl.drawElements(gl.TRIANGLES, this.nTris, gl.UNSIGNED_SHORT,0);
       ///////////////////////////////////////////////////////////////////////////////// CLEAR ALL BUFFERS
       gl.bindBuffer(gl.ARRAY_BUFFER, null);
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-
-
-
-
-
-
-
-
-
-        /*gl.bindBuffer(gl.ARRAY_BUFFER, meshPosVertexBufferObject);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.DYNAMIC_DRAW);
-
-
-        // gl.bindBuffer(gl.ARRAY_BUFFER, meshPosVertexBufferObject);
-        var positionAttribLocation = gl.getAttribLocation(program, 'vertPosition');
-        gl.vertexAttribPointer(
-          positionAttribLocation, // Attribute location
-          3, // Number of elements per attribute
-          gl.FLOAT, // Type of elements
-          gl.FALSE,
-          3 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
-          0 // Offset from the beginning of a single vertex to this attribute
-        );
-        gl.enableVertexAttribArray(positionAttribLocation);
-      ///////////////////////////////////////////////////////////////////////////////////////////     Index
-
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, meshIndexBufferObject);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triVertices), gl.DYNAMIC_DRAW);
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-
-
-/* Textures
-        var susanTexCoords = this.textures;
-        var susanNormals = this.normals;
-
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, texCoordVertexBufferObject);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(susanTexCoords), gl.DYNAMIC_DRAW);
-
-        //gl.activeTexture(gl.TEXTURE0);
-        //gl.bindTexture(gl.TEXTURE_2D, texture);
-        //gl.uniform1i(program.sampler, 0);
-        var texCoordAttribLocation = gl.getAttribLocation(program, 'vertTexCoord');
-        gl.vertexAttribPointer(
-          texCoordAttribLocation, // Attribute location
-          2, // Number of elements per attribute
-          gl.FLOAT, // Type of elements
-          gl.FALSE,
-          2 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
-          0
-        );
-        gl.enableVertexAttribArray(texCoordAttribLocation);
-
-
-
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, normalBufferObject);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(susanNormals), gl.DYNAMIC_DRAW);
-
-        var normalAttribLocation = gl.getAttribLocation(program, 'vertNormal');
-        gl.vertexAttribPointer(
-          normalAttribLocation,
-          3, gl.FLOAT,
-          gl.TRUE,
-          3 * Float32Array.BYTES_PER_ELEMENT,
-          0
-        );
-        gl.enableVertexAttribArray(normalAttribLocation);
-*/
-        //
-        // Create texture
-        //
-        // var susanTexture = gl.createTexture();
-        // gl.bindTexture(gl.TEXTURE_2D, susanTexture);
-        // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-        // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        // gl.texImage2D(
-        //     gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,
-        //     gl.UNSIGNED_BYTE,
-        //     document.getElementById("image")
-        // );
-        // gl.bindTexture(gl.TEXTURE_2D, null);
-
-        //gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
-        //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);*/
-
-
-
-
-
-
-
-
-
-        /*
-        var worldMatrix = TEntity.Model;
-
-
-        // rotation stuff
-
-        var rotation = glMatrix.mat4.create();
-        glMatrix.mat4.rotate(rotation, worldMatrix, angle, [0, 1, 0]);
-
-        var matWorldUniformLocation = gl.getUniformLocation(program, 'mWorld');
-        gl.uniformMatrix4fv(matWorldUniformLocation, false, rotation);
-
-
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, meshIndexBufferObject);
-        gl.drawElements(gl.TRIANGLES, this.nTris, gl.UNSIGNED_SHORT, 0);
-        gl.bindBuffer(gl.ARRAY_BUFFER, null);
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);*/
-
-
 
     }
 }

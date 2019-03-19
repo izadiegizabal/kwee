@@ -28,6 +28,30 @@ class TMotorTAG{
         return TMotorTAG.scene;
     }
 
+    // scale -> rotation -> translation -> node
+    createFullBranch(father, entity){
+
+      // node scale
+      let TransScale = new TTransform();
+      let nodeScale = this.createNode(father, TransScale );
+
+      return this.createBranch(nodeScale, entity);
+    }
+    // rotation -> translation -> node
+    createBranch(father, entity){
+      // node rotation
+      let TransRotation = new TTransform();
+      let nodeRotation = this.createNode(father, TransRotation );
+
+      // node translation
+      let TransTrans = new TTransform();
+      let nodeTranslation= this.createNode(nodeRotation, TransTrans );
+
+      let node = this.createNode(nodeTranslation, entity );
+
+      return node;
+    }
+
     createNode(father, entity){
         var node = new TNode(father, entity);
         father.addChild(node);
@@ -36,17 +60,9 @@ class TMotorTAG{
 
     createCamera( father, isPerspective, near, far, right, left, top, bottom ){
 
-        // node rotation
-        let TransfRotaCam = new TTransform();
-        let nodeRotation = this.createNode(father, TransfRotaCam );
-
-        // node traslation
-        let TransfTransCam = new TTransform();
-        let nodeTranslation = this.createNode(nodeRotation, TransfTransCam );
-
         // isPerspective, near, far, right, left, top, bottom
         let cam = new TCamera(isPerspective, near, far, right, left, top, bottom);
-        let NCam = this.createNode(nodeTranslation, cam);
+        let NCam = this.createBranch(father, cam);
 
         this.allCameras.push(NCam);
 
@@ -60,29 +76,33 @@ class TMotorTAG{
     }
     /**
      * 
-     * @param {*} TNodeCam Camera to rotate
+     * @param {*} Node to rotate
      * @param {*} angle Angle to rotate
      * @param {*} axis Axis to rotate. If different for values 'x', 'y' or 'z', will use that axis
      */
-    rotateCamera( TNodeCam, angle, axis ) {
+    rotate( node, angle, axis ) {
         switch (axis) {
             case 'x':
-                TNodeCam.father.father.entity.rotateX(angle);
+                node.father.father.entity.rotateX(angle);
                 break;
             case 'y':
-                TNodeCam.father.father.entity.rotateY(angle);
+                node.father.father.entity.rotateY(angle);
                 break;
             case 'z':
-                TNodeCam.father.father.entity.rotateZ(angle);
+                node.father.father.entity.rotateZ(angle);
                 break;
             default:
-                TNodeCam.father.father.entity.rotate(angle, axis);
+                node.father.father.entity.rotate(angle, axis);
                 break;
         }
     }
 
-    translateCamera( TNodeCam, units ) {
-        TNodeCam.father.entity.translate(units);
+    translate( node, units ) {
+        node.father.entity.translate(units);
+    }
+
+    scale( node, units ) {
+        node.father.father.father.entity.scale(units);
     }
 
     lookAt(TNodeCam, eye, center, up) {
@@ -147,31 +167,14 @@ class TMotorTAG{
   
         TNodeCam.father.entity.setTranslation([out[12], out[13], out[14]]);
         TNodeCam.father.father.entity.setRotation([out[0], out[1], out[2], out[4], out[5], out[6], out[8], out[9], out[10]]);
-  
-  
-  
-        /*var matrix = glMatrix.mat4.create();
-        matrix = glMatrix.mat4.multiply(matrix, TNodeCam.father.entity.matrix, TNodeCam.father.father.entity.matrix)
-        var matrix2 = glMatrix.mat4.create();
-        matrix2 = glMatrix.mat4.lookAt(matrix2, [0, 0, -5], [0, 0, 0], [0, 1, 0]);
-        console.log(matrix);
-        console.log(matrix2);
-        console.log(glMatrix.mat4.equals(matrix, matrix2));*/
+
       }
 
     createLight(father, typ, intensity, specular, direction, s){
 
-        // node rotation
-        let TransfRotaLight = new TTransform();
-        let nodeRotation = this.createNode(father, TransfRotaLight );
-
-        // node traslation
-        let TransfTransLight = new TTransform();
-        let nodeTranslation = this.createNode(nodeRotation, TransfTransLight );
-          
         // typ, intensity, specular, direction, s
         let light = new TLight(typ, intensity, specular, direction, s);
-        let NLight = this.createNode(nodeTranslation, light);
+        let NLight = this.createBranch(father, light);
 
         this.allLights.push(NLight);
 
@@ -185,7 +188,8 @@ class TMotorTAG{
         let meshResource = await this.resourceManager.getResource(file); 
 
         let mesh = new TMesh(meshResource);
-        return this.createNode(father, mesh);
+
+        return this.createFullBranch(father, mesh);
     }
 
     draw(){

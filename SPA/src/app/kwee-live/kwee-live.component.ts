@@ -19,7 +19,7 @@ import {
 import { TMotorTAG } from '../../assets/engine/TMotorTAG.js';
 import { shared, canvas } from '../../assets/engine/commons.js';
 
-import { main, mainInit, mainR, mainTest, resetCanvas, allowActions, pls} from '../../assets/engine/main.js';
+import { main, mainInit, mainR, mainTest, resetCanvas, allowActions} from '../../assets/engine/main.js';
 import {__await} from 'tslib';
 
 // import { main } from '../../assets/engine/run.js'
