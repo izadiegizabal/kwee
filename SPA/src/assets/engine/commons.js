@@ -9,7 +9,7 @@ var angle = 30;
 function shared() {
     canvas = document.getElementById('kweelive');
     
-    gl = canvas.getContext('webgl2');
+    gl = canvas.getContext('webgl');
     
     program = gl.createProgram();
     
