@@ -52,7 +52,7 @@ class TResourceManager {
                     resource = new TResourceMesh(name);
                     break;
                 }
-                case 'texture': {
+                case 'png': {
                     // console.log("-> Creating TResourceTexture " + name + "...");
                     resource = new TResourceTexture(name);
                     break;
@@ -392,9 +392,32 @@ class TResourceMaterial extends TResource{
 class TResourceTexture extends TResource{
     constructor(name){
         super(name);
+        this.tex = gl.createTexture();
+        this.image = new Image();
+    }
+
+    bindTexture() {
+        console.info('loading image '+this.image.src);
+        gl.bindTexture(gl.TEXTURE_2D, this.tex);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.image);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+        gl.generateMipmap(gl.TEXTURE_2D);
+        gl.bindTexture(gl.TEXTURE_2D, null);
     }
     
-    loadFile(){}
+    async loadFile(name){
+        let url = constants.URL + '/assets/assets/textures' + name;
+        let result = await fetch( url );
+        
+        var self = this;
+        this.image.onload = function(){
+            self.bindTexture();
+        }
+        this.image.src = name;
+        
+        return result;
+    }
 }
 
 class TResourceShader extends TResource {
