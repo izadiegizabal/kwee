@@ -89,7 +89,11 @@ export class CandidateProfileComponent implements OnInit {
       },
     ],
     skills: ['Java', 'Android', 'Kotlin', 'HTML', 'CSS', 'JS', 'Angular', 'Android Studio', 'MySQL',
-    ]
+    ],
+    twitter: 'Applicant',
+    telegram: 'Applicant',
+    github: 'Applicant',
+    linkedin: 'Applicant'
   };
 
   profilesState: Observable<fromProfiles.State>;

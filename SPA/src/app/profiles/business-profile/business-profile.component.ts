@@ -27,6 +27,10 @@ export class BusinessProfileComponent implements OnInit {
       long: 40.51,
     },
     address: '770 Broadway, New York, NY 10003, USA',
+    twitter: 'Facebook',
+    linkedin: 'Facebook',
+    telegram: 'Facebook',
+    github: 'Facebook'
   };
 
   constructor(private router: Router) {
