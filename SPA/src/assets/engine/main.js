@@ -147,8 +147,8 @@ async function mainR( model ){
   let light = motor.createLight(scene);
   let land = null
   if (model === 'hollow') {
-    land = await motor.loadMesh(scene, 'earth_fbx.json');
-    motor.rotate(land, -90, 'z');
+    land = await motor.loadMesh(scene, 'earthobj.json');
+    //motor.rotate(land, -90, 'z');
   } else {
     land = await motor.loadMesh(scene, 'textured_earth.json');
     motor.rotate(land, -90, 'z');
@@ -157,7 +157,7 @@ async function mainR( model ){
   let sphere = null
   if (model === 'hollow') {
     sphere = await motor.loadMesh(scene, 'sea.json');
-    motor.rotate(sphere, -90, 'z');
+    //motor.rotate(sphere, -90, 'z');
     motor.scale(sphere, [0.995,0.995,0.995]);
   } else {
     sphere = await motor.loadMesh(scene, 'textured_earth.json');
@@ -172,7 +172,7 @@ async function mainR( model ){
   console.log("scene:");
   console.log(scene);
 
-  motor.lookAt(cam, [0, 0, 2], [0, 0, 0], [0, 1, 0]);
+  motor.lookAt(cam, [0, 0, 2], [0, 1, 0], [0, 1, 0]);
 
   motor.calculateLights();
   motor.calculateViews();
@@ -217,8 +217,8 @@ async function mainR( model ){
   let alpha = gl.getUniformLocation(program, 'uAlpha');
 
   /// @todo: MOVE TO TNODE
-  gl.uniform3fv(lightPos,   [5,5,5]);
-  gl.uniform4fv(lightAmb,    [0.1,0.1,0.1,1.0]);
+  gl.uniform3fv(lightPos,   [7,5,5]);
+  gl.uniform4fv(lightAmb,    [0.0,0.0,0.0,1.0]);
   gl.uniform4fv(lightDiff,    [1.0,1.0,1.0,1.0]);
   gl.uniform1f(alpha, 1.0);
 
@@ -233,7 +233,7 @@ async function mainR( model ){
     if(draw) {
       //gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-      changeAngle(performance.now() / 1000 / 6 * 2 * Math.PI);
+      changeAngle(performance.now() / 1000 / 12 * 2 * Math.PI);
       scene.draw();
       requestAnimationFrame(loop);
     }
