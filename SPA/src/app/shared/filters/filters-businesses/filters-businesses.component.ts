@@ -67,11 +67,7 @@ export class FiltersBusinessesComponent implements OnInit {
 
     this.filters.controls['minIndex'].valueChanges.subscribe(() => {
       this.router.navigate(['/search-businesses'],
-        {
-          queryParams: {
-            index: JSON.stringify({'gte': this.filters.controls['minIndex'].value})
-          }, queryParamsHandling: 'merge'
-        });
+        {queryParams: {index: this.filters.controls['minIndex'].value}, queryParamsHandling: 'merge'});
     });
 
     this.filters.controls['companySize'].valueChanges.subscribe(() => {
@@ -82,12 +78,7 @@ export class FiltersBusinessesComponent implements OnInit {
     });
 
     this.filters.controls['foundationDate'].valueChanges.subscribe(() => {
-      this.router.navigate(['/search-businesses'],
-        {
-          queryParams: {
-            year: JSON.stringify({'gte': this.filters.controls['foundationDate'].value})
-          }, queryParamsHandling: 'merge'
-        });
+      this.getYear();
     });
 
     this.filters.controls['industry'].valueChanges.subscribe(() => {
@@ -105,6 +96,17 @@ export class FiltersBusinessesComponent implements OnInit {
 
   isMobile() {
     return !this.media.isMatched('screen and (min-width: 960px)'); // gt-sm
+  }
+
+  getYear() {
+    let yeartoday = new Date().getFullYear();
+
+    yeartoday = yeartoday - this.filters.controls['foundationDate'].value;
+
+    this.router.navigate(['/search-businesses'],
+      {
+        queryParams: {year: yeartoday}, queryParamsHandling: 'merge'
+      });
   }
 
 }

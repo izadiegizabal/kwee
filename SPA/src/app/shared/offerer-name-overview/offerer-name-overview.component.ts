@@ -1,4 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
+import {getColourFromIndex} from '../utils.service';
 
 @Component({
   selector: 'app-offerer-name-overview',
@@ -14,6 +15,10 @@ export class OffererNameOverviewComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  private getBGColour() {
+    // return getColourFromIndex(this.index);
   }
 
 }

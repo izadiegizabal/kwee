@@ -18,6 +18,7 @@ import {
   MatMenuModule,
   MatNativeDateModule,
   MatPaginatorModule,
+  MatProgressSpinnerModule,
   MatRadioModule,
   MatSelectModule,
   MatSidenavModule,
@@ -59,7 +60,8 @@ import {CommonModule} from '@angular/common';
     MatSnackBarModule,
     MatPaginatorModule,
     MatMenuModule,
-    MatSliderModule
+    MatSliderModule,
+    MatProgressSpinnerModule
   ],
 })
 export class MaterialAngularModule {

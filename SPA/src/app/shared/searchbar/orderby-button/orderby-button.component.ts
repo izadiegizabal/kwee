@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 
 @Component({
   selector: 'app-orderby-button',
@@ -19,6 +19,7 @@ export class OrderbyButtonComponent implements OnInit {
     {value: 6, viewValue: 'Selection Date'},
   ];
   @Output() selectedValue = 0;
+  @Output() changeSelectedValue = new EventEmitter();
   selectedViewValue;
 
   constructor() {
@@ -26,6 +27,12 @@ export class OrderbyButtonComponent implements OnInit {
 
   ngOnInit() {
     this.selectedViewValue = this.orderBy[0].viewValue;
+  }
+
+  onChange(order) {
+    this.selectedViewValue = order.viewValue;
+    this.selectedValue = order.value;
+    this.changeSelectedValue.emit(this.selectedValue);
   }
 
 }

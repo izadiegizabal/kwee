@@ -4,36 +4,45 @@
       fxFlex="70%"
       fxFlex.gt-md="=70%"
       fxFlex.gt-sm="80%">
-      <div fxLayout="row">
-        <h2>Publish a new offer</h2></div>
-      <div class="line2" fxLayout="column">
-        <mat-form-field>
-          <input formControlName="title" matInput placeholder="Title" required>
-          <mat-error *ngIf="!form.get('title').valid ">
-            This field is required
-          </mat-error>
-        </mat-form-field>
-      </div>
-      <br>
-      <h3>Description</h3>
-      <div class="line2" fxLayout="column">
-        <mat-form-field class="noUnderline">
-          <ckeditor (change)="onChangeDescription($event)" [config]="Config" [data]="DataDesc"
-                    [editor]="Editor"></ckeditor>
-          <input [hidden]="true" formControlName="description" matInput required>
-          <mat-error *ngIf="!form.get('description').valid ">
-            This field is required
-          </mat-error>
-        </mat-form-field>
-      </div>
-      <br>
-      <h3>Details</h3>
-      <div fxLayout="row">
-        <div fxFlexOffset="10%" fxFlexOffset.lt-sm="0">
+      <mat-horizontal-stepper #stepper linear="true">
+        <mat-step>
+          <ng-template matStepLabel>Describe your offer</ng-template>
+
+          <div fxLayout="row">
+            <h2>Publish a new offer</h2></div>
+          <div class="line2" fxLayout="column">
+            <mat-form-field>
+              <input formControlName="title" matInput placeholder="Title" required>
+              <mat-error *ngIf="!form.get('title').valid ">
+                This field is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <br>
+          <h3>Description</h3>
+          <div class="line2" fxLayout="column">
+            <mat-form-field class="noUnderline">
+              <ckeditor (change)="onChangeDescription($event)" [config]="Config" [data]="DataDesc"
+                        [editor]="Editor"></ckeditor>
+              <input [hidden]="true" formControlName="description" matInput required>
+              <mat-error *ngIf="!form.get('description').valid ">
+                This field is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="end">
+          <button  matStepperNext color="accent" mat-button type="button">Next</button>
+          </div>
+        </mat-step>
+        <mat-step>
+          <ng-template matStepLabel>More details</ng-template>
+
+          <h3>Details</h3>
           <h4>Duration</h4>
           <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
             <mat-form-field>
-              <input [required]="durationReq" formControlName="duration" id="dnum" matInput placeholder="Numeric unit"
+              <input [required]="durationReq" formControlName="duration" id="dnum" matInput
+                     placeholder="Numeric unit"
                      required type="number">
               <mat-icon color="primary" matPrefix svgIcon="access-time"></mat-icon>
               <mat-error *ngIf="!form.get('duration').valid ">
@@ -195,70 +204,78 @@
               </mat-error>
             </mat-form-field>
           </div>
-        </div>
-      </div>
-      <br><br>
-      <h4>Responsabilities:</h4>
-      <p>What responsabilitites will your candidates have?</p>
-      <div class="line2" fxLayout="column">
-        <mat-form-field class="noUnderline">
-          <!--<textarea formControlName="responsabilities" matInput placeholder="Responsabilities"></textarea>-->
-          <ckeditor (change)="onChangeResponsabilities($event)" [config]="Config" [data]="DataRes"
-                    [editor]="Editor"></ckeditor>
-          <input [hidden]="true" formControlName="responsabilities" matInput required>
-        </mat-form-field>
-      </div>
-      <br>
-      <h4>Requirements:</h4>
-      <p>What requirements must your candidates have?</p>
-      <div class="line2" fxLayout="column">
-        <mat-form-field class="noUnderline">
-          <!--<textarea formControlName="requirements" matInput placeholder="Requirements"></textarea>-->
-          <ckeditor (change)="onChangeRequirements($event)" [config]="Config" [data]="DataReq"
-                    [editor]="Editor"></ckeditor>
-          <input [hidden]="true" formControlName="requirements" matInput required>
-        </mat-form-field>
-      </div>
-      <br>
-      <h4>Skills:</h4>
-      <p>If you want to add a skill, write it and click on the "Add" button</p>
-      <div fxLayout="row" fxLayoutGap="16px">
-        <div formArrayName="skills" fxFlex="50%" fxLayout="column" fxLayoutGap="-16px">
-          <mat-form-field *ngFor="let skill of formSkills.controls; let i =index;">
-            <input (keyup.enter)='add_skill()'
-                   [formControlName]="i"
-                   class="form-control"
-                   id="{{'skill'+i}}"
-                   matInput type="text">
+          <div fxLayout="row" fxLayoutAlign="end">
+          <button color="primary" mat-button matStepperPrevious type="button">Back</button>
+          <button  matStepperNext color="accent" mat-button type="button">Next</button>
+          </div>
+        </mat-step>
+        <mat-step>
+          <ng-template matStepLabel>Responsabilities, requirements and skills</ng-template>
+          <h4>Responsabilities:</h4>
+          <p>What responsabilitites will your candidates have?</p>
+          <div class="line2" fxLayout="column">
+            <mat-form-field class="noUnderline">
+              <!--<textarea formControlName="responsabilities" matInput placeholder="Responsabilities"></textarea>-->
+              <ckeditor (change)="onChangeResponsabilities($event)" [config]="Config" [data]="DataRes"
+                        [editor]="Editor"></ckeditor>
+              <input [hidden]="true" formControlName="responsabilities" matInput required>
+            </mat-form-field>
+          </div>
+          <br>
+          <h4>Requirements:</h4>
+          <p>What requirements must your candidates have?</p>
+          <div class="line2" fxLayout="column">
+            <mat-form-field class="noUnderline">
+              <!--<textarea formControlName="requirements" matInput placeholder="Requirements"></textarea>-->
+              <ckeditor (change)="onChangeRequirements($event)" [config]="Config" [data]="DataReq"
+                        [editor]="Editor"></ckeditor>
+              <input [hidden]="true" formControlName="requirements" matInput required>
+            </mat-form-field>
+          </div>
+          <br>
+          <h4>Skills:</h4>
+          <p>If you want to add a skill, write it and click on the "Add" button</p>
+          <div fxLayout="row" fxLayoutGap="16px">
+            <div formArrayName="skills" fxFlex="50%" fxLayout="column" fxLayoutGap="-16px">
+              <mat-form-field *ngFor="let skill of formSkills.controls; let i =index;">
+                <input (keyup.enter)='add_skill()'
+                       [formControlName]="i"
+                       class="form-control"
+                       id="{{'skill'+i}}"
+                       matInput type="text">
 
 
-            <button (click)="deleteSkill(i)" *ngIf="this.formSkills.controls[i].value && this.formSkills.length-1!=i"
-                    aria-label="Clear"
-                    mat-button mat-icon-button matSuffix type="button">
-              <mat-icon color="primary" svgIcon="close"></mat-icon>
+                <button (click)="deleteSkill(i)"
+                        *ngIf="this.formSkills.controls[i].value && this.formSkills.length-1!=i"
+                        aria-label="Clear"
+                        mat-button mat-icon-button matSuffix type="button">
+                  <mat-icon color="primary" svgIcon="close"></mat-icon>
+                </button>
+
+                <button (click)="deleteSkill(i); add_skill()"
+                        *ngIf="this.formSkills.controls[i].value && this.formSkills.length-1==i" aria-label="Clear"
+                        mat-button mat-icon-button matSuffix type="button">
+                  <mat-icon color="primary" svgIcon="close"></mat-icon>
+                </button>
+              </mat-form-field>
+            </div>
+            <div class="divBtn" fxLayout="column" fxLayoutAlign="end">
+              <button (click)=" add_skill()" mat-button type="button">
+                Add
+              </button>
+            </div>
+          </div>
+          <br>
+          <div fxLayout="row" fxLayoutAlign="end">
+            <button color="primary" mat-button matStepperPrevious type="button">Back</button>
+            <button (click)="onSave(true)" *ngIf="!edit; else update" color="accent" mat-button type="button">Publish
             </button>
-
-            <button (click)="deleteSkill(i); add_skill()"
-                    *ngIf="this.formSkills.controls[i].value && this.formSkills.length-1==i" aria-label="Clear"
-                    mat-button mat-icon-button matSuffix type="button">
-              <mat-icon color="primary" svgIcon="close"></mat-icon>
-            </button>
-          </mat-form-field>
-        </div>
-        <div class="divBtn" fxLayout="column" fxLayoutAlign="end">
-          <button (click)=" add_skill()" mat-button type="button">
-            Add
-          </button>
-        </div>
-      </div>
-      <br>
-      <div fxLayout="row" fxLayoutAlign="end">
-        <button (click)="onSave(true)" *ngIf="!edit; else update" color="accent" mat-button type="button">Publish
-        </button>
-        <ng-template #update>
-          <button (click)="onSave(false)" color="accent" mat-button type="button">Update</button>
-        </ng-template>
-      </div>
+            <ng-template #update>
+              <button (click)="onSave(false)" color="accent" mat-button type="button">Update</button>
+            </ng-template>
+          </div>
+        </mat-step>
+      </mat-horizontal-stepper>
     </div>
   </div>
 </form>

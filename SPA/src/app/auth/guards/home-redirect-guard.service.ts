@@ -4,7 +4,7 @@ import {AuthService} from '../auth.service';
 import {Observable} from 'rxjs';
 
 @Injectable({providedIn: 'root'})
-export class VisitorGuard implements CanActivate {
+export class HomeRedirectGuardService implements CanActivate {
 
   constructor(private auth: AuthService, private router: Router) {
   }
@@ -12,13 +12,11 @@ export class VisitorGuard implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):
     Observable<boolean> | boolean {
 
-    let isVisitor = false;
-
     this.auth.getUserType().subscribe(
       (type) => {
         switch (type) {
           case '':
-            isVisitor = true;
+            this.router.navigate(['home']);
             break;
           case 'admin':
             this.router.navigate(['admin']);
@@ -32,6 +30,6 @@ export class VisitorGuard implements CanActivate {
         }
       }
     );
-    return isVisitor;
+    return true;
   }
 }

@@ -22,10 +22,23 @@ export class CandidateHomeComponent implements OnInit {
   pageSize = 5;
   pageSizeOptions: number[] = [5, 10, 25, 100];
   pageEvent: PageEvent;
+  orderby = '0';
   @ViewChild('paginator') paginator: MatPaginator;
 
   // Filter sidebar
   @ViewChild('drawer') drawer: MatSidenav;
+
+  order: { value: string , viewValue: string }[] =
+    [
+      { value: '0', viewValue: 'Relevance' },
+      { value: 'index', viewValue: 'Kwee Index' },
+      { value: 'title', viewValue: 'Title' },
+      { value: 'salaryAmount', viewValue: 'Salary' },
+      { value: 'dateStart', viewValue: 'Start Date' },
+      { value: 'datePublished', viewValue: 'Published Date' },
+      { value: 'dateEnd', viewValue: 'Selection Date' },
+      { value: 'seniority', viewValue: 'Seniority' },
+    ];
 
 
   constructor(
@@ -37,7 +50,8 @@ export class CandidateHomeComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store$.dispatch(new OffersActions.TryGetOffers({page: 1, limit: 5, params: '&status=0'}));
+    this.query = {...this.query, status: '0'};
+    this.store$.dispatch(new OffersActions.TryGetOffers({page: 1, limit: 5, params: this.query, order: this.orderby}));
     this.offersState = this.store$.pipe(select(state => state.offers));
 
     this.activatedRoute.queryParams
@@ -48,13 +62,11 @@ export class CandidateHomeComponent implements OnInit {
   }
 
   changePage() {
-    this.pageSize = this.pageEvent.pageSize;
-    this.query = {...this.query, status: '0'};
-
     this.store$.dispatch(new OffersActions.TryGetOffers({
       page: this.pageEvent.pageIndex + 1,
       limit: this.pageEvent.pageSize,
-      params: this.query
+      params: this.query,
+      order: this.orderby
     }));
   }
 
@@ -68,24 +80,41 @@ export class CandidateHomeComponent implements OnInit {
     if (!searchParams) {
       searchParams = null;
     }
-    this.router.navigate(['/candidate-home'], {queryParams: {keywords: searchParams}, queryParamsHandling: 'merge'});
+    this.router.navigate(['/candidate-home'], {queryParams: {title: searchParams}, queryParamsHandling: 'merge'});
   }
 
-  searchCallApi() {
-    // let query = '';
-    // if (window.location.href.split('?')[1]) {
-    //   query = '&' + window.location.href.split('?')[1];
-    // }
-    //
-    // query += '&status=0';
-
-    this.query = {...this.query, status: '0'};
-    console.log(this.query);
+  getOrderby(order: string) {
+    // console.log(order);
+    this.orderby = order;
 
     this.store$.dispatch(new OffersActions.TryGetOffers({
       page: 1,
       limit: this.pageSize,
-      params: this.query
+      params: this.query,
+      order: this.orderby
+    }));
+  }
+
+
+  searchCallApi() {
+    this.query = {...this.query, status: '0'};
+    if (this.query.salaryAmount) {
+      this.query = {...this.query, salaryAmount: {'gte': this.query.salaryAmount}};
+    }
+
+    if (this.query.offererIndex) {
+      this.query = {...this.query, offererIndex: {'gte': this.query.offererIndex}};
+    }
+
+    if (this.query.datePublished) {
+      this.query = {...this.query, datePublished: {'gte': this.query.datePublished}};
+    }
+
+    this.store$.dispatch(new OffersActions.TryGetOffers({
+      page: 1,
+      limit: this.pageSize,
+      params: this.query,
+      order: this.orderby
     }));
 
     if (this.paginator) {

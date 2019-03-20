@@ -7,6 +7,11 @@ import {environment} from '../../../environments/environment';
 import {RateCandidateComponent} from '../../rating/rate-candidate/rate-candidate.component';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
+import {AlertDialogComponent} from '../../shared/alert-dialog/alert-dialog.component';
+import {OfferManageEffects} from '../offer-manage/store/offer-manage.effects';
+import * as OfferManageActions from '../offer-manage/store/offer-manage.actions';
+import {filter} from 'rxjs/operators';
+import {Router} from '@angular/router';
 
 
 @Component({
@@ -18,17 +23,23 @@ export class OfferPreviewCardComponent implements OnInit {
 
   offerUrl: string;
   authState: any;
+  offerManageState: any;
   candidate: boolean;
   nameToRate: string;
+  userId: number;
 
   @Input() offer: any;
 
 
   constructor(public dialog: MatDialog,
-              private store$: Store<fromApp.AppState>) {
+              private store$: Store<fromApp.AppState>,
+              private router: Router,
+              private manageOfferEffects: OfferManageEffects) {
   }
 
   ngOnInit() {
+    // console.log(this.offer);
+
     this.offerUrl = this.urlfyPosition();
 
     this.authState = this.store$.pipe(select('auth'));
@@ -36,13 +47,22 @@ export class OfferPreviewCardComponent implements OnInit {
       select((s: { user: any}) => s.user)
     ).subscribe(
       (user) => {
+        // console.log(user);
         if (user) {
           this.candidate = user.type === 'candidate';
           if (this.candidate) {
             this.nameToRate = this.offer.offererName;
+            this.userId = user.id;
           }
         }
       });
+
+    this.manageOfferEffects.ChangeOfferStatus.pipe(
+      filter((action: any) => action.type === OfferManageActions.SET_CHANGE_OFFER_STATUS)
+    ).subscribe((next: { payload: any, type: string }) => {
+        this.router.navigate(['/my-offers/' + this.offer.id + '/selection']);
+      }
+    );
   }
 
   urlfyPosition() {
@@ -117,11 +137,10 @@ export class OfferPreviewCardComponent implements OnInit {
   }
 
   rateCandidate() {
-
     const dialogRef = this.dialog.open(RateCandidateComponent, {
       width: '95%',
       maxHeight: '90%',
-      data: {candidate: !this.candidate, to: 1, list: [{name: this.nameToRate}]}
+      data: {candidate: !this.candidate, to: this.offer.fk_application, list: [{name: this.nameToRate}]}
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -130,5 +149,51 @@ export class OfferPreviewCardComponent implements OnInit {
         console.log(result);
       }
     });
+  }
+
+  reject() {
+
+    const dialog = this.dialog.open(AlertDialogComponent, {
+      data: {
+        header: 'Are you sure you want to reject this offer?',
+      }
+    });
+
+    dialog.afterClosed().subscribe(result => {
+      if (result) {
+        this.changeAplicationStatus(4);
+      }
+    });
+  }
+
+  accept() {
+
+    const dialog = this.dialog.open(AlertDialogComponent, {
+      data: {
+        header: 'Are you sure you want to accept this offer?',
+      }
+    });
+
+    dialog.afterClosed().subscribe(result => {
+      if (result) {
+        this.changeAplicationStatus(3);
+      }
+    });
+  }
+
+  changeAplicationStatus(status: number) {
+    this.store$.dispatch(new OfferManageActions
+      .TryChangeApplicationStatus({
+        candidateId: this.userId,
+        applicationId: this.offer.fk_application,
+        status: status,
+        refresh: false,
+        refreshStatus: this.offer.status
+      }));
+
+  }
+
+  startSelectionProcess() {
+    this.store$.dispatch(new OfferManageActions.TryChangeOfferStatus({offerId: this.offer.id, newStatus: 3}));
   }
 }

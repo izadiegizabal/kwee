@@ -490,25 +490,26 @@ export class SignupCandidateComponent implements OnInit {
     //     this.dialogShown = true;
     //   }
     // });
-    window.location.href = 'http://localhost:3000/google';
+    window.location.href = environment.apiUrl + 'google';
     // stepper.next();
   }
 
   gitHubSignUp(stepper: MatStepper) {
-    window.location.href = 'http://localhost:3000/auth/github';
+    window.location.href = 'http://h203.eps.ua.es/api/auth/github';
+    // this.router.navigate(['/api/auth/github']);
     // stepper.next();
   }
 
-  linkedInSignUp(stepper: MatStepper) {
+    linkedInSignUp(stepper: MatStepper) {
     console.log('linkedIn Sign Up');
     this.store$.dispatch(new AuthActions.TrySignupLinkedIn());
-    window.location.href = 'http://localhost:3000/auth/github';
+    window.location.href = environment.apiUrl + 'auth/linkedin';
     // stepper.next();
   }
 
   twitterSignUp(stepper: MatStepper) {
     console.log('twitter Sign Up');
-    window.location.href = 'http://localhost:3000/auth/twitter';
+    window.location.href = environment.apiUrl + 'auth/twitter';
     // stepper.next();
 
   }

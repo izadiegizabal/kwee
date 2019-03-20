@@ -4,6 +4,6 @@
   'mat-card-title': size === 'title'
 }"
   fxLayout="row">
-  <div class="index"><span>{{index}}</span></div>
+  <div class="index" [style.background-color]="getBGColour()"><span>{{index}}</span></div>
   <p>{{name}}</p>
 </div>

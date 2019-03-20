@@ -25,6 +25,7 @@ export class AdminVerifyComponent implements OnInit {
   // ---------
 
   isPanelOpen = false;
+  orderby = '0';
 
 
   workFields = Object
@@ -47,7 +48,7 @@ export class AdminVerifyComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store$.dispatch(new AdminActions.TryGetBusinesses({page: 1, limit: 2}));
+    this.store$.dispatch(new AdminActions.TryGetBusinesses({page: 1, limit: 2, params: '', order: this.orderby}));
     this.adminState = this.store$.pipe(select(s => s.admin));
   }
 
@@ -56,7 +57,8 @@ export class AdminVerifyComponent implements OnInit {
   }
 
   changepage() {
-    this.store$.dispatch(new AdminActions.TryGetBusinesses({page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize}));
+    this.store$.dispatch(new AdminActions.TryGetBusinesses(
+      {page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize, params: '', order: this.orderby}));
   }
 
   accept(user) {

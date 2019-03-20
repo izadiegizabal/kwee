@@ -6,13 +6,14 @@ import {PrivacyComponent} from './privacy/privacy.component';
 import {AuthTokenGuard} from './auth/guards/auth-token-guard.service';
 import {AdminGuard} from './auth/guards/admin-guard.service';
 import {VisitorGuard} from './auth/guards/visitor-guard.service';
-import {LandingComponent} from "./landing/landing.component";
+import {LandingComponent} from './landing/landing.component';
+import {HomeRedirectGuardService} from './auth/guards/home-redirect-guard.service';
 
 const routes: Routes = [
 
   // MAIN PAGES
-  {path: '', redirectTo: '/candidate-home', pathMatch: 'full'}, // TODO: canActivate -> redirect to candidate-home or business-home
-  {path: 'landing', component: LandingComponent},
+  {path: '', redirectTo: '', canActivate: [HomeRedirectGuardService], pathMatch: 'full'},
+  {path: 'home', component: LandingComponent},
   {path: 'candidate-home', component: CandidateHomeComponent},
 
   // PROFILES
