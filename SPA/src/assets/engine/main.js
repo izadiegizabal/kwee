@@ -217,7 +217,7 @@ async function mainR( model ){
   let alpha = gl.getUniformLocation(program, 'uAlpha');
 
   /// @todo: MOVE TO TNODE
-  gl.uniform3fv(lightPos,   [20,10,0]);
+  gl.uniform3fv(lightPos,   [5,5,5]);
   gl.uniform4fv(lightAmb,    [0.0,0.0,0.0,1.0]);
   gl.uniform4fv(lightDiff,    [1.0,1.0,1.0,1.0]);
   gl.uniform1f(alpha, 1.0);
