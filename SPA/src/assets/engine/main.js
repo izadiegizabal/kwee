@@ -44,27 +44,10 @@ let allowActions = {
 };
 
 async function mainInit(){
-  return new Promise(resolve => {
+  return new Promise(async resolve => {
 
   //gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  console.log('== Loading Image ==');
-  const image = new Image();
-  image.onload = async function(){
-    console.log('== Image loaded ==');
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-    //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.bindTexture(gl.TEXTURE_2D, null);
-
-
-    /// @todo: MOVE TO MESH DRAW
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.uniform1i(program.sampler, 0);
 
 
 
@@ -72,8 +55,9 @@ async function mainInit(){
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         SHADERS
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    let VShader = await manager.getResource('shader.vs');
-    let FShader = await manager.getResource('shader.fs');
+      let VShader = await manager.getResource('shader.vs');
+      let FShader = await manager.getResource('shader.fs');
+
 
     let vertexShader = gl.createShader(gl.VERTEX_SHADER);
     let fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
@@ -109,8 +93,8 @@ async function mainInit(){
     draw = true;
     allowActions.value = true;
     resolve(allowActions.value);
-  }
-  image.src = '../assets/assets/textures/continents.jpg';
+
+
   });
 }
 
@@ -143,11 +127,15 @@ async function mainR( model ){
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////                                         TREE & RESOURCES
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  let tex = await manager.getResource('continents.jpg');
+
   let cam = motor.createCamera(scene);
   let light = motor.createLight(scene);
-  let land = null
+  let land = null;
   if (model === 'hollow') {
     land = await motor.loadMesh(scene, 'earthobj.json');
+    land.entity.mesh.tex = tex;
+    console.log(land);
     //motor.rotate(land, -90, 'z');
   } else {
     land = await motor.loadMesh(scene, 'textured_earth.json');
@@ -163,6 +151,8 @@ async function mainR( model ){
     sphere = await motor.loadMesh(scene, 'textured_earth.json');
     motor.rotate(sphere, -90, 'z');
   }
+
+
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////                                         CAMERAS

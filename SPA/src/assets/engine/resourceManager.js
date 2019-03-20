@@ -52,6 +52,7 @@ class TResourceManager {
                     resource = new TResourceMesh(name);
                     break;
                 }
+                case 'jpg':
                 case 'png': {
                     // console.log("-> Creating TResourceTexture " + name + "...");
                     resource = new TResourceTexture(name);
@@ -89,9 +90,10 @@ class TResourceManager {
 
                     break;
                 }
-                case 'texture': {
+                case 'jpg':
+                case 'png': {
                     let value = await this.map.get(name); 
-                    resource = value.texture;
+                    resource = value;
                     
                     break;
                 }
@@ -178,7 +180,11 @@ class TResourceMesh extends TResource{
 
         this.alias = jsonMesh.alias;
 
-        if( file == "earth_fbx.json" || file == "earthfbx.json" || file == "earthobj.json"){
+        if( file == "earth_fbx.json" ||
+          file == "earthfbx.json" ||
+          file == "earthobj.json" ||
+          file == "mesh_continentsObj.json"
+        ){
 
             this.vertices = jsonMesh.meshes[0].vertices;
             this.triVertices = [].concat.apply([], jsonMesh.meshes[0].faces);
@@ -200,6 +206,7 @@ class TResourceMesh extends TResource{
           file == "ballNoNormals.json" ||
           file == "textured_earth.json" ||
           file == "sea.json" ||
+          file == "mesh_continents.json" ||
           file == "earth.json") {
           this.alias = file;
 
@@ -263,6 +270,11 @@ class TResourceMesh extends TResource{
       else {
         gl.uniform4fv(uMaterialDiffuse, [0.258, 0.960, 0.6,1.0]);
         gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+        /*gl.uniform4fv(uMaterialDiffuse, [1.0,1.0,1.0,1.0]);
+        gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);*/
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, this.tex.tex );
+        gl.uniform1i(program.sampler, 0);
       }
       ///// BOTH FALSE
       var uWireframe = gl.getUniformLocation(program, 'uWireframe');
@@ -399,25 +411,25 @@ class TResourceTexture extends TResource{
     bindTexture() {
         console.info('loading image '+this.image.src);
         gl.bindTexture(gl.TEXTURE_2D, this.tex);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.image);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
-        gl.generateMipmap(gl.TEXTURE_2D);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.bindTexture(gl.TEXTURE_2D, null);
     }
     
-    async loadFile(name){
-        let url = constants.URL + '/assets/assets/textures' + name;
-        let result = await fetch( url );
-        
-        var self = this;
-        this.image.onload = function(){
-            self.bindTexture();
+    async loadFile(name) {
+      return new Promise(resolve => {
+        let url = constants.URL + '/assets/assets/textures/' + name;
+        let self = this;
+        this.image.onload = async function () {
+          self.bindTexture();
+          resolve(self);
         }
-        this.image.src = name;
-        
-        return result;
+        this.image.src = url;
+
+      });
     }
+
 }
 
 class TResourceShader extends TResource {
@@ -500,43 +512,10 @@ async function loadMTL(filename){
     return file;
 }
 
-async function loadImage(filename){
-
-  let img = new Image();
-  img.src = '../assets/assets/textures/'+filename;
-  img.id = 'image';
-
-  // let host = "http://localhost:4200";
-  let host = constants.URL;  
-  let path = '/assets/assets/textures/';
-  let url = `${host + path + filename}`;
-
-  console.log(`Fetching ${filename} resource from url: ${ url }`);
-  let file;
-  await fetch( url )
-    .then( response => response.blob() )
-    .then( res => {
-      console.log("== fetch file ok ==");
-      var objectURL = URL.createObjectURL(res);
-      //img.src = '../assets/textures/'+filename;
-    });
-
-  return file;
-}
-
-var loadImg = async function (url, callback) {
-  var image = new Image();
-  image.onload = async function () {
-    await callback(null, image);
-  };
-  image.src = url;
-};
-
 export {
     TResourceManager,
     TResourceMaterial,
     TResourceMesh,
     TResourceShader,
-    TResourceTexture,
-    loadImage
+    TResourceTexture
 }
