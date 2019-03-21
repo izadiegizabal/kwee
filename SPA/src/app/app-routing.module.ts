@@ -6,7 +6,7 @@ import {PrivacyComponent} from './privacy/privacy.component';
 import {AuthTokenGuard} from './auth/guards/auth-token-guard.service';
 import {AdminGuard} from './auth/guards/admin-guard.service';
 import {VisitorGuard} from './auth/guards/visitor-guard.service';
-import {LandingComponent} from "./landing/landing.component";
+import {LandingComponent} from './landing/landing.component';
 
 const routes: Routes = [
 
@@ -34,7 +34,6 @@ const routes: Routes = [
     path: 'offer/:id/edit',
     loadChildren: './offer/offer-create/offer-create.module#OfferCreateModule'
   },
-
   // DIRECTORIES
   {
     path: 'search-businesses',
@@ -68,7 +67,18 @@ const routes: Routes = [
     loadChildren: './admin/admin.module#AdminModule',
     canActivate: [AdminGuard]
   },
-
+  // NOTIFICATIONS
+  {
+    path: 'notifications',
+    loadChildren: './notifications/notifications.module#NotificationsModule',
+    canActivate: [AuthTokenGuard]
+  },
+  // MESSAGES
+  {
+    path: 'messages',
+    loadChildren: './messages/messages.module#MessagesModule',
+    canActivate: [AuthTokenGuard]
+  },
   // KWEE LIVE
   {path: 'kwee-live', loadChildren: './kwee-live/kwee-live.module#KweeLiveModule'},
 
