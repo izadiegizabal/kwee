@@ -136,19 +136,31 @@ export class OfferPreviewCardComponent implements OnInit {
       'cdn.vox-cdn.com/uploads/chorus_image/image/47070706/google2.0.0.jpg';
   }
 
-  rateCandidate() {
-    const dialogRef = this.dialog.open(RateCandidateComponent, {
-      width: '95%',
-      maxHeight: '90%',
-      data: {candidate: !this.candidate, to: this.offer.fk_application, list: [{name: this.nameToRate}]}
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-      if (result) {
-        console.log(result);
+  rate() {
+    if (this.offer.status === 1) {
+      const applications: any[] = [];
+      if (!this.candidate) {
+        this.offer.applications.forEach((e) => {
+          if (e.applicationStatus === 3) {
+            applications.push({to: e.applicationId, name: e.applicantName, index: e.applicantStatus, haveIRated: e.aHasRated});
+          }
+        });
+      } else {
+        applications.push({to: this.offer.fk_application, name: this.nameToRate, haveIRated: this.offer.aHasRated});
       }
-    });
+      const dialogRef = this.dialog.open(RateCandidateComponent, {
+        width: '95%',
+        maxHeight: '90%',
+        data: {candidate: !this.candidate, applications: applications}
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        console.log('The dialog was closed');
+        if (result) {
+          console.log(result);
+        }
+      });
+    }
   }
 
   reject() {
@@ -161,7 +173,7 @@ export class OfferPreviewCardComponent implements OnInit {
 
     dialog.afterClosed().subscribe(result => {
       if (result) {
-        this.changeAplicationStatus(4);
+        this.changeApplicationStatus(4);
       }
     });
   }
@@ -176,12 +188,12 @@ export class OfferPreviewCardComponent implements OnInit {
 
     dialog.afterClosed().subscribe(result => {
       if (result) {
-        this.changeAplicationStatus(3);
+        this.changeApplicationStatus(3);
       }
     });
   }
 
-  changeAplicationStatus(status: number) {
+  changeApplicationStatus(status: number) {
     this.store$.dispatch(new OfferManageActions
       .TryChangeApplicationStatus({
         candidateId: this.userId,

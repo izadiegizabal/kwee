@@ -4,6 +4,7 @@ import {RouterModule} from '@angular/router';
 import { StarRatingModule } from 'angular-star-rating';
 import {RateCandidateComponent} from './rate-candidate/rate-candidate.component';
 import {ReactiveFormsModule} from '@angular/forms';
+import {MatExpansionModule} from '@angular/material/expansion';
 
 
 @NgModule({
@@ -14,6 +15,7 @@ import {ReactiveFormsModule} from '@angular/forms';
     SharedModule,
     RouterModule,
     ReactiveFormsModule,
+    MatExpansionModule,
     StarRatingModule.forRoot()
   ],
   entryComponents: [

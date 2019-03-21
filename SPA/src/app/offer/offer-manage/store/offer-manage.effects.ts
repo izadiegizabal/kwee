@@ -267,6 +267,10 @@ export class OfferManageEffects {
                   {
                     type: OfferManageActions.SET_CHANGE_APPLICATION_STATUS,
                     payload: {status: payload.status, candidateId: payload.candidateId},
+                  },
+                  {
+                    type: OfferManageActions.TRY_GET_OFFERS_APPLICANT,
+                    payload: { id: payload.candidateId, page: 0, limit: 10, status: payload.refreshStatus },
                   }
                 ];
               }
