@@ -1,9 +1,9 @@
+
 const constants = {};
 
-constants.ENVIRONMENT =  'LOCAL'; // LOCAL, PROD OR DEV
+constants.ENVIRONMENT = window.location.hostname;
 
-constants.URL = constants.ENVIRONMENT=='LOCAL'?'http://localhost:4200':constants.ENVIRONMENT=='DEV'?'http://h203.eps.ua.es':'https://www.kwee.ovh';
-
+constants.URL = constants.ENVIRONMENT=='localhost'?'http://localhost:4200':constants.ENVIRONMENT=='wwww.h203.eps.ua.es'?'http://www.h203.eps.ua.es':'https://www.kwee.ovh';
 
 export {
     constants
