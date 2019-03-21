@@ -831,13 +831,13 @@ module.exports = (app, db) => {
             offerer.name = offerers[i]._source.name;
             offerer.email = offerers[i]._source.email;
             offerer.address = offerers[i]._source.address;
-            offerer.workField = Number(userOfferer.workField);
+            if (userOfferer.workField) offerer.workField = Number(userOfferer.workField);
             offerer.cif = userOfferer.cif;
             offerer.dateVerification = offerers[i]._source.dateVerification;
             offerer.website = userOfferer.website;
             offerer.companySize = Number(offerers[i]._source.companySize);
-            offerer.year = userOfferer.year;
-            offerer.premium = Number(userOfferer.premium);
+            if (userOfferer.year) offerer.year = userOfferer.year;
+            if (userOfferer.premium) offerer.premium = Number(userOfferer.premium);
             offerer.createdAt = user.createdAt;
             offerer.lastAccess = user.lastAccess;
             offerer.status = Number(offerers[i]._source.status);

@@ -35,13 +35,6 @@ module.exports = (app, db) => {
 
                     let token = auth.auth.encode(user);
                     const query = `token=${token}&id=${user.id}&name=${user.name}&email=${user.email}`;
-                    
-                    // JSON.stringify({
-                    //             user: user.id,
-                    //             name: user.name,
-                    //             email: user.email,
-                    //             token
-                    //     });
 
                     res.redirect(env.SIGNUP + query);
 
