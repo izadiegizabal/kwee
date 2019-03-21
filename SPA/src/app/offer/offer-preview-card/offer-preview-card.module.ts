@@ -9,17 +9,18 @@ import {AlertDialogComponent} from '../../shared/alert-dialog/alert-dialog.compo
 import {MatChipsModule} from '@angular/material/chips';
 import {EffectsModule} from '@ngrx/effects';
 import {OfferManageEffects} from '../offer-manage/store/offer-manage.effects';
+import {AlertDialogModule} from "../../shared/alert-dialog/alert-dialog.module";
 
 @NgModule({
   declarations: [
     OfferPreviewCardComponent,
-    AlertDialogComponent,
   ],
   imports: [
     SharedModule,
     RouterModule,
     IconWithTextModule,
     MatChipsModule,
+    AlertDialogModule,
     OffererNameOverviewModule,
     SnsShareModule,
     EffectsModule.forFeature([OfferManageEffects])
