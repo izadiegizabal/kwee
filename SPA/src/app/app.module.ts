@@ -22,8 +22,15 @@ import {NgcCookieConsentConfig, NgcCookieConsentModule} from 'ngx-cookieconsent'
 import {PrivacyComponent} from './privacy/privacy.component';
 import {OfferCreateModule} from './offer/offer-create/offer-create.module';
 import {LandingComponent} from './landing/landing.component';
+import {JWT_OPTIONS, JwtHelperService, JwtModule} from '@auth0/angular-jwt';
 import {RatingModule} from './rating/rating.module';
 import {LandingModule} from './landing/landing.module';
+
+// Sockets
+import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+const config: SocketIoConfig = {
+  url: environment.apiUrl, options: {}
+};
 
 export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {
   return localStorageSync({
@@ -85,7 +92,8 @@ const cookieConfig: NgcCookieConsentConfig = {
     StoreModule.forRoot(reducers, {metaReducers}),
     EffectsModule.forRoot([]),
     NgcCookieConsentModule.forRoot(cookieConfig),
-    !environment.production ? StoreDevtoolsModule.instrument() : []
+    !environment.production ? StoreDevtoolsModule.instrument() : [],
+    SocketIoModule.forRoot(config)
   ],
   providers: [CookieService],
   bootstrap: [AppComponent]

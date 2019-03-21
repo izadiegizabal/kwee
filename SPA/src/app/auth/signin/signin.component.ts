@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators, EmailValidator} from '@angular/forms';
 import {Action, select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
 import {AuthEffects} from '../store/auth.effects';
@@ -11,6 +11,7 @@ import * as fromAuth from '../store/auth.reducers';
 import {MatDialog} from '@angular/material';
 import {ResetDialogComponent} from './reset-dialog/reset-dialog.component';
 import {Title} from "@angular/platform-browser";
+import { WebsocketService } from 'src/app/services/websocket.service';
 
 
 @Component({
@@ -29,7 +30,8 @@ export class SigninComponent implements OnInit {
     private _formBuilder: FormBuilder,
     public dialog: MatDialog,
     private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects,
-    private router: Router) {
+    private router: Router
+    public wsService: WebsocketService){
   }
 
   ngOnInit() {
@@ -56,10 +58,12 @@ export class SigninComponent implements OnInit {
       filter((action: Action) => action.type === AuthActions.SET_USER)
     ).subscribe((res: {
         payload: {
-          root: boolean
+          root: boolean,
+          email: string
         },
         type: string
       }) => {
+        this.wsService.connectedUser( res.payload.email );
         if (res.payload.root) {
           this.router.navigate(['/admin']);
         } else {

@@ -5,12 +5,14 @@
     <a [routerLink]="'/' + userType + '/' + userId + '/' + urlfyUser()">View Profile</a>
   </div>
   <mat-divider></mat-divider>
-  <button mat-menu-item>
-    <mat-icon svgIcon="notifications"></mat-icon>
+  <button mat-menu-item
+          routerLink="/notifications">
+    <mat-icon [ngClass]="{'gray':!notification, 'red':notification}" svgIcon="notifications"><span class="num">{{numNotifications}}</span></mat-icon>
     <span>Notifications</span>
   </button>
-  <button mat-menu-item>
-    <mat-icon svgIcon="chat"></mat-icon>
+  <button mat-menu-item
+          routerLink="/messages">
+    <mat-icon [ngClass]="{'red':!message, 'red':message}" svgIcon="chat"><span class="num">{{numMessages}}</span></mat-icon>
     <span>Messages</span>
   </button>
   <button *ngIf="userType==='admin'"

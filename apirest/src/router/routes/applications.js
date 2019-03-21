@@ -1,6 +1,8 @@
-const { checkToken, checkAdmin } = require('../../middlewares/authentication');
 const { tokenId, logger, sendEmailSelected } = require('../../shared/functions');
+const { checkToken, checkAdmin } = require('../../middlewares/authentication');
+const { usersConnected } = require('../../middlewares/sockets');
 const { algorithm } = require('../../shared/algorithm');
+const io = require('../../database/sockets');
 
 // ============================
 // ===== CRUD application ======
@@ -207,7 +209,16 @@ module.exports = (app, db) => {
                         if ( status == 2 ) {
                             //Send mail selected
                             let user = await db.users.findOne({where: { id: application.fk_applicant }});
+                            let socketUsers = usersConnected.getList();
                             sendEmailSelected(user, res, application.fk_offer);
+                            // Send notification to client
+                            let payload = {
+                                selected: true,
+                                applicationId: application.id,
+                                offerId: application.fk_offer
+                            }
+                            socketUsers = socketUsers.find(element => element.email === user.email);                            
+                            io.in(socketUsers.id).emit('selected', payload);
                         }
                         await algorithm.indexUpdate(user);
                         return res.status(201).json({
@@ -221,72 +232,6 @@ module.exports = (app, db) => {
         } catch (err) {
             return next({ type: 'error', error: err.toString() });
         }
-
-        // try {
-        //     let id = tokenId.getTokenId(req.get('token'));
-
-        //     await db.users.findOne({where:{id}})
-        //     .then( async userExists => {
-        //         if( userExists ) {
-                    
-        //             let applicant = await db.applicants.findOne({
-        //                     where: { userId: body.fk_applicant }
-        //                 })
-        //                 .then(async _applicant => {
-        //                     if (_applicant) {
-        //                         _applicant.getOffers({ where: { id: body.fk_offer } })
-        //                             .then(offers => {
-        //                                 if (offers) {
-        //                                     let offer = offers[0];
-        
-        //                                     if (body.status) {
-        //                                         offer.applications.status = body.status;
-        
-        //                                         offer.applications.save()
-        //                                             .then(ret => {
-        //                                                 if (ret.isRejected) {
-        //                                                     // Problems
-        //                                                     return res.status(400).json({
-        //                                                         ok: false,
-        //                                                         error: "Update REJECTED."
-        //                                                     });
-        //                                                 } else {
-        //                                                     // Everything ok
-        //                                                     return res.status(201).json({
-        //                                                         ok: true,
-        //                                                         error: "Application updated to " + body.status
-        //                                                     });
-        //                                                 }
-        //                                             })
-        //                                     } else {
-        //                                         return res.status(400).json({
-        //                                             ok: false,
-        //                                             error: "Updating an application requires a status value."
-        //                                         });
-        //                                     }
-        //                                 } else {
-        //                                     return res.status(200).json({
-        //                                         ok: true,
-        //                                         error: "Application with OfferId " + body.fk_offer + " on ApplicantId " + body.fk_applicant + " doesn't exist."
-        //                                     });
-        //                                 }
-        //                             })
-        //                     } else {
-        
-        //                     }
-        //                 })
-        //         }
-        //         else {
-        //             return res.status(400).json({
-        //                 ok: false,
-        //                 error: "Sorry, user not exists."
-        //             });
-        //         }
-        //     })
-
-        // } catch (err) {
-        //     next({ type: 'error', error: err.toString() });
-        // }
     });
 
     // DELETE single application
