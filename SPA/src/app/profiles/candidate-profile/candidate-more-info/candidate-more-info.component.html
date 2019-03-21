@@ -94,30 +94,73 @@
     fxLayoutAlign.lt-sm="end end"
     style="padding-bottom: 64px">
     <div fxLayout="column">
-      <h2 fxLayout="row">
-        <mat-chip-list>
-          <mat-chip
-            color="accent" selected
-            style="color: white;">
-            Premium
-          </mat-chip>
-        </mat-chip-list>
-        &nbsp; Documents
-      </h2>
-      <p style="margin-top: 0; font-style: italic;">
-        With the premium membership you'll be able to upload files like your CV, recommendation letters or even your
-        certifications!
-      </p>
-      <mat-list style="margin-bottom: 16px; opacity: 0.5; font-style: italic">
-        <mat-list-item>
-          <mat-icon color="primary" mat-list-icon svgIcon="insert-drive-file"></mat-icon>
-          <h4 mat-line>Curriculum Vitae</h4>
-        </mat-list-item>
-        <mat-list-item>
-          <mat-icon color="primary" mat-list-icon svgIcon="insert-drive-file"></mat-icon>
-          <h4 mat-line>Recommendation Letter</h4>
-        </mat-list-item>
-      </mat-list>
+      <div>
+          <div fxLayout="column">
+            <div *ngIf="candidate.twitter || candidate.linkedin || candidate.github || candidate.telegram">
+                <h2>Social Networks</h2>
+                <div fxLayout="row">
+                  <div *ngIf="candidate.twitter">
+                    <button mat-icon-button>
+                        <a href="https://twitter.com/{{candidate.twitter}}">
+                          <mat-icon fontIcon="fa-twitter" fontSet="fab"></mat-icon>
+                        </a>
+                    </button>
+                  </div>
+            
+                  <div *ngIf="candidate.linkedin">
+                      <button mat-icon-button>
+                          <a href="https://linkedin.com/in/{{candidate.linkedin}}">
+                            <mat-icon fontIcon="fa-linkedin" fontSet="fab"></mat-icon>
+                          </a>
+                      </button>
+                  </div>
+          
+                  <div *ngIf="candidate.github">
+                      <button mat-icon-button>
+                          <a href="https://github.com/{{candidate.github}}">
+                            <mat-icon fontIcon="fa-github" fontSet="fab"></mat-icon>
+                          </a>
+                      </button>
+                  </div>
+          
+                  <div *ngIf="candidate.telegram">
+                      <button mat-icon-button>
+                          <a href="https://telegram.me/{{candidate.telegram}}">
+                            <mat-icon fontIcon="fa-telegram" fontSet="fab"></mat-icon>
+                          </a>
+                      </button>
+                  </div>
+          
+                </div>
+            </div>
+          </div>
+      </div>
+      <div>
+        <h2 fxLayout="row">
+          <mat-chip-list>
+            <mat-chip
+              color="accent" selected
+              style="color: white;">
+              Premium
+            </mat-chip>
+          </mat-chip-list>
+          &nbsp; Documents
+        </h2>
+        <p style="margin-top: 0; font-style: italic;">
+          With the premium membership you'll be able to upload files like your CV, recommendation letters or even your
+          certifications!
+        </p>
+        <mat-list style="margin-bottom: 16px; opacity: 0.5; font-style: italic">
+          <mat-list-item>
+            <mat-icon color="primary" mat-list-icon svgIcon="insert-drive-file"></mat-icon>
+            <h4 mat-line>Curriculum Vitae</h4>
+          </mat-list-item>
+          <mat-list-item>
+            <mat-icon color="primary" mat-list-icon svgIcon="insert-drive-file"></mat-icon>
+            <h4 mat-line>Recommendation Letter</h4>
+          </mat-list-item>
+        </mat-list>
+      </div>
     </div>
   </div>
 </div>

@@ -3,6 +3,7 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../environments/environment';
 import {ActivatedRoute} from '@angular/router';
+import {Title} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-reset-password',
@@ -22,12 +23,14 @@ export class ResetPasswordComponent implements OnInit {
   // 0 = nothing done, 1 = changed correctly, 2 = error while changing password
 
   constructor(
+    private titleService: Title,
     private http: HttpClient,
     private activatedRoute: ActivatedRoute
   ) {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Kwee - Reset Password');
 
     this.onlyFormGroup = new FormGroup({
       'password': new FormControl(null, [Validators.required, Validators.pattern('[a-zA-Z0-9_-ñ]{6,49}$')]),

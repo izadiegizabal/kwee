@@ -79,6 +79,7 @@ const routes: Routes = [
   {path: 'reset-password/:token', loadChildren: './reset-password/reset-password.module#ResetPasswordModule'},
   {path: 'contact-support', loadChildren: './contact-support/contact-support.module#ContactSupportModule'},
   {path: 'error', loadChildren: './errors/errors.module#ErrorsModule'},
+  {path: 'premium', loadChildren: './premium/premium.module#PremiumModule'},
 
   // If matching path not found show Error 404
   {path: '**', redirectTo: 'error/404'}

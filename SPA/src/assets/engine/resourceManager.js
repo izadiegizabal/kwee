@@ -178,7 +178,7 @@ class TResourceMesh extends TResource{
 
         this.alias = jsonMesh.alias;
 
-        if( file == "earth_fbx.json"){
+        if( file == "earth_fbx.json" || file == "earthfbx.json" || file == "earthobj.json"){
 
             this.vertices = jsonMesh.meshes[0].vertices;
             this.triVertices = [].concat.apply([], jsonMesh.meshes[0].faces);
@@ -303,7 +303,7 @@ class TResourceMesh extends TResource{
       ///////////////////////////////////////////////////////////////////////////////// POSITION & ROTATION STUFF
       var worldMatrix = TEntity.Model;
       var rotation = glMatrix.mat4.create();
-      glMatrix.mat4.rotate(rotation, worldMatrix, angle, [1, 0, 0]);
+      glMatrix.mat4.rotate(rotation, worldMatrix, angle, [0, 1, 0]);
 
 
       var matWorldUniformLocation = gl.getUniformLocation(program, 'uMVMatrix');

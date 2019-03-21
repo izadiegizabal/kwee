@@ -7,7 +7,7 @@ import * as fromApp from '../../store/app.reducers';
 import * as AdminActions from '../../admin/store/admin.actions';
 import {BreakpointObserver} from '@angular/cdk/layout';
 import {ActivatedRoute, Router} from '@angular/router';
-import * as OffersActions from '../../offer/store/offers.actions';
+import {Title} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-search-candidates',
@@ -45,6 +45,7 @@ export class SearchCandidatesComponent implements OnInit {
 
 
   constructor(
+    private titleService: Title,
     private store$: Store<fromApp.AppState>,
     public media: BreakpointObserver,
     private router: Router,
@@ -52,7 +53,14 @@ export class SearchCandidatesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store$.dispatch(new AdminActions.TryGetCandidates({page: 1, limit: 5, params: this.query, order: this.orderby}));
+    this.titleService.setTitle('Kwee - Search Candidates');
+
+    this.store$.dispatch(new AdminActions.TryGetCandidates({
+      page: 1,
+      limit: 5,
+      params: this.query,
+      order: this.orderby
+    }));
     this.adminState = this.store$.pipe(select(state => state.admin));
 
     this.activatedRoute.queryParams
@@ -84,6 +92,8 @@ export class SearchCandidatesComponent implements OnInit {
     let searchParams = params.toLowerCase().replace(/ /g, '+');
     if (!searchParams) {
       searchParams = null;
+    } else {
+      this.titleService.setTitle('Kwee - ' + searchParams);
     }
     this.router.navigate(['/search-candidates'], {queryParams: {name: searchParams}, queryParamsHandling: 'merge'});
   }

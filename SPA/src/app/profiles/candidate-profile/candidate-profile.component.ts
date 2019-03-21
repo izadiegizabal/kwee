@@ -6,6 +6,7 @@ import * as ProfilesActions from '../store/profiles.actions';
 import * as fromProfiles from '../store/profiles.reducers';
 import {ActivatedRoute, Router} from '@angular/router';
 import {environment} from '../../../environments/environment';
+import {Title} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-candidate-profile',
@@ -89,23 +90,29 @@ export class CandidateProfileComponent implements OnInit {
       },
     ],
     skills: ['Java', 'Android', 'Kotlin', 'HTML', 'CSS', 'JS', 'Angular', 'Android Studio', 'MySQL',
-    ]
+    ],
+    twitter: 'Applicant',
+    telegram: 'Applicant',
+    github: 'Applicant',
+    linkedin: 'Applicant'
   };
 
   profilesState: Observable<fromProfiles.State>;
 
-  constructor(private store$: Store<fromApp.AppState>,
-              private activatedRoute: ActivatedRoute,
-              private router: Router) {
+  constructor(
+    private titleService: Title,
+    private store$: Store<fromApp.AppState>,
+    private activatedRoute: ActivatedRoute,
+    private router: Router) {
   }
 
   ngOnInit() {
     const params = this.activatedRoute.snapshot.params;
-    // console.log(params.id);
     this.store$.dispatch(new ProfilesActions.TryGetProfileCandidate({id: params.id}));
     this.profilesState = this.store$.pipe(select(state => state.profiles));
-    // this.store$.dispatch(new ProfilesActions.TryGetProfileOfferer({id: params.id}));
-    // this.profilesState = this.store$.pipe(select(state => state.profiles));
+    this.profilesState.subscribe(s => {
+      this.titleService.setTitle('Kwee - ' + s.candidate.name);
+    })
   }
 
   goToMyOffers(tabIndex: number) {

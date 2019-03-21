@@ -20,6 +20,7 @@ import { TMotorTAG } from '../../assets/engine/TMotorTAG.js';
 import { shared, canvas } from '../../assets/engine/commons.js';
 
 import { main, mainInit, mainR, mainTest, resetCanvas, allowActions, pls} from '../../assets/engine/main.js';
+import {Title} from "@angular/platform-browser";
 
 
 // import { main } from '../../assets/engine/run.js'
@@ -45,11 +46,12 @@ export class KweeLiveComponent implements OnInit {
 
   @ViewChild('rendererContainer') rendererContainer: ElementRef;
 
-  constructor() {
+  constructor(private titleService: Title) {
     this.disabled = true;
   }
 
   async ngOnInit() {
+    this.titleService.setTitle('Kwee - Kwee Live');
     this.disabled = false;
     shared();
     await mainInit();

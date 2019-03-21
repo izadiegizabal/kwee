@@ -10,6 +10,7 @@ import {Observable} from 'rxjs';
 import * as fromAuth from '../store/auth.reducers';
 import {MatDialog} from '@angular/material';
 import {ResetDialogComponent} from './reset-dialog/reset-dialog.component';
+import {Title} from "@angular/platform-browser";
 
 
 @Component({
@@ -23,13 +24,16 @@ export class SigninComponent implements OnInit {
   hide = false;
   authState: Observable<fromAuth.State>;
 
-  constructor(private _formBuilder: FormBuilder,
-              public dialog: MatDialog,
-              private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects,
-              private router: Router) {
+  constructor(
+    private titleService: Title,
+    private _formBuilder: FormBuilder,
+    public dialog: MatDialog,
+    private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects,
+    private router: Router) {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Kwee - Sign In');
     this.user = this._formBuilder.group({
       'email': new FormControl(null, [Validators.required, Validators.email]),
       'password': new FormControl(null, Validators.required),
