@@ -7,6 +7,7 @@ import {Observable} from 'rxjs';
 import * as fromAdmin from '../store/admin.reducers';
 import {BusinessAccountStates, BusinessAccountSubscriptions, BusinessIndustries} from '../../../models/Business.model';
 import {isStringNotANumber} from '../../../models/Offer.model';
+import {Title} from "@angular/platform-browser";
 
 
 @Component({
@@ -44,10 +45,11 @@ export class AdminVerifyComponent implements OnInit {
   adminState: Observable<fromAdmin.State>;
 
 
-  constructor(private store$: Store<fromApp.AppState>) {
+  constructor(private store$: Store<fromApp.AppState>, private titleService: Title) {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Kwee - ' + 'Verify Businesses');
     this.store$.dispatch(new AdminActions.TryGetBusinesses({page: 1, limit: 2, params: '', order: this.orderby}));
     this.adminState = this.store$.pipe(select(s => s.admin));
   }

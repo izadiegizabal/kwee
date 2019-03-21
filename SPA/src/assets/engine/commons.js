@@ -3,15 +3,17 @@
 let canvas = null;
 let gl = null;
 let program = null;
+let texture = null;
 var angle = 30;
 
 function shared() {
     canvas = document.getElementById('kweelive');
-    // console.log(canvas);
-    gl = canvas.getContext('webgl');
-    // console.log(gl);
+    
+    gl = canvas.getContext('webgl2');
+    
     program = gl.createProgram();
-    // console.log(program);
+    
+    texture = gl.createTexture();
 }
 
 function changeAngle(degrees) {
@@ -59,5 +61,6 @@ export {
     getEntity,
     setEntity,
     changeAngle,
-    angle
+    angle,
+    texture
 }

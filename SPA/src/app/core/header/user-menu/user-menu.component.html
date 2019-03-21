@@ -17,7 +17,13 @@
           mat-menu-item
           routerLink="/admin/manage-candidates">
     <mat-icon svgIcon="people"></mat-icon>
-    <span>Manage Users</span>
+    <span>Manage Candidates</span>
+  </button>
+  <button *ngIf="userType==='admin'"
+          mat-menu-item
+          routerLink="/admin/manage-businesses">
+    <mat-icon svgIcon="domain"></mat-icon>
+    <span>Manage Businesses</span>
   </button>
   <button *ngIf="userType==='admin'"
           mat-menu-item
@@ -68,7 +74,7 @@
         color="primary"
         [ngClass]="{
           'profileLogo': true,
-          'business': userType === 'business' || userType === 'admin'
+          'business': isLanding || userType === 'business' || userType === 'admin'
         }">
   <a [matMenuTriggerFor]="menu">
     <mat-icon svgIcon="account-circle"></mat-icon>

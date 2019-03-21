@@ -8,10 +8,18 @@ import {OfferEffects} from './store/offer.effects';
 import {filter} from 'rxjs/operators';
 import {Location} from '@angular/common';
 
-import {ContractType, JobDurationUnit, OfferStatus, SalaryFrequency, SeniorityLevel, WorkLocationType} from '../../../models/Offer.model';
+import {
+  ContractType,
+  JobDurationUnit,
+  OfferStatus,
+  SalaryFrequency,
+  SeniorityLevel,
+  WorkLocationType
+} from '../../../models/Offer.model';
 import {getTimePassed, getUrlfiedString} from '../../shared/utils.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {environment} from "../../../environments/environment";
+import {Title} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-offer-detail',
@@ -27,11 +35,13 @@ export class OfferDetailComponent implements OnInit {
   idApplication: Number;
   environment = environment;
 
-  constructor(private store$: Store<fromApp.AppState>,
-              private activatedRoute: ActivatedRoute,
-              private offerEffects$: OfferEffects,
-              private router: Router,
-              private location: Location) {
+  constructor(
+    private titleService: Title,
+    private store$: Store<fromApp.AppState>,
+    private activatedRoute: ActivatedRoute,
+    private offerEffects$: OfferEffects,
+    private router: Router,
+    private location: Location) {
   }
 
   ngOnInit() {
@@ -55,6 +65,9 @@ export class OfferDetailComponent implements OnInit {
       this.offerId = Number(params.id);
       this.store$.dispatch(new OfferActions.TryGetOffer({id: params.id}));
       this.offerState = this.store$.pipe(select(state => state.offer));
+      this.offerState.subscribe(s => {
+        this.titleService.setTitle('Kwee - ' + s.offer.title);
+      });
 
       this.offerEffects$.offerGetoffer.pipe(
         filter((action: Action) => action.type === OfferActions.OPERATION_ERROR)
@@ -138,13 +151,13 @@ export class OfferDetailComponent implements OnInit {
 
   deleteApplication() {
     this.offerState = this.store$.pipe(select(state => state.offer));
-      this.offerState.pipe(
-        select((s: { applications: { id: Number } }) => s.applications ? s.applications.id : undefined)
-      ).subscribe(
-        (id) => {
-          console.log(id);
-          this.idApplication = id;
-        });
+    this.offerState.pipe(
+      select((s: { applications: { id: Number } }) => s.applications ? s.applications.id : undefined)
+    ).subscribe(
+      (id) => {
+        console.log(id);
+        this.idApplication = id;
+      });
 
     this.store$.dispatch(new OfferActions.TryDeleteApplication({fk_application: this.idApplication}));
   }

@@ -24,10 +24,13 @@ export class PaypalComponent implements OnInit {
 
   rateCandidate() {
 
+    const applications: any[] = [];
+    applications.push({to: 0, name: 'Flaviu', index: 77, haveIRated: false});
+    applications.push({to: 4, name: 'Marcos', index: 90, haveIRated: true});
     const dialogRef = this.dialog.open(RateCandidateComponent, {
       width: '95%',
       maxHeight: '90%',
-      data: {candidate: false, to: 1, list: [{name: 'Flaviu el italiano'}]}
+      data: {candidate: true, applications: applications}
     });
 
     dialogRef.afterClosed().subscribe(result => {

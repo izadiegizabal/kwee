@@ -19,7 +19,11 @@ import {
 import { TMotorTAG } from '../../assets/engine/TMotorTAG.js';
 import { shared, canvas } from '../../assets/engine/commons.js';
 
-import { main, mainR, init } from '../../assets/engine/main.js';
+import { main, mainInit, mainR, mainTest, resetCanvas, allowActions, pls} from '../../assets/engine/main.js';
+import {Title} from "@angular/platform-browser";
+
+
+// import { main } from '../../assets/engine/run.js'
 
 // import * as test from '../../assets/test.js';
 
@@ -36,15 +40,44 @@ import { main, mainR, init } from '../../assets/engine/main.js';
   styleUrls: ['./kwee-live.component.scss']
 })
 export class KweeLiveComponent implements OnInit {
+
+  disabled: boolean;
+  particles: boolean;
+
   @ViewChild('rendererContainer') rendererContainer: ElementRef;
 
-  constructor() {
+  constructor(private titleService: Title) {
+    this.disabled = true;
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    this.titleService.setTitle('Kwee - Kwee Live');
+    this.disabled = false;
     shared();
-    mainR();
-    // init();
+    await mainInit();
+  }
+
+  getAllow() {
+    return !allowActions.value;
+  }
+
+  drawHollow() {
+    resetCanvas();
+    mainR('hollow', this.particles);
+  }
+
+  drawThicc() {
+    resetCanvas();
+    mainR('notHollow', this.particles);
+  }
+
+  async reset() {
+    resetCanvas();
+  }
+
+  drawParticles() {
+    this.particles = !this.particles;
+    console.log('Particles ' + this.particles);
   }
 
 }

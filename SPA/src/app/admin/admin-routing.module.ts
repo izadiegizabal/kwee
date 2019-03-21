@@ -11,14 +11,14 @@ import {AdminMessagesComponent} from './admin-messages/admin-messages.component'
 const adminRoutes: Routes = [
   {
     path: '', component: AdminComponent, children: [
-      {path: '', redirectTo: 'statistics', pathMatch: 'full'},
-      {path: 'statistics', component: AdminStatisticsComponent},
+      {path: '', redirectTo: 'manage-candidates', pathMatch: 'full'},
       {path: 'manage-candidates', component: AdminManageCandidatesComponent},
       {path: 'manage-businesses', component: AdminManageBusinessesComponent},
       {path: 'verify', component: AdminVerifyComponent},
       {path: 'reports', component: AdminReportsComponent},
       {path: 'messages', component: AdminMessagesComponent},
-      {path: '**', redirectTo: 'statistics'}
+      {path: 'statistics', component: AdminStatisticsComponent},
+      {path: '**', redirectTo: 'manage-candidates'}
     ]
   },
 ];

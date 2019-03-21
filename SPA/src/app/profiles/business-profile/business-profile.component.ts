@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
+import {Title} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-business-profile',
@@ -27,12 +28,20 @@ export class BusinessProfileComponent implements OnInit {
       long: 40.51,
     },
     address: '770 Broadway, New York, NY 10003, USA',
+    twitter: 'Facebook',
+    linkedin: 'Facebook',
+    telegram: 'Facebook',
+    github: 'Facebook'
   };
 
-  constructor(private router: Router) {
+  constructor(
+    private titleService: Title,
+    private router: Router
+  ) {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Kwee - ' + this.business.name);
   }
 
   goToMyOffers(tabIndex: number) {

@@ -1,15 +1,14 @@
-<div class="container"
+<div [ngClass]="{'isLanding': isLanding, 'container': true}"
      fxLayout="column"
      fxLayoutGap="8px">
-  <header>
+  <header *ngIf="!isLanding">
     <app-header></app-header>
   </header>
 
   <app-chat-dialog></app-chat-dialog>
 
-  <div
-    class="content">
-    <router-outlet></router-outlet>
+  <div class="content">
+    <router-outlet (activate)="onActivate($event)" (deactivate)="onDeactivate($event)"></router-outlet>
   </div>
 
   <footer>

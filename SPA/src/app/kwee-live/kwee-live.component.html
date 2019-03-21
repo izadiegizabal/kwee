@@ -1,11 +1,38 @@
-<div
-  fxLayout="column"
-  fxFlex="90%"
-  fxLayoutAlign="center center"
-  style="margin: 64px 0">
-  <h2 class="mat-h1">Kwee Live</h2>
-  <canvas 
-  id="kweelive"
-  width="700px"
-  height="700px"></canvas>
+<div fxLayout="column"
+     fxFlex="100%"
+     class="container"
+     [ngStyle.lt-sm]="{'margin': '0'}"
+     [ngStyle]="{'margin': '0 16px'}">
+  <div fxLayout="row"
+       fxLayoutAlign="center center">
+    <h2 class="mat-h1">Kwee Live</h2>
+  </div>
+  <div
+    fxLayout="row"
+    fxLayout.lt-sm="column"
+    fxFlex="100%"
+    fxLayoutAlign="center start"
+    fxLayoutAlign.lt-sm="center center"
+    fxLayoutGap.lt-sm="16px">
+    <div
+      fxLayout="column"
+      fxLayoutAlign="center center"
+      style="margin: 30px 0">
+        <canvas
+        id="kweelive"
+        width="700px"
+        height="700px"
+        [ngStyle]="{'width': '100%'}"></canvas>
+        <mat-spinner *ngIf="getAllow()"></mat-spinner>
+    </div>
+    <div
+      fxLayout="column"
+      fxLayout.lt-sm="row"
+      fxLayoutAlign="start start"
+      fxLayoutGap="16px">
+        <button mat-raised-button (click)="drawHollow()" color="primary" [disabled]="getAllow()">Draw Earth</button>
+        <!--<button mat-raised-button (click)="drawThicc()" color="primary" [disabled]="getAllow()">Draw Sphere</button>-->
+        <button mat-raised-button (click)="reset()" color="warn" [disabled]="getAllow()">Reset</button>
+    </div>
+  </div>
 </div>

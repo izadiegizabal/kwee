@@ -27,7 +27,7 @@ export class VisitorGuard implements CanActivate {
             this.router.navigate(['candidate-home']);
             break;
           case 'business':
-            this.router.navigate(['business-home']);
+            this.router.navigate(['my-offers']);
             break;
         }
       }

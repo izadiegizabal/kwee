@@ -4,18 +4,57 @@
   fxLayout="column"
   fxLayout.gt-lg="row"
   style="padding: 16px 0 32px 0">
-  <div fxFlex.gt-lg="50" fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap.gt-xs="32px">
+  <div fxFlex.gt-lg="50" fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap.gt-xs="32px" fxLayoutGap.lt-sm="32px">
     <div fxFlex="50" fxLayout="column">
       <h4>Website</h4>
       <a [href]="business.website" style="margin-bottom: 16px">{{business.website}}</a>
       <h4>Company Size</h4>
       <p>{{getSize()}}</p>
+      <h4>Foundation</h4>
+      <p>{{business.year | date:'longDate'}}</p>
     </div>
     <div fxFlex="50" fxLayout="column">
       <h4>Industry</h4>
       <p>{{business.industry}}</p>
-      <h4>Foundation</h4>
-      <p>{{business.year | date:'longDate'}}</p>
+      <div *ngIf="business.twitter || business.linkedin || business.telegram || business.github ">
+
+      </div>
+      <h4>Social Networks</h4>
+      <div fxLayout="row">
+        <div *ngIf="business.twitter">
+          <button mat-icon-button>
+              <a href="https://twitter.com/{{business.twitter}}">
+                <mat-icon fontIcon="fa-twitter" fontSet="fab"></mat-icon>
+              </a>
+          </button>
+        </div>
+  
+        <div *ngIf="business.linkedin">
+            <button mat-icon-button>
+                <a href="https://linkedin.com/in/{{business.linkedin}}">
+                  <mat-icon fontIcon="fa-linkedin" fontSet="fab"></mat-icon>
+                </a>
+            </button>
+        </div>
+
+        <div *ngIf="business.github">
+            <button mat-icon-button>
+                <a href="https://github.com/{{business.github}}">
+                  <mat-icon fontIcon="fa-github" fontSet="fab"></mat-icon>
+                </a>
+            </button>
+        </div>
+
+        <div *ngIf="business.telegram">
+            <button mat-icon-button>
+                <a href="https://telegram.me/{{business.telegram}}">
+                  <mat-icon fontIcon="fa-telegram" fontSet="fab"></mat-icon>
+                </a>
+            </button>
+        </div>
+
+      </div>
+
     </div>
   </div>
   <div fxFlex.gt-lg="50" fxLayout="column">
