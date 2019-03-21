@@ -30,7 +30,7 @@ export class SigninComponent implements OnInit {
     private _formBuilder: FormBuilder,
     public dialog: MatDialog,
     private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects,
-    private router: Router
+    private router: Router,
     public wsService: WebsocketService){
   }
 
