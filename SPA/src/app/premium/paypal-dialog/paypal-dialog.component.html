@@ -1,0 +1,10 @@
+<h1 mat-dialog-title>Please confirm:</h1>
+<mat-dialog-content class="mat-typography">
+
+    <div class="item item-1" fxFlex="100%" fxFlex.xl="50%">
+      <ngx-paypal [config]="payPalConfig"></ngx-paypal>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+</mat-dialog-actions>

@@ -116,7 +116,11 @@
                   style="color: white" type="button">{{'Edit Offer' | uppercase }}</button>
               </a>
               <ng-template #apply>
-                <button *ngIf="(offerState | async).applications===null" (click)="postApplication()"
+                <button *ngIf="(offerState | async).applications===null && id" [disabled]="(authState | async).user.type === 'business'" (click)="postApplication()"
+                        color="accent"
+                        mat-raised-button style="color: white">{{'Apply Now!' | uppercase }}</button>
+
+                <button *ngIf="!id" routerLink="/signin"
                         color="accent"
                         mat-raised-button style="color: white">{{'Apply Now!' | uppercase }}</button>
 

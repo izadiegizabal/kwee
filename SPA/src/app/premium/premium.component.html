@@ -3,11 +3,11 @@
     fxFlex="95%"
     fxFlex.gt-lg="50%"
     fxFlex.gt-md="=60%"
-    fxFlex.gt-sm="70%">
-    <div *ngIf="(authState | async).user.type === 'business'">
+    fxFlex.gt-sm="70%" flexLayoutAlign="center center">
+    <div *ngIf="(authState | async).user.type === 'business'" flexLayoutAlign="center center">
       <app-premium-business></app-premium-business>
     </div>
-    <div *ngIf="(authState | async).user.type === 'candidate'">
+    <div *ngIf="(authState | async).user.type === 'candidate'" flexLayoutAlign="center center">
       <app-premium-candidate></app-premium-candidate>
     </div>
   </div>

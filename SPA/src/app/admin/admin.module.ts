@@ -17,7 +17,7 @@ import {adminReducer} from './store/admin.reducers';
 import {EffectsModule} from '@ngrx/effects';
 import {AdminEffects} from './store/admin.effects';
 import {AlertDialogComponent} from '../shared/alert-dialog/alert-dialog.component';
-import {AlertDialogModule} from "../shared/alert-dialog/alert-dialog.module";
+import {AlertDialogModule} from '../shared/alert-dialog/alert-dialog.module';
 
 @NgModule({
   declarations: [

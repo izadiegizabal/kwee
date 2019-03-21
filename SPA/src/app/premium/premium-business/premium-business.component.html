@@ -1,9 +1,9 @@
 <h2 class="mat-h1">Upgrade to premium</h2>
 
-<div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap.lt-sm="16px">
+<div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap.lt-sm="16px" flexLayoutAlign="center center">
 
   <mat-card
-    fxFlex="30" fxFlexOffset.gt-xs="10px">
+    fxFlex="32" fxFlexOffset.gt-xs="10px">
     <mat-card-subtitle style="text-align: center">Active account type:</mat-card-subtitle>
     <mat-card-title style="text-align: center">
       Basic
@@ -30,7 +30,7 @@
 
 
   <mat-card
-    fxFlex="30" fxFlexOffset.gt-xs="10px" class="card">
+    fxFlex="32" fxFlexOffset.gt-xs="10px" class="card">
     <div class="top">
       <mat-card-subtitle style="text-align: center; color: white;">Upgrade:</mat-card-subtitle>
       <mat-card-title style="text-align: center">
@@ -56,7 +56,7 @@
         color="accent"
         mat-raised-button
         style="color: white; margin-bottom: 16px"
-        routerLink="/paypal">
+        (click)="callPaypalDialog()">
         Upgrade
       </button>
     </mat-card-actions>
@@ -65,7 +65,7 @@
 
 
   <mat-card
-    fxFlex="30" fxFlexOffset.gt-xs="10px">
+    fxFlex="32" fxFlexOffset.gt-xs="10px">
     <mat-card-subtitle style="text-align: center">Upgrade:</mat-card-subtitle>
     <mat-card-title style="text-align: center">
       Pay as you go
@@ -87,7 +87,8 @@
         color="accent"
         mat-raised-button
         style="color: white; margin-bottom: 16px"
-        routerLink="/paypal">
+        routerLink="/paypal"
+        (click)="callPaypalDialog()">
         Upgrade
       </button>
     </mat-card-actions>

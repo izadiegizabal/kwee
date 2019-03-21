@@ -55,7 +55,8 @@
         color="accent"
         mat-raised-button
         style="color: white; margin-bottom: 16px"
-        routerLink="/paypal">
+        routerLink="/paypal"
+        (click)="callPaypalDialog()">
         Upgrade
       </button>
     </mat-card-actions>

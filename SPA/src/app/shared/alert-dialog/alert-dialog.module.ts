@@ -1,6 +1,6 @@
-import {NgModule} from "@angular/core";
-import {SharedModule} from "../shared.module";
-import {AlertDialogComponent} from "./alert-dialog.component";
+import {NgModule} from '@angular/core';
+import {SharedModule} from '../shared.module';
+import {AlertDialogComponent} from './alert-dialog.component';
 
 @NgModule({
   declarations: [
