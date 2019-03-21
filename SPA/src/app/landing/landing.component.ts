@@ -7,6 +7,7 @@ import {main, mainTest, pls} from '../../assets/engine/main.js';
 import {shared} from '../../assets/engine/commons';
 import {allowActions, mainInit, mainR, resetCanvas} from '../../assets/engine/main';
 import {Router} from '@angular/router';
+import {Title} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-landing',
@@ -20,11 +21,12 @@ export class LandingComponent implements OnInit {
 
   @ViewChild('rendererContainer') rendererContainer: ElementRef;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private titleService: Title) {
     this.disabled = true;
   }
 
   async ngOnInit() {
+    this.titleService.setTitle('Kwee - Home');
     this.disabled = false;
     shared();
     await mainInit();

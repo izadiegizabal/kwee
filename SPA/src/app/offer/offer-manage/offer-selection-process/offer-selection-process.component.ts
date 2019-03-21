@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {Action, select, Store} from '@ngrx/store';
-import {FormArray, FormBuilder, FormControl, FormGroup} from '@angular/forms';
+import {FormArray, FormControl, FormGroup} from '@angular/forms';
 import {WorkFields} from '../../../../models/Candidate.model';
 import {Distances, isStringNotANumber} from '../../../../models/Offer.model';
 import {MatSidenav, MatStepper, PageEvent} from '@angular/material';
@@ -16,6 +16,7 @@ import {CandidatePreview} from '../../../../models/candidate-preview.model';
 import * as OfferActions from "../../offer-detail/store/offer.actions";
 import * as fromOffer from "../../offer-detail/store/offer.reducers";
 import {OfferEffects} from "../../offer-detail/store/offer.effects";
+import {Title} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-offer-selection-process',
@@ -65,24 +66,23 @@ export class OfferSelectionProcessComponent implements OnInit {
   private currentSelected: number;
 
   constructor(
+    private titleService: Title,
     private store$: Store<fromApp.AppState>,
     private offerEffects$: OfferEffects,
     public media: BreakpointObserver,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private manageOfferEffects: OfferManageEffects,
-    private _formBuilder: FormBuilder) {
+    private manageOfferEffects: OfferManageEffects
+  ) {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Kwee - Selection Process');
+
     // TODO: check if offer is in selection process and that the owner of the offer is the one logged in
 
     // Empty previous states
     this.store$.dispatch(new OfferManageActions.EmptyState());
-
-    // Initialise stepper form
-    this.selectFormGroup = this._formBuilder.group({});
-    this.waitFormGroup = this._formBuilder.group({});
 
     // Get Manage Offer store
     this.manageOfferState = this.store$.pipe(select(state => state.offerManage));
@@ -98,6 +98,7 @@ export class OfferSelectionProcessComponent implements OnInit {
       this.offerState.subscribe(
         offer => {
           this.offer = offer.offer;
+          this.titleService.setTitle('Kwee - Selecting for ' + offer.offer.title);
         }
       );
 
@@ -331,10 +332,10 @@ export class OfferSelectionProcessComponent implements OnInit {
 
   getSelection(selection: any) {
     let selectTot = 0;
-    if (selection.selected){
+    if (selection.selected) {
       selectTot += selection.selected.lenght;
     }
-    if (selection.accepted){
+    if (selection.accepted) {
       selectTot += selection.accepted.length;
     }
     return selectTot;

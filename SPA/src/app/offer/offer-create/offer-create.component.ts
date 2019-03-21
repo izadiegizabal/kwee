@@ -21,6 +21,7 @@ import {
   SeniorityLevel,
   WorkLocationType
 } from '../../../models/Offer.model';
+import {Title} from "@angular/platform-browser";
 
 
 interface City {
@@ -82,13 +83,15 @@ export class OfferCreateComponent implements OnInit {
 
   private dialogShown = false;
 
-  constructor(private _formBuilder: FormBuilder,
-              private http: HttpClient,
-              public dialog: MatDialog,
-              private store$: Store<fromApp.AppState>,
-              private router: Router,
-              private offerEffects$: OfferEffects,
-              private activatedRoute: ActivatedRoute) {
+  constructor(
+    private titleService: Title,
+    private _formBuilder: FormBuilder,
+    private http: HttpClient,
+    public dialog: MatDialog,
+    private store$: Store<fromApp.AppState>,
+    private router: Router,
+    private offerEffects$: OfferEffects,
+    private activatedRoute: ActivatedRoute) {
 
     this.iskill = 0;
     this.durationReq = true;
@@ -122,6 +125,7 @@ export class OfferCreateComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Kwee - Create Offer');
     this.authState = this.store$.pipe(select('auth'));
     this.authState.pipe(
       select((s: { token: string }) => s.token)
@@ -194,7 +198,9 @@ export class OfferCreateComponent implements OnInit {
       this.DataDesc = this.offer.description;
       this.DataReq = this.offer.requeriments;
       this.DataRes = this.offer.responsabilities;
+      this.titleService.setTitle('Kwee - Edit Offer "' + this.offer.title + '"');
     }
+
 
     this.form = this._formBuilder.group({
       'title': new FormControl(this.offer ? this.offer.title : null, Validators.required),

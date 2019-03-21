@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
+import {Title} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-error404',
@@ -35,7 +36,7 @@ export class ErrorPageComponent implements OnInit {
   errorNum = 404;
   errorMessage = '';
 
-  constructor(private route: ActivatedRoute) {
+  constructor(private route: ActivatedRoute, private titleService: Title) {
     this.errorNum = Number(this.route.snapshot.paramMap.get('errorNum'));
     this.errorNum = (this.gifPaths[0][+this.errorNum]) ? this.errorNum : 404; // if there aren't any gifs for error --> unknown error -> 404
     const currentGifArray = this.gifPaths[0][+this.errorNum];
@@ -44,6 +45,9 @@ export class ErrorPageComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (this.errorNum) {
+      this.titleService.setTitle('Kwee - Error ' + this.errorNum);
+    }
   }
 
   getGif() {
