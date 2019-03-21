@@ -1,5 +1,6 @@
 const { checkToken } = require('../../../../middlewares/authentication');
 const { tokenId, logger } = require('../../../../shared/functions');
+const { algorithm } = require('../../../../shared/algorithm');
 
 // ============================
 // ===== CRUD applicant_skill ======
@@ -99,8 +100,9 @@ module.exports = (app, db) => {
                             level: body.level
                         }
                     })
-                    .then(created => {
+                    .then(async created => {
                         if (created) {
+                            await algorithm.indexUpdate(id);
                             return res.status(201).json({
                                 ok: true,
                                 message: "Added skill to applicant"
@@ -147,13 +149,15 @@ module.exports = (app, db) => {
                                         if (body.description) skill.applicant_skills.description = body.description;
 
                                         skill.applicant_skills.save()
-                                            .then(rest => {
+                                            .then(async rest => {
                                                 if (rest.isReject) {
                                                     return res.status(400).json({
                                                         ok: false,
                                                         msg: "Skill not updated."
                                                     });
                                                 } else {
+                                                    await algorithm.indexUpdate(id);
+
                                                     return res.status(200).json({
                                                         ok: false,
                                                         msg: "Skill updated with level " + body.level
@@ -190,7 +194,9 @@ module.exports = (app, db) => {
                             .then(success => {
                                 if (success) {
                                     u.removeSkills(body.fk_skill)
-                                        .then(ok => {
+                                        .then(async ok => {
+                                            await algorithm.indexUpdate(id);
+
                                             return res.status(201).json({
                                                 ok: true,
                                                 message: "Deleted"

@@ -35,7 +35,6 @@ const routes: Routes = [
     path: 'offer/:id/edit',
     loadChildren: './offer/offer-create/offer-create.module#OfferCreateModule'
   },
-
   // DIRECTORIES
   {
     path: 'search-businesses',
@@ -69,7 +68,18 @@ const routes: Routes = [
     loadChildren: './admin/admin.module#AdminModule',
     canActivate: [AdminGuard]
   },
-
+  // NOTIFICATIONS
+  {
+    path: 'notifications',
+    loadChildren: './notifications/notifications.module#NotificationsModule',
+    canActivate: [AuthTokenGuard]
+  },
+  // MESSAGES
+  {
+    path: 'messages',
+    loadChildren: './messages/messages.module#MessagesModule',
+    canActivate: [AuthTokenGuard]
+  },
   // KWEE LIVE
   {path: 'kwee-live', loadChildren: './kwee-live/kwee-live.module#KweeLiveModule'},
 

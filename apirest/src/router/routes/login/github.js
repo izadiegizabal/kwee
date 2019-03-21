@@ -6,13 +6,14 @@ const env = require('../../../tools/constants');
 module.exports = (app, db) => {
 
     app.get('/auth/github',
-        passport.authenticate('github', { scope: ['user:email'] }));
+        passport.authenticate('github', { scope: ['user:email'] })
+    );
 
     app.get('/auth/github/callback',
         passport.authenticate('github', { failureRedirect: '/login' }),
 
         async(req, res, next) => {
-            // Authentication with Instagram successful
+            // Authentication with Github successful
             try {
 
                 let user = await db.users.findOne({ where: { email: req.user._json.email } });
@@ -32,13 +33,10 @@ module.exports = (app, db) => {
                         github: user.email
                     });
 
-                    // const query = querystring.stringify({
-                    //         user: user.id,
-                    //         name: user.name,
-                    //         email: user.email
-                    // });
-                    let token = 'token=' + auth.auth.encode(user);
-                    res.redirect(env.SIGNUP + token);
+                    let token = auth.auth.encode(user);
+                    const query = `token=${token}&id=${user.id}&name=${user.name}&email=${user.email}`;
+
+                    res.redirect(env.SIGNUP + query);
 
                 } else {
                     // Existent user
@@ -46,7 +44,7 @@ module.exports = (app, db) => {
                     res.redirect('/');
                 }
             } catch (err) {
-                next({ type: 'error', error: 'Error getting data' });
+                return next({ type: 'error', error: err.message });
             }
         });
 

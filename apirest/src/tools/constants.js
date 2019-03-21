@@ -14,7 +14,7 @@ const env = {
 
     PROD,
 
-    SIGNUP: URL + '/signup?',
+    SIGNUP: pass.URL + '/signup?',
 
     DATABASE_NAME: pass.DATABASE_NAME,
     DATABASE_USERNAME: pass.DATABASE_USERNAME,

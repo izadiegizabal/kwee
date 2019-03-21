@@ -58,6 +58,16 @@ module.exports = (sequelize, DataTypes) => {
             }
         },
 
+        satisfaction: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            validate: {
+                max: 5,
+                min: 0,
+                isInt: true
+            }
+        }
+
     }, {
         paranoid: true
     });

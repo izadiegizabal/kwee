@@ -1,5 +1,7 @@
 const { checkToken } = require('../../../../middlewares/authentication');
 const { tokenId, logger } = require('../../../../shared/functions');
+const { algorithm } = require('../../../../shared/algorithm');
+
 
 // ============================
 // ===== CRUD applicant_education ======
@@ -124,8 +126,10 @@ module.exports = (app, db) => {
                         dateEnd: body.dateEnd,
                         institution: body.institution
                     }
-                }).then(result => {
+                }).then(async result => {
                     if (result) {
+                        await algorithm.indexUpdate(id);
+
                         return res.status(201).json({
                             ok: true,
                             message: "Added education to applicant"
@@ -177,7 +181,7 @@ module.exports = (app, db) => {
                                         if (body.institution) edu.applicant_educations.institution = body.institution;
 
                                         edu.applicant_educations.save()
-                                            .then(rest => {
+                                            .then(async rest => {
 
                                                 if (rest.isRejected) {
                                                     // Problems
@@ -186,6 +190,8 @@ module.exports = (app, db) => {
                                                         msg: "Education not updated."
                                                     });
                                                 } else {
+                                                    await algorithm.indexUpdate(id);
+
                                                     // Everything ok
                                                     return res.status(201).json({
                                                         ok: true,
@@ -225,6 +231,7 @@ module.exports = (app, db) => {
 
             if (applicant) {
                 await applicant.removeEducations(body.fk_education);
+                await algorithm.indexUpdate(id);
 
                 return res.status(201).json({
                     ok: true,

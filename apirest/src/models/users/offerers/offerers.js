@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
       },
 
       address: {
-        type: DataTypes.STRING(50),
+        type: DataTypes.STRING(),
         field: "address",
         allowNull: false,
         validate: {
@@ -21,15 +21,9 @@ module.exports = (sequelize, DataTypes) => {
       },
 
       workField: {
-        type: DataTypes.INTEGER(),
+        type: DataTypes.INTEGER,
         allowNull: false,
-        field: "workField",
-        validate: {
-          isIn: {
-            args: [[0, 1, 2, 3, 4, 5, 6, 7, 8]],
-            msg: "Unknown workField value."
-          }
-        }
+        field: "workField"
       },
 
       cif: {
@@ -74,25 +68,20 @@ module.exports = (sequelize, DataTypes) => {
 	},
 
       year: {
-        type: DataTypes.DATE,
-        validate: {
-          isDate: {
-            args: true,
-            msg: "year should be a valid date."
-          }
-        }
+        type: DataTypes.INTEGER,
+        allowNull: true,
       },
 
       premium: {
         type: DataTypes.INTEGER,
-		defaultValue: 0,
-        validate: {
-          isIn: {
-            args: [[0, 1, 2]],
-            msg:
-              "Invalid premium type. Only valid 'basic' (0), 'premium' (1) or 'elite' (2)."
-          }
-        }
+        defaultValue: 0,
+            validate: {
+              isIn: {
+                args: [[0, 1, 2]],
+                msg:
+                  "Invalid premium type. Only valid 'basic' (0), 'premium' (1) or 'elite' (2)."
+              }
+            }
       },
 
       dateVerification: {
@@ -112,7 +101,7 @@ module.exports = (sequelize, DataTypes) => {
 
       // Index stuff
       salaryAVG: {
-        type: DataTypes.FLOAT(3, 2),
+        type: DataTypes.FLOAT(),
         allowNull: false,
         defaultValue: 0,
         validate: {
@@ -120,7 +109,7 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
       environmentAVG: {
-        type: DataTypes.FLOAT(3, 2),
+        type: DataTypes.FLOAT(),
         allowNull: false,
         defaultValue: 0,
         validate: {
@@ -128,7 +117,7 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
       partnersAVG: {
-        type: DataTypes.FLOAT(3, 2),
+        type: DataTypes.FLOAT(),
         allowNull: false,
         defaultValue: 0,
         validate: {
@@ -136,7 +125,7 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
       servicesAVG: {
-        type: DataTypes.FLOAT(3, 2),
+        type: DataTypes.FLOAT(),
         allowNull: false,
         defaultValue: 0,
         validate: {
@@ -144,7 +133,16 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
       installationsAVG: {
-        type: DataTypes.FLOAT(3, 2),
+        type: DataTypes.FLOAT(),
+        allowNull: false,
+        defaultValue: 0,
+        validate: {
+          isFloat: true
+        }
+      },
+
+      satisfactionAVG: {
+        type: DataTypes.FLOAT(),
         allowNull: false,
         defaultValue: 0,
         validate: {
@@ -161,7 +159,7 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
       profileComplete: {
-        type: DataTypes.FLOAT(4, 2),
+        type: DataTypes.FLOAT(),
         allowNull: false,
         defaultValue: 0,
         validate: {

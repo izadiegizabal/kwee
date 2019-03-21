@@ -153,6 +153,95 @@ function sendEmailResetPassword(user, res) {
     });
 }
 
+function sendEmailSelected(user, res, offer) {
+    // Generate test SMTP service account from gmail
+    let data = fs.readFileSync(path.join(__dirname, '../templates/emailSelected.html'), 'utf-8');
+    let token = auth.auth.encode(user, '1h');
+
+    let urlValidation = `${ env.URL }/reset-password/` + token;
+
+    nodemailer.createTestAccount((err, account) => {
+        // create reusable transporter object using the default SMTP transport
+
+        let transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false, // true for 465, false for other ports
+            auth: {
+                user: env.EMAIL,
+                pass: env.EMAIL_PASSWORD
+            }
+        });
+
+        // setup email data with unicode symbols
+        let mailOptions = {
+            from: '"Kwee 👻" <hello@kwee.ovh>', // sender address
+            to: user.email,
+            subject: 'You are selected! ✔', // Subject line
+            html: data.replace('@@name@@', user.email).replace('@@url@@', 'https://kwee.ovh').replace('@@offer@@', offer)
+        };
+
+        // send mail with defined transport object
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                return res.status(400).json({
+                    ok: false,
+                    message: "Error sending email applicant selected"
+                });
+            }
+            return res.status(200).json({
+                ok: true,
+                message: "Applicant selected email sended"
+            });
+        });
+    });
+}
+
+function sendEmailOfferClosed(user, res, offer) {
+    // Generate test SMTP service account from gmail
+    let data = fs.readFileSync(path.join(__dirname, '../templates/emailOfferClosed.html'), 'utf-8');
+    let token = auth.auth.encode(user, '1h');
+
+    let urlValidation = `${ env.URL }/reset-password/` + token;
+
+    nodemailer.createTestAccount((err, account) => {
+        // create reusable transporter object using the default SMTP transport
+
+        let transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false, // true for 465, false for other ports
+            auth: {
+                user: env.EMAIL,
+                pass: env.EMAIL_PASSWORD
+            }
+        });
+
+        // setup email data with unicode symbols
+        let mailOptions = {
+            from: '"Kwee 👻" <hello@kwee.ovh>', // sender address
+            to: user.email,
+            subject: 'Sorry, offer is now closed!', // Subject line
+            html: data.replace('@@name@@', user.email).replace('@@urlAccepted@@', 'https://kwee.ovh').replace('@@offer@@', offer.id).replace('@@urlRefused@@', 'https://kwee.ovh')
+        };
+
+        // send mail with defined transport object
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                return res.status(400).json({
+                    ok: false,
+                    message: "Error sending email offer closed"
+                });
+            }
+            return res.status(200).json({
+                ok: true,
+                message: "Offer closed email sended",
+                //token
+            });
+        });
+    });
+}
+
 function isEmpty(obj) {
     for(var key in obj) {
         if(obj.hasOwnProperty(key))
@@ -189,7 +278,7 @@ async function pagination( db, dbname, _limit, _page, attr, res, next){
                 return res.status(200).json({
                     ok: true,
                     message: `It doesn't exist ${ page } pages`
-                })
+                });
             }
             
             data = await db.findAll({
@@ -412,15 +501,17 @@ function prepareOffersToShow(offers, offersShow, user){
         offer.createdAt = offers[i].createdAt;
         offer.updatedAt = offers[i].updatedAt;
         offer.deletedAt = offers[i].deletedAt;
+        offer.applications = [];
         offersShow.push(offer);
     }
     return offersShow;
 }
 
-function saveLogES(action, actionToRoute){
+function saveLogES(action, actionToRoute, user){
     moment.locale('es');
 
     let body = {
+        user,
         action, 
         actionToRoute,
         date: moment().format('YYYY-MM-DD'),
@@ -444,6 +535,8 @@ module.exports = {
     logger,
     sendVerificationEmail,
     sendEmailResetPassword,
+    sendEmailSelected,
+    sendEmailOfferClosed,
     pagination,
     validateDate,
     uploadFile,

@@ -5,6 +5,7 @@ const env =     require('../../../../tools/constants');
 const bcrypt = require('bcryptjs');
 const moment = require('moment')
 const axios = require('axios');
+const { algorithm } = require('../../../../shared/algorithm');
 
 // ============================
 // ======== CRUD user =========
@@ -14,14 +15,16 @@ module.exports = (app, db) => {
 
     app.post('/applicants/search', async(req, res, next) => {
         try {
-            saveLogES('POST', 'applicants/search');
+            saveLogES('POST', 'applicants/search', 'Visitor');
             let query = req.query;
             let page = Number(query.page);
             let limit = Number(query.limit);
             let body = req.body;
             let must = [];
             let sort = 'index';
+            let from;
             if (body.sort) sort = body.sort;
+            if ( page > 0 && limit > 0 ) from = (page - 1) * limit;
 
             buildLanguages(must, body.languages);
             buildSkills(must, body.skills);
@@ -34,9 +37,12 @@ module.exports = (app, db) => {
             if ( body.city ) must.push({multi_match: {query: body.city, fields: [ "city" ] }});
             if ( body.premium ) must.push({multi_match: {query: body.premium, fields: [ "premium" ] }});
             if ( body.bio ) must.push({multi_match: {query: body.bio, fields: [ "bio" ] }});
+            if ( body.rol ) must.push({multi_match: {query: body.rol, fields: [ "rol" ] }});
 
             let searchParams = {
                 index: "applicants",
+                from: from ? from : null,
+                size: limit ? limit : null,
                 body: {
                     query: {
                         bool: {
@@ -50,30 +56,13 @@ module.exports = (app, db) => {
             await elastic.search(searchParams, async function (err, response) {
                 if (err) throw err;
                 
+                let applicantsToShow = [];
+                let allApplicants = await db.applicants.findAll();
+                let users = await db.users.findAll();
+
                 if ( response.hits.total != 0 ) {
-                    let applicantsToShow = [];
                     let applicants = response.hits.hits;
-
-                    for (let i = 0; i < applicants.length; i++) {
-                        let applicant = {};
-
-                        applicant.id = applicants[i]._id;
-                        applicant.index = applicants[i]._source.index;
-                        applicant.name = applicants[i]._source.name;
-                        applicant.email = applicants[i]._source.email;
-                        applicant.city = applicants[i]._source.city;
-                        applicant.dateBorn = applicants[i]._source.dateBorn;
-                        applicant.status = applicants[i]._source.status;
-                        applicant.rol = applicants[i]._source.rol;
-                        applicant.bio = applicants[i]._source.bio;
-                        applicant.skills = applicants[i]._source.skills;
-                        applicant.educations = applicants[i]._source.educations;
-                        applicant.languages = applicants[i]._source.languages;
-                        applicant.experiences = applicants[i]._source.experiences;
-                        applicant.applications = applicants[i]._source.applications;
-                        
-                        applicantsToShow.push(applicant);
-                    }
+                    buildApplicantsToShow(users, allApplicants, applicantsToShow, applicants);
 
                     return res.json({
                         ok: true,
@@ -101,10 +90,12 @@ module.exports = (app, db) => {
                         }
 
                         if ( response2.hits.total > 0 ) {
+                            let applicants = response2.hits.hits;
+                            buildApplicantsToShow(users, allApplicants, applicantsToShow, applicants);
                             return res.json({
                                 ok: true,
                                 message: 'No results but maybe this is interesting for you',
-                                data: response2.hits.hits,
+                                data: offersToShow,
                                 total: response2.hits.total,
                                 page: Number(page),
                                 pages: Math.ceil(response2.hits.total / limit)
@@ -127,7 +118,7 @@ module.exports = (app, db) => {
     app.get('/applicants', async(req, res, next) => {
         try {
             await logger.saveLog('GET', 'applicant', null, res);
-            saveLogES('GET', 'applicants');
+            saveLogES('GET', 'applicants', 'Visitor');
 
             var attributes = {
                 exclude: ['password', 'root']
@@ -162,8 +153,10 @@ module.exports = (app, db) => {
                                 email: users[i].email,
                                 city: applicants[j].city,
                                 dateBorn: applicants[j].dateBorn,
+                                rol: applicants[j].rol,
                                 premium: applicants[j].premium,
                                 lastAccess: users[i].lastAccess,
+                                createdAt: users[i].createdAt,
                                 status: users[i].status,
                                 img: users[i].img,
                                 bio: users[i].bio,
@@ -212,7 +205,7 @@ module.exports = (app, db) => {
         
         try {
             await logger.saveLog('GET', 'applicant', id, res);
-            saveLogES('GET', 'applicant/id/applications');
+            saveLogES('GET', 'applicant/id/applications', 'Visitor');
 
             let message = ``;
             
@@ -242,6 +235,7 @@ module.exports = (app, db) => {
                             
                             offer.id = allOffers[j].id;
                             offer.fk_offerer = allOffers[j].fk_offerer;
+                            offer.fk_application = applications[i].id;
                             offer.offererName = offerer.name;
                             offer.offererIndex = offerer.index;
                             allOffers[j].img ? offer.img = allOffers[j].img : offer.img = offerer.img;
@@ -252,6 +246,8 @@ module.exports = (app, db) => {
                             offer.datePublished = allOffers[j].datePublished;
                             offer.location = allOffers[j].location;
                             offer.status = allOffers[j].status;
+                            offer.applicationStatus = applications[i].status;
+                            offer.aHasRated = applications[i].aHasRated;
                             offer.salaryAmount = allOffers[j].salaryAmount;
                             offer.salaryFrequency = allOffers[j].salaryFrequency;
                             offer.salaryCurrency = allOffers[j].salaryCurrency;
@@ -393,12 +389,12 @@ module.exports = (app, db) => {
                     city: applicant.city,
                     dateBorn: applicant.dateBorn,
                     premium: applicant.premium,
-                    //createdAt: applicant.createdAt,
+                    createdAt: user.createdAt,
                     status: user.status,
                     lastAccess: user.lastAccess,
                     img: user.img,
-                    bio: user.bio,
-                    social_networks: []
+                    bio: user.bio,            
+                    rol: applicant.rol
                 };
 
                 let networks = await db.social_networks.findOne({
@@ -443,7 +439,7 @@ module.exports = (app, db) => {
             body.name ? user.name = body.name : null;
             body.email ? user.email = body.email : null;
 
-            saveLogES('POST', 'applicant');
+            saveLogES('POST', 'applicant', body.name);
             
             return db.sequelize.transaction(transaction => {
                 return db.users.create(user, { transaction: transaction })
@@ -451,7 +447,7 @@ module.exports = (app, db) => {
                     uservar = user;
                     return createApplicant(body, user, next, transaction);
                 })
-                .then(ending => {
+                .then(async ending => {
                     sendVerificationEmail(body, uservar);
                     delete body.password;
                     body.index = 50;
@@ -466,6 +462,8 @@ module.exports = (app, db) => {
                             console.log(err)
                         }
                     });
+                    // await algorithm.indexUpdate(ending.userId);
+
                     return res.status(201).json({
                         ok: true,
                         message: `Applicant with id ${ending.userId} has been created.`
@@ -490,8 +488,12 @@ module.exports = (app, db) => {
             let applicant = await db.applicants.findOne({
                 where: { userId: id }
             });
+
+            let aUser = await db.users.findOne({
+                where: { id }
+            });
             if ( applicant ) {
-                saveLogES('POST', 'applicant/info');
+                saveLogES('POST', 'applicant/info', aUser.name);
                 var user = {};
                 if ( body.img && checkImg(body.img) ) {
                     var imgName = uploadImg(req, res, next, 'applicants');
@@ -527,6 +529,7 @@ module.exports = (app, db) => {
                                 }).catch((error) => {
                                     console.log('ERROR:', error.message);
                                 });
+                                await algorithm.indexUpdate(id);
                                 
                                 return res.status(200).json({
                                     ok: true,
@@ -549,8 +552,11 @@ module.exports = (app, db) => {
         try {
             let logId = await logger.saveLog('PUT', 'applicant', null, res);
             let id = tokenId.getTokenId(req.get('token'));
+            let user = await db.users.findOne({
+                where: { id }
+            });
             logger.updateLog(logId, true, id);
-            saveLogES('PUT', 'applicant');
+            saveLogES('PUT', 'applicant', user.name);
             updateApplicant(id, req, res, next);
         } catch (err) {
             return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
@@ -563,10 +569,40 @@ module.exports = (app, db) => {
 
         try {
             await logger.saveLog('PUT', 'applicant', id, res);
-            saveLogES('PUT', 'applicant/id');
+            saveLogES('PUT', 'applicant/id', 'Admin');
             updateApplicant(id, req, res, next);
         } catch (err) {
             return next({ type: 'error', error: err.errors ? err.errors[0].message : err.message });
+        }
+    });
+
+    app.delete('/applicant/applications', async(req, res, next) => {
+        try {
+            let id = tokenId.getTokenId(req.get('token'));
+            let applicant = await db.applicants.findOne({ where: { userId: id }});
+            let applications = await db.applications.findAll();
+
+            if ( applicant ) {
+                applications = applications.filter(
+                    application => application.fk_applicant == id && (application.status == 0 || application.status == 1)
+                );
+                if ( applications.length > 0 ){
+                    applications.forEach(async element => {
+                        await db.applications.update({status: 5}, {where: { id: element.id }});
+                    });
+                    return res.status(200).json({
+                        ok: true,
+                        message: "Applications with status pending or fav are now with status closed"
+                    });
+                } else {
+                    return next({ type: 'error', error: 'No applications pending or fav in this applicant'});
+                }
+            } else {
+                return next({ type: 'error', error: 'You are not applicant'});
+            }
+
+        } catch (err) {
+            return next({ type: 'error', error: err.message });
         }
     });
 
@@ -574,13 +610,17 @@ module.exports = (app, db) => {
     app.delete('/applicant', async(req, res, next) => {
         try {
             let id = tokenId.getTokenId(req.get('token'));
-            
+
             await logger.saveLog('DELETE', 'applicant', id, res);
-            saveLogES('DELETE', 'applicant');
 
             let applicant = await db.applicants.findOne({
                 where: { userId: id }
             });
+
+            let user = await db.users.findOne({
+                where: { id }
+            });
+            saveLogES('DELETE', 'applicant', user.name);
 
             if (applicant) {
                 let applicantToDelete = await db.applicants.destroy({
@@ -617,7 +657,7 @@ module.exports = (app, db) => {
 
         try {
             await logger.saveLog('DELETE', 'applicant', id, res);
-            saveLogES('DELETE', 'applicant/id');
+            saveLogES('DELETE', 'applicant/id', 'Admin');
 
             let applicant = await db.applicants.findOne({
                 where: { userId: id }
@@ -787,6 +827,8 @@ module.exports = (app, db) => {
             body.skills ? updateSkills(applicant, body.skills, elasticsearch, next) : null;
 
             if (updated && applicantUser) {
+                await algorithm.indexUpdate(id);
+
                 return res.status(200).json({
                     ok: true,
                     message: `Applicant ${ id } data updated successfuly`,
@@ -1383,5 +1425,33 @@ module.exports = (app, db) => {
             });
         }
         return must;
+    }
+
+    function buildApplicantsToShow(users, allApplicants, applicantsToShow, applicants) {
+        for (let i = 0; i < applicants.length; i++) {
+            let user = users.find(element => applicants[i]._id == element.id);
+            let userApplicant = allApplicants.find(element => applicants[i]._id == element.userId);
+            let applicant = {};
+
+            applicant.id = Number(applicants[i]._id);
+            applicant.index = Number(applicants[i]._source.index);
+            applicant.name = applicants[i]._source.name;
+            applicant.email = applicants[i]._source.email;
+            applicant.city = applicants[i]._source.city;
+            applicant.dateBorn = applicants[i]._source.dateBorn;
+            applicant.rol = Number(applicants[i]._source.rol);
+            applicant.premium = Number(userApplicant.premium);
+            applicant.skills = applicants[i]._source.skills;
+            applicant.educations = applicants[i]._source.educations;
+            applicant.languages = applicants[i]._source.languages;
+            applicant.experiences = applicants[i]._source.experiences;
+            applicant.lastAccess = user.lastAccess;
+            applicant.createdAt = user.createdAt;
+            applicant.status = Number(user.status);
+            applicant.img = user.img;
+            applicant.bio = user.bio;
+
+            applicantsToShow.push(applicant);
+        }
     }
 }

@@ -4,16 +4,17 @@ module.exports = (sequelize, DataTypes) => {
 
         fk_application: {
             type: DataTypes.INTEGER,
-            allowNull: false,
-            unique: {
-                args: true,
-                message: 'Application must be unique.'
-            }
+            allowNull: false
         },
 
         overall: {
             type: DataTypes.DOUBLE,
             field: 'overall',
+            allowNull: true
+        },
+
+        opinion: {
+            type: DataTypes.TEXT,
             allowNull: true
         }
 

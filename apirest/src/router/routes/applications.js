@@ -1,5 +1,8 @@
+const { tokenId, logger, sendEmailSelected } = require('../../shared/functions');
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
-const { tokenId, logger } = require('../../shared/functions');
+const { usersConnected } = require('../../middlewares/sockets');
+const { algorithm } = require('../../shared/algorithm');
+const io = require('../../database/sockets');
 
 // ============================
 // ===== CRUD application ======
@@ -93,144 +96,212 @@ module.exports = (app, db) => {
     // POST single application
     app.post("/application", async(req, res, next) => {
         const body = req.body;
+        const offerToAdd = body.fk_offer;
 
         try {
             let id = tokenId.getTokenId(req.get('token'));
-
+            
             let applicant = await db.applicants.findOne({
                 where: { userId: id }
             });
 
             if (applicant) {
-                let offers = await applicant.getOffers();
+                let offer = await db.offers.findOne({where: { id: offerToAdd }});
+                if ( offer ) {
 
-                if (offers.length > 0) {
-                    for (let i = 0; i < offers.length; i++) {
-                        if (body.fk_offer == offers[i].id) {
+                    await applicant.addOffer(offerToAdd)
+                        .then(async result => {
+                        if (result) {
+                                await db.offers.update({currentApplications: offer.currentApplications + 1}, { where: {id: offerToAdd}});
+                                if ( result[0] ) {  
+                                    await algorithm.indexUpdate(id); 
+                                    return res.status(201).json({
+                                        ok: true,
+                                        message: 'Application done',
+                                        application: result[0][0]
+                                    });
+                                } else {
+                                    return res.status(400).json({
+                                        ok: false,
+                                        message: "You already applicated to this offer."
+                                    });
+                                }
+                        } else {
                             return res.status(400).json({
                                 ok: false,
-                                error: "Application already added"
+                                message: "Application not added."
                             });
                         }
-                    }
+                    });
+                } else {
+                    return res.status(400).json({
+                        ok: false,
+                        message: "Sorry, this offers does not exists"
+                    });
                 }
-
-                await applicant.addOffer(body.fk_offer, {
-                    through: {
-                        status: body.status
-                    }
-                }).then(result => {
-                    if (result) {
-                        return res.status(201).json({
-                            ok: true,
-                            application: result
-                        });
-                    } else {
-                        return res.status(400).json({
-                            ok: false,
-                            application: "Application not added."
-                        });
-                    }
-                });
-
-
             } else {
                 return res.status(400).json({
                     ok: false,
-                    error: "Sorry, you are not applicant"
+                    message: "Sorry, you are not applicant"
                 });
             }
         } catch (err) {
-            next({ type: 'error', error: err.toString() });
+            return next({ type: 'error', error: err.toString() });
         }
 
     });
 
     // PUT single application
-    app.put("/application", async(req, res, next) => {
-        const body = req.body;
+    app.put("/application/:id([0-9]+)", async(req, res, next) => {
+        const status = req.body.status;
+        const id = req.params.id;
 
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            // Applicants and offerers may update applications
+            let user = tokenId.getTokenId(req.get('token'));
+            let application = await db.applications.findOne({where: { id }});
+            let applicant = await db.applicants.findOne({where: { userId: user }});
 
-            let applicant = await db.applicants.findOne({
-                    where: { userId: id }
-                })
-                .then(_applicant => {
-                    if (_applicant) {
-                        _applicant.getOffers({ where: { id: body.fk_offer } })
-                            .then(offers => {
-                                if (offers) {
-                                    let offer = offers[0];
+            if ( applicant ) {
+                // applicants only may update to status 3 and 4 
+                //(accept or refuse application when is selected)
+                if ( status == 3 || status == 4 ) {
+                    if ( application.status == 2 ){
+                        if ( applicant.userId == application.fk_applicant ) {
+                            await db.applications.update({status}, {
+                                where: { id }
+                            });
+                            await algorithm.indexUpdate(user);
 
-                                    if (body.status) {
-                                        offer.applications.status = body.status;
-
-                                        offer.applications.save()
-                                            .then(ret => {
-                                                if (ret.isRejected) {
-                                                    // Problems
-                                                    return res.status(400).json({
-                                                        ok: false,
-                                                        error: "Update REJECTED."
-                                                    });
-                                                } else {
-                                                    // Everything ok
-                                                    return res.status(201).json({
-                                                        ok: true,
-                                                        error: "Application updated to " + body.status
-                                                    });
-                                                }
-                                            })
-                                    } else {
-                                        return res.status(400).json({
-                                            ok: false,
-                                            error: "Updating an application requires a status value."
-                                        });
-                                    }
-                                } else {
-                                    return res.status(200).json({
-                                        ok: true,
-                                        error: "Application with OfferId " + body.fk_offer + " on ApplicantId " + body.fk_applicant + " doesn't exist."
-                                    });
-                                }
-                            })
+                            return res.status(201).json({
+                                ok: true,
+                                message: "Application updated to status " + status
+                            });
+                        } else {
+                            return res.status(401).json({
+                                ok: false,
+                                message: "Unauthorized to update applications of other user"
+                            });
+                        }
                     } else {
-                        return res.status(400).json({
+                        return res.status(401).json({
                             ok: false,
-                            error: "Sorry, you are not applicant"
+                            message: "You are not selected!"
                         });
                     }
-                })
+                } else {
+                    return res.status(401).json({
+                        ok: false,
+                        message: "Unauthorized action"
+                    });
+                }
+            } else {
+                let offerer = await db.offerers.findOne({where: { userId: user }});
+                if ( offerer ) {
+                    let offers = await offerer.getOffers();
+
+                    let offerToUpdate = offers.map(offer => offer.id == application.fk_offer);
+
+                    if ( offerToUpdate ) {
+                        await db.applications.update({status}, {
+                            where: { id }
+                        });
+                        if ( status == 2 ) {
+                            //Send mail selected
+                            let user = await db.users.findOne({where: { id: application.fk_applicant }});
+                            let socketUsers = usersConnected.getList();
+                            sendEmailSelected(user, res, application.fk_offer);
+                            // Send notification to client
+                            let payload = {
+                                selected: true,
+                                applicationId: application.id,
+                                offerId: application.fk_offer
+                            }
+                            socketUsers = socketUsers.find(element => element.email === user.email);                            
+                            io.in(socketUsers.id).emit('selected', payload);
+                        }
+                        await algorithm.indexUpdate(user);
+                        return res.status(201).json({
+                            ok: true,
+                            message: "Application updated to status " + status
+                        });
+                    }
+                }
+            }
+            
         } catch (err) {
-            next({ type: 'error', error: err.toString() });
+            return next({ type: 'error', error: err.toString() });
         }
     });
 
     // DELETE single application
-    app.delete("/application", async(req, res, next) => {
-        const body = req.body;
+    app.delete("/application/:id([0-9]+)", async(req, res, next) => {
+        const applicationId = req.params.id;
 
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let application = await db.applications.findOne({where: { id: applicationId }});
+            if ( application ){
 
-            let applicant = await db.applicants.findOne({
-                where: { userId: id }
-            });
-
-            if (applicant) {
-                res.json({
-                    ok: true,
-                    application: await applicant.removeOffers(body.fk_offer)
+                let id = tokenId.getTokenId(req.get('token'));
+                
+                let applicant = await db.applicants.findOne({
+                    where: { userId: id }
                 });
+                
+                if (applicant) {
+                    if ( application.fk_applicant == id ) {
+                        let offer = await db.offers.findOne({
+                            where: { id: application.fk_offer }
+                        });
+                        let currentApplications = offer.currentApplications - 1;
+                        await applicant.removeOffers(application.fk_offer);
+                        await db.offers.update({currentApplications}, {where: { id: offer.id }});
+
+                        await algorithm.indexUpdate(id);
+
+                        return res.json({
+                            ok: true,
+                            message: 'Application deleted' 
+                        });
+                    } else {
+                        return res.status(400).json({
+                            ok: false,
+                            message: "Sorry, this is not your application"
+                        });
+                    }
+                } else {
+                    let offerer = await db.offerers.findOne({
+                        where: { userId: id }
+                    });
+                    
+                    if ( offerer ) {
+                        offers = await offerer.getOffers();
+                        offers = offers.find(element => element.id == application.fk_offer );
+                        
+                        if ( offers ) {
+                            let currentApplications = offers.currentApplications - 1;
+                            await offers.removeApplicants(application.fk_applicant);
+                            await db.offers.update({currentApplications}, {where: { id: offers.id }});
+                            return res.json({
+                                ok: true,
+                                message: 'Application deleted' 
+                            });
+                        } else {
+                            return res.status(400).json({
+                                ok: false,
+                                message: "Sorry, this is not your application"
+                            });
+                        }
+                    }
+                }
             } else {
                 return res.status(400).json({
                     ok: false,
-                    error: "Sorry, you are not applicant"
+                    message: "This application does not exists"
                 });
             }
         } catch (err) {
-            next({ type: 'error', error: err.message });
+            return next({ type: 'error', error: err.message });
         }
 
     });

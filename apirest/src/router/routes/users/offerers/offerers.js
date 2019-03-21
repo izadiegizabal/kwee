@@ -3,9 +3,10 @@ const { checkToken, checkAdmin } = require('../../../../middlewares/authenticati
 const elastic = require('../../../../database/elasticsearch');
 const env =     require('../../../../tools/constants');
 const bcrypt = require('bcryptjs');
-const moment = require('moment')
-const axios =   require('axios')
+const moment = require('moment');
+const axios =   require('axios');
 
+const { algorithm } = require('../../../../shared/algorithm');
 
 // ============================
 // ======== CRUD user =========
@@ -15,7 +16,7 @@ module.exports = (app, db) => {
 
     app.post('/offerers/search', async(req, res, next) => {
         try {
-            saveLogES('POST', 'offerers/search');
+            saveLogES('POST', 'offerers/search', 'Visitor');
 
             let query = req.query;
             let page = Number(query.page);
@@ -23,21 +24,26 @@ module.exports = (app, db) => {
             let body = req.body;
             let must = [];
             let sort = 'index';
+            let from;
             if (body.sort) sort = body.sort;
+            if ( page > 0 && limit > 0 ) from = (page - 1) * limit;
 
             buildIndex(must, body.index);
             buildYear(must, body.year);
             buildCompanySize(must, body.companySize);
             buildDateVerification(must, body.dateVerification);
 
-            if ( body.name ) must.push({multi_match : {query: body.name, fields: ["name"]}})
-            if ( body.email ) must.push({multi_match : {query: body.email, fields: ["email"]}})
-            if ( body.status ) must.push({multi_match : {query: body.status, fields: ["status"]}})
-            if ( body.address ) must.push({multi_match : {query: body.address, fields: ["address"]}})
-            if ( body.bio ) must.push({multi_match : {query: body.bio, fields: ["bio"]}})
+            if ( body.name ) must.push({multi_match : {query: body.name, fields: ["name"]}});
+            if ( body.email ) must.push({multi_match : {query: body.email, fields: ["email"]}});
+            if ( body.status ) must.push({multi_match : {query: body.status, fields: ["status"]}});
+            if ( body.address ) must.push({multi_match : {query: body.address, fields: ["address"]}});
+            if ( body.bio ) must.push({multi_match : {query: body.bio, fields: ["bio"]}});
+            if ( body.workField ) must.push({multi_match : {query: body.workField, fields: ["workField"]}});
 
             let searchParams = {
                 index: "offerers",
+                from: from ? from : null,
+                size: limit ? limit : null,
                 body: {
                     query: {
                         bool: {
@@ -51,26 +57,14 @@ module.exports = (app, db) => {
             await elastic.search(searchParams, async function (err, response) {
                 if (err) throw err;
                 
+                let offerersToShow = [];
+                let allOfferers = await db.offerers.findAll();
+                let users = await db.users.findAll();
+
                 if ( response.hits.total != 0 ) {
-                    let offerersToShow = [];
                     let offerers = response.hits.hits;
 
-                    for (let i = 0; i < offerers.length; i++) {
-                        let offerer = {};
-
-                        offerer.id = offerers[i]._id;
-                        offerer.name = offerers[i]._source.name;
-                        offerer.index = offerers[i]._source.index;
-                        offerer.bio = offerers[i]._source.bio;
-                        offerer.status = offerers[i]._source.status;
-                        offerer.email = offerers[i]._source.email;
-                        offerer.address = offerers[i]._source.address;
-                        offerer.companySize = offerers[i]._source.companySize;
-                        offerer.year = offerers[i]._source.year;
-                        offerer.dateVerification = offerers[i]._source.dateVerification;
-                        
-                        offerersToShow.push(offerer);
-                    }
+                    buildOfferersToShow(users, allOfferers, offerersToShow, offerers);
 
                     return res.json({
                         ok: true,
@@ -98,10 +92,13 @@ module.exports = (app, db) => {
                         }
 
                         if ( response2.hits.total > 0 ) {
+                            let offerers = response2.hits.hits;
+                            buildOfferersToShow(users, allOfferers, offerersToShow, offerers);
+
                             return res.json({
                                 ok: true,
                                 message: 'No results but maybe this is interesting for you',
-                                data: response2.hits.hits,
+                                data: offerersToShow,
                                 total: response2.hits.total,
                                 page: Number(page),
                                 pages: Math.ceil(response2.hits.total / limit)
@@ -125,7 +122,7 @@ module.exports = (app, db) => {
     // GET all users offerers
     app.get('/offerers', async(req, res, next) => {
         try {
-            saveLogES('GET', 'offerers');
+            saveLogES('GET', 'offerers', 'Visitor');
             await logger.saveLog('GET', 'offerers', null, res);
 
             var attributes = {
@@ -170,7 +167,8 @@ module.exports = (app, db) => {
                                 createdAt: offerers[j].createdAt,
                                 lastAccess: users[i].lastAccess,
                                 status: users[i].status,
-                                img: users[i].img
+                                img: users[i].img,
+                                bio: users[i].bio
                             }
                         }
                     }
@@ -217,7 +215,7 @@ module.exports = (app, db) => {
         
         try {
             await logger.saveLog('GET', 'offerer', id, res);
-            saveLogES('GET', 'offerer/id/offers');
+            saveLogES('GET', 'offerer/id/offers', 'Visitor');
             
             let message = ``;
 
@@ -228,9 +226,8 @@ module.exports = (app, db) => {
             
             
             if ( offerer ) {
-                let user = await db.users.findOne({
-                    where: { id }
-                });
+                let users = await db.users.findAll();
+                let user = users.find( u => u.id == id);
                 let offers = await offerer.getOffers();
                 
                 let count = offers.length;
@@ -295,6 +292,26 @@ module.exports = (app, db) => {
                 let offersShow = [];
                 
                 prepareOffersToShow(offers, offersShow, user);
+
+                let applicants = await db.applicants.findAll();
+                let applications = await db.applications.findAll();
+                offersShow.forEach(offer => {
+                    let applicationsOffers = applications.filter(application => application.fk_offer === offer.id);
+                    applicationsOffers.forEach(a => {
+                        let applicant = applicants.find(apli => a.fk_applicant == apli.userId);
+                        let applicantUser = users.find(usu => usu.id == applicant.userId);
+                        let applicantShow = {};
+                        applicantShow.applicationId = a.id;
+                        applicantShow.applicationStatus = a.status;
+                        applicantShow.aHasRated = a.aHasRated;
+                        applicantShow.applicantId = applicantUser.id;
+                        applicantShow.applicantName = applicantUser.name;
+                        applicantShow.applicantStatus = applicantUser.status;
+
+                        offer.applications.push(applicantShow);
+                        
+                    });
+                });
                 
                 return res.json({
                     ok: true,
@@ -320,7 +337,7 @@ module.exports = (app, db) => {
         const id = req.params.id;
         try {
             await logger.saveLog('GET', 'offerer', id, res);
-            saveLogES('GET', 'offerer/id');
+            saveLogES('GET', 'offerer/id', 'Visitor');
 
             let user = await db.users.findOne({
                 where: { id }
@@ -384,8 +401,7 @@ module.exports = (app, db) => {
 
         try {
             await logger.saveLog('POST', 'offerer', null, res);
-            saveLogES('POST', 'offerer');
-
+            
             const body = req.body;
             let user = {};
             body.password ? user.password = bcrypt.hashSync(body.password, 10) : null;
@@ -393,6 +409,7 @@ module.exports = (app, db) => {
             body.bio ? user.bio = body.bio : null;
             body.email ? user.email = body.email : null;
             var uservar;
+            saveLogES('POST', 'offerer', body.name);
 
             if ( body.img && checkImg(body.img) ) {
                 
@@ -425,6 +442,8 @@ module.exports = (app, db) => {
                                         console.log(err.message);
                                     }
                                 });
+                                // await algorithm.indexUpdate(ending.userId);
+
                                 return res.status(201).json({
                                     ok: true,
                                     message: `Offerer with id ${ending.userId} has been created.`
@@ -453,9 +472,12 @@ module.exports = (app, db) => {
 
         try {
             let logId = await logger.saveLog('PUT', 'offerer', null, res);
-            saveLogES('PUT', 'offerer');
-
+            
             let id = tokenId.getTokenId(req.get('token'));
+            let user = await db.users.findOne({
+                where: { id }
+            });
+            saveLogES('PUT', 'offerer', user.name);
             logger.updateLog(logId, true, id);
             updateOfferer(id, req, res, next);
         } catch (err) {
@@ -476,17 +498,62 @@ module.exports = (app, db) => {
         }
     });
 
+    app.delete('/offerer/applications', async(req, res, next) => {
+        try {
+            let id = tokenId.getTokenId(req.get('token'));
+            let offerer = await db.offerers.findOne({ where: { userId: id }});
+            let offers = await offerer.getOffers();
+            let applications = await db.applications.findAll();
+
+            if ( offerer ) {
+                let applicationsAux = [];
+                let num = 1;
+                offers.forEach(offer => {
+                    applications.forEach(application => {
+                        if ( offer.id == application.fk_offer && (application.status == 0 || application.status == 1) ){
+                            applicationsAux.push(application);
+                        }
+                    });
+                });
+
+                applications = applicationsAux;
+
+                if ( applications.length > 0 ){
+                    applications.forEach(async element => {
+                        await db.applications.update({status: 5}, {where: { id: element.id }});
+                    });
+                    return res.status(200).json({
+                        ok: true,
+                        message: "Applications with status pending or fav are now with status closed"
+                    });
+                } else {
+                    return next({ type: 'error', error: 'No applications pending or fav in this offer'});
+                }
+            } else {
+                return next({ type: 'error', error: 'You are not offerer'});
+            }
+
+        } catch (err) {
+            return next({ type: 'error', error: err.message });
+        }
+    });
+
     // DELETE by themself
     app.delete('/offerer', async(req, res, next) => {
         try {
             let id = tokenId.getTokenId(req.get('token'));
             
             await logger.saveLog('DELETE', 'offerer', id, res);
-            saveLogES('DELETE', 'offerer');
-
+            
             let offerer = await db.offerers.findOne({
                 where: { userId: id }
             });
+            
+            let user = await db.users.findOne({
+                where: { id }
+            });
+            
+            saveLogES('DELETE', 'offerer', user.name);
 
             if (offerer) {
                 let offererToDelete = await db.offerers.destroy({
@@ -523,7 +590,7 @@ module.exports = (app, db) => {
 
         try {
             await logger.saveLog('DELETE', 'offerer', id, res);
-            saveLogES('DELETE', 'offerer/id');
+            saveLogES('DELETE', 'offerer/id', 'Admin');
 
             let offerer = await db.offerers.findOne({
                 where: { userId: id }
@@ -634,6 +701,8 @@ module.exports = (app, db) => {
             }); 
 
             if (updated && offererUser) {
+                await algorithm.indexUpdate(id);
+
                 return res.status(200).json({
                     ok: true,
                     message: `Values updated for offerer ${ id }`,
@@ -730,7 +799,7 @@ module.exports = (app, db) => {
         
         return must;
     }
-    
+
     function buildDateVerification (must, dateVerification) {
         if ( dateVerification ) {
             let range = 
@@ -749,5 +818,34 @@ module.exports = (app, db) => {
         }   
         
         return must;
+    }
+
+    function buildOfferersToShow(users, allOfferers, offerersToShow, offerers) {
+        for (let i = 0; i < offerers.length; i++) {
+            let user = users.find(element => offerers[i]._id == element.id);
+            let userOfferer = allOfferers.find(element => offerers[i]._id == element.userId);
+            let offerer = {};
+
+            offerer.id = Number(offerers[i]._id);
+            offerer.index = Number(offerers[i]._source.index);
+            offerer.name = offerers[i]._source.name;
+            offerer.email = offerers[i]._source.email;
+            offerer.address = offerers[i]._source.address;
+            if (userOfferer.workField) offerer.workField = Number(userOfferer.workField);
+            offerer.cif = userOfferer.cif;
+            offerer.dateVerification = offerers[i]._source.dateVerification;
+            offerer.website = userOfferer.website;
+            offerer.companySize = Number(offerers[i]._source.companySize);
+            if (userOfferer.year) offerer.year = userOfferer.year;
+            if (userOfferer.premium) offerer.premium = Number(userOfferer.premium);
+            offerer.createdAt = user.createdAt;
+            offerer.lastAccess = user.lastAccess;
+            offerer.status = Number(offerers[i]._source.status);
+            offerer.img = user.img;
+            offerer.bio = user.bio;
+            
+            
+            offerersToShow.push(offerer);
+        }
     }
 }

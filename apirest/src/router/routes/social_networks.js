@@ -1,6 +1,7 @@
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
 const { tokenId, logger } = require('../../shared/functions');
 const auth = require('../../shared/functions');
+const { algorithm } = require('../../shared/algorithm');
 
 // =======================================
 // ======== CRUD social_networks =========
@@ -86,6 +87,8 @@ module.exports = (app, db) => {
                 linkedin: body.linkedin ? body.linkedin : null
             })
 
+            await algorithm.indexUpdate(id);
+
             res.status(201).json({
                 ok: true,
                 message: `Social_networks with id ${social_network.id} has been created.`
@@ -110,6 +113,8 @@ module.exports = (app, db) => {
             });
 
             if ( social_network ) {
+                await algorithm.indexUpdate(id);
+
                 res.status(200).json({
                     ok: true,
                     message: `Social networks updated`,
@@ -131,6 +136,7 @@ module.exports = (app, db) => {
         const id = req.params.id;
 
         try {
+            
             res.json({
                 ok: true,
                 social_network: await db.social_networks.destroy({

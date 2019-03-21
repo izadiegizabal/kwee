@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {Action, select, Store} from '@ngrx/store';
-import {FormArray, FormControl, FormGroup} from '@angular/forms';
+import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {WorkFields} from '../../../../models/Candidate.model';
 import {Distances, isStringNotANumber} from '../../../../models/Offer.model';
 import {MatSidenav, MatStepper, PageEvent} from '@angular/material';
@@ -66,6 +66,7 @@ export class OfferSelectionProcessComponent implements OnInit {
   private currentSelected: number;
 
   constructor(
+    private _formBuilder: FormBuilder,
     private titleService: Title,
     private store$: Store<fromApp.AppState>,
     private offerEffects$: OfferEffects,
@@ -78,6 +79,14 @@ export class OfferSelectionProcessComponent implements OnInit {
 
   ngOnInit() {
     this.titleService.setTitle('Kwee - Selection Process');
+
+    // Initialise stepper forms
+    this.selectFormGroup = this._formBuilder.group({
+      firstCtrl: ['', Validators.required]
+    });
+    this.waitFormGroup = this._formBuilder.group({
+      secondCtrl: ['', Validators.required]
+    });
 
     // TODO: check if offer is in selection process and that the owner of the offer is the one logged in
 

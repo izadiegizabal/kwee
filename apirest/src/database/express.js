@@ -8,6 +8,7 @@ const express = require('express'),
     cors = require('cors');
 
 const app = express();
+let server = require('http').Server(app);
 
 app.use(logger);
 // Configure the app to use bodyParser()
@@ -38,4 +39,7 @@ app.use(session({
 // enable frontend folder
 app.use(express.static(path.resolve(__dirname, '../../../frontend')));
 
-module.exports = app;
+module.exports = {
+    app,
+    server
+};
