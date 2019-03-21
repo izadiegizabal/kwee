@@ -123,6 +123,7 @@ export class SignupOffererComponent implements OnInit {
       'password2': new FormControl(null, Validators.required),
       'workField': new FormControl(null, Validators.required),
       'address1': new FormControl(null, Validators.required),
+      'terms': new FormControl(null, Validators.required),
       'profile': new FormControl(null)
     });
 

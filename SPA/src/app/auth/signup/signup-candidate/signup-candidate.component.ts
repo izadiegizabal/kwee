@@ -154,6 +154,7 @@ export class SignupCandidateComponent implements OnInit {
       'birthday': new FormControl(null, Validators.required),
       'location': new FormControl(null, Validators.required),
       'role': new FormControl(null, Validators.required),
+      'terms': new FormControl(null, Validators.required)
     });
 
     this.secondFormGroup.controls['password2'].setValidators([

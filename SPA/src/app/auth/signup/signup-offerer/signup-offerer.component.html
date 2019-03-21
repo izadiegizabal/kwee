@@ -183,6 +183,11 @@
           </mat-form-field>
         </div>
         <br>
+          <mat-checkbox formControlName="terms" required>Accept our terms and conditions. More info <a [routerLink]="['/privacy']" target="_blank" >here</a>.</mat-checkbox>
+          <mat-error *ngIf="!secondFormGroup.get('terms').valid && secondFormGroup.get('terms').touched">
+              Please accept our terms and conditions
+          </mat-error>
+            
         <!--
           <div class="line1" fxLayout="column">
             <mat-form-field>
