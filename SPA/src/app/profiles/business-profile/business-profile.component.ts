@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {Title} from "@angular/platform-browser";
+import {Location} from '@angular/common';
 
 @Component({
   selector: 'app-business-profile',
@@ -36,7 +37,8 @@ export class BusinessProfileComponent implements OnInit {
 
   constructor(
     private titleService: Title,
-    private router: Router
+    private router: Router,
+    private location: Location
   ) {
   }
 
@@ -48,5 +50,9 @@ export class BusinessProfileComponent implements OnInit {
     if (tabIndex && tabIndex === 2) {
       this.router.navigate(['/my-offers']);
     }
+  }
+
+  backClicked() {
+    this.location.back();
   }
 }

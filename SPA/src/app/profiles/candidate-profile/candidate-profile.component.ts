@@ -7,6 +7,7 @@ import * as fromProfiles from '../store/profiles.reducers';
 import {ActivatedRoute, Router} from '@angular/router';
 import {environment} from '../../../environments/environment';
 import {Title} from "@angular/platform-browser";
+import {Location} from '@angular/common';
 
 @Component({
   selector: 'app-candidate-profile',
@@ -103,7 +104,8 @@ export class CandidateProfileComponent implements OnInit {
     private titleService: Title,
     private store$: Store<fromApp.AppState>,
     private activatedRoute: ActivatedRoute,
-    private router: Router) {
+    private router: Router,
+    private location: Location) {
   }
 
   ngOnInit() {
@@ -131,5 +133,9 @@ export class CandidateProfileComponent implements OnInit {
     });
 
     return this.imgPath;
+  }
+
+  backClicked() {
+    this.location.back();
   }
 }
