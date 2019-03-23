@@ -17,7 +17,13 @@ export class PremiumBusinessComponent implements OnInit {
 
   callPaypalDialog() {
     console.log('abre dialog');
-    this.dialog.open(PaypalDialogComponent);
+    this.dialog.open(PaypalDialogComponent, {
+      data: {
+        header: 'Order summary: ',
+        product: 'Subscribe to premium',
+        price: '5,99€'
+      }
+    });
   }
 
 }
