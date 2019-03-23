@@ -10,7 +10,7 @@
   </div>
 
   <mat-card fxFlex="100" style="padding: 0 !important;">
-    <mat-tab-group [selectedIndex]="1">
+    <mat-tab-group [selectedIndex]="selectedIndex" (selectedIndexChange)="changeTab($event)">
       <mat-tab>
         <ng-template mat-tab-label>
           <mat-icon class="tab-icon" color="primary" svgIcon="move-to-inbox"></mat-icon>

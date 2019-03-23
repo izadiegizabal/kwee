@@ -112,7 +112,7 @@ export class CandidateProfileComponent implements OnInit {
     this.profilesState = this.store$.pipe(select(state => state.profiles));
     this.profilesState.subscribe(s => {
       this.titleService.setTitle('Kwee - ' + s.candidate.name);
-    })
+    });
   }
 
   goToMyOffers(tabIndex: number) {
