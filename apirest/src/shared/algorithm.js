@@ -36,6 +36,8 @@ class Algorithm {
 
         let avg = [];
         let avgValue = 0;
+        let elasticUserP;
+        let elasticUserS;
 
         switch( await this.checkRole(id) ) {
             case 'applicant':
@@ -60,6 +62,8 @@ class Algorithm {
                 console.log("avg:     " + avgValue);
                 console.log("profile: " + profile);
                 index = profile + avgValue;
+                elasticUserP = 'applicants';
+                elasticUserS = 'applicant';
             break;
             case 'offerer':
                 avg = [ _averages.salaryAVG, _averages.environmentAVG, _averages.partnersAVG, _averages.servicesAVG, _averages.installationsAVG, _averages.satisfactionAVG];
@@ -93,6 +97,8 @@ class Algorithm {
                 console.log("avg:     " + avgValue);
                 console.log("profileCalc: " + profileCalc);
                 index = ratio + avgValue + profileCalc;
+                elasticUserP = 'offerers';
+                elasticUserS = 'offerer';
 
                 break;
         }
@@ -102,7 +108,7 @@ class Algorithm {
         let res = await db.users.update({index: index},{where:{id}})
                 .then( ok => {
                     console.log("index updated");
-                    axios.post(`http://${ env.ES_URL }/offerers/offerer/${ id }/_update?pretty=true`, {
+                    axios.post(`http://${ env.ES_URL }/${ elasticUserP }/${ elasticUserS }/${ id }/_update?pretty=true`, {
                         doc: {index}
                     }).then(() => {}
                         ).catch((error) => {
