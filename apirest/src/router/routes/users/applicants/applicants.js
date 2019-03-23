@@ -512,11 +512,11 @@ module.exports = (app, db) => {
                             await setExperiences(id, body, next).then( async () => {
                                 delete body.img;
                                 axios.get(`http://${ env.ES_URL }/applicants/applicant/${ id }`, {
-                                }).then((resp) => {
+                                }).then(async (resp) => {
                                     // updated from elasticsearch database too
                                     let data = Object.assign(resp.data._source, body);
 
-                                    elastic.index({
+                                    await elastic.index({
                                         index: 'applicants',
                                         id,
                                         type: 'applicant',
@@ -529,7 +529,7 @@ module.exports = (app, db) => {
                                 }).catch((error) => {
                                     console.log('ERROR:', error.message);
                                 });
-                                await algorithm.indexUpdate(id);
+
                                 
                                 return res.status(200).json({
                                     ok: true,

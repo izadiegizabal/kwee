@@ -303,18 +303,22 @@ class Algorithm {
                                     'satisfaction'
                                 ]
                             });
-                            //
-                            console.log(" - valoration:");
-                            console.log(" - " + valoration.efficiency + " " + valoration.skills + " " + valoration.punctuality + " " +valoration.hygiene + " " + valoration.teamwork);
-                            
-                            efficiency.push(valoration.efficiency);
-                            skills.push(valoration.skills);
-                            punctuality.push(valoration.punctuality);
-                            hygiene.push(valoration.hygiene);
-                            teamwork.push(valoration.teamwork);
-                            satisfaction.push(valoration.satisfaction);
 
-                            totalOpinions++;
+                            if( valoration ) {
+                                //
+                                console.log(" - valoration:");
+                                console.log(" - " + valoration.efficiency + " " + valoration.skills + " " + valoration.punctuality + " " +valoration.hygiene + " " + valoration.teamwork);
+                                
+                                efficiency.push(valoration.efficiency);
+                                skills.push(valoration.skills);
+                                punctuality.push(valoration.punctuality);
+                                hygiene.push(valoration.hygiene);
+                                teamwork.push(valoration.teamwork);
+                                satisfaction.push(valoration.satisfaction);
+                                
+                                totalOpinions++;
+                            }
+
 
                         }
                     });
@@ -443,15 +447,17 @@ class Algorithm {
                                         'satisfaction'
                                     ]
                                 });
-                                
-                                salary.push(valoration.salary);
-                                environment.push(valoration.environment);
-                                partners.push(valoration.partners);
-                                services.push(valoration.services);
-                                installations.push(valoration.installations);
-                                satisfaction.push(valoration.satisfaction);
-    
-                                totalOpinions++;
+                                if(valoration){
+                                    salary.push(valoration.salary);
+                                    environment.push(valoration.environment);
+                                    partners.push(valoration.partners);
+                                    services.push(valoration.services);
+                                    installations.push(valoration.installations);
+                                    satisfaction.push(valoration.satisfaction);
+        
+                                    totalOpinions++;
+
+                                }
     
                             }
                         });
@@ -708,7 +714,7 @@ class Algorithm {
                 // img + bio + 
                 await db.users.findOne({where:{id}, attributes: ['bio','img','lat','lon']})
                 .then( result => {
-                    if( result && result.dataValues.bio != ''){
+                    if( result && result.dataValues.bio != '' && result.dataValues.bio != 'Here you have a place to define yourself'){
                         // has bio
                         console.log("1- User has bio");
                         points++;
@@ -874,11 +880,9 @@ class Algorithm {
                 }
             );
             if( type ) {
-                console.log("APPLICANT");
                 return 'applicant';
             }
             else{
-                console.log("OFFERER");
                 return 'offerer';
             }
 
