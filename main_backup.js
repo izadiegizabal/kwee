@@ -49,7 +49,6 @@ let applicants = 'No file';
 let totalOffers = 0;
 let limit = null;
 let applicationsDone = [];
-let userApplied = [];
 let offersMap = new Map();
 
 
@@ -308,45 +307,34 @@ async function offerersAndOffers() {
 				"name": e.name,
 				"password": e.password,
 				"email": e.email,
-				"img": e.img,
 				"cif": e.cif,
 				"address": e.address,
+				"workField": e.workField,
+				"year": e.year,
+				"premium": e.premium.toString(),
+				"companySize": e.companySize,
+				"bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sed scelerisque tellus. Curabitur nec erat lacus. Fusce mollis rhoncus nunc ut elementum. Praesent lobortis consequat imperdiet. Mauris rutrum, purus non luctus tristique, eros urna volutpat magna, et posuere diam diam convallis lorem. In sed nunc tortor. Donec magna justo, commodo eu commodo vitae, vehicula et nisl. Nunc malesuada lobortis elit et pretium. Aliquam dignissim enim sit amet ante suscipit ornare. Aliquam sit amet vehicula tortor. Sed non sagittis erat, eget placerat nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Praesent ante massa, porta ac sapien et, aliquet consectetur felis. Suspendisse vestibulum commodo turpis. Etiam blandit erat nec erat tincidunt tincidunt. \n\nEtiam accumsan erat non tincidunt commodo. Proin pharetra eu turpis nec finibus. Mauris pharetra, leo ut pharetra porta, purus purus commodo diam, eget aliquam metus elit nec lorem. Sed mollis purus ligula, eget vestibulum lectus consectetur et. Maecenas finibus at lorem imperdiet aliquet. Integer aliquam purus vel lorem suscipit, ac iaculis neque euismod. Sed ultricies ac lorem et tempor. Integer lacinia sem sapien, vitae bibendum lorem posuere at. Maecenas urna est, mollis in congue sit amet, sagittis varius velit. Sed ac feugiat ex, quis dignissim dolor. Sed mauris mauris, varius ac arcu quis, ornare finibus diam. Sed ac quam odio.",
+				"img": e.img,
+				"status": e.status,
 				"lon": e.lon,
-				"lat": e.lat,
-				"workField": e.workField	
+				"lat": e.lat
+	
 			})
 			.then( async res => { 
 				log(" " + res.data.message);
 				//console.log(res.data) 
+				
 				// login bussiness
 				await instance.post('/login',{
 					"email": e.email,
 					"password": e.password
 				})
 				.then( async loginSuccess => {
-					log(" " + success(loginSuccess.data.message));
+					log(" " + success(loginSuccess.data.message))
 					let token = loginSuccess.data.token;
 					let id = loginSuccess.data.data.id;
 					// create random number of offers
 					let _limit = randomInt(0,10);
-
-					await instance.put('/offerer',{
-						"year": e.year,
-						"companySize": e.companySize,
-						"bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus sed scelerisque tellus. Curabitur nec erat lacus. Fusce mollis rhoncus nunc ut elementum. Praesent lobortis consequat imperdiet. Mauris rutrum, purus non luctus tristique, eros urna volutpat magna, et posuere diam diam convallis lorem. In sed nunc tortor. Donec magna justo, commodo eu commodo vitae, vehicula et nisl. Nunc malesuada lobortis elit et pretium. Aliquam dignissim enim sit amet ante suscipit ornare. Aliquam sit amet vehicula tortor. Sed non sagittis erat, eget placerat nisl. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Praesent ante massa, porta ac sapien et, aliquet consectetur felis. Suspendisse vestibulum commodo turpis. Etiam blandit erat nec erat tincidunt tincidunt. \n\nEtiam accumsan erat non tincidunt commodo. Proin pharetra eu turpis nec finibus. Mauris pharetra, leo ut pharetra porta, purus purus commodo diam, eget aliquam metus elit nec lorem. Sed mollis purus ligula, eget vestibulum lectus consectetur et. Maecenas finibus at lorem imperdiet aliquet. Integer aliquam purus vel lorem suscipit, ac iaculis neque euismod. Sed ultricies ac lorem et tempor. Integer lacinia sem sapien, vitae bibendum lorem posuere at. Maecenas urna est, mollis in congue sit amet, sagittis varius velit. Sed ac feugiat ex, quis dignissim dolor. Sed mauris mauris, varius ac arcu quis, ornare finibus diam. Sed ac quam odio.",
-					},
-					{
-						// headers
-						headers: { 
-							token, 
-							'Content-Type': 'application/json; charset=utf-8'
-						}
-					}).then( offererUpdated => {
-						console.log('Offerer updated');
-					})
-					.catch( offerUpdateError => {
-						log(error("Error updating offerer: ") + offerUpdateError.response.data.message);
-					})
 
 					await asyncForEach( offers, _limit, async (offerElement, index) => {
 						await instance.post("/offer", {
@@ -479,8 +467,8 @@ async function applicantsAndApplications() {
 
 					})
 					.then( application => {
-						//log(" application success")//. ApplicantId:" + loginSuccess.data.data.id + " fk_offer:" + arrApplications);
-						log( success(application.data.message));
+						log(" application success")//. ApplicantId:" + loginSuccess.data.data.id + " fk_offer:" + arrApplications);
+						log( application.data)
 					})
 					.catch( err => {
 						log(error("Error applying: "));
@@ -525,6 +513,8 @@ async function offerersAccepts(){
 						// console.log(_applications.data.data);
 						// if exists applications
 						let applications = _applications.data.data;
+						console.log("applications: " + applications.length);
+						//console.log(applications);
 						
 						// for each application in the offer
 						await asyncForEach( applications, applications.length, async (applicationElement, index) => {
@@ -532,6 +522,8 @@ async function offerersAccepts(){
 							 console.log("applicantId: " + applicationElement.applicantId);
 
 							await instance.put('/application/' + applicationElement.applicationId,{
+								// "fk_offer": applicationElement.offerId,
+								// "fk_applicant": applicationElement.applicantId, // checks on token
 								"status": "0"
 							},
 							{
@@ -539,9 +531,7 @@ async function offerersAccepts(){
 							})
 							.then( applicationUpdated => { 
 								console.log( success(" application accepted") + " offerId:" + applicationElement.offerId + " applicantId:" + applicationElement.applicantId);
-								userApplied.push(applicationElement.email);
 								applicationsDone.push(applicationElement.applicationId);
-
 							})
 							.catch( e => { 
 								log(error("PUT application/"+applicationElement.applicationId))
@@ -585,93 +575,43 @@ async function offerersAccepts(){
 
 async function ratings(type){
 	if(type=="applicants"){
-		await asyncForEach( userApplied, userApplied.length, async (email, index) => {
-
-			await instance.post('/login',{
-				"email": email,
-				"password": "123456789"
+		await asyncForEach( applicationsDone, applicationsDone.length, async (application, index) => {
+			await instance.post('/rating_applicant',{
+				"fk_application": application,
+				"efficiency": randomInt(0,5),
+				"skills": randomInt(0,5),
+				"punctuality": randomInt(0,5),
+				"hygiene": randomInt(0,5),
+				"teamwork": randomInt(0,5),
+				"satisfaction": randomInt(0,5)
 			})
-			.then( async completed => {
-				let token = completed.data.token;
-				await asyncForEach( applicationsDone, applicationsDone.length, async (application, index) => {
-
-					await instance.post('/rating_offerer',{
-						"fk_application": application,
-						"salary": randomInt(0,5),
-						"environment": randomInt(0,5),
-						"partners": randomInt(0,5),
-						"services": randomInt(0,5),
-						"installations": randomInt(0,5),
-						"satisfaction": randomInt(0,5),
-						"opinion": "This business smells bad."
-					}, {
-						headers: {
-							token,
-							'Content-Type': 'application/json; charset=utf-8'
-						}
-					})
-					.then( done => log(success(done.data.message)) )
-					.catch( x => {
-						// log(error("Problem rating applicant"))
-						if(x && x.response && x.response.data!=undefined){
-							if(x.response.data.message != "You may not rate offerers of others applicants"){
-								console.log(x.response.data.message);	
-							}
-						}
-						else {
-							console.log(x);
-						}
-					});
-				});
-			})
-			.catch( e => {
-				log(error("error login"));
-			})
+			.then( done => log(" Rating applicant " + success("ok")) )
+			.catch( x => {
+				log(error("Problem rating applicant"))
+				if(x && x.response && x.response.data!=undefined){
+					console.log(x.response.data);	
+				}
+				else {
+					console.log(x);
+				}
+			});
 		});
-
-
 	}
 	else if(type=="offerers"){
-		await asyncForEach( obj, limit, async (offerer, index) => {
-			await instance.post('/login',{
-				"email": offerer.email,
-				"password": "123456789"
+		await asyncForEach( applicationsDone, applicationsDone.length, async (application, index) => {
+			await instance.post('/rating_offerer',{
+				"fk_application": application,
+				"salary": randomInt(0,5),
+				"environment": randomInt(0,5),
+				"partners": randomInt(0,5),
+				"services": randomInt(0,5),
+				"installations": randomInt(0,5),
+				"satisfaction": randomInt(0,5)
 			})
-			.then( async completed => {
-				let token = completed.data.token;
-				await asyncForEach( applicationsDone, applicationsDone.length, async (application, index) => {
-					await instance.post('/rating_applicant',{
-						"fk_application": application,
-						"efficiency": randomInt(0,5),
-						"skills": randomInt(0,5),
-						"punctuality": randomInt(0,5),
-						"hygiene": randomInt(0,5),
-						"teamwork": randomInt(0,5),
-						"satisfaction": randomInt(0,5),
-						"opinion": "This applicant works very well in Javashit."
-					}, {
-						headers: {
-							token,
-							'Content-Type': 'application/json; charset=utf-8'
-						}
-					})
-					.then( done => {
-						log(success(done.data.message));
-					})
-					.catch( x => {
-						// log(error("Problem rating offerers"))
-						if(x && x.response && x.response.data!=undefined){
-							if(x.response.data.message != "You may not rate applicants of others offerers"){
-								console.log(x.response.data);	
-							}
-						}
-						else {
-							console.log(x);
-						}
-					});
-				});
-		})
+			.then( done => log(" Rating offerer " + success("ok")) )
+			.catch( x => log(error("Problem rating applicant")));
 		});
+		
 	}
 }
 
@@ -736,6 +676,13 @@ async function main() {
 	log(warning("Offerers login"))
 	await offerersAccepts();
 	
+
+	//////
+	// ratings
+	//////
+	// --> when routes updated to require TOKEN ==>> update ratings functions too!!
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 	console.log(applicationsDone);
 	// 4- Rate offerers
 	await ratings("offerers");
@@ -743,6 +690,9 @@ async function main() {
 	// 5- Rate applicants
 	await ratings("applicants");
 
+	
+	// console.log("doing algorithm things xd");
+	// update algorithm (TO FIX in API and avoid doing here)
 	// await algorithm();
 
 }	
