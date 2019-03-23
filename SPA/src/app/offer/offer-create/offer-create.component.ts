@@ -21,7 +21,7 @@ import {
   SeniorityLevel,
   WorkLocationType
 } from '../../../models/Offer.model';
-import {Title} from "@angular/platform-browser";
+import {Title} from '@angular/platform-browser';
 
 
 interface City {
