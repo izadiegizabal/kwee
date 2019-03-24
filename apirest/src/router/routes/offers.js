@@ -1,4 +1,4 @@
-const { tokenId, logger, pagination, prepareOffersToShow, saveLogES, sendEmailOfferClosed } = require('../../shared/functions');
+const { tokenId, logger, pagination, prepareOffersToShow, saveLogES, sendEmailOfferClosed, createNotification } = require('../../shared/functions');
 const { checkToken } = require('../../middlewares/authentication');
 const elastic = require('../../database/elasticsearch');
 const env =     require('../../tools/constants');
@@ -414,58 +414,68 @@ module.exports = (app, db) => {
             saveLogES('PUT', 'offer/id', user.name);
             
             if ( offerToUpdate ) {
-                if ( updates.status && updates.status == 2 ) {
-                    // send mail to all applicants that applicated to this offer
-                    // to advise that the offer is closed
-                    let users = await db.users.findAll();
-                    let applications = await db.applications.findAll({where: {fk_offer: id}});
-                    let applicants = await offerToUpdate.getApplicants();
-                    applicants.forEach(applicant => {
-                        user = users.find(usu => applicant.userId == usu.id);
-                        sendEmailOfferClosed(user, res, offerToUpdate);
-                    });
-                    applications.forEach(async application => {
-                        await db.applications.update({status: 4}, {
-                            where: { id: application.id }
-                        });
-                    });
-                }
-                await db.offers.update(updates, {
-                        where: { id, fk_offerer }
-                    }).then(result => {
-                        if ( result ) {
-                            axios.post(`http://${ env.ES_URL }/offers/offer/${ id }/_update?pretty=true`, {
-                                doc: updates
-                            }).then((resp) => {
-                                // updated from elasticsearch database too
-                            }).catch((error) => {
-                                console.log(error.message);
-                            });
-                            if ( result == 1) {
+                if ( offerToUpdate.fk_offerer == fk_offerer ) {
+                    // Checking status to update, if is the same, not necessary to update
+                    // if not and it is status = 1, sending notification that offer is closed
+                    // to applicants that applicated to this offer.
+                    if ( updates.status ) {
+                        if ( offerToUpdate.status == updates.status ) {
+                            delete updates.status;
+                        } else {
+                            if ( updates.status == 1 ) {
+                                // send mail to all applicants that applicated to this offer
+                                // to advise that the offer is closed
+                                let users = await db.users.findAll();
+                                let applications = await db.applications.findAll({where: {fk_offer: id}});
+                                let applicants = await offerToUpdate.getApplicants();
+                                applicants.forEach(applicant => {
+                                    user = users.find(usu => applicant.userId == usu.id);
+                                    createNotification( db, user.id, fk_offerer, 'offers', id, 'closed', true );
+                                    sendEmailOfferClosed(user, res, offerToUpdate);
+                                });
+                                applications.forEach(async application => {
+                                    await db.applications.update({status: 4}, {
+                                        where: { id: application.id }
+                                    });
+                                });
+                            }
+                        }
+                    }
+                    // because Object.keys(new Date()).length === 0;
+                    // we have to do some additional check
+                    if ( !(Object.keys(updates).length === 0 && updates.constructor === Object) ){
+                        await db.offers.update(updates, {
+                            where: { id, fk_offerer }
+                        }).then(result => {
+                            if ( result == 1 ) {
+                                axios.post(`http://${ env.ES_URL }/offers/offer/${ id }/_update?pretty=true`, {
+                                    doc: updates
+                                }).then((resp) => {
+                                    // updated from elasticsearch database too
+                                }).catch((error) => {
+                                    console.log(error.message);
+                                });
+                                
                                 return res.status(200).json({
                                     ok: true,
                                     message: `Offer ${ id } updated`,
                                 });
                             } else {
-                                return res.status(400).json({
-                                    ok: false,
-                                    message: `This offer is not yours`,
-                                });
+                                return next({ type: 'error', error: 'No updates' });
                             }
-                        } else {
-                            return res.status(400).json({
-                                ok: false,
-                                message: `No updates`,
-                            });
-                        }
-
-                    });
+                        });
+                    } else {
+                        return next({ type: 'error', error: 'Nothing to update here' });
+                    }
                 } else {
-                    return res.status(200).json({
-                        ok: true,
-                        message: `No offers with this id`,
-                    });
+                    return next({ type: 'error', error: 'This offer is not yours' });
                 }
+            } else {
+                return res.status(200).json({
+                    ok: true,
+                    message: `No offers with this id`,
+                });
+            }
         } catch (err) {
             return next({ type: 'error', error: err.message });
         }

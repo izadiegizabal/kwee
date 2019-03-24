@@ -2,7 +2,7 @@
   <mat-accordion fxFlex="99%">
     <mat-expansion-panel
       (closed)="isPanelOpen = !isPanelOpen; isInEditMode = false; userForm.reset()"
-      (opened)="isPanelOpen = !isPanelOpen; isInEditMode = false"
+      (opened)="isPanelOpen = !isPanelOpen;"
       *ngFor="let user of (adminState | async).candidates.data;" [formGroup]="userForm">
       <mat-expansion-panel-header>
         <mat-panel-title fxFlex="75%"
@@ -28,10 +28,10 @@
             <mat-icon class="svg" color="primary" svgIcon="access-time"></mat-icon>
             <span>{{user.lastAccess| date:'d/M/y, HH:mm'}}</span>
           </div>
-          <mat-chip-list fxHide fxShow.gt-sm>
-            <mat-chip color="primary" selected
-                      style="pointer-events: none">{{states[user.status].viewValue  | titlecase }}</mat-chip>
-          </mat-chip-list>
+          <div fxLayout="row">
+              <button (click)="edit(user)" color="accent" mat-button>Edit</button>
+              <button (click)="callAlertDialogDelete(user.id)" color="warn" mat-button>Delete</button>
+          </div>
         </mat-panel-description>
       </mat-expansion-panel-header>
 

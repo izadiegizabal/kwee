@@ -30,9 +30,8 @@
     <img
       alt="Business Logo"
       [src]="getImg()">
-    <p>
-      {{ (offer.description | slice:0:280) + "..." }}
-    </p>
+    <span [innerHTML]="(offer.description | slice:0:280) + '...'">
+    </span>
   </mat-card-content>
 
   <mat-card-actions

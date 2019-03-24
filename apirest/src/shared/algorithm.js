@@ -36,6 +36,8 @@ class Algorithm {
 
         let avg = [];
         let avgValue = 0;
+        let elasticUserP;
+        let elasticUserS;
 
         switch( await this.checkRole(id) ) {
             case 'applicant':
@@ -60,6 +62,8 @@ class Algorithm {
                 console.log("avg:     " + avgValue);
                 console.log("profile: " + profile);
                 index = profile + avgValue;
+                elasticUserP = 'applicants';
+                elasticUserS = 'applicant';
             break;
             case 'offerer':
                 avg = [ _averages.salaryAVG, _averages.environmentAVG, _averages.partnersAVG, _averages.servicesAVG, _averages.installationsAVG, _averages.satisfactionAVG];
@@ -93,6 +97,8 @@ class Algorithm {
                 console.log("avg:     " + avgValue);
                 console.log("profileCalc: " + profileCalc);
                 index = ratio + avgValue + profileCalc;
+                elasticUserP = 'offerers';
+                elasticUserS = 'offerer';
 
                 break;
         }
@@ -102,7 +108,7 @@ class Algorithm {
         let res = await db.users.update({index: index},{where:{id}})
                 .then( ok => {
                     console.log("index updated");
-                    axios.post(`http://${ env.ES_URL }/offerers/offerer/${ id }/_update?pretty=true`, {
+                    axios.post(`http://${ env.ES_URL }/${ elasticUserP }/${ elasticUserS }/${ id }/_update?pretty=true`, {
                         doc: {index}
                     }).then(() => {}
                         ).catch((error) => {
@@ -297,18 +303,22 @@ class Algorithm {
                                     'satisfaction'
                                 ]
                             });
-                            //
-                            console.log(" - valoration:");
-                            console.log(" - " + valoration.efficiency + " " + valoration.skills + " " + valoration.punctuality + " " +valoration.hygiene + " " + valoration.teamwork);
-                            
-                            efficiency.push(valoration.efficiency);
-                            skills.push(valoration.skills);
-                            punctuality.push(valoration.punctuality);
-                            hygiene.push(valoration.hygiene);
-                            teamwork.push(valoration.teamwork);
-                            satisfaction.push(valoration.satisfaction);
 
-                            totalOpinions++;
+                            if( valoration ) {
+                                //
+                                console.log(" - valoration:");
+                                console.log(" - " + valoration.efficiency + " " + valoration.skills + " " + valoration.punctuality + " " +valoration.hygiene + " " + valoration.teamwork);
+                                
+                                efficiency.push(valoration.efficiency);
+                                skills.push(valoration.skills);
+                                punctuality.push(valoration.punctuality);
+                                hygiene.push(valoration.hygiene);
+                                teamwork.push(valoration.teamwork);
+                                satisfaction.push(valoration.satisfaction);
+                                
+                                totalOpinions++;
+                            }
+
 
                         }
                     });
@@ -437,15 +447,17 @@ class Algorithm {
                                         'satisfaction'
                                     ]
                                 });
-                                
-                                salary.push(valoration.salary);
-                                environment.push(valoration.environment);
-                                partners.push(valoration.partners);
-                                services.push(valoration.services);
-                                installations.push(valoration.installations);
-                                satisfaction.push(valoration.satisfaction);
-    
-                                totalOpinions++;
+                                if(valoration){
+                                    salary.push(valoration.salary);
+                                    environment.push(valoration.environment);
+                                    partners.push(valoration.partners);
+                                    services.push(valoration.services);
+                                    installations.push(valoration.installations);
+                                    satisfaction.push(valoration.satisfaction);
+        
+                                    totalOpinions++;
+
+                                }
     
                             }
                         });
@@ -702,7 +714,7 @@ class Algorithm {
                 // img + bio + 
                 await db.users.findOne({where:{id}, attributes: ['bio','img','lat','lon']})
                 .then( result => {
-                    if( result && result.dataValues.bio != ''){
+                    if( result && result.dataValues.bio != '' && result.dataValues.bio != 'Here you have a place to define yourself'){
                         // has bio
                         console.log("1- User has bio");
                         points++;
@@ -868,11 +880,9 @@ class Algorithm {
                 }
             );
             if( type ) {
-                console.log("APPLICANT");
                 return 'applicant';
             }
             else{
-                console.log("OFFERER");
                 return 'offerer';
             }
 

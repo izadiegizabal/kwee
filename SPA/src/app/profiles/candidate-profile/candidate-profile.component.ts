@@ -6,7 +6,8 @@ import * as ProfilesActions from '../store/profiles.actions';
 import * as fromProfiles from '../store/profiles.reducers';
 import {ActivatedRoute, Router} from '@angular/router';
 import {environment} from '../../../environments/environment';
-import {Title} from "@angular/platform-browser";
+import {Title} from '@angular/platform-browser';
+import {Location} from '@angular/common';
 
 @Component({
   selector: 'app-candidate-profile',
@@ -98,21 +99,33 @@ export class CandidateProfileComponent implements OnInit {
   };
 
   profilesState: Observable<fromProfiles.State>;
+  // To check if this is my profile
+  mine = false;
 
   constructor(
     private titleService: Title,
     private store$: Store<fromApp.AppState>,
     private activatedRoute: ActivatedRoute,
-    private router: Router) {
+    private router: Router,
+    private location: Location) {
   }
 
   ngOnInit() {
     const params = this.activatedRoute.snapshot.params;
     this.store$.dispatch(new ProfilesActions.TryGetProfileCandidate({id: params.id}));
     this.profilesState = this.store$.pipe(select(state => state.profiles));
+    this.store$.pipe(select(state => state.auth)).subscribe(
+      s => {
+        if (s.user) {
+          this.mine = Number(params.id) === s.user.id;
+        }
+      }
+    );
     this.profilesState.subscribe(s => {
-      this.titleService.setTitle('Kwee - ' + s.candidate.name);
-    })
+      if (s.candidate) {
+        this.titleService.setTitle('Kwee - ' + s.candidate.name);
+      }
+    });
   }
 
   goToMyOffers(tabIndex: number) {
@@ -123,7 +136,7 @@ export class CandidateProfileComponent implements OnInit {
 
   getProfileImg() {
     this.profilesState.subscribe(s => {
-      if (s.candidate.img) {
+      if (s.candidate && s.candidate.img) {
         this.imgPath = environment.apiUrl + 'image/applicants/' + s.candidate.img;
       } else {
         this.imgPath = '../../../../assets/img/defaultProfileImg.png';
@@ -131,5 +144,9 @@ export class CandidateProfileComponent implements OnInit {
     });
 
     return this.imgPath;
+  }
+
+  backClicked() {
+    this.location.back();
   }
 }

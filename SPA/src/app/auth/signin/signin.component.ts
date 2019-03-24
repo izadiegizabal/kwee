@@ -8,10 +8,11 @@ import {filter} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import * as fromAuth from '../store/auth.reducers';
-import {MatDialog} from '@angular/material';
+import {MatDialog, _countGroupLabelsBeforeOption} from '@angular/material';
 import {ResetDialogComponent} from './reset-dialog/reset-dialog.component';
-import {Title} from "@angular/platform-browser";
-import { WebsocketService } from 'src/app/services/websocket.service';
+import {Title} from '@angular/platform-browser';
+import { WebsocketService } from '../../services/websocket.service';
+import { NotificationsService } from '../../services/notifications.service';
 
 
 @Component({
@@ -31,8 +32,9 @@ export class SigninComponent implements OnInit {
     public dialog: MatDialog,
     private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects,
     private router: Router,
-    public wsService: WebsocketService){
-  }
+    public wsService: WebsocketService,
+    public notificationsService: NotificationsService
+    ) { }
 
   ngOnInit() {
     this.titleService.setTitle('Kwee - Sign In');
@@ -59,7 +61,8 @@ export class SigninComponent implements OnInit {
     ).subscribe((res: {
         payload: {
           root: boolean,
-          email: string
+          email: string,
+          notifications: number,
         },
         type: string
       }) => {
@@ -67,7 +70,13 @@ export class SigninComponent implements OnInit {
         if (res.payload.root) {
           this.router.navigate(['/admin']);
         } else {
-          this.router.navigate(['/']);
+          if ( res.payload.notifications > 0 ) {
+            console.log('HAY NOTIFICATIONES: ', res.payload.notifications);
+            // this.notificationsService.newNotification( res.payload.notifications );
+            this.router.navigate(['/notifications']);
+          } else {
+            this.router.navigate(['/']);
+          }
         }
       }
     );

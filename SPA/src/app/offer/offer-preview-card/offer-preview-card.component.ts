@@ -44,7 +44,7 @@ export class OfferPreviewCardComponent implements OnInit {
 
     this.authState = this.store$.pipe(select('auth'));
     this.authState.pipe(
-      select((s: { user: any}) => s.user)
+      select((s: { user: any }) => s.user)
     ).subscribe(
       (user) => {
         // console.log(user);
@@ -60,7 +60,9 @@ export class OfferPreviewCardComponent implements OnInit {
     this.manageOfferEffects.ChangeOfferStatus.pipe(
       filter((action: any) => action.type === OfferManageActions.SET_CHANGE_OFFER_STATUS)
     ).subscribe((next: { payload: any, type: string }) => {
-        this.router.navigate(['/my-offers/' + this.offer.id + '/selection']);
+        if (!this.candidate) {
+          this.router.navigate(['/my-offers/' + this.offer.id + '/selection']);
+        }
       }
     );
   }

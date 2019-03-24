@@ -94,7 +94,7 @@ module.exports = (sequelize, DataTypes) => {
         index: {
             type: DataTypes.INTEGER,
             allowNull: true,
-            defaultValue: 50,
+            defaultValue: 15,
             validate: {
                 isInt: {
                     args: true,

@@ -3,7 +3,7 @@ import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
 import {Observable} from 'rxjs';
 import * as fromAuth from '../../auth/store/auth.reducers';
-import {Title} from "@angular/platform-browser";
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-offer-manage',

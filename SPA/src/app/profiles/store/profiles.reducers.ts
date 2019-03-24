@@ -21,7 +21,7 @@ export interface State {
     applications: string[]
   };
 
-  offerer: {
+  business: {
     address: string,
     cif: string,
     companySize: number,
@@ -44,7 +44,7 @@ export interface State {
 
 const initialState: State = {
   candidate: null,
-  offerer: null,
+  business: null,
 };
 
 export function profilesReducer(state = initialState, action: ProfilesActions.ProfilesActions) {
@@ -54,10 +54,10 @@ export function profilesReducer(state = initialState, action: ProfilesActions.Pr
         ...state,
         candidate: action.payload
       };
-    case ProfilesActions.SET_PROFILE_OFFERER:
+    case ProfilesActions.SET_PROFILE_BUSINESS:
       return {
         ...state,
-        offerer: action.payload
+        business: action.payload
       };
     default:
       return state;

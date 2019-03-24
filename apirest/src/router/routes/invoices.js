@@ -1,5 +1,5 @@
 const { checkToken, checkAdmin } = require('../../middlewares/authentication');
-const { logger } = require('../../shared/functions');
+const { logger, tokenId } = require('../../shared/functions');
 
 // =======================================
 // ======== CRUD invoices =========
@@ -71,15 +71,21 @@ module.exports = (app, db) => {
     });
 
     // POST single invoice
-    app.post('/invoice', [checkToken, checkAdmin], async(req, res, next) => {
+    app.post('/invoice', async(req, res, next) => {
         const body = req.body;
 
         try {
+            let id = tokenId.getTokenId(req.get('token'));
+            let user = await db.users.findOne({ where: { id } });
+
             let invoice = await db.invoices.create({
-                fk_application: body.fk_application,
+                fk_user: id, 
+                userName: user.name,
+                product: body.product,
+                price: body.price
             });
 
-            if (invoice) {
+            if ( invoice ) {
                 res.status(201).json({
                     ok: true,
                     message: `Invoice with id ${invoice.id} has been created.`
@@ -98,16 +104,12 @@ module.exports = (app, db) => {
         const updates = req.body;
 
         try {
-            res.status(200).json({
+            return res.status(200).json({
                 ok: true,
                 invoice: await db.invoices.update(updates, {
                     where: { id }
                 })
             });
-            // json
-            // invoice: [1] -> Updated
-            // invoice: [0] -> Not updated
-            // empty body will change 'updateAt'
         } catch (err) {
             next({ type: 'error', error: err.errors[0].message });
         }
@@ -119,15 +121,12 @@ module.exports = (app, db) => {
         const id = req.params.id;
 
         try {
-            res.json({
+            return res.json({
                 ok: true,
                 invoice: await db.invoices.destroy({
                     where: { id: id }
                 })
             });
-            // Respuestas en json
-            // invoice: 1 -> Deleted
-            // invoice: 0 -> User don't exists
         } catch (err) {
             next({ type: 'error', error: 'Error getting data' });
         }

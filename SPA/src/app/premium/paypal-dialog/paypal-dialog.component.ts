@@ -6,7 +6,9 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 
 
 export interface DialogData {
-  type: string;
+  header: string;
+  product: string;
+  price: string;
 }
 
 @Component({
@@ -16,12 +18,18 @@ export interface DialogData {
 })
 export class PaypalDialogComponent implements OnInit {
 
+  pay = 0;
+  priceN: any;
+
   public payPalConfig?: PayPalConfig;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: DialogData, public dialogRef: MatDialogRef<DialogData>) { }
+  constructor(@Inject(MAT_DIALOG_DATA) public data: DialogData, public dialogRef: MatDialogRef<DialogData>) {
+  }
 
   ngOnInit(): void {
     this.initConfig();
+    const aux = this.data.price.split('€');
+    this.priceN = parseFloat(aux[0]);
   }
 
   private initConfig(): void {
@@ -44,12 +52,15 @@ export class PaypalDialogComponent implements OnInit {
         },
         onPaymentComplete: (data, actions) => {
           console.log('OnPaymentComplete');
+          this.pay = 1;
         },
         onCancel: (data, actions) => {
           console.log('OnCancel');
+          this.pay = 2;
         },
         onError: err => {
           console.log('OnError');
+          this.pay = 2;
         },
         onClick: () => {
           console.log('onClick');
@@ -64,12 +75,12 @@ export class PaypalDialogComponent implements OnInit {
         transactions: [
           {
             amount: {
-              total: 30.11,
+              total: 5.99,
               currency: 'EUR',
               details: {
-                subtotal: 30.00,
+                subtotal: 5.90,
                 tax: 0.07,
-                shipping: 0.03,
+                shipping: 0.01,
                 handling_fee: 1.00,
                 shipping_discount: -1.00,
                 insurance: 0.01
@@ -79,33 +90,14 @@ export class PaypalDialogComponent implements OnInit {
             item_list: {
               items: [
                 {
-                  name: 'hat',
-                  description: 'Brown hat.',
-                  quantity: 5,
-                  price: 3,
-                  tax: 0.01,
+                  name: this.data.product,
+                  description: this.data.product,
+                  quantity: 1,
+                  price: 5.90,
+                  tax: 0.07,
                   sku: '1',
                   currency: 'EUR'
-                },
-                {
-                  name: 'handbag',
-                  description: 'Black handbag.',
-                  quantity: 1,
-                  price: 15,
-                  tax: 0.02,
-                  sku: 'product34',
-                  currency: 'EUR'
                 }],
-              shipping_address: {
-                recipient_name: 'Brian Robinson',
-                line1: '4th Floor',
-                line2: 'Unit #34',
-                city: 'San Jose',
-                country_code: 'US',
-                postal_code: '95131',
-                phone: '011862212345678',
-                state: 'CA'
-              },
             },
           }
         ],
@@ -113,4 +105,5 @@ export class PaypalDialogComponent implements OnInit {
       }
     );
   }
+
 }

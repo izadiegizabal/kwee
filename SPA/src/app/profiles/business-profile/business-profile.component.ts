@@ -1,6 +1,13 @@
 import {Component, OnInit} from '@angular/core';
-import {Router} from '@angular/router';
-import {Title} from "@angular/platform-browser";
+import {ActivatedRoute, Router} from '@angular/router';
+import {Title} from '@angular/platform-browser';
+import {Location} from '@angular/common';
+import {Observable} from 'rxjs';
+import * as fromProfiles from '../store/profiles.reducers';
+import {select, Store} from '@ngrx/store';
+import * as fromApp from '../../store/app.reducers';
+import * as ProfilesActions from '../store/profiles.actions';
+import {environment} from '../../../environments/environment';
 
 @Component({
   selector: 'app-business-profile',
@@ -34,19 +41,52 @@ export class BusinessProfileComponent implements OnInit {
     github: 'Facebook'
   };
 
+  profilesState: Observable<fromProfiles.State>;
+  mine = false;
+
   constructor(
     private titleService: Title,
-    private router: Router
+    private store$: Store<fromApp.AppState>,
+    private activatedRoute: ActivatedRoute,
+    private router: Router,
+    private location: Location
   ) {
   }
 
   ngOnInit() {
-    this.titleService.setTitle('Kwee - ' + this.business.name);
+    const params = this.activatedRoute.snapshot.params;
+    this.store$.dispatch(new ProfilesActions.TryGetProfileBusiness({id: params.id}));
+    this.profilesState = this.store$.pipe(select(state => state.profiles));
+    this.store$.pipe(select(state => state.auth)).subscribe(
+      s => {
+        if (s.user) {
+          this.mine = Number(params.id) === s.user.id;
+        }
+      }
+    );
+
+    this.profilesState.subscribe(s => {
+      if (s.business) {
+        this.titleService.setTitle('Kwee - ' + s.business.name);
+      }
+    });
   }
 
   goToMyOffers(tabIndex: number) {
     if (tabIndex && tabIndex === 2) {
       this.router.navigate(['/my-offers']);
+    }
+  }
+
+  backClicked() {
+    this.location.back();
+  }
+
+  getImg(img: string) {
+    if (img) {
+      return environment.apiUrl + 'image/offerers/' + img;
+    } else {
+      return this.business.img;
     }
   }
 }

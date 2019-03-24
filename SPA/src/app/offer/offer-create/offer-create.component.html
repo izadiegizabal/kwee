@@ -3,15 +3,9 @@
     <h2>Publish a new offer</h2>
   </div>
 
-  <mat-sidenav-container
-    fxLayout="column">
-
-    <mat-sidenav-content
-      fxLayout="column"
-      fxLayoutAlign="start center"
-      fxLayoutGap="16px" fxLayoutGap.gt-sm="32px">
-
-      <form [formGroup]="form">
+      <form [formGroup]="form" fxLayout="column"
+            fxLayoutAlign="start center"
+            fxLayoutGap="16px" fxLayoutGap.gt-sm="32px">
         <mat-horizontal-stepper #stepper linear="true">
           <mat-step>
             <ng-template matStepLabel>Describe your offer</ng-template>
@@ -288,6 +282,4 @@
         </mat-horizontal-stepper>
       </form>
 
-    </mat-sidenav-content>
-  </mat-sidenav-container>
 </div>
