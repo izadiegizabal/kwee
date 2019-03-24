@@ -183,7 +183,7 @@ module.exports = (app, db) => {
                             await db.applications.update({oHasRated: 1}, {
                                 where: { id: fk_application }
                             });
-                            await algorithm.indexUpdate(id);
+                            await algorithm.indexUpdate(application.fk_applicant);
                             
                             
                             return res.status(201).json({

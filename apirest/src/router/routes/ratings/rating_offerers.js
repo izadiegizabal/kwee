@@ -180,7 +180,10 @@ module.exports = (app, db) => {
                             await db.applications.update({aHasRated: 1}, {
                                 where: { id: fk_application }
                             });
-                            await algorithm.indexUpdate(id);
+
+                            let offerer=await db.offers.findOne({where:{id:application.fk_offer}, attributes: ['fk_offerer']})
+
+                            await algorithm.indexUpdate(offerer.id);
                             
                             
                             return res.status(201).json({
@@ -251,7 +254,9 @@ module.exports = (app, db) => {
                     });
                     
                     if (updated) {
-                        await algorithm.indexUpdate(id);
+                        let offerer=await db.offers.findOne({where:{id:application.fk_offer}, attributes: ['fk_offerer']})
+
+                        await algorithm.indexUpdate(offerer.id);
                         
                         return res.status(200).json({
                             ok: true,
@@ -291,7 +296,10 @@ module.exports = (app, db) => {
 
                     await db.rating_offerers.destroy({ where: { ratingId } });
                     await db.ratings.destroy({ where: { id: ratingId } });
-                    await algorithm.indexUpdate(id);
+                    
+                    let offerer=await db.offers.findOne({where:{id:application.fk_offer}, attributes: ['fk_offerer']})
+                    await algorithm.indexUpdate(offerer.id);
+                    
                     
                     return res.json({
                         ok: true,

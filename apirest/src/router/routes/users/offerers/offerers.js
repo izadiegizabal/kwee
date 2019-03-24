@@ -432,6 +432,7 @@ module.exports = (app, db) => {
                                 body.companySize = 0;
                                 body.year = null;
                                 body.dateVerification = null;
+                                
                                 elastic.index({
                                     index: 'offerers',
                                     type: 'offerer',
@@ -442,8 +443,8 @@ module.exports = (app, db) => {
                                         console.log(err.message);
                                     }
                                 });
-                                // await algorithm.indexUpdate(ending.userId);
-
+                                
+                                
                                 return res.status(201).json({
                                     ok: true,
                                     message: `Offerer with id ${ending.userId} has been created.`

@@ -1,8 +1,6 @@
-const { tokenId, logger, sendEmailSelected } = require('../../shared/functions');
-const { checkToken, checkAdmin } = require('../../middlewares/authentication');
-const { usersConnected } = require('../../middlewares/sockets');
+const { tokenId, logger, sendEmailSelected, sendNotification, getSocketUserId, createNotification, } = require('../../shared/functions');
+const { checkToken } = require('../../middlewares/authentication');
 const { algorithm } = require('../../shared/algorithm');
-const io = require('../../database/sockets');
 
 // ============================
 // ===== CRUD application ======
@@ -121,29 +119,17 @@ module.exports = (app, db) => {
                                         application: result[0][0]
                                     });
                                 } else {
-                                    return res.status(400).json({
-                                        ok: false,
-                                        message: "You already applicated to this offer."
-                                    });
+                                    return next({ type: 'error', error: "You already applicated to this offer." });
                                 }
                         } else {
-                            return res.status(400).json({
-                                ok: false,
-                                message: "Application not added."
-                            });
+                            return next({ type: 'error', error: "Application not added." });
                         }
                     });
                 } else {
-                    return res.status(400).json({
-                        ok: false,
-                        message: "Sorry, this offers does not exists"
-                    });
+                    return next({ type: 'error', error: "Sorry, this offers does not exists" });
                 }
             } else {
-                return res.status(400).json({
-                    ok: false,
-                    message: "Sorry, you are not applicant"
-                });
+                return next({ type: 'error', error: "Sorry, you are not applicant" });
             }
         } catch (err) {
             return next({ type: 'error', error: err.toString() });
@@ -162,73 +148,64 @@ module.exports = (app, db) => {
             let application = await db.applications.findOne({where: { id }});
             let applicant = await db.applicants.findOne({where: { userId: user }});
 
-            if ( applicant ) {
-                // applicants only may update to status 3 and 4 
-                //(accept or refuse application when is selected)
-                if ( status == 3 || status == 4 ) {
-                    if ( application.status == 2 ){
-                        if ( applicant.userId == application.fk_applicant ) {
-                            await db.applications.update({status}, {
-                                where: { id }
-                            });
-                            await algorithm.indexUpdate(user);
+            if( application ) {
 
-                            return res.status(201).json({
-                                ok: true,
-                                message: "Application updated to status " + status
-                            });
+                if ( applicant ) {
+                    // applicants only may update to status 3 and 4 
+                    //(accept or refuse application when is selected)
+                    if ( status == 3 || status == 4 ) {
+                        if ( application.status == 2 || application.status == 3 ){
+                            if ( applicant.userId == application.fk_applicant ) {
+                                await db.applications.update({status}, {
+                                    where: { id }
+                                });
+                                
+                                notifyOfferer(applicant, application, id, status, res);
+                                
+                                await algorithm.indexUpdate(user);
+                                
+                                return res.status(201).json({
+                                    ok: true,
+                                    message: "Application updated to status " + status
+                                });
+                            } else {
+                                return next({ type: 'error', error: "Unauthorized to update applications of other user" });
+                            }
                         } else {
-                            return res.status(401).json({
-                                ok: false,
-                                message: "Unauthorized to update applications of other user"
-                            });
+                            return next({ type: 'error', error: "You are not selected!" });
                         }
                     } else {
-                        return res.status(401).json({
-                            ok: false,
-                            message: "You are not selected!"
-                        });
+                        return next({ type: 'error', error: "Unauthorized action" });
                     }
                 } else {
-                    return res.status(401).json({
-                        ok: false,
-                        message: "Unauthorized action"
-                    });
-                }
-            } else {
-                let offerer = await db.offerers.findOne({where: { userId: user }});
-                if ( offerer ) {
-                    let offers = await offerer.getOffers();
+                    let offerer = await db.offerers.findOne({where: { userId: user }});
+                    if ( offerer ) {
+                        let offers = await offerer.getOffers();
+                        let offerToUpdate = offers.find(offer => offer.id == application.fk_offer);
 
-                    let offerToUpdate = offers.map(offer => offer.id == application.fk_offer);
-
-                    if ( offerToUpdate ) {
-                        await db.applications.update({status}, {
-                            where: { id }
-                        });
-                        if ( status == 2 ) {
-                            //Send mail selected
-                            let user = await db.users.findOne({where: { id: application.fk_applicant }});
-                            let socketUsers = usersConnected.getList();
-                            sendEmailSelected(user, res, application.fk_offer);
-                            // Send notification to client
-                            let payload = {
-                                selected: true,
-                                applicationId: application.id,
-                                offerId: application.fk_offer
+                        if ( offerToUpdate ) {
+                            if ( offerToUpdate.id == application.fk_offer ) {
+                                await db.applications.update({status}, {
+                                    where: { id }
+                                });
+                                notifyApplicant(offerer, application, id, status, res);
+                                await algorithm.indexUpdate(user);
+                                return res.status(201).json({
+                                    ok: true,
+                                    message: "Application updated to status " + status
+                                });
+                            } else {
+                                return next({ type: 'error', error: "Unauthorized to update applications of other user" });
                             }
-                            socketUsers = socketUsers.find(element => element.email === user.email);                            
-                            io.in(socketUsers.id).emit('selected', payload);
+                        } else {
+                            return next({ type: 'error', error: "Unauthorized to update applications of other user" });
                         }
-                        await algorithm.indexUpdate(user);
-                        return res.status(201).json({
-                            ok: true,
-                            message: "Application updated to status " + status
-                        });
                     }
                 }
+            } else {
+                return next({ type: 'error', error: "This application does not exist" });
             }
-            
+                
         } catch (err) {
             return next({ type: 'error', error: err.toString() });
         }
@@ -264,10 +241,7 @@ module.exports = (app, db) => {
                             message: 'Application deleted' 
                         });
                     } else {
-                        return res.status(400).json({
-                            ok: false,
-                            message: "Sorry, this is not your application"
-                        });
+                        return next({ type: 'error', error: "Sorry, this is not your application" });
                     }
                 } else {
                     let offerer = await db.offerers.findOne({
@@ -287,22 +261,79 @@ module.exports = (app, db) => {
                                 message: 'Application deleted' 
                             });
                         } else {
-                            return res.status(400).json({
-                                ok: false,
-                                message: "Sorry, this is not your application"
-                            });
+                            return next({ type: 'error', error: "Sorry, this is not your application" });
                         }
                     }
                 }
             } else {
-                return res.status(400).json({
-                    ok: false,
-                    message: "This application does not exists"
-                });
+                return next({ type: 'error', error: "This application does not exists" });
             }
         } catch (err) {
             return next({ type: 'error', error: err.message });
         }
 
     });
+
+    async function getOffererOfApplication( application ) {
+
+        let offerers = await db.offerers.findAll();
+        let offer = await db.offers.findOne({ where: { id: application.fk_offer }});
+        let offerer = offerers.find( offerer => offerer.userId === offer.fk_offerer );
+        
+        return offerer;
+    }
+
+    async function notifyOfferer(applicant, application, id, status, res) {
+        let offerer = await getOffererOfApplication(application);
+        let user = await db.users.findOne({where: { id: offerer.userId }});
+        let socketId = getSocketUserId(user.email);
+
+        switch ( status ) {
+            case 3:
+                // Accepted
+                // Create notification in BD
+                createNotification(db, user.id, applicant.userId, 'applications', id, 'accepted', true);
+                // Send real time notification if client connected
+                if ( socketId ) sendNotification('accepted', socketId, application, true);
+              break;
+            case 4:
+                // Refused
+                // Create notification in BD
+                createNotification(db, user.id, applicant.userId, 'applications', id, 'accepted', false);
+                // Send real time notification if client connected
+                if ( socketId ) sendNotification('accepted', socketId, application, false);
+                
+        }
+    }
+    
+    async function notifyApplicant(offerer, application, id, status, res) {
+        
+        let user = await db.users.findOne({where: { id: application.fk_applicant }});
+        let socketId = getSocketUserId(user.email)
+
+        switch ( status ) {
+            case 1: 
+                // Fav
+                // Create notification in BD
+                createNotification(db, user.id, offerer.userId, 'applications', id, 'fav', true);
+                // Send real time notification if client connected
+                if ( socketId ) sendNotification('fav', socketId, application, true);
+              break;
+            case 2:
+                // Selected
+                // Create notification in BD
+                createNotification(db, user.id, offerer.userId, 'applications', id, 'selected', true);
+                sendEmailSelected(user, res, application.fk_offer);
+                // Send real time notification if client connected
+                if ( socketId ) sendNotification('selected', socketId, application, true);
+              break;
+            case 5:
+                // Closed
+                // Create notification in BD
+                createNotification(db, user.id, offerer.userId, 'applications', id, 'closed', true);
+                // Send real time notification if client connected
+                if ( socketId ) sendNotification('closed', socketId, application, true);
+        }
+    }
+
 };
