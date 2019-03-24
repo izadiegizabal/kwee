@@ -5,9 +5,10 @@ import {select, Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
 import * as fromAuth from '../../../auth/store/auth.reducers';
 import {getUrlfiedString} from '../../../shared/utils.service';
-import { MessagesService } from 'src/app/services/messages.service';
-import { WebsocketService } from 'src/app/services/websocket.service';
-import { NotificationsService } from 'src/app/services/notifications.service';
+import { MessagesService } from '../../../services/messages.service';
+import { WebsocketService } from '../../../services/websocket.service';
+import { NotificationsService } from '../../../services/notifications.service';
+import { _countGroupLabelsBeforeOption } from '@angular/material';
 
 @Component({
   selector: 'app-user-menu',
@@ -47,11 +48,13 @@ export class UserMenuComponent implements OnInit {
         }
       });
     this.messageService.getSelected().subscribe( msg => {
-      console.log('selected!', msg);
       this.numNotifications++;
       this.notification = true;
     });
     this.notificationsService.newNotification$.subscribe((data) => {
+      if ( data > 0 ) {
+        this.notification = true;
+      }
       this.numNotifications = data;
     });
     this.notificationsService.notificationAlert$.subscribe((value) => {

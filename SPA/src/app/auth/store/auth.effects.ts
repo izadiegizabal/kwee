@@ -31,6 +31,7 @@ export class AuthEffects {
               name: string
               type: string
               lastAccess: Date
+              notifications: number
             }
           }) => {
             switch (res.data.type) {
@@ -56,7 +57,8 @@ export class AuthEffects {
                   email: res.data.email,
                   id: res.data.id,
                   name: res.data.name,
-                  type: res.data.type
+                  type: res.data.type,
+                  notifications: res.data.notifications
                 }
               }
             ];
