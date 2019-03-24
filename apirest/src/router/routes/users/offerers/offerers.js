@@ -386,6 +386,9 @@ module.exports = (app, db) => {
                     lastAccess: user.lastAccess,
                     status: user.status,
                     img: user.img,
+                    bio: user.bio,
+                    lat: user.lat,
+                    lon: user.lon,
                     social_networks: []
                 };
 
