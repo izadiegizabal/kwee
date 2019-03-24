@@ -362,8 +362,8 @@ export class OfferCreateComponent implements OnInit {
   }
 
   disableDuration() {
-    document.getElementById(`dnum`).setAttribute('disabled', 'true');
-    document.getElementById(`dtime`).setAttribute('disabled', 'true');
+    // document.getElementById(`dnum`).setAttribute('disabled', 'true');
+    // document.getElementById(`dtime`).setAttribute('disabled', 'true');
     this.form.get('duration').setValue(null);
     this.form.get('durationUnit').setValue(null);
     this.form.get('durationUnit').disable();

@@ -152,7 +152,7 @@ export class OfferManageEffects {
               console.log(res);
               return {
                 type: OfferManageActions.SET_CHANGE_OFFER_STATUS,
-                payload: { offerId: payload.offerId, newStatus: payload.newStatus },
+                payload: {offerId: payload.offerId, newStatus: payload.newStatus},
               };
             } else {
               return [
@@ -257,23 +257,20 @@ export class OfferManageEffects {
               // If change okay get all the candidates
               if (payload.refresh) {
                 this.refreshCandidates();
-
-                return {
+              } else {
+                this.store$.dispatch(new OfferManageActions
+                  .TryGetOffersApplicant({
+                    id: payload.candidateId,
+                    page: 1,
+                    limit: 10,
+                    status: payload.refreshStatus
+                  }));
+              }
+              return {
                   type: OfferManageActions.SET_CHANGE_APPLICATION_STATUS,
                   payload: {status: payload.status, candidateId: payload.candidateId},
                 };
-              } else {
-                return [
-                  {
-                    type: OfferManageActions.SET_CHANGE_APPLICATION_STATUS,
-                    payload: {status: payload.status, candidateId: payload.candidateId},
-                  },
-                  {
-                    type: OfferManageActions.TRY_GET_OFFERS_APPLICANT,
-                    payload: { id: payload.candidateId, page: 0, limit: 10, status: payload.refreshStatus },
-                  }
-                ];
-              }
+
             } else {
               return [
                 {
