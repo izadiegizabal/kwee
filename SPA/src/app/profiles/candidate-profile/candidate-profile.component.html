@@ -1,4 +1,4 @@
-<div fxLayout="column" fxLayoutGap="16px" *ngIf="(profilesState | async).candidate">
+<div fxLayout="column" fxLayoutGap="16px" *ngIf="(profilesState | async).candidate" style="padding-bottom: 32px">
   <div fxLayout="row">
     <button mat-icon-button
             (click)="backClicked()"
@@ -49,7 +49,9 @@
             <button
               *ngIf="!mine"
               color="primary"
+              (click)="contactUser()"
               mat-raised-button>
+              <mat-icon svgIcon="chat" style="margin-right: 8px"></mat-icon>
               Contact
             </button>
           </mat-card-actions>

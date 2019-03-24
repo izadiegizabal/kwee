@@ -101,6 +101,7 @@ export class CandidateProfileComponent implements OnInit {
   profilesState: Observable<fromProfiles.State>;
   // To check if this is my profile
   mine = false;
+  private cand: any;
 
   constructor(
     private titleService: Title,
@@ -123,7 +124,8 @@ export class CandidateProfileComponent implements OnInit {
     );
     this.profilesState.subscribe(s => {
       if (s.candidate) {
-        this.titleService.setTitle('Kwee - ' + s.candidate.name);
+        this.cand = s.candidate;
+        this.titleService.setTitle('Kwee - ' + this.cand.name);
       }
     });
   }
@@ -135,18 +137,23 @@ export class CandidateProfileComponent implements OnInit {
   }
 
   getProfileImg() {
-    this.profilesState.subscribe(s => {
-      if (s.candidate && s.candidate.img) {
-        this.imgPath = environment.apiUrl + 'image/applicants/' + s.candidate.img;
-      } else {
-        this.imgPath = '../../../../assets/img/defaultProfileImg.png';
-      }
-    });
+    if (this.cand && this.cand.img) {
+      this.imgPath = environment.apiUrl + 'image/applicants/' + this.cand.img;
+    } else {
+      this.imgPath = '../../../../assets/img/defaultProfileImg.png';
+    }
 
     return this.imgPath;
   }
 
   backClicked() {
     this.location.back();
+  }
+
+  contactUser() {
+    if (this.cand.email) {
+      const href = 'mailto:' + this.cand.email + '?subject=Enquiry about your Kwee Profile';
+      location.href = href;
+    }
   }
 }

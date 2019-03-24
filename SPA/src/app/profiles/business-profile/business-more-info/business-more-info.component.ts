@@ -42,7 +42,7 @@ export class BusinessMoreInfoComponent implements OnInit {
 
   getSize() {
     let size = 'Information not available.';
-    switch (Number(this.business.size)) {
+    switch (Number(this.business.companySize)) {
       case 10:
         size = 'Less than 10 people.';
         break;
