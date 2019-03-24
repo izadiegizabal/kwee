@@ -26,15 +26,16 @@ const routes: Routes = [
     loadChildren: './offer/offer-manage/offer-manage.module#OfferManageModule',
     canActivate: [AuthTokenGuard]
   },
-  {path: 'offer/:id/:name', component: OfferDetailComponent},
-  { // TODO: canActivate -> Business & Admin
-    path: 'offer/create',
-    loadChildren: './offer/offer-create/offer-create.module#OfferCreateModule'
-  },
   { // TODO: canActivate -> Offer Owner & Admin
     path: 'offer/:id/edit',
     loadChildren: './offer/offer-create/offer-create.module#OfferCreateModule'
   },
+  { // TODO: canActivate -> Business & Admin
+    path: 'offer/create',
+    loadChildren: './offer/offer-create/offer-create.module#OfferCreateModule'
+  },
+  {path: 'offer/:id/:name', component: OfferDetailComponent},
+
   // DIRECTORIES
   {
     path: 'search-businesses',

@@ -21,7 +21,7 @@ import {
   SeniorityLevel,
   WorkLocationType
 } from '../../../models/Offer.model';
-import {Title} from "@angular/platform-browser";
+import {Title} from '@angular/platform-browser';
 
 
 interface City {
@@ -362,8 +362,8 @@ export class OfferCreateComponent implements OnInit {
   }
 
   disableDuration() {
-    document.getElementById(`dnum`).setAttribute('disabled', 'true');
-    document.getElementById(`dtime`).setAttribute('disabled', 'true');
+    // document.getElementById(`dnum`).setAttribute('disabled', 'true');
+    // document.getElementById(`dtime`).setAttribute('disabled', 'true');
     this.form.get('duration').setValue(null);
     this.form.get('durationUnit').setValue(null);
     this.form.get('durationUnit').disable();
