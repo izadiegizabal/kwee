@@ -1,12 +1,14 @@
-const auth          = require('../middlewares/auth/auth');
-const env           = require('../tools/constants.js');
-const Log           = require('../models/logs');
-const elastic       = require('../database/elasticsearch')
-const jwt           = require('jsonwebtoken');
-const nodemailer    = require('nodemailer');
-const moment        = require('moment');
-const path          = require('path');
-const fs            = require('fs');
+const elastic            = require('../database/elasticsearch');
+const auth               = require('../middlewares/auth/auth');
+const { usersConnected } = require('../middlewares/sockets');
+const env                = require('../tools/constants.js');
+const io                 = require('../database/sockets');
+const Log                = require('../models/logs');
+const jwt                = require('jsonwebtoken');
+const nodemailer         = require('nodemailer');
+const moment             = require('moment');
+const path               = require('path');
+const fs                 = require('fs');
 
 
 
@@ -529,6 +531,32 @@ function saveLogES(action, actionToRoute, user){
     });
 }
 
+function sendNotification( route, id, object, bool ) {
+    let payload = {
+        selected: bool,
+        applicationId: object.id,
+        offerId: object.fk_offer
+    }
+    io.in(id).emit(route, payload);
+}
+
+function getSocketUserId( email ) {
+    let socketUsers = usersConnected.getList();
+    socketUsers = socketUsers.find(element => element.email === email);
+    return socketUsers ? socketUsers.id : null;
+}
+
+async function createNotification( db, to, from, type, idTable, notification, status ) {
+    await db.notifications.create({
+        to,
+        from,
+        type,
+        idTable,
+        notification,
+        status
+    });
+}
+
 
 module.exports = {
     tokenId,
@@ -545,5 +573,8 @@ module.exports = {
     deleteFile,
     prepareOffersToShow,
     isEmpty,
-    saveLogES
+    saveLogES,
+    sendNotification,
+    getSocketUserId,
+    createNotification
 }

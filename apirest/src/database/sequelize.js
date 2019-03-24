@@ -42,6 +42,7 @@ db.rating_applicants = require('../models/ratings/rating_applicants')(sequelize,
 db.rating_offerers = require('../models/ratings/rating_offerers')(sequelize, Sequelize);
 db.comments = require('../models/comments')(sequelize, Sequelize);
 db.applications = require('../models/applications')(sequelize, Sequelize);
+db.notifications = require('../models/notifications')(sequelize, Sequelize);
 
 /* Relations */
 // Heredity
@@ -83,7 +84,7 @@ db.languages.belongsToMany(db.applicants, { through: 'applicant_languages', fore
 // 1:1
 db.social_networks.belongsTo(db.users);
 
-db.applications.hasOne(db.invoices, { foreignKey: 'fk_application' });
+db.users.hasOne(db.invoices, { foreignKey: 'fk_user' });
 
 db.applications.hasOne(db.ratings, { foreignKey: 'fk_application' });
 

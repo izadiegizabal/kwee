@@ -43,6 +43,10 @@ module.exports = (app, db) => {
 
             delete userUpdated.dataValues.password;
 
+            let notifications = await db.notifications.findAll({ where: { to: id, readed: false }});
+
+            notifications ? notifications = notifications.length : notifications = 0;
+
             let token = auth.auth.encode(userUpdated);
             logger.updateLog(logId, true, id);
 
@@ -71,6 +75,7 @@ module.exports = (app, db) => {
                     lastAccess: userUpdated.lastAccess,
                     index: userUpdated.index,
                     status: userUpdated.status,
+                    notifications,
                     type
                 },
                 token

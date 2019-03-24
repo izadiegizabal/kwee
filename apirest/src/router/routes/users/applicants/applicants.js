@@ -501,7 +501,7 @@ module.exports = (app, db) => {
                 }
                 
                 body.bio ? user.bio = body.bio : null;
-                body.index ? user.index = body.index : null;
+                delete body.index;
                 applicantuser = await db.users.update(user, {
                     where: { id }
                 })
@@ -539,6 +539,8 @@ module.exports = (app, db) => {
                         });
                     });
                 });
+            } else {
+                return next({ type: 'error', error: 'You are not applicant' });
             }
         } catch (err) {
             deleteFile('uploads/applicants/' + user.img);
