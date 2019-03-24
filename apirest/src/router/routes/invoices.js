@@ -1,4 +1,4 @@
-const { checkToken, checkAdmin } = require('../../middlewares/authentication');
+const { checkAdmin } = require('../../middlewares/authentication');
 const { logger, tokenId } = require('../../shared/functions');
 
 // =======================================
@@ -8,7 +8,7 @@ const { logger, tokenId } = require('../../shared/functions');
 module.exports = (app, db) => {
 
     // GET all invoices
-    app.get('/invoices', checkToken, async(req, res, next) => {
+    app.get('/invoices', async(req, res, next) => {
         try {
             await logger.saveLog('GET', 'invoices', null, res);
 
@@ -16,6 +16,26 @@ module.exports = (app, db) => {
                 ok: true,
                 invoices: await db.invoices.findAll()
             });
+        } catch (err) {
+            next({ type: 'error', error: 'Error getting data' });
+        }
+    });
+
+    app.get('/invoices/user/:id([0-9]+)', async(req, res, next) => {
+        const id = req.params.id;
+        try {
+            await logger.saveLog('GET', 'invoices', null, res);
+            let invoices = await db.invoices.findAll({where: {fk_user: id}})
+
+            if ( invoices ) {   
+                return res.status(200).json({
+                    ok: true,
+                    message: 'Listing all invoices',
+                    data: invoices
+                });
+            } else {
+                return next({ type: 'error', error: 'No invoices' });
+            }
         } catch (err) {
             next({ type: 'error', error: 'Error getting data' });
         }
@@ -56,7 +76,7 @@ module.exports = (app, db) => {
     });
 
     // GET one invoice by id
-    app.get('/invoice/:id([0-9]+)', checkToken, async(req, res, next) => {
+    app.get('/invoice/:id([0-9]+)', async(req, res, next) => {
         const id = req.params.id;
 
         try {
@@ -99,7 +119,7 @@ module.exports = (app, db) => {
     });
 
     // PUT single invoice
-    app.put('/invoice/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
+    app.put('/invoice/:id([0-9]+)',  checkAdmin, async(req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
 
@@ -117,7 +137,7 @@ module.exports = (app, db) => {
     });
 
     // DELETE single invoice
-    app.delete('/invoice/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
+    app.delete('/invoice/:id([0-9]+)',  checkAdmin, async(req, res, next) => {
         const id = req.params.id;
 
         try {

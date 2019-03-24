@@ -304,8 +304,10 @@ module.exports = (app, db) => {
                         applicantShow.applicationId = a.id;
                         applicantShow.applicationStatus = a.status;
                         applicantShow.aHasRated = a.aHasRated;
+                        applicantShow.oHasRated = a.oHasRated;
                         applicantShow.applicantId = applicantUser.id;
                         applicantShow.applicantName = applicantUser.name;
+                        applicantShow.applicantIndex = applicantUser.index;
                         applicantShow.applicantStatus = applicantUser.status;
 
                         offer.applications.push(applicantShow);
