@@ -28,7 +28,10 @@ export class ProfilesEffects {
             message: any[],
             data: any[],
           }) => {
-            console.log(res);
+            // console.log(res);
+            if (!res.data) {
+              this.router.navigate(['error/404']);
+            }
             return {
               type: UserActions.SET_PROFILE_CANDIDATE,
               payload: res.data,
@@ -50,9 +53,9 @@ export class ProfilesEffects {
   );
 
   @Effect()
-  profileGetOfferer = this.actions$.pipe(
-    ofType(UserActions.TRY_GET_PROFILE_OFFERER),
-    map((action: UserActions.TryGetProfileOfferer) => {
+  profileGetBusiness = this.actions$.pipe(
+    ofType(UserActions.TRY_GET_PROFILE_BUSINESS),
+    map((action: UserActions.TryGetProfileBusiness) => {
       return action.payload;
     }),
     switchMap((payload) => {
@@ -65,14 +68,17 @@ export class ProfilesEffects {
             message: any[],
             data: any[],
           }) => {
-            console.log(res);
+            // console.log(res);
+            if (!res.data) {
+              this.router.navigate(['error/404']);
+            }
             return {
-              type: UserActions.SET_PROFILE_OFFERER,
+              type: UserActions.SET_PROFILE_BUSINESS,
               payload: res.data,
             };
           }),
           catchError((err: HttpErrorResponse) => {
-            throwError(this.handleError('getProfileOfferer', err));
+            throwError(this.handleError('getProfileBusiness', err));
             return [
               {
                 type: UserActions.OPERATION_ERROR,

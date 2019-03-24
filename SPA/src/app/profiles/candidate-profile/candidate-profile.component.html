@@ -1,4 +1,4 @@
-<div fxLayout="column" fxLayoutGap="16px">
+<div fxLayout="column" fxLayoutGap="16px" *ngIf="(profilesState | async).candidate">
   <div fxLayout="row">
     <button mat-icon-button
             (click)="backClicked()"
@@ -14,11 +14,11 @@
       <div fxLayout="row" fxLayout.lt-sm="column"
            fxLayoutGap.lt-sm="16px">
         <!-- Basic info -->
-        <mat-card fxFlex="70">
+        <mat-card [fxFlex]="mine ? 70 : 100">
           <mat-card-title>
             <app-offerer-name-overview
-              [index]="(profilesState | async).candidate.index"
-              [name]="(profilesState | async).candidate.name"
+              [index]="(profilesState | async).candidate.index ? (profilesState | async).candidate.index : candidate.kweeIndex"
+              [name]="(profilesState | async).candidate.name ? (profilesState | async).candidate.name : candidate.name"
               size="title">
             </app-offerer-name-overview>
           </mat-card-title>
@@ -41,15 +41,23 @@
           </mat-card-content>
           <mat-card-actions fxLayoutAlign="end end">
             <button
+              *ngIf="mine"
               color="accent"
               mat-button>
               Edit
+            </button>
+            <button
+              *ngIf="!mine"
+              color="primary"
+              mat-raised-button>
+              Contact
             </button>
           </mat-card-actions>
         </mat-card>
 
         <!-- Premium info -->
         <mat-card
+          *ngIf="mine"
           fxFlex="30" fxFlexOffset.gt-xs="32px">
           <mat-card-subtitle style="text-align: center">Active account type:</mat-card-subtitle>
           <mat-card-title style="text-align: center">
