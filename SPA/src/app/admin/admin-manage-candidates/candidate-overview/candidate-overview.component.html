@@ -2,7 +2,7 @@
   <mat-accordion fxFlex="99%">
     <mat-expansion-panel
       (closed)="isPanelOpen = !isPanelOpen; isInEditMode = false; userForm.reset()"
-      (opened)="isPanelOpen = !isPanelOpen; isInEditMode = false"
+      (opened)="isPanelOpen = !isPanelOpen;"
       *ngFor="let user of (adminState | async).candidates.data;" [formGroup]="userForm">
       <mat-expansion-panel-header>
         <mat-panel-title fxFlex="75%"
