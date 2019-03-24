@@ -95,7 +95,7 @@ export class SearchCandidatesComponent implements OnInit {
     } else {
       this.titleService.setTitle('Kwee - ' + searchParams);
     }
-    this.router.navigate(['/search-candidates'], {queryParams: {name: searchParams}, queryParamsHandling: 'merge'});
+    this.router.navigate(['/search-candidates'], {queryParams: {keywords: searchParams}, queryParamsHandling: 'merge'});
   }
 
   getOrderby(order: string) {
@@ -140,7 +140,7 @@ export class SearchCandidatesComponent implements OnInit {
       this.query = {...this.query, dateBorn: paramDate};
     }
 
-    console.log(this.query);
+    // console.log(this.query);
 
     if (this.query.skills) {
       const skills = [];

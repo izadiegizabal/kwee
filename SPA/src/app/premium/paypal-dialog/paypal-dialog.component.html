@@ -1,12 +1,12 @@
 <h1 mat-dialog-title>Select payment method:</h1>
-<mat-dialog-content class="mat-typography" fxLayout="column" >
+<mat-dialog-content class="mat-typography" fxLayout="column" fxLayoutAlign="center">
     <h3 class="mat-h3">{{data.header}}</h3>
     <p>{{data.product}}</p>
     <p fxLayoutAlign="end"><strong>{{data.price}}</strong></p>
   <br>
-  <p *ngIf="pay===2">Sorry!! There is an error, please try again!</p>
+  <p *ngIf="pay===2">Sorry!! There was an error, please try again!</p>
 
-  <div class="item item-1" fxFlex="100%" fxFlex.xl="50%" *ngIf="pay!==1">
+  <div class="item item-1" fxFlex="100%" fxFlex.xl="50%" *ngIf="pay!==1" fxLayoutAlign="center">
       <ngx-paypal [config]="payPalConfig"></ngx-paypal>
     </div>
 
