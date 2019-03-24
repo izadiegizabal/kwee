@@ -11,7 +11,8 @@
       fxFlex="95%"
       fxFlex.gt-md="=70%"
       fxFlex.gt-sm="80%">
-      <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap.lt-sm="16px">
+      <div fxLayout="row" fxLayout.lt-sm="column"
+           fxLayoutGap.lt-sm="16px">
         <!-- Basic info -->
         <mat-card fxFlex="70">
           <mat-card-title>
@@ -23,19 +24,20 @@
           </mat-card-title>
           <mat-card-content
             fxLayout="row"
-            fxLayout.lt-sm="column" fxLayoutAlign="center stretch"
-            fxLayoutAlign.lt-sm="center center" style="margin-top: 16px">
+            fxLayout.lt-sm="column"
+            fxLayoutAlign="start stretch" fxLayoutAlign.lt-sm="center center"
+            style="margin-top: 16px">
             <img
               alt="{{(profilesState | async).candidate.name + ' profile picture'}}'"
               fxFlex="200px"
               fxLayout="column" height="200px"
               src="{{getProfileImg()}}"
               width="200px"/>
-            <p
+            <span
               fxLayout="column"
               fxLayoutAlign="center center">
               {{(profilesState | async).candidate.bio}}
-            </p>
+            </span>
           </mat-card-content>
           <mat-card-actions fxLayoutAlign="end end">
             <button

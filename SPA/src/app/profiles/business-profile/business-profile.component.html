@@ -23,19 +23,20 @@
           </mat-card-title>
           <mat-card-content
             fxLayout="row"
-            fxLayout.lt-sm="column" fxLayoutAlign="center stretch"
-            fxLayoutAlign.lt-sm="center center" style="margin-top: 16px">
+            fxLayout.lt-sm="column"
+            fxLayoutAlign="start stretch" fxLayoutAlign.lt-sm="center center"
+            style="margin-top: 16px">
             <img
               alt="{{business.name + ' profile picture'}}'"
               fxFlex="200px"
               fxlayout="column" height="200px"
               src="{{business.img}}"
               width="200px"/>
-            <p
+            <span
               fxLayout="column"
               fxLayoutAlign="center center">
               {{business.bio}}
-            </p>
+            </span>
           </mat-card-content>
           <mat-card-actions fxLayoutAlign="end end">
             <button

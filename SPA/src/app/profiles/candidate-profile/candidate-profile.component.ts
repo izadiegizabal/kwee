@@ -6,7 +6,7 @@ import * as ProfilesActions from '../store/profiles.actions';
 import * as fromProfiles from '../store/profiles.reducers';
 import {ActivatedRoute, Router} from '@angular/router';
 import {environment} from '../../../environments/environment';
-import {Title} from "@angular/platform-browser";
+import {Title} from '@angular/platform-browser';
 import {Location} from '@angular/common';
 
 @Component({
