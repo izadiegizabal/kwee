@@ -89,7 +89,7 @@ export class CandidateHomeComponent implements OnInit {
     } else {
       this.titleService.setTitle('Kwee - ' + searchParams);
     }
-    this.router.navigate(['/candidate-home'], {queryParams: {title: searchParams}, queryParamsHandling: 'merge'});
+    this.router.navigate(['/candidate-home'], {queryParams: {keywords: searchParams}, queryParamsHandling: 'merge'});
   }
 
   getOrderby(order: string) {

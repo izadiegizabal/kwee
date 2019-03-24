@@ -19,6 +19,7 @@ export interface DialogData {
 export class PaypalDialogComponent implements OnInit {
 
   pay = 0;
+  priceN: any;
 
   public payPalConfig?: PayPalConfig;
 
@@ -27,6 +28,8 @@ export class PaypalDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.initConfig();
+    const aux = this.data.price.split('€');
+    this.priceN = parseFloat(aux[0]);
   }
 
   private initConfig(): void {
@@ -76,8 +79,8 @@ export class PaypalDialogComponent implements OnInit {
               currency: 'EUR',
               details: {
                 subtotal: 5.90,
-                tax: 0.09,
-                shipping: 0.00,
+                tax: 0.07,
+                shipping: 0.01,
                 handling_fee: 1.00,
                 shipping_discount: -1.00,
                 insurance: 0.01
@@ -87,24 +90,14 @@ export class PaypalDialogComponent implements OnInit {
             item_list: {
               items: [
                 {
-                  name: 'Subscribe to premium',
-                  description: 'Subscribe to premium',
+                  name: this.data.product,
+                  description: this.data.product,
                   quantity: 1,
                   price: 5.90,
-                  tax: 0.09,
+                  tax: 0.07,
                   sku: '1',
                   currency: 'EUR'
                 }],
-              // shipping_address: {
-              //   recipient_name: 'Brian Robinson',
-              //   line1: '4th Floor',
-              //   line2: 'Unit #34',
-              //   city: 'San Jose',
-              //   country_code: 'US',
-              //   postal_code: '95131',
-              //   phone: '011862212345678',
-              //   state: 'CA'
-              // },
             },
           }
         ],
@@ -112,4 +105,5 @@ export class PaypalDialogComponent implements OnInit {
       }
     );
   }
+
 }

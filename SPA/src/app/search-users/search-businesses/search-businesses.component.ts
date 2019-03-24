@@ -7,7 +7,7 @@ import * as fromApp from '../../store/app.reducers';
 import * as AdminActions from '../../admin/store/admin.actions';
 import {BreakpointObserver} from '@angular/cdk/layout';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Title} from "@angular/platform-browser";
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-search-businesses',
@@ -99,7 +99,7 @@ export class SearchBusinessesComponent implements OnInit {
     } else {
       this.titleService.setTitle('Kwee - ' + searchParams);
     }
-    this.router.navigate(['/search-businesses'], {queryParams: {name: searchParams}, queryParamsHandling: 'merge'});
+    this.router.navigate(['/search-businesses'], {queryParams: {keywords: searchParams}, queryParamsHandling: 'merge'});
   }
 
   getOrderby(order: string) {
