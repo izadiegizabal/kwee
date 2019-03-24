@@ -33,12 +33,31 @@ module.exports = (app, db) => {
             buildCompanySize(must, body.companySize);
             buildDateVerification(must, body.dateVerification);
 
-            if ( body.name ) must.push({multi_match : {query: body.name, fields: ["name"]}});
-            if ( body.email ) must.push({multi_match : {query: body.email, fields: ["email"]}});
+            if ( body.name ) must.push({multi_match : {query: body.name, type: "phrase_prefix", fields: ["name"]}});
+            if ( body.email ) must.push({multi_match : {query: body.email, type: "phrase_prefix", fields: ["email"]}});
             if ( body.status ) must.push({multi_match : {query: body.status, fields: ["status"]}});
-            if ( body.address ) must.push({multi_match : {query: body.address, fields: ["address"]}});
-            if ( body.bio ) must.push({multi_match : {query: body.bio, fields: ["bio"]}});
+            if ( body.address ) must.push({multi_match : {query: body.address, type: "phrase_prefix", fields: ["address"]}});
+            if ( body.bio ) must.push({multi_match : {query: body.bio, type: "phrase_prefix", fields: ["bio"]}});
             if ( body.workField ) must.push({multi_match : {query: body.workField, fields: ["workField"]}});
+            if ( body.keywords ) must.push({
+                multi_match: {
+                    query: body.keywords, 
+                    type: "cross_fields", 
+                    fields: 
+                    [ 
+                        "name",
+                        "email",
+                        "status",
+                        "address",
+                        "bio",
+                        "workField",
+                        "index",
+                        "companySize",
+                        "year",
+                        "dateVerification"
+                    ] 
+                }
+            });
 
             let searchParams = {
                 index: "offerers",
