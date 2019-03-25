@@ -40,6 +40,7 @@
   background-color: whitesmoke;
   position: relative;
   margin: 0 15px 10px 1px;
+  float: left;
 }
 
 .reply {
@@ -56,6 +57,7 @@
 
 .toLeft {
   position: relative;
+  float: left;
 }
 
 mat-chip-list{
