@@ -1,9 +1,7 @@
-const env = require('../../../tools/constants');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const moment = require('moment');
-const auth = require('../../../middlewares/auth/auth');
 const { logger } = require('../../../shared/functions');
+const auth = require('../../../middlewares/auth/auth');
+const bcrypt = require('bcryptjs');
+const moment = require('moment');
 
 module.exports = (app, db) => {
 
@@ -43,7 +41,7 @@ module.exports = (app, db) => {
 
             delete userUpdated.dataValues.password;
 
-            let notifications = await db.notifications.findAll({ where: { to: id, readed: false }});
+            let notifications = await db.notifications.findAll({ where: { to: id, read: false }});
 
             notifications ? notifications = notifications.length : notifications = 0;
 
@@ -85,7 +83,7 @@ module.exports = (app, db) => {
             if (err.message == 'Invalid token') {
                 return next({ type: 'error', error: 'Invalid token' });
             }
-            return next({ type: 'error', error: 'Error getting data' });
+            return next({ type: 'error', error: err.message });
         }
     });
 
