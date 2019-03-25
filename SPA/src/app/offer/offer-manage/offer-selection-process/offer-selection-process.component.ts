@@ -52,18 +52,18 @@ export class OfferSelectionProcessComponent implements OnInit {
 
   // SELECTION DATA
   private offerId: number;
-  private manageOfferState: Observable<fromOfferManage.State>;
+  manageOfferState: Observable<fromOfferManage.State>;
 
   // Stepper forms
   selectFormGroup: FormGroup;
   waitFormGroup: FormGroup;
-  private firstStepCompletion = false;
-  private secondStepCompletion = false;
-  private firstStepOkay = false;
-  private secondStepOkay = false;
+  firstStepCompletion = false;
+  secondStepCompletion = false;
+  firstStepOkay = false;
+  secondStepOkay = false;
   showStepper = false;
-  private offer: any;
-  private currentSelected: number;
+  offer: any;
+  currentSelected: number;
 
   constructor(
     private _formBuilder: FormBuilder,

@@ -17,7 +17,7 @@ export class OffererNameOverviewComponent implements OnInit {
   ngOnInit() {
   }
 
-  private getBGColour() {
+  getBGColour() {
     // return getColourFromIndex(this.index);
   }
 
