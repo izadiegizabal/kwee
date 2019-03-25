@@ -84,6 +84,9 @@ const routes: Routes = [
   // KWEE LIVE
   {path: 'kwee-live', loadChildren: './kwee-live/kwee-live.module#KweeLiveModule'},
 
+  // INVOICES
+  {path: 'invoices', loadChildren: './invoices/invoices.module#InvoicesModule'},
+
   // OTHERS
   {path: 'privacy', component: PrivacyComponent},
   {path: 'email-verified/:token', loadChildren: './email-verified/email-verified.module#EmailVerifiedModule'},

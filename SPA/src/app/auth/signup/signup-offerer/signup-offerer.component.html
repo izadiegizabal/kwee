@@ -299,16 +299,11 @@
         <br>
         <div fxLayout="row">
           <mat-form-field>
-            <input [matDatepicker]="picker" formControlName="year" matInput placeholder="Date funded" required>
-            <mat-datepicker-toggle [for]="picker" matPrefix></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-            <mat-error *ngIf="!thirdFormGroup.get('year').valid && !thirdFormGroup.get('year').hasError('tooOld')">
-              Please enter a valid date
+            <input [max]="getMaxYear()" type="number" formControlName="year" matInput placeholder="Date funded">
+            <mat-error *ngIf="!thirdFormGroup.get('year').valid">
+              Please enter a valid year
             </mat-error>
-            <mat-error
-              *ngIf="thirdFormGroup.get('year').hasError('tooOld')">
-              Your date is too old
-            </mat-error>
+            <mat-icon color="primary" matPrefix svgIcon="cake"></mat-icon>
           </mat-form-field>
         </div>
 
