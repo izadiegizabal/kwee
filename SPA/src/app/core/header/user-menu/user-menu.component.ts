@@ -45,7 +45,10 @@ export class UserMenuComponent implements OnInit {
           this.username = user.name;
           this.userId = '' + user.id;
           this.userType = user.type;
-          this.numNotifications = user.notifications;
+          if ( user.notifications > 0 ) {
+            this.numNotifications = user.notifications;
+            this.notification = true;
+          }
         }
       });
     this.messageService.getSelected().subscribe( msg => {
