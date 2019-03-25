@@ -127,7 +127,18 @@
 
                 <button *ngIf="(offerState | async).applications" (click)="deleteApplication()"
                         color="warn"
+                        [disabled]="(offerState | async).offer.status !== 0 || (offerState | async).applications.status !== 0"
                         mat-raised-button style="color: white">{{'Delete Application' | uppercase }}</button>
+
+                <div fxLayout="column" fxLayoutAlign="center center"
+                     *ngIf="(offerState | async).applications && (offerState | async).applications.status === 2">
+                  <p style="margin-top: 0">You have been selected! What do you want to do?</p>
+                  <div fxLayout="row" fxLayoutGap="16px">
+                    <button  mat-raised-button color="warn">{{'Reject' | uppercase }}</button>
+                    <button  mat-raised-button color="accent">{{'Accept' | uppercase }}</button>
+                  </div>
+                </div>
+
               </ng-template>
               <app-sns-share [offer]="getShareableOffer((offerState | async).offer.title)"></app-sns-share>
             </div>
