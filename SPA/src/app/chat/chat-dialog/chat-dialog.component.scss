@@ -5,24 +5,26 @@
 }
 
 .message {
-  border-radius: 50px;
-  margin: 0 15px 10px;
+  border-radius: 25px;
+  margin: 10px 15px 10px 1px;
   padding: 15px 20px;
   position: relative;
+  display: inline-block;
 }
 
 .message.to {
   background-color: #455a64;
   color: #fff;
-  //margin-left: 200px;
+  float: right;
   text-align: right;
+  border-bottom-right-radius: 2px
 }
 
 .message.from {
   background-color: whitesmoke;
   color: #363636;
-  //margin-right: 150px;
-
+  float: left;
+  border-bottom-left-radius: 2px
 }
 
 .message.to + .message.to,
@@ -37,7 +39,7 @@
 .example-card {
   background-color: whitesmoke;
   position: relative;
-  margin: 0 15px 10px;
+  margin: 0 15px 10px 1px;
 }
 
 .reply {
@@ -54,7 +56,11 @@
 
 .toLeft {
   position: relative;
-  margin-right: 100px;
+}
+
+mat-chip-list{
+  margin: 0;
+  padding: 0;
 }
 
 .float {
@@ -108,6 +114,8 @@
   top: 4%;
   max-height: 82%;
   min-height: 82%;
+  max-width: 93%;
+  min-width: 93%;
   overflow-y: scroll;
   overflow-x: hidden;
 }
