@@ -7,7 +7,8 @@ export interface State {
     email: string,
     id: number,
     name: string,
-    type: string
+    type: string,
+    notifications: number,
   };
 }
 

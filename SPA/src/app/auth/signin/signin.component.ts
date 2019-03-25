@@ -70,13 +70,13 @@ export class SigninComponent implements OnInit {
         if (res.payload.root) {
           this.router.navigate(['/admin']);
         } else {
-          if ( res.payload.notifications > 0 ) {
-            console.log('HAY NOTIFICATIONES: ', res.payload.notifications);
+          // if ( res.payload.notifications > 0 ) {
+            // console.log('HAY NOTIFICATIONES: ', res.payload.notifications);
             // this.notificationsService.newNotification( res.payload.notifications );
-            this.router.navigate(['/notifications']);
-          } else {
+            // this.router.navigate(['/notifications']);
+          // } else {
             this.router.navigate(['/']);
-          }
+          // }
         }
       }
     );
