@@ -43,6 +43,7 @@ export class BusinessProfileComponent implements OnInit {
 
   profilesState: Observable<fromProfiles.State>;
   mine = false;
+  busi: any;
 
   constructor(
     private titleService: Title,
@@ -67,6 +68,7 @@ export class BusinessProfileComponent implements OnInit {
 
     this.profilesState.subscribe(s => {
       if (s.business) {
+        this.busi = s.business;
         this.titleService.setTitle('Kwee - ' + s.business.name);
       }
     });
@@ -87,6 +89,13 @@ export class BusinessProfileComponent implements OnInit {
       return environment.apiUrl + 'image/offerers/' + img;
     } else {
       return this.business.img;
+    }
+  }
+
+  contactUser() {
+    if (this.busi.email) {
+      const href = 'mailto:' + this.busi.email + '?subject=Enquiry about your Kwee Profile';
+      location.href = href;
     }
   }
 }
