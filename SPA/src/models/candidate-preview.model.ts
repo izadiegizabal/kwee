@@ -14,7 +14,7 @@ export class CandidatePreview {
     public city: string,
     public dateBorn: Date,
     public rol: WorkFields,
-    public imgPath: string,
+    public img: string,
     public lastExp: string, // name of the business they worked in
     // for admin purposes
     public email: string,

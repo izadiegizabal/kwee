@@ -33,8 +33,10 @@
     </div>
   </mat-card-header>
 
-  <mat-card-content>
+  <mat-card-content fxLayout="row">
     <img
+      width="100px"
+      height="100px"
       alt="Business Logo"
       [src]="getImg()">
     <p>
@@ -43,31 +45,37 @@
   </mat-card-content>
 
   <mat-card-actions
-    fxLayout="row" fxLayout.lt-sm="column"
-    fxLayoutAlign="end center"
+    fxLayout="row"
+    fxLayoutAlign="center center"
     fxLayoutGap="24px" fxLayoutGap.lt-sm="16px">
     <div
       fxLayout="row"
-      fxLayout.lt-sm="column"
       fxLayoutAlign="center center"
       fxLayoutGap="16px">
       <button [routerLink]="userUrl" color="accent" mat-button>{{'More Info' | uppercase }}</button>
       <button (click)="openShareDialog()" mat-icon-button *ngIf="!selectionMode && applicationStatus === -1">
         <mat-icon aria-label="Share user in social networks" color="accent" svgIcon="share"></mat-icon>
       </button>
+      <button (click)="contactUser()"
+              color="primary"
+              mat-raised-button
+              *ngIf="selectionMode">
+        <mat-icon svgIcon="chat"></mat-icon>
+        {{'Contact'}}
+      </button>
       <button (click)="rejectCandidate()"
               color="primary"
               mat-raised-button
               *ngIf="selectionMode">
         <mat-icon>close</mat-icon>
-        {{'Reject' | uppercase }}
+        {{'Reject'}}
       </button>
       <button (click)="selectCandidate()"
               color="primary"
               mat-raised-button
               *ngIf="selectionMode">
         <mat-icon svgIcon="star"></mat-icon>
-        {{'Select' | uppercase }}
+        {{'Select'}}
       </button>
       <div *ngIf="applicationStatus !== -1">
         <button (click)="rejectCandidate()"

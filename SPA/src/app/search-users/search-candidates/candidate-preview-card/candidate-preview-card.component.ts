@@ -4,6 +4,7 @@ import {SnsShareDialogComponent} from '../../../shared/sns-share/sns-share-dialo
 import {getUrlfiedString} from '../../../shared/utils.service';
 import {CandidatePreview} from '../../../../models/candidate-preview.model';
 import {WorkFields} from '../../../../models/Candidate.model';
+import {environment} from "../../../../environments/environment";
 
 
 @Component({
@@ -80,7 +81,11 @@ export class CandidatePreviewCardComponent implements OnInit {
   getImg() {
     // TODO: delete this dirty fix when api returns correctly
     const defaultImg = '../../../../../assets/img/defaultProfileImg.png';
-    return this.user.imgPath ? this.user.imgPath : defaultImg;
+    if (this.user.img) {
+      return environment.apiUrl + 'image/applicants/' + this.user.img;
+    } else {
+      return defaultImg;
+    }
   }
 
   onFaved() {
@@ -109,6 +114,13 @@ export class CandidatePreviewCardComponent implements OnInit {
       case 3: return 'accent';
       case 4: return 'warn';
       default: return 'primary';
+    }
+  }
+
+  contactUser() {
+    if (this.user.email) {
+      const href = 'mailto:' + this.user.email + '?subject=Enquiry about your Kwee Profile';
+      location.href = href;
     }
   }
 }
