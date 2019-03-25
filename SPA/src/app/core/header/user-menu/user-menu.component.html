@@ -12,7 +12,7 @@
   </button>
   <button mat-menu-item
           routerLink="/messages">
-    <mat-icon [ngClass]="{'red':!message, 'red':message}" svgIcon="chat"><span class="num">{{numMessages}}</span></mat-icon>
+    <mat-icon [ngClass]="{'red':message}" svgIcon="chat"><span class="num">{{numMessages}}</span></mat-icon>
     <span>Messages</span>
   </button>
   <button *ngIf="userType==='admin'"
