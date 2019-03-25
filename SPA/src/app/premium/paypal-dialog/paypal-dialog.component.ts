@@ -1,12 +1,19 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {PayPalConfig, PayPalEnvironment, PayPalIntegrationType} from 'ngx-paypal';
 import {environment} from '../../../environments/environment';
-import {of} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import * as fromAuth from '../../auth/store/auth.reducers';
+import {select, Store} from '@ngrx/store';
+import * as fromApp from '../../store/app.reducers';
+import * as AdminActions from '../../admin/store/admin.actions';
+import * as fromAdmin from '../../admin/store/admin.reducers';
+import {Router} from '@angular/router';
 
 
 export interface DialogData {
   header: string;
+  idproduct: number;
   product: string;
   price: string;
 }
@@ -20,13 +27,39 @@ export class PaypalDialogComponent implements OnInit {
 
   pay = 0;
   priceN: any;
+  profileType;
+  userId;
 
   public payPalConfig?: PayPalConfig;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: DialogData, public dialogRef: MatDialogRef<DialogData>) {
+  authState: Observable<fromAuth.State>;
+  adminState: Observable<fromAdmin.State>;
+
+
+  constructor(@Inject(MAT_DIALOG_DATA) public data: DialogData,
+              public dialogRef: MatDialogRef<DialogData>,
+              private store$: Store<fromApp.AppState>,
+              private router: Router) {
   }
 
   ngOnInit(): void {
+    this.authState = this.store$.pipe(select('auth'));
+    this.adminState = this.store$.pipe(select(s => s.admin));
+
+    this.authState.pipe(
+      select(s => s.user)
+    ).subscribe(
+      (user) => {
+        if (user && user.name && user.id) {
+          this.profileType = user.type;
+          this.userId = user.id;
+        } else {
+          this.router.navigate(['/']);
+        }
+      });
+
+   // console.log(this.userId + 'id usuario' + this.profileType + 'tipo' + this.data.idproduct + 'idproduct');
+
     this.initConfig();
     const aux = this.data.price.split('€');
     this.priceN = parseFloat(aux[0]);
@@ -53,6 +86,17 @@ export class PaypalDialogComponent implements OnInit {
         onPaymentComplete: (data, actions) => {
           console.log('OnPaymentComplete');
           this.pay = 1;
+
+          const updateuser = {
+            'premium': this.data.idproduct,
+          };
+
+          if (this.profileType === 'candidate') {
+            this.store$.dispatch(new AdminActions.TryUpdateCandidate({id: this.userId, updatedCandidate: updateuser}));
+
+          } else if (this.profileType === 'business') {
+            this.store$.dispatch(new AdminActions.TryUpdateBusiness({id: this.userId, updatedBusiness: updateuser}));
+          }
         },
         onCancel: (data, actions) => {
           console.log('OnCancel');
