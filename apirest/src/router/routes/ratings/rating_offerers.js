@@ -27,11 +27,11 @@ module.exports = (app, db) => {
                             fk_applicant: ratings[i].fk_applicant,
                             fk_offer: ratings[i].fk_offer,
                             overall: ratings[j].overall,
-                            salary: rating_applicants[j].salary,
-                            environment: rating_applicants[j].environment,
-                            partners: rating_applicants[j].partners,
-                            services: rating_applicants[j].services,
-                            installations: rating_applicants[j].installations,
+                            salary: rating_offerers[j].salary,
+                            environment: rating_offerers[j].environment,
+                            partners: rating_offerers[j].partners,
+                            services: rating_offerers[j].services,
+                            installations: rating_offerers[j].installations,
                             createdAt: ratings[j].createdAt
                         }
                     }
@@ -82,17 +82,23 @@ module.exports = (app, db) => {
     });
 
     // GET one rating_offerer by id
-    app.get('/rating_offerer/:id([0-9]+)', checkToken, async(req, res, next) => {
+    app.get('/rating_offerer/:id([0-9]+)', async(req, res, next) => {
         const id = req.params.id;
 
         try {
-            let rating = await db.ratings.findOne({
-                where: { id }
-            });
+            let ratings = await db.ratings.findAll({ where: { fk_application: id } });
+            let rating_offerers = await db.rating_offerers.findAll();
+            let rating_offerer, rating;
 
-            let rating_offerer = await db.rating_offerers.findOne({
-                where: { ratingId: id }
-            });
+            for (let i = 0; i < ratings.length; i++) {
+                for (let j = 0; j < rating_offerers.length; j++) {
+                    if ( ratings[i].id === rating_offerers[j].ratingId ) {
+                        rating = ratings[i];
+                        rating_offerer = rating_offerers[j];
+                        break;
+                    }
+                }
+            }
 
             if (rating && rating_offerer) {
                 const ratingRating_Offerer = {
@@ -100,17 +106,18 @@ module.exports = (app, db) => {
                     fk_applicant: rating.fk_applicant,
                     fk_offer: rating.fk_offer,
                     overall: rating.overall,
-                    salary: rating_applicant.salary,
-                    environment: rating_applicant.environment,
-                    partners: rating_applicant.partners,
-                    services: rating_applicant.services,
-                    installations: rating_applicant.installations,
+                    salary: rating_offerer.salary,
+                    environment: rating_offerer.environment,
+                    partners: rating_offerer.partners,
+                    services: rating_offerer.services,
+                    installations: rating_offerer.installations,
+                    satisfaction: rating_offerer.satisfaction,
                     createdAt: rating.createdAt
                 };
 
                 return res.status(200).json({
                     ok: true,
-                    message: 'Rating offerer list',
+                    message: 'Rating offerer of application id',
                     data: ratingRating_Offerer
                 });
             } else {
@@ -288,7 +295,6 @@ module.exports = (app, db) => {
             });
 
             if (rating_offerer) {
-                console.log("encontrada");
                 let fk_application = await db.ratings.findOne({ where: { id: ratingId }});
                 let application = await db.applications.findOne({ where: { id: fk_application.fk_application }});
 
@@ -327,10 +333,9 @@ module.exports = (app, db) => {
 
             if (rating_offerer) {
                 let rating_offererToDelete = await db.rating_offerers.destroy({ where: { ratingId: id } });
-                let rating_applicant = await db.rating_applicants.destroy({ where: { ratingId: id } }); // search first?
                 let rating = await db.ratings.destroy({ where: { id } });
 
-                if (rating_offererToDelete && rating && rating_applicant) {
+                if (rating_offererToDelete && rating && rating_offerer) {
                     await algorithm.indexUpdate(id);
 
                     return res.json({

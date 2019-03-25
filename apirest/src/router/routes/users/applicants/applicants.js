@@ -33,11 +33,33 @@ module.exports = (app, db) => {
             buildIndex(must, body.index);
             buildDateBorn(must, body.dateBorn);
 
-            if ( body.name ) must.push({multi_match: {query: body.name, fields: [ "name" ] }});
-            if ( body.city ) must.push({multi_match: {query: body.city, fields: [ "city" ] }});
+            if ( body.name ) must.push({multi_match: {query: body.name, type: "phrase_prefix", fields: [ "name" ] }});
+            if ( body.city ) must.push({multi_match: {query: body.city, type: "phrase_prefix", fields: [ "city" ] }});
             if ( body.premium ) must.push({multi_match: {query: body.premium, fields: [ "premium" ] }});
-            if ( body.bio ) must.push({multi_match: {query: body.bio, fields: [ "bio" ] }});
+            if ( body.bio ) must.push({multi_match: {query: body.bio, type: "phrase_prefix", fields: [ "bio" ] }});
             if ( body.rol ) must.push({multi_match: {query: body.rol, fields: [ "rol" ] }});
+            if ( body.keywords ) must.push({
+                multi_match: {
+                    query: body.keywords, 
+                    type: "cross_fields", 
+                    fields: 
+                    [ 
+                        "name",
+                        "email",
+                        "status",
+                        "city",
+                        "dateBorn",
+                        "rol",
+                        "index",
+                        "bio",
+                        "skills",
+                        "languages",
+                        "educations",
+                        "experiences",
+                        "premium"
+                    ]
+                }
+            });
 
             let searchParams = {
                 index: "applicants",

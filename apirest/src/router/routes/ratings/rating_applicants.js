@@ -84,17 +84,23 @@ module.exports = (app, db) => {
     });
 
     // GET one rating_applicant by id
-    app.get('/rating_applicant/:id([0-9]+)', checkToken, async(req, res, next) => {
+    app.get('/rating_applicant/:id([0-9]+)', async(req, res, next) => {
         const id = req.params.id;
 
         try {
-            let rating = await db.ratings.findOne({
-                where: { id }
-            });
+            let ratings = await db.ratings.findAll({ where: { fk_application: id } });
+            let rating_applicants = await db.rating_applicants.findAll();
+            let rating_applicant, rating;
 
-            let rating_applicant = await db.rating_applicants.findOne({
-                where: { ratingId: id }
-            });
+            for (let i = 0; i < ratings.length; i++) {
+                for (let j = 0; j < rating_applicants.length; j++) {
+                    if ( ratings[i].id === rating_applicants[j].ratingId ) {
+                        rating = ratings[i];
+                        rating_applicant = rating_applicants[j];
+                        break;
+                    }
+                }
+            }
 
             if (rating && rating_applicant) {
                 const ratingApplicant = {
@@ -105,15 +111,15 @@ module.exports = (app, db) => {
                     punctuality: rating_applicant.punctuality,
                     hygiene: rating_applicant.hygiene,
                     teamwork: rating_applicant.teamwork,
+                    satisfaction: rating_applicant.satisfaction,
                     createdAt: rating_applicant.createdAt
                 };
 
-                res.status(200).json({
+                return res.status(200).json({
                     ok: true,
                     ratingApplicant
                 });
             } else {
-
                 return res.status(200).json({
                     ok: true,
                     message: 'RatingApplicant doesn\'t exist',
