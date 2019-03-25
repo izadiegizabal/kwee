@@ -3,7 +3,7 @@ module.exports = (sequelize, DateTypes) => {
     const Applicant_Education = sequelize.define('applicant_educations', {
 
         description: {
-            type: DateTypes.STRING(140),
+            type: DateTypes.TEXT,
             allowNull: false,
             field: 'description',
             validate: {
