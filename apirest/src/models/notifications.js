@@ -46,7 +46,7 @@ module.exports = (sequelize, DateTypes) => {
             allowNull: false,
         },
         
-        readed: {
+        read: {
             type: DateTypes.BOOLEAN,
             defaultValue: false,
         }
