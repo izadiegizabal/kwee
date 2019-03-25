@@ -7,7 +7,8 @@
   <mat-divider></mat-divider>
   <button mat-menu-item
           routerLink="/notifications">
-    <mat-icon [ngClass]="{'gray':!notification, 'red':notification}" svgIcon="notifications"><span class="num">{{numNotifications}}</span></mat-icon>
+    <mat-icon *ngIf="numNotifications > 0" class="red" matBadge="{{numNotifications}}" matBadgeColor="warn">notifications</mat-icon>
+    <mat-icon *ngIf="numNotifications == 0" class="gray" svgIcon="notifications"></mat-icon>
     <span>Notifications</span>
   </button>
   <button mat-menu-item
