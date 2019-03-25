@@ -262,6 +262,8 @@ class TResourceMesh extends TResource{
       ///////////////////////////////////////////////////////////////////////////////////////////// ""MATERIALS"" (NOPE)
       let uMaterialDiffuse = gl.getUniformLocation(program, 'uMaterialDiffuse');
       let uMaterialAmbient = gl.getUniformLocation(program, 'uMaterialAmbient');
+      let uUseTextures = gl.getUniformLocation(program, 'uUseTextures');
+      gl.uniform1i(uUseTextures, false);
       /// CHAPUZA CHANGE COLORS
       if (this.name === 'sea.json'){
         gl.uniform4fv(uMaterialDiffuse, [0.313, 0.678, 0.949,1.0]);
@@ -270,11 +272,14 @@ class TResourceMesh extends TResource{
       else {
         gl.uniform4fv(uMaterialDiffuse, [0.258, 0.960, 0.6,1.0]);
         gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
-        /*gl.uniform4fv(uMaterialDiffuse, [1.0,1.0,1.0,1.0]);
-        gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);*/
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, this.tex.tex );
-        gl.uniform1i(program.sampler, 0);
+        if(this.tex && this.tex.tex) {
+          gl.uniform4fv(uMaterialDiffuse, [1.0,1.0,1.0,1.0]);
+          gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+          gl.activeTexture(gl.TEXTURE0);
+          gl.bindTexture(gl.TEXTURE_2D, this.tex.tex);
+          gl.uniform1i(program.sampler, 0);
+          gl.uniform1i(uUseTextures, true);
+        }
       }
       ///// BOTH FALSE
       var uWireframe = gl.getUniformLocation(program, 'uWireframe');
@@ -283,8 +288,7 @@ class TResourceMesh extends TResource{
       gl.uniform1i(uUseVertexColor, false);
 
       ///// TRUE IF TEXTURES ARE NEEDED
-      var uUseTextures = gl.getUniformLocation(program, 'uUseTextures');
-      gl.uniform1i(uUseTextures, false);
+
 
       ///////////////////////////////////////////////////////////////////////////////////////////// BIND BUFFERS
       var positionAttribLocation = gl.getAttribLocation(program, 'aVertexPosition');

@@ -104,7 +104,7 @@ async function resetCanvas(){
 }
 
 
-async function mainR( model ){
+async function mainR( texture ){
   draw = true;
   allowActions.value = false;
   let motor = new TMotorTAG(manager);
@@ -127,30 +127,24 @@ async function mainR( model ){
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////                                         TREE & RESOURCES
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  let tex = await manager.getResource('continents.jpg');
+
 
   let cam = motor.createCamera(scene);
   let light = motor.createLight(scene);
-  let land = null;
-  if (model === 'hollow') {
-    land = await motor.loadMesh(scene, 'earthobj.json');
+  let land;
+  land = await motor.loadMesh(scene, 'earthobj.json');
+  if(texture) {
+    console.log(true);
+    let tex = await manager.getResource('continents.jpg');
     land.entity.mesh.tex = tex;
     console.log(land);
-    //motor.rotate(land, -90, 'z');
   } else {
-    land = await motor.loadMesh(scene, 'textured_earth.json');
-    motor.rotate(land, -90, 'z');
+    land.entity.mesh.tex = undefined;
   }
-
-  let sphere = null
-  if (model === 'hollow') {
-    sphere = await motor.loadMesh(scene, 'sea.json');
-    //motor.rotate(sphere, -90, 'z');
-    motor.scale(sphere, [0.995,0.995,0.995]);
-  } else {
-    sphere = await motor.loadMesh(scene, 'textured_earth.json');
-    motor.rotate(sphere, -90, 'z');
-  }
+  //motor.rotate(land, -90, 'z');
+  let sphere = await motor.loadMesh(scene, 'sea.json');
+  //motor.rotate(sphere, -90, 'z');
+  motor.scale(sphere, [0.995,0.995,0.995]);
 
 
 

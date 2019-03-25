@@ -37,7 +37,7 @@ export class LandingComponent implements OnInit {
 
   drawHollow() {
     resetCanvas();
-    mainR('hollow', this.particles);
+    mainR(false, this.particles);
   }
 
   async reset() {

@@ -61,12 +61,12 @@ export class KweeLiveComponent implements OnInit {
 
   drawHollow() {
     resetCanvas();
-    mainR('hollow', this.particles);
+    mainR(false, this.particles);
   }
 
-  drawThicc() {
+  draw() {
     resetCanvas();
-    mainR('notHollow', this.particles);
+    mainR(true, this.particles);
   }
 
   async reset() {
