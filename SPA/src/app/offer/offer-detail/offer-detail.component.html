@@ -125,9 +125,9 @@
                         color="accent"
                         mat-raised-button style="color: white">{{'Apply Now!' | uppercase }}</button>
 
-                <button *ngIf="(offerState | async).applications" (click)="deleteApplication()"
+                <button *ngIf="(offerState | async).applications && ((offerState | async).offer.status === 0 ||
+                (offerState | async).offer.status === 3) && (offerState | async).applications.status < 2" (click)="deleteApplication()"
                         color="warn"
-                        [disabled]="(offerState | async).offer.status !== 0 || (offerState | async).applications.status !== 0"
                         mat-raised-button style="color: white">{{'Delete Application' | uppercase }}</button>
 
                 <div fxLayout="column" fxLayoutAlign="center center"

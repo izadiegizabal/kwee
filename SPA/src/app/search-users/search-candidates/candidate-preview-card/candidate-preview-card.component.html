@@ -46,7 +46,7 @@
 
   <mat-card-actions
     fxLayout="row"
-    fxLayoutAlign="center center"
+    [fxLayoutAlign]="selectionMode? 'center center' : 'end end'"
     fxLayoutGap="24px" fxLayoutGap.lt-sm="16px">
     <div
       fxLayout="row"

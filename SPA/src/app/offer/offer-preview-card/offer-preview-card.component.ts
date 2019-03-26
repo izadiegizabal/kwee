@@ -12,6 +12,7 @@ import {OfferManageEffects} from '../offer-manage/store/offer-manage.effects';
 import * as OfferManageActions from '../offer-manage/store/offer-manage.actions';
 import {filter} from 'rxjs/operators';
 import {Router} from '@angular/router';
+import {HttpClient} from "@angular/common/http";
 
 
 @Component({
@@ -29,15 +30,23 @@ export class OfferPreviewCardComponent implements OnInit {
   userId: number;
 
   @Input() offer: any;
+  currencies;
 
 
   constructor(public dialog: MatDialog,
               private store$: Store<fromApp.AppState>,
               private router: Router,
+              private http: HttpClient,
               private manageOfferEffects: OfferManageEffects) {
   }
 
   ngOnInit() {
+
+    this.http.get('../../../assets/CurrenciesISO.json').subscribe(currencies => {
+        this.currencies = currencies;
+      }
+    );
+
     // console.log(this.offer);
 
     this.offerUrl = this.urlfyPosition();
@@ -94,9 +103,21 @@ export class OfferPreviewCardComponent implements OnInit {
       salaryNum = this.offer.salaryAmount;
     }
 
-    return salaryNum + ' ' +
-      this.offer.salaryCurrency + ' ' +
+    return salaryNum +
+      this.getCurrency(this.offer.salaryCurrency) + ' ' +
       SalaryFrequency[this.offer.salaryFrequency];
+  }
+
+  private getCurrency(salaryCurrency) {
+    let currency = '';
+    if (this.currencies) {
+      Object.keys(this.currencies).map(key => {
+        if (this.currencies[key].value && this.currencies[key].value === salaryCurrency) {
+          currency = this.currencies[key].symbol;
+        }
+      });
+    }
+    return currency;
   }
 
   getOfferDuration() {
@@ -144,7 +165,12 @@ export class OfferPreviewCardComponent implements OnInit {
       if (!this.candidate) {
         this.offer.applications.forEach((e) => {
           if (e.applicationStatus === 3) {
-            applications.push({to: e.applicationId, name: e.applicantName, index: e.applicantStatus, haveIRated: e.aHasRated});
+            applications.push({
+              to: e.applicationId,
+              name: e.applicantName,
+              index: e.applicantStatus,
+              haveIRated: e.aHasRated
+            });
           }
         });
       } else {
