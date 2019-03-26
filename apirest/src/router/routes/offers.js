@@ -34,15 +34,39 @@ module.exports = (app, db) => {
             buildDatePublishedRange(must, body.datePublished);
             buildOffererIndexRange(must, body.offererIndex);
 
-            if ( body.title ) must.push({multi_match: {query: body.title, fields: [ "title" ] }});
+            if ( body.title ) must.push({multi_match: {query: body.title, type: "phrase_prefix", fields: [ "title" ] }});
             if ( body.status ) must.push({multi_match: {query: body.status, fields: [ "status" ] }});
-            if ( body.location ) must.push({multi_match: { query: body.location, fields: [ "location" ] }});
-            if ( body.skills ) must.push({multi_match: {query: body.skills, fields: [ "skills" ] }});
-            if ( body.offererName ) must.push({multi_match: {query: body.offererName, fields: [ "offererName" ] }});
+            if ( body.location ) must.push({multi_match: { query: body.location, type: "phrase_prefix", fields: [ "location" ] }});
+            if ( body.skills ) must.push({multi_match: {query: body.skills, type: "phrase_prefix", fields: [ "skills" ] }});
+            if ( body.offererName ) must.push({multi_match: {query: body.offererName, type: "phrase_prefix", fields: [ "offererName" ] }});
             if ( body.workLocation ) must.push({multi_match: {query: body.workLocation, fields: [ "workLocation" ] }});
             if ( body.seniority ) must.push({multi_match: {query: body.seniority, fields: [ "seniority" ] }});
             if ( body.contractType ) must.push({multi_match: {query: body.contractType, fields: [ "contractType" ] }});
-            if ( body.keywords ) must.push({multi_match: {query: body.keywords, fields: [ "*" ] }});
+            if ( body.description ) must.push({multi_match: {query: body.description, fields: [ "description" ] }});
+            if ( body.keywords ) must.push({
+                multi_match: {
+                    query: body.keywords, 
+                    type: "cross_fields", 
+                    fields: 
+                    [ 
+                        "status",
+                        "title",
+                        "location",
+                        "dateStart",
+                        "dateEnd",
+                        "datePublished",
+                        "offererName",
+                        "offererIndex",
+                        "salaryAmount",
+                        "seniority",
+                        "contractType",
+                        "salaryCurrency",
+                        "description",
+                        "skills",
+                        "workLocation",
+                    ]
+                }
+            });
 
             if ( must.length == 0 ){
                 return res.status(200).json({

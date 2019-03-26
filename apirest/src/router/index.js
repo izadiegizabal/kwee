@@ -18,6 +18,7 @@ const routes = [
     require('./routes/ratings/rating_applicants'),
     require('./routes/ratings/rating_offerers'),
     require('./routes/messages'),
+    require('./routes/notifications'),
     require('./routes/comments'),
     require('./routes/login/login'),
     require('./routes/email-verified'),
