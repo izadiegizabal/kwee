@@ -432,6 +432,8 @@ module.exports = (app, db) => {
             body.name ? user.name = body.name : null;
             body.bio ? user.bio = body.bio : null;
             body.email ? user.email = body.email : null;
+            body.lat ? user.lat = body.lat : null;
+            body.lon ? user.lon = body.lon : null;
             var uservar;
             saveLogES('POST', 'offerer', body.name);
 
@@ -452,7 +454,7 @@ module.exports = (app, db) => {
                                 delete body.cif;
                                 delete lon;
                                 delete lat;
-                                body.index = 50;
+                                body.index = 15;
                                 body.companySize = 0;
                                 body.year = null;
                                 body.dateVerification = null;
