@@ -12,7 +12,7 @@ export class BusinessPreview {
     public address: string,
     public year: Date,
     public workfield: BusinessIndustries,
-    public imgPath: string,
+    public img: string,
     public email: string,
     public lastAccess: Date,
     public createdAt: Date,

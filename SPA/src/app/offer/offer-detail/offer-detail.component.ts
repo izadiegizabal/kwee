@@ -8,7 +8,14 @@ import {OfferEffects} from './store/offer.effects';
 import {filter} from 'rxjs/operators';
 import {Location} from '@angular/common';
 
-import {ContractType, JobDurationUnit, OfferStatus, SalaryFrequency, SeniorityLevel, WorkLocationType} from '../../../models/Offer.model';
+import {
+  ContractType,
+  JobDurationUnit,
+  OfferStatus,
+  SalaryFrequency,
+  SeniorityLevel,
+  WorkLocationType
+} from '../../../models/Offer.model';
 import {getTimePassed, getUrlfiedString} from '../../shared/utils.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {environment} from '../../../environments/environment';
@@ -80,11 +87,15 @@ export class OfferDetailComponent implements OnInit {
   }
 
   getTimePassed(publishDate) {
-    return getTimePassed(new Date(publishDate));
+    if (publishDate) {
+      return getTimePassed(new Date(publishDate));
+    }
   }
 
   getOfferStatus(status) {
-    return OfferStatus[status];
+    if (status) {
+      return OfferStatus[status];
+    }
   }
 
   getOfferDuration(isIndefinite, duration, durationUnit) {
@@ -100,15 +111,21 @@ export class OfferDetailComponent implements OnInit {
   }
 
   getOfferContractType(contractType) {
-    return ContractType[contractType];
+    if (contractType) {
+      return ContractType[contractType];
+    }
   }
 
   getOfferSeniorityLevel(seniority) {
-    return SeniorityLevel[seniority] + ' Position';
+    if (seniority) {
+      return SeniorityLevel[seniority] + ' Position';
+    }
   }
 
   getOfferSalary(salaryAmount, salaryCurrency, salaryFrequency) {
-    return salaryAmount + salaryCurrency + ' ' + SalaryFrequency[salaryFrequency];
+    if (salaryAmount && salaryCurrency && salaryFrequency) {
+      return salaryAmount + salaryCurrency + ' ' + SalaryFrequency[salaryFrequency];
+    }
   }
 
   getOfferLocation(offerlocation, workLocation) {
@@ -124,17 +141,23 @@ export class OfferDetailComponent implements OnInit {
   }
 
   getOfferApplications(applications) {
-    const numOfApplications = applications;
-    return numOfApplications + (numOfApplications === 1 ? ' application' : ' applications');
+    if (applications) {
+      const numOfApplications = applications;
+      return numOfApplications + (numOfApplications === 1 ? ' application' : ' applications');
+    }
   }
 
   getShareableOffer(title) {
-    return {title: title, url: window.location.href};
+    if (title) {
+      return {title: title, url: window.location.href};
+    }
   }
 
   getSkills(skills) {
-    this.offerSkills = skills.split([',']);
-    return this.offerSkills;
+    if (skills) {
+      this.offerSkills = skills.split([',']);
+      return this.offerSkills;
+    }
   }
 
   postApplication() {

@@ -79,7 +79,6 @@ export class CandidatePreviewCardComponent implements OnInit {
   }
 
   getImg() {
-    // TODO: delete this dirty fix when api returns correctly
     const defaultImg = '../../../../../assets/img/defaultProfileImg.png';
     if (this.user.img) {
       return environment.apiUrl + 'image/applicants/' + this.user.img;
