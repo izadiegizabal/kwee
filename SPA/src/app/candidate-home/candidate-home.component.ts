@@ -8,7 +8,7 @@ import {MatPaginator, MatSidenav, PageEvent} from '@angular/material';
 import {BreakpointObserver} from '@angular/cdk/layout';
 import {HttpClient} from '@angular/common/http';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Title} from "@angular/platform-browser";
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-candidate-home',
@@ -119,9 +119,9 @@ export class CandidateHomeComponent implements OnInit {
       this.query = {...this.query, datePublished: {'gte': this.query.datePublished}};
     }
 
-    if (this.query.title) {
-      this.titleService.setTitle('Kwee - ' + this.query.title);
-      this.alreadySearched = this.query.title;
+    if (this.query.keywords) {
+      this.titleService.setTitle('Kwee - ' + this.query.keywords);
+      this.alreadySearched = this.query.keywords;
     } else {
       this.titleService.setTitle('Kwee - Candidate Home');
       this.alreadySearched = '';
