@@ -47,6 +47,6 @@ export class LandingComponent implements OnInit {
   }
 
   onSearch(query: string) {
-    this.router.navigate(['/candidate-home'], {queryParams: {title: query}});
+    this.router.navigate(['/candidate-home'], {queryParams: {keywords: query}});
   }
 }
