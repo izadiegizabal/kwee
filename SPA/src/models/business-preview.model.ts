@@ -11,7 +11,7 @@ export class BusinessPreview {
     public bio: string,
     public address: string,
     public year: Date,
-    public workfield: BusinessIndustries,
+    public workField: BusinessIndustries,
     public img: string,
     public email: string,
     public lastAccess: Date,

@@ -14,7 +14,7 @@
       <h4>Company Size</h4>
       <p>{{getSize()}}</p>
       <h4>Foundation</h4>
-      <p>{{business.year ? (business.year | date:'longDate') : infoNAMess}}</p>
+      <p>{{business.year ? business.year : infoNAMess}}</p>
     </div>
     <div fxFlex="50" fxLayout="column">
       <h4>Industry</h4>
@@ -63,7 +63,7 @@
     <p
       style="margin: 0">{{business.address ? business.address : mockBusiness.address}}</p>
     <mgl-map
-      [center]="[business.lat ? business.lat : mockBusiness.location.lat, business.long ? business.long : mockBusiness.location.long]"
+      [center]="[business.lat ? business.lat : mockBusiness.location.lat, business.lon ? business.lon : mockBusiness.location.lon]"
       [style]="'mapbox://styles/mapbox/streets-v9'"
       [zoom]="[8]"
       fxFlex.lt-sm="100%"
@@ -71,7 +71,7 @@
       style="margin-top: 16px"
     >
       <mgl-marker
-        [lngLat]="[business.lat ? business.lat : mockBusiness.location.lat, business.long ? business.long : mockBusiness.location.long]">
+        [lngLat]="[business.lat ? business.lat : mockBusiness.location.lat, business.lon ? business.lon : mockBusiness.location.lon]">
         <mat-icon color="primary" svgIcon="place"></mat-icon>
       </mgl-marker>
     </mgl-map>

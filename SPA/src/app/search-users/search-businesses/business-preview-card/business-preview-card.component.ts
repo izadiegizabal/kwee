@@ -41,7 +41,7 @@ export class BusinessPreviewCardComponent implements OnInit {
 
   getWorkfield() {
     // TODO: delete this dirty fix when api returns correctly
-    return (BusinessIndustries[this.user.workfield]) ? BusinessIndustries[this.user.workfield] : 'Designer';
+    return (BusinessIndustries[this.user.workField]) ? BusinessIndustries[this.user.workField] : 'Designer';
   }
 
   getSize() {

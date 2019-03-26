@@ -21,10 +21,10 @@ export class BusinessMoreInfoComponent implements OnInit {
     website: 'https://facebook.com',
     size: '1000',
     industry: 'Online Service Company',
-    year: '2004-02-04',
+    year: '2004',
     location: {
       lat: -74.20,
-      long: 40.51,
+      lon: 40.51,
     },
     address: '770 Broadway, New York, NY 10003, USA',
     twitter: 'Facebook',
