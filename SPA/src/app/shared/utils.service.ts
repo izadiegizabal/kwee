@@ -1,3 +1,5 @@
+import {Observable} from "rxjs";
+
 export function getTimePassed(publishDate: Date): string {
   const min = 1000 * 60;
   const hour = 60 * min;
