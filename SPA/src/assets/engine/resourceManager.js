@@ -266,28 +266,27 @@ class TResourceMesh extends TResource{
         let uMaterialDiffuse = global.gl.getUniformLocation(global.program, 'uMaterialDiffuse');
         let uMaterialAmbient = global.gl.getUniformLocation(global.program, 'uMaterialAmbient');
         let uUseTextures = global.gl.getUniformLocation(global.program, 'uUseTextures');
-        global.gl.uniform1i(uUseTextures, false);
         /// CHAPUZA CHANGE COLORS
         if (this.name === 'sea.json') {
           global.gl.uniform4fv(uMaterialDiffuse, [0.313, 0.678, 0.949, 1.0]);
           global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+          global.gl.uniform1i(uUseTextures, 0);
         } else {
           if (this.tex && this.tex.tex) {
-
             global.gl.uniform4fv(uMaterialDiffuse, [1.0, 1.0, 1.0, 1.0]);
             global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
             global.gl.activeTexture(global.gl.TEXTURE0);
             global.gl.bindTexture(global.gl.TEXTURE_2D, this.tex.tex);
             global.gl.uniform1i(global.program.sampler, 0);
-            global.gl.uniform1i(uUseTextures, true);
+            global.gl.uniform1i(uUseTextures, 1);
           } else {
             global.gl.uniform4fv(uMaterialDiffuse, [0.258, 0.960, 0.6, 1.0]);
             global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+            global.gl.uniform1i(uUseTextures, 0);
           }
         }
         ///////////////////////////////////////////////////////////////////////////////////////////// BIND BUFFERS
         let positionAttribLocation = global.gl.getAttribLocation(global.program, 'aVertexPosition');
-        let texCoordAttribLocation = global.gl.getAttribLocation(global.program, 'aVertexTextureCoords');
         let normalAttribLocation = global.gl.getAttribLocation(global.program, 'aVertexNormal');
         global.gl.enableVertexAttribArray(positionAttribLocation);
         global.gl.enableVertexAttribArray(normalAttribLocation);
@@ -304,6 +303,7 @@ class TResourceMesh extends TResource{
 
 
         if (this.tex && this.tex.tex) {
+          let texCoordAttribLocation = global.gl.getAttribLocation(global.program, 'aVertexTextureCoords');
           global.gl.enableVertexAttribArray(texCoordAttribLocation);
           global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.cbo);
           global.gl.vertexAttribPointer(texCoordAttribLocation, 2, global.gl.FLOAT, global.gl.FALSE, 2 * Float32Array.BYTES_PER_ELEMENT, 0);
@@ -407,21 +407,25 @@ class TResourceTexture extends TResource{
         this.image = new Image();
     }
 
-    bindTexture() {
-        console.info('loading image '+this.image.src);
+    async bindTexture() {
+      return new Promise(async resolve => {
+        console.log('== loading TResourceTexture(' + this.name + ') ==');
+        // console.info('loading image '+this.image.src);
         global.gl.bindTexture(global.gl.TEXTURE_2D, this.tex);
-        global.gl.pixelStorei(global.gl.UNPACK_FLIP_Y_WEBGL, true);
+        global.gl.pixelStorei(global.gl.UNPACK_FLIP_Y_WEBGL, 1);
         global.gl.texImage2D(global.gl.TEXTURE_2D, 0, global.gl.RGBA, global.gl.RGBA, global.gl.UNSIGNED_BYTE, this.image);
         global.gl.texParameteri(global.gl.TEXTURE_2D, global.gl.TEXTURE_MIN_FILTER, global.gl.LINEAR);
         global.gl.bindTexture(global.gl.TEXTURE_2D, null);
+        resolve(true);
+      });
     }
     
     async loadFile(name) {
-      return new Promise(resolve => {
+      return new Promise(async resolve => {
         let url = constants.URL + '/assets/assets/textures/' + name;
         let self = this;
         this.image.onload = async function () {
-          self.bindTexture();
+          await self.bindTexture();
           resolve(self);
         }
         this.image.src = url;

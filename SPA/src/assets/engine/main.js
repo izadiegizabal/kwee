@@ -1,7 +1,7 @@
 // TNode
 // TEntity
 // TResourceManager
-import {loadImage, TResourceManager} from './resourceManager.js';
+import {TResourceManager} from './resourceManager.js';
 // TMotor
 import {TMotorTAG} from './TMotorTAG.js';
 // Commons
@@ -62,8 +62,6 @@ async function mainInit() {
     draw = true;
     allowActions.value = true;
     resolve(allowActions.value);
-
-
   });
 }
 
@@ -84,7 +82,7 @@ async function mainR(texture) {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // global.gl.clearColor(0.266, 0.294, 0.329, 1.0); // our grey
-    //global.gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
+    // global.gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
     global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
     global.gl.enable(global.gl.DEPTH_TEST);
     global.gl.enable(global.gl.CULL_FACE);
@@ -97,8 +95,6 @@ async function mainR(texture) {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         TREE & RESOURCES
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
     let cam = motor.createCamera(scene);
     let light = motor.createLight(scene);
     let land;
@@ -115,13 +111,13 @@ async function mainR(texture) {
     //motor.rotate(sphere, -90, 'z');
     motor.scale(sphere, [0.995, 0.995, 0.995]);
 
-
+    ///// 0 === false ; 1 === true
     let uWireframe = global.gl.getUniformLocation(global.program, 'uWireframe');
-    global.gl.uniform1i(uWireframe, global.gl.FALSE);
+    global.gl.uniform1i(uWireframe, 0);
     let uUseVertexColor = global.gl.getUniformLocation(global.program, 'uUseVertexColor');
-    global.gl.uniform1i(uUseVertexColor, global.gl.FALSE);
+    global.gl.uniform1i(uUseVertexColor, 0);
     let uUseTextures = global.gl.getUniformLocation(global.program, 'uUseTextures');
-    global.gl.uniform1i(uUseTextures, global.gl.FALSE);
+    global.gl.uniform1i(uUseTextures, 0);
 
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -148,7 +144,7 @@ async function mainR(texture) {
     global.gl.uniformMatrix4fv(matProjUniformLocation, false, projMatrix);
 
     let off = global.gl.getUniformLocation(global.program, 'uOffscreen');
-    global.gl.uniform1i(off, false);
+    global.gl.uniform1i(off, 0);
     global.gl.bindFramebuffer(global.gl.FRAMEBUFFER, null);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         LIGHTNING
@@ -170,6 +166,25 @@ async function mainR(texture) {
     allowActions.value = true;
     // document.getElementById("kweelive").click();
     document.body.click();
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         FAKE TEXTURE
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /*
+      If seems that it doesn't matter if the shader only accesses the texture when uUseTextures is true.
+      What matters is the shader uses a texture at all.
+
+      Instead of using two different pair of shader, we are going to bind a one pixel white texture to avoid the error.
+      It is said to be a good practice.Then, we overwrite it in case we need to use textures.
+
+      link: https://gamedev.stackexchange.com/questions/166886/render-warning-there-is-no-texture-bound-to-the-unit-0-when-not-rendering-tex
+     */
+    const whiteTexture = global.gl.createTexture();
+    global.gl.bindTexture(global.gl.TEXTURE_2D, whiteTexture);
+    global.gl.texImage2D(
+      global.gl.TEXTURE_2D, 0, global.gl.RGBA, 1, 1, 0,
+      global.gl.RGBA, global.gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
+    global.gl.useProgram(global.program);
+    global.gl.bindTexture(global.gl.TEXTURE_2D, whiteTexture);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         LOOP
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
