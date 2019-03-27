@@ -1,19 +1,22 @@
+import * as glMatrix from "./dependencies/gl-matrix";
 
 
 let canvas = null;
-let gl = null;
-let program = null;
-let texture = null;
-var angle = 30;
+let global = {
+  gl: null,
+  program: null
+}
+let angle = 30;
 
 function shared() {
+  return new Promise(async resolve => {
     canvas = document.getElementById('kweelive');
-    
-    gl = canvas.getContext('webgl');
-    
-    program = gl.createProgram();
-    
-    texture = gl.createTexture();
+    if (canvas) {
+      global.gl = canvas.getContext('webgl');
+      global.program = global.gl.createProgram();
+    }
+    resolve(true);
+  });
 }
 
 function changeAngle(degrees) {
@@ -22,13 +25,11 @@ function changeAngle(degrees) {
 
 // Virtual class
 class TEntity {
-
     beginDraw() {
     }
 
     endDraw() {
     }
-
 }
 
 // Static attributes
@@ -55,12 +56,10 @@ function setEntity(ent){
 export {
     shared,
     canvas,
-    gl,
-    program,
+    global,
     TEntity,
     getEntity,
     setEntity,
     changeAngle,
     angle,
-    texture
 }
