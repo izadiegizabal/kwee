@@ -5,6 +5,7 @@ import {TNode} from '../../assets/engine/TNode';
 import {TResourceManager, TResourceMaterial, TResourceMesh, TResourceShader, TResourceTexture} from '../../assets/engine/resourceManager';
 import {shared} from '../../assets/engine/commons.js';
 import {main, mainInit, mainR, mainTest, resetCanvas, allowActions, pls} from '../../assets/engine/main.js';
+import {Title} from '@angular/platform-browser';
 
 // import {TMotorTAG} from '../../assets/engine/TMotorTAG.js';
 // import {glMatrix, mat2, mat2d, mat3, mat4, quat, quat2, vec2, vec3, vec4} from 'gl-matrix';
