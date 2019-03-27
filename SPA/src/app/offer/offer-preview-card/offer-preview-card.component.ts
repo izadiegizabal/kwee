@@ -10,7 +10,6 @@ import * as fromApp from '../../store/app.reducers';
 import {AlertDialogComponent} from '../../shared/alert-dialog/alert-dialog.component';
 import {OfferManageEffects} from '../offer-manage/store/offer-manage.effects';
 import * as OfferManageActions from '../offer-manage/store/offer-manage.actions';
-import {filter} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 
@@ -24,7 +23,6 @@ export class OfferPreviewCardComponent implements OnInit {
 
   offerUrl: string;
   authState: any;
-  offerManageState: any;
   candidate: boolean;
   nameToRate: string;
   userId: number;
@@ -65,15 +63,6 @@ export class OfferPreviewCardComponent implements OnInit {
           }
         }
       });
-
-    this.manageOfferEffects.ChangeOfferStatus.pipe(
-      filter((action: any) => action.type === OfferManageActions.SET_CHANGE_OFFER_STATUS)
-    ).subscribe((next: { payload: any, type: string }) => {
-        if (!this.candidate) {
-          this.router.navigate(['/my-offers/' + this.offer.id + '/selection']);
-        }
-      }
-    );
   }
 
   urlfyPosition() {
@@ -235,6 +224,7 @@ export class OfferPreviewCardComponent implements OnInit {
 
   startSelectionProcess() {
     this.store$.dispatch(new OfferManageActions.TryChangeOfferStatus({offerId: this.offer.id, newStatus: 3}));
+    this.router.navigate(['/my-offers/' + this.offer.id + '/selection']);
   }
 
   getDescription() {
