@@ -7,13 +7,14 @@
   <mat-divider></mat-divider>
   <button mat-menu-item
           routerLink="/notifications">
-    <mat-icon *ngIf="numNotifications > 0" class="red" matBadge="{{numNotifications}}" matBadgeColor="warn">notifications</mat-icon>
-    <mat-icon *ngIf="numNotifications == 0" class="gray" svgIcon="notifications"></mat-icon>
+    <mat-icon matBadge="{{numNotifications}}" [matBadgeColor]="getNotificationNum() > 0 ? 'warn' : 'primary'"
+              color="primary" svgIcon="notifications"></mat-icon>
     <span>Notifications</span>
   </button>
   <button mat-menu-item
           routerLink="/messages">
-    <mat-icon [ngClass]="{'red':message}" svgIcon="chat"><span class="num">{{numMessages}}</span></mat-icon>
+    <mat-icon matBadge="{{numMessages}}" [matBadgeColor]="numMessages > 0 ? 'warn' : 'primary'"
+              color="primary" svgIcon="chat"></mat-icon>
     <span>Messages</span>
   </button>
   <button *ngIf="userType==='admin'"
