@@ -1,30 +1,15 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 
+import {TCamera, TMesh, TAnimation, TLight, TTransform, TEntity} from '../../assets/engine/TEntity';
+import {TNode} from '../../assets/engine/TNode';
+import {TResourceManager, TResourceMaterial, TResourceMesh, TResourceShader, TResourceTexture} from '../../assets/engine/resourceManager';
+import {shared} from '../../assets/engine/commons.js';
+import {main, mainInit, mainR, mainTest, resetCanvas, allowActions, pls} from '../../assets/engine/main.js';
+
+// import {TMotorTAG} from '../../assets/engine/TMotorTAG.js';
 // import {glMatrix, mat2, mat2d, mat3, mat4, quat, quat2, vec2, vec3, vec4} from 'gl-matrix';
 
-import {
-  TCamera,
-  TMesh,
-  TAnimation,
-  TLight,
-  TTransform,
-  TEntity } from '../../assets/engine/TEntity';
-import { TNode } from '../../assets/engine/TNode';
-import {
-  TResourceManager,
-  TResourceMaterial,
-  TResourceMesh,
-  TResourceShader,
-  TResourceTexture } from '../../assets/engine/resourceManager';
-import { TMotorTAG } from '../../assets/engine/TMotorTAG.js';
-import { shared, canvas } from '../../assets/engine/commons.js';
-
-import { main, mainInit, mainR, mainTest, resetCanvas, allowActions, pls} from '../../assets/engine/main.js';
-import {Title} from "@angular/platform-browser";
-
-
 // import { main } from '../../assets/engine/run.js'
-
 // import * as test from '../../assets/test.js';
 
 // import 'gl-matrix';
@@ -39,7 +24,7 @@ import {Title} from "@angular/platform-browser";
   templateUrl: './kwee-live.component.html',
   styleUrls: ['./kwee-live.component.scss']
 })
-export class KweeLiveComponent implements OnInit {
+export class KweeLiveComponent implements OnInit, OnDestroy {
 
   disabled: boolean;
   particles: boolean;
@@ -53,7 +38,7 @@ export class KweeLiveComponent implements OnInit {
   async ngOnInit() {
     this.titleService.setTitle('Kwee - Kwee Live');
     this.disabled = false;
-    shared();
+    await shared();
     await mainInit();
   }
 
@@ -63,12 +48,12 @@ export class KweeLiveComponent implements OnInit {
 
   drawHollow() {
     resetCanvas();
-    mainR('hollow', this.particles);
+    mainR(false, this.particles);
   }
 
-  drawThicc() {
+  draw() {
     resetCanvas();
-    mainR('notHollow', this.particles);
+    mainR(true, this.particles);
   }
 
   async reset() {
@@ -78,6 +63,10 @@ export class KweeLiveComponent implements OnInit {
   drawParticles() {
     this.particles = !this.particles;
     console.log('Particles ' + this.particles);
+  }
+
+  ngOnDestroy() {
+    resetCanvas();
   }
 
 }
