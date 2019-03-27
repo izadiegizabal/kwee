@@ -79,6 +79,8 @@ export class OfferManageTabComponent implements OnInit {
         status: this.status
       }));
     }
+
+    window.scrollTo(0, 0);
   }
 
   totalOffers(count) {
