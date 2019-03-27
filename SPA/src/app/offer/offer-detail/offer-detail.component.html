@@ -8,8 +8,10 @@
   </div>
   <div fxLayout="row"
        fxLayoutAlign="center center">
-    <mat-card fxFlex="95%"
-              fxFlex.gt-lg="50%" fxFlex.gt-md="60%" fxFlex.gt-sm="75%" fxLayout="column">
+    <mat-card
+      *ngIf="(offerState | async).offer"
+      fxFlex="95%"
+      fxFlex.gt-lg="50%" fxFlex.gt-md="60%" fxFlex.gt-sm="75%" fxLayout="column">
       <mat-card-header fxLayoutAlign="space-between">
         <mat-card-title fxLayout="row" fxLayoutGap="16px">
           <span>{{(offerState | async).offer.title }}</span>
@@ -66,7 +68,7 @@
                [src]="(offerState | async).offer.img ? environment.apiUrl + 'image/offerers/' + (offerState | async).offer.img :
             'https://cdn.vox-cdn.com/thumbor/Pkmq1nm3skO0-j693JTMd7RL0Zk=/0x0:2012x1341/1200x800/filters:focal(0x0:2012x1341)/' +
             'cdn.vox-cdn.com/uploads/chorus_image/image/47070706/google2.0.0.jpg'">
-          <span [innerHTML]="(offerState | async).offer.description">
+          <span [innerHTML]="(offerState | async).offer.description" fxFlex="column">
           </span>
         </div>
 
@@ -157,7 +159,7 @@
         <div fxLayout="column">
           <h2 class="mat-h2">Responsibilities</h2>
           <div
-            fxLayout="row"
+            fxLayout="column"
             style="white-space: pre-wrap; margin-bottom: 16px"
             [innerHTML]="(offerState | async).offer.responsabilities">
           </div>
@@ -166,7 +168,7 @@
         <div fxLayout="column">
           <h2 class="mat-h2">Requirements</h2>
           <div
-            fxLayout="row"
+            fxLayout="column"
             style="white-space: pre-wrap; margin-bottom: 16px"
             [innerHTML]="(offerState | async).offer.requeriments">
           </div>
