@@ -2,19 +2,19 @@
   <div style="margin: 8px 0 32px 16px">
     <h2 class="mat-h1">Selection process for <span>{{offer ? offer.title : ''}}</span></h2>
   </div>
-  <mat-sidenav-container
-    fxLayout="column">
+  <mat-sidenav-container>
 
-    <mat-sidenav-content
-      fxLayout="column"
-      fxLayoutAlign="start center"
-      fxLayoutGap="16px" fxLayoutGap.gt-sm="32px">
+    <mat-sidenav-content>
 
       <div [ngClass]="{'hide': showStepper}" fxLayout="row" fxLayoutAlign="center center" fxFlex="100%">
         <mat-spinner></mat-spinner>
       </div>
 
-      <mat-horizontal-stepper linear [ngClass]="{'hide': !showStepper}" #stepper>
+      <mat-horizontal-stepper
+        fxFlex="100%"
+        *ngIf="(offerState | async).offer"
+        linear [ngClass]="{'hide': !showStepper}"
+        #stepper>
         <mat-step [editable]="!firstStepCompletion" [completed]="firstStepOkay">
           <form [formGroup]="selectFormGroup">
             <ng-template matStepLabel>Select your candidates</ng-template>
@@ -58,13 +58,13 @@
                   <p>The following candidates have applied for the offer. You now have to
                     choose {{(offerState | async).offer.maxApplicants}}
                     candidate{{(offerState | async).offer.maxApplicants > 1 ? 's' : ''}}.
-                    You have selected <strong>{{currentSelected}}</strong> candidates out of <strong>{{(offerState | async).offer.maxApplicants}}</strong>
+                    You have selected <strong>{{currentSelected}}</strong> candidates out of
+                    <strong>{{(offerState | async).offer.maxApplicants}}</strong>
                     positions.
                   </p>
                 </div>
                 <div fxLayout="row" fxLayout.lt-lg="column" fxLayoutGap="48px" style="padding-top: 32px">
                   <div
-                    style="margin-top: 36px"
                     fxFlexOrder="2"
                     fxFlexOrder.lt-lg="1"
                     fxLayoutGap="24px"
@@ -94,7 +94,6 @@
                     </div>
                   </div>
                   <div
-                    style="margin-top: 36px"
                     fxFlexOrder="1"
                     fxFlexOrder.lt-lg="2"
                     fxLayoutGap="24px"

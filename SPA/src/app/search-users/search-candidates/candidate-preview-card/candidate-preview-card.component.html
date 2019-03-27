@@ -29,6 +29,11 @@
       fxLayoutGap="16px">
       <app-icon-with-text [text]="user.city" icon="place"></app-icon-with-text>
       <app-icon-with-text [text]="getAge(user.dateBorn.toString())" icon="cake"></app-icon-with-text>
+      <div *ngIf="applicationStatus !== -1">
+        <mat-chip-list *ngIf="applicationStatus !== 2">
+          <mat-chip [color]="getColor()" selected>{{getApplicationStatus()}}</mat-chip>
+        </mat-chip-list>
+      </div>
       <!--<app-icon-with-text [text]="getLatestExperience()" icon="work"></app-icon-with-text>-->
     </div>
   </mat-card-header>
@@ -77,7 +82,13 @@
         <mat-icon svgIcon="star"></mat-icon>
         {{'Select'}}
       </button>
-      <div *ngIf="applicationStatus !== -1">
+      <div *ngIf="applicationStatus !== -1" fxLayout="row" fxLayoutGap="16px">
+        <button (click)="contactUser()"
+                color="primary"
+                mat-raised-button>
+          <mat-icon svgIcon="chat"></mat-icon>
+          {{'Contact'}}
+        </button>
         <button (click)="rejectCandidate()"
                 color="primary"
                 mat-raised-button
@@ -85,9 +96,6 @@
           <mat-icon>close</mat-icon>
           Cancel Selection
         </button>
-        <mat-chip-list *ngIf="applicationStatus !== 2">
-          <mat-chip [color]="getColor()" selected>{{getApplicationStatus()}}</mat-chip>
-        </mat-chip-list>
       </div>
     </div>
   </mat-card-actions>

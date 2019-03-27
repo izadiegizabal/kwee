@@ -17,7 +17,6 @@ import * as OfferActions from '../../offer-detail/store/offer.actions';
 import * as fromOffer from '../../offer-detail/store/offer.reducers';
 import {OfferEffects} from '../../offer-detail/store/offer.effects';
 import {Title} from '@angular/platform-browser';
-import {Location} from '@angular/common';
 
 @Component({
   selector: 'app-offer-selection-process',
