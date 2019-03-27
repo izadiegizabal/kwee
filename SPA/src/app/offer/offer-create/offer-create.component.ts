@@ -277,7 +277,7 @@ export class OfferCreateComponent implements OnInit {
         'status': '0',
         'title': this.form.controls['title'].value,
         'description': this.form.controls['description'].value,
-        'datePublished': (new Date()).toDateString(),
+        'datePublished': new Date(),
         'dateStart': this.form.controls['dateStart'].value,
         'dateEnd': this.form.controls['dateEnd'].value,
         'location': (this.form.controls['location'].value as City).name
