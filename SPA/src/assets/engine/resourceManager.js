@@ -229,15 +229,15 @@ class TResourceMesh extends TResource{
         this.nVertices = this.vertices.length;
 
       ///////////////////////////////////////////////////////////////////////////////// CREATE BUFFERS
-        var vertexBufferObject = gl.createBuffer();
+        let vertexBufferObject = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, vertexBufferObject);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
 
-        var normalBufferObject = gl.createBuffer();
+        let normalBufferObject = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, normalBufferObject);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.normals), gl.STATIC_DRAW);
 
-        var indexBufferObject = gl.createBuffer();
+        let indexBufferObject = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBufferObject);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triVertices), gl.STATIC_DRAW);
 
@@ -245,8 +245,8 @@ class TResourceMesh extends TResource{
         this.ibo = indexBufferObject;
         this.nbo = normalBufferObject;
 
-        if (this.textures !== null) {
-          var colorBufferObject = gl.createBuffer();
+        if (this.textures) {
+          let colorBufferObject = gl.createBuffer();
           gl.bindBuffer(gl.ARRAY_BUFFER, colorBufferObject);
           gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.textures), gl.STATIC_DRAW);
           this.cbo = colorBufferObject;
@@ -270,30 +270,23 @@ class TResourceMesh extends TResource{
         gl.uniform4fv(uMaterialAmbient, [1.0,1.0,1.0,1.0]);
       }
       else {
-        gl.uniform4fv(uMaterialDiffuse, [0.258, 0.960, 0.6,1.0]);
-        gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
         if(this.tex && this.tex.tex) {
+
           gl.uniform4fv(uMaterialDiffuse, [1.0,1.0,1.0,1.0]);
           gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
           gl.activeTexture(gl.TEXTURE0);
           gl.bindTexture(gl.TEXTURE_2D, this.tex.tex);
           gl.uniform1i(program.sampler, 0);
           gl.uniform1i(uUseTextures, true);
+        } else {
+          gl.uniform4fv(uMaterialDiffuse, [0.258, 0.960, 0.6,1.0]);
+          gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
         }
       }
-      ///// BOTH FALSE
-      var uWireframe = gl.getUniformLocation(program, 'uWireframe');
-      gl.uniform1i(uWireframe, false);
-      var uUseVertexColor = gl.getUniformLocation(program, 'uUseVertexColor');
-      gl.uniform1i(uUseVertexColor, false);
-
-      ///// TRUE IF TEXTURES ARE NEEDED
-
-
       ///////////////////////////////////////////////////////////////////////////////////////////// BIND BUFFERS
-      var positionAttribLocation = gl.getAttribLocation(program, 'aVertexPosition');
-      var texCoordAttribLocation = gl.getAttribLocation(program, 'aVertexTextureCoords');
-      var normalAttribLocation = gl.getAttribLocation(program, 'aVertexNormal');
+      let positionAttribLocation = gl.getAttribLocation(program, 'aVertexPosition');
+      let texCoordAttribLocation = gl.getAttribLocation(program, 'aVertexTextureCoords');
+      let normalAttribLocation = gl.getAttribLocation(program, 'aVertexNormal');
       gl.enableVertexAttribArray(positionAttribLocation);
       gl.enableVertexAttribArray(normalAttribLocation);
 
@@ -308,7 +301,7 @@ class TResourceMesh extends TResource{
       gl.enableVertexAttribArray(normalAttribLocation);
 
 
-      if (this.textures !== null) {
+      if (this.tex && this.tex.tex) {
         gl.enableVertexAttribArray(texCoordAttribLocation);
         gl.bindBuffer(gl.ARRAY_BUFFER, this.cbo);
         gl.vertexAttribPointer(texCoordAttribLocation,2,gl.FLOAT, gl.FALSE, 2 * Float32Array.BYTES_PER_ELEMENT,0);

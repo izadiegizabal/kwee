@@ -1,41 +1,11 @@
 // TNode
-import {
-    TNode,
-    calculateViews,
-    calculateLights,
-    goToRoot,
-    getLigthsViews
-} from './TNode.js';
 // TEntity
-import {
-    TTransform,
-    TCamera,
-    TLight,
-    TAnimation,
-    TMesh
-} from './TEntity.js';
 // TResourceManager
-import {
-    TResourceManager,
-    TResourceMesh,
-    TResourceMaterial,
-    TResourceTexture,
-    TResourceShader,
-    loadImage
-} from './resourceManager.js';
+import {loadImage, TResourceManager} from './resourceManager.js';
 // TMotor
-import { TMotorTAG } from './TMotorTAG.js';
-
+import {TMotorTAG} from './TMotorTAG.js';
 // Commons
-import {
-    canvas,
-    gl,
-    program,
-    TEntity,
-    angle,
-    changeAngle,
-    texture
-} from './commons.js';
+import {canvas, changeAngle, gl, program} from './commons.js';
 
 let draw = true;
 let manager = null;
@@ -43,20 +13,19 @@ let allowActions = {
   value: false
 };
 
-async function mainInit(){
+async function mainInit() {
   return new Promise(async resolve => {
 
-  //gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
+    //gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 
     manager = new TResourceManager();
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         SHADERS
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      let VShader = await manager.getResource('shader.vs');
-      let FShader = await manager.getResource('shader.fs');
+    let VShader = await manager.getResource('shader.vs');
+    let FShader = await manager.getResource('shader.fs');
 
 
     let vertexShader = gl.createShader(gl.VERTEX_SHADER);
@@ -98,13 +67,13 @@ async function mainInit(){
   });
 }
 
-async function resetCanvas(){
+async function resetCanvas() {
   draw = false;
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 }
 
 
-async function mainR( texture ){
+async function mainR(texture) {
   draw = true;
   allowActions.value = false;
   let motor = new TMotorTAG(manager);
@@ -133,8 +102,7 @@ async function mainR( texture ){
   let light = motor.createLight(scene);
   let land;
   land = await motor.loadMesh(scene, 'earthobj.json');
-  if(texture) {
-    console.log(true);
+  if (texture) {
     let tex = await manager.getResource('continents.jpg');
     land.entity.mesh.tex = tex;
     console.log(land);
@@ -144,14 +112,22 @@ async function mainR( texture ){
   //motor.rotate(land, -90, 'z');
   let sphere = await motor.loadMesh(scene, 'sea.json');
   //motor.rotate(sphere, -90, 'z');
-  motor.scale(sphere, [0.995,0.995,0.995]);
+  motor.scale(sphere, [0.995, 0.995, 0.995]);
+
+
+  let uWireframe = gl.getUniformLocation(program, 'uWireframe');
+  gl.uniform1i(uWireframe, gl.FALSE);
+  let uUseVertexColor = gl.getUniformLocation(program, 'uUseVertexColor');
+  gl.uniform1i(uUseVertexColor, gl.FALSE);
+  let uUseTextures = gl.getUniformLocation(program, 'uUseTextures');
+  gl.uniform1i(uUseTextures, gl.FALSE);
 
 
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////                                         CAMERAS
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  
+
 
   console.log("scene:");
   console.log(scene);
@@ -160,23 +136,6 @@ async function mainR( texture ){
 
   motor.calculateLights();
   motor.calculateViews();
-  //   console.log('Lights : ');
-  //   console.log(TEntity.Lights);
-  //   console.log('Views/cameras: ');
-  //   console.log(TEntity.Views);
-  //   console.log('Lights array: ');
-  //   console.log(TEntity.AuxLights);
-  //   console.log('Views/cameras array: ');
-  //   console.log(TEntity.AuxViews);
-  //   console.log('Lights : ');
-  //   console.log(motor.allLights);
-  //   console.log('Views/cameras: ');
-  //   console.log(motor.allCameras);
-  //   console.log('Lights array: ');
-  //   console.log(TEntity.AuxLights);
-  //   console.log('Views/cameras array: ');
-  //   console.log(TEntity.AuxViews);
-
 
   // @todo: DEAL WITH UMVMATRIX
   let projMatrix = new Float32Array(16);
@@ -184,7 +143,7 @@ async function mainR( texture ){
   glMatrix.mat4.perspective(projMatrix, glMatrix.glMatrix.toRadian(45), canvas.clientWidth / canvas.clientHeight, 0.1, 1000.0);
   let matViewUniformLocation = gl.getUniformLocation(program, 'uVMatrix');
   let matProjUniformLocation = gl.getUniformLocation(program, 'uPMatrix');
-  
+
   gl.uniformMatrix4fv(matViewUniformLocation, false, viewMatrix);
   gl.uniformMatrix4fv(matProjUniformLocation, false, projMatrix);
 
@@ -201,9 +160,9 @@ async function mainR( texture ){
   let alpha = gl.getUniformLocation(program, 'uAlpha');
 
   /// @todo: MOVE TO TNODE
-  gl.uniform3fv(lightPos,   [5,5,5]);
-  gl.uniform4fv(lightAmb,    [0.0,0.0,0.0,1.0]);
-  gl.uniform4fv(lightDiff,    [1.0,1.0,1.0,1.0]);
+  gl.uniform3fv(lightPos, [5, 5, 5]);
+  gl.uniform4fv(lightAmb, [0.0, 0.0, 0.0, 1.0]);
+  gl.uniform4fv(lightDiff, [1.0, 1.0, 1.0, 1.0]);
   gl.uniform1f(alpha, 1.0);
 
 
@@ -214,7 +173,7 @@ async function mainR( texture ){
   /////////////////////                                         LOOP
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   var loop = function () {
-    if(draw) {
+    if (draw) {
       //gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       changeAngle(performance.now() / 1000 / 12 * 2 * Math.PI);
@@ -227,8 +186,8 @@ async function mainR( texture ){
 }
 
 export {
-    mainInit,
-    mainR,
-    resetCanvas,
-    allowActions
+  mainInit,
+  mainR,
+  resetCanvas,
+  allowActions
 }
