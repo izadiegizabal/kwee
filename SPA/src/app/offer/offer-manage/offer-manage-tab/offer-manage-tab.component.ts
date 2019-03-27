@@ -17,7 +17,7 @@ export class OfferManageTabComponent implements OnInit {
   @Input() status: number;
   @Input() type: number;
   id: number;
-  pageSize = 2;
+  pageSize = 5;
   pageSizeOptions: number[] = [2, 5, 10, 25, 100];
   pageEvent: PageEvent;
   public offerManageState: Observable<fromOfferManage.State>;
