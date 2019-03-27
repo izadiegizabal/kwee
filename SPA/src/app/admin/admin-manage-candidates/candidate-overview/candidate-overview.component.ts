@@ -20,7 +20,7 @@ import {AlertDialogComponent} from '../../../shared/alert-dialog/alert-dialog.co
 export class CandidateOverviewComponent implements OnInit {
 
   // paging
-  pageSize = 2;
+  pageSize = 5;
   pageSizeOptions: number[] = [2, 5, 10, 25, 100];
 
   // MatPaginator Output
@@ -55,7 +55,7 @@ export class CandidateOverviewComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store$.dispatch(new AdminActions.TryGetCandidates({page: 1, limit: 2, params: this.query, order: this.orderby}));
+    this.store$.dispatch(new AdminActions.TryGetCandidates({page: 1, limit: this.pageSize, params: this.query, order: this.orderby}));
     this.adminState = this.store$.pipe(select(state => state.admin));
 
     this.userForm = this._formBuilder.group({
