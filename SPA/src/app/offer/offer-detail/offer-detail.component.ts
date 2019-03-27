@@ -153,7 +153,7 @@ export class OfferDetailComponent implements OnInit {
   }
 
   getOfferApplications(applications) {
-    if (applications) {
+    if (applications > -1) {
       const numOfApplications = applications;
       return numOfApplications + (numOfApplications === 1 ? ' application' : ' applications');
     }

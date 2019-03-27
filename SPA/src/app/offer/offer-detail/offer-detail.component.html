@@ -82,7 +82,7 @@
                  fxLayoutAlign="start start"
                  fxLayoutGap="8px">
               <app-icon-with-text
-                [text]="getOfferDuration((offerState | async).offer.isIndefinite, (offerState | async).offer.duration, (offerState | async).offer.durationUnit) | lowercase"
+                [text]="getOfferDuration((offerState | async).offer.isIndefinite, (offerState | async).offer.duration, (offerState | async).offer.durationUnit) | titlecase"
                 icon="date-range"></app-icon-with-text>
               <app-icon-with-text
                 [text]="getOfferSalary((offerState | async).offer.salaryAmount, (offerState | async).offer.salaryCurrency, (offerState | async).offer.salaryFrequency)"
