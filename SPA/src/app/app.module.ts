@@ -34,7 +34,7 @@ const config: SocketIoConfig = {
 
 export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {
   return localStorageSync({
-    keys: ['auth', 'admin', 'offers', 'offer', 'profiles', 'offerManage'],
+    keys: ['auth', 'admin', 'offers', 'offer', 'profiles', 'offerManage', 'invoices'],
     rehydrate: true
   })(reducer);
 }

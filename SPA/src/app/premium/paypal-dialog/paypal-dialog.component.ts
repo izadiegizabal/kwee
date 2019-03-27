@@ -8,6 +8,9 @@ import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
 import * as AdminActions from '../../admin/store/admin.actions';
 import * as fromAdmin from '../../admin/store/admin.reducers';
+import * as fromInvoice from '../../invoices/store/invoice.reducers';
+import * as InvoiceActions from '../../invoices/store/invoice.actions';
+
 import {Router} from '@angular/router';
 
 
@@ -34,6 +37,7 @@ export class PaypalDialogComponent implements OnInit {
 
   authState: Observable<fromAuth.State>;
   adminState: Observable<fromAdmin.State>;
+  invoiceState: Observable<fromInvoice.State>;
 
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: DialogData,
@@ -58,7 +62,7 @@ export class PaypalDialogComponent implements OnInit {
         }
       });
 
-   // console.log(this.userId + 'id usuario' + this.profileType + 'tipo' + this.data.idproduct + 'idproduct');
+    // console.log(this.userId + 'id usuario' + this.profileType + 'tipo' + this.data.idproduct + 'idproduct');
 
     this.initConfig();
     const aux = this.data.price.split('€');
@@ -93,10 +97,11 @@ export class PaypalDialogComponent implements OnInit {
 
           if (this.profileType === 'candidate') {
             this.store$.dispatch(new AdminActions.TryUpdateCandidate({id: this.userId, updatedCandidate: updateuser}));
-
           } else if (this.profileType === 'business') {
             this.store$.dispatch(new AdminActions.TryUpdateBusiness({id: this.userId, updatedBusiness: updateuser}));
           }
+          this.invoiceState = this.store$.pipe(select('invoices'));
+          this.store$.dispatch(new InvoiceActions.TryPostInvoice({obj: {product: this.data.product, price: this.data.price}}));
         },
         onCancel: (data, actions) => {
           console.log('OnCancel');
