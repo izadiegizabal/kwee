@@ -12,7 +12,7 @@ import {OfferManageEffects} from '../offer-manage/store/offer-manage.effects';
 import * as OfferManageActions from '../offer-manage/store/offer-manage.actions';
 import {filter} from 'rxjs/operators';
 import {Router} from '@angular/router';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient} from '@angular/common/http';
 
 
 @Component({
@@ -235,5 +235,13 @@ export class OfferPreviewCardComponent implements OnInit {
 
   startSelectionProcess() {
     this.store$.dispatch(new OfferManageActions.TryChangeOfferStatus({offerId: this.offer.id, newStatus: 3}));
+  }
+
+  getDescription() {
+    if (this.offer.description && this.offer.description.length > 300) {
+      return this.offer.description.substring(0, 300) + '...';
+    } else {
+      return this.offer.description;
+    }
   }
 }
