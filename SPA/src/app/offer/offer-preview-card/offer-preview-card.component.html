@@ -1,4 +1,4 @@
-<mat-card fxFlex="100%" fxFlex.gt-xs="600px">
+<mat-card fxFlex="100%" fxFlex.gt-sm="656px" fxFlex.gt-md="712px">
   <mat-card-header
     fxLayout="row"
     fxLayout.lt-sm="column"
@@ -28,15 +28,17 @@
 
   <mat-card-content>
     <img
+      width="88px"
+      height="88px"
       alt="Business Logo"
       [src]="getImg()">
-    <span [innerHTML]="(offer.description | slice:0:280) + '...'">
+    <span [innerHTML]="getDescription()">
     </span>
   </mat-card-content>
 
   <mat-card-actions
     fxLayout="row" fxLayout.lt-sm="column"
-    fxLayoutAlign="end center"
+    fxLayoutAlign="center center"
     fxLayoutGap="24px" fxLayoutGap.lt-sm="16px">
     <div
       fxLayout="row"
@@ -66,7 +68,7 @@
          fxLayoutAlign="end center">
       <p *ngIf="!candidate">Click to rate the candidate</p>
       <p *ngIf="candidate">Click to rate the offerer</p>
-      <button (click)="rate()" mat-raised-button color="primary">{{'Rate' | uppercase }}</button>
+      <button (click)="rate()" mat-raised-button color="primary">{{'Rate'}}</button>
     </div>
   </mat-card-actions>
 
@@ -78,7 +80,7 @@
     <div fxLayout="row"
          fxLayoutAlign="end center">
       <p>All applications received!</p>
-      <button [routerLink]="'/my-offers/' + offer.id + '/selection'" mat-raised-button color="primary">{{'Go to Selection Process' | uppercase }}</button>
+      <button [routerLink]="'/my-offers/' + offer.id + '/selection'" mat-raised-button color="primary">{{'Go to Selection'}}</button>
     </div>
   </mat-card-actions>
 
@@ -90,7 +92,7 @@
     <div fxLayout="row"
          fxLayoutAlign="end center">
       <p>Do you want to start the selection process?</p>
-      <button (click)="startSelectionProcess()" mat-raised-button color="primary">{{'Start Selection Process' | uppercase }}</button>
+      <button (click)="startSelectionProcess()" mat-raised-button color="primary">{{'Start Selection'}}</button>
     </div>
   </mat-card-actions>
 

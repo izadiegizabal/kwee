@@ -81,6 +81,7 @@ export class SearchBusinessesComponent implements OnInit {
       params: this.query,
       order: this.orderby
     }));
+    window.scrollTo(0, 0);
   }
 
   isMobile() {

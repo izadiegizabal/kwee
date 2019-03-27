@@ -277,7 +277,7 @@ export class OfferCreateComponent implements OnInit {
         'status': '0',
         'title': this.form.controls['title'].value,
         'description': this.form.controls['description'].value,
-        'datePublished': (new Date()).toDateString(),
+        'datePublished': new Date(),
         'dateStart': this.form.controls['dateStart'].value,
         'dateEnd': this.form.controls['dateEnd'].value,
         'location': (this.form.controls['location'].value as City).name
@@ -292,7 +292,7 @@ export class OfferCreateComponent implements OnInit {
         'duration': this.form.controls['duration'].value ? this.form.controls['duration'].value : '0',
         'durationUnit': this.form.controls['durationUnit'].value ? this.form.controls['durationUnit'].value : '0',
         'contractType': this.form.controls['contractType'].value,
-        'isIndefinite': this.form.controls['isIndefinite'].value ? '0' : '1',
+        'isIndefinite': this.form.controls['isIndefinite'].value ? 'true' : 'false',
         'currentApplications': '0',
         'responsabilities': this.form.controls['responsabilities'].value,
         'requeriments': this.form.controls['requirements'].value,

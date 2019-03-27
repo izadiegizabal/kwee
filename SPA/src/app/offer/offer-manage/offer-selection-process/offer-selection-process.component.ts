@@ -229,6 +229,7 @@ export class OfferSelectionProcessComponent implements OnInit {
   }
 
   changePage() {
+    window.scrollTo(0, 0);
   }
 
 
