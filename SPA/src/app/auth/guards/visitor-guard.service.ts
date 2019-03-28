@@ -16,19 +16,10 @@ export class VisitorGuard implements CanActivate {
 
     this.auth.getUserType().subscribe(
       (type) => {
-        switch (type) {
-          case '':
-            isVisitor = true;
-            break;
-          case 'admin':
-            this.router.navigate(['admin']);
-            break;
-          case 'candidate':
-            this.router.navigate(['candidate-home']);
-            break;
-          case 'business':
-            this.router.navigate(['my-offers']);
-            break;
+        if (type === '') {
+          isVisitor = true;
+        } else {
+          this.router.navigate(['/']);
         }
       }
     );
