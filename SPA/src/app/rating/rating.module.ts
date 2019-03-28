@@ -9,6 +9,7 @@ import {OkDialogModule} from '../shared/ok-dialog/ok-dialog.module';
 import {SignupModule} from '../auth/signup/signup.module';
 import {OkDialogComponent} from '../shared/ok-dialog/ok-dialog.component';
 import {DialogErrorComponent} from '../auth/signup/dialog-error/dialog-error.component';
+import {ClickOutsideModule} from 'ng-click-outside';
 
 
 @NgModule({
@@ -18,6 +19,7 @@ import {DialogErrorComponent} from '../auth/signup/dialog-error/dialog-error.com
   imports: [
     SharedModule,
     RouterModule,
+    ClickOutsideModule,
     ReactiveFormsModule,
     MatExpansionModule,
     OkDialogModule,

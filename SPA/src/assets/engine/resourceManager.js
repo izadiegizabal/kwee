@@ -261,7 +261,7 @@ class TResourceMesh extends TResource{
     }
 
     draw(){
-      if(global.gl && global.program) {
+      // if(global.gl && global.program) {
         ///////////////////////////////////////////////////////////////////////////////////////////// ""MATERIALS"" (NOPE)
         let uMaterialDiffuse = global.gl.getUniformLocation(global.program, 'uMaterialDiffuse');
         let uMaterialAmbient = global.gl.getUniformLocation(global.program, 'uMaterialAmbient');
@@ -338,7 +338,7 @@ class TResourceMesh extends TResource{
         global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
         global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, null);
       }
-    }
+    // }
 }
 
 class TResourceMaterial extends TResource{

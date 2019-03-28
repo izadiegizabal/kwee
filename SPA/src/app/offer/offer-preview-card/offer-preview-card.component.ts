@@ -26,6 +26,7 @@ export class OfferPreviewCardComponent implements OnInit {
   candidate: boolean;
   nameToRate: string;
   userId: number;
+  allRated = false;
 
   @Input() offer: any;
   currencies;
@@ -190,6 +191,8 @@ export class OfferPreviewCardComponent implements OnInit {
             limit: 10,
             status: this.offer.status
           }));
+        } else {
+          this.allRated = result;
         }
       });
     }
