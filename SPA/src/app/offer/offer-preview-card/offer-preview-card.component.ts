@@ -158,7 +158,7 @@ export class OfferPreviewCardComponent implements OnInit {
               to: e.applicationId,
               name: e.applicantName,
               index: e.applicantStatus,
-              haveIRated: e.aHasRated
+              haveIRated: e.oHasRated
             });
           }
         });
@@ -175,6 +175,21 @@ export class OfferPreviewCardComponent implements OnInit {
         console.log('The dialog was closed');
         if (result) {
           console.log(result);
+        }
+        if (this.candidate) {
+          console.log('update my offers as candidate');
+          this.store$.dispatch(new OfferManageActions.TryGetOffersApplicant({
+            id: this.userId,
+            page: 1,
+            limit: 10,
+            status: -1
+          }));
+          this.store$.dispatch(new OfferManageActions.TryGetOffersApplicant({
+            id: this.userId,
+            page: 1,
+            limit: 10,
+            status: this.offer.status
+          }));
         }
       });
     }

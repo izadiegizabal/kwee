@@ -60,7 +60,7 @@
   </mat-card-actions>
 
   <mat-card-actions
-    *ngIf="this.offer.status === 1 && (!candidate || (candidate && this.offer.applicationStatus === 3))"
+    *ngIf="this.offer.status === 1 && ((!candidate && this.offer.applications.length > 0) || (candidate && this.offer.applicationStatus === 3 && !this.offer.aHasRated))"
     fxLayout="row" fxLayout.lt-sm="column"
     fxLayoutAlign="end center"
     fxLayoutGap="24px" fxLayoutGap.lt-sm="16px">
@@ -69,6 +69,19 @@
       <p *ngIf="!candidate">Click to rate the candidate</p>
       <p *ngIf="candidate">Click to rate the offerer</p>
       <button (click)="rate()" mat-raised-button color="primary">{{'Rate'}}</button>
+    </div>
+  </mat-card-actions>
+
+  <mat-card-actions
+    *ngIf="this.offer.status === 1 && ((candidate && this.offer.applicationStatus === 3 && this.offer.aHasRated))"
+    fxLayout="row" fxLayout.lt-sm="column"
+    fxLayoutAlign="end center">
+    <div fxLayout="row"
+         fxLayoutAlign="end center"
+         fxLayoutGap="8px">
+      <p *ngIf="!candidate">You have already rated the candidates</p>
+      <p *ngIf="candidate">You have already rated the offerer</p>
+      <mat-icon color="accent" svgIcon="check-circle"></mat-icon>
     </div>
   </mat-card-actions>
 

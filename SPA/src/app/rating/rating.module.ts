@@ -5,6 +5,10 @@ import { StarRatingModule } from 'angular-star-rating';
 import {RateCandidateComponent} from './rate-candidate/rate-candidate.component';
 import {ReactiveFormsModule} from '@angular/forms';
 import {MatExpansionModule} from '@angular/material/expansion';
+import {OkDialogModule} from '../shared/ok-dialog/ok-dialog.module';
+import {SignupModule} from '../auth/signup/signup.module';
+import {OkDialogComponent} from '../shared/ok-dialog/ok-dialog.component';
+import {DialogErrorComponent} from '../auth/signup/dialog-error/dialog-error.component';
 
 
 @NgModule({
@@ -16,10 +20,14 @@ import {MatExpansionModule} from '@angular/material/expansion';
     RouterModule,
     ReactiveFormsModule,
     MatExpansionModule,
+    OkDialogModule,
+    SignupModule,
     StarRatingModule.forRoot()
   ],
   entryComponents: [
-    RateCandidateComponent
+    RateCandidateComponent,
+    OkDialogComponent,
+    DialogErrorComponent
   ],
   exports: [
     RateCandidateComponent
