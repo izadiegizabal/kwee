@@ -21,13 +21,11 @@ import {CookieService} from 'ngx-cookie-service';
 import {NgcCookieConsentConfig, NgcCookieConsentModule} from 'ngx-cookieconsent';
 import {PrivacyComponent} from './privacy/privacy.component';
 import {OfferCreateModule} from './offer/offer-create/offer-create.module';
-import {LandingComponent} from './landing/landing.component';
-import {JWT_OPTIONS, JwtHelperService, JwtModule} from '@auth0/angular-jwt';
 import {RatingModule} from './rating/rating.module';
 import {LandingModule} from './landing/landing.module';
-
 // Sockets
-import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+import {SocketIoConfig, SocketIoModule} from 'ngx-socket-io';
+
 const config: SocketIoConfig = {
   url: environment.apiUrl, options: {}
 };

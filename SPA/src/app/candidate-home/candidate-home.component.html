@@ -34,7 +34,7 @@
       </div>
     </div>
     <div
-      *ngIf="((!(offersState | async).offers || !(offersState | async).offers.data) && (offersState | async).offers.message === 'No results')"
+      *ngIf="!(offersState | async).offers || (!(offersState | async).offers.data && (offersState | async).offers.message === 'No results')"
       fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">
       <h4 class="mat-h3">No results found.</h4>
       <p class="mat-typography">Your search returned no results. Try shortening or rephrasing your search.</p>
@@ -42,8 +42,8 @@
 
     <div
       *ngIf="
-      ((!(offersState | async).offers ||
-      (offersState | async).offers.data)
+      !(offersState | async).offers ||
+      ((offersState | async).offers.data
       && (offersState | async).offers.message === 'No results but maybe this is interesting for you'
       )"
       fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">
