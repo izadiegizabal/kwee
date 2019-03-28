@@ -15,7 +15,7 @@
 */
 
 import { MTLFile } from './dependencies/MTLFile.js';
-import { gl, program, TEntity, angle, texture } from './commons';
+import { global, TEntity, angle } from './commons';
 import { constants } from './tools/constants.js';
 
 var vec3 = glMatrix.vec3;
@@ -29,10 +29,10 @@ class TResourceManager {
     // map --> store resources
     constructor() {
         this.map = new Map();
-        meshPosVertexBufferObject = gl.createBuffer();
-        meshIndexBufferObject = gl.createBuffer();
-        texCoordVertexBufferObject = gl.createBuffer();
-        normalBufferObject = gl.createBuffer();
+        meshPosVertexBufferObject = global.gl.createBuffer();
+        meshIndexBufferObject = global.gl.createBuffer();
+        texCoordVertexBufferObject = global.gl.createBuffer();
+        normalBufferObject = global.gl.createBuffer();
     }
     
     // getResource --> The resource filename must be the same as "name"
@@ -52,7 +52,8 @@ class TResourceManager {
                     resource = new TResourceMesh(name);
                     break;
                 }
-                case 'texture': {
+                case 'jpg':
+                case 'png': {
                     // console.log("-> Creating TResourceTexture " + name + "...");
                     resource = new TResourceTexture(name);
                     break;
@@ -89,9 +90,10 @@ class TResourceManager {
 
                     break;
                 }
-                case 'texture': {
+                case 'jpg':
+                case 'png': {
                     let value = await this.map.get(name); 
-                    resource = value.texture;
+                    resource = value;
                     
                     break;
                 }
@@ -178,7 +180,11 @@ class TResourceMesh extends TResource{
 
         this.alias = jsonMesh.alias;
 
-        if( file == "earth_fbx.json" || file == "earthfbx.json" || file == "earthobj.json"){
+        if( file == "earth_fbx.json" ||
+          file == "earthfbx.json" ||
+          file == "earthobj.json" ||
+          file == "mesh_continentsObj.json"
+        ){
 
             this.vertices = jsonMesh.meshes[0].vertices;
             this.triVertices = [].concat.apply([], jsonMesh.meshes[0].faces);
@@ -200,6 +206,7 @@ class TResourceMesh extends TResource{
           file == "ballNoNormals.json" ||
           file == "textured_earth.json" ||
           file == "sea.json" ||
+          file == "mesh_continents.json" ||
           file == "earth.json") {
           this.alias = file;
 
@@ -222,111 +229,115 @@ class TResourceMesh extends TResource{
         this.nVertices = this.vertices.length;
 
       ///////////////////////////////////////////////////////////////////////////////// CREATE BUFFERS
-        var vertexBufferObject = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBufferObject);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
+      if(global.gl && global.program) {
+        let vertexBufferObject = global.gl.createBuffer();
+        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, vertexBufferObject);
+        global.gl.bufferData(global.gl.ARRAY_BUFFER, new Float32Array(this.vertices), global.gl.STATIC_DRAW);
 
-        var normalBufferObject = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, normalBufferObject);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.normals), gl.STATIC_DRAW);
+        let normalBufferObject = global.gl.createBuffer();
+        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, normalBufferObject);
+        global.gl.bufferData(global.gl.ARRAY_BUFFER, new Float32Array(this.normals), global.gl.STATIC_DRAW);
 
-        var indexBufferObject = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBufferObject);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triVertices), gl.STATIC_DRAW);
+        let indexBufferObject = global.gl.createBuffer();
+        global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, indexBufferObject);
+        global.gl.bufferData(global.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triVertices), global.gl.STATIC_DRAW);
 
         this.vbo = vertexBufferObject;
         this.ibo = indexBufferObject;
         this.nbo = normalBufferObject;
 
-        if (this.textures !== null) {
-          var colorBufferObject = gl.createBuffer();
-          gl.bindBuffer(gl.ARRAY_BUFFER, colorBufferObject);
-          gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.textures), gl.STATIC_DRAW);
+        if (this.textures) {
+          let colorBufferObject = global.gl.createBuffer();
+          global.gl.bindBuffer(global.gl.ARRAY_BUFFER, colorBufferObject);
+          global.gl.bufferData(global.gl.ARRAY_BUFFER, new Float32Array(this.textures), global.gl.STATIC_DRAW);
           this.cbo = colorBufferObject;
         }
 
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-        gl.bindBuffer(gl.ARRAY_BUFFER,null);
+        global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, null);
+        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
+      }
 
         return this;
     }
 
     draw(){
-      ///////////////////////////////////////////////////////////////////////////////////////////// ""MATERIALS"" (NOPE)
-      let uMaterialDiffuse = gl.getUniformLocation(program, 'uMaterialDiffuse');
-      let uMaterialAmbient = gl.getUniformLocation(program, 'uMaterialAmbient');
-      /// CHAPUZA CHANGE COLORS
-      if (this.name === 'sea.json'){
-        gl.uniform4fv(uMaterialDiffuse, [0.313, 0.678, 0.949,1.0]);
-        gl.uniform4fv(uMaterialAmbient, [1.0,1.0,1.0,1.0]);
+      if(global.gl && global.program) {
+        ///////////////////////////////////////////////////////////////////////////////////////////// ""MATERIALS"" (NOPE)
+        let uMaterialDiffuse = global.gl.getUniformLocation(global.program, 'uMaterialDiffuse');
+        let uMaterialAmbient = global.gl.getUniformLocation(global.program, 'uMaterialAmbient');
+        let uUseTextures = global.gl.getUniformLocation(global.program, 'uUseTextures');
+        /// CHAPUZA CHANGE COLORS
+        if (this.name === 'sea.json') {
+          global.gl.uniform4fv(uMaterialDiffuse, [0.313, 0.678, 0.949, 1.0]);
+          global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+          global.gl.uniform1i(uUseTextures, 0);
+        } else {
+          if (this.tex && this.tex.tex) {
+            global.gl.uniform4fv(uMaterialDiffuse, [1.0, 1.0, 1.0, 1.0]);
+            global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+            global.gl.activeTexture(global.gl.TEXTURE0);
+            global.gl.bindTexture(global.gl.TEXTURE_2D, this.tex.tex);
+            global.gl.uniform1i(global.program.sampler, 0);
+            global.gl.uniform1i(uUseTextures, 1);
+          } else {
+            global.gl.uniform4fv(uMaterialDiffuse, [0.258, 0.960, 0.6, 1.0]);
+            global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+            global.gl.uniform1i(uUseTextures, 0);
+          }
+        }
+        ///////////////////////////////////////////////////////////////////////////////////////////// BIND BUFFERS
+        let positionAttribLocation = global.gl.getAttribLocation(global.program, 'aVertexPosition');
+        let normalAttribLocation = global.gl.getAttribLocation(global.program, 'aVertexNormal');
+        global.gl.enableVertexAttribArray(positionAttribLocation);
+        global.gl.enableVertexAttribArray(normalAttribLocation);
+
+
+        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.vbo);
+        global.gl.vertexAttribPointer(positionAttribLocation, 3, global.gl.FLOAT, global.gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
+        global.gl.enableVertexAttribArray(positionAttribLocation);
+
+
+        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.nbo);
+        global.gl.vertexAttribPointer(normalAttribLocation, 3, global.gl.FLOAT, global.gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
+        global.gl.enableVertexAttribArray(normalAttribLocation);
+
+
+        if (this.tex && this.tex.tex) {
+          let texCoordAttribLocation = global.gl.getAttribLocation(global.program, 'aVertexTextureCoords');
+          global.gl.enableVertexAttribArray(texCoordAttribLocation);
+          global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.cbo);
+          global.gl.vertexAttribPointer(texCoordAttribLocation, 2, global.gl.FLOAT, global.gl.FALSE, 2 * Float32Array.BYTES_PER_ELEMENT, 0);
+          global.gl.enableVertexAttribArray(texCoordAttribLocation);
+        }
+
+
+        ///////////////////////////////////////////////////////////////////////////////// POSITION & ROTATION STUFF
+        var worldMatrix = TEntity.Model;
+        var rotation = glMatrix.mat4.create();
+        glMatrix.mat4.rotate(rotation, worldMatrix, angle, [0, 1, 0]);
+
+
+        var matWorldUniformLocation = global.gl.getUniformLocation(global.program, 'uMVMatrix');
+        global.gl.uniformMatrix4fv(matWorldUniformLocation, false, rotation);
+
+        let aux = glMatrix.mat4.create();
+        /// SORRRRRY, I HAD TO
+        glMatrix.mat4.set(aux, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -2, 1);
+        let auxAux = glMatrix.mat4.create();
+        glMatrix.mat4.multiply(auxAux, rotation, aux);
+
+        glMatrix.mat4.invert(auxAux, auxAux);
+        glMatrix.mat4.transpose(auxAux, auxAux);
+
+        var normal = global.gl.getUniformLocation(global.program, 'uNMatrix');
+        global.gl.uniformMatrix4fv(normal, false, auxAux);
+        ///////////////////////////////////////////////////////////////////////////////// DRAW
+        global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, this.ibo);
+        global.gl.drawElements(global.gl.TRIANGLES, this.nTris, global.gl.UNSIGNED_SHORT, 0);
+        ///////////////////////////////////////////////////////////////////////////////// CLEAR ALL BUFFERS
+        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
+        global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, null);
       }
-      else {
-        gl.uniform4fv(uMaterialDiffuse, [0.258, 0.960, 0.6,1.0]);
-        gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
-      }
-      ///// BOTH FALSE
-      var uWireframe = gl.getUniformLocation(program, 'uWireframe');
-      gl.uniform1i(uWireframe, false);
-      var uUseVertexColor = gl.getUniformLocation(program, 'uUseVertexColor');
-      gl.uniform1i(uUseVertexColor, false);
-
-      ///// TRUE IF TEXTURES ARE NEEDED
-      var uUseTextures = gl.getUniformLocation(program, 'uUseTextures');
-      gl.uniform1i(uUseTextures, false);
-
-      ///////////////////////////////////////////////////////////////////////////////////////////// BIND BUFFERS
-      var positionAttribLocation = gl.getAttribLocation(program, 'aVertexPosition');
-      var texCoordAttribLocation = gl.getAttribLocation(program, 'aVertexTextureCoords');
-      var normalAttribLocation = gl.getAttribLocation(program, 'aVertexNormal');
-      gl.enableVertexAttribArray(positionAttribLocation);
-      gl.enableVertexAttribArray(normalAttribLocation);
-
-
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
-      gl.vertexAttribPointer(positionAttribLocation, 3, gl.FLOAT, gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
-      gl.enableVertexAttribArray(positionAttribLocation);
-
-
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.nbo);
-      gl.vertexAttribPointer(normalAttribLocation, 3, gl.FLOAT, gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
-      gl.enableVertexAttribArray(normalAttribLocation);
-
-
-      if (this.textures !== null) {
-        gl.enableVertexAttribArray(texCoordAttribLocation);
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.cbo);
-        gl.vertexAttribPointer(texCoordAttribLocation,2,gl.FLOAT, gl.FALSE, 2 * Float32Array.BYTES_PER_ELEMENT,0);
-        gl.enableVertexAttribArray(texCoordAttribLocation);
-      }
-
-
-      ///////////////////////////////////////////////////////////////////////////////// POSITION & ROTATION STUFF
-      var worldMatrix = TEntity.Model;
-      var rotation = glMatrix.mat4.create();
-      glMatrix.mat4.rotate(rotation, worldMatrix, angle, [0, 1, 0]);
-
-
-      var matWorldUniformLocation = gl.getUniformLocation(program, 'uMVMatrix');
-      gl.uniformMatrix4fv(matWorldUniformLocation, false, rotation);
-
-      let aux = glMatrix.mat4.create();
-      /// SORRRRRY, I HAD TO
-      glMatrix.mat4.set( aux,1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -2, 1);
-      let auxAux = glMatrix.mat4.create();
-      glMatrix.mat4.multiply(auxAux, rotation, aux);
-
-      glMatrix.mat4.invert(auxAux, auxAux);
-      glMatrix.mat4.transpose(auxAux, auxAux);
-
-      var normal = gl.getUniformLocation(program, 'uNMatrix');
-      gl.uniformMatrix4fv(normal, false, auxAux);
-      ///////////////////////////////////////////////////////////////////////////////// DRAW
-      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
-      gl.drawElements(gl.TRIANGLES, this.nTris, gl.UNSIGNED_SHORT,0);
-      ///////////////////////////////////////////////////////////////////////////////// CLEAR ALL BUFFERS
-      gl.bindBuffer(gl.ARRAY_BUFFER, null);
-      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-
     }
 }
 
@@ -392,9 +403,36 @@ class TResourceMaterial extends TResource{
 class TResourceTexture extends TResource{
     constructor(name){
         super(name);
+        this.tex = global.gl.createTexture();
+        this.image = new Image();
+    }
+
+    async bindTexture() {
+      return new Promise(async resolve => {
+        console.log('== loading TResourceTexture(' + this.name + ') ==');
+        // console.info('loading image '+this.image.src);
+        global.gl.bindTexture(global.gl.TEXTURE_2D, this.tex);
+        global.gl.pixelStorei(global.gl.UNPACK_FLIP_Y_WEBGL, 1);
+        global.gl.texImage2D(global.gl.TEXTURE_2D, 0, global.gl.RGBA, global.gl.RGBA, global.gl.UNSIGNED_BYTE, this.image);
+        global.gl.texParameteri(global.gl.TEXTURE_2D, global.gl.TEXTURE_MIN_FILTER, global.gl.LINEAR);
+        global.gl.bindTexture(global.gl.TEXTURE_2D, null);
+        resolve(true);
+      });
     }
     
-    loadFile(){}
+    async loadFile(name) {
+      return new Promise(async resolve => {
+        let url = constants.URL + '/assets/assets/textures/' + name;
+        let self = this;
+        this.image.onload = async function () {
+          await self.bindTexture();
+          resolve(self);
+        }
+        this.image.src = url;
+
+      });
+    }
+
 }
 
 class TResourceShader extends TResource {
@@ -477,43 +515,10 @@ async function loadMTL(filename){
     return file;
 }
 
-async function loadImage(filename){
-
-  let img = new Image();
-  img.src = '../assets/assets/textures/'+filename;
-  img.id = 'image';
-
-  // let host = "http://localhost:4200";
-  let host = constants.URL;  
-  let path = '/assets/assets/textures/';
-  let url = `${host + path + filename}`;
-
-  console.log(`Fetching ${filename} resource from url: ${ url }`);
-  let file;
-  await fetch( url )
-    .then( response => response.blob() )
-    .then( res => {
-      console.log("== fetch file ok ==");
-      var objectURL = URL.createObjectURL(res);
-      //img.src = '../assets/textures/'+filename;
-    });
-
-  return file;
-}
-
-var loadImg = async function (url, callback) {
-  var image = new Image();
-  image.onload = async function () {
-    await callback(null, image);
-  };
-  image.src = url;
-};
-
 export {
     TResourceManager,
     TResourceMaterial,
     TResourceMesh,
     TResourceShader,
-    TResourceTexture,
-    loadImage
+    TResourceTexture
 }

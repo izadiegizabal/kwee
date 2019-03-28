@@ -3,8 +3,8 @@ import {MatDialog} from '@angular/material';
 import {SnsShareDialogComponent} from '../../../shared/sns-share/sns-share-dialog/sns-share-dialog.component';
 import {getUrlfiedString} from '../../../shared/utils.service';
 import {BusinessPreview} from '../../../../models/business-preview.model';
-import {BusinessIndustries} from '../../../../models/Business.model';
-import {environment} from "../../../../environments/environment";
+import {BusinessIndustries, BusinessSize} from '../../../../models/Business.model';
+import {environment} from '../../../../environments/environment';
 
 
 @Component({
@@ -46,7 +46,7 @@ export class BusinessPreviewCardComponent implements OnInit {
 
   getSize() {
     // TODO: delete this dirty fix when api returns correctly
-    const size = (BusinessIndustries[this.user.companySize]) ? BusinessIndustries[this.user.companySize] : '100';
+    const size = (this.user.companySize) ? (this.user.companySize) : '100';
     return size + ' people';
   }
 

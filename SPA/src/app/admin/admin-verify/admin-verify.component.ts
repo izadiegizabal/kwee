@@ -18,7 +18,7 @@ import {Title} from "@angular/platform-browser";
 export class AdminVerifyComponent implements OnInit {
 
   // paging
-  pageSize = 2;
+  pageSize = 5;
   pageSizeOptions: number[] = [2, 5, 10, 25, 100];
 
   // MatPaginator Output
@@ -50,7 +50,7 @@ export class AdminVerifyComponent implements OnInit {
 
   ngOnInit() {
     this.titleService.setTitle('Kwee - ' + 'Verify Businesses');
-    this.store$.dispatch(new AdminActions.TryGetBusinesses({page: 1, limit: 2, params: '', order: this.orderby}));
+    this.store$.dispatch(new AdminActions.TryGetBusinesses({page: 1, limit: this.pageSize, params: '', order: this.orderby}));
     this.adminState = this.store$.pipe(select(s => s.admin));
   }
 

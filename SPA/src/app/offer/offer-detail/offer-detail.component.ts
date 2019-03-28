@@ -8,19 +8,12 @@ import {OfferEffects} from './store/offer.effects';
 import {filter} from 'rxjs/operators';
 import {Location} from '@angular/common';
 
-import {
-  ContractType,
-  JobDurationUnit,
-  OfferStatus,
-  SalaryFrequency,
-  SeniorityLevel,
-  WorkLocationType
-} from '../../../models/Offer.model';
+import {ContractType, JobDurationUnit, OfferStatus, SalaryFrequency, SeniorityLevel, WorkLocationType} from '../../../models/Offer.model';
 import {getTimePassed, getUrlfiedString} from '../../shared/utils.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {environment} from '../../../environments/environment';
 import {Title} from '@angular/platform-browser';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient} from '@angular/common/http';
 
 @Component({
   selector: 'app-offer-detail',
@@ -153,7 +146,7 @@ export class OfferDetailComponent implements OnInit {
   }
 
   getOfferApplications(applications) {
-    if (applications) {
+    if (applications > -1) {
       const numOfApplications = applications;
       return numOfApplications + (numOfApplications === 1 ? ' application' : ' applications');
     }

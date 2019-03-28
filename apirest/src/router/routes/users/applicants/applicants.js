@@ -472,7 +472,7 @@ module.exports = (app, db) => {
                 .then(async ending => {
                     sendVerificationEmail(body, uservar);
                     delete body.password;
-                    body.index = 50;
+                    body.index = 15;
 
                     elastic.index({
                         index: 'applicants',

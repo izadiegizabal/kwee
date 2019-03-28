@@ -140,6 +140,7 @@ export class OfferManageEffects {
     }),
     withLatestFrom(this.store$.pipe(select(state => state.auth))),
     switchMap(([payload, authState]) => {
+      console.log(payload);
         const apiEndpointUrl = environment.apiUrl + 'offer/' + payload.offerId;
         const token = authState.token;
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);

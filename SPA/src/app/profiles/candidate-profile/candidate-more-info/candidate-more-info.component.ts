@@ -7,10 +7,11 @@ import {Component, Input, OnInit} from '@angular/core';
 })
 export class CandidateMoreInfoComponent implements OnInit {
   @Input() candidate: any;
+  @Input() isPremium = false;
 
   constructor() {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 }

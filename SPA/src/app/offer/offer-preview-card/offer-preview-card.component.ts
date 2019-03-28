@@ -10,9 +10,8 @@ import * as fromApp from '../../store/app.reducers';
 import {AlertDialogComponent} from '../../shared/alert-dialog/alert-dialog.component';
 import {OfferManageEffects} from '../offer-manage/store/offer-manage.effects';
 import * as OfferManageActions from '../offer-manage/store/offer-manage.actions';
-import {filter} from 'rxjs/operators';
 import {Router} from '@angular/router';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient} from '@angular/common/http';
 
 
 @Component({
@@ -24,7 +23,6 @@ export class OfferPreviewCardComponent implements OnInit {
 
   offerUrl: string;
   authState: any;
-  offerManageState: any;
   candidate: boolean;
   nameToRate: string;
   userId: number;
@@ -65,15 +63,6 @@ export class OfferPreviewCardComponent implements OnInit {
           }
         }
       });
-
-    this.manageOfferEffects.ChangeOfferStatus.pipe(
-      filter((action: any) => action.type === OfferManageActions.SET_CHANGE_OFFER_STATUS)
-    ).subscribe((next: { payload: any, type: string }) => {
-        if (!this.candidate) {
-          this.router.navigate(['/my-offers/' + this.offer.id + '/selection']);
-        }
-      }
-    );
   }
 
   urlfyPosition() {
@@ -169,7 +158,7 @@ export class OfferPreviewCardComponent implements OnInit {
               to: e.applicationId,
               name: e.applicantName,
               index: e.applicantStatus,
-              haveIRated: e.aHasRated
+              haveIRated: e.oHasRated
             });
           }
         });
@@ -186,6 +175,21 @@ export class OfferPreviewCardComponent implements OnInit {
         console.log('The dialog was closed');
         if (result) {
           console.log(result);
+        }
+        if (this.candidate) {
+          console.log('update my offers as candidate');
+          this.store$.dispatch(new OfferManageActions.TryGetOffersApplicant({
+            id: this.userId,
+            page: 1,
+            limit: 10,
+            status: -1
+          }));
+          this.store$.dispatch(new OfferManageActions.TryGetOffersApplicant({
+            id: this.userId,
+            page: 1,
+            limit: 10,
+            status: this.offer.status
+          }));
         }
       });
     }
@@ -235,5 +239,14 @@ export class OfferPreviewCardComponent implements OnInit {
 
   startSelectionProcess() {
     this.store$.dispatch(new OfferManageActions.TryChangeOfferStatus({offerId: this.offer.id, newStatus: 3}));
+    this.router.navigate(['/my-offers/' + this.offer.id + '/selection']);
+  }
+
+  getDescription() {
+    if (this.offer.description && this.offer.description.length > 300) {
+      return this.offer.description.substring(0, 300) + '...';
+    } else {
+      return this.offer.description;
+    }
   }
 }

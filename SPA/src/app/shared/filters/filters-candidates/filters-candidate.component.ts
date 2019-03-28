@@ -77,10 +77,17 @@ export class FiltersCandidateComponent implements OnInit {
     });
 
     this.filters.controls['minIndex'].valueChanges.subscribe(() => {
-      this.router.navigate(['/search-candidates'],
-        {
-          queryParams: {index: this.filters.controls['minIndex'].value}, queryParamsHandling: 'merge'
-        });
+      if (this.filters.controls['minIndex'].value > 0) {
+        this.router.navigate(['/search-candidates'],
+          {
+            queryParams: {index: this.filters.controls['minIndex'].value}, queryParamsHandling: 'merge'
+          });
+      } else {
+        this.router.navigate(['/search-candidates'],
+          {
+            queryParams: {index: null}, queryParamsHandling: 'merge'
+          });
+      }
     });
 
     this.filters.controls['workfield0'].valueChanges.subscribe(() => {
@@ -284,9 +291,13 @@ export class FiltersCandidateComponent implements OnInit {
     if (this.filters.controls['workfield20'].value) {
       queryWorkF += '20 ';
     }
-
-    this.router.navigate(['/search-candidates'],
-      {queryParams: {workfield: queryWorkF}, queryParamsHandling: 'merge'});
+    if (queryWorkF === '') {
+      this.router.navigate(['/search-candidates'],
+        {queryParams: {rol: null}, queryParamsHandling: 'merge'});
+    } else {
+      this.router.navigate(['/search-candidates'],
+        {queryParams: {rol: queryWorkF}, queryParamsHandling: 'merge'});
+    }
   }
 
   minDateSearch() {

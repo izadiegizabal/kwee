@@ -22,6 +22,8 @@ import {
   WorkLocationType
 } from '../../../models/Offer.model';
 import {Title} from '@angular/platform-browser';
+import {OkDialogComponent} from '../../shared/ok-dialog/ok-dialog.component';
+import {DialogErrorComponent} from '../../auth/signup/dialog-error/dialog-error.component';
 
 
 interface City {
@@ -277,7 +279,7 @@ export class OfferCreateComponent implements OnInit {
         'status': '0',
         'title': this.form.controls['title'].value,
         'description': this.form.controls['description'].value,
-        'datePublished': (new Date()).toDateString(),
+        'datePublished': new Date(),
         'dateStart': this.form.controls['dateStart'].value,
         'dateEnd': this.form.controls['dateEnd'].value,
         'location': (this.form.controls['location'].value as City).name
@@ -292,7 +294,7 @@ export class OfferCreateComponent implements OnInit {
         'duration': this.form.controls['duration'].value ? this.form.controls['duration'].value : '0',
         'durationUnit': this.form.controls['durationUnit'].value ? this.form.controls['durationUnit'].value : '0',
         'contractType': this.form.controls['contractType'].value,
-        'isIndefinite': this.form.controls['isIndefinite'].value ? '0' : '1',
+        'isIndefinite': this.form.controls['isIndefinite'].value ? 'true' : 'false',
         'currentApplications': '0',
         'responsabilities': this.form.controls['responsabilities'].value,
         'requeriments': this.form.controls['requirements'].value,
@@ -304,18 +306,27 @@ export class OfferCreateComponent implements OnInit {
           obj
           , options)
           .subscribe((data: any) => {
-            console.log(data);
-            this.router.navigate(['/']);
+            if (!this.dialogShown) {
+              const dialog = this.dialog.open(OkDialogComponent, {
+                data: {
+                  message: 'Your offer has been successfully created',
+                }
+              });
+              dialog.afterClosed().subscribe(result => {
+                this.router.navigate(['/']);
+              });
+              this.dialogShown = true;
+            }
           }, (error: any) => {
-            console.log(error);
-            /*if (!this.dialogShown) {
+            if (!this.dialogShown) {
               this.dialog.open(DialogErrorComponent, {
                 data: {
-                  error: 'We had some issue creating your offer. Please try again later',
+                  header: 'We had some issue creating your offer.',
+                  error: 'Please try again later',
                 }
               });
               this.dialogShown = true;
-            }*/
+            }
           });
       } else {
         this.http.put(environment.apiUrl + 'offer/' + this.editOffer,

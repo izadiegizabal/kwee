@@ -5,8 +5,6 @@ import * as OfferManageActions from '../store/offer-manage.actions';
 import {PageEvent} from '@angular/material';
 import {Observable} from 'rxjs';
 import * as fromOfferManage from '../store/offer-manage.reducers';
-import {filter} from 'rxjs/operators';
-import {OfferManageEffects} from '../store/offer-manage.effects';
 import {changeAngle} from '../../../../assets/engine/commons';
 
 @Component({
@@ -19,15 +17,14 @@ export class OfferManageTabComponent implements OnInit {
   @Input() status: number;
   @Input() type: number;
   id: number;
-  pageSize = 2;
+  pageSize = 5;
   pageSizeOptions: number[] = [2, 5, 10, 25, 100];
   pageEvent: PageEvent;
   public offerManageState: Observable<fromOfferManage.State>;
   private authState: Observable<any>;
 
   constructor(
-    private store$: Store<fromApp.AppState>,
-    private manageOfferEffects: OfferManageEffects) {
+    private store$: Store<fromApp.AppState>) {
   }
 
   ngOnInit() {
@@ -79,6 +76,8 @@ export class OfferManageTabComponent implements OnInit {
         status: this.status
       }));
     }
+
+    window.scrollTo(0, 0);
   }
 
   totalOffers(count) {
