@@ -1,11 +1,13 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
+import {MatDialogRef, MAT_DIALOG_DATA, MatDialog} from '@angular/material';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
 import {getColourFromIndex} from '../../shared/utils.service';
+import {OkDialogComponent} from '../../shared/ok-dialog/ok-dialog.component';
+import {DialogErrorComponent} from '../../auth/signup/dialog-error/dialog-error.component';
 
 export interface DialogData {
   candidate: boolean;
@@ -27,9 +29,13 @@ export class RateCandidateComponent implements OnInit {
   selected: string;
   authState: any;
   token: string;
+  rated: any[] = [];
+
+  private dialogShown = false;
 
   constructor(
     private http: HttpClient,
+    public dialog: MatDialog,
     private store$: Store<fromApp.AppState>,
     public dialogRef: MatDialogRef<RateCandidateComponent>,
     private _formBuilder: FormBuilder,
@@ -65,6 +71,7 @@ export class RateCandidateComponent implements OnInit {
     if (this.data.candidate) {
       this.formArray = this._formBuilder.array([]);
       this.data.applications.forEach( (e , i) => {
+        this.rated.push(e.haveIRated);
         (<FormArray>this.formArray).push(this.add());
       });
       this.form.addControl('array', this.formArray);
@@ -95,6 +102,7 @@ export class RateCandidateComponent implements OnInit {
       });
       console.log(this.form);
     } else {
+      this.selected = this.data.applications[0].name;
       this.form = this.add();
       this.form.controls['one'].valueChanges.subscribe(value => {
         this.form.controls['one_aux']. setValue(value);
@@ -158,7 +166,8 @@ export class RateCandidateComponent implements OnInit {
   }
 
   getRated(i: number) {
-    return this.data.applications[i].haveIRated;
+    // return this.data.applications[i].haveIRated;
+    return this.rated[i];
   }
 
   getTo(i: number) {
@@ -166,6 +175,9 @@ export class RateCandidateComponent implements OnInit {
   }
 
   rate(num: number) {
+    const close = 'close' + num;
+    window.document.getElementById(close).click();
+    this.dialogShown = false;
     console.log(num);
     if ((!this.data.candidate && this.form.valid) ||
       (this.data.candidate && (<FormGroup>(<FormArray>this.form.get('array')).controls[num]).valid)) {
@@ -209,20 +221,35 @@ export class RateCandidateComponent implements OnInit {
         , options)
         .subscribe((data: any) => {
           console.log(data);
-          return false;
-          if (!this.data.candidate) {
-            this.dialogRef.close(this.form);
-          }
-        }, (error: any) => {
-          console.log(error);
-          /*if (!this.dialogShown) {
-            this.dialog.open(DialogErrorComponent, {
+          if (!this.dialogShown) {
+            const dialog = this.dialog.open(OkDialogComponent, {
               data: {
-                error: 'We had some issue creating your offer. Please try again later',
+                message: 'Your rating has been successfully saved. Thank you!',
+              }
+            });
+            dialog.afterClosed().subscribe(result => {
+              // this.router.navigate(['/']);
+              if (!this.data.candidate) {
+                this.dialogRef.close(this.form);
+              }
+              if (this.data.candidate) {
+                this.rated[num] = true;
+                window.document.getElementById('close').click();
               }
             });
             this.dialogShown = true;
-          }*/
+          }
+        }, (error: any) => {
+          console.log(error);
+          if (!this.dialogShown) {
+            this.dialog.open(DialogErrorComponent, {
+              data: {
+                header: 'We had some issue saving your rating.',
+                error: 'Please try again later',
+              }
+            });
+            this.dialogShown = true;
+          }
         });
 
       // this.dialogRef.close(this.form);
