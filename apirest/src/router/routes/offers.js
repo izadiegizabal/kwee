@@ -458,9 +458,11 @@ module.exports = (app, db) => {
                                     sendEmailOfferClosed(user, res, offerToUpdate);
                                 });
                                 applications.forEach(async application => {
-                                    await db.applications.update({status: 4}, {
-                                        where: { id: application.id }
-                                    });
+                                    if ( application.status == 0 || application.status == 1 ||  application.status == 2 ) {
+                                        await db.applications.update({status: 5}, {
+                                            where: { id: application.id }
+                                        });
+                                    }
                                 });
                             }
                         }
