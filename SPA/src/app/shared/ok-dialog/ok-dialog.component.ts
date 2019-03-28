@@ -1,6 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {DialogData} from '../../auth/signup/dialog-error/dialog-error.component';
 
 export interface DialogData {
   message: string;
