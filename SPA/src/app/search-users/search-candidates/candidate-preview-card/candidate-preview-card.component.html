@@ -49,18 +49,35 @@
     </p>
   </mat-card-content>
 
-  <mat-card-actions
-    fxLayout="row"
-    [fxLayoutAlign]="selectionMode? 'center center' : 'end end'"
-    fxLayoutGap="24px" fxLayoutGap.lt-sm="16px">
+  <mat-card-actions fxLayout="row">
     <div
       fxLayout="row"
-      fxLayoutAlign="center center"
+      fxLayout.lt-sm="column"
+      fxFlex="100%"
+      [fxLayoutAlign]="(selectionMode || applicationStatus !== -1)? 'center center' : 'end end'"
       fxLayoutGap="16px">
+      <span>
       <button [routerLink]="userUrl" color="accent" mat-button>{{'More Info' | uppercase }}</button>
       <button (click)="openShareDialog()" mat-icon-button *ngIf="!selectionMode && applicationStatus === -1">
         <mat-icon aria-label="Share user in social networks" color="accent" svgIcon="share"></mat-icon>
       </button>
+      </span>
+      <div *ngIf="applicationStatus !== -1" fxLayout="row" fxLayoutGap="16px">
+        <button (click)="contactUser()"
+                color="primary"
+                mat-raised-button>
+          <mat-icon svgIcon="chat"></mat-icon>
+          {{'Contact'}}
+        </button>
+        <button (click)="rejectCandidate()"
+                color="primary"
+                mat-raised-button
+                *ngIf="applicationStatus === 2">
+          <mat-icon>close</mat-icon>
+          Reject
+        </button>
+      </div>
+      <span fxLayout.lt-sm="column" fxLayoutGap="8px">
       <button (click)="contactUser()"
               color="primary"
               mat-raised-button
@@ -82,21 +99,7 @@
         <mat-icon svgIcon="star"></mat-icon>
         {{'Select'}}
       </button>
-      <div *ngIf="applicationStatus !== -1" fxLayout="row" fxLayoutGap="16px">
-        <button (click)="contactUser()"
-                color="primary"
-                mat-raised-button>
-          <mat-icon svgIcon="chat"></mat-icon>
-          {{'Contact'}}
-        </button>
-        <button (click)="rejectCandidate()"
-                color="primary"
-                mat-raised-button
-                *ngIf="applicationStatus === 2">
-          <mat-icon>close</mat-icon>
-          Cancel Selection
-        </button>
-      </div>
+      </span>
     </div>
   </mat-card-actions>
 
