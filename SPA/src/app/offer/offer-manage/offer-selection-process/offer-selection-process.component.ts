@@ -17,7 +17,6 @@ import * as OfferActions from '../../offer-detail/store/offer.actions';
 import * as fromOffer from '../../offer-detail/store/offer.reducers';
 import {OfferEffects} from '../../offer-detail/store/offer.effects';
 import {Title} from '@angular/platform-browser';
-import {Location} from '@angular/common';
 
 @Component({
   selector: 'app-offer-selection-process',
@@ -114,8 +113,10 @@ export class OfferSelectionProcessComponent implements OnInit {
       this.offerState = this.store$.pipe(select(state => state.offer));
       this.offerState.subscribe(
         offer => {
-          this.offer = offer.offer;
-          this.titleService.setTitle('Kwee - Selecting for ' + offer.offer.title);
+          if (offer.offer && offer.offer.title) {
+            this.offer = offer.offer;
+            this.titleService.setTitle('Kwee - Selecting for ' + offer.offer.title);
+          }
         }
       );
 
