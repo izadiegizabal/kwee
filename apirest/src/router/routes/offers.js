@@ -46,18 +46,18 @@ module.exports = (app, db) => {
             if ( body.keywords ) must.push({
                 multi_match: {
                     query: body.keywords, 
-                    type: "cross_fields", 
+                    type: "phrase_prefix", 
                     fields: 
                     [ 
-                        "status",
+                        // "status",
                         "title",
                         "location",
-                        "dateStart",
-                        "dateEnd",
-                        "datePublished",
+                        // "dateStart",
+                        // "dateEnd",
+                        // "datePublished",
+                        // "offererIndex",
+                        // "salaryAmount",
                         "offererName",
-                        "offererIndex",
-                        "salaryAmount",
                         "seniority",
                         "contractType",
                         "salaryCurrency",
@@ -364,6 +364,7 @@ module.exports = (app, db) => {
 
                     body.offererIndex = offerer.index;
                     body.offererName = offerer.name;
+                    body.createdAt = new Date();
 
                     elastic.index({
                         index: 'offers',
@@ -670,9 +671,9 @@ module.exports = (app, db) => {
             offer.durationUnit = offers[i]._source.durationUnit;
             offer.isIndefinite = offers[i]._source.isIndefinite;
             offer.contractType = offers[i]._source.contractType;
-            offer.responsabilities = offers[i].responsabilities;
-            offer.requeriments = offers[i].requeriments;
-            offer.skills = offers[i].skills;
+            offer.responsabilities = offers[i]._source.responsabilities;
+            offer.requeriments = offers[i]._source.requeriments;
+            offer.skills = offers[i]._source.skills;
             offer.lat = offers[i]._source.lat;
             offer.lon = offers[i]._source.lon;
             offer.createdAt = offers[i]._source.createdAt;

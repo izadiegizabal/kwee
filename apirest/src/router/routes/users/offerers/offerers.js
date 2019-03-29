@@ -42,19 +42,19 @@ module.exports = (app, db) => {
             if ( body.keywords ) must.push({
                 multi_match: {
                     query: body.keywords, 
-                    type: "cross_fields", 
+                    type: "phrase_prefix", 
                     fields: 
                     [ 
                         "name",
                         "email",
-                        "status",
+                        // "status",
                         "address",
                         "bio",
                         "workField",
-                        "index",
-                        "companySize",
-                        "year",
-                        "dateVerification"
+                        // "index",
+                        // "companySize",
+                        // "year",
+                        // "dateVerification"
                     ] 
                 }
             });
