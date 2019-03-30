@@ -1,0 +1,40 @@
+<div class="container"
+       fxLayout="column"
+       fxLayoutAlign="center"
+       fxLayoutGap="10px"
+       fxLayoutGap.xs="0">
+  <div fxLayout="row" fxFlex="80%" fxFlex.lt-md="100%" class="line1" fxLayoutAlign="start center"><h2 class="mat-h1">My Invoices</h2></div>
+  <mat-accordion fxLayout="column">
+    <div fxLayout="row" *ngFor="let invoice of  invoices;">
+      <mat-checkbox #toggle style="display: none"></mat-checkbox>
+      <mat-expansion-panel  fxFlex="80%" fxFlex.lt-md="100%" class="line1" [(expanded)]="toggle.checked">
+        <mat-expansion-panel-header>
+          <mat-panel-title
+            fxLayout="row"
+            fxLayoutGap="10px">
+            <span>Invoice #{{invoice.id}}</span>
+            <span fxHide fxShow.gt-xs>Total: {{invoice.total}} {{invoice.currency}}</span>
+          </mat-panel-title>
+          <mat-panel-description fxHide fxShow.gt-xs>
+            <span>Offer: {{invoice.offer}}</span>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+          <h2 class="mat-h2 no-margin">Invoice #{{invoice.id}}</h2>
+          <h3 class="mat-h3 no-margin">{{invoice.offer}}</h3>
+          <h4 class="mat-h4 no-margin">{{getDate(invoice.date)}}</h4>
+
+          <p fxLayoutAlign="end" class="mat-h3">Total:&nbsp;<b class="mat-h2">{{invoice.total}} {{invoice.currency}}</b></p>
+
+          <div fxLayout="row"
+             fxLayoutAlign="end" fxLayoutGap="0"
+             fxLayoutGap.gt-sm="8px">
+            <div><button (click)="toggle.checked=false" color="primary" mat-button type="button">Close</button></div>
+            <div><button
+                      color="primary"
+                      mat-raised-button type="button">Download</button></div>
+
+          </div>
+      </mat-expansion-panel>
+    </div>
+  </mat-accordion>
+</div>

@@ -8,7 +8,7 @@ passport.use(
             clientSecret: env.TELEGRAM_SECRET,
             callbackURL: env.TELEGRAM_URL
         },
-        function(accessToken, refreshToken, profile, done) {
+        function (accessToken, refreshToken, profile, done) {
             // User.findOrCreate(..., function(err, user) {
             //     done(err, user);
             // });

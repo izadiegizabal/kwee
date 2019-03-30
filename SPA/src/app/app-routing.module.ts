@@ -26,15 +26,16 @@ const routes: Routes = [
     loadChildren: './offer/offer-manage/offer-manage.module#OfferManageModule',
     canActivate: [AuthTokenGuard]
   },
-  {path: 'offer/:id/:name', component: OfferDetailComponent},
-  { // TODO: canActivate -> Business & Admin
-    path: 'offer/create',
-    loadChildren: './offer/offer-create/offer-create.module#OfferCreateModule'
-  },
   { // TODO: canActivate -> Offer Owner & Admin
     path: 'offer/:id/edit',
     loadChildren: './offer/offer-create/offer-create.module#OfferCreateModule'
   },
+  { // TODO: canActivate -> Business & Admin
+    path: 'offer/create',
+    loadChildren: './offer/offer-create/offer-create.module#OfferCreateModule'
+  },
+  {path: 'offer/:id/:name', component: OfferDetailComponent},
+
   // DIRECTORIES
   {
     path: 'search-businesses',
@@ -82,6 +83,9 @@ const routes: Routes = [
   },
   // KWEE LIVE
   {path: 'kwee-live', loadChildren: './kwee-live/kwee-live.module#KweeLiveModule'},
+
+  // INVOICES
+  {path: 'invoices', loadChildren: './invoices/invoices.module#InvoicesModule'},
 
   // OTHERS
   {path: 'privacy', component: PrivacyComponent},

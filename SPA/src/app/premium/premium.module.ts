@@ -7,6 +7,11 @@ import { PremiumBusinessComponent } from './premium-business/premium-business.co
 import { PaypalDialogComponent } from './paypal-dialog/paypal-dialog.component';
 import {NgxPayPalModule} from 'ngx-paypal';
 import {PaypalDialogModule} from './paypal-dialog/paypal-dialog.module';
+import {StoreModule} from '@ngrx/store';
+import {EffectsModule} from '@ngrx/effects';
+import {invoiceReducer} from '../invoices/store/invoice.reducers';
+import {InvoiceEffects} from '../invoices/store/invoice.effects';
+
 
 @NgModule({
   declarations: [
@@ -19,6 +24,8 @@ import {PaypalDialogModule} from './paypal-dialog/paypal-dialog.module';
     PremiumRoutingModule,
     NgxPayPalModule,
     PaypalDialogModule,
+    StoreModule.forFeature('invoices', invoiceReducer),
+    EffectsModule.forFeature([InvoiceEffects])
   ],
   exports: [
   ],

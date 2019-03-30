@@ -1,7 +1,7 @@
 const env = require('../../../tools/constants');
 const passport = require('../../../middlewares/passport');
 const jwt = require('jsonwebtoken');
-const { OAuth2Client } = require('google-auth-library');
+const {OAuth2Client} = require('google-auth-library');
 const client = new OAuth2Client(env.CLIENT_ID);
 
 module.exports = (app, db) => {
@@ -13,7 +13,7 @@ module.exports = (app, db) => {
             audience: env.CLIENT_ID, // Specify the CLIENT_ID
             // Or, multiple clients access the backend:
             //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
-        })
+        });
         const payload = ticket.getPayload();
 
         return {
@@ -24,7 +24,7 @@ module.exports = (app, db) => {
 
     }
 
-    app.post('/google', async(req, res, next) => {
+    app.post('/google', async (req, res, next) => {
 
         let token = req.body.idtoken;
 
@@ -36,7 +36,7 @@ module.exports = (app, db) => {
                 });
             });
 
-        let user = await db.users.findOne({ where: { email: googleUser.email } });
+        let user = await db.users.findOne({where: {email: googleUser.email}});
 
         if (!user) {
 
@@ -63,9 +63,8 @@ module.exports = (app, db) => {
                 });
 
             } catch (err) {
-                next({ type: 'error', error: err.errors[0].message });
-            };
-
+                next({type: 'error', error: err.errors[0].message});
+            }
         } else {
             if (user.google === false) {
                 return res.status(400).json({
@@ -77,7 +76,7 @@ module.exports = (app, db) => {
             } else {
                 let token = jwt.sign({
                     user
-                }, env.JSONWEBTOKEN_SECRET, { expiresIn: env.JSONWEBTOKEN_EXPIRES });
+                }, env.JSONWEBTOKEN_SECRET, {expiresIn: env.JSONWEBTOKEN_EXPIRES});
 
                 return res.json({
                     ok: true,
@@ -91,4 +90,4 @@ module.exports = (app, db) => {
         }
     });
 
-}
+};

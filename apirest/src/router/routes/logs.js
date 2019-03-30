@@ -2,7 +2,7 @@ const Log = require('../../models/logs');
 
 module.exports = (app, db) => {
     // GET all logs
-    app.get("/logs", async(req, res, next) => {
+    app.get("/logs", async (req, res, next) => {
 
         let from = req.query.from || 0;
         from = Number(from);
@@ -32,7 +32,7 @@ module.exports = (app, db) => {
             });
     });
 
-    app.delete('/log/:id', async(req, res, next) => {
+    app.delete('/log/:id', async (req, res, next) => {
 
         let id = req.params.id;
 
@@ -49,7 +49,7 @@ module.exports = (app, db) => {
                 return res.status(200).json({
                     ok: true,
                     message: 'Log not found'
-                    
+
                 });
             }
 
@@ -62,4 +62,4 @@ module.exports = (app, db) => {
         });
 
     });
-}
+};

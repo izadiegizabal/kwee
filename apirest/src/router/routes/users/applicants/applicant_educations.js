@@ -1,6 +1,6 @@
-const { checkToken } = require('../../../../middlewares/authentication');
-const { tokenId, logger } = require('../../../../shared/functions');
-const { algorithm } = require('../../../../shared/algorithm');
+const {checkToken} = require('../../../../middlewares/authentication');
+const {tokenId, logger} = require('../../../../shared/functions');
+const {algorithm} = require('../../../../shared/algorithm');
 
 
 // ============================
@@ -11,7 +11,7 @@ module.exports = (app, db) => {
     // GET all applicant_educations
     app.get("/applicant_educations",
         checkToken,
-        async(req, res, next) => {
+        async (req, res, next) => {
             try {
                 await logger.saveLog('GET', 'applicant_educations', null, res);
 
@@ -21,14 +21,14 @@ module.exports = (app, db) => {
                     data: await db.applicant_educations.findAll()
                 });
             } catch (err) {
-                return next({ type: 'error', error: 'Error getting data' });
+                return next({type: 'error', error: 'Error getting data'});
             }
         });
 
     // GET one applicant_education by two id's
     app.get("/applicant_education/:fk_applicant([0-9]+)/:fk_education([0-9]+)",
         checkToken,
-        async(req, res, next) => {
+        async (req, res, next) => {
             const params = req.params;
 
             try {
@@ -39,25 +39,25 @@ module.exports = (app, db) => {
                         //     model: db.educations,
                         //     where: { fk_education: params.fk_education }
                         // }],
-                        where: { fk_applicant: params.fk_applicant, fk_education: params.fk_education }
+                        where: {fk_applicant: params.fk_applicant, fk_education: params.fk_education}
                     })
                 });
 
             } catch (err) {
-                return next({ type: 'error', error: err });
+                return next({type: 'error', error: err});
             }
         });
 
     // GET one applicant_education by one id
-    app.get("/applicant_education/:fk_applicant([0-9]+)", checkToken, async(req, res, next) => {
+    app.get("/applicant_education/:fk_applicant([0-9]+)", checkToken, async (req, res, next) => {
         const params = req.params;
 
         try {
             let applicant_education = await db.applicant_educations.findAll({
-                where: { fk_applicant: params.fk_applicant }
-            })
+                where: {fk_applicant: params.fk_applicant}
+            });
 
-            if ( applicant_education ) {
+            if (applicant_education) {
                 return res.status(200).json({
                     ok: true,
                     message: 'Listing educations of this applicant',
@@ -71,12 +71,12 @@ module.exports = (app, db) => {
             }
 
         } catch (err) {
-            return next({ type: 'error', error: err.message });
+            return next({type: 'error', error: err.message});
         }
     });
 
     // POST single applicant_education
-    app.post("/applicant_education", checkToken, async(req, res, next) => {
+    app.post("/applicant_education", checkToken, async (req, res, next) => {
 
         const body = req.body;
         let fk_education = body.fk_education;
@@ -95,7 +95,7 @@ module.exports = (app, db) => {
         try {
             // Find USER if exists
             let applicant = await db.applicants.findOne({
-                where: { userId: id }
+                where: {userId: id}
             });
 
             // Set educations and so
@@ -150,19 +150,19 @@ module.exports = (app, db) => {
                 });
             }
         } catch (err) {
-            return next({ type: "error", error: err.toString() /*err.errors?err.errors[0].message:err.message*/ });
+            return next({type: "error", error: err.toString() /*err.errors?err.errors[0].message:err.message*/});
         }
     });
 
     // PUT single applicant_education
-    app.put("/applicant_education", checkToken, async(req, res, next) => {
+    app.put("/applicant_education", checkToken, async (req, res, next) => {
         const body = req.body;
 
         let id = tokenId.getTokenId(req.get('token'));
 
         try {
             let applicant = await db.applicants.findOne({
-                where: { userId: id }
+                where: {userId: id}
             }).then(async _applicant => {
 
                 if (_applicant) {
@@ -170,7 +170,7 @@ module.exports = (app, db) => {
                         .then(exists => {
 
                             if (exists) {
-                                _applicant.getEducations({ where: { id: body.fk_education } })
+                                _applicant.getEducations({where: {id: body.fk_education}})
                                     .then(education => {
 
                                         let edu = education[0];
@@ -201,32 +201,35 @@ module.exports = (app, db) => {
                                             })
                                     })
                                     .catch(err => {
-                                        return next({ type: 'error', error: err.message });
+                                        return next({type: 'error', error: err.message});
                                     })
                             } else {
-                                return next({ type: 'error', error: "User don't know this education (¿fk_education wrong maybe?)" });
+                                return next({
+                                    type: 'error',
+                                    error: "User don't know this education (¿fk_education wrong maybe?)"
+                                });
                             }
                         })
                 } else {
-                    return next({ type: 'error', error: "User not found (fk_applicant unknown)" });
+                    return next({type: 'error', error: "User not found (fk_applicant unknown)"});
                 }
 
             });
         } catch (err) {
             // More generic errors
-            return next({ type: 'error', error: err.message });
+            return next({type: 'error', error: err.message});
         }
     });
 
     // DELETE single applicant_education
-    app.delete("/applicant_education", checkToken, async(req, res, next) => {
+    app.delete("/applicant_education", checkToken, async (req, res, next) => {
         const body = req.body;
 
         let id = tokenId.getTokenId(req.get('token'));
 
         try {
             let applicant = await db.applicants.findOne({
-                where: { userId: id }
+                where: {userId: id}
             });
 
             if (applicant) {
@@ -244,7 +247,7 @@ module.exports = (app, db) => {
                 });
             }
         } catch (err) {
-            return next({ type: 'error', error: err });
+            return next({type: 'error', error: err});
         }
 
     });

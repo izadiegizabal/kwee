@@ -1,4 +1,4 @@
-<div fxLayout="row" fxLayoutAlign="center start">
+<div fxLayout="row" fxLayoutAlign="center start" *ngIf="(authState | async).user">
   <div
     fxFlex="95%"
     fxFlex.gt-lg="50%"

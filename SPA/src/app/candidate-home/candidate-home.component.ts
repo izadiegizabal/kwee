@@ -8,7 +8,7 @@ import {MatPaginator, MatSidenav, PageEvent} from '@angular/material';
 import {BreakpointObserver} from '@angular/cdk/layout';
 import {HttpClient} from '@angular/common/http';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Title} from "@angular/platform-browser";
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-candidate-home',
@@ -74,6 +74,7 @@ export class CandidateHomeComponent implements OnInit {
       params: this.query,
       order: this.orderby
     }));
+    window.scrollTo(0, 0);
   }
 
   isMobile() {
@@ -89,7 +90,7 @@ export class CandidateHomeComponent implements OnInit {
     } else {
       this.titleService.setTitle('Kwee - ' + searchParams);
     }
-    this.router.navigate(['/candidate-home'], {queryParams: {title: searchParams}, queryParamsHandling: 'merge'});
+    this.router.navigate(['/candidate-home'], {queryParams: {keywords: searchParams}, queryParamsHandling: 'merge'});
   }
 
   getOrderby(order: string) {
@@ -119,9 +120,9 @@ export class CandidateHomeComponent implements OnInit {
       this.query = {...this.query, datePublished: {'gte': this.query.datePublished}};
     }
 
-    if (this.query.title) {
-      this.titleService.setTitle('Kwee - ' + this.query.title);
-      this.alreadySearched = this.query.title;
+    if (this.query.keywords) {
+      this.titleService.setTitle('Kwee - ' + this.query.keywords);
+      this.alreadySearched = this.query.keywords;
     } else {
       this.titleService.setTitle('Kwee - Candidate Home');
       this.alreadySearched = '';

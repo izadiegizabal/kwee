@@ -61,3 +61,11 @@ p:nth-child(4){
   padding: 0 !important;
   border-top: 0;
 }
+
+::ng-deep .ng-animating div mat-accordion mat-expansion-panel mat-expansion-panel-header {
+  height: 48px;
+}
+::ng-deep .ng-animating div mat-accordion mat-expansion-panel div.mat-expansion-panel-content {
+  height: 0px;
+  visibility: hidden;
+}

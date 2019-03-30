@@ -108,11 +108,10 @@
             <p>{{getName(i)}}</p>
           </mat-panel-title>
           <mat-panel-description fxLayoutAlign="end">
-            <mat-icon *ngIf="!getRated(i)" color="warn" svgIcon="error"></mat-icon>
-            <mat-icon *ngIf="getRated(i)" color="accent" svgIcon="check-circle"></mat-icon>
+            <div *ngIf="!getRated(i) "fxLayout="row" fxAlign="center" fxLayoutGap="8px"><span>Unrated</span><mat-icon  color="warn" svgIcon="error"></mat-icon></div>
+            <div *ngIf="getRated(i) "fxLayout="row" fxAlign="center" fxLayoutGap="8px"><span>Rated</span><mat-icon  color="accent" svgIcon="check-circle"></mat-icon></div>
           </mat-panel-description>
         </mat-expansion-panel-header>
-        <mat-dialog-content>
           <h2>Rate {{getName(i)}}</h2>
             <h3>Opinion</h3>
             <mat-form-field class="example-full-width">
@@ -195,16 +194,15 @@
                 </mat-form-field>
               </div>
             </div>
-        </mat-dialog-content>
         <br>
         <div fxLayout="row"
              fxLayoutAlign="end" fxLayoutGap="0"
              fxLayoutGap.gt-sm="8px">
           <div>
-            <button mat-button color="primary" type="button" (click)="toggle.checked = false">Cancel</button>
+            <button id="{{ 'close' + i }}" mat-button color="primary" type="button" (click)="toggle.checked = false">Close</button>
           </div>
           <div>
-            <button mat-raised-button color="primary" type="button" (click)="toggle.checked = rate(i)">Rate</button>
+            <button *ngIf="!getRated(i)" mat-raised-button color="primary" type="button" (click)="toggle.checked = rate(i)">Rate</button>
           </div>
         </div>
       </mat-expansion-panel>

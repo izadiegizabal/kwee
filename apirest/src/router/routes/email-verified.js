@@ -1,15 +1,15 @@
 const jwt = require('jsonwebtoken');
-const env = require('../../tools/constants')
+const env = require('../../tools/constants');
 
 module.exports = (app, db) => {
-    app.get('/email-verified/:token', async(req, res, next) => {
+    app.get('/email-verified/:token', async (req, res, next) => {
         let token = req.params.token;
 
         try {
             let id = jwt.decode(token).id;
 
-            let updated = await db.users.update({ status: 1 }, {
-                where: { id }
+            let updated = await db.users.update({status: 1}, {
+                where: {id}
             });
 
             if (updated > 0) {
@@ -25,7 +25,7 @@ module.exports = (app, db) => {
             }
 
         } catch (err) {
-            next({ type: 'error', error: (err.errors ? err.errors[0].message : err.message) });
+            next({type: 'error', error: (err.errors ? err.errors[0].message : err.message)});
         }
     });
-}
+};

@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
             field: 'twitter',
             allowNull: true
         },
-        
+
         github: {
             type: DataTypes.STRING(50),
             field: 'github',

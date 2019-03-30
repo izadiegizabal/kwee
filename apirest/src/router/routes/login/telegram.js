@@ -4,19 +4,19 @@ module.exports = (app, db) => {
 
     app.get('/auth/telegram',
         passport.authenticate('telegram'),
-        function(req, res) {
+        function (req, res) {
             // The request will be redirected to telepass.me for authentication,
             // so this function will not be called.
         }
     );
 
     app.get('/auth/telegram/callback',
-        passport.authenticate('telegram', { failureRedirect: '/login' }),
+        passport.authenticate('telegram', {failureRedirect: '/login'}),
         // function(req, res) {
         //     // Successful authentication, redirect home.
         //     res.redirect('/');
         // }
-        async(req, res, next) => {
+        async (req, res, next) => {
             // Authentication with Telegram successful
             try {
                 console.log('req: ', req);
@@ -51,8 +51,8 @@ module.exports = (app, db) => {
                     res.redirect('/');
                 }
             } catch (err) {
-                next({ type: 'error', error: 'Error getting data' });
+                next({type: 'error', error: 'Error getting data'});
             }
         });
 
-}
+};

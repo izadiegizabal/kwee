@@ -2,8 +2,8 @@ import {Action} from '@ngrx/store';
 
 export const TRY_GET_PROFILE_CANDIDATE = 'TRY_GET_PROFILE_CANDIDATE';
 export const SET_PROFILE_CANDIDATE = 'SET_PROFILE_CANDIDATE';
-export const TRY_GET_PROFILE_OFFERER = 'TRY_GET_PROFILE_OFFERER';
-export const SET_PROFILE_OFFERER = 'SET_PROFILE_OFFERER';
+export const TRY_GET_PROFILE_BUSINESS = 'TRY_GET_PROFILE_BUSINESS';
+export const SET_PROFILE_BUSINESS = 'SET_PROFILE_BUSINESS';
 export const OPERATION_ERROR = 'OPERATION_ERROR';
 
 
@@ -21,15 +21,15 @@ export class SetProfileCandidate implements Action {
   }
 }
 
-export class TryGetProfileOfferer implements Action {
-  readonly type = TRY_GET_PROFILE_OFFERER;
+export class TryGetProfileBusiness implements Action {
+  readonly type = TRY_GET_PROFILE_BUSINESS;
 
   constructor(public payload: { id: number }) {
   }
 }
 
-export class SetProfileOfferer implements Action {
-  readonly type = SET_PROFILE_OFFERER;
+export class SetProfileBusiness implements Action {
+  readonly type = SET_PROFILE_BUSINESS;
 
   constructor(public payload: any) {
   }
@@ -45,6 +45,6 @@ export class OperationError implements Action {
 export type ProfilesActions =
   TryGetProfileCandidate |
   SetProfileCandidate |
-  TryGetProfileOfferer |
-  SetProfileOfferer |
+  TryGetProfileBusiness |
+  SetProfileBusiness |
   OperationError;

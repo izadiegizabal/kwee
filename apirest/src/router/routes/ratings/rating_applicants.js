@@ -1,5 +1,5 @@
-const { checkToken, checkAdmin } = require('../../../middlewares/authentication');
-const { logger, tokenId } = require('../../../shared/functions');
+const {checkToken, checkAdmin} = require('../../../middlewares/authentication');
+const {logger, tokenId} = require('../../../shared/functions');
 const bcrypt = require('bcryptjs');
 
 const {algorithm} = require('../../../shared/algorithm');
@@ -11,7 +11,7 @@ const {algorithm} = require('../../../shared/algorithm');
 module.exports = (app, db) => {
 
     // GET all ratings rating_applicants
-    app.get('/rating_applicants', checkToken, async(req, res, next) => {
+    app.get('/rating_applicants', checkToken, async (req, res, next) => {
 
         try {
             await logger.saveLog('GET', 'rating_applicants', null, res);
@@ -44,18 +44,18 @@ module.exports = (app, db) => {
                 data: rating_applicantsView
             });
         } catch (err) {
-            return next({ type: 'error', error: err.message });
+            return next({type: 'error', error: err.message});
         }
 
     });
 
     // GET rating_applicants by page limit to 10 rating_applicants/page
-    app.get('/rating_applicants/:page([0-9]+)/:limit([0-9]+)', async(req, res, next) => {
+    app.get('/rating_applicants/:page([0-9]+)/:limit([0-9]+)', async (req, res, next) => {
         let limit = Number(req.params.limit);
         let page = Number(req.params.page);
 
         try {
-            await logger.saveLog('GET', `rating_applicants/${ page }`, null, res);
+            await logger.saveLog('GET', `rating_applicants/${page}`, null, res);
 
             let count = await db.rating_applicants.findAndCountAll();
             let pages = Math.ceil(count.count / limit);
@@ -64,37 +64,37 @@ module.exports = (app, db) => {
             if (page > pages) {
                 return res.status(200).json({
                     ok: true,
-                    message: `It doesn't exist ${ page } pages`
+                    message: `It doesn't exist ${page} pages`
                 })
             }
 
             return res.status(200).json({
                 ok: true,
-                message: `${ limit } rating_applicants of page ${ page } of ${ pages } pages`,
+                message: `${limit} rating_applicants of page ${page} of ${pages} pages`,
                 data: await db.rating_applicants.findAll({
                     limit,
                     offset,
-                    $sort: { id: 1 }
+                    $sort: {id: 1}
                 }),
                 total: count.count
             });
         } catch (err) {
-            return next({ type: 'error', error: err });
+            return next({type: 'error', error: err});
         }
     });
 
     // GET one rating_applicant by id
-    app.get('/rating_applicant/:id([0-9]+)', async(req, res, next) => {
+    app.get('/rating_applicant/:id([0-9]+)', async (req, res, next) => {
         const id = req.params.id;
 
         try {
-            let ratings = await db.ratings.findAll({ where: { fk_application: id } });
+            let ratings = await db.ratings.findAll({where: {fk_application: id}});
             let rating_applicants = await db.rating_applicants.findAll();
             let rating_applicant, rating;
 
             for (let i = 0; i < ratings.length; i++) {
                 for (let j = 0; j < rating_applicants.length; j++) {
-                    if ( ratings[i].id === rating_applicants[j].ratingId ) {
+                    if (ratings[i].id === rating_applicants[j].ratingId) {
                         rating = ratings[i];
                         rating_applicant = rating_applicants[j];
                         break;
@@ -126,12 +126,12 @@ module.exports = (app, db) => {
                 });
             }
         } catch (err) {
-            return next({ type: 'error', error: 'Error getting data' });
+            return next({type: 'error', error: 'Error getting data'});
         }
     });
 
     // POST single rating_applicant
-    app.post('/rating_applicant', async(req, res, next) => {
+    app.post('/rating_applicant', async (req, res, next) => {
         let transaction;
         let rating;
 
@@ -141,63 +141,63 @@ module.exports = (app, db) => {
             let fk_application = body.fk_application;
             let overall;
             let opinion;
-            if( body.opinion ) opinion = body.opinion;
+            if (body.opinion) opinion = body.opinion;
 
             overall = (body.efficiency + body.skills + body.punctuality + body.hygiene + body.teamwork + body.satisfaction) / 6;
 
-            let offerer = await db.offerers.findOne({where: { userId: id }});
-            let application = await db.applications.findOne({where: { id: fk_application }});
-            
-            if ( application ) {
-                if ( offerer ) {
+            let offerer = await db.offerers.findOne({where: {userId: id}});
+            let application = await db.applications.findOne({where: {id: fk_application}});
+
+            if (application) {
+                if (offerer) {
                     let offers = await offerer.getOffers();
                     let offer = offers.find(o => o.id == application.fk_offer);
-                    if ( offer ) {
+                    if (offer) {
 
-                        if ( application.oHasRated ) {
+                        if (application.oHasRated) {
                             return res.status(400).json({
                                 ok: false,
                                 message: 'It is already rated'
                             });
                         } else {
-                            
+
                             // get transaction
                             transaction = await db.sequelize.transaction();
-                            
+
                             rating = await db.ratings.create({
                                 fk_application,
                                 overall,
                                 opinion
-                            }, { transaction: transaction });
-                            
-                            
+                            }, {transaction: transaction});
+
+
                             if (!rating) {
                                 await transaction.rollback();
                             }
-                            
+
                             // step 2
                             let rating_applicant = await createRatingApplicant(body, rating, next, transaction);
 
                             if (!rating_applicant) {
                                 await transaction.rollback();
                             }
-                            
+
                             // commit
                             await transaction.commit();
-                            
+
                             // to check + clean
                             await db.applications.update({oHasRated: 1}, {
-                                where: { id: fk_application }
+                                where: {id: fk_application}
                             });
                             await algorithm.indexUpdate(application.fk_applicant);
-                            
-                            
+
+
                             return res.status(201).json({
                                 ok: true,
                                 message: 'Applicant rated as offerer'
                             });
                         }
-                    }else {
+                    } else {
                         return res.status(400).json({
                             ok: false,
                             message: 'You may not rate applicants of others offerers'
@@ -217,33 +217,33 @@ module.exports = (app, db) => {
             }
         } catch (err) {
             //await transaction.rollback();
-            return next({ type: 'error', error: err.message });
+            return next({type: 'error', error: err.message});
         }
     });
 
     // PUT single rating_applicant
-    app.put('/rating_applicant/:id([0-9]+)', async(req, res, next) => {
+    app.put('/rating_applicant/:id([0-9]+)', async (req, res, next) => {
         const ratingId = req.params.id;
         const body = req.body;
         let opinion;
-        if ( req.body.opinion ) opinion = req.body.opinion;
+        if (req.body.opinion) opinion = req.body.opinion;
         delete body.opinion;
 
         try {
             let id = tokenId.getTokenId(req.get('token'));
 
-            let offerer = await db.offerers.findOne( { where: { userId: id } } );
+            let offerer = await db.offerers.findOne({where: {userId: id}});
             let offers = await offerer.getOffers();
 
             let rating_applicant = await db.rating_applicants.findOne({
-                where: { ratingId }
+                where: {ratingId}
             });
 
             if (rating_applicant) {
-                let fk_application = await db.ratings.findOne({ where: { id: ratingId }});
-                let application = await db.applications.findOne({ where: { id: fk_application.fk_application }});
+                let fk_application = await db.ratings.findOne({where: {id: ratingId}});
+                let application = await db.applications.findOne({where: {id: fk_application.fk_application}});
                 let offer = offers.find(element => element.id == application.fk_offer);
-                if ( application.fk_offer == offer.id ){
+                if (application.fk_offer == offer.id) {
                     let rating = {};
                     let efficiency = body.efficiency ? body.efficiency : rating_applicant.efficiency;
                     let skills = body.skills ? body.skills : rating_applicant.skills;
@@ -253,106 +253,106 @@ module.exports = (app, db) => {
                     let satisfaction = body.satisfaction ? body.satisfaction : rating_applicant.satisfaction;
                     rating.overall = (efficiency + skills + punctuality + hygiene + teamwork + satisfaction) / 6;
 
-                    if ( opinion ) rating.opinion = opinion;
+                    if (opinion) rating.opinion = opinion;
                     await db.ratings.update(rating, {
-                        where: { id: ratingId }
+                        where: {id: ratingId}
                     });
-                    
+
                     let updated = await db.rating_applicants.update(body, {
-                        where: { ratingId }
+                        where: {ratingId}
                     });
-                    
+
                     if (updated) {
                         await algorithm.indexUpdate(id);
-                        
+
                         return res.status(200).json({
                             ok: true,
                             message: 'Update successful'
                         })
                     } else {
-                        return next({ type: 'error', error: 'Can\'t update rating_applicant' });
+                        return next({type: 'error', error: 'Can\'t update rating_applicant'});
                     }
-                }  else {
-                    return next({ type: 'error', error: 'You are not applicant of this application' });
+                } else {
+                    return next({type: 'error', error: 'You are not applicant of this application'});
                 }
             } else {
-                return next({ type: 'error', error: 'This rate does not exist' });
+                return next({type: 'error', error: 'This rate does not exist'});
             }
 
         } catch (err) {
-            return next({ type: 'error', error: err.message });
+            return next({type: 'error', error: err.message});
         }
     });
 
     // DELETE by themeself
-    app.delete('/rating_applicant/:id([0-9]+)', async(req, res, next) => {
+    app.delete('/rating_applicant/:id([0-9]+)', async (req, res, next) => {
         const ratingId = req.params.id;
 
         try {
             let id = tokenId.getTokenId(req.get('token'));
-            
-            let offerer = await db.offerers.findOne( { where: { userId: id } } );
+
+            let offerer = await db.offerers.findOne({where: {userId: id}});
             let offers = await offerer.getOffers();
 
             let rating_applicant = await db.rating_applicants.findOne({
-                where: { ratingId }
+                where: {ratingId}
             });
 
             if (rating_applicant) {
-                let fk_application = await db.ratings.findOne({ where: { id: ratingId }});
-                let application = await db.applications.findOne({ where: { id: fk_application.fk_application }});
+                let fk_application = await db.ratings.findOne({where: {id: ratingId}});
+                let application = await db.applications.findOne({where: {id: fk_application.fk_application}});
                 let offer = offers.find(element => element.id == application.fk_offer);
 
-                if ( application.fk_offer == offer.id ){
-                    await db.rating_applicants.destroy({ where: { ratingId } });
-                    await db.ratings.destroy({ where: { id: ratingId } });
+                if (application.fk_offer == offer.id) {
+                    await db.rating_applicants.destroy({where: {ratingId}});
+                    await db.ratings.destroy({where: {id: ratingId}});
                     await algorithm.indexUpdate(id);
-                        
+
                     return res.json({
                         ok: true,
                         message: 'RatingApplicant deleted'
                     });
                 } else {
-                    return next({ type: 'error', error: 'You may not delete ratings of others users' });
+                    return next({type: 'error', error: 'You may not delete ratings of others users'});
                 }
             } else {
-                return next({ type: 'error', error: 'RatingApplicant doesn\'t exist' });
+                return next({type: 'error', error: 'RatingApplicant doesn\'t exist'});
             }
         } catch (err) {
-            return next({ type: 'error', error: 'Error getting data' });
+            return next({type: 'error', error: 'Error getting data'});
         }
     });
 
     // DELETE by admin
-    app.delete('/rating_applicant/admin/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
+    app.delete('/rating_applicant/admin/:id([0-9]+)', [checkToken, checkAdmin], async (req, res, next) => {
         const id = req.params.id;
 
         try {
             let rating_applicant = await db.rating_applicants.findOne({
-                where: { ratingId: id }
+                where: {ratingId: id}
             });
 
             if (rating_applicant) {
-                let rating_applicantToDelete = await db.rating_applicants.destroy({ where: { ratingId: id } });
-                let rating_offerer = await db.rating_offerers.destroy({ where: { ratingId: id } }); // Search first?
-                let rating = await db.ratings.destroy({ where: { id } });
+                let rating_applicantToDelete = await db.rating_applicants.destroy({where: {ratingId: id}});
+                let rating_offerer = await db.rating_offerers.destroy({where: {ratingId: id}}); // Search first?
+                let rating = await db.ratings.destroy({where: {id}});
 
                 if (rating_applicant && rating && rating_offerer) {
                     await algorithm.indexUpdate(id);
-                    
+
                     res.json({
                         ok: true,
                         message: 'RatingApplicant deleted'
                     });
                 }
             } else {
-                return next({ type: 'error', error: 'RatingApplicant doesn\'t exist' });
+                return next({type: 'error', error: 'RatingApplicant doesn\'t exist'});
             }
             // Respuestas en json
             // rating_applicant: 1 -> Deleted
             // rating_applicant: 0 -> Rating don't exists
         } catch (err) {
-            return next({ type: 'error', error: 'Error getting data' });
+            return next({type: 'error', error: 'Error getting data'});
         }
     });
 
@@ -368,13 +368,13 @@ module.exports = (app, db) => {
             rating_applicant.teamwork = body.teamwork;
             rating_applicant.satisfaction = body.satisfaction;
 
-            let newRating_applicant = await db.rating_applicants.create(rating_applicant, { transaction: transaction });
+            let newRating_applicant = await db.rating_applicants.create(rating_applicant, {transaction: transaction});
 
             return newRating_applicant;
 
         } catch (err) {
             await transaction.rollback();
-            return next({ type: 'error', error: err.message });
+            return next({type: 'error', error: err.message});
         }
     }
-}
+};

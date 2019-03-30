@@ -13,10 +13,10 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import {OfferManageEffects} from '../store/offer-manage.effects';
 import {CandidatePreview} from '../../../../models/candidate-preview.model';
-import * as OfferActions from "../../offer-detail/store/offer.actions";
-import * as fromOffer from "../../offer-detail/store/offer.reducers";
-import {OfferEffects} from "../../offer-detail/store/offer.effects";
-import {Title} from "@angular/platform-browser";
+import * as OfferActions from '../../offer-detail/store/offer.actions';
+import * as fromOffer from '../../offer-detail/store/offer.reducers';
+import {OfferEffects} from '../../offer-detail/store/offer.effects';
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-offer-selection-process',
@@ -25,17 +25,10 @@ import {Title} from "@angular/platform-browser";
 })
 export class OfferSelectionProcessComponent implements OnInit {
 
-  // Filter sidebar
-  @ViewChild('drawer') private drawer: MatSidenav;
-
-  // Selection process Stepper
-  @ViewChild('stepper') private stepper: MatStepper;
-
   // PAGINATOR
   pageSize = 5;
   pageSizeOptions: number[] = [5, 10, 25, 100];
   pageEvent: PageEvent;
-
   // FILTERS
   filters: FormGroup;
   isSkill = 0;
@@ -46,24 +39,25 @@ export class OfferSelectionProcessComponent implements OnInit {
   distances = Object.keys(Distances)
     .filter(isStringNotANumber)
     .map(key => ({value: Distances[key], viewValue: key}));
-
   // Offer state
   offerState: Observable<fromOffer.State>;
-
-  // SELECTION DATA
-  private offerId: number;
-  private manageOfferState: Observable<fromOfferManage.State>;
-
+  manageOfferState: Observable<fromOfferManage.State>;
   // Stepper forms
   selectFormGroup: FormGroup;
   waitFormGroup: FormGroup;
-  private firstStepCompletion = false;
-  private secondStepCompletion = false;
-  private firstStepOkay = false;
-  private secondStepOkay = false;
+  firstStepCompletion = false;
+  secondStepCompletion = false;
+  firstStepOkay = false;
+  secondStepOkay = false;
   showStepper = false;
-  private offer: any;
-  private currentSelected: number;
+  offer: any;
+  currentSelected: number;
+  // Filter sidebar
+  @ViewChild('drawer') private drawer: MatSidenav;
+  // Selection process Stepper
+  @ViewChild('stepper') private stepper: MatStepper;
+  // SELECTION DATA
+  private offerId: number;
 
   constructor(
     private _formBuilder: FormBuilder,
@@ -76,6 +70,19 @@ export class OfferSelectionProcessComponent implements OnInit {
     private manageOfferEffects: OfferManageEffects
   ) {
   }
+
+  get formSkills() {
+    return <FormArray>this.filters.get('skills');
+  }
+
+  get formLanguages() {
+    return <FormArray>this.filters.get('languages');
+  }
+
+
+  //////////////////////////////////////////////////////
+  // FILTER HELPER METHODS /////////////////////////////
+  //////////////////////////////////////////////////////
 
   ngOnInit() {
     this.titleService.setTitle('Kwee - Selection Process');
@@ -106,8 +113,10 @@ export class OfferSelectionProcessComponent implements OnInit {
       this.offerState = this.store$.pipe(select(state => state.offer));
       this.offerState.subscribe(
         offer => {
-          this.offer = offer.offer;
-          this.titleService.setTitle('Kwee - Selecting for ' + offer.offer.title);
+          if (offer.offer && offer.offer.title) {
+            this.offer = offer.offer;
+            this.titleService.setTitle('Kwee - Selecting for ' + offer.offer.title);
+          }
         }
       );
 
@@ -229,12 +238,8 @@ export class OfferSelectionProcessComponent implements OnInit {
   }
 
   changePage() {
+    window.scrollTo(0, 0);
   }
-
-
-  //////////////////////////////////////////////////////
-  // FILTER HELPER METHODS /////////////////////////////
-  //////////////////////////////////////////////////////
 
   isMobile() {
     return !this.media.isMatched('screen and (min-width: 960px)'); // gt-sm
@@ -243,14 +248,6 @@ export class OfferSelectionProcessComponent implements OnInit {
   applyFilters() {
     this.drawer.toggle();
     window.scrollTo(0, 0);
-  }
-
-  get formSkills() {
-    return <FormArray>this.filters.get('skills');
-  }
-
-  get formLanguages() {
-    return <FormArray>this.filters.get('languages');
   }
 
   addSkill() {
@@ -286,7 +283,7 @@ export class OfferSelectionProcessComponent implements OnInit {
   // Interaction with stepper methods
   closeSelectionProcess() {
     this.store$.dispatch(new OfferManageActions.TryChangeOfferStatus({offerId: this.offerId, newStatus: 1}));
-    this.router.navigate(['my-offers']);
+    this.router.navigate(['my-offers/4']);
   }
 
   isFaved(faved: boolean, candidate: CandidatePreview) {

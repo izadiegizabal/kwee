@@ -1,15 +1,14 @@
-const elastic            = require('../database/elasticsearch');
-const auth               = require('../middlewares/auth/auth');
-const { usersConnected } = require('../middlewares/sockets');
-const env                = require('../tools/constants.js');
-const io                 = require('../database/sockets');
-const Log                = require('../models/logs');
-const jwt                = require('jsonwebtoken');
-const nodemailer         = require('nodemailer');
-const moment             = require('moment');
-const path               = require('path');
-const fs                 = require('fs');
-
+const elastic = require('../database/elasticsearch');
+const auth = require('../middlewares/auth/auth');
+const {usersConnected} = require('../middlewares/sockets');
+const env = require('../tools/constants.js');
+const io = require('../database/sockets');
+const Log = require('../models/logs');
+const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+const moment = require('moment');
+const path = require('path');
+const fs = require('fs');
 
 
 class TokenId {
@@ -50,7 +49,7 @@ class Logger {
         // id is the log to update
         // toId is the id to which route id is the action
 
-        let updates = { status: status };
+        let updates = {status: status};
         toId ? updates.actionToId = toId : null;
 
         Log.findByIdAndUpdate(id, updates, (err, userDB) => {
@@ -71,9 +70,9 @@ function sendVerificationEmail(body, user) {
 
     let token = jwt.sign({
         id: user.id
-    }, env.JSONWEBTOKEN_SECRET, { expiresIn: '1h' });
+    }, env.JSONWEBTOKEN_SECRET, {expiresIn: '1h'});
 
-    let urlValidation = `${ env.URL }/email-verified/` + token;
+    let urlValidation = `${env.URL}/email-verified/` + token;
 
     nodemailer.createTestAccount((err, account) => {
         // create reusable transporter object using the default SMTP transport
@@ -109,10 +108,10 @@ function sendEmailResetPassword(user, res) {
     // Generate test SMTP service account from gmail
     let data = fs.readFileSync(path.join(__dirname, '../templates/emailResetPassword.html'), 'utf-8');
     let token = auth.auth.encode(user, '1h');
-    
+
     // let urlValidation = `${ env.URL }/email-verified/` + token;
 
-    let urlValidation = `${ env.URL }/reset-password/` + token;
+    let urlValidation = `${env.URL}/reset-password/` + token;
 
     //let urlValidation = `http://localhost:4200/reset-password/` + token;
 
@@ -160,7 +159,7 @@ function sendEmailSelected(user, res, offer) {
     let data = fs.readFileSync(path.join(__dirname, '../templates/emailSelected.html'), 'utf-8');
     let token = auth.auth.encode(user, '1h');
 
-    let urlValidation = `${ env.URL }/reset-password/` + token;
+    let urlValidation = `${env.URL}/reset-password/` + token;
 
     nodemailer.createTestAccount((err, account) => {
         // create reusable transporter object using the default SMTP transport
@@ -204,7 +203,7 @@ function sendEmailOfferClosed(user, res, offer) {
     let data = fs.readFileSync(path.join(__dirname, '../templates/emailOfferClosed.html'), 'utf-8');
     let token = auth.auth.encode(user, '1h');
 
-    let urlValidation = `${ env.URL }/reset-password/` + token;
+    let urlValidation = `${env.URL}/reset-password/` + token;
 
     nodemailer.createTestAccount((err, account) => {
         // create reusable transporter object using the default SMTP transport
@@ -280,157 +279,159 @@ function sendEmailInactiveUser(user) {
 }
 
 function isEmpty(obj) {
-    for(var key in obj) {
-        if(obj.hasOwnProperty(key))
+    for (var key in obj) {
+        if (obj.hasOwnProperty(key))
             return false;
     }
     return true;
 }
 
-async function pagination( db, dbname, _limit, _page, attr, res, next){
+async function pagination(db, dbname, _limit, _page, attr, res, next) {
     var output = {};
 
     var data;
     var message;
 
-    try{
+    try {
         var countTotal = await db.findAndCountAll();
-        
-        if( _limit === undefined || _page === undefined ){
+
+        if (_limit === undefined || _page === undefined) {
             data = await db.findAll({attributes: attr});
             message = `Listing all ${dbname}`;
         } else {
             let limit = Number(_limit);
             let page = Number(_page);
-            
-            if(isNaN(limit)) return res.status(400).json({ ok: false, message: 'Invalid limit value'});
-            else if(isNaN(page)) return res.status(400).json({ ok: false, message: 'Invalid page value. Page starts in 1.'});
-    
+
+            if (isNaN(limit)) return res.status(400).json({ok: false, message: 'Invalid limit value'});
+            else if (isNaN(page)) return res.status(400).json({
+                ok: false,
+                message: 'Invalid page value. Page starts in 1.'
+            });
+
             let pages = Math.ceil(countTotal.count / limit);
-            
+
             // Offset: sets the starting index to start counting 
             offset = limit * (page - 1);
-    
+
             if (page > pages) {
                 return res.status(200).json({
                     ok: true,
-                    message: `It doesn't exist ${ page } pages`
+                    message: `It doesn't exist ${page} pages`
                 });
             }
-            
+
             data = await db.findAll({
                 attributes: attr,
                 limit,
                 offset,
             });
-    
-            message = `Listing ${ limit } ${ dbname }. Page ${ page } of ${ pages }.`
+
+            message = `Listing ${limit} ${dbname}. Page ${page} of ${pages}.`
         }
         output.data = data;
         output.message = message;
         output.count = countTotal.count;
-        
+
         return output;
 
+    } catch (error) {
+        return next({type: 'error', error: error.message});
     }
-    catch(error){
-        return next({ type: 'error', error: error.message });
-    }
-    
+
 }
 
-function validateDate ( date ) {
-    if(moment(date, 'YYYY-MM-DD', true).isValid()){
+function validateDate(date) {
+    if (moment(date, 'YYYY-MM-DD', true).isValid()) {
         return true;
     } else {
         throw new Error("Invalid date");
     }
 }
 
-async function uploadFile ( req, res, next, _type, _id, _db ) {
-    
+async function uploadFile(req, res, next, _type, _id, _db) {
+
     try {
         let type = _type;
-        var path = `uploads/${ type }`;
-        
+        var path = `uploads/${type}`;
+
         // Create dir if not exists
-        if (!fs.existsSync(path)){
-            fs.mkdirSync(path, { recursive: true });
-            console.log(`Path ${ path } created`);
+        if (!fs.existsSync(path)) {
+            fs.mkdirSync(path, {recursive: true});
+            console.log(`Path ${path} created`);
         }
-        
+
         let id = _id;
-        
-            if (!isNaN(id)) {
-                if (!req.files) {
-                    return res.status(400).json({
+
+        if (!isNaN(id)) {
+            if (!req.files) {
+                return res.status(400).json({
+                    ok: false,
+                    message: 'Not file selected'
+                });
+            }
+
+            // Validate type
+            let validTypes = ['users'];
+            if (validTypes.indexOf(type) < 0) {
+                return res.status(400).json({
+                    ok: false,
+                    message: 'Valid types are: ' + validTypes.join(', ')
+                })
+            }
+
+            let file = req.files.img;
+
+            let fileNameCut = file.name.split('.');
+            let fileExt = fileNameCut[fileNameCut.length - 1];
+
+            // Validate extension
+            let validExt = ['png', 'jpg', 'gif', 'jpeg'];
+
+            if (validExt.indexOf(fileExt) < 0) {
+                return res.status(400).json({
+                    ok: false,
+                    message: 'Valid extension are ' + validExt.join(', '),
+                    ext: fileExt
+                })
+            }
+
+            // Change file name
+            let fileName = `user${id}-${new Date().getMilliseconds()}.${fileExt}`;
+            var outputPath = `uploads/${type}/${fileName}`;
+            file.mv(outputPath, (err) => {
+                if (err) {
+                    return res.status(500).json({
                         ok: false,
-                        message: 'Not file selected'
+                        message: err
                     });
                 }
 
-                // Validate type
-                let validTypes = ['users'];
-                if (validTypes.indexOf(type) < 0) {
-                    return res.status(400).json({
-                        ok: false,
-                        message: 'Valid types are: ' + validTypes.join(', ')
-                    })
-                }
-
-                let file = req.files.img;
-                
-                let fileNameCut = file.name.split('.');
-                let fileExt = fileNameCut[fileNameCut.length - 1];
-
-                // Validate extension
-                let validExt = ['png', 'jpg', 'gif', 'jpeg'];
-
-                if (validExt.indexOf(fileExt) < 0) {
-                    return res.status(400).json({
-                        ok: false,
-                        message: 'Valid extension are ' + validExt.join(', '),
-                        ext: fileExt
-                    })
-                }
-
-                // Change file name
-                let fileName = `user${ id }-${ new Date().getMilliseconds() }.${ fileExt }`;
-                var outputPath = `uploads/${ type }/${ fileName }`;
-                file.mv(outputPath, (err) => {
-                    if (err) {
-                        return res.status(500).json({
-                            ok: false,
-                            message: err
-                        });
-                    }
-                    
-                });
-                var out = await saveUserImg(id, outputPath, _db);
-                return out;
-            } else {
-                return res.status(400).json({
-                    ok: false,
-                    message: 'Invalid user'
-                });
-            }
-        } catch (err) {
-            next({ type: 'error', error: err });
+            });
+            var out = await saveUserImg(id, outputPath, _db);
+            return out;
+        } else {
+            return res.status(400).json({
+                ok: false,
+                message: 'Invalid user'
+            });
         }
+    } catch (err) {
+        next({type: 'error', error: err});
+    }
 }
 
 async function saveUserImg(id, outputPath, db) {
-    
+
     var ok;
-    
+
     let user = await db.users.findOne({
-        where: { id }
+        where: {id}
     });
-    
+
     deleteFile(user.img);
 
-    let updated = await db.users.update({ img: outputPath }, {
-        where: { id }
+    let updated = await db.users.update({img: outputPath}, {
+        where: {id}
     });
 
     if (updated > 0) {
@@ -454,41 +455,41 @@ function deleteFile(outputPath) {
 }
 
 function uploadImg(req, res, next, type,) {
-    
+
     try {
-        var location = `uploads/${ type }`;
-        
+        var location = `uploads/${type}`;
+
         // Create dir if not exists
-        if (!fs.existsSync(location)){
-            fs.mkdirSync(location, { recursive: true });
+        if (!fs.existsSync(location)) {
+            fs.mkdirSync(location, {recursive: true});
         }
-        
+
         // image takes from body which you uploaded
-        const imgdata = req.body.img;    
-        
+        const imgdata = req.body.img;
+
         // to convert base64 format into random filename
         // const base64Data = imgdata.replace(/^data:([A-Za-z-+/]+);base64,/, '');
         const base64Data = imgdata.split(',');
-        if ( type != 'skills' ) {
+        if (type != 'skills') {
             // to create some random id or name for your image name
             var imgname = new Date().getTime().toString();
         } else {
             var imgname = req.body.name;
-        } 
+        }
 
         imgname = imgname + '.' + base64Data[0].split('/')[1].split(';')[0];
-        
+
         // to declare some path to store your converted image
         const path = location + '/' + imgname;
 
         fs.writeFile(path, base64Data[1], 'base64', (err) => {
-            if ( err ) {
-                next({ type: 'error', error: err });
+            if (err) {
+                next({type: 'error', error: err});
             }
         });
         return imgname;
     } catch (err) {
-        next({ type: 'error', error: err });
+        next({type: 'error', error: err});
     }
 
 }
@@ -497,13 +498,13 @@ function checkImg(data) {
     let dataSplit = data.split(',');
     dataSplit = dataSplit[0].split('/');
     dataSplit = dataSplit[0].split(':')[1];
-    if( dataSplit == 'image' ){
+    if (dataSplit == 'image') {
         return true;
     }
     return false;
 }
 
-function prepareOffersToShow(offers, offersShow, user){
+function prepareOffersToShow(offers, offersShow, user) {
     for (let i = 0; i < offers.length; i++) {
         let offer = {};
 
@@ -544,44 +545,44 @@ function prepareOffersToShow(offers, offersShow, user){
     return offersShow;
 }
 
-function saveLogES(action, actionToRoute, user){
+function saveLogES(action, actionToRoute, user) {
     moment.locale('es');
 
     let body = {
         user,
-        action, 
+        action,
         actionToRoute,
         date: moment().format('YYYY-MM-DD'),
         hour: moment().format('HH:mm:ss'),
-    }
+    };
 
     elastic.index({
         index: 'logs',
         type: 'log',
         body
     }, function (err, resp, status) {
-        if ( err ) {
+        if (err) {
             console.log(err)
         }
     });
 }
 
-function sendNotification( route, id, object, bool ) {
+function sendNotification(route, id, object, bool) {
     let payload = {
         selected: bool,
         applicationId: object.id,
         offerId: object.fk_offer
-    }
+    };
     io.in(id).emit(route, payload);
 }
 
-function getSocketUserId( email ) {
+function getSocketUserId(email) {
     let socketUsers = usersConnected.getList();
     socketUsers = socketUsers.find(element => element.email === email);
     return socketUsers ? socketUsers.id : null;
 }
 
-async function createNotification( db, to, from, type, idTable, notification, status ) {
+async function createNotification(db, to, from, type, idTable, notification, status) {
     await db.notifications.create({
         to,
         from,
