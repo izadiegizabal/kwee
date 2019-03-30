@@ -13,7 +13,8 @@ export interface DialogData {
 })
 export class AlertDialogComponent implements OnInit {
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: DialogData, public dialogRef: MatDialogRef<DialogData>) { }
+  constructor(@Inject(MAT_DIALOG_DATA) public data: DialogData, public dialogRef: MatDialogRef<DialogData>) {
+  }
 
   ngOnInit() {
   }

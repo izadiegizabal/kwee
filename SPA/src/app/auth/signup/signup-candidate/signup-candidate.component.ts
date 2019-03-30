@@ -31,6 +31,31 @@ interface City {
 
 export class SignupCandidateComponent implements OnInit {
 
+  @ViewChild('stepper') stepper: MatStepper;
+  options: City[] = [];
+  fileEvent = null;
+  firstFormGroup: FormGroup;
+  secondFormGroup: FormGroup;
+  thirdFormGroup: FormGroup;
+  candidate: any;
+  hide = false;
+  iskill = 0;
+  iskillang = 0;
+  isSocialNetwork = false;
+  snToken;
+  token;
+  authState: any;
+  file: any;
+  roles = Object
+    .keys(WorkFields)
+    .filter(isStringNotANumber)
+    .map(key => ({value: WorkFields[key], viewValue: key}));
+  proficiencies = Object
+    .keys(LanguageLevels)
+    .filter(isStringNotANumber)
+    .map(key => ({value: LanguageLevels[key], viewValue: key}));
+  private dialogShown = false;
+
   constructor(private _formBuilder: FormBuilder,
               public dialog: MatDialog,
               private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects,
@@ -56,33 +81,6 @@ export class SignupCandidateComponent implements OnInit {
   get formEducation() {
     return <FormArray>this.thirdFormGroup.get('education');
   }
-  @ViewChild('stepper') stepper: MatStepper;
-
-  options: City[] = [];
-  fileEvent = null;
-
-  firstFormGroup: FormGroup;
-  secondFormGroup: FormGroup;
-  thirdFormGroup: FormGroup;
-  candidate: any;
-  hide = false;
-  iskill = 0;
-  iskillang = 0;
-  isSocialNetwork = false;
-  snToken;
-  token;
-  authState: any;
-  file: any;
-
-  roles = Object
-    .keys(WorkFields)
-    .filter(isStringNotANumber)
-    .map(key => ({value: WorkFields[key], viewValue: key}));
-  proficiencies = Object
-    .keys(LanguageLevels)
-    .filter(isStringNotANumber)
-    .map(key => ({value: LanguageLevels[key], viewValue: key}));
-  private dialogShown = false;
 
   static minDate(control: FormControl): { [s: string]: { [s: string]: boolean } } {
     const today = new Date();
@@ -113,6 +111,7 @@ export class SignupCandidateComponent implements OnInit {
     }
     return num;
   }
+
   // LATITUDE -90 to +90
   static generateRandomLat() {
     let num = +(Math.random() * 90).toFixed(3);
@@ -283,7 +282,7 @@ export class SignupCandidateComponent implements OnInit {
       console.log('form valid');
       if (!this.isSocialNetwork) {
         console.log('no viene por red social');
-        if ((this.secondFormGroup.controls['location'].value as City).geo === undefined ) {
+        if ((this.secondFormGroup.controls['location'].value as City).geo === undefined) {
           if (this.options.length > 0) {
             this.secondFormGroup.controls['location'].setValue(this.options[0]);
           } else {
@@ -307,8 +306,8 @@ export class SignupCandidateComponent implements OnInit {
           'dateBorn': this.secondFormGroup.controls['birthday'].value,
           'premium': '0',
           'rol': this.secondFormGroup.controls['role'].value.toString(),
-          'lng' : (this.secondFormGroup.controls['location'].value as City).geo.lng,
-          'lat' : (this.secondFormGroup.controls['location'].value as City).geo.lat
+          'lng': (this.secondFormGroup.controls['location'].value as City).geo.lng,
+          'lat': (this.secondFormGroup.controls['location'].value as City).geo.lat
         };
 
         // console.log(this.candidate);
@@ -501,7 +500,7 @@ export class SignupCandidateComponent implements OnInit {
     // stepper.next();
   }
 
-    linkedInSignUp(stepper: MatStepper) {
+  linkedInSignUp(stepper: MatStepper) {
     console.log('linkedIn Sign Up');
     this.store$.dispatch(new AuthActions.TrySignupLinkedIn());
     window.location.href = environment.apiUrl + 'auth/linkedin';

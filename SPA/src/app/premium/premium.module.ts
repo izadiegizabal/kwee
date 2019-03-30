@@ -2,9 +2,9 @@ import {NgModule} from '@angular/core';
 import {SharedModule} from '../shared/shared.module';
 import {PremiumComponent} from './premium.component';
 import {PremiumRoutingModule} from './premium-routing.module';
-import { PremiumCandidateComponent } from './premium-candidate/premium-candidate.component';
-import { PremiumBusinessComponent } from './premium-business/premium-business.component';
-import { PaypalDialogComponent } from './paypal-dialog/paypal-dialog.component';
+import {PremiumCandidateComponent} from './premium-candidate/premium-candidate.component';
+import {PremiumBusinessComponent} from './premium-business/premium-business.component';
+import {PaypalDialogComponent} from './paypal-dialog/paypal-dialog.component';
 import {NgxPayPalModule} from 'ngx-paypal';
 import {PaypalDialogModule} from './paypal-dialog/paypal-dialog.module';
 import {StoreModule} from '@ngrx/store';
@@ -27,8 +27,7 @@ import {InvoiceEffects} from '../invoices/store/invoice.effects';
     StoreModule.forFeature('invoices', invoiceReducer),
     EffectsModule.forFeature([InvoiceEffects])
   ],
-  exports: [
-  ],
+  exports: [],
   entryComponents: [
     PaypalDialogComponent,
   ],

@@ -1,4 +1,4 @@
-<mat-card fxFlex="100%" fxFlex.gt-xs="600px" fxFlex.gt-sm="656px" fxFlex.gt-md="712px">
+<mat-card fxFlex="100%" fxFlex.gt-md="712px" fxFlex.gt-sm="656px" fxFlex.gt-xs="600px">
   <mat-card-header
     fxLayout="row"
     fxLayout.lt-sm="column"
@@ -28,10 +28,10 @@
 
   <mat-card-content>
     <img
-      width="88px"
-      height="88px"
+      [src]="getImg()"
       alt="Business Logo"
-      [src]="getImg()">
+      height="88px"
+      width="88px">
     <span [innerHTML]="getDescription()">
     </span>
   </mat-card-content>
@@ -68,7 +68,7 @@
          fxLayoutAlign="end center">
       <p *ngIf="!candidate">Click to rate the candidate</p>
       <p *ngIf="candidate">Click to rate the offerer</p>
-      <button (click)="rate()" mat-raised-button color="primary">{{'Rate'}}</button>
+      <button (click)="rate()" color="primary" mat-raised-button>{{'Rate'}}</button>
     </div>
   </mat-card-actions>
 
@@ -93,7 +93,8 @@
     <div fxLayout="row"
          fxLayoutAlign="end center">
       <p>All applications received!</p>
-      <button [routerLink]="'/my-offers/' + offer.id + '/selection'" mat-raised-button color="primary">{{'Go to Selection'}}</button>
+      <button [routerLink]="'/my-offers/' + offer.id + '/selection'" color="primary"
+              mat-raised-button>{{'Go to Selection'}}</button>
     </div>
   </mat-card-actions>
 
@@ -105,7 +106,7 @@
     <div fxLayout="row"
          fxLayoutAlign="end center">
       <p>Do you want to start the selection process?</p>
-      <button (click)="startSelectionProcess()" mat-raised-button color="primary">{{'Start Selection'}}</button>
+      <button (click)="startSelectionProcess()" color="primary" mat-raised-button>{{'Start Selection'}}</button>
     </div>
   </mat-card-actions>
 
@@ -117,8 +118,8 @@
     <div fxLayout="row"
          fxLayoutAlign="end center">
       <p *ngIf="candidate">You have been selected! What do you want to do?</p>
-      <button (click)="reject()" mat-raised-button color="warn">{{'Reject' | uppercase }}</button>
-      <button (click)="accept()" mat-raised-button color="accent">{{'Accept' | uppercase }}</button>
+      <button (click)="reject()" color="warn" mat-raised-button>{{'Reject' | uppercase }}</button>
+      <button (click)="accept()" color="accent" mat-raised-button>{{'Accept' | uppercase }}</button>
     </div>
   </mat-card-actions>
 
@@ -128,7 +129,9 @@
     fxLayoutAlign="end center"
     fxLayoutGap="16px">
     <p>You have rejected your selection to this offer!</p>
-    <mat-chip-list><mat-chip color="warn" selected>Rejected</mat-chip></mat-chip-list>
+    <mat-chip-list>
+      <mat-chip color="warn" selected>Rejected</mat-chip>
+    </mat-chip-list>
   </div>
 
   <div
@@ -137,7 +140,9 @@
     fxLayoutAlign="end center"
     fxLayoutGap="16px">
     <p>You have accepted your selection to this offer!</p>
-    <mat-chip-list><mat-chip color="accent" selected>Accepted</mat-chip></mat-chip-list>
+    <mat-chip-list>
+      <mat-chip color="accent" selected>Accepted</mat-chip>
+    </mat-chip-list>
   </div>
 
 

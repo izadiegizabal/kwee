@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../store/app.reducers';
 import {Observable} from 'rxjs';
@@ -13,7 +13,8 @@ import {Router} from '@angular/router';
 export class PremiumComponent implements OnInit {
   authState: Observable<fromAuth.State>;
 
-  constructor(private store$: Store<fromApp.AppState>,  private router: Router) { }
+  constructor(private store$: Store<fromApp.AppState>, private router: Router) {
+  }
 
   ngOnInit() {
     this.authState = this.store$.pipe(select('auth'));

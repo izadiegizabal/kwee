@@ -1,5 +1,4 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {getColourFromIndex} from '../utils.service';
 
 @Component({
   selector: 'app-offerer-name-overview',

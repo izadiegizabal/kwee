@@ -1,14 +1,12 @@
-import {Component, OnInit, EventEmitter, Input} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import * as AuthActions from '../../../auth/store/auth.actions';
 import * as fromApp from '../../../store/app.reducers';
 import {select, Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
 import * as fromAuth from '../../../auth/store/auth.reducers';
 import {getUrlfiedString} from '../../../shared/utils.service';
-import { MessagesService } from '../../../services/messages.service';
-import { WebsocketService } from '../../../services/websocket.service';
-import { NotificationsService } from '../../../services/notifications.service';
-import { _countGroupLabelsBeforeOption } from '@angular/material';
+import {MessagesService} from '../../../services/messages.service';
+import {NotificationsService} from '../../../services/notifications.service';
 
 @Component({
   selector: 'app-user-menu',
@@ -29,8 +27,8 @@ export class UserMenuComponent implements OnInit {
   message = false;
 
   constructor(private store$: Store<fromApp.AppState>,
-    public messageService: MessagesService,
-    public notificationsService: NotificationsService) {
+              public messageService: MessagesService,
+              public notificationsService: NotificationsService) {
   }
 
   ngOnInit() {
@@ -44,13 +42,13 @@ export class UserMenuComponent implements OnInit {
           this.username = user.name;
           this.userId = '' + user.id;
           this.userType = user.type;
-          if ( user.notifications > 0 ) {
+          if (user.notifications > 0) {
             this.numNotifications = user.notifications;
             this.notification = true;
           }
         }
       });
-    this.messageService.getSelected().subscribe( msg => {
+    this.messageService.getSelected().subscribe(msg => {
       this.numMessages++;
       this.notification = true;
     });

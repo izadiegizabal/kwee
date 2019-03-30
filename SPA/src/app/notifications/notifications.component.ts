@@ -1,9 +1,9 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { WebsocketService } from '../services/websocket.service';
-import {Action, select, Store} from '@ngrx/store';
+import {Component, OnInit} from '@angular/core';
+import {WebsocketService} from '../services/websocket.service';
+import {Store} from '@ngrx/store';
 import * as fromApp from '../store/app.reducers';
-import { MessagesService } from '../services/messages.service';
-import { NotificationsService } from '../services/notifications.service';
+import {MessagesService} from '../services/messages.service';
+import {NotificationsService} from '../services/notifications.service';
 
 @Component({
   selector: 'app-notifications',
@@ -19,7 +19,8 @@ export class NotificationsComponent implements OnInit {
     public messageService: MessagesService,
     private store$: Store<fromApp.AppState>,
     public notificationsService: NotificationsService
-  ) { }
+  ) {
+  }
 
   ngOnInit() {
     this.notificationsService.newNotification(0);

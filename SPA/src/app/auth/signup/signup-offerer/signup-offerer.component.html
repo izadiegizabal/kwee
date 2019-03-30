@@ -183,11 +183,13 @@
           </mat-form-field>
         </div>
         <br>
-          <mat-checkbox formControlName="terms" required>Accept our terms and conditions. More info <a [routerLink]="['/privacy']" target="_blank" >here</a>.</mat-checkbox>
-          <mat-error *ngIf="!secondFormGroup.get('terms').valid && secondFormGroup.get('terms').touched">
-              Please accept our terms and conditions
-          </mat-error>
-            
+        <mat-checkbox formControlName="terms" required>Accept our terms and conditions. More info <a
+          [routerLink]="['/privacy']" target="_blank">here</a>.
+        </mat-checkbox>
+        <mat-error *ngIf="!secondFormGroup.get('terms').valid && secondFormGroup.get('terms').touched">
+          Please accept our terms and conditions
+        </mat-error>
+
         <!--
           <div class="line1" fxLayout="column">
             <mat-form-field>
@@ -299,7 +301,7 @@
         <br>
         <div fxLayout="row">
           <mat-form-field>
-            <input [max]="getMaxYear()" type="number" formControlName="year" matInput placeholder="Date funded">
+            <input [max]="getMaxYear()" formControlName="year" matInput placeholder="Date funded" type="number">
             <mat-error *ngIf="!thirdFormGroup.get('year').valid">
               Please enter a valid year
             </mat-error>

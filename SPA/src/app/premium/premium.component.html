@@ -1,9 +1,9 @@
-<div fxLayout="row" fxLayoutAlign="center start" *ngIf="(authState | async).user">
+<div *ngIf="(authState | async).user" fxLayout="row" fxLayoutAlign="center start">
   <div
+    flexLayoutAlign="center center"
     fxFlex="95%"
     fxFlex.gt-lg="50%"
-    fxFlex.gt-md="=60%"
-    fxFlex.gt-sm="70%" flexLayoutAlign="center center">
+    fxFlex.gt-md="=60%" fxFlex.gt-sm="70%">
     <div *ngIf="(authState | async).user.type === 'business'" flexLayoutAlign="center center">
       <app-premium-business></app-premium-business>
     </div>

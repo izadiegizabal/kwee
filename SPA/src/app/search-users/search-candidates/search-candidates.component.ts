@@ -7,7 +7,7 @@ import * as fromApp from '../../store/app.reducers';
 import * as AdminActions from '../../admin/store/admin.actions';
 import {BreakpointObserver} from '@angular/cdk/layout';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Title} from "@angular/platform-browser";
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-search-candidates',
@@ -19,22 +19,15 @@ import {Title} from "@angular/platform-browser";
 })
 export class SearchCandidatesComponent implements OnInit {
 
-  // Filter sidebar
-  @ViewChild('drawer') private drawer: MatSidenav;
   @ViewChild('paginator') paginator: MatPaginator;
-
   query: any;
   adminState: Observable<fromAdmin.State>;
-
   // paging
   pageSize = 5;
-
   pageSizeOptions: number[] = [5, 10, 25, 100];
   // MatPaginator Output
   pageEvent: PageEvent;
-
   orderby = '0';
-
   order: { value: string, viewValue: string }[] =
     [
       {value: '0', viewValue: 'Relevance'},
@@ -42,7 +35,8 @@ export class SearchCandidatesComponent implements OnInit {
       {value: 'name', viewValue: 'Name'},
       {value: 'dateBorn', viewValue: 'Date Born'},
     ];
-
+  // Filter sidebar
+  @ViewChild('drawer') private drawer: MatSidenav;
 
   constructor(
     private titleService: Title,

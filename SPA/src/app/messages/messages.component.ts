@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { MessagesService } from '../services/messages.service';
-import {Action, select, Store} from '@ngrx/store';
+import {Component, OnInit} from '@angular/core';
+import {MessagesService} from '../services/messages.service';
+import {select, Store} from '@ngrx/store';
 import * as fromApp from '../store/app.reducers';
-import { WebsocketService } from '../services/websocket.service';
+import {WebsocketService} from '../services/websocket.service';
 
 export interface Users {
   id: number;
@@ -45,7 +45,8 @@ export class MessagesComponent implements OnInit {
     public messageService: MessagesService,
     public wsService: WebsocketService,
     private store$: Store<fromApp.AppState>
-  ) { }
+  ) {
+  }
 
   ngOnInit() {
     this.authState = this.store$.pipe(select('auth'));
@@ -58,14 +59,14 @@ export class MessagesComponent implements OnInit {
 
     console.log(this.users);
 
-    this.messageService.getMessage().subscribe( msg => {
+    this.messageService.getMessage().subscribe(msg => {
       console.log(msg);
     });
 
   }
 
   send() {
-    this.messageService.sendMessage( this.text );
+    this.messageService.sendMessage(this.text);
     this.text = '';
   }
 

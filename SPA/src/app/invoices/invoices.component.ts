@@ -26,7 +26,7 @@ export class InvoicesComponent implements OnInit {
     this.invoices.push({id: 4562, date: new Date(), offer: 'Backend Developer', total: 5.95, currency: 'EUR'});
   }
 
-  getDate(date: Date){
+  getDate(date: Date) {
     return date.getDay() + '/' + date.getMonth() + '/' + date.getFullYear();
   }
 

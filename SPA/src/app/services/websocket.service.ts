@@ -1,7 +1,6 @@
-import { Injectable } from '@angular/core';
-import { User } from '../../models/user';
-import { Socket } from 'ngx-socket-io';
-import { _countGroupLabelsBeforeOption } from '@angular/material';
+import {Injectable} from '@angular/core';
+import {User} from '../../models/user';
+import {Socket} from 'ngx-socket-io';
 
 @Injectable({
   providedIn: 'root'
@@ -40,18 +39,18 @@ export class WebsocketService {
     // });
   }
 
-  emit( event: string, payload?: any, callback?: Function ) {
-    this.socket.emit( event, payload, callback );
+  emit(event: string, payload?: any, callback?: Function) {
+    this.socket.emit(event, payload, callback);
   }
 
-  listen( event: string ) {
-    return this.socket.fromEvent( event );
+  listen(event: string) {
+    return this.socket.fromEvent(event);
   }
 
-  selected( event: string ) {
+  selected(event: string) {
     console.log('en el selected');
 
-    this.socket.on('selected', function(data) {
+    this.socket.on('selected', function (data) {
       const username: any = data.username;
       const message: any = data.message;
 
@@ -59,13 +58,13 @@ export class WebsocketService {
     });
   }
 
-  connectedUser( email: string ) {
+  connectedUser(email: string) {
 
-    return new Promise(  (resolve, reject) => {
+    return new Promise((resolve, reject) => {
 
-      this.emit( 'set-user', { email }, resp => {
+      this.emit('set-user', {email}, resp => {
 
-        this.user = new User( email );
+        this.user = new User(email);
         this.setStorage();
 
         resolve();
@@ -77,13 +76,13 @@ export class WebsocketService {
   }
 
   setStorage() {
-    localStorage.setItem( 'user', JSON.stringify( this.user ));
+    localStorage.setItem('user', JSON.stringify(this.user));
   }
 
   getStorage() {
-    if ( localStorage.getItem('user') ) {
-      this.user = JSON.parse( localStorage.getItem('user') );
-      this.connectedUser( this.user.email );
+    if (localStorage.getItem('user')) {
+      this.user = JSON.parse(localStorage.getItem('user'));
+      this.connectedUser(this.user.email);
     }
   }
 }

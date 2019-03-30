@@ -1,14 +1,14 @@
-<div fxLayout="column" fxFlex="100%" class="container">
+<div class="container" fxFlex="100%" fxLayout="column">
   <app-header [isLanding]="true"></app-header>
   <div id='stars'></div>
   <div id='stars2'></div>
   <div id='stars3'></div>
   <div
-    id='title'
-    fxLayout="column"
     fxFlex="100%"
+    fxLayout="column"
     fxLayoutAlign="center center"
-    fxLayoutGap="16px">
+    fxLayoutGap="16px"
+    id='title'>
     <app-searchbar
       (search)="onSearch($event)"
       [ngStyle.lt-sm]="{'padding-top':'32px', 'width': '85%'}"
@@ -18,15 +18,15 @@
       [ngClass.lt-sm]="{'worldContainerXS': true}"
       [ngClass]="{'worldContainer': true}"
       fxLayout="column"
-      style="overflow-x: hidden;"
-      fxLayoutAlign="center center">
-      <mat-spinner color="accent" style="margin-top: 600px" *ngIf="getAllow()"></mat-spinner>
+      fxLayoutAlign="center center"
+      style="overflow-x: hidden;">
+      <mat-spinner *ngIf="getAllow()" color="accent" style="margin-top: 600px"></mat-spinner>
       <canvas
         [ngStyle.lt-sm]="{'width': '200%'}"
         [ngStyle]="{'width': '123%'}"
+        height="1400px"
         id="kweelive"
-        width="1400px"
-        height="1400px"></canvas>
+        width="1400px"></canvas>
     </div>
   </div>
 </div>

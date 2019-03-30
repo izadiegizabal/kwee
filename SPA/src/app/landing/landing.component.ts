@@ -6,7 +6,7 @@ import {TResourceManager, TResourceMaterial, TResourceMesh, TResourceShader, TRe
 import {shared} from '../../assets/engine/commons';
 import {allowActions, mainInit, mainR, resetCanvas} from '../../assets/engine/main';
 import {Router} from '@angular/router';
-import {Title} from "@angular/platform-browser";
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-landing',

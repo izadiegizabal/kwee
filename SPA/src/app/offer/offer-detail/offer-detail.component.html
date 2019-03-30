@@ -1,8 +1,8 @@
 <div fxLayout="column" fxLayoutGap="16px" style="padding-bottom: 32px">
   <div fxLayout="row">
-    <button mat-icon-button
-            (click)="backClicked()"
-            fxFlexOffset="0" fxFlexOffset.gt-sm="12.5%" fxFlexOffset.gt-md="20%" fxFlexOffset.gt-lg="25%">
+    <button (click)="backClicked()"
+            fxFlexOffset="0"
+            fxFlexOffset.gt-lg="25%" fxFlexOffset.gt-md="20%" fxFlexOffset.gt-sm="12.5%" mat-icon-button>
       <mat-icon class="svg" color="primary" svgIcon="back"></mat-icon>
     </button>
   </div>
@@ -60,14 +60,14 @@
         <div
           fxLayout="row"
           fxLayout.lt-sm="column" fxLayoutGap="16px">
-          <img alt="Business Logo"
+          <img [src]="(offerState | async).offer.img ? environment.apiUrl + 'image/offerers/' + (offerState | async).offer.img :
+            'https://cdn.vox-cdn.com/thumbor/Pkmq1nm3skO0-j693JTMd7RL0Zk=/0x0:2012x1341/1200x800/filters:focal(0x0:2012x1341)/' +
+            'cdn.vox-cdn.com/uploads/chorus_image/image/47070706/google2.0.0.jpg'"
+               alt="Business Logo"
                class="offerImg"
                fxFlex="25%"
                fxFlex.lt-sm="100%"
-               fxLayoutAlign="center center"
-               [src]="(offerState | async).offer.img ? environment.apiUrl + 'image/offerers/' + (offerState | async).offer.img :
-            'https://cdn.vox-cdn.com/thumbor/Pkmq1nm3skO0-j693JTMd7RL0Zk=/0x0:2012x1341/1200x800/filters:focal(0x0:2012x1341)/' +
-            'cdn.vox-cdn.com/uploads/chorus_image/image/47070706/google2.0.0.jpg'">
+               fxLayoutAlign="center center">
           <span [innerHTML]="(offerState | async).offer.description" fxFlex="column">
           </span>
         </div>
@@ -118,26 +118,27 @@
                   style="color: white" type="button">{{'Edit Offer' | uppercase }}</button>
               </a>
               <ng-template #apply>
-                <button *ngIf="(offerState | async).applications===null && id"
-                        [disabled]="(authState | async).user.type === 'business'" (click)="postApplication()"
+                <button (click)="postApplication()"
+                        *ngIf="(offerState | async).applications===null && id" [disabled]="(authState | async).user.type === 'business'"
                         color="accent"
                         mat-raised-button style="color: white">{{'Apply Now!' | uppercase }}</button>
 
-                <button *ngIf="!id" routerLink="/signin"
-                        color="accent"
-                        mat-raised-button style="color: white">{{'Apply Now!' | uppercase }}</button>
+                <button *ngIf="!id" color="accent"
+                        mat-raised-button
+                        routerLink="/signin" style="color: white">{{'Apply Now!' | uppercase }}</button>
 
-                <button *ngIf="(offerState | async).applications && ((offerState | async).offer.status === 0 ||
-                (offerState | async).offer.status === 3) && (offerState | async).applications.status < 2" (click)="deleteApplication()"
+                <button (click)="deleteApplication()"
+                        *ngIf="(offerState | async).applications && ((offerState | async).offer.status === 0 ||
+                (offerState | async).offer.status === 3) && (offerState | async).applications.status < 2"
                         color="warn"
                         mat-raised-button style="color: white">{{'Delete Application' | uppercase }}</button>
 
-                <div fxLayout="column" fxLayoutAlign="center center"
-                     *ngIf="(offerState | async).applications && (offerState | async).applications.status === 2">
+                <div *ngIf="(offerState | async).applications && (offerState | async).applications.status === 2" fxLayout="column"
+                     fxLayoutAlign="center center">
                   <p style="margin-top: 0">You have been selected! What do you want to do?</p>
                   <div fxLayout="row" fxLayoutGap="16px">
-                    <button  mat-raised-button color="warn">{{'Reject' | uppercase }}</button>
-                    <button  mat-raised-button color="accent">{{'Accept' | uppercase }}</button>
+                    <button color="warn" mat-raised-button>{{'Reject' | uppercase }}</button>
+                    <button color="accent" mat-raised-button>{{'Accept' | uppercase }}</button>
                   </div>
                 </div>
 
@@ -159,18 +160,18 @@
         <div fxLayout="column">
           <h2 class="mat-h2">Responsibilities</h2>
           <div
+            [innerHTML]="(offerState | async).offer.responsabilities"
             fxLayout="column"
-            style="white-space: pre-wrap; margin-bottom: 16px"
-            [innerHTML]="(offerState | async).offer.responsabilities">
+            style="white-space: pre-wrap; margin-bottom: 16px">
           </div>
         </div>
 
         <div fxLayout="column">
           <h2 class="mat-h2">Requirements</h2>
           <div
+            [innerHTML]="(offerState | async).offer.requeriments"
             fxLayout="column"
-            style="white-space: pre-wrap; margin-bottom: 16px"
-            [innerHTML]="(offerState | async).offer.requeriments">
+            style="white-space: pre-wrap; margin-bottom: 16px">
           </div>
         </div>
 

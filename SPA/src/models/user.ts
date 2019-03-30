@@ -1,15 +1,11 @@
-
-
-
 export class User {
 
-    public email: string;
+  public email: string;
 
 
-    constructor( email: string ) {
-        this.email = email;
-    }
-
+  constructor(email: string) {
+    this.email = email;
+  }
 
 
 }

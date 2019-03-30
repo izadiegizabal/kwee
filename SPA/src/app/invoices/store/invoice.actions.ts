@@ -14,7 +14,7 @@ export class TryPostInvoice implements Action {
 export class PostInvoice implements Action {
   readonly type = POST_INVOICE;
 
-  constructor(public payload: any ) {
+  constructor(public payload: any) {
   }
 }
 

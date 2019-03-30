@@ -1,5 +1,5 @@
 <mat-card fxFlex="100%" fxFlexOffset="16dp" fxLayout="row">
-  <form fxFlex="100%" (ngSubmit)="onSubmit()">
+  <form (ngSubmit)="onSubmit()" fxFlex="100%">
     <mat-form-field fxFlex="100%">
       <input
         [formControl]="myControl"
@@ -12,7 +12,7 @@
           {{option}}
         </mat-option>
       </mat-autocomplete>
-      <mat-icon matSuffix svgIcon="search" (click)="onSubmit()"></mat-icon>
+      <mat-icon (click)="onSubmit()" matSuffix svgIcon="search"></mat-icon>
     </mat-form-field>
   </form>
 </mat-card>

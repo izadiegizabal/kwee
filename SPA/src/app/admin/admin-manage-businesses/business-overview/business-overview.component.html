@@ -32,7 +32,7 @@
             <mat-icon class="svg" color="primary" svgIcon="access-time"></mat-icon>
             <span>{{user.lastAccess | date:'d/M/y, HH:mm'}}</span>
           </div>
-          <div fxLayout="row" *ngIf="!isInEditMode">
+          <div *ngIf="!isInEditMode" fxLayout="row">
             <button (click)="edit(user)" color="accent" mat-button>Edit</button>
             <button (click)="callAlertDialogDelete(user.id)" color="warn" mat-button>Delete</button>
           </div>

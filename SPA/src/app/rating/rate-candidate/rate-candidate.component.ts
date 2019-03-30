@@ -1,11 +1,10 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MatDialogRef, MAT_DIALOG_DATA, MatDialog} from '@angular/material';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
-import {getColourFromIndex} from '../../shared/utils.service';
 import {OkDialogComponent} from '../../shared/ok-dialog/ok-dialog.component';
 import {DialogErrorComponent} from '../../auth/signup/dialog-error/dialog-error.component';
 
@@ -132,11 +131,6 @@ export class RateCandidateComponent implements OnInit {
     }
   }
 
-
-  private getBGColour() {
-    // return getColourFromIndex(this.index);
-  }
-
   getControl(i: number) {
     return (<FormGroup>(<FormArray>this.form.get('array')).controls[i]);
   }
@@ -175,17 +169,6 @@ export class RateCandidateComponent implements OnInit {
   getTo(i: number) {
     return this.data.applications[i].to;
   }
-
-  /*close() {
-    this.data.applications.forEach( (e) => {
-      if (!e.haveIRated) {
-        this.dialogRef.close(false);
-      }
-    });
-    if (this.formArray.touched) {
-      this.dialogRef.close(true);
-    }
-  }*/
 
   rate(num: number) {
     this.dialogShown = false;
@@ -277,6 +260,21 @@ export class RateCandidateComponent implements OnInit {
       }
     }
     return false;
+  }
+
+  /*close() {
+    this.data.applications.forEach( (e) => {
+      if (!e.haveIRated) {
+        this.dialogRef.close(false);
+      }
+    });
+    if (this.formArray.touched) {
+      this.dialogRef.close(true);
+    }
+  }*/
+
+  private getBGColour() {
+    // return getColourFromIndex(this.index);
   }
 
 }

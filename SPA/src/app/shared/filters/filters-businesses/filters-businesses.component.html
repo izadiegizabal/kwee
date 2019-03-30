@@ -9,33 +9,33 @@
 
     <!--<h3>Minimum Amount of Ratings</h3>-->
     <!--<section fxLayout="column">-->
-      <!--<mat-slider formControlName="minRatings" max="100" min="0" thumbLabel></mat-slider>-->
+    <!--<mat-slider formControlName="minRatings" max="100" min="0" thumbLabel></mat-slider>-->
     <!--</section>-->
 
     <mat-form-field>
       <input formControlName="location" matInput placeholder="Location" type="text">
-      <button type="button" (click)="filters.controls['location'].reset('')" *ngIf="filters.controls['location'].value"
-              aria-label="Clear" mat-button
-              mat-icon-button
-              matSuffix>
+      <button (click)="filters.controls['location'].reset('')" *ngIf="filters.controls['location'].value" aria-label="Clear"
+              mat-button mat-icon-button
+              matSuffix
+              type="button">
         <mat-icon>close</mat-icon>
       </button>
     </mat-form-field>
 
     <!--<mat-form-field>-->
-      <!--<mat-select formControlName="distance" placeholder="Distance">-->
-        <!--<mat-option *ngFor="let distance of distances" [value]="distance.value">-->
-          <!--{{distance.viewValue}}-->
-        <!--</mat-option>-->
-      <!--</mat-select>-->
+    <!--<mat-select formControlName="distance" placeholder="Distance">-->
+    <!--<mat-option *ngFor="let distance of distances" [value]="distance.value">-->
+    <!--{{distance.viewValue}}-->
+    <!--</mat-option>-->
+    <!--</mat-select>-->
     <!--</mat-form-field>-->
 
     <!--<mat-form-field>-->
-      <!--<mat-select formControlName="openOffers" placeholder="Open Positions">-->
-        <!--<mat-option *ngFor="let num of openOfferNum" [value]="num.value">-->
-          <!--{{num.viewValue}}-->
-        <!--</mat-option>-->
-      <!--</mat-select>-->
+    <!--<mat-select formControlName="openOffers" placeholder="Open Positions">-->
+    <!--<mat-option *ngFor="let num of openOfferNum" [value]="num.value">-->
+    <!--{{num.viewValue}}-->
+    <!--</mat-option>-->
+    <!--</mat-select>-->
     <!--</mat-form-field>-->
 
     <mat-form-field>
@@ -73,7 +73,7 @@
 
   </form>
 
-  <div fxLayout="row" fxLayoutAlign="end end" style="margin-top: 16px" fxHide.gt-sm>
-    <button type="button" mat-raised-button color="primary" (click)="applyFilters()">Apply Filters</button>
+  <div fxHide.gt-sm fxLayout="row" fxLayoutAlign="end end" style="margin-top: 16px">
+    <button (click)="applyFilters()" color="primary" mat-raised-button type="button">Apply Filters</button>
   </div>
 </div>

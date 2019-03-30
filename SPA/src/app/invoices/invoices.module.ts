@@ -18,4 +18,5 @@ import {MatExpansionModule} from '@angular/material/expansion';
     InvoicesComponent
   ]
 })
-export class InvoicesModule {}
+export class InvoicesModule {
+}

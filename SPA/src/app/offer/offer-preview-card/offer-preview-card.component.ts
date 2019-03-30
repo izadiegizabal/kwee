@@ -98,18 +98,6 @@ export class OfferPreviewCardComponent implements OnInit {
       SalaryFrequency[this.offer.salaryFrequency];
   }
 
-  private getCurrency(salaryCurrency) {
-    let currency = '';
-    if (this.currencies) {
-      Object.keys(this.currencies).map(key => {
-        if (this.currencies[key].value && this.currencies[key].value === salaryCurrency) {
-          currency = this.currencies[key].symbol;
-        }
-      });
-    }
-    return currency;
-  }
-
   getOfferDuration() {
     if (this.offer.isIndefinite) {
       return 'Indefinite';
@@ -251,5 +239,17 @@ export class OfferPreviewCardComponent implements OnInit {
     } else {
       return this.offer.description;
     }
+  }
+
+  private getCurrency(salaryCurrency) {
+    let currency = '';
+    if (this.currencies) {
+      Object.keys(this.currencies).map(key => {
+        if (this.currencies[key].value && this.currencies[key].value === salaryCurrency) {
+          currency = this.currencies[key].symbol;
+        }
+      });
+    }
+    return currency;
   }
 }

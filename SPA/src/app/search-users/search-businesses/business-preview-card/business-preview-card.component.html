@@ -28,10 +28,10 @@
 
   <mat-card-content>
     <img
-      width="100px"
-      height="100px"
+      [src]="getImg()"
       alt="Business Logo"
-      [src]="getImg()">
+      height="100px"
+      width="100px">
     <p>
       {{ (user.bio | slice:0:280) + "..." }}
     </p>
@@ -48,7 +48,7 @@
       fxLayoutGap="16px">
       <div>
         <button [routerLink]="userUrl" color="accent" mat-button>{{'More Info' | uppercase }}</button>
-        <button (click)="openShareDialog()" mat-icon-button >
+        <button (click)="openShareDialog()" mat-icon-button>
           <mat-icon aria-label="Share user in social networks" color="accent" svgIcon="share"></mat-icon>
         </button>
 

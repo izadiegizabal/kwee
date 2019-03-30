@@ -140,7 +140,7 @@ export class OfferManageEffects {
     }),
     withLatestFrom(this.store$.pipe(select(state => state.auth))),
     switchMap(([payload, authState]) => {
-      console.log(payload);
+        console.log(payload);
         const apiEndpointUrl = environment.apiUrl + 'offer/' + payload.offerId;
         const token = authState.token;
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
@@ -268,9 +268,9 @@ export class OfferManageEffects {
                   }));
               }
               return {
-                  type: OfferManageActions.SET_CHANGE_APPLICATION_STATUS,
-                  payload: {status: payload.status, candidateId: payload.candidateId},
-                };
+                type: OfferManageActions.SET_CHANGE_APPLICATION_STATUS,
+                payload: {status: payload.status, candidateId: payload.candidateId},
+              };
 
             } else {
               return [
@@ -344,6 +344,9 @@ export class OfferManageEffects {
     share()
   );
 
+  constructor(private actions$: Actions, private store$: Store<fromApp.AppState>, private router: Router, private httpClient: HttpClient) {
+  }
+
   private refreshCandidates() {
     // pending
     this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({
@@ -384,9 +387,6 @@ export class OfferManageEffects {
       limit: this.limit,
       status: 4
     }));
-  }
-
-  constructor(private actions$: Actions, private store$: Store<fromApp.AppState>, private router: Router, private httpClient: HttpClient) {
   }
 
   private handleError<T>(operation = 'operation', result?: T) {

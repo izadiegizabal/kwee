@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { WebsocketService } from './websocket.service';
+import {Injectable} from '@angular/core';
+import {WebsocketService} from './websocket.service';
 
 @Injectable({
   providedIn: 'root'
@@ -8,9 +8,10 @@ export class MessagesService {
 
   constructor(
     public wsService: WebsocketService
-  ) { }
+  ) {
+  }
 
-  sendMessage( msg: string ) {
+  sendMessage(msg: string) {
 
     const payload = {
       from: 'Carlos',

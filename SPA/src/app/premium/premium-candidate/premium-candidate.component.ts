@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {PaypalDialogComponent} from '../paypal-dialog/paypal-dialog.component';
 import {MatDialog} from '@angular/material';
 
@@ -9,7 +9,8 @@ import {MatDialog} from '@angular/material';
 })
 export class PremiumCandidateComponent implements OnInit {
 
-  constructor(public dialog: MatDialog) { }
+  constructor(public dialog: MatDialog) {
+  }
 
   ngOnInit() {
   }

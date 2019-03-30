@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { PremiumComponent } from './premium.component';
+import {PremiumComponent} from './premium.component';
 
 describe('PremiumComponent', () => {
   let component: PremiumComponent;
@@ -8,9 +8,9 @@ describe('PremiumComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PremiumComponent ]
+      declarations: [PremiumComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

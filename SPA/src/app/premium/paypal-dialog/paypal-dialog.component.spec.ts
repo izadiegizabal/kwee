@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { PaypalDialogComponent } from './paypal-dialog.component';
+import {PaypalDialogComponent} from './paypal-dialog.component';
 
 describe('PaypalDialogComponent', () => {
   let component: PaypalDialogComponent;
@@ -8,9 +8,9 @@ describe('PaypalDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PaypalDialogComponent ]
+      declarations: [PaypalDialogComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

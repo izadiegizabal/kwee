@@ -24,7 +24,7 @@ export class TryGetCandidates implements Action {
 export class TryGetBusinesses implements Action {
   readonly type = TRY_GET_BUSINESSES;
 
-  constructor(public payload: { page: number, limit: number, params: string, order: string}) {
+  constructor(public payload: { page: number, limit: number, params: string, order: string }) {
   }
 }
 

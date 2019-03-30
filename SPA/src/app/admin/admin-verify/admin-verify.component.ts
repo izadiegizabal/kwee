@@ -7,7 +7,7 @@ import {Observable} from 'rxjs';
 import * as fromAdmin from '../store/admin.reducers';
 import {BusinessAccountStates, BusinessAccountSubscriptions, BusinessIndustries} from '../../../models/Business.model';
 import {isStringNotANumber} from '../../../models/Offer.model';
-import {Title} from "@angular/platform-browser";
+import {Title} from '@angular/platform-browser';
 
 
 @Component({

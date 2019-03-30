@@ -15,11 +15,11 @@ export class PaypalComponent implements OnInit {
 
   public payPalConfig?: PayPalConfig;
 
-  ngOnInit(): void {
-    this.initConfig();
+  constructor(public dialog: MatDialog) {
   }
 
-  constructor(public dialog: MatDialog) {
+  ngOnInit(): void {
+    this.initConfig();
   }
 
   rateCandidate() {

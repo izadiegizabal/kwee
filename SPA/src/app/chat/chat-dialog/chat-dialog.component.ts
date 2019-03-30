@@ -12,14 +12,12 @@ import {MatDialog} from '@angular/material';
 })
 export class ChatDialogComponent implements OnInit, OnDestroy {
 
-  @ViewChild('content') private myScrollContainer: ElementRef;
-
   public opened = false;
-
   clicked = false;
   messages: Observable<Message[]>;
   formValue: string;
   subscription: Subscription;
+  @ViewChild('content') private myScrollContainer: ElementRef;
 
   constructor(public chat: ChatService,
               public dialog: MatDialog) {

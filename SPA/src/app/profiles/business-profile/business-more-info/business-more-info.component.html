@@ -20,7 +20,7 @@
       <h4>Industry</h4>
       <p>{{business.workField ? getIndustry() : infoNAMess}}</p>
       <h4 *ngIf="business.twitter || business.linkedin || business.telegram || business.github">Social Networks</h4>
-      <div fxLayout="row" *ngIf="business.twitter || business.linkedin || business.telegram || business.github">
+      <div *ngIf="business.twitter || business.linkedin || business.telegram || business.github" fxLayout="row">
         <div *ngIf="business.twitter">
           <button mat-icon-button>
             <a href="https://twitter.com/{{business.twitter}}">

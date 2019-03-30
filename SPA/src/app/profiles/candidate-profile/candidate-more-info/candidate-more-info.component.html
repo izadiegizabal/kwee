@@ -95,45 +95,45 @@
     style="padding-bottom: 64px">
     <div fxLayout="column">
       <div>
-          <div fxLayout="column">
-            <div *ngIf="candidate.twitter || candidate.linkedin || candidate.github || candidate.telegram">
-                <h2>Social Networks</h2>
-                <div fxLayout="row">
-                  <div *ngIf="candidate.twitter">
-                    <button mat-icon-button>
-                        <a href="https://twitter.com/{{candidate.twitter}}">
-                          <mat-icon fontIcon="fa-twitter" fontSet="fab"></mat-icon>
-                        </a>
-                    </button>
-                  </div>
-            
-                  <div *ngIf="candidate.linkedin">
-                      <button mat-icon-button>
-                          <a href="https://linkedin.com/in/{{candidate.linkedin}}">
-                            <mat-icon fontIcon="fa-linkedin" fontSet="fab"></mat-icon>
-                          </a>
-                      </button>
-                  </div>
-          
-                  <div *ngIf="candidate.github">
-                      <button mat-icon-button>
-                          <a href="https://github.com/{{candidate.github}}">
-                            <mat-icon fontIcon="fa-github" fontSet="fab"></mat-icon>
-                          </a>
-                      </button>
-                  </div>
-          
-                  <div *ngIf="candidate.telegram">
-                      <button mat-icon-button>
-                          <a href="https://telegram.me/{{candidate.telegram}}">
-                            <mat-icon fontIcon="fa-telegram" fontSet="fab"></mat-icon>
-                          </a>
-                      </button>
-                  </div>
-          
-                </div>
+        <div fxLayout="column">
+          <div *ngIf="candidate.twitter || candidate.linkedin || candidate.github || candidate.telegram">
+            <h2>Social Networks</h2>
+            <div fxLayout="row">
+              <div *ngIf="candidate.twitter">
+                <button mat-icon-button>
+                  <a href="https://twitter.com/{{candidate.twitter}}">
+                    <mat-icon fontIcon="fa-twitter" fontSet="fab"></mat-icon>
+                  </a>
+                </button>
+              </div>
+
+              <div *ngIf="candidate.linkedin">
+                <button mat-icon-button>
+                  <a href="https://linkedin.com/in/{{candidate.linkedin}}">
+                    <mat-icon fontIcon="fa-linkedin" fontSet="fab"></mat-icon>
+                  </a>
+                </button>
+              </div>
+
+              <div *ngIf="candidate.github">
+                <button mat-icon-button>
+                  <a href="https://github.com/{{candidate.github}}">
+                    <mat-icon fontIcon="fa-github" fontSet="fab"></mat-icon>
+                  </a>
+                </button>
+              </div>
+
+              <div *ngIf="candidate.telegram">
+                <button mat-icon-button>
+                  <a href="https://telegram.me/{{candidate.telegram}}">
+                    <mat-icon fontIcon="fa-telegram" fontSet="fab"></mat-icon>
+                  </a>
+                </button>
+              </div>
+
             </div>
           </div>
+        </div>
       </div>
       <div *ngIf="!isPremium">
         <h2 fxLayout="row">

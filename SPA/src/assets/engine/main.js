@@ -72,7 +72,7 @@ async function resetCanvas() {
 
 
 async function mainR(texture) {
-  if(global.gl && global.program) {
+  if (global.gl && global.program) {
     draw = true;
     allowActions.value = false;
     let motor = new TMotorTAG(manager);

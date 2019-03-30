@@ -1,10 +1,10 @@
 import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 
-import {TCamera, TMesh, TAnimation, TLight, TTransform, TEntity} from '../../assets/engine/TEntity';
+import {TAnimation, TCamera, TEntity, TLight, TMesh, TTransform} from '../../assets/engine/TEntity';
 import {TNode} from '../../assets/engine/TNode';
 import {TResourceManager, TResourceMaterial, TResourceMesh, TResourceShader, TResourceTexture} from '../../assets/engine/resourceManager';
 import {shared} from '../../assets/engine/commons.js';
-import {main, mainInit, mainR, mainTest, resetCanvas, allowActions, pls} from '../../assets/engine/main.js';
+import {allowActions, main, mainInit, mainR, mainTest, pls, resetCanvas} from '../../assets/engine/main.js';
 import {Title} from '@angular/platform-browser';
 
 // import {TMotorTAG} from '../../assets/engine/TMotorTAG.js';

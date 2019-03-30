@@ -5,7 +5,7 @@ let canvas = null;
 let global = {
   gl: null,
   program: null
-}
+};
 let angle = 30;
 
 function shared() {
@@ -20,16 +20,16 @@ function shared() {
 }
 
 function changeAngle(degrees) {
-    angle = degrees;
+  angle = degrees;
 }
 
 // Virtual class
 class TEntity {
-    beginDraw() {
-    }
+  beginDraw() {
+  }
 
-    endDraw() {
-    }
+  endDraw() {
+  }
 }
 
 // Static attributes
@@ -45,21 +45,21 @@ TEntity.Aux = [];
 // Static attribute stack
 TEntity.stack = null;
 
-function getEntity(){
-    return TEntity;
+function getEntity() {
+  return TEntity;
 }
 
-function setEntity(ent){
-    TEntity = ent;
+function setEntity(ent) {
+  TEntity = ent;
 }
 
 export {
-    shared,
-    canvas,
-    global,
-    TEntity,
-    getEntity,
-    setEntity,
-    changeAngle,
-    angle,
+  shared,
+  canvas,
+  global,
+  TEntity,
+  getEntity,
+  setEntity,
+  changeAngle,
+  angle,
 }

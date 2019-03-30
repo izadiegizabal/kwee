@@ -4,7 +4,7 @@ import {SnsShareDialogComponent} from '../../../shared/sns-share/sns-share-dialo
 import {getUrlfiedString} from '../../../shared/utils.service';
 import {CandidatePreview} from '../../../../models/candidate-preview.model';
 import {WorkFields} from '../../../../models/Candidate.model';
-import {environment} from "../../../../environments/environment";
+import {environment} from '../../../../environments/environment';
 
 
 @Component({
@@ -99,20 +99,29 @@ export class CandidatePreviewCardComponent implements OnInit {
 
   getApplicationStatus() {
     switch (this.applicationStatus) {
-      case 0: return 'Pending';
-      case 1: return 'Faved';
-      case 2: return 'Selected';
-      case 3: return 'Accepted';
-      case 4: return 'Refused';
-      default: return 'IDK';
+      case 0:
+        return 'Pending';
+      case 1:
+        return 'Faved';
+      case 2:
+        return 'Selected';
+      case 3:
+        return 'Accepted';
+      case 4:
+        return 'Refused';
+      default:
+        return 'IDK';
     }
   }
 
   getColor() {
     switch (this.applicationStatus) {
-      case 3: return 'accent';
-      case 4: return 'warn';
-      default: return 'primary';
+      case 3:
+        return 'accent';
+      case 4:
+        return 'warn';
+      default:
+        return 'primary';
     }
   }
 

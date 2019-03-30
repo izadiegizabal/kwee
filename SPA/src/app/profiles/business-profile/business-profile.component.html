@@ -1,8 +1,8 @@
-<div fxLayout="column" fxLayoutGap="16px" *ngIf="(profilesState | async).business" style="padding-bottom: 32px">
+<div *ngIf="(profilesState | async).business" fxLayout="column" fxLayoutGap="16px" style="padding-bottom: 32px">
   <div fxLayout="row">
-    <button mat-icon-button
-            (click)="backClicked()"
-            fxFlexOffset="0" fxFlexOffset.gt-sm="9.5%" fxFlexOffset.gt-md="10%">
+    <button (click)="backClicked()"
+            fxFlexOffset="0"
+            fxFlexOffset.gt-md="10%" fxFlexOffset.gt-sm="9.5%" mat-icon-button>
       <mat-icon class="svg" color="primary" svgIcon="back"></mat-icon>
     </button>
   </div>
@@ -46,11 +46,11 @@
               Edit
             </button>
             <button
+              (click)="contactUser()"
               *ngIf="!mine"
               color="primary"
-              (click)="contactUser()"
               mat-raised-button>
-              <mat-icon svgIcon="chat" style="margin-right: 8px"></mat-icon>
+              <mat-icon style="margin-right: 8px" svgIcon="chat"></mat-icon>
               Contact
             </button>
           </mat-card-actions>
@@ -77,8 +77,8 @@
             <button
               color="accent"
               mat-raised-button
-              style="color: white; margin-bottom: 16px"
-              routerLink="/premium">
+              routerLink="/premium"
+              style="color: white; margin-bottom: 16px">
               Upgrade to Premium
             </button>
           </mat-card-actions>

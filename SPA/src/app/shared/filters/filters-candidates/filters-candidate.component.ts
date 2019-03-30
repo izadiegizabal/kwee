@@ -31,6 +31,14 @@ export class FiltersCandidateComponent implements OnInit {
   constructor(private router: Router, public media: BreakpointObserver) {
   }
 
+  get formSkills() {
+    return <FormArray>this.filters.get('skills');
+  }
+
+  get formLanguages() {
+    return <FormArray>this.filters.get('languages');
+  }
+
   ngOnInit() {
 
     this.filters = new FormGroup({
@@ -184,14 +192,6 @@ export class FiltersCandidateComponent implements OnInit {
 
     this.router.navigate(['/search-candidates'],
       {queryParams: {languages: lang}, queryParamsHandling: 'merge'});
-  }
-
-  get formSkills() {
-    return <FormArray>this.filters.get('skills');
-  }
-
-  get formLanguages() {
-    return <FormArray>this.filters.get('languages');
   }
 
   addSkill() {

@@ -27,9 +27,9 @@ export class InvoiceEffects {
 
         return this.httpClient.post(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res: {
-              ok: boolean,
-              message: string,
-            }) => {
+            ok: boolean,
+            message: string,
+          }) => {
             return {
               type: InvoiceActions.POST_INVOICE,
               payload: res
