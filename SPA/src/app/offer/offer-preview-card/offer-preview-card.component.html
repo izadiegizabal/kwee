@@ -4,8 +4,22 @@
     fxLayout.lt-sm="column"
     fxLayoutAlign="space-between">
     <mat-card-title
-      [routerLink]="offerUrl"
+      *ngIf="!candidate && offer.status === 0 && (authState | async).user && offer.fk_offerer === (authState | async).user.id"
+      (click)="startSelectionProcess()"
       style="cursor: pointer">
+      {{offer.title}}
+    </mat-card-title>
+
+    <mat-card-title
+      *ngIf="!candidate && offer.status === 3"
+      [routerLink]="'/my-offers/' + offer.id + '/selection'"
+      style="cursor: pointer">
+      {{offer.title}}
+    </mat-card-title>
+
+    <mat-card-title *ngIf="candidate || (offer.status !== 0 && offer.status !== 3 )"
+                    [routerLink]="offerUrl"
+                    style="cursor: pointer">
       {{offer.title}}
     </mat-card-title>
     <mat-card-subtitle>
