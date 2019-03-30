@@ -103,7 +103,7 @@ export enum WorkFields {
   'Project Management' = 12,
   'Product Management' = 13,
   'Software Testing' = 14,
-  'Software/Application Developement' = 15,
+  'Software Developement' = 15,
   'Web Developement' = 16,
   'Marketing' = 17,
   'Technical Sales' = 18,

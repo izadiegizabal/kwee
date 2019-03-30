@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators, EmailValidator} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Action, select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
 import {AuthEffects} from '../store/auth.effects';
@@ -8,11 +8,11 @@ import {filter} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import * as fromAuth from '../store/auth.reducers';
-import {MatDialog, _countGroupLabelsBeforeOption} from '@angular/material';
+import {MatDialog} from '@angular/material';
 import {ResetDialogComponent} from './reset-dialog/reset-dialog.component';
 import {Title} from '@angular/platform-browser';
-import { WebsocketService } from '../../services/websocket.service';
-import { NotificationsService } from '../../services/notifications.service';
+import {WebsocketService} from '../../services/websocket.service';
+import {NotificationsService} from '../../services/notifications.service';
 
 
 @Component({
@@ -34,7 +34,8 @@ export class SigninComponent implements OnInit {
     private router: Router,
     public wsService: WebsocketService,
     public notificationsService: NotificationsService
-    ) { }
+  ) {
+  }
 
   ngOnInit() {
     this.titleService.setTitle('Kwee - Sign In');
@@ -55,25 +56,6 @@ export class SigninComponent implements OnInit {
       this.user.controls['email'].setErrors({'incorrect': true});
       this.user.controls['password'].setErrors({'incorrect': true});
     });
-
-    this.authEffects$.authSignin.pipe(
-      filter((action: Action) => action.type === AuthActions.SET_USER)
-    ).subscribe((res: {
-        payload: {
-          root: boolean,
-          email: string,
-          notifications: number,
-        },
-        type: string
-      }) => {
-        this.wsService.connectedUser( res.payload.email );
-        if (res.payload.root) {
-          this.router.navigate(['/admin']);
-        } else {
-            this.router.navigate(['/']);
-        }
-      }
-    );
   }
 
   openResetModal() {

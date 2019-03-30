@@ -1,6 +1,6 @@
 <div class="container, filters">
-  <h2>Filters</h2>
-  <form [formGroup]="filters" fxLayout="column">
+  <form [formGroup]="filters" fxLayout="column" fxFlex="100%">
+    <h2>Filters</h2>
 
     <h3>Minimum Index</h3>
     <section fxLayout="column">
@@ -9,7 +9,7 @@
 
     <!--<h3>Minimum Amount of Ratings</h3>-->
     <!--<section fxLayout="column">-->
-      <!--<mat-slider formControlName="minRatings" max="100" min="0" thumbLabel></mat-slider>-->
+    <!--<mat-slider formControlName="minRatings" max="100" min="0" thumbLabel></mat-slider>-->
     <!--</section>-->
 
     <h3>Required Skills</h3>
@@ -78,7 +78,7 @@
     </div>
 
     <h3 style="margin-top: 16px">Work Fields</h3>
-    <section fxLayout="column" *ngFor="let workfield of workfields; index as i">
+    <section fxLayout="column" *ngFor="let workfield of workfields; index as i" class="smallFontFilter">
       <mat-checkbox formControlName="workfield{{i}}">
         {{workfield.viewValue}}
       </mat-checkbox>
@@ -104,13 +104,13 @@
     <!--</section>-->
 
     <h3 style="margin-top: 16px">Age of the Candidate</h3>
-    <div fxLayout="row" fxFlex="100%" class="ageInputs" fxLayoutGap="4px">
+    <div fxLayout="row" fxFlex="100%" class="ageInputs smallFontFilter" fxLayoutGap="4px">
       <p>Between </p>
-      <mat-form-field fxFlex="40px">
+      <mat-form-field fxFlex="35px">
         <input matInput type="number" formControlName="minAge">
       </mat-form-field>
       <p> and </p>
-      <mat-form-field fxFlex="40px">
+      <mat-form-field fxFlex="35px">
         <input matInput type="number" formControlName="maxAge">
       </mat-form-field>
       <p>years old.</p>
@@ -127,11 +127,11 @@
     </mat-form-field>
 
     <!--<mat-form-field>-->
-      <!--<mat-select formControlName="distance" placeholder="Distance">-->
-        <!--<mat-option *ngFor="let distance of distances" [value]="distance.value">-->
-          <!--{{distance.viewValue}}-->
-        <!--</mat-option>-->
-      <!--</mat-select>-->
+    <!--<mat-select formControlName="distance" placeholder="Distance">-->
+    <!--<mat-option *ngFor="let distance of distances" [value]="distance.value">-->
+    <!--{{distance.viewValue}}-->
+    <!--</mat-option>-->
+    <!--</mat-select>-->
     <!--</mat-form-field>-->
 
   </form>
