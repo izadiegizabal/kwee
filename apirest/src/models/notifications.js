@@ -6,7 +6,7 @@ module.exports = (sequelize, DateTypes) => {
             type: DateTypes.INTEGER,
             allowNull: false,
         },
-        
+
         from: {
             type: DateTypes.INTEGER,
             allowNull: false,
@@ -23,7 +23,7 @@ module.exports = (sequelize, DateTypes) => {
                 }
             }
         },
-        
+
         idTable: { // Could be notification about offert or application
             type: DateTypes.INTEGER,
             allowNull: false,
@@ -45,7 +45,7 @@ module.exports = (sequelize, DateTypes) => {
             type: DateTypes.BOOLEAN,
             allowNull: false,
         },
-        
+
         read: {
             type: DateTypes.BOOLEAN,
             defaultValue: false,

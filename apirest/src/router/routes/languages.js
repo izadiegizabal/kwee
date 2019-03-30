@@ -1,5 +1,5 @@
-const { checkToken, checkAdmin } = require('../../middlewares/authentication');
-const { tokenId, logger } = require('../../shared/functions');
+const {checkToken, checkAdmin} = require('../../middlewares/authentication');
+const {tokenId, logger} = require('../../shared/functions');
 
 // ============================
 // ======== CRUD languages =========
@@ -8,7 +8,7 @@ const { tokenId, logger } = require('../../shared/functions');
 module.exports = (app, db) => {
 
     // GET all languages
-    app.get('/languages', checkToken, async(req, res, next) => {
+    app.get('/languages', checkToken, async (req, res, next) => {
         try {
             await logger.saveLog('GET', 'languages', null, res);
 
@@ -20,17 +20,17 @@ module.exports = (app, db) => {
                 data: languages
             });
         } catch (err) {
-            return next({ type: 'error', error: 'Error getting data' });
+            return next({type: 'error', error: 'Error getting data'});
         }
     });
 
     // GET languages by page limit to 10 languages/page
-    app.get('/languages/:page([0-9]+)/:limit([0-9]+)', async(req, res, next) => {
+    app.get('/languages/:page([0-9]+)/:limit([0-9]+)', async (req, res, next) => {
         let limit = Number(req.params.limit);
         let page = Number(req.params.page);
 
         try {
-            await logger.saveLog('GET', `languages/${ page }`, null, res);
+            await logger.saveLog('GET', `languages/${page}`, null, res);
 
             let count = await db.languages.findAndCountAll();
             let pages = Math.ceil(count.count / limit);
@@ -39,33 +39,33 @@ module.exports = (app, db) => {
             if (page > pages) {
                 return res.status(200).json({
                     ok: true,
-                    message: `It doesn't exist ${ page } pages`
+                    message: `It doesn't exist ${page} pages`
                 })
             }
 
             return res.status(200).json({
                 ok: true,
-                message: `${ limit } languages of page ${ page } of ${ pages } pages`,
+                message: `${limit} languages of page ${page} of ${pages} pages`,
                 data: await db.languages.findAll({
                     limit,
                     offset,
-                    $sort: { id: 1 }
+                    $sort: {id: 1}
                 }),
                 total: count.count
             });
         } catch (err) {
-            return next({ type: 'error', error: err });
+            return next({type: 'error', error: err});
         }
     });
 
     // GET one language by id
-    app.get('/language/:id([0-9]+)', checkToken, async(req, res, next) => {
+    app.get('/language/:id([0-9]+)', checkToken, async (req, res, next) => {
         const id = req.params.id;
 
         try {
             let language = await db.languages.findOne({
-                where: { id }
-            })
+                where: {id}
+            });
             return res.status(200).json({
                 ok: true,
                 message: 'Listing language',
@@ -73,12 +73,12 @@ module.exports = (app, db) => {
             });
 
         } catch (err) {
-            return next({ type: 'error', error: 'Error getting data' });
+            return next({type: 'error', error: 'Error getting data'});
         }
     });
 
     // POST single language
-    app.post('/language', checkToken, async(req, res, next) => {
+    app.post('/language', checkToken, async (req, res, next) => {
         let body = req.body;
 
         try {
@@ -86,7 +86,7 @@ module.exports = (app, db) => {
                 name: body.name
             });
 
-            if ( language ) {
+            if (language) {
                 return res.status(201).json({
                     ok: true,
                     message: `Language has been created.`
@@ -94,19 +94,19 @@ module.exports = (app, db) => {
             }
 
         } catch (err) {
-            return next({ type: 'error', error: err.message });
+            return next({type: 'error', error: err.message});
         }
 
     });
 
     // PUT single language
-    app.put('/language/admin/:id([0-9]+)', checkToken, async(req, res, next) => {
+    app.put('/language/admin/:id([0-9]+)', checkToken, async (req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
 
         try {
             await db.languages.update(updates, {
-                where: { id }
+                where: {id}
             });
 
             return res.status(200).json({
@@ -114,17 +114,17 @@ module.exports = (app, db) => {
                 message: 'Updated'
             });
         } catch (err) {
-            return next({ type: 'error', error: err.errors[0].message });
+            return next({type: 'error', error: err.errors[0].message});
         }
     });
 
     // DELETE single language
-    app.delete('/language/admin/:id([0-9]+)', checkToken, async(req, res, next) => {
+    app.delete('/language/admin/:id([0-9]+)', checkToken, async (req, res, next) => {
         const id = req.params.id;
 
         try {
             await db.languages.destroy({
-                where: { id }
+                where: {id}
             });
 
             return res.json({
@@ -132,7 +132,7 @@ module.exports = (app, db) => {
                 message: 'Deleted'
             });
         } catch (err) {
-            return next({ type: 'error', error: 'Error getting data' });
+            return next({type: 'error', error: 'Error getting data'});
         }
     });
-}
+};

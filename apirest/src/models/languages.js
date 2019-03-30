@@ -10,7 +10,7 @@ module.exports = (sequelize, DateTypes) => {
                 notEmpty: {
                     args: true,
                     msg: "Language should not be empty."
-                } 
+                }
             }
         }
 

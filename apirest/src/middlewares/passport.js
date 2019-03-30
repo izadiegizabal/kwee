@@ -1,5 +1,5 @@
 const passport = require('passport'),
-    { app } = require('../database/express');
+    {app} = require('../database/express');
 
 app.use(passport.initialize());
 app.use(passport.session());

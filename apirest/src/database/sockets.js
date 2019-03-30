@@ -1,25 +1,25 @@
 const socketIO = require('socket.io');
-const { server } = require('./express');
-const { disconnect, message, selected, connectClient, setUser } = require('../middlewares/sockets');
+const {server} = require('./express');
+const {disconnect, message, selected, connectClient, setUser} = require('../middlewares/sockets');
 
 var io = socketIO(server);
 io.sockets.on('connection', (client) => {
     console.log('Client connected');
 
     // Connect client
-    connectClient( client );
+    connectClient(client);
 
     // Configure user
-    setUser( client, io );
+    setUser(client, io);
 
     // Messages
-    message( client );
+    message(client);
 
     // Disconnect
-    disconnect( client );
+    disconnect(client);
 
-    selected( client );
-    
+    selected(client);
+
 });
 
 module.exports = io;

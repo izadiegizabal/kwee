@@ -9,8 +9,8 @@ module.exports = (sequelize, DataTypes) => {
                 args: true,
                 message: 'Application must be unique.'
             }
-        }, 
-        
+        },
+
         userName: {
             type: DataTypes.STRING(),
             field: 'userName',
@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
                 }
             }
         },
-        
+
         product: {
             type: DataTypes.STRING(),
             field: 'product',
@@ -34,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
                 }
             }
         },
-        
+
         price: {
             type: DataTypes.STRING(),
             field: 'price',

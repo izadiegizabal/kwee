@@ -39,5 +39,5 @@ const colors = {
     bgMagentaBright: '\u001b[105m',
     bgCyanBright: '\u001b[106m',
     bgWhiteBright: '\u001b[107m'
-}
+};
 module.exports = colors;

@@ -6,12 +6,12 @@ module.exports = (app, db) => {
         passport.authenticate('twitter'));
 
     app.get('/auth/twitter/callback',
-        passport.authenticate('twitter', { failureRedirect: '/login' }),
-        async(req, res, next) => {
+        passport.authenticate('twitter', {failureRedirect: '/login'}),
+        async (req, res, next) => {
             // Authentication with Instagram successful
             try {
 
-                let user = await db.users.findOne({ where: { email: req.user._json.email } });
+                let user = await db.users.findOne({where: {email: req.user._json.email}});
 
                 if (!user) {
                     // New user
@@ -41,7 +41,7 @@ module.exports = (app, db) => {
                     res.redirect('/');
                 }
             } catch (err) {
-                next({ type: 'error', error: 'Error getting data' });
+                next({type: 'error', error: 'Error getting data'});
             }
         });
-}
+};
