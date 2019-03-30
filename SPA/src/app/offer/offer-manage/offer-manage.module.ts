@@ -15,7 +15,6 @@ import {OfferSelectionProcessComponent} from './offer-selection-process/offer-se
 import {ReactiveFormsModule} from '@angular/forms';
 import {CandidatePreviewCardModule} from '../../search-users/search-candidates/candidate-preview-card/candidate-preview-card.module';
 import {SearchbarModule} from '../../shared/searchbar/searchbar.module';
-import {PreselectedCandidateCardComponent} from './offer-selection-process/preselected-candidate-card/preselected-candidate-card.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +23,6 @@ import {PreselectedCandidateCardComponent} from './offer-selection-process/prese
     OfferManageBusinessComponent,
     OfferManageTabComponent,
     OfferSelectionProcessComponent,
-    PreselectedCandidateCardComponent
   ],
   imports: [
     SharedModule,

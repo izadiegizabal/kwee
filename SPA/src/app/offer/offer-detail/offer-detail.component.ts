@@ -13,6 +13,7 @@ import {getTimePassed, getUrlfiedString} from '../../shared/utils.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {environment} from '../../../environments/environment';
 import {Title} from '@angular/platform-browser';
+import {HttpClient} from '@angular/common/http';
 
 @Component({
   selector: 'app-offer-detail',
@@ -27,6 +28,7 @@ export class OfferDetailComponent implements OnInit {
   offerId: Number;
   idApplication: Number;
   environment = environment;
+  currencies;
 
   constructor(
     private titleService: Title,
@@ -34,11 +36,17 @@ export class OfferDetailComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private offerEffects$: OfferEffects,
     private router: Router,
+    private http: HttpClient,
     private location: Location) {
   }
 
   ngOnInit() {
     const params = this.activatedRoute.snapshot.params;
+
+    this.getCurrencyJSON().subscribe(currencies => {
+        this.currencies = currencies;
+      }
+    );
 
     this.authState = this.store$.pipe(select('auth'));
     if (this.authState) {
@@ -80,7 +88,9 @@ export class OfferDetailComponent implements OnInit {
   }
 
   getTimePassed(publishDate) {
-    return getTimePassed(new Date(publishDate));
+    if (publishDate) {
+      return getTimePassed(new Date(publishDate));
+    }
   }
 
   getOfferStatus(status) {
@@ -100,15 +110,27 @@ export class OfferDetailComponent implements OnInit {
   }
 
   getOfferContractType(contractType) {
-    return ContractType[contractType];
+    if (contractType > -1) {
+      return ContractType[contractType];
+    }
   }
 
   getOfferSeniorityLevel(seniority) {
-    return SeniorityLevel[seniority] + ' Position';
+    if (seniority > -1) {
+      return SeniorityLevel[seniority] + ' Position';
+    }
   }
 
   getOfferSalary(salaryAmount, salaryCurrency, salaryFrequency) {
-    return salaryAmount + salaryCurrency + ' ' + SalaryFrequency[salaryFrequency];
+    let currency = salaryCurrency;
+    if (this.currencies) {
+      Object.keys(this.currencies).map(key => {
+        if (this.currencies[key].value && this.currencies[key].value === salaryCurrency) {
+          currency = this.currencies[key].symbol;
+        }
+      });
+    }
+    return salaryAmount + currency + ' ' + SalaryFrequency[salaryFrequency];
   }
 
   getOfferLocation(offerlocation, workLocation) {
@@ -124,17 +146,23 @@ export class OfferDetailComponent implements OnInit {
   }
 
   getOfferApplications(applications) {
-    const numOfApplications = applications;
-    return numOfApplications + (numOfApplications === 1 ? ' application' : ' applications');
+    if (applications > -1) {
+      const numOfApplications = applications;
+      return numOfApplications + (numOfApplications === 1 ? ' application' : ' applications');
+    }
   }
 
   getShareableOffer(title) {
-    return {title: title, url: window.location.href};
+    if (title) {
+      return {title: title, url: window.location.href};
+    }
   }
 
   getSkills(skills) {
-    this.offerSkills = skills.split([',']);
-    return this.offerSkills;
+    if (skills) {
+      this.offerSkills = skills.split([',']);
+      return this.offerSkills;
+    }
   }
 
   postApplication() {
@@ -161,10 +189,15 @@ export class OfferDetailComponent implements OnInit {
   }
 
   goEdit() {
-    this.router.navigate(['/offer', this.offerId, 'edit']);
+    const url = '/offer/' + this.offerId + '/edit';
+    this.router.navigate([url]);
   }
 
   backClicked() {
     this.location.back();
+  }
+
+  getCurrencyJSON(): Observable<any> {
+    return this.http.get('../../../assets/CurrenciesISO.json');
   }
 }

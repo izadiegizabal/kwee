@@ -1,12 +1,22 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {PayPalConfig, PayPalEnvironment, PayPalIntegrationType} from 'ngx-paypal';
 import {environment} from '../../../environments/environment';
-import {of} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import * as fromAuth from '../../auth/store/auth.reducers';
+import {select, Store} from '@ngrx/store';
+import * as fromApp from '../../store/app.reducers';
+import * as AdminActions from '../../admin/store/admin.actions';
+import * as fromAdmin from '../../admin/store/admin.reducers';
+import * as fromInvoice from '../../invoices/store/invoice.reducers';
+import * as InvoiceActions from '../../invoices/store/invoice.actions';
+
+import {Router} from '@angular/router';
 
 
 export interface DialogData {
   header: string;
+  idproduct: number;
   product: string;
   price: string;
 }
@@ -19,14 +29,44 @@ export interface DialogData {
 export class PaypalDialogComponent implements OnInit {
 
   pay = 0;
+  priceN: any;
+  profileType;
+  userId;
 
   public payPalConfig?: PayPalConfig;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: DialogData, public dialogRef: MatDialogRef<DialogData>) {
+  authState: Observable<fromAuth.State>;
+  adminState: Observable<fromAdmin.State>;
+  invoiceState: Observable<fromInvoice.State>;
+
+
+  constructor(@Inject(MAT_DIALOG_DATA) public data: DialogData,
+              public dialogRef: MatDialogRef<DialogData>,
+              private store$: Store<fromApp.AppState>,
+              private router: Router) {
   }
 
   ngOnInit(): void {
+    this.authState = this.store$.pipe(select('auth'));
+    this.adminState = this.store$.pipe(select(s => s.admin));
+
+    this.authState.pipe(
+      select(s => s.user)
+    ).subscribe(
+      (user) => {
+        if (user && user.name && user.id) {
+          this.profileType = user.type;
+          this.userId = user.id;
+        } else {
+          this.router.navigate(['/']);
+        }
+      });
+
+    // console.log(this.userId + 'id usuario' + this.profileType + 'tipo' + this.data.idproduct + 'idproduct');
+
     this.initConfig();
+    const aux = this.data.price.split('€');
+    this.priceN = parseFloat(aux[0]);
   }
 
   private initConfig(): void {
@@ -50,6 +90,18 @@ export class PaypalDialogComponent implements OnInit {
         onPaymentComplete: (data, actions) => {
           console.log('OnPaymentComplete');
           this.pay = 1;
+
+          const updateuser = {
+            'premium': this.data.idproduct,
+          };
+
+          if (this.profileType === 'candidate') {
+            this.store$.dispatch(new AdminActions.TryUpdateCandidate({id: this.userId, updatedCandidate: updateuser}));
+          } else if (this.profileType === 'business') {
+            this.store$.dispatch(new AdminActions.TryUpdateBusiness({id: this.userId, updatedBusiness: updateuser}));
+          }
+          this.invoiceState = this.store$.pipe(select('invoices'));
+          this.store$.dispatch(new InvoiceActions.TryPostInvoice({obj: {product: this.data.product, price: this.data.price}}));
         },
         onCancel: (data, actions) => {
           console.log('OnCancel');
@@ -76,8 +128,8 @@ export class PaypalDialogComponent implements OnInit {
               currency: 'EUR',
               details: {
                 subtotal: 5.90,
-                tax: 0.09,
-                shipping: 0.00,
+                tax: 0.07,
+                shipping: 0.01,
                 handling_fee: 1.00,
                 shipping_discount: -1.00,
                 insurance: 0.01
@@ -87,24 +139,14 @@ export class PaypalDialogComponent implements OnInit {
             item_list: {
               items: [
                 {
-                  name: 'Subscribe to premium',
-                  description: 'Subscribe to premium',
+                  name: this.data.product,
+                  description: this.data.product,
                   quantity: 1,
                   price: 5.90,
-                  tax: 0.09,
+                  tax: 0.07,
                   sku: '1',
                   currency: 'EUR'
                 }],
-              // shipping_address: {
-              //   recipient_name: 'Brian Robinson',
-              //   line1: '4th Floor',
-              //   line2: 'Unit #34',
-              //   city: 'San Jose',
-              //   country_code: 'US',
-              //   postal_code: '95131',
-              //   phone: '011862212345678',
-              //   state: 'CA'
-              // },
             },
           }
         ],
@@ -112,4 +154,5 @@ export class PaypalDialogComponent implements OnInit {
       }
     );
   }
+
 }

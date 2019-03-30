@@ -1,18 +1,22 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
+import {MatDialogRef, MAT_DIALOG_DATA, MatDialog} from '@angular/material';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
 import {getColourFromIndex} from '../../shared/utils.service';
+import {OkDialogComponent} from '../../shared/ok-dialog/ok-dialog.component';
+import {DialogErrorComponent} from '../../auth/signup/dialog-error/dialog-error.component';
 
 export interface DialogData {
   candidate: boolean;
-  applications: [{to: number,
+  applications: [{
+    to: number,
     name: string,
     index: number,
-    haveIRated: boolean}];
+    haveIRated: boolean
+  }];
 }
 
 @Component({
@@ -27,9 +31,13 @@ export class RateCandidateComponent implements OnInit {
   selected: string;
   authState: any;
   token: string;
+  rated: any[] = [];
+
+  private dialogShown = false;
 
   constructor(
     private http: HttpClient,
+    public dialog: MatDialog,
     private store$: Store<fromApp.AppState>,
     public dialogRef: MatDialogRef<RateCandidateComponent>,
     private _formBuilder: FormBuilder,
@@ -45,79 +53,81 @@ export class RateCandidateComponent implements OnInit {
         this.token = token;
       });
 
-      this.form = new FormGroup({});
-      /*new FormGroup({
-      opinion: new FormControl(null),
-      one: new FormControl('', Validators.required),
-      one_aux: new FormControl(null, Validators.required),
-      two: new FormControl('', Validators.required),
-      two_aux: new FormControl(null, Validators.required),
-      three: new FormControl('', Validators.required),
-      three_aux: new FormControl(null, Validators.required),
-      four: new FormControl('', Validators.required),
-      four_aux: new FormControl(null, Validators.required),
-      five: new FormControl('', Validators.required),
-      five_aux: new FormControl(null, Validators.required),
-      six: new FormControl('', Validators.required),
-      six_aux: new FormControl(null, Validators.required)
-    });*/
+    this.form = new FormGroup({});
+    /*new FormGroup({
+    opinion: new FormControl(null),
+    one: new FormControl('', Validators.required),
+    one_aux: new FormControl(null, Validators.required),
+    two: new FormControl('', Validators.required),
+    two_aux: new FormControl(null, Validators.required),
+    three: new FormControl('', Validators.required),
+    three_aux: new FormControl(null, Validators.required),
+    four: new FormControl('', Validators.required),
+    four_aux: new FormControl(null, Validators.required),
+    five: new FormControl('', Validators.required),
+    five_aux: new FormControl(null, Validators.required),
+    six: new FormControl('', Validators.required),
+    six_aux: new FormControl(null, Validators.required)
+  });*/
 
     if (this.data.candidate) {
       this.formArray = this._formBuilder.array([]);
-      this.data.applications.forEach( (e , i) => {
+      this.data.applications.forEach((e, i) => {
+        this.rated.push(e.haveIRated);
         (<FormArray>this.formArray).push(this.add());
       });
       this.form.addControl('array', this.formArray);
-      this.data.applications.forEach( (e , i) => {
+      this.data.applications.forEach((e, i) => {
         this.getControl(i).controls['one'].valueChanges.subscribe(value => {
-          this.getControl(i).controls['one_aux']. setValue(value);
+          this.getControl(i).controls['one_aux'].setValue(value);
         });
 
         this.getControl(i).controls['two'].valueChanges.subscribe(value => {
-          this.getControl(i).controls['two_aux']. setValue(value);
+          this.getControl(i).controls['two_aux'].setValue(value);
         });
 
         this.getControl(i).controls['three'].valueChanges.subscribe(value => {
-          this.getControl(i).controls['three_aux']. setValue(value);
+          this.getControl(i).controls['three_aux'].setValue(value);
         });
 
         this.getControl(i).controls['four'].valueChanges.subscribe(value => {
-          this.getControl(i).controls['four_aux']. setValue(value);
+          this.getControl(i).controls['four_aux'].setValue(value);
         });
 
         this.getControl(i).controls['five'].valueChanges.subscribe(value => {
-          this.getControl(i).controls['five_aux']. setValue(value);
+          this.getControl(i).controls['five_aux'].setValue(value);
         });
 
         this.getControl(i).controls['six'].valueChanges.subscribe(value => {
-          this.getControl(i).controls['six_aux']. setValue(value);
+          this.getControl(i).controls['six_aux'].setValue(value);
         });
       });
       console.log(this.form);
     } else {
+      this.selected = this.data.applications[0].name;
       this.form = this.add();
       this.form.controls['one'].valueChanges.subscribe(value => {
-        this.form.controls['one_aux']. setValue(value);
+        this.form.controls['one_aux'].setValue(value);
       });
 
       this.form.controls['two'].valueChanges.subscribe(value => {
-        this.form.controls['two_aux']. setValue(value);
+        this.form.controls['two_aux'].setValue(value);
       });
 
       this.form.controls['three'].valueChanges.subscribe(value => {
-        this.form.controls['three_aux']. setValue(value);
+        this.form.controls['three_aux'].setValue(value);
       });
 
       this.form.controls['four'].valueChanges.subscribe(value => {
-        this.form.controls['four_aux']. setValue(value);
+        this.form.controls['four_aux'].setValue(value);
       });
 
       this.form.controls['five'].valueChanges.subscribe(value => {
-        this.form.controls['five_aux']. setValue(value);
+        this.form.controls['five_aux'].setValue(value);
       });
 
       this.form.controls['six'].valueChanges.subscribe(value => {
-        this.form.controls['six_aux']. setValue(value);
+        this.form.controls['six_aux'].setValue(value);
       });
     }
   }
@@ -158,14 +168,27 @@ export class RateCandidateComponent implements OnInit {
   }
 
   getRated(i: number) {
-    return this.data.applications[i].haveIRated;
+    // return this.data.applications[i].haveIRated;
+    return this.rated[i];
   }
 
   getTo(i: number) {
     return this.data.applications[i].to;
   }
 
+  /*close() {
+    this.data.applications.forEach( (e) => {
+      if (!e.haveIRated) {
+        this.dialogRef.close(false);
+      }
+    });
+    if (this.formArray.touched) {
+      this.dialogRef.close(true);
+    }
+  }*/
+
   rate(num: number) {
+    this.dialogShown = false;
     console.log(num);
     if ((!this.data.candidate && this.form.valid) ||
       (this.data.candidate && (<FormGroup>(<FormArray>this.form.get('array')).controls[num]).valid)) {
@@ -209,25 +232,41 @@ export class RateCandidateComponent implements OnInit {
         , options)
         .subscribe((data: any) => {
           console.log(data);
-          return false;
-          if (!this.data.candidate) {
-            this.dialogRef.close(this.form);
-          }
-        }, (error: any) => {
-          console.log(error);
-          /*if (!this.dialogShown) {
-            this.dialog.open(DialogErrorComponent, {
+          if (!this.dialogShown) {
+            const dialog = this.dialog.open(OkDialogComponent, {
               data: {
-                error: 'We had some issue creating your offer. Please try again later',
+                message: 'Your rating has been successfully saved. Thank you!',
+              }
+            });
+            dialog.afterClosed().subscribe(result => {
+              // this.router.navigate(['/']);
+              if (!this.data.candidate) {
+                this.dialogRef.close(this.form);
+              }
+              if (this.data.candidate) {
+                this.rated[num] = true;
+                return true;
               }
             });
             this.dialogShown = true;
-          }*/
+          }
+        }, (error: any) => {
+          console.log(error);
+          if (!this.dialogShown) {
+            this.dialog.open(DialogErrorComponent, {
+              data: {
+                header: 'We had some issue saving your rating.',
+                error: 'Please try again later',
+              }
+            });
+            this.dialogShown = true;
+            return true;
+          }
         });
 
       // this.dialogRef.close(this.form);
     } else {
-      if ( num !== -1) {
+      if (num !== -1) {
         for (const i of Object.keys((<FormGroup>(<FormArray>this.form.get('array')).controls[num]).controls)) {
           (<FormGroup>(<FormArray>this.form.get('array')).controls[num]).controls[i].markAsTouched();
         }
@@ -237,7 +276,7 @@ export class RateCandidateComponent implements OnInit {
         }
       }
     }
-    return true;
+    return false;
   }
 
 }

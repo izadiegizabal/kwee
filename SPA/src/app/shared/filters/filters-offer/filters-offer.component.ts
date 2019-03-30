@@ -179,9 +179,13 @@ export class FiltersOfferComponent implements OnInit {
     if (this.filters.controls['workLocation2'].value) {
       queryWorkL += '2 ';
     }
-
-    this.router.navigate(['/candidate-home'],
-      {queryParams: {workLocation: queryWorkL}, queryParamsHandling: 'merge'});
+    if (queryWorkL === '') {
+      this.router.navigate(['/candidate-home'],
+        {queryParams: {workLocation: null}, queryParamsHandling: 'merge'});
+    } else {
+      this.router.navigate(['/candidate-home'],
+        {queryParams: {workLocation: queryWorkL}, queryParamsHandling: 'merge'});
+    }
   }
 
   countContractType() {
@@ -199,9 +203,13 @@ export class FiltersOfferComponent implements OnInit {
     if (this.filters.controls['jobType3'].value) {
       queryCT += '3 ';
     }
-
-    this.router.navigate(['/candidate-home'],
-      {queryParams: {contractType: queryCT}, queryParamsHandling: 'merge'});
+    if (queryCT === '') {
+      this.router.navigate(['/candidate-home'],
+        {queryParams: {contractType: null}, queryParamsHandling: 'merge'});
+    } else {
+      this.router.navigate(['/candidate-home'],
+        {queryParams: {contractType: queryCT}, queryParamsHandling: 'merge'});
+    }
   }
 
   countSeniority() {
@@ -219,9 +227,14 @@ export class FiltersOfferComponent implements OnInit {
     if (this.filters.controls['seniority3'].value) {
       queryS += '3 ';
     }
+    if (queryS === '') {
+      this.router.navigate(['/candidate-home'],
+        {queryParams: {seniority: null}, queryParamsHandling: 'merge'});
+    } else {
+      this.router.navigate(['/candidate-home'],
+        {queryParams: {seniority: queryS}, queryParamsHandling: 'merge'});
+    }
 
-    this.router.navigate(['/candidate-home'],
-      {queryParams: {seniority: queryS}, queryParamsHandling: 'merge'});
   }
 
 

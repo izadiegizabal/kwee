@@ -26,7 +26,6 @@ export class AdminEffects {
         if (payload.order !== '0') {
           apiEndpointUrl += '&sort=' + payload.order;
         }
-
         return this.httpClient.post(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res: {
             ok: boolean,

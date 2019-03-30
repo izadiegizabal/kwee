@@ -193,6 +193,7 @@ class TMotorTAG{
     }
 
     draw(){
+      /*
         /// ESTO ESTA MAL
         var loop = function () {
             // default color
@@ -207,7 +208,7 @@ class TMotorTAG{
             requestAnimationFrame(loop);
         };
         requestAnimationFrame(loop);
-
+      */
     }
 
     /*Métodos para el registro y manejo de las cámaras Métodos para el registro 

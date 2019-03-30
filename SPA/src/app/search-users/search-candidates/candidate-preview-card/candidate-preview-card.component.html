@@ -29,12 +29,19 @@
       fxLayoutGap="16px">
       <app-icon-with-text [text]="user.city" icon="place"></app-icon-with-text>
       <app-icon-with-text [text]="getAge(user.dateBorn.toString())" icon="cake"></app-icon-with-text>
+      <div *ngIf="applicationStatus !== -1">
+        <mat-chip-list *ngIf="applicationStatus !== 2">
+          <mat-chip [color]="getColor()" selected>{{getApplicationStatus()}}</mat-chip>
+        </mat-chip-list>
+      </div>
       <!--<app-icon-with-text [text]="getLatestExperience()" icon="work"></app-icon-with-text>-->
     </div>
   </mat-card-header>
 
-  <mat-card-content>
+  <mat-card-content fxLayout="row">
     <img
+      width="100px"
+      height="100px"
       alt="Business Logo"
       [src]="getImg()">
     <p>
@@ -42,45 +49,57 @@
     </p>
   </mat-card-content>
 
-  <mat-card-actions
-    fxLayout="row" fxLayout.lt-sm="column"
-    fxLayoutAlign="end center"
-    fxLayoutGap="24px" fxLayoutGap.lt-sm="16px">
+  <mat-card-actions fxLayout="row">
     <div
       fxLayout="row"
       fxLayout.lt-sm="column"
-      fxLayoutAlign="center center"
+      fxFlex="100%"
+      [fxLayoutAlign]="(selectionMode || applicationStatus !== -1)? 'center center' : 'end end'"
       fxLayoutGap="16px">
+      <span>
       <button [routerLink]="userUrl" color="accent" mat-button>{{'More Info' | uppercase }}</button>
       <button (click)="openShareDialog()" mat-icon-button *ngIf="!selectionMode && applicationStatus === -1">
         <mat-icon aria-label="Share user in social networks" color="accent" svgIcon="share"></mat-icon>
+      </button>
+      </span>
+      <div *ngIf="applicationStatus !== -1" fxLayout="row" fxLayoutGap="16px">
+        <button (click)="contactUser()"
+                color="primary"
+                mat-raised-button>
+          <mat-icon svgIcon="chat"></mat-icon>
+          {{'Contact'}}
+        </button>
+        <button (click)="rejectCandidate()"
+                color="primary"
+                mat-raised-button
+                *ngIf="applicationStatus === 2">
+          <mat-icon>close</mat-icon>
+          Reject
+        </button>
+      </div>
+      <span fxLayout.lt-sm="column" fxLayoutGap="8px">
+      <button (click)="contactUser()"
+              color="primary"
+              mat-raised-button
+              *ngIf="selectionMode">
+        <mat-icon svgIcon="chat"></mat-icon>
+        {{'Contact'}}
       </button>
       <button (click)="rejectCandidate()"
               color="primary"
               mat-raised-button
               *ngIf="selectionMode">
         <mat-icon>close</mat-icon>
-        {{'Reject' | uppercase }}
+        {{'Reject'}}
       </button>
       <button (click)="selectCandidate()"
               color="primary"
               mat-raised-button
               *ngIf="selectionMode">
         <mat-icon svgIcon="star"></mat-icon>
-        {{'Select' | uppercase }}
+        {{'Select'}}
       </button>
-      <div *ngIf="applicationStatus !== -1">
-        <button (click)="rejectCandidate()"
-                color="primary"
-                mat-raised-button
-                *ngIf="applicationStatus === 2">
-          <mat-icon>close</mat-icon>
-          Cancel Selection
-        </button>
-        <mat-chip-list *ngIf="applicationStatus !== 2">
-          <mat-chip [color]="getColor()" selected>{{getApplicationStatus()}}</mat-chip>
-        </mat-chip-list>
-      </div>
+      </span>
     </div>
   </mat-card-actions>
 

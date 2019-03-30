@@ -71,14 +71,14 @@ export class SignupOffererComponent implements OnInit {
     this.address = {ad1: null, ad2: null};
   }
 
-  static maxMinDate(control: FormControl): { [s: string]: { [s: string]: boolean } } {
-    const today = new Date();
-    const mdate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDay());
 
-    if (control.value > mdate) {
+  static maxDate(control: FormControl): { [s: string]: { [s: string]: boolean } } {
+    const today = new Date();
+
+    if (control.value <= today.getFullYear() && control.value >= 0) {
       return null;
     }
-    return {'tooOld': {value: true}};
+    return {'tooDumb': {value: true}};
   }
 
   // LONGITUDE -180 to + 180
@@ -90,6 +90,7 @@ export class SignupOffererComponent implements OnInit {
     }
     return num;
   }
+
   // LATITUDE -90 to +90
   static generateRandomLat() {
     let num = +(Math.random() * 90).toFixed(3);
@@ -174,8 +175,12 @@ export class SignupOffererComponent implements OnInit {
     });*/
 
     this.thirdFormGroup.controls['year'].setValidators([
-      SignupOffererComponent.maxMinDate.bind(this.thirdFormGroup),
+      SignupOffererComponent.maxDate.bind(this.thirdFormGroup),
     ]);
+
+    this.secondFormGroup.controls['year'].valueChanges.subscribe(value => {
+      this.secondFormGroup.controls['year'].updateValueAndValidity();
+    });
 
 
     this.thirdFormGroup.controls['twitter'].valueChanges.subscribe(() => {
@@ -245,7 +250,7 @@ export class SignupOffererComponent implements OnInit {
     // console.log(this.secondFormGroup);
     if (this.secondFormGroup.status === 'VALID') {
 
-      if ((this.secondFormGroup.controls['address1'].value as City).geo === undefined ) {
+      if ((this.secondFormGroup.controls['address1'].value as City).geo === undefined) {
         if (this.options.length > 0) {
           this.secondFormGroup.controls['address1'].setValue(this.options[0]);
         } else {
@@ -267,14 +272,13 @@ export class SignupOffererComponent implements OnInit {
         'address': this.secondFormGroup.controls['address1'].value.name,
         'cif': this.secondFormGroup.controls['vat'].value,
         'workField': this.secondFormGroup.controls['workField'].value,
-        'year': new Date().toDateString(),
         'premium': '0',
         'companySize': '50',
         'bio': '',
         'img': this.file,
         'status': '0',
-        'lng' : (this.secondFormGroup.controls['address1'].value as City).geo.lng,
-        'lat' : (this.secondFormGroup.controls['address1'].value as City).geo.lat
+        'lng': (this.secondFormGroup.controls['address1'].value as City).geo.lng,
+        'lat': (this.secondFormGroup.controls['address1'].value as City).geo.lat
       };
 
       // console.log(this.offerer);
@@ -396,6 +400,11 @@ export class SignupOffererComponent implements OnInit {
   deletePhoto() {
     (document.getElementById('photo_profile') as HTMLInputElement).src = '../../../../assets/img/defaultProfileImg.png';
     this.secondFormGroup.controls['profile'].setValue(null);
+  }
+
+  getMaxYear() {
+    const date = new Date;
+    return date.getFullYear();
   }
 
 

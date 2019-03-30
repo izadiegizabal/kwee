@@ -7,7 +7,7 @@ import * as fromApp from '../../store/app.reducers';
 import * as AdminActions from '../../admin/store/admin.actions';
 import {BreakpointObserver} from '@angular/cdk/layout';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Title} from "@angular/platform-browser";
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-search-businesses',
@@ -31,7 +31,7 @@ export class SearchBusinessesComponent implements OnInit {
   order: { value: string, viewValue: string }[] =
     [
       {value: '0', viewValue: 'Relevance'},
-      {value: 'index', viewValue: 'Kwee Index'},
+      {value: 'indworkFieldex', viewValue: 'Kwee Index'},
       {value: 'name', viewValue: 'Name'},
       {value: 'year', viewValue: 'Foundation Year'},
       {value: 'companySize', viewValue: 'Company Size'},
@@ -81,6 +81,7 @@ export class SearchBusinessesComponent implements OnInit {
       params: this.query,
       order: this.orderby
     }));
+    window.scrollTo(0, 0);
   }
 
   isMobile() {
@@ -99,7 +100,7 @@ export class SearchBusinessesComponent implements OnInit {
     } else {
       this.titleService.setTitle('Kwee - ' + searchParams);
     }
-    this.router.navigate(['/search-businesses'], {queryParams: {name: searchParams}, queryParamsHandling: 'merge'});
+    this.router.navigate(['/search-businesses'], {queryParams: {keywords: searchParams}, queryParamsHandling: 'merge'});
   }
 
   getOrderby(order: string) {
@@ -123,6 +124,9 @@ export class SearchBusinessesComponent implements OnInit {
       this.query = {...this.query, year: {'gte': this.query.year}};
     }
 
+    if (this.query.companySize) {
+      this.query = {...this.query, companySize: {'gte': this.query.companySize}};
+    }
     this.store$.dispatch(new AdminActions.TryGetBusinesses({
       page: 1,
       limit: this.pageSize,

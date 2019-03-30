@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { User } from '../classes/user';
+import { User } from '../../models/user';
 import { Socket } from 'ngx-socket-io';
 import { _countGroupLabelsBeforeOption } from '@angular/material';
 

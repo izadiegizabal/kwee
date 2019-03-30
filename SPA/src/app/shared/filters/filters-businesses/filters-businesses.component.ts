@@ -66,15 +66,27 @@ export class FiltersBusinessesComponent implements OnInit {
     });
 
     this.filters.controls['minIndex'].valueChanges.subscribe(() => {
-      this.router.navigate(['/search-businesses'],
-        {queryParams: {index: this.filters.controls['minIndex'].value}, queryParamsHandling: 'merge'});
+      if (this.filters.controls['minIndex'].value > 0) {
+        this.router.navigate(['/search-businesses'],
+          {queryParams: {index: this.filters.controls['minIndex'].value}, queryParamsHandling: 'merge'});
+      } else {
+        this.router.navigate(['/search-businesses'],
+          {queryParams: {index: null}, queryParamsHandling: 'merge'});
+      }
     });
 
     this.filters.controls['companySize'].valueChanges.subscribe(() => {
-      this.router.navigate(['/search-businesses'],
-        {
-          queryParams: {companySize: this.filters.controls['companySize'].value}, queryParamsHandling: 'merge'
-        });
+      if (this.filters.controls['companySize'].value > 0) {
+        this.router.navigate(['/search-businesses'],
+          {
+            queryParams: {companySize: this.filters.controls['companySize'].value}, queryParamsHandling: 'merge'
+          });
+      } else {
+        this.router.navigate(['/search-businesses'],
+          {
+            queryParams: {companySize: null}, queryParamsHandling: 'merge'
+          });
+      }
     });
 
     this.filters.controls['foundationDate'].valueChanges.subscribe(() => {
@@ -82,10 +94,17 @@ export class FiltersBusinessesComponent implements OnInit {
     });
 
     this.filters.controls['industry'].valueChanges.subscribe(() => {
-      this.router.navigate(['/search-businesses'],
-        {
-          queryParams: {workfield: this.filters.controls['industry'].value}, queryParamsHandling: 'merge'
-        });
+      if (this.filters.controls['industry'].value >= 0) {
+        this.router.navigate(['/search-businesses'],
+          {
+            queryParams: {workField: this.filters.controls['industry'].value}, queryParamsHandling: 'merge'
+          });
+      } else {
+        this.router.navigate(['/search-businesses'],
+          {
+            queryParams: {workField: null}, queryParamsHandling: 'merge'
+          });
+      }
     });
   }
 

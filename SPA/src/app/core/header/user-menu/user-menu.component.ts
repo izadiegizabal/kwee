@@ -29,7 +29,6 @@ export class UserMenuComponent implements OnInit {
   message = false;
 
   constructor(private store$: Store<fromApp.AppState>,
-    public wsService: WebsocketService,
     public messageService: MessagesService,
     public notificationsService: NotificationsService) {
   }
@@ -45,16 +44,18 @@ export class UserMenuComponent implements OnInit {
           this.username = user.name;
           this.userId = '' + user.id;
           this.userType = user.type;
+          if ( user.notifications > 0 ) {
+            this.numNotifications = user.notifications;
+            this.notification = true;
+          }
         }
       });
     this.messageService.getSelected().subscribe( msg => {
-      this.numNotifications++;
+      this.numMessages++;
       this.notification = true;
     });
     this.notificationsService.newNotification$.subscribe((data) => {
-      if ( data > 0 ) {
-        this.notification = true;
-      }
+      this.notification = data > 0;
       this.numNotifications = data;
     });
     this.notificationsService.notificationAlert$.subscribe((value) => {
@@ -68,5 +69,9 @@ export class UserMenuComponent implements OnInit {
 
   urlfyUser() {
     return getUrlfiedString(this.username);
+  }
+
+  getNotificationNum() {
+    return this.numNotifications;
   }
 }

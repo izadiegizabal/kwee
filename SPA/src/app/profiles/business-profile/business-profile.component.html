@@ -1,4 +1,4 @@
-<div fxLayout="column" fxLayoutGap="16px">
+<div fxLayout="column" fxLayoutGap="16px" *ngIf="(profilesState | async).business" style="padding-bottom: 32px">
   <div fxLayout="row">
     <button mat-icon-button
             (click)="backClicked()"
@@ -13,41 +13,52 @@
       fxFlex.gt-sm="80%">
       <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap.lt-sm="16px">
         <!-- Basic info -->
-        <mat-card fxFlex="70">
+        <mat-card [fxFlex]="mine? 70 : 100">
           <mat-card-title>
             <app-offerer-name-overview
-              [index]="business.kweeIndex"
-              [name]="business.name"
+              [index]="(profilesState | async).business.index"
+              [name]="(profilesState | async).business.name"
               size="title">
             </app-offerer-name-overview>
           </mat-card-title>
           <mat-card-content
             fxLayout="row"
-            fxLayout.lt-sm="column" fxLayoutAlign="center stretch"
-            fxLayoutAlign.lt-sm="center center" style="margin-top: 16px">
+            fxLayout.lt-sm="column"
+            fxLayoutAlign="start stretch" fxLayoutAlign.lt-sm="center center"
+            style="margin-top: 16px">
             <img
-              alt="{{business.name + ' profile picture'}}'"
+              alt="{{(profilesState | async).business.name + ' profile picture'}}'"
               fxFlex="200px"
               fxlayout="column" height="200px"
-              src="{{business.img}}"
+              src="{{getImg((profilesState | async).business.img)}}"
               width="200px"/>
-            <p
+            <span
               fxLayout="column"
               fxLayoutAlign="center center">
-              {{business.bio}}
-            </p>
+              {{(profilesState | async).business.bio ? (profilesState | async).business.bio : business.bio}}
+            </span>
           </mat-card-content>
           <mat-card-actions fxLayoutAlign="end end">
             <button
+              *ngIf="mine"
               color="accent"
               mat-button>
               Edit
+            </button>
+            <button
+              *ngIf="!mine"
+              color="primary"
+              (click)="contactUser()"
+              mat-raised-button>
+              <mat-icon svgIcon="chat" style="margin-right: 8px"></mat-icon>
+              Contact
             </button>
           </mat-card-actions>
         </mat-card>
 
         <!-- Premium info -->
         <mat-card
+          *ngIf="mine"
           fxFlex="30" fxFlexOffset.gt-xs="32px">
           <mat-card-subtitle style="text-align: center">Active account type:</mat-card-subtitle>
           <mat-card-title style="text-align: center">
@@ -78,7 +89,7 @@
           <mat-tab-group (selectedIndexChange)="goToMyOffers($event)">
             <mat-tab label="More Info">
               <ng-template matTabContent>
-                <app-business-more-info [business]="business"></app-business-more-info>
+                <app-business-more-info [business]="(profilesState | async).business"></app-business-more-info>
               </ng-template>
             </mat-tab>
             <mat-tab label="Opinions">
