@@ -7,9 +7,9 @@ var io = socketIO(server);
 
 io.origins((origin, callback) => {
     const isOVH = /^(?:http(?:s)?:\/\/)?(?:[^\.]+\.)?kwee\.ovh(\/.*)?$/.test(origin);
-    console.log(!isOVH, origin !== 'http://localhost:4200',  origin !== env.URL);
-    if (origin !== 'http://localhost:4200' && !isOVH && origin !== env.URL) {
-       console.log('No entiendo nada');
+    const isH203 = /^(?:http(?:s)?:\/\/)?(?:[^\.]+\.)?h203\.eps\.ua\.es(\/.*)?$/.test(origin);
+    console.log(isOVH, isH203, origin !== 'http://localhost:4200', origin !== env.URL);
+    if (origin !== 'http://localhost:4200' && !isOVH && !isH203 && origin !== env.URL) {
        return callback('origin not allowed', false);
     }
     callback(null, true);
