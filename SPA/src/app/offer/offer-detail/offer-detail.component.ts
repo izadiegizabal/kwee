@@ -200,4 +200,10 @@ export class OfferDetailComponent implements OnInit {
   getCurrencyJSON(): Observable<any> {
     return this.http.get('../../../assets/CurrenciesISO.json');
   }
+
+  searchSkill(skill) {
+    console.log(skill);
+    this.router.navigate(['/candidate-home'], {queryParams: {keywords: skill}});
+
+  }
 }

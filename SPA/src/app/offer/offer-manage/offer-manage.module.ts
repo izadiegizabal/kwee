@@ -15,6 +15,8 @@ import {OfferSelectionProcessComponent} from './offer-selection-process/offer-se
 import {ReactiveFormsModule} from '@angular/forms';
 import {CandidatePreviewCardModule} from '../../search-users/search-candidates/candidate-preview-card/candidate-preview-card.module';
 import {SearchbarModule} from '../../shared/searchbar/searchbar.module';
+import {AlertDialogModule} from '../../shared/alert-dialog/alert-dialog.module';
+import {AlertDialogComponent} from '../../shared/alert-dialog/alert-dialog.component';
 
 @NgModule({
   declarations: [
@@ -31,9 +33,13 @@ import {SearchbarModule} from '../../shared/searchbar/searchbar.module';
     SearchbarModule,
     OfferManageRoutingModule,
     OfferPreviewCardModule,
+    AlertDialogModule,
     StoreModule.forFeature('offerManage', OfferManageReducer),
     EffectsModule.forFeature([OfferManageEffects])
-  ]
+  ],
+  entryComponents: [
+    AlertDialogComponent,
+  ],
 })
 export class OfferManageModule {
 

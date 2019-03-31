@@ -5,6 +5,7 @@ import {getUrlfiedString} from '../../../shared/utils.service';
 import {CandidatePreview} from '../../../../models/candidate-preview.model';
 import {WorkFields} from '../../../../models/Candidate.model';
 import {environment} from '../../../../environments/environment';
+import {AlertDialogComponent} from '../../../shared/alert-dialog/alert-dialog.component';
 
 
 @Component({
@@ -74,8 +75,18 @@ export class CandidatePreviewCardComponent implements OnInit {
   // }
 
   selectCandidate() {
-    this.selected = true;
-    this.changeSelected.emit(this.selected);
+    const dialogSelect = this.dialog.open(AlertDialogComponent, {
+      data: {
+        header: 'Are you sure you want to select this user?',
+      }
+    });
+
+    dialogSelect.afterClosed().subscribe(result => {
+      if (result) {
+        this.selected = true;
+        this.changeSelected.emit(this.selected);
+      }
+    });
   }
 
   getImg() {
@@ -93,8 +104,19 @@ export class CandidatePreviewCardComponent implements OnInit {
   }
 
   rejectCandidate() {
-    this.rejected = true;
-    this.changeRejected.emit(this.rejected);
+    const dialogSelect = this.dialog.open(AlertDialogComponent, {
+      data: {
+        header: 'Are you sure you want to reject this user?',
+      }
+    });
+
+    dialogSelect.afterClosed().subscribe(result => {
+      if (result) {
+        this.rejected = true;
+        this.changeRejected.emit(this.rejected);
+      }
+    });
+
   }
 
   getApplicationStatus() {

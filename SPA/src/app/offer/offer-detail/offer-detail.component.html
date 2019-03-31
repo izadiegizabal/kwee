@@ -186,7 +186,7 @@
                 *ngFor="let skill of getSkills((offerState | async).offer.skills); let i = index"
                 style="margin-left: -20px">
                 <mat-list-item
-                  *ngIf="i % 2 === 0">
+                  *ngIf="i % 2 === 0" (click)="searchSkill(skill)" style="cursor: pointer">
                   <mat-icon color="primary">chevron_right</mat-icon>
                   {{' ' + skill}}</mat-list-item>
               </div>
@@ -197,7 +197,7 @@
               <div
                 *ngFor="let skill of getSkills((offerState | async).offer.skills); let i = index"
                 style="margin-left: -20px">
-                <mat-list-item *ngIf="i % 2 !== 0">
+                <mat-list-item *ngIf="i % 2 !== 0" (click)="searchSkill(skill)" style="cursor: pointer">
                   <mat-icon color="primary">chevron_right</mat-icon>
                   {{' ' + skill}}</mat-list-item>
               </div>
