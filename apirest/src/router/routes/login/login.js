@@ -1,4 +1,4 @@
-const {logger} = require('../../../shared/functions');
+const { logger, getOffererAVG, getApplicantAVG } = require('../../../shared/functions');
 const auth = require('../../../middlewares/auth/auth');
 const bcrypt = require('bcryptjs');
 const moment = require('moment');
@@ -7,11 +7,15 @@ module.exports = (app, db) => {
 
     app.post('/login', async (req, res, next) => {
         let logId = await logger.saveLog('POST', 'login', null, res, req.body.email);
-
+        let id, user;
+        
         let body = req.body;
-
+        
         try {
-            let user = await db.users.findOne({where: {email: body.email}});
+            if ( req.get('token') ) id = tokenId.getTokenId(req.get('token'));
+            if ( body.email ) user = await db.users.findOne({where: {email: body.email}});
+            else if ( id ) user = await db.users.findOne({where: { id }});
+             
             let type;
 
             if (!user) {
@@ -51,12 +55,18 @@ module.exports = (app, db) => {
             if (user.root) {
                 type = 'admin';
             } else {
+                var avg = [];
                 let offerer = await db.offerers.findOne({
                     where: {userId: id}
                 });
                 if (offerer) {
+                    avg = getOffererAVG(offerer);
                     type = 'offerer';
                 } else {
+                    let applicant = await db.applicants.findOne({
+                        where: {userId: id}
+                    });
+                    avg = getApplicantAVG(applicant);
                     type = 'applicant';
                 }
             }
@@ -72,6 +82,7 @@ module.exports = (app, db) => {
                     bio: userUpdated.bio,
                     lastAccess: userUpdated.lastAccess,
                     index: userUpdated.index,
+                    avg,
                     status: userUpdated.status,
                     notifications,
                     type

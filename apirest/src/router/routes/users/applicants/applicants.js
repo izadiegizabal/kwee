@@ -1,4 +1,4 @@
-const {tokenId, logger, sendVerificationEmail, pagination, checkImg, deleteFile, uploadImg, saveLogES} = require('../../../../shared/functions');
+const {tokenId, logger, sendVerificationEmail, getOffererAVG, getApplicantAVG, pagination, checkImg, deleteFile, uploadImg, saveLogES} = require('../../../../shared/functions');
 const {checkToken, checkAdmin} = require('../../../../middlewares/authentication');
 const elastic = require('../../../../database/elasticsearch');
 const env = require('../../../../tools/constants');
@@ -172,6 +172,7 @@ module.exports = (app, db) => {
                             applicantsView[j] = {
                                 id: applicants[j].userId,
                                 index: users[i].index,
+                                avg: getApplicantAVG(applicants[j]),
                                 name: users[i].name,
                                 email: users[i].email,
                                 city: applicants[j].city,
@@ -261,6 +262,7 @@ module.exports = (app, db) => {
                             offer.fk_application = applications[i].id;
                             offer.offererName = offerer.name;
                             offer.offererIndex = offerer.index;
+                            offer.offererAVG = getOffererAVG(offerer);
                             allOffers[j].img ? offer.img = allOffers[j].img : offer.img = offerer.img;
                             offer.title = allOffers[j].title;
                             offer.description = allOffers[j].description;
@@ -415,6 +417,7 @@ module.exports = (app, db) => {
                 const userApplicant = {
                     id: user.id,
                     index: user.index,
+                    avg: getApplicantAVG(applicant),
                     name: user.name,
                     email: user.email,
                     city: applicant.city,
@@ -465,6 +468,7 @@ module.exports = (app, db) => {
             await logger.saveLog('POST', 'applicant', null, res);
 
             const body = req.body;
+            delete body.root;
             let user = {};
             body.password ? user.password = bcrypt.hashSync(body.password, 10) : null;
             body.name ? user.name = body.name : null;
@@ -1492,6 +1496,7 @@ module.exports = (app, db) => {
 
             applicant.id = Number(applicants[i]._id);
             applicant.index = Number(applicants[i]._source.index);
+            applicant.avg = getApplicantAVG(userApplicant);
             applicant.name = applicants[i]._source.name;
             applicant.email = applicants[i]._source.email;
             applicant.city = applicants[i]._source.city;

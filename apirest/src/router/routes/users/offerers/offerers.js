@@ -1,4 +1,4 @@
-const {tokenId, logger, sendVerificationEmail, pagination, uploadImg, checkImg, deleteFile, prepareOffersToShow, isEmpty, saveLogES} = require('../../../../shared/functions');
+const {tokenId, logger, sendVerificationEmail, getOffererAVG, getApplicantAVG, pagination, uploadImg, checkImg, deleteFile, prepareOffersToShow, isEmpty, saveLogES} = require('../../../../shared/functions');
 const {checkToken, checkAdmin} = require('../../../../middlewares/authentication');
 const elastic = require('../../../../database/elasticsearch');
 const env = require('../../../../tools/constants');
@@ -346,6 +346,7 @@ module.exports = (app, db) => {
                         applicantShow.applicantId = applicantUser.id;
                         applicantShow.applicantName = applicantUser.name;
                         applicantShow.applicantIndex = applicantUser.index;
+                        applicantShow.applicantAVG = getApplicantAVG(applicantUser);
                         applicantShow.applicantStatus = applicantUser.status;
 
                         offer.applications.push(applicantShow);
@@ -391,6 +392,7 @@ module.exports = (app, db) => {
                 const userOfferer = {
                     id: offerer.userId,
                     index: user.index,
+                    avg: getOffererAVG(offerer),
                     name: user.name,
                     email: user.email,
                     address: offerer.address,
@@ -446,6 +448,7 @@ module.exports = (app, db) => {
             await logger.saveLog('POST', 'offerer', null, res);
 
             const body = req.body;
+            delete body.root;
             let user = {};
             body.password ? user.password = bcrypt.hashSync(body.password, 10) : null;
             body.name ? user.name = body.name : null;
@@ -875,6 +878,7 @@ module.exports = (app, db) => {
 
             offerer.id = Number(offerers[i]._id);
             offerer.index = Number(offerers[i]._source.index);
+            offerer.avg = getOffererAVG(userOfferer);
             offerer.name = offerers[i]._source.name;
             offerer.email = offerers[i]._source.email;
             offerer.address = offerers[i]._source.address;

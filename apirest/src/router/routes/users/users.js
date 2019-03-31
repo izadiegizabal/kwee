@@ -86,6 +86,7 @@ module.exports = (app, db) => {
                 var imgName = uploadImg(req, res, next, 'users');
                 body.img = imgName;
             }
+            delete body.root;
 
             let user = await db.users.create(body);
 

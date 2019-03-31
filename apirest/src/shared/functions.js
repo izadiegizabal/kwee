@@ -593,6 +593,34 @@ async function createNotification(db, to, from, type, idTable, notification, sta
     });
 }
 
+function getOffererAVG( offerer ) {
+
+    var avg = [];
+
+    avg.push({salaryAVG: offerer.salaryAVG});
+    avg.push({environmentAVG: offerer.environmentAVG});
+    avg.push({partnersAVG: offerer.partnersAVG});
+    avg.push({servicesAVG: offerer.servicesAVG});
+    avg.push({installationsAVG: offerer.installationsAVG});
+    avg.push({satisfactionAVG: offerer.satisfactionAVG});
+
+    return avg;
+}
+
+function getApplicantAVG( applicant ) {
+
+    var avg = [];
+
+    avg.push({efficiencyAVG: applicant.efficiencyAVG})
+    avg.push({skillsAVG: applicant.skillsAVG})
+    avg.push({punctualityAVG: applicant.punctualityAVG})
+    avg.push({hygieneAVG: applicant.hygieneAVG})
+    avg.push({teamworkAVG: applicant.teamworkAVG})
+    avg.push({satisfactionAVG: applicant.satisfactionAVG})
+
+    return avg;
+}
+
 
 module.exports = {
     tokenId,
@@ -613,5 +641,7 @@ module.exports = {
     sendNotification,
     getSocketUserId,
     createNotification,
-    sendEmailInactiveUser
+    sendEmailInactiveUser,
+    getOffererAVG,
+    getApplicantAVG
 }
