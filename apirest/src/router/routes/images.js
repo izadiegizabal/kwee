@@ -9,8 +9,8 @@ module.exports = (app, db) => {
         let type = req.params.type;
         let img = req.params.img;
 
-        let pathImage = path.resolve(`uploads/${ type }/${ img }`);
-
+        let pathImage = path.resolve(__dirname, '../../',`uploads/${ type }/${ img }`);
+	console.log(pathImage);
         if (fs.existsSync(pathImage)) {
             res.sendFile(pathImage);
         } else {
