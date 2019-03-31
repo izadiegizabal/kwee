@@ -9,8 +9,8 @@ passport.use(
         callbackURL: env.LINKEDIN_URL,
         scope: ['r_emailaddress', 'r_basicprofile'],
         state: true
-    }, async function(accessToken, refreshToken, profile, done) {
-        await process.nextTick(function() {
+    }, async function (accessToken, refreshToken, profile, done) {
+        await process.nextTick(function () {
             return done(null, profile);
         });
     }));

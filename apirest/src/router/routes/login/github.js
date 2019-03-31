@@ -6,17 +6,17 @@ const env = require('../../../tools/constants');
 module.exports = (app, db) => {
 
     app.get('/auth/github',
-        passport.authenticate('github', { scope: ['user:email'] })
+        passport.authenticate('github', {scope: ['user:email']})
     );
 
     app.get('/auth/github/callback',
-        passport.authenticate('github', { failureRedirect: '/login' }),
+        passport.authenticate('github', {failureRedirect: '/login'}),
 
-        async(req, res, next) => {
+        async (req, res, next) => {
             // Authentication with Github successful
             try {
 
-                let user = await db.users.findOne({ where: { email: req.user._json.email } });
+                let user = await db.users.findOne({where: {email: req.user._json.email}});
 
                 if (!user) {
                     // New user
@@ -44,8 +44,8 @@ module.exports = (app, db) => {
                     res.redirect('/');
                 }
             } catch (err) {
-                return next({ type: 'error', error: err.message });
+                return next({type: 'error', error: err.message});
             }
         });
 
-}
+};

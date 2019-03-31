@@ -1,15 +1,15 @@
-const { checkToken, checkAdmin } = require('../../middlewares/authentication');
+const {checkToken, checkAdmin} = require('../../middlewares/authentication');
 const fs = require('fs');
 const path = require('path');
 
 module.exports = (app, db) => {
 
-    app.get('/image/:type/:img', async(req, res, next) => {
+    app.get('/image/:type/:img', async (req, res, next) => {
 
         let type = req.params.type;
         let img = req.params.img;
 
-        let pathImage = path.resolve(`uploads/${ type }/${ img }`);
+        let pathImage = path.resolve(`uploads/${type}/${img}`);
 
         if (fs.existsSync(pathImage)) {
             res.sendFile(pathImage);
@@ -23,4 +23,4 @@ module.exports = (app, db) => {
 
     });
 
-}
+};

@@ -1,8 +1,8 @@
-const { tokenId, logger, pagination, prepareOffersToShow, saveLogES, sendEmailOfferClosed, createNotification } = require('../../shared/functions');
-const { checkToken } = require('../../middlewares/authentication');
+const {tokenId, logger, pagination, prepareOffersToShow, saveLogES, sendEmailOfferClosed, createNotification} = require('../../shared/functions');
+const {checkToken} = require('../../middlewares/authentication');
 const elastic = require('../../database/elasticsearch');
-const env =     require('../../tools/constants');
-const axios =   require('axios')
+const env = require('../../tools/constants');
+const axios = require('axios');
 
 
 // ============================
@@ -11,7 +11,7 @@ const axios =   require('axios')
 
 module.exports = (app, db) => {
 
-    app.post('/offers/search', async(req, res, next) => {
+    app.post('/offers/search', async (req, res, next) => {
 
         try {
             saveLogES('POST', 'offers/search', 'Visitor');
@@ -24,8 +24,8 @@ module.exports = (app, db) => {
             let must = [];
             let sort = 'offererIndex';
             let from;
-            if ( query.sort ) sort = query.sort;
-            if ( page > 0 && limit > 0 ) from = (page - 1) * limit;
+            if (query.sort) sort = query.sort;
+            if (page > 0 && limit > 0) from = (page - 1) * limit;
 
             // If salaryAmount, dateStart, dateEnd or datePublished in query, add range to must filter
             buildSalaryRange(must, body.salaryAmount);
@@ -34,41 +34,53 @@ module.exports = (app, db) => {
             buildDatePublishedRange(must, body.datePublished);
             buildOffererIndexRange(must, body.offererIndex);
 
-            if ( body.title ) must.push({multi_match: {query: body.title, type: "phrase_prefix", fields: [ "title" ] }});
-            if ( body.status ) must.push({multi_match: {query: body.status, fields: [ "status" ] }});
-            if ( body.location ) must.push({multi_match: { query: body.location, type: "phrase_prefix", fields: [ "location" ] }});
-            if ( body.skills ) must.push({multi_match: {query: body.skills, type: "phrase_prefix", fields: [ "skills" ] }});
-            if ( body.offererName ) must.push({multi_match: {query: body.offererName, type: "phrase_prefix", fields: [ "offererName" ] }});
-            if ( body.workLocation ) must.push({multi_match: {query: body.workLocation, fields: [ "workLocation" ] }});
-            if ( body.seniority ) must.push({multi_match: {query: body.seniority, fields: [ "seniority" ] }});
-            if ( body.contractType ) must.push({multi_match: {query: body.contractType, fields: [ "contractType" ] }});
-            if ( body.description ) must.push({multi_match: {query: body.description, fields: [ "description" ] }});
-            if ( body.keywords ) must.push({
+            if (body.title) must.push({multi_match: {query: body.title, type: "phrase_prefix", fields: ["title"]}});
+            if (body.status) must.push({multi_match: {query: body.status, fields: ["status"]}});
+            if (body.location) must.push({
                 multi_match: {
-                    query: body.keywords, 
-                    type: "cross_fields", 
-                    fields: 
-                    [ 
-                        "status",
-                        "title",
-                        "location",
-                        "dateStart",
-                        "dateEnd",
-                        "datePublished",
-                        "offererName",
-                        "offererIndex",
-                        "salaryAmount",
-                        "seniority",
-                        "contractType",
-                        "salaryCurrency",
-                        "description",
-                        "skills",
-                        "workLocation",
-                    ]
+                    query: body.location,
+                    type: "phrase_prefix",
+                    fields: ["location"]
+                }
+            });
+            if (body.skills) must.push({multi_match: {query: body.skills, type: "phrase_prefix", fields: ["skills"]}});
+            if (body.offererName) must.push({
+                multi_match: {
+                    query: body.offererName,
+                    type: "phrase_prefix",
+                    fields: ["offererName"]
+                }
+            });
+            if (body.workLocation) must.push({multi_match: {query: body.workLocation, fields: ["workLocation"]}});
+            if (body.seniority) must.push({multi_match: {query: body.seniority, fields: ["seniority"]}});
+            if (body.contractType) must.push({multi_match: {query: body.contractType, fields: ["contractType"]}});
+            if (body.description) must.push({multi_match: {query: body.description, fields: ["description"]}});
+            if (body.keywords) must.push({
+                multi_match: {
+                    query: body.keywords,
+                    type: "phrase_prefix",
+                    fields:
+                        [
+                            // "status",
+                            "title",
+                            "location",
+                            // "dateStart",
+                            // "dateEnd",
+                            // "datePublished",
+                            // "offererIndex",
+                            // "salaryAmount",
+                            "offererName",
+                            "seniority",
+                            "contractType",
+                            "salaryCurrency",
+                            "description",
+                            "skills",
+                            "workLocation",
+                        ]
                 }
             });
 
-            if ( must.length == 0 ){
+            if (must.length == 0) {
                 return res.status(200).json({
                     ok: true,
                     message: 'You must search something'
@@ -94,11 +106,11 @@ module.exports = (app, db) => {
                     let users = await db.users.findAll();
                     let offersToShow = [];
 
-                    if ( response.hits.total != 0 ) {
-                        
+                    if (response.hits.total != 0) {
+
 
                         let offers = response.hits.hits;
-                        
+
                         buildOffersToShow(users, offersToShow, offers);
 
                         return res.json({
@@ -119,7 +131,7 @@ module.exports = (app, db) => {
                                 throw error;
                             }
 
-                            if ( response2.hits.total > 0 ) {
+                            if (response2.hits.total > 0) {
                                 let offers = response2.hits.hits;
                                 buildOffersToShow(users, offersToShow, offers);
                                 return res.json({
@@ -142,12 +154,12 @@ module.exports = (app, db) => {
                 });
             }
         } catch (error) {
-            return next({ type: 'error', error });
+            return next({type: 'error', error});
         }
     });
 
     // GET all offers
-    app.get('/offers', async(req, res, next) => {
+    app.get('/offers', async (req, res, next) => {
         try {
             await logger.saveLog('GET', 'offers', null, res);
             saveLogES('GET', 'offers', 'Visitor');
@@ -164,19 +176,19 @@ module.exports = (app, db) => {
                 next
             );
 
-            if ( output.data ) {
+            if (output.data) {
                 offers = output.data;
                 users = await db.users.findAll();
-                
+
                 var offersShow = [];
-                
+
                 for (var offer in offers) {
                     let offersAux = [],
                         offersToShowAux = [];
                     offersAux.push(offers[offer]);
                     offersShow.push(prepareOffersToShow(offersAux, offersToShowAux, users.find(element => offers[offer]['fk_offerer'] == element.id))[0]);
                 }
-                
+
                 return res.status(200).json({
                     ok: true,
                     message: output.message,
@@ -186,54 +198,54 @@ module.exports = (app, db) => {
                     pages: Math.ceil(output.count / req.query.limit)
                 });
             }
-   
+
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            next({type: 'error', error: 'Error getting data'});
         }
     });
 
     // GET one offer by id
-    app.get('/offer/:id([0-9]+)', async(req, res, next) => {
+    app.get('/offer/:id([0-9]+)', async (req, res, next) => {
         const id = req.params.id;
 
         try {
             saveLogES('GET', 'offer/id', 'Visitor');
             offer = await db.offers.findOne({
-                where: { id }
+                where: {id}
             });
 
-            if ( offer ) {
+            if (offer) {
                 let users = await db.users.findAll();
                 let user = users.find(usu => usu.id === offer.fk_offerer);
-                
+
                 let offers = [],
-                offersShow = [];
-                
+                    offersShow = [];
+
                 offers.push(offer);
-                
+
                 prepareOffersToShow(offers, offersShow, user);
-                
+
                 let applicants = await offer.getApplicants();
-                if ( applicants.length > 0 ) {
+                if (applicants.length > 0) {
                     let applications = await db.applications.findAll({where: {fk_offer: id}});
                     applicants.forEach(applicant => {
-                            let application = applications.find(apli => apli.fk_applicant == applicant.userId);
-                            let applicantUser = users.find(usu => usu.id === applicant.userId);
-                            let applicantShow = {};
-                            applicantShow.applicationId = application.id;
-                            applicantShow.applicationStatus = application.status;
-                            applicantShow.aHasRated = application.aHasRated;
-                            applicantShow.applicantId = applicantUser.id;
-                            applicantShow.applicantName = applicantUser.name;
-                            applicantShow.applicantStatus = applicantUser.status;
-                            
-                            offersShow[0].applications.push(applicantShow);
-                        
+                        let application = applications.find(apli => apli.fk_applicant == applicant.userId);
+                        let applicantUser = users.find(usu => usu.id === applicant.userId);
+                        let applicantShow = {};
+                        applicantShow.applicationId = application.id;
+                        applicantShow.applicationStatus = application.status;
+                        applicantShow.aHasRated = application.aHasRated;
+                        applicantShow.applicantId = applicantUser.id;
+                        applicantShow.applicantName = applicantUser.name;
+                        applicantShow.applicantStatus = applicantUser.status;
+
+                        offersShow[0].applications.push(applicantShow);
+
                     });
                 } else {
                     offersShow[0].applications = null;
                 }
-                
+
                 return res.status(200).json({
                     ok: true,
                     message: 'Listing..',
@@ -247,11 +259,11 @@ module.exports = (app, db) => {
             }
 
         } catch (err) {
-            return next({ type: 'error', error: 'Error getting data' });
+            return next({type: 'error', error: 'Error getting data'});
         }
     });
 
-    app.get('/offer/:id([0-9]+)/applications', async(req, res, next) => {
+    app.get('/offer/:id([0-9]+)/applications', async (req, res, next) => {
         const id = req.params.id;
         let status = req.query.status;
         let page = Number(req.query.page);
@@ -259,19 +271,19 @@ module.exports = (app, db) => {
         let pages = 0;
         try {
             saveLogES('GET', `offer/${id}/applications`, 'Visitor');
-            let applications = await db.applications.findAll({ where: { fk_offer: id } });
+            let applications = await db.applications.findAll({where: {fk_offer: id}});
 
-            if ( applications.length > 0 ) {
+            if (applications.length > 0) {
                 let users = await db.users.findAll();
                 let offers = await db.offers.findAll();
                 let applicants = await db.applicants.findAll();
                 var applicantsToShow = [];
 
-                if(status) applications = applications.filter(element => element.status == status);
+                if (status) applications = applications.filter(element => element.status == status);
 
                 applications.forEach(application => {
                     applicants.forEach(applicant => {
-                        if ( application.fk_applicant === applicant.userId ) {
+                        if (application.fk_applicant === applicant.userId) {
                             let user = users.find(usu => applicant.userId == usu.id);
                             let offer = offers.find(offer => application.fk_offer == offer.id);
                             let app = {
@@ -298,16 +310,16 @@ module.exports = (app, db) => {
                     });
                 });
 
-                if ( applicantsToShow.length > 0 ) {
+                if (applicantsToShow.length > 0) {
                     let total = applicantsToShow.length;
                     let msg = 'Listing applicants applicating to this offer';
-                    if (page && limit){
+                    if (page && limit) {
                         pages = Math.ceil(applicantsToShow.length / limit);
                         offset = Number(limit * (page - 1));
                         if (page > pages) {
                             return res.status(200).json({
                                 ok: true,
-                                message: `It doesn't exist ${ page } pages`
+                                message: `It doesn't exist ${page} pages`
                             })
                         }
                         let applicantsAux = [];
@@ -320,7 +332,7 @@ module.exports = (app, db) => {
                         }
                         applicantsToShow = applicantsAux;
                         if (applicantsToShow.length < limit) limit = applicantsToShow.length;
-                        msg = `Listing ${ limit } applicants applicating to this offer. Page ${ page } of ${ pages }.`
+                        msg = `Listing ${limit} applicants applicating to this offer. Page ${page} of ${pages}.`
                     }
                     return res.json({
                         ok: true,
@@ -342,111 +354,112 @@ module.exports = (app, db) => {
             }
 
         } catch (err) {
-            return next({ type: 'error', error: err.message });
+            return next({type: 'error', error: err.message});
         }
     });
-    
+
     // POST single offer
-    app.post('/offer', async(req, res, next) => {
+    app.post('/offer', async (req, res, next) => {
 
         let body = req.body;
 
         try {
             let id = tokenId.getTokenId(req.get('token'));
             body.fk_offerer = id;
-            
+
             await db.offers.create(body)
-            .then(async result => {
-                if ( result ) {
-                    
-                    let offerer = await db.users.findOne({ where: { id }});
-                    saveLogES('POST', 'offer', offerer.name);
+                .then(async result => {
+                    if (result) {
 
-                    body.offererIndex = offerer.index;
-                    body.offererName = offerer.name;
+                        let offerer = await db.users.findOne({where: {id}});
+                        saveLogES('POST', 'offer', offerer.name);
 
-                    elastic.index({
-                        index: 'offers',
-                        id: result.id,
-                        type: 'offer',
-                        body
-                    }, function (err, resp, status) {
-                        if ( err ) {
-                            console.log('ERROR:', err.message);
-                        }
+                        body.offererIndex = offerer.index;
+                        body.offererName = offerer.name;
+                        body.createdAt = new Date();
 
-                        return res.status(201).json({
-                            ok: true,
-                            message: 'Offer created',
-                            data: {
-                                id: result.id,
-                                fk_offerer: id,
-                                offererIndex: body.offererIndex,
-                                offererName: body.offererName,
-                                status: result.status,
-                                title: result.title,
-                                description: result.description,
-                                datePublished: result.datePublished,
-                                dateStart: result.dateStart,
-                                dateEnd: result.dateEnd,
-                                location: result.location,
-                                salaryAmount: result.salaryAmount,
-                                salaryFrequency: result.salaryFrequency,
-                                salaryCurrency: result.salaryCurrency,
-                                workLocation: result.workLocation,
-                                seniority: result.seniority,
-                                responsabilities: result.responsabilities,
-                                requeriments: result.requeriments,
-                                skills: body.skills,
-                                maxApplicants: body.maxApplicants,
-                                currentApplications: body.currentApplications,
-                                duration: body.duration,
-                                durationUnit: body.durationUnit,
-                                contractType: body.contractType,
-                                isIndefinite: body.isIndefinite
+                        elastic.index({
+                            index: 'offers',
+                            id: result.id,
+                            type: 'offer',
+                            body
+                        }, function (err, resp, status) {
+                            if (err) {
+                                console.log('ERROR:', err.message);
                             }
+
+                            return res.status(201).json({
+                                ok: true,
+                                message: 'Offer created',
+                                data: {
+                                    id: result.id,
+                                    fk_offerer: id,
+                                    offererIndex: body.offererIndex,
+                                    offererName: body.offererName,
+                                    status: result.status,
+                                    title: result.title,
+                                    description: result.description,
+                                    datePublished: result.datePublished,
+                                    dateStart: result.dateStart,
+                                    dateEnd: result.dateEnd,
+                                    location: result.location,
+                                    salaryAmount: result.salaryAmount,
+                                    salaryFrequency: result.salaryFrequency,
+                                    salaryCurrency: result.salaryCurrency,
+                                    workLocation: result.workLocation,
+                                    seniority: result.seniority,
+                                    responsabilities: result.responsabilities,
+                                    requeriments: result.requeriments,
+                                    skills: body.skills,
+                                    maxApplicants: body.maxApplicants,
+                                    currentApplications: body.currentApplications,
+                                    duration: body.duration,
+                                    durationUnit: body.durationUnit,
+                                    contractType: body.contractType,
+                                    isIndefinite: body.isIndefinite
+                                }
+                            });
                         });
-                    });
-                } else {
-                    return res.status(400).json({
-                        ok: false,
-                        message: `No created`
-                    });
-                }
-            });
+                    } else {
+                        return res.status(400).json({
+                            ok: false,
+                            message: `No created`
+                        });
+                    }
+                });
 
         } catch (err) {
-            return next({ type: 'error', error: err.message });
+            return next({type: 'error', error: err.message});
         }
 
     });
 
     // PUT single offer
-    app.put('/offer/:id([0-9]+)', async(req, res, next) => {
+    app.put('/offer/:id([0-9]+)', async (req, res, next) => {
         const id = req.params.id;
         const updates = req.body;
 
         try {
             let fk_offerer = tokenId.getTokenId(req.get('token'));
-            
+
             let offerToUpdate = await db.offers.findOne({
                 where: {id}
             });
             let user = db.users.findOne({
                 where: {id: fk_offerer}
-            })
+            });
             saveLogES('PUT', 'offer/id', user.name);
-            
-            if ( offerToUpdate ) {
-                if ( offerToUpdate.fk_offerer == fk_offerer ) {
+
+            if (offerToUpdate) {
+                if (offerToUpdate.fk_offerer == fk_offerer) {
                     // Checking status to update, if is the same, not necessary to update
                     // if not and it is status = 1, sending notification that offer is closed
                     // to applicants that applicated to this offer.
-                    if ( updates.status ) {
-                        if ( offerToUpdate.status == updates.status ) {
+                    if (updates.status) {
+                        if (offerToUpdate.status == updates.status) {
                             delete updates.status;
                         } else {
-                            if ( updates.status == 1 ) {
+                            if (updates.status == 1) {
                                 // send mail to all applicants that applicated to this offer
                                 // to advise that the offer is closed
                                 let users = await db.users.findAll();
@@ -454,13 +467,13 @@ module.exports = (app, db) => {
                                 let applicants = await offerToUpdate.getApplicants();
                                 applicants.forEach(applicant => {
                                     user = users.find(usu => applicant.userId == usu.id);
-                                    createNotification( db, user.id, fk_offerer, 'offers', id, 'closed', true );
+                                    createNotification(db, user.id, fk_offerer, 'offers', id, 'closed', true);
                                     sendEmailOfferClosed(user, res, offerToUpdate);
                                 });
                                 applications.forEach(async application => {
-                                    if ( application.status == 0 || application.status == 1 ||  application.status == 2 ) {
+                                    if (application.status == 0 || application.status == 1 || application.status == 2) {
                                         await db.applications.update({status: 5}, {
-                                            where: { id: application.id }
+                                            where: {id: application.id}
                                         });
                                     }
                                 });
@@ -469,32 +482,32 @@ module.exports = (app, db) => {
                     }
                     // because Object.keys(new Date()).length === 0;
                     // we have to do some additional check
-                    if ( !(Object.keys(updates).length === 0 && updates.constructor === Object) ){
+                    if (!(Object.keys(updates).length === 0 && updates.constructor === Object)) {
                         await db.offers.update(updates, {
-                            where: { id, fk_offerer }
+                            where: {id, fk_offerer}
                         }).then(result => {
-                            if ( result == 1 ) {
-                                axios.post(`http://${ env.ES_URL }/offers/offer/${ id }/_update?pretty=true`, {
+                            if (result == 1) {
+                                axios.post(`http://${env.ES_URL}/offers/offer/${id}/_update?pretty=true`, {
                                     doc: updates
                                 }).then((resp) => {
                                     // updated from elasticsearch database too
                                 }).catch((error) => {
                                     console.log(error.message);
                                 });
-                                
+
                                 return res.status(200).json({
                                     ok: true,
-                                    message: `Offer ${ id } updated`,
+                                    message: `Offer ${id} updated`,
                                 });
                             } else {
-                                return next({ type: 'error', error: 'No updates' });
+                                return next({type: 'error', error: 'No updates'});
                             }
                         });
                     } else {
-                        return next({ type: 'error', error: 'Nothing to update here' });
+                        return next({type: 'error', error: 'Nothing to update here'});
                     }
                 } else {
-                    return next({ type: 'error', error: 'This offer is not yours' });
+                    return next({type: 'error', error: 'This offer is not yours'});
                 }
             } else {
                 return res.status(200).json({
@@ -503,30 +516,30 @@ module.exports = (app, db) => {
                 });
             }
         } catch (err) {
-            return next({ type: 'error', error: err.message });
+            return next({type: 'error', error: err.message});
         }
     });
 
     // DELETE single offer
-    app.delete('/offer/:id([0-9]+)', checkToken, async(req, res, next) => {
+    app.delete('/offer/:id([0-9]+)', checkToken, async (req, res, next) => {
         const id = req.params.id;
 
         try {
             let fk_offerer = tokenId.getTokenId(req.get('token'));
             let user = db.users.findOne({
                 where: {id: fk_offerer}
-            })
+            });
             saveLogES('DELETE', 'offer/id', user.name);
 
-            axios.delete(`http://${ env.ES_URL }/offers/offers/${ id }`)
+            axios.delete(`http://${env.ES_URL}/offers/offers/${id}`)
                 .then((res) => {
                     // deleted from elasticsearch database too
-            }).catch((error) => {
+                }).catch((error) => {
                 console.error(error)
             });
 
             await db.offers.destroy({
-                where: { id, fk_offerer }
+                where: {id, fk_offerer}
             });
 
             return res.json({
@@ -534,18 +547,18 @@ module.exports = (app, db) => {
                 message: 'Offer deleted'
             });
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            next({type: 'error', error: 'Error getting data'});
         }
     });
 
-    function buildSalaryRange (must, salaryAmount) {
-        if ( salaryAmount ) {
+    function buildSalaryRange(must, salaryAmount) {
+        if (salaryAmount) {
             let range =
-            {
-                range: {
-                    salaryAmount: {}
-                }
-            };
+                {
+                    range: {
+                        salaryAmount: {}
+                    }
+                };
 
             salaryAmount.gte ? range.range.salaryAmount.gte = salaryAmount.gte : null;
             salaryAmount.gt ? range.range.salaryAmount.gt = salaryAmount.gt : null;
@@ -558,36 +571,36 @@ module.exports = (app, db) => {
         return must;
     }
 
-    function buildOffererIndexRange (must, offererIndex) {
-        if ( offererIndex ) {
+    function buildOffererIndexRange(must, offererIndex) {
+        if (offererIndex) {
             console.log("offererIndex: ", offererIndex);
             let range =
-            {
-                range: {
-                    offererIndex: {}
-                }
-            };
+                {
+                    range: {
+                        offererIndex: {}
+                    }
+                };
 
             offererIndex.gte ? range.range.offererIndex.gte = offererIndex.gte : null;
             offererIndex.gt ? range.range.offererIndex.gt = offererIndex.gt : null;
             offererIndex.lte ? range.range.offererIndex.lte = offererIndex.lte : null;
             offererIndex.lt ? range.range.offererIndex.lt = offererIndex.lt : null;
-   
+
             must.push(range);
         }
 
         return must;
     }
 
-    function buildDateStartRange (must, dateStart) {
+    function buildDateStartRange(must, dateStart) {
 
-        if ( dateStart ) {
+        if (dateStart) {
             let range =
-            {
-                range: {
-                  dateStart: {}
-                }
-            };
+                {
+                    range: {
+                        dateStart: {}
+                    }
+                };
 
             dateStart.gte ? range.range.dateStart.gte = dateStart.gte : null;
             dateStart.gt ? range.range.dateStart.gt = dateStart.gt : null;
@@ -600,15 +613,15 @@ module.exports = (app, db) => {
         return must;
     }
 
-    function buildDateEndRange (must, dateEnd) {
+    function buildDateEndRange(must, dateEnd) {
 
-        if ( dateEnd ) {
+        if (dateEnd) {
             let range =
-            {
-                range: {
-                  dateEnd: {}
-                }
-            };
+                {
+                    range: {
+                        dateEnd: {}
+                    }
+                };
 
             dateEnd.gte ? range.range.dateEnd.gte = dateEnd.gte : null;
             dateEnd.gt ? range.range.dateEnd.gt = dateEnd.gt : null;
@@ -621,15 +634,15 @@ module.exports = (app, db) => {
         return must;
     }
 
-    function buildDatePublishedRange (must, datePublished) {
+    function buildDatePublishedRange(must, datePublished) {
 
-        if ( datePublished ) {
+        if (datePublished) {
             let range =
-            {
-                range: {
-                  datePublished: {}
-                }
-            };
+                {
+                    range: {
+                        datePublished: {}
+                    }
+                };
 
             datePublished.gte ? range.range.datePublished.gte = datePublished.gte : null;
             datePublished.gt ? range.range.datePublished.gt = datePublished.gt : null;
@@ -670,16 +683,16 @@ module.exports = (app, db) => {
             offer.durationUnit = offers[i]._source.durationUnit;
             offer.isIndefinite = offers[i]._source.isIndefinite;
             offer.contractType = offers[i]._source.contractType;
-            offer.responsabilities = offers[i].responsabilities;
-            offer.requeriments = offers[i].requeriments;
-            offer.skills = offers[i].skills;
+            offer.responsabilities = offers[i]._source.responsabilities;
+            offer.requeriments = offers[i]._source.requeriments;
+            offer.skills = offers[i]._source.skills;
             offer.lat = offers[i]._source.lat;
             offer.lon = offers[i]._source.lon;
             offer.createdAt = offers[i]._source.createdAt;
             offer.updatedAt = offers[i]._source.updatedAt;
             offer.deletedAt = offers[i]._source.deletedAt;
-            
+
             offersToShow.push(offer);
         }
     }
-}
+};
