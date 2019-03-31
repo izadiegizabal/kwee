@@ -11,7 +11,7 @@ router(app, db);
 
 require('./middlewares/cron');
 //drop and resync with { force: true }
-db.sequelize.sync( /*{ force: true }*/).then(() => {
+db.sequelize.sync( /*{ force: true }*/ ).then(() => {
     server.listen(env.API_PORT, () => {
         console.log('Express listening on port:', env.API_PORT);
     });
