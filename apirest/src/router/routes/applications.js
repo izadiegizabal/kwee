@@ -103,28 +103,21 @@ module.exports = (app, db) => {
                 where: {userId: id}
             });
 
-            if (applicant) {
+            if ( applicant ) {
                 let offer = await db.offers.findOne({where: {id: offerToAdd}});
-                if (offer) {
+                if ( offer ) {
+                    if ( applicant.premium == 0 ) {
+                        let applications = await applicant.getOffers();
+                        if ( applications <= 5 ) {
 
-                    await applicant.addOffer(offerToAdd)
-                        .then(async result => {
-                            if (result) {
-                                await db.offers.update({currentApplications: offer.currentApplications + 1}, {where: {id: offerToAdd}});
-                                if (result[0]) {
-                                    await algorithm.indexUpdate(id);
-                                    return res.status(201).json({
-                                        ok: true,
-                                        message: 'Application done',
-                                        application: result[0][0]
-                                    });
-                                } else {
-                                    return next({type: 'error', error: "You already applicated to this offer."});
-                                }
-                            } else {
-                                return next({type: 'error', error: "Application not added."});
-                            }
-                        });
+                            createApplication( id, applicant, offerToAdd, offer, res, next );
+                            
+                        } else {
+                            return next({type: 'error', error: "Sorry, the maximum applications to basic users are 5"});
+                        }
+                    } else {
+                        createApplication( id, applicant, offerToAdd, offer, res, next );
+                    }
                 } else {
                     return next({type: 'error', error: "Sorry, this offers does not exists"});
                 }
@@ -279,6 +272,31 @@ module.exports = (app, db) => {
         }
 
     });
+
+    async function createApplication( id, applicant, offerToAdd, offer, res, next ) {
+        try {
+            await applicant.addOffer(offerToAdd)
+            .then(async result => {
+                if (result) {
+                    await db.offers.update({currentApplications: offer.currentApplications + 1}, {where: {id: offerToAdd}});
+                    if (result[0]) {
+                        await algorithm.indexUpdate(id);
+                        return res.status(201).json({
+                            ok: true,
+                            message: 'Application done',
+                            application: result[0][0]
+                        });
+                    } else {
+                        return next({type: 'error', error: "You already applicated to this offer."});
+                    }
+                } else {
+                    return next({type: 'error', error: "Application not added."});
+                }
+            });
+        } catch (error) {
+            return next({type: 'error', error: error.message});
+        }
+    }
 
     async function getOffererOfApplication(application) {
 
