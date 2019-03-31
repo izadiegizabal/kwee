@@ -367,67 +367,25 @@ module.exports = (app, db) => {
             let id = tokenId.getTokenId(req.get('token'));
             body.fk_offerer = id;
 
-            await db.offers.create(body)
-                .then(async result => {
-                    if (result) {
-
-                        let offerer = await db.users.findOne({where: {id}});
-                        saveLogES('POST', 'offer', offerer.name);
-
-                        body.offererIndex = offerer.index;
-                        body.offererName = offerer.name;
-                        body.createdAt = new Date();
-
-                        elastic.index({
-                            index: 'offers',
-                            id: result.id,
-                            type: 'offer',
-                            body
-                        }, function (err, resp, status) {
-                            if (err) {
-                                console.log('ERROR:', err.message);
-                            }
-
-                            return res.status(201).json({
-                                ok: true,
-                                message: 'Offer created',
-                                data: {
-                                    id: result.id,
-                                    fk_offerer: id,
-                                    offererIndex: body.offererIndex,
-                                    offererName: body.offererName,
-                                    status: result.status,
-                                    title: result.title,
-                                    description: result.description,
-                                    datePublished: result.datePublished,
-                                    dateStart: result.dateStart,
-                                    dateEnd: result.dateEnd,
-                                    location: result.location,
-                                    salaryAmount: result.salaryAmount,
-                                    salaryFrequency: result.salaryFrequency,
-                                    salaryCurrency: result.salaryCurrency,
-                                    workLocation: result.workLocation,
-                                    seniority: result.seniority,
-                                    responsabilities: result.responsabilities,
-                                    requeriments: result.requeriments,
-                                    skills: body.skills,
-                                    maxApplicants: body.maxApplicants,
-                                    currentApplications: body.currentApplications,
-                                    duration: body.duration,
-                                    durationUnit: body.durationUnit,
-                                    contractType: body.contractType,
-                                    isIndefinite: body.isIndefinite
-                                }
-                            });
-                        });
+            let user = await db.users.findOne({where: { id }});
+            let offerer = await db.offerers.findOne({where: { userId: id }});
+            let offers = await offerer.getOffers();
+            
+            if ( offerer ) {
+                if ( offerer.premium == 0 ) {
+                    if ( ( offers && offers.length < 3 ) || !offers ) {
+                        createOffer( user, body, res, next );
                     } else {
-                        return res.status(400).json({
-                            ok: false,
-                            message: `No created`
-                        });
+                        createInvoice( user );
+                        createOffer( user, body, res, next );
                     }
-                });
-
+                } else {
+                    createOffer( user, body, res, next );
+                }
+                
+            } else {
+                return next({type: 'error', error: 'Only offerers may create offers'});
+            }
         } catch (err) {
             return next({type: 'error', error: err.message});
         }
@@ -694,5 +652,77 @@ module.exports = (app, db) => {
 
             offersToShow.push(offer);
         }
+    }
+
+    async function createOffer( user, body, res, next ) {
+        await db.offers.create( body )
+                .then(async result => {
+                    if (result) {
+                        saveLogES('POST', 'offer', user.name);
+                        
+                        body.offererIndex = user.index;
+                        body.offererName = user.name;
+                        body.createdAt = new Date();
+                        
+                        elastic.index({
+                            index: 'offers',
+                            id: result.id,
+                            type: 'offer',
+                            body
+                        }, function (err, resp, status) {
+                            if (err) {
+                                console.log('ERROR:', err.message);
+                            }
+                            
+                            return res.status(201).json({
+                                ok: true,
+                                message: 'Offer created',
+                                data: {
+                                    id: result.id,
+                                    fk_offerer: user.id,
+                                    offererIndex: body.offererIndex,
+                                    offererName: body.offererName,
+                                    status: result.status,
+                                    title: result.title,
+                                    description: result.description,
+                                    datePublished: result.datePublished,
+                                    dateStart: result.dateStart,
+                                    dateEnd: result.dateEnd,
+                                    location: result.location,
+                                    salaryAmount: result.salaryAmount,
+                                    salaryFrequency: result.salaryFrequency,
+                                    salaryCurrency: result.salaryCurrency,
+                                    workLocation: result.workLocation,
+                                    seniority: result.seniority,
+                                    responsabilities: result.responsabilities,
+                                    requeriments: result.requeriments,
+                                    skills: body.skills,
+                                    maxApplicants: body.maxApplicants,
+                                    currentApplications: body.currentApplications,
+                                    duration: body.duration,
+                                    durationUnit: body.durationUnit,
+                                    contractType: body.contractType,
+                                    isIndefinite: body.isIndefinite
+                                }
+                            });
+                        });
+                    } else {
+                        return res.status(400).json({
+                            ok: false,
+                            message: `No created`
+                        });
+                    }
+                });
+    }
+
+    async function createInvoice( user ) {
+
+        await db.invoices.create({
+            fk_user: user.id,
+            userName: user.name,
+            product: 'Single offer',
+            price: '2€'
+        })
+
     }
 };
