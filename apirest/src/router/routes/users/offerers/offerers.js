@@ -1,5 +1,6 @@
 const {tokenId, logger, sendVerificationEmail, getOffererAVG, getApplicantAVG, pagination, uploadImg, checkImg, deleteFile, prepareOffersToShow, isEmpty, saveLogES} = require('../../../../shared/functions');
 const {checkToken, checkAdmin} = require('../../../../middlewares/authentication');
+const { createAccountLimiter } = require('../../../../middlewares/rateLimiter');
 const elastic = require('../../../../database/elasticsearch');
 const env = require('../../../../tools/constants');
 const bcrypt = require('bcryptjs');
@@ -442,7 +443,7 @@ module.exports = (app, db) => {
     });
 
     // POST single offerer
-    app.post('/offerer', async (req, res, next) => {
+    app.post('/offerer', /*createAccountLimiter,*/ async (req, res, next) => {
 
         try {
             await logger.saveLog('POST', 'offerer', null, res);
@@ -540,7 +541,6 @@ module.exports = (app, db) => {
 
         try {
             await logger.saveLog('PUT', 'offerer', id, res);
-            console.log("body.status: " + req.body.status);
             updateOfferer(id, req, res, next);
         } catch (err) {
             return next({type: 'error', error: err.message});
@@ -677,7 +677,7 @@ module.exports = (app, db) => {
         }
     });
 
-    async function updateOfferer(id, req, res, next) {
+    async function updateOfferer( id, req, res, next ) {
         let body = req.body;
         var elasticsearch = {};
         const offerer = await db.offerers.findOne({
@@ -691,21 +691,29 @@ module.exports = (app, db) => {
             let userOff = {};
 
             body.cif ? userOff.cif = body.cif : null;
+
             if (body.address) {
                 userOff.address = body.address;
                 elasticsearch.address = body.address;
             }
             body.workField ? userOff.workField = body.workField : null;
-            body.premium ? userOff.premium = body.premium : null;
             body.website ? userOff.website = body.website : null;
+
+            if ( body.premium ) {
+                createInvoice( id, body.premium );
+                userOff.premium = body.premium;
+            }
+
             if (body.companySize) {
                 userOff.companySize = body.companySize;
                 elasticsearch.companySize = body.companySize;
             }
+
             if (body.year) {
                 userOff.year = body.year;
                 elasticsearch.year = body.year;
             }
+
             if (body.status) {
                 userOff.status = body.status;
                 elasticsearch.status = body.status;
@@ -764,6 +772,34 @@ module.exports = (app, db) => {
         } else {
             return next({type: 'error', error: 'Offerer doesn\'t exist'});
         }
+    }
+
+    async function createInvoice( id, premium ) {
+
+        try {
+            
+            if ( premium == 1 || premium == 2 ) {
+                let user = await db.users.findOne({ where: { id }});
+                let product = '';
+                let price = '';
+                
+                switch ( premium ) {
+                    case 1: product = 'premium'; price = '6€'; break;
+                    case 2: product = 'elite'; price = '10€'; break;
+                }
+                
+                await db.invoices.create({
+                    fk_user: user.id,
+                    userName: user.name,
+                    product,
+                    price
+                });
+            }
+
+        } catch (error) {
+            throw new Error(error);
+        }
+
     }
 
     async function createOfferer(body, user, next, transaction) {

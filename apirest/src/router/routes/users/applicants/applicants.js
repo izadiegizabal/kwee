@@ -835,6 +835,7 @@ module.exports = (app, db) => {
             }
 
             if (body.premium) {
+                createInvoice( id, body.premium );
                 userApp.premium = body.premium;
                 elasticsearch.premium = body.premium;
             }
@@ -897,6 +898,34 @@ module.exports = (app, db) => {
         } else {
             return next({type: 'error', error: 'Sorry, you are not applicant'});
         }
+    }
+
+    async function createInvoice( id, premium ) {
+
+        try {
+            
+            if ( premium == 1 || premium == 2 ) {
+                let user = await db.users.findOne({ where: { id }});
+                let product = '';
+                let price = '';
+                
+                switch ( premium ) {
+                    case 1: product = 'premium'; price = '6€'; break;
+                    case 2: product = 'elite'; price = '10€'; break;
+                }
+                
+                await db.invoices.create({
+                    fk_user: user.id,
+                    userName: user.name,
+                    product,
+                    price
+                });
+            }
+
+        } catch (error) {
+            throw new Error(error);
+        }
+
     }
 
     async function updateLanguages(applicant, languages, elasticsearch, next) {

@@ -30,7 +30,7 @@ client.indices.exists({
                             dateBorn: {type: "date"},
                             rol: {type: "text", "fielddata": true},
                             index: {type: "integer", "doc_values": true},
-                            bio: {type: "text", "doc_values": true},
+                            bio: {type: "text", "fielddata": true},
                             skills: {
                                 type: "nested",
                                 properties: {

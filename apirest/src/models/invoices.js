@@ -5,10 +5,6 @@ module.exports = (sequelize, DataTypes) => {
         fk_user: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            unique: {
-                args: true,
-                message: 'Application must be unique.'
-            }
         },
 
         userName: {
