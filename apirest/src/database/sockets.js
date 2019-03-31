@@ -6,7 +6,10 @@ const { disconnect, message, selected, connectClient, setUser } = require('../mi
 var io = socketIO(server);
 
 io.origins((origin, callback) => {
-    if (origin !== 'http://localhost:4200' || origin !== env.URL) {
+    const isOVH = /^(?:http(?:s)?:\/\/)?(?:[^\.]+\.)?kwee\.ovh(\/.*)?$/.test(origin);
+    console.log(!isOVH, origin !== 'http://localhost:4200',  origin !== env.URL);
+    if (origin !== 'http://localhost:4200' && !isOVH && origin !== env.URL) {
+       console.log('No entiendo nada');
        return callback('origin not allowed', false);
     }
     callback(null, true);
