@@ -174,7 +174,9 @@ module.exports = (app, db) => {
                             }
 
                             // step 2
-                            let rating_offerer = await createRating_Offerer(body, rating, next, transaction);
+                            let offer = await db.offers.findOne({ where: { id: application.fk_offer }});
+
+                            let rating_offerer = await createRating_Offerer(body, offer.fk_offerer, rating, next, transaction);
 
                             if (!rating_offerer) {
                                 await transaction.rollback();
@@ -188,12 +190,7 @@ module.exports = (app, db) => {
                                 where: {id: fk_application}
                             });
 
-                            let offerer = await db.offers.findOne({
-                                where: {id: application.fk_offer},
-                                attributes: ['fk_offerer']
-                            });
-
-                            await algorithm.indexUpdate(offerer.id);
+                            await algorithm.indexUpdate(offer.fk_offerer);
 
 
                             return res.status(201).json({
@@ -363,10 +360,11 @@ module.exports = (app, db) => {
         }
     });
 
-    async function createRating_Offerer(body, rating, next, transaction) {
+    async function createRating_Offerer(body, offererId, rating, next, transaction) {
         try {
             let rating_offerer = {
                 ratingId: rating.id,
+                userRated: offererId,
                 salary: body.salary,
                 environment: body.environment,
                 partners: body.partners,

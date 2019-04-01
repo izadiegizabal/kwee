@@ -7,6 +7,12 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             allowNull: false
         },
+        
+        userRated: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            allowNull: false
+        },
 
         efficiency: {
             type: DataTypes.INTEGER,

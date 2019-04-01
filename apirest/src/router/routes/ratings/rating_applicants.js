@@ -176,7 +176,7 @@ module.exports = (app, db) => {
                             }
 
                             // step 2
-                            let rating_applicant = await createRatingApplicant(body, rating, next, transaction);
+                            let rating_applicant = await createRatingApplicant(body, application, rating, next, transaction);
 
                             if (!rating_applicant) {
                                 await transaction.rollback();
@@ -356,11 +356,12 @@ module.exports = (app, db) => {
         }
     });
 
-    async function createRatingApplicant(body, rating, next, transaction) {
+    async function createRatingApplicant(body, application, rating, next, transaction) {
         try {
             let rating_applicant = {};
 
             rating_applicant.ratingId = rating.id;
+            rating_applicant.userRated = application.fk_applicant;
             rating_applicant.efficiency = body.efficiency;
             rating_applicant.skills = body.skills;
             rating_applicant.punctuality = body.punctuality;

@@ -57,6 +57,49 @@ module.exports = (app, db) => {
         }
     });
 
+    // GET all ratings of user ID
+    app.get('/ratings/user/:id([0-9]+)', checkToken, async (req, res, next) => {
+        let id = req.params.id;
+
+        try {
+            let attr = {};
+            attr.where = { userRated: id };
+            if ( req.query.limit && req.query.page ) {
+                var limit = Number(req.query.limit);
+                var page = Number(req.query.page)
+                var offset = req.query.limit * (req.query.page - 1)
+                attr.limit = limit;
+                attr.offset = offset;
+            } 
+            let rating = [];
+            let applicant = await db.applicants.findOne({ where: { userId: id }});
+
+            if ( applicant ) {
+                rating = await db.rating_applicants.findAll(attr);
+                
+            } else {
+                if ( offerer ) {
+                    rating = await db.rating_offerers.findAll(attr);
+                } else {
+                    return next({type: 'error', error: 'No user with this id'});   
+                }
+            }
+            if ( rating.length > 0 ) {
+                return res.json({
+                    ok: true,
+                    message: `Listing all rates done to user ${ id }`,
+                    data: rating,
+                    total: rating.length
+                });
+            } else {
+                return next({type: 'error', error: 'This user does not have rates yet'});
+            }
+        } catch (error) {
+            return next({type: 'error', error: error.message});
+        }
+
+    });
+
     // GET one rating by id
     app.get('/rating/:id([0-9]+)',
         checkToken,
