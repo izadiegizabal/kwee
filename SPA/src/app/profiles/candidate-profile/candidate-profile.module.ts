@@ -11,7 +11,6 @@ import {ProfilesEffects} from '../store/profiles.effects';
 import {StoreModule} from '@ngrx/store';
 import {EffectsModule} from '@ngrx/effects';
 import {CandidateProfileOpinionsComponent} from './candidate-profile-opinions/candidate-profile-opinions.component';
-import {NgxTwitterTimelineModule} from 'ngx-twitter-timeline';
 
 @NgModule({
   declarations: [
@@ -23,7 +22,6 @@ import {NgxTwitterTimelineModule} from 'ngx-twitter-timeline';
     SharedModule,
     CandidateProfileRoutingModule,
     OffererNameOverviewModule,
-    NgxTwitterTimelineModule,
     ExperienceFormsModule,
     EducationsFormsModule,
     EffectsModule.forFeature([ProfilesEffects]),

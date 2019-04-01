@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
@@ -14,7 +14,7 @@ import {Location} from '@angular/common';
   templateUrl: './candidate-profile.component.html',
   styleUrls: ['./candidate-profile.component.scss']
 })
-export class CandidateProfileComponent implements OnInit {
+export class CandidateProfileComponent implements OnInit, AfterViewInit {
   imgPath = '../../../../assets/img/defaultProfileImg.png';
 
   candidate = {
@@ -102,6 +102,8 @@ export class CandidateProfileComponent implements OnInit {
   // To check if this is my profile
   mine = false;
   private cand: any;
+  // TODO: load this dynamically
+  twitterAccount = '';
 
   constructor(
     private titleService: Title,
@@ -128,6 +130,11 @@ export class CandidateProfileComponent implements OnInit {
         this.titleService.setTitle('Kwee - ' + this.cand.name);
       }
     });
+  }
+
+  ngAfterViewInit () {
+    // @ts-ignore
+    twttr.widgets.load();
   }
 
   goToMyOffers(tabIndex: number) {

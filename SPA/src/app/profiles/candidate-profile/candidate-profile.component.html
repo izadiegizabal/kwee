@@ -14,7 +14,7 @@
       <div fxLayout="row" fxLayout.lt-sm="column"
            fxLayoutGap.lt-sm="16px">
         <!-- Basic info -->
-        <mat-card [fxFlex]="mine ? 70 : 70">
+        <mat-card [fxFlex]="(mine && twitterAccount === '') ? 70 : 100" fxLayoutAlign="space-between" fxLayout="column">
           <mat-card-title>
             <app-offerer-name-overview
               [index]="(profilesState | async).candidate.index ? (profilesState | async).candidate.index : candidate.kweeIndex"
@@ -84,13 +84,11 @@
             </button>
           </mat-card-actions>
         </mat-card>
-        <mat-card *ngIf="!mine"
+        <mat-card *ngIf="!mine && twitterAccount !== ''"
+                  fxHide.lt-lg
+                  class="twitter-wrapper"
                   fxFlex="30" fxFlexOffset.gt-xs="32px">
-          <ngx-twitter-timeline
-            [data]="{sourceType: 'profile', screenName: 'izadiegizabal'}"
-            [opts]="{}"
-          >
-          </ngx-twitter-timeline>
+          <a class="twitter-timeline" [href]="'https://twitter.com/' + twitterAccount">Tweets by @{{twitterAccount}}</a>
         </mat-card>
       </div>
       <div fxLayout="row" style="margin-top: 16px">
