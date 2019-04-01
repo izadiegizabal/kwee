@@ -1,4 +1,4 @@
-const {tokenId, logger, sendEmailSelected, sendNotification, getSocketUserId, createNotification,} = require('../../shared/functions');
+const {tokenId, logger, pagination, sendEmailSelected, sendNotification, getSocketUserId, createNotification,} = require('../../shared/functions');
 const {checkToken} = require('../../middlewares/authentication');
 const {algorithm} = require('../../shared/algorithm');
 
@@ -7,6 +7,57 @@ const {algorithm} = require('../../shared/algorithm');
 // ============================
 
 module.exports = (app, db) => {
+    // GET all applications for kwee live
+    app.get("/applications/kweelive", checkToken, async (req, res, next) => {
+        try {
+            await logger.saveLog('GET', 'applications/kweelive', null, res);
+            var applications;
+            var output = await pagination(
+                db.applications,
+                "applications",
+                req.query.limit,
+                req.query.page,
+                '',
+                res,
+                next
+            );
+
+            if (output.data) {
+                applications = output.data;
+
+                var applicationsToShow = [];
+
+                for (let application in applications) {
+                    let appli = {};
+                    let user = await db.users.findOne({ 
+                        where: { id: applications[application].fk_applicant }
+                    });
+                    let offer = await db.offers.findOne({ where: {
+                        id: applications[application].fk_offer
+                    }});
+                    appli.id = applications[application].id;
+                    appli.applicantLAT = user.lat;
+                    appli.applicantLON = user.lon;
+                    appli.offerLAT = offer.lat;
+                    appli.offerLON = offer.lon;
+                    applicationsToShow.push(appli);
+                }
+                
+                return res.status(200).json({
+                    ok: true,
+                    message: output.message,
+                    data: applicationsToShow,
+                    total: output.count,
+                    page: Number(req.query.page),
+                    pages: Math.ceil(output.count / req.query.limit)
+                });
+            } else {
+                next({type: 'error', error: 'No applications'});
+            }
+        } catch (err) {
+            next({type: 'error', error: err.message});
+        }
+    });
     // GET all applications
     app.get("/applications", checkToken, async (req, res, next) => {
         try {
@@ -358,6 +409,10 @@ module.exports = (app, db) => {
                 // Send real time notification if client connected
                 if (socketId) sendNotification('closed', socketId, application, true);
         }
+    }
+
+    async function applicationsForKweeLive( application ) {
+
     }
 
 };
