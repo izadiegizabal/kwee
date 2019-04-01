@@ -56,7 +56,7 @@
         </mat-card-subtitle>
       </mat-card-header>
 
-      <mat-card-content fxLayout="column" fxLayoutGap="24px" style="margin-left: 16px">
+      <mat-card-content fxLayout="column" fxLayoutGap="24px" style="margin: 0 16px">
         <div
           fxLayout="row"
           fxLayout.lt-sm="column" fxLayoutGap="16px">
@@ -65,7 +65,6 @@
             'cdn.vox-cdn.com/uploads/chorus_image/image/47070706/google2.0.0.jpg'"
                alt="Business Logo"
                class="offerImg"
-               fxFlex="25%"
                fxFlex.lt-sm="100%"
                fxLayoutAlign="center center">
           <span [innerHTML]="(offerState | async).offer.description" fxFlex="column">
@@ -75,88 +74,82 @@
         <div fxLayout="column">
           <h2 class="mat-h2">Details</h2>
           <div
-            fxLayout="row"
+            fxLayout="row" fxLayout.lt-sm="column"
+            fxFlex="100%"
             fxLayoutAlign="start start"
-            fxLayoutGap="8px"
-            style="margin-bottom: 16px">
-            <div fxFlex="33%" fxFlex.lt-sm="100%"
-                 fxLayout="column"
-                 fxLayoutAlign="start start"
-                 fxLayoutGap="8px">
-              <app-icon-with-text
-                [text]="getOfferDuration((offerState | async).offer.isIndefinite, (offerState | async).offer.duration, (offerState | async).offer.durationUnit) | titlecase"
-                icon="date-range"></app-icon-with-text>
-              <app-icon-with-text
-                [text]="getOfferSalary((offerState | async).offer.salaryAmount, (offerState | async).offer.salaryCurrency, (offerState | async).offer.salaryFrequency)"
-                icon="local-atm"></app-icon-with-text>
-              <app-icon-with-text [text]="getOfferSeniorityLevel((offerState | async).offer.seniority)"
-                                  icon="face"></app-icon-with-text>
+            fxLayoutGap="8px">
+            <div fxFlex="66%" fxFlex.lt-sm="100%" style="width: 100%; padding-bottom: 16px">
+              <div fxFlex="50%"
+                   fxLayout="column"
+                   fxLayoutAlign="start start"
+                   fxLayoutGap="8px">
+                <app-icon-with-text
+                  [text]="getOfferDuration((offerState | async).offer.isIndefinite, (offerState | async).offer.duration, (offerState | async).offer.durationUnit) | titlecase"
+                  icon="date-range"></app-icon-with-text>
+                <app-icon-with-text
+                  [text]="getOfferSalary((offerState | async).offer.salaryAmount, (offerState | async).offer.salaryCurrency, (offerState | async).offer.salaryFrequency)"
+                  icon="local-atm"></app-icon-with-text>
+                <app-icon-with-text [text]="getOfferSeniorityLevel((offerState | async).offer.seniority)"
+                                    icon="face"></app-icon-with-text>
+              </div>
+              <div fxFlex="50%"
+                   fxLayout="column"
+                   fxLayoutAlign="start start"
+                   fxLayoutGap="8px">
+                <app-icon-with-text [text]="getOfferContractType((offerState | async).offer.contractType)"
+                                    icon="work"></app-icon-with-text>
+                <app-icon-with-text
+                  [text]="getOfferLocation((offerState | async).offer.location, (offerState | async).offer.workLocation)"
+                  icon="place"></app-icon-with-text>
+                <app-icon-with-text [text]="getOfferApplications((offerState | async).offer.currentApplications)"
+                                    icon="people"></app-icon-with-text>
+              </div>
             </div>
             <div fxFlex="33%" fxFlex.lt-sm="100%"
-                 fxLayout="column"
-                 fxLayoutAlign="start start"
-                 fxLayoutGap="8px">
-              <app-icon-with-text [text]="getOfferContractType((offerState | async).offer.contractType)"
-                                  icon="work"></app-icon-with-text>
-              <app-icon-with-text
-                [text]="getOfferLocation((offerState | async).offer.location, (offerState | async).offer.workLocation)"
-                icon="place"></app-icon-with-text>
-              <app-icon-with-text [text]="getOfferApplications((offerState | async).offer.currentApplications)"
-                                  icon="people"></app-icon-with-text>
-            </div>
-            <div fxFlex="33%"
-                 fxHide.xs
-                 fxLayout="column"
                  fxLayoutAlign="center center"
-                 fxLayoutGap="8px"
-                 fxShow.gt-xs>
-              <a (click)="goEdit()"
-                 *ngIf="(offerState | async).offer.fk_offerer === this.id ; else apply">
-                <button
-                  color="accent"
-                  mat-raised-button
-                  style="color: white" type="button">{{'Edit Offer' | uppercase }}</button>
-              </a>
-              <ng-template #apply>
-                <button (click)="postApplication()"
-                        *ngIf="(offerState | async).applications===null && id" [disabled]="(authState | async).user.type === 'business'"
-                        color="accent"
-                        mat-raised-button style="color: white">{{'Apply Now!' | uppercase }}</button>
+                 style="width: 100%">
+              <div fxLayout="column" fxLayout.lt-sm="row"
+                   fxLayoutGap="8px">
+                <a (click)="goEdit()"
+                   *ngIf="(offerState | async).offer.fk_offerer === this.id ; else apply">
+                  <button
+                    color="accent"
+                    mat-raised-button
+                    style="color: white" type="button">{{'Edit Offer' | uppercase }}</button>
+                </a>
+                <ng-template #apply>
+                  <button (click)="postApplication()"
+                          *ngIf="(offerState | async).applications===null && id"
+                          [disabled]="(authState | async).user.type === 'business'"
+                          color="accent"
+                          mat-raised-button style="color: white">{{'Apply Now!' | uppercase }}</button>
 
-                <button *ngIf="!id" color="accent"
-                        mat-raised-button
-                        routerLink="/signin" style="color: white">{{'Apply Now!' | uppercase }}</button>
+                  <button *ngIf="!id" color="accent"
+                          mat-raised-button
+                          routerLink="/signin" style="color: white">{{'Apply Now!' | uppercase }}</button>
 
-                <button (click)="deleteApplication()"
-                        *ngIf="(offerState | async).applications && ((offerState | async).offer.status === 0 ||
+                  <button (click)="deleteApplication()"
+                          *ngIf="(offerState | async).applications && ((offerState | async).offer.status === 0 ||
                 (offerState | async).offer.status === 3) && (offerState | async).applications.status < 2"
-                        color="warn"
-                        mat-raised-button style="color: white">{{'Delete Application' | uppercase }}</button>
+                          color="warn"
+                          mat-raised-button style="color: white">{{'Delete Application' | uppercase }}</button>
 
-                <div *ngIf="(offerState | async).applications && (offerState | async).applications.status === 2" fxLayout="column"
-                     fxLayoutAlign="center center">
-                  <p style="margin-top: 0">You have been selected! What do you want to do?</p>
-                  <div fxLayout="row" fxLayoutGap="16px">
-                    <button color="warn" mat-raised-button>{{'Reject' | uppercase }}</button>
-                    <button color="accent" mat-raised-button>{{'Accept' | uppercase }}</button>
+                  <div *ngIf="(offerState | async).applications && (offerState | async).applications.status === 2"
+                       fxLayout="column"
+                       fxLayoutAlign="center center">
+                    <p style="margin-top: 0">You have been selected! What do you want to do?</p>
+                    <div fxLayout="row" fxLayoutGap="16px">
+                      <button color="warn" mat-raised-button>{{'Reject' | uppercase }}</button>
+                      <button color="accent" mat-raised-button>{{'Accept' | uppercase }}</button>
+                    </div>
                   </div>
-                </div>
 
-              </ng-template>
-              <app-sns-share [offer]="getShareableOffer((offerState | async).offer.title)"></app-sns-share>
+                </ng-template>
+                <app-sns-share [offer]="getShareableOffer((offerState | async).offer.title)"></app-sns-share>
+              </div>
             </div>
           </div>
         </div>
-        <div fxFlex="100%"
-             fxHide
-             fxLayoutAlign="center"
-             fxLayoutGap="8px"
-             fxShow.xs
-             style="padding-bottom: 16px">
-          <button color="primary" mat-raised-button>{{'Apply Now!' | uppercase }}</button>
-          <app-sns-share [offer]="getShareableOffer((offerState | async).offer.title)"></app-sns-share>
-        </div>
-
         <div fxLayout="column">
           <h2 class="mat-h2">Responsibilities</h2>
           <div

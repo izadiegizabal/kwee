@@ -18,7 +18,7 @@
     </mat-card-title>
 
     <mat-card-title
-      *ngIf="candidate || (offer.fk_offerer !== (authState | async).user.id) || selection === false || (selection === true && offer.status !== 3 && offer.status !== 0)"
+      *ngIf="candidate || ((authState | async).user && offer.fk_offerer !== (authState | async).user.id) || selection === false || (selection === true && offer.status !== 3 && offer.status !== 0)"
       [routerLink]="offerUrl"
       style="cursor: pointer">
       {{offer.title}}
