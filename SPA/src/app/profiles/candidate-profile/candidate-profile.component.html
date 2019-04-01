@@ -14,7 +14,7 @@
       <div fxLayout="row" fxLayout.lt-sm="column"
            fxLayoutGap.lt-sm="16px">
         <!-- Basic info -->
-        <mat-card [fxFlex]="mine ? 70 : 100">
+        <mat-card [fxFlex]="mine ? 70 : 70">
           <mat-card-title>
             <app-offerer-name-overview
               [index]="(profilesState | async).candidate.index ? (profilesState | async).candidate.index : candidate.kweeIndex"
@@ -83,6 +83,14 @@
               Upgrade to Premium
             </button>
           </mat-card-actions>
+        </mat-card>
+        <mat-card *ngIf="!mine"
+                  fxFlex="30" fxFlexOffset.gt-xs="32px">
+          <ngx-twitter-timeline
+            [data]="{sourceType: 'profile', screenName: 'izadiegizabal'}"
+            [opts]="{}"
+          >
+          </ngx-twitter-timeline>
         </mat-card>
       </div>
       <div fxLayout="row" style="margin-top: 16px">

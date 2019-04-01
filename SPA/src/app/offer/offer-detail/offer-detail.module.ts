@@ -12,7 +12,7 @@ import {OfferEffects} from './store/offer.effects';
 
 @NgModule({
   declarations: [
-    OfferDetailComponent,
+    OfferDetailComponent
   ],
   imports: [
     SharedModule,
