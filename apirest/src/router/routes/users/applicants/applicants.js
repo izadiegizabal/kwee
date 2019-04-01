@@ -428,7 +428,8 @@ module.exports = (app, db) => {
                     lastAccess: user.lastAccess,
                     img: user.img,
                     bio: user.bio,
-                    rol: applicant.rol
+                    rol: applicant.rol,
+                    social_networks: []
                 };
 
                 let networks = await db.social_networks.findOne({

@@ -61,14 +61,8 @@ module.exports = (app, db) => {
                     type: "phrase_prefix",
                     fields:
                         [
-                            // "status",
                             "title",
                             "location",
-                            // "dateStart",
-                            // "dateEnd",
-                            // "datePublished",
-                            // "offererIndex",
-                            // "salaryAmount",
                             "offererName",
                             "seniority",
                             "contractType",
@@ -182,7 +176,7 @@ module.exports = (app, db) => {
 
                 var offersShow = [];
 
-                for (var offer in offers) {
+                for (let offer in offers) {
                     let offersAux = [],
                         offersToShowAux = [];
                     offersAux.push(offers[offer]);
