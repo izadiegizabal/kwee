@@ -1,4 +1,4 @@
-const { logger, getOffererAVG, getApplicantAVG } = require('../../../shared/functions');
+const { logger, tokenId, getOffererAVG, getApplicantAVG } = require('../../../shared/functions');
 const auth = require('../../../middlewares/auth/auth');
 const bcrypt = require('bcryptjs');
 const moment = require('moment');
