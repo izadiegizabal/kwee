@@ -127,6 +127,9 @@ export class CandidateProfileComponent implements OnInit, AfterViewInit {
     this.profilesState.subscribe(s => {
       if (s.candidate) {
         this.cand = s.candidate;
+        if (this.cand.social_networks && this.cand.social_network.twitter) {
+          this.twitterAccount = this.cand.social_network.twitter;
+        }
         this.titleService.setTitle('Kwee - ' + this.cand.name);
       }
     });
