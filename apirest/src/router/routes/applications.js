@@ -130,16 +130,38 @@ module.exports = (app, db) => {
         const params = req.params;
 
         try {
-            res.status(200).json({
-                ok: true,
-                message: `Showing applications of user ${params.fk_applicant}`,
-                data: await db.applications.findAll({
-                    where: {fk_applicant: params.fk_applicant}
-                })
-            });
+            var attr = {};
+            let where = {};
+            where.fk_applicant = params.fk_applicant;
+            attr.where = where;
+            if ( req.query.status ) where.status = req.query.status;
+            if ( req.query.limit && req.query.page ) {
+                var limit = Number(req.query.limit);
+                var page = Number(req.query.page)
+                var offset = req.query.limit * (req.query.page - 1)
+                attr.limit = limit;
+                attr.offset = offset;
+            }
+            
+
+            let count = await db.applications.findAndCountAll({ where});
+            let applications = await db.applications.findAll(attr);
+
+            if ( applications ) {
+                return res.status(200).json({
+                    ok: true,
+                    message: `Showing applications of user ${params.fk_applicant}`,
+                    data: applications,
+                    total: count.count,
+                    page,
+                    limit
+                });
+            } else {
+                return next({type: 'error', error: 'This user does not have applications'});
+            }
 
         } catch (err) {
-            next({type: 'error', error: err.message});
+            return next({type: 'error', error: err.message});
         }
     });
 
