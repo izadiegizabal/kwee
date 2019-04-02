@@ -1,6 +1,7 @@
 const {tokenId, logger, pagination, sendEmailSelected, sendNotification, getSocketUserId, createNotification,} = require('../../shared/functions');
 const {checkToken} = require('../../middlewares/authentication');
 const {algorithm} = require('../../shared/algorithm');
+const {Op} = require('../../database/op');
 
 // ============================
 // ===== CRUD application ======
@@ -158,8 +159,16 @@ module.exports = (app, db) => {
                 let offer = await db.offers.findOne({where: {id: offerToAdd}});
                 if ( offer ) {
                     if ( applicant.premium == 0 ) {
-                        let applications = await applicant.getOffers();
-                        if ( applications <= 5 ) {
+                        let applications = await db.applications.findAll({
+                                                where: {
+                                                    fk_applicant: applicant.userId,
+                                                    status: {
+                                                        [Op.or]: [0, 1, 2]
+                                                    }
+                                                }
+                                            });
+
+                        if ( applications.length < 5 ) {
 
                             createApplication( id, applicant, offerToAdd, offer, res, next );
                             
