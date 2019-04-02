@@ -12,6 +12,7 @@
     <app-offer-preview-card
       *ngFor="let offer of (offerManageState | async).offers.data;"
       [offer]="offer"
+      [selection]="true"
       fxLayout="row">
     </app-offer-preview-card>
   </div>

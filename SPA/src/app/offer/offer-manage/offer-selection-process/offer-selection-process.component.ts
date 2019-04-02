@@ -15,8 +15,10 @@ import {OfferManageEffects} from '../store/offer-manage.effects';
 import {CandidatePreview} from '../../../../models/candidate-preview.model';
 import * as OfferActions from '../../offer-detail/store/offer.actions';
 import * as fromOffer from '../../offer-detail/store/offer.reducers';
+import * as fromAuth from '../../../auth/store/auth.reducers';
 import {OfferEffects} from '../../offer-detail/store/offer.effects';
 import {Title} from '@angular/platform-browser';
+import {getUrlfiedString} from '../../../shared/utils.service';
 
 @Component({
   selector: 'app-offer-selection-process',
@@ -42,6 +44,7 @@ export class OfferSelectionProcessComponent implements OnInit {
   // Offer state
   offerState: Observable<fromOffer.State>;
   manageOfferState: Observable<fromOfferManage.State>;
+  authState: Observable<fromAuth.State>;
   // Stepper forms
   selectFormGroup: FormGroup;
   waitFormGroup: FormGroup;
@@ -52,6 +55,7 @@ export class OfferSelectionProcessComponent implements OnInit {
   showStepper = false;
   offer: any;
   currentSelected: number;
+  id: any;
   // Filter sidebar
   @ViewChild('drawer') private drawer: MatSidenav;
   // Selection process Stepper
@@ -125,6 +129,20 @@ export class OfferSelectionProcessComponent implements OnInit {
       ).subscribe((error: { payload: any, type: string }) => {
         this.router.navigate(['/error/404']);
       });
+
+      this.authState = this.store$.pipe(select('auth'));
+      if (this.authState) {
+        this.authState.pipe(
+          select((s: { user: { id: Number } }) => s.user ? s.user.id : undefined)
+        ).subscribe(
+          (id) => {
+            this.id = id ? id : null;
+
+            if (!this.id || this.id !== this.offer.fk_offerer) {
+              this.router.navigate([this.urlfyPosition()]);
+            }
+          });
+      }
 
       // Get applications
       this.offerId = Number(params.id);
@@ -239,6 +257,10 @@ export class OfferSelectionProcessComponent implements OnInit {
 
   changePage() {
     window.scrollTo(0, 0);
+  }
+
+  urlfyPosition() {
+    return '/offer/' + this.offer.id + '/' + getUrlfiedString(this.offer.title);
   }
 
   isMobile() {
