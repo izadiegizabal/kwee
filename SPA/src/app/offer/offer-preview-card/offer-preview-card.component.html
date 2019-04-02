@@ -3,20 +3,12 @@
     fxLayout="row"
     fxLayout.lt-sm="column"
     fxLayoutAlign="space-between">
+
     <mat-card-title
-      *ngIf="offer.status === 0 && (authState | async).user && offer.fk_offerer === (authState | async).user.id && selection === true; else detail"
-      (click)="startSelectionProcess()"
+      [routerLink]="offerUrl"
       style="cursor: pointer">
       {{offer.title}}
     </mat-card-title>
-
-    <ng-template #detail>
-      <mat-card-title
-        [routerLink]="offerUrl"
-        style="cursor: pointer">
-        {{offer.title}}
-      </mat-card-title>
-    </ng-template>
 
     <mat-card-subtitle>
       <app-offerer-name-overview
