@@ -33,7 +33,7 @@ export class TrySignupCandidate implements Action {
 export class TrySignupBusiness implements Action {
   readonly type = TRY_SIGNUP_BUSINESS;
 
-  constructor(public payload: { email: string, password: string }) {
+  constructor(public payload: { email: string, password: string, token: string }) {
   }
 }
 
@@ -56,7 +56,7 @@ export class TrySignupTwitter implements Action {
 export class TrySignin implements Action {
   readonly type = TRY_SIGNIN;
 
-  constructor(public payload: { email: string, password: string }) {
+  constructor(public payload: { email: string, password: string, token: any  }) {
   }
 }
 

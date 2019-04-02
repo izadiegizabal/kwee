@@ -19,9 +19,18 @@ export class AuthEffects {
       return action.payload;
     }),
     switchMap(
-      (authData: { email: string, password: string }) => {
-        const body = JSON.stringify({email: authData.email, password: authData.password});
-        const headers = new HttpHeaders().set('Content-Type', 'application/json');
+      (authData) => {
+        let body;
+        let headers;
+        if (authData.token) {
+          headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', authData.token);
+          body = JSON.stringify({password: authData.password});
+        } else {
+          headers = new HttpHeaders().set('Content-Type', 'application/json');
+          body = JSON.stringify({email: authData.email, password: authData.password});
+        }
+        // console.log(headers);
+        // console.log(body);
         return this.httpClient.post(environment.apiUrl + 'login', body, {headers: headers}).pipe(
           mergeMap((res: {
             token: string,
@@ -34,6 +43,7 @@ export class AuthEffects {
               notifications: number
             }
           }) => {
+            // console.log(res);
             switch (res.data.type) {
               case 'offerer':
                 res.data.type = 'business';

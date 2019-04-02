@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
@@ -24,6 +24,7 @@ import {
 import {Title} from '@angular/platform-browser';
 import {OkDialogComponent} from '../../shared/ok-dialog/ok-dialog.component';
 import {DialogErrorComponent} from '../../auth/signup/dialog-error/dialog-error.component';
+import {AlertDialogComponent} from '../../shared/alert-dialog/alert-dialog.component';
 
 
 interface City {
@@ -40,7 +41,6 @@ interface City {
   styleUrls: ['./offer-create.component.scss']
 })
 export class OfferCreateComponent implements OnInit {
-
 
   public Editor = ClassicEditor;
   public Config = {
@@ -440,5 +440,22 @@ export class OfferCreateComponent implements OnInit {
       }
     }
   }
+
+  @HostListener('window:beforeunload', ['$event'])
+  unloadNotification($event: any) {
+
+    $event.preventDefault();
+    $event.returnValue = '';
+  }
+
+  // @HostListener('window:popstate', ['$event'])
+  // unloadNotification2($event: any) {
+  //   console.log($event);
+  //   if (confirm('You have unsaved changes! If you leave, your changes will be lost.')) {
+  //     $event.preventDefault();
+  //     history.go(1);
+  //     // $event.returnValue = '';
+  //   }
+  // }
 
 }
