@@ -1,4 +1,5 @@
 import * as ProfilesActions from './profiles.actions';
+import * as AdminActions from '../../admin/store/admin.actions';
 
 export interface State {
   candidate: {
@@ -55,6 +56,16 @@ export function profilesReducer(state = initialState, action: ProfilesActions.Pr
         candidate: action.payload
       };
     case ProfilesActions.SET_PROFILE_BUSINESS:
+      return {
+        ...state,
+        business: action.payload
+      };
+    case ProfilesActions.USER_UPDATE_CANDIDATE:
+      return {
+        ...state,
+        candidate: action.payload
+      };
+    case ProfilesActions.USER_UPDATE_BUSINESS:
       return {
         ...state,
         business: action.payload

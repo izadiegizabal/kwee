@@ -15,11 +15,12 @@ export class PremiumCandidateComponent implements OnInit {
   ngOnInit() {
   }
 
-  callPaypalDialog() {
+  callPaypalDialog(id, product, price) {
     this.dialog.open(PaypalDialogComponent, {
       data: {
         header: 'Order summary: ',
         product: 'Subscribe to premium',
+        idproduct: id,
         price: '5.99€'
       }
     });
