@@ -52,8 +52,12 @@
     </div>
 
     <div *ngIf="(offersState | async).offers" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="8px">
-      <app-offer-preview-card *ngFor="let offer of (offersState | async).offers.data;" [offer]="offer">
+      <app-offer-preview-card
+        *ngFor="let offer of (offersState | async).offers.data;"
+        [offer]="offer"
+        [selection]="true">
       </app-offer-preview-card>
+
     </div>
 
     <div *ngIf="(offersState | async).offers && (offersState | async).offers.data" fxLayout="row"

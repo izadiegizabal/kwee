@@ -1,8 +1,13 @@
 img {
   float: left;
-  margin: 0 16px 0 0;
+  margin: 0 16px 16px 0;
   border-radius: 4px;
   object-fit: cover;
+}
+
+.twitter-wrapper {
+  max-height: 50vh;
+  overflow: auto;
 }
 
 mat-list-item p::before {

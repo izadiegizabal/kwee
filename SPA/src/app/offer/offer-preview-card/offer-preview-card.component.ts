@@ -29,6 +29,8 @@ export class OfferPreviewCardComponent implements OnInit {
   allRated = false;
 
   @Input() offer: any;
+  @Input() selection: boolean;
+
   currencies;
 
 
