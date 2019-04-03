@@ -12,10 +12,12 @@ export class NotificationsService {
   }
 
   newNotification(data?) {
+    console.log('New Notification');
     this.newNotification$.emit(data);
   }
 
   notificationAlert(value?: boolean) {
+    console.log('Notification Alert');
     this.notificationAlert$.emit(value);
   }
 

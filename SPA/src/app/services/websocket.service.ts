@@ -40,15 +40,17 @@ export class WebsocketService {
   }
 
   emit(event: string, payload?: any, callback?: Function) {
+    console.log('Emit');
     this.socket.emit(event, payload, callback);
   }
 
   listen(event: string) {
+    console.log('Listening');
     return this.socket.fromEvent(event);
   }
 
   selected(event: string) {
-    console.log('en el selected');
+    console.log('Selected');
 
     this.socket.on('selected', function (data) {
       const username: any = data.username;
@@ -59,6 +61,7 @@ export class WebsocketService {
   }
 
   connectedUser(email: string) {
+    console.log('New Connected User');
 
     return new Promise((resolve, reject) => {
 

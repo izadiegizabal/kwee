@@ -12,7 +12,6 @@ export class MessagesService {
   }
 
   sendMessage(msg: string) {
-
     const payload = {
       from: 'Carlos',
       body: msg
