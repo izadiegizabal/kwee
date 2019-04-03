@@ -62,8 +62,10 @@ module.exports = (app, db) => {
         let id = req.params.id;
 
         try {
+            let count;
             let attr = {};
-            attr.where = { userRated: id };
+            let where = { userRated: id };
+            attr.where = where;
             if ( req.query.limit && req.query.page ) {
                 var limit = Number(req.query.limit);
                 var page = Number(req.query.page)
@@ -75,10 +77,12 @@ module.exports = (app, db) => {
             let applicant = await db.applicants.findOne({ where: { userId: id }});
 
             if ( applicant ) {
+                count = await db.rating_applicants.findAndCountAll({ where });
                 rating = await db.rating_applicants.findAll(attr);
                 
             } else {
                 if ( offerer ) {
+                    count = await db.rating_applicants.findAndCountAll({ where });
                     rating = await db.rating_offerers.findAll(attr);
                 } else {
                     return next({type: 'error', error: 'No user with this id'});   
@@ -89,7 +93,9 @@ module.exports = (app, db) => {
                     ok: true,
                     message: `Listing all rates done to user ${ id }`,
                     data: rating,
-                    total: rating.length
+                    total: count.count,
+                    page,
+                    limit
                 });
             } else {
                 return next({type: 'error', error: 'This user does not have rates yet'});

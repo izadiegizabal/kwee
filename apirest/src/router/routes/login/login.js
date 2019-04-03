@@ -7,14 +7,22 @@ module.exports = (app, db) => {
 
     app.post('/login', async (req, res, next) => {
         let logId = await logger.saveLog('POST', 'login', null, res, req.body.email);
-        let id, user;
-        
+        let user;
         let body = req.body;
         
         try {
-            if ( req.get('token') ) id = tokenId.getTokenId(req.get('token'));
-            if ( body.email ) user = await db.users.findOne({where: {email: body.email}});
-            else if ( id ) user = await db.users.findOne({where: { id }});
+                
+            if ( body.email ) {
+                user = await db.users.findOne({where: {email: body.email}});
+            } else if ( body.token ) {
+                console.log("hay token");
+                var idToken = tokenId.getTokenId(body.token);
+                console.log('despues del id token');
+                user = await db.users.findOne({where: { id: idToken }});
+            } else {
+                return next({type: 'error', error: 'Error getting data'});
+            }
+                
              
             let type;
 
@@ -38,10 +46,10 @@ module.exports = (app, db) => {
             let dateNow = moment().format();
 
             await db.users.update({lastAccess: dateNow}, {
-                where: {id}
+                where: { id }
             });
 
-            let userUpdated = await db.users.findOne({where: {id}});
+            let userUpdated = await db.users.findOne({ where: { id }});
 
             delete userUpdated.dataValues.password;
 
@@ -66,8 +74,12 @@ module.exports = (app, db) => {
                     let applicant = await db.applicants.findOne({
                         where: {userId: id}
                     });
-                    avg = getApplicantAVG(applicant);
-                    type = 'applicant';
+                    if ( applicant ) {
+                        avg = getApplicantAVG(applicant);
+                        type = 'applicant';
+                    } else {
+                        return next({type: 'error', error: 'User not found'});
+                    }
                 }
             }
 
