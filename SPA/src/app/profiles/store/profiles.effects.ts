@@ -167,6 +167,49 @@ export class ProfilesEffects {
   );
 
 
+  @Effect()
+  profileGetOpinions = this.actions$.pipe(
+    ofType(UserActions.TRY_GET_OPINIONS_CANDIDATE),
+    map((action: UserActions.TryGetOpinionsCandidate) => {
+      return action.payload;
+    }),
+    withLatestFrom(this.store$.pipe(select(state => state.auth))),
+
+    switchMap(([payload, authState]) => {
+        const apiEndpointUrl = environment.apiUrl + 'ratings/user/' + payload.id + '?limit=' + payload.limit + '&page=' + payload.page;
+        const token = authState.token;
+        const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+
+        return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
+          map((res: {
+            ok: boolean,
+            message: any[],
+            data: any[],
+            total: number,
+          }) => {
+            // console.log(res);
+            return {
+              type: UserActions.SET_OPINIONS_CANDIDATE,
+              payload: res,
+            };
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('getOpinionsCandidate', err));
+            return [
+              {
+                type: UserActions.OPERATION_ERROR,
+                payload: err.error.error
+              }
+            ];
+          })
+        );
+      }
+    ),
+    share()
+  );
+
+
+
   constructor(private actions$: Actions, private store$: Store<fromApp.AppState>, private router: Router, private httpClient: HttpClient) {
   }
 

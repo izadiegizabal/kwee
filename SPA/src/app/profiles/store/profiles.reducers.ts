@@ -1,5 +1,4 @@
 import * as ProfilesActions from './profiles.actions';
-import * as AdminActions from '../../admin/store/admin.actions';
 
 export interface State {
   candidate: {
@@ -41,11 +40,30 @@ export interface State {
     workField: number,
     year: Date,
   };
+
+  opinions: {
+    data: {
+      opinion: string,
+      ratingId: number,
+      userRated: number,
+      efficiency: number,
+      skills: number,
+      punctuality: number,
+      hygiene: number,
+      teamwork: number,
+      satisfaction: number,
+      createdAt: Date,
+      updatedAt: Date,
+      deletedAt: Date,
+    }[],
+    total: number,
+  };
 }
 
 const initialState: State = {
   candidate: null,
   business: null,
+  opinions: null,
 };
 
 export function profilesReducer(state = initialState, action: ProfilesActions.ProfilesActions) {
@@ -69,6 +87,11 @@ export function profilesReducer(state = initialState, action: ProfilesActions.Pr
       return {
         ...state,
         business: action.payload
+      };
+    case ProfilesActions.SET_OPINIONS_CANDIDATE:
+      return {
+        ...state,
+        opinions: action.payload
       };
     default:
       return state;

@@ -9,6 +9,8 @@ export class CandidateMoreInfoComponent implements OnInit {
   @Input() candidate: any;
   @Input() isPremium = false;
 
+  infoNAMess = 'Information not available.';
+
   constructor() {
   }
 
