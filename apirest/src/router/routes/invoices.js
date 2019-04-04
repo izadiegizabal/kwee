@@ -7,7 +7,7 @@ const {logger, tokenId} = require('../../shared/functions');
 
 module.exports = (app, db) => {
 
-    // GET all invoices
+    // GET all invoices of user
 
     app.get('/invoices/user/:id([0-9]+)', async (req, res, next) => {
         const id = req.params.id;

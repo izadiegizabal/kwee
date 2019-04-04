@@ -177,7 +177,6 @@ module.exports = (app, db) => {
                     applicationsToShow.push(object);
                 });
 
-
                 return res.status(200).json({
                     ok: true,
                     message: `Showing applications of user ${ user.name } with id ${ user.id }`,

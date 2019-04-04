@@ -54,14 +54,9 @@ module.exports = (app, db) => {
                         [
                             "name",
                             "email",
-                            // "status",
                             "address",
                             "bio",
                             "workField",
-                            // "index",
-                            // "companySize",
-                            // "year",
-                            // "dateVerification"
                         ]
                 }
             });
