@@ -20,7 +20,7 @@ export class InvoiceEffects {
     }),
     withLatestFrom(this.store$.pipe(select(state => state.auth))),
     switchMap(([payload, authState]) => {
-        const apiEndpointUrl = environment.apiUrl + 'invoice';
+        const apiEndpointUrl = environment.apiUrl + 'invoice' ;
         const token = authState.token;
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
         const body = JSON.stringify(payload.obj);

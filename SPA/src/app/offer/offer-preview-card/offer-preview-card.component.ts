@@ -83,6 +83,9 @@ export class OfferPreviewCardComponent implements OnInit {
     return url;
   }
 
+  urlfyDetail() {
+    return '/offer/' + this.offer.id + '/' + getUrlfiedString(this.offer.title);
+  }
 
   getPublishedDate() {
     if (this.offer && this.offer.datePublished) {
