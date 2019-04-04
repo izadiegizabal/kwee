@@ -14,7 +14,7 @@
       <div fxLayout="row" fxLayout.lt-sm="column"
            fxLayoutGap.lt-sm="16px">
         <!-- Basic info -->
-        <mat-card [fxFlex]="(mine && twitterAccount === '') ? 70 : 100" fxLayoutAlign="space-between" fxLayout="column">
+        <mat-card [fxFlex]="(mine || twitterAccount === '') ? 70 : 100" fxLayoutAlign="space-between" fxLayout="column">
           <mat-card-title>
             <app-offerer-name-overview
               [index]="(profilesState | async).candidate.index ? (profilesState | async).candidate.index : candidate.kweeIndex"

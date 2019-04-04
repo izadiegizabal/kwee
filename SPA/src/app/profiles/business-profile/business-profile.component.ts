@@ -45,6 +45,9 @@ export class BusinessProfileComponent implements OnInit {
   mine = false;
   busi: any;
 
+  // TODO: load this dynamically
+  twitterAccount = '';
+
   constructor(
     private titleService: Title,
     private store$: Store<fromApp.AppState>,
@@ -69,6 +72,9 @@ export class BusinessProfileComponent implements OnInit {
     this.profilesState.subscribe(s => {
       if (s.business) {
         this.busi = s.business;
+        if (this.busi.social_networks && this.busi.social_network.twitter) {
+          this.twitterAccount = this.busi.social_network.twitter;
+        }
         this.titleService.setTitle('Kwee - ' + s.business.name);
       }
     });
