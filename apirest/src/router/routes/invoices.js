@@ -7,18 +7,64 @@ const {logger, tokenId} = require('../../shared/functions');
 
 module.exports = (app, db) => {
 
-    // GET all invoices of user
+    // GET all invoices of offerer
+    app.get('/invoices/offerer/:id([0-9]+)', async (req, res, next) => {
+        getUserInvoices('offerers', req, res, next);
+    });
+    
+    // GET all invoices of applicant
+    app.get('/invoices/applicant/:id([0-9]+)', async (req, res, next) => {
+        getUserInvoices('applicants', req, res, next);
+    });
 
-    app.get('/invoices/user/:id([0-9]+)', async (req, res, next) => {
+    // GET one invoice by id
+    app.get('/invoice/:id([0-9]+)', async (req, res, next) => {
+        getInvoiceById(req, res, next);
+    });
+
+    // POST single invoice
+    app.post('/invoice', async (req, res, next) => {
+        postInvoice( req, res, next );
+    });
+
+    // PUT single invoice
+    app.put('/invoice/:id([0-9]+)', checkAdmin, async (req, res, next) => {
+        updateInvoice( req, res, next );
+    });
+
+    // DELETE single invoice
+    app.delete('/invoice/:id([0-9]+)', checkAdmin, async (req, res, next) => {
+        deleteInvoice( req, res, next );
+    });
+    
+    async function getUserInvoices( table, req, res, next ) {
         const id = req.params.id;
+        let herency;
+
         try {
+            switch ( table ) {
+                case 'offerers': herency = {
+                                        model: db.offerers,
+                                        as: 'user',
+                                        where: { userId: id }
+                                    }; 
+                                break;
+                case 'applicants': herency = {
+                                        model: db.applicants,
+                                        where: { userId: id }
+                                    }; 
+                                break;
+
+            }
+
             await logger.saveLog('GET', 'invoices', null, res);
             
             let attr = {
                 include: [{
                     model: db.invoices,
                     where: { fk_user: id }
-                }],
+                }, herency
+                ],
                 attributes: {
                     exclude: ["password"]
                 }
@@ -45,59 +91,26 @@ module.exports = (app, db) => {
         } catch (err) {
             next({type: 'error', error: err.message});
         }
-    });
+    }
 
-    // GET invoices by page limit to 10 invoices/page
-    app.get('/invoices/:page([0-9]+)/:limit([0-9]+)', async (req, res, next) => {
-        let limit = Number(req.params.limit);
-        let page = Number(req.params.page);
-
-        try {
-            await logger.saveLog('GET', `invoices/${page}`, null, res);
-
-            let count = await db.invoices.findAndCountAll();
-            let pages = Math.ceil(count.count / limit);
-            offset = limit * (page - 1);
-
-            if (page > pages) {
-                return res.status(200).json({
-                    ok: true,
-                    message: `It doesn't exist ${page} pages`
-                })
-            }
-
-            return res.status(200).json({
-                ok: true,
-                message: `${limit} invoices of page ${page} of ${pages} pages`,
-                data: await db.invoices.findAll({
-                    limit,
-                    offset,
-                    $sort: {id: 1}
-                }),
-                total: count.count
-            });
-        } catch (err) {
-            next({type: 'error', error: err});
-        }
-    });
-
-    // GET one invoice by id
-    app.get('/invoice/:id([0-9]+)', async (req, res, next) => {
+    async function getInvoiceById( req, res, next ) {
         const id = req.params.id;
 
         try {
-            res.status(200).json({
+            let invoice = await db.invoices.findOne({ where: { id }});
+
+            return res.status(200).json({
                 ok: true,
-                invoice: await db.invoices.findOne({where: {id}})
+                message: 'Showing invoice',
+                date: invoice
             });
 
         } catch (err) {
-            next({type: 'error', error: 'Error getting data'});
+            return next({type: 'error', error: 'Error getting data'});
         }
-    });
+    }
 
-    // POST single invoice
-    app.post('/invoice', async (req, res, next) => {
+    async function postInvoice( req, res, next ) {
         const body = req.body;
 
         try {
@@ -121,28 +134,26 @@ module.exports = (app, db) => {
         } catch (err) {
             next({type: 'error', error: err.message});
         }
-    });
+    }
 
-    // PUT single invoice
-    app.put('/invoice/:id([0-9]+)', checkAdmin, async (req, res, next) => {
+    async function updateInvoice( req, res, next ) {
         const id = req.params.id;
         const updates = req.body;
 
         try {
+            await db.invoices.update(updates, {
+                where: {id}
+            });
             return res.status(200).json({
                 ok: true,
-                invoice: await db.invoices.update(updates, {
-                    where: {id}
-                })
+                message: 'updated'
             });
         } catch (err) {
-            next({type: 'error', error: err.errors[0].message});
+            return next({type: 'error', error: err.errors[0].message});
         }
+    }
 
-    });
-
-    // DELETE single invoice
-    app.delete('/invoice/:id([0-9]+)', checkAdmin, async (req, res, next) => {
+    async function deleteInvoice( req, res, next ) {
         const id = req.params.id;
 
         try {
@@ -155,5 +166,6 @@ module.exports = (app, db) => {
         } catch (err) {
             next({type: 'error', error: 'Error getting data'});
         }
-    });
+    }
 };
+
