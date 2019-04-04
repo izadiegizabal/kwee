@@ -215,7 +215,7 @@ module.exports = (app, db) => {
 
     });
 
-    // GET one offerer offers by id
+    // GET all offers of offerer id
     app.get('/offerer/:id([0-9]+)/offers', async (req, res, next) => {
         const id = req.params.id;
         let limit = Number(req.query.limit);
@@ -382,11 +382,11 @@ module.exports = (app, db) => {
             saveLogES('GET', 'offerer/id', 'Visitor');
 
             let user = await db.users.findOne({
-                where: {id}
+                where: { id }
             });
 
             let offerer = await db.offerers.findOne({
-                where: {userId: id}
+                where: { userId: id }
             });
 
             if (user && offerer) {
@@ -411,19 +411,20 @@ module.exports = (app, db) => {
                     bio: user.bio,
                     lat: user.lat,
                     lon: user.lon,
-                    social_networks: []
+                    social_networks: {}
                 };
 
                 let networks = await db.social_networks.findOne({
                     where: {userId: user.id}
                 });
 
-                if (networks) {
-                    networks.google ? userOfferer.social_networks.push({google: networks.google}) : null;
-                    networks.twitter ? userOfferer.social_networks.push({twitter: networks.twitter}) : null;
-                    networks.instagram ? userOfferer.social_networks.push({instagram: networks.instagram}) : null;
-                    networks.telegram ? userOfferer.social_networks.push({telegram: networks.telegram}) : null;
-                    networks.linkedin ? userOfferer.social_networks.push({linkeding: networks.linkedin}) : null;
+                if ( networks ) {
+                    networks.google ? userOfferer.social_networks.google = networks.google : null;
+                    networks.twitter ? userOfferer.social_networks.twitter = networks.twitter : null;
+                    networks.github ? userOfferer.social_networks.github = networks.github : null;
+                    networks.instagram ? userOfferer.social_networks.instagram = networks.instagram : null;
+                    networks.telegram ? userOfferer.social_networks.telegram = networks.telegram : null;
+                    networks.linkedin ? userOfferer.social_networks.linkedin = networks.linkedin : null;
                 }
 
                 return res.status(200).json({
@@ -698,6 +699,27 @@ module.exports = (app, db) => {
             }
             body.workField ? userOff.workField = body.workField : null;
             body.website ? userOff.website = body.website : null;
+
+            if (body.social_networks.length > 0) {
+                let sn = body.social_networks;
+                let snUpdates = {};
+
+                sn.forEach(social_network => {
+                    if ( social_network.google ) snUpdates.google = social_network.google;
+                    if ( social_network.twitter ) snUpdates.twitter = social_network.twitter;
+                    if ( social_network.github ) snUpdates.github = social_network.github;
+                    if ( social_network.instagram ) snUpdates.instagram = social_network.instagram;
+                    if ( social_network.telegram ) snUpdates.telegram = social_network.telegram;
+                    if ( social_network.linkedin ) snUpdates.linkedin = social_network.linkedin;
+                });
+                snUpdates.userId = offerer.userId;
+                let social_networks = await db.social_networks.findOne({ where: { userId: offerer.userId }});
+                if ( social_networks ) {
+                    await db.social_networks.update(snUpdates, { where: {userId: offerer.userId }});
+                } else {
+                    await db.social_networks.create(snUpdates);
+                }
+            }
 
             if ( body.premium ) {
                 createInvoice( id, body.premium );
