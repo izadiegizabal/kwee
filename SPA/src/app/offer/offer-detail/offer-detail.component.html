@@ -8,7 +8,7 @@
   </div>
   <div fxLayout="row"
        fxLayoutAlign="center center">
-    <mat-card
+    <mat-card id="id"
       *ngIf="(offerState | async).offer"
       fxFlex="95%"
       fxFlex.gt-lg="50%" fxFlex.gt-md="60%" fxFlex.gt-sm="75%" fxLayout="column">
@@ -198,6 +198,9 @@
           </div>
         </div>
       </mat-card-content>
+      <button (click)="download()"
+              color="accent"
+              mat-raised-button style="color: black">{{'Dowload' | uppercase }}</button>
     </mat-card>
   </div>
 </div>

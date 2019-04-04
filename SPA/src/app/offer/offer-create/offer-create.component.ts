@@ -44,9 +44,9 @@ export class OfferCreateComponent implements OnInit {
 
   public Editor = ClassicEditor;
   public Config = {
-    toolbar: ['heading', '|', 'bold', 'italic', 'link',
+    toolbar: ['heading', '|', 'bold', 'italic',
       'bulletedList', 'numberedList', 'blockQuote',
-      'insertTable', 'undo', 'redo']
+      'undo', 'redo']
   };
   public DataDesc = '<p>Your text...</p>';
   public DataReq = '<p>Your text...</p>';
