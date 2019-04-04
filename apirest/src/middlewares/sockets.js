@@ -29,8 +29,8 @@ const message = (client) => {
 };
 
 const selected = (client) => {
-    console.log('enviando socket "selected" al frontend');
     client.on('selected', (payload) => {
+        console.log('enviando socket "selected" al frontend');
         io.emit('selected', client);
     });
 };
