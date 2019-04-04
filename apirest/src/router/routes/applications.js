@@ -144,14 +144,44 @@ module.exports = (app, db) => {
             }
             
 
-            let count = await db.applications.findAndCountAll({ where});
+            let count = await db.applications.findAndCountAll({ where });
             let applications = await db.applications.findAll(attr);
+            let user = await db.users.findOne({ where: { id: params.fk_applicant }, include: [db.applicants] });
+            let offers = await db.offers.findAll();
 
-            if ( applications ) {
+            let applicationsToShow = [];
+
+            if ( count.count > 0 ) {
+
+                applications.forEach( application => {
+                    let object = {};
+                    let offerFind = offers.find( offer => offer.id === application.fk_offer );
+                    object.applicantId = application.fk_applicant;
+                    object.applicationId = application.id;
+                    object.offerId = application.fk_offer;
+                    object.applicantStatus = user.status;
+                    object.applicationStatus = application.status;
+                    object.offerStatus = offerFind.status;
+                    object.offerTitle = offerFind.title;
+                    object.index = user.index;
+                    object.name = user.name;
+                    object.email = user.email;
+                    object.city = user.applicant.city;
+                    object.dateBorn = user.applicant.dateBorn;
+                    object.premium = user.applicant.premium;
+                    object.rol = user.applicant.rol;
+                    object.lastAccess = user.lastAccess;
+                    object.createdAt = user.applicant.createdAt;
+                    object.img = user.img;
+                    object.bio = user.bio;
+                    applicationsToShow.push(object);
+                });
+
+
                 return res.status(200).json({
                     ok: true,
-                    message: `Showing applications of user ${params.fk_applicant}`,
-                    data: applications,
+                    message: `Showing applications of user ${ user.name } with id ${ user.id }`,
+                    data: applicationsToShow,
                     total: count.count,
                     page,
                     limit
