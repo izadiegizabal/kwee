@@ -8,26 +8,32 @@ const {logger, tokenId} = require('../../shared/functions');
 module.exports = (app, db) => {
 
     // GET all invoices
-    app.get('/invoices', async (req, res, next) => {
-        try {
-            await logger.saveLog('GET', 'invoices', null, res);
-
-            return res.status(200).json({
-                ok: true,
-                invoices: await db.invoices.findAll()
-            });
-        } catch (err) {
-            next({type: 'error', error: 'Error getting data'});
-        }
-    });
 
     app.get('/invoices/user/:id([0-9]+)', async (req, res, next) => {
         const id = req.params.id;
         try {
             await logger.saveLog('GET', 'invoices', null, res);
-            let invoices = await db.invoices.findAll({where: {fk_user: id}});
+            
+            let attr = {
+                include: [{
+                    model: db.invoices,
+                    where: { fk_user: id }
+                }],
+                attributes: {
+                    exclude: ["password"]
+                }
+            }
+            if ( req.query.limit && req.query.page ) {
+                var limit = Number(req.query.limit);
+                var page = Number(req.query.page)
+                var offset = limit * (page - 1)
+                attr.limit = limit;
+                attr.offset = offset;
+            }
+            
+            let invoices = await db.users.findAll(attr);
 
-            if (invoices) {
+            if ( invoices ) {
                 return res.status(200).json({
                     ok: true,
                     message: 'Listing all invoices',
@@ -37,7 +43,7 @@ module.exports = (app, db) => {
                 return next({type: 'error', error: 'No invoices'});
             }
         } catch (err) {
-            next({type: 'error', error: 'Error getting data'});
+            next({type: 'error', error: err.message});
         }
     });
 
