@@ -1,12 +1,12 @@
 import {Injectable} from '@angular/core';
 import {Actions, Effect, ofType} from '@ngrx/effects';
-import {catchError, map, share, switchMap} from 'rxjs/operators';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {catchError, map, share, switchMap, withLatestFrom} from 'rxjs/operators';
+import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {Observable, of, throwError} from 'rxjs';
 import * as UserActions from './profiles.actions';
 import {environment} from '../../../environments/environment';
-import {Store} from '@ngrx/store';
+import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
 
 
@@ -91,6 +91,123 @@ export class ProfilesEffects {
     ),
     share()
   );
+
+
+  @Effect()
+  userUpdateCandidate = this.actions$.pipe(
+    ofType(UserActions.USER_TRY_UPDATE_CANDIDATE),
+    map((action: UserActions.UserTryUpdateCandidate) => {
+      return action.payload;
+    }),
+    withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    switchMap(([payload, authState]) => {
+        const apiEndpointUrl = environment.apiUrl + 'applicant';
+        const token = authState.token;
+        const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+        const body = JSON.stringify(payload.updatedCandidate);
+
+
+        return this.httpClient.put(apiEndpointUrl, body, {headers: headers}).pipe(
+          map((res) => {
+            return {
+              type: UserActions.USER_UPDATE_CANDIDATE,
+              payload: { updatedCandidate: payload.updatedCandidate}
+            };
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('updateCandidate', err));
+            const error = err.error.message ? err.error.message : err;
+            return [
+              {
+                type: UserActions.OPERATION_ERROR,
+                payload: error
+              }
+            ];
+          })
+        );
+      }
+    ),
+    share()
+  );
+
+  @Effect()
+  userUpdateBusiness = this.actions$.pipe(
+    ofType(UserActions.USER_TRY_UPDATE_BUSINESS),
+    map((action: UserActions.UserTryUpdateBusiness) => {
+      return action.payload;
+    }),
+    withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    switchMap(([payload, authState]) => {
+        const apiEndpointUrl = environment.apiUrl + 'offerer';
+        const token = authState.token;
+        const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+        const body = JSON.stringify(payload.updatedBusiness);
+
+        return this.httpClient.put(apiEndpointUrl, body, {headers: headers}).pipe(
+          map(() => {
+            return {
+              type: UserActions.USER_UPDATE_BUSINESS,
+              payload: { updatedBusiness: payload.updatedBusiness}
+            };
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('updateBusiness', err));
+            const error = err.error.message ? err.error.message : err;
+            return [
+              {
+                type: UserActions.OPERATION_ERROR,
+                payload: error
+              }
+            ];
+          })
+        );
+      }
+    ),
+    share()
+  );
+
+
+  @Effect()
+  profileGetOpinions = this.actions$.pipe(
+    ofType(UserActions.TRY_GET_OPINIONS_CANDIDATE),
+    map((action: UserActions.TryGetOpinionsCandidate) => {
+      return action.payload;
+    }),
+    withLatestFrom(this.store$.pipe(select(state => state.auth))),
+
+    switchMap(([payload, authState]) => {
+        const apiEndpointUrl = environment.apiUrl + 'ratings/user/' + payload.id + '?limit=' + payload.limit + '&page=' + payload.page;
+        const token = authState.token;
+        const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+
+        return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
+          map((res: {
+            ok: boolean,
+            message: any[],
+            data: any[],
+            total: number,
+          }) => {
+            // console.log(res);
+            return {
+              type: UserActions.SET_OPINIONS_CANDIDATE,
+              payload: res,
+            };
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('getOpinionsCandidate', err));
+            return [
+              {
+                type: UserActions.OPERATION_ERROR,
+                payload: err.error.error
+              }
+            ];
+          })
+        );
+      }
+    ),
+    share()
+  );
+
 
 
   constructor(private actions$: Actions, private store$: Store<fromApp.AppState>, private router: Router, private httpClient: HttpClient) {
