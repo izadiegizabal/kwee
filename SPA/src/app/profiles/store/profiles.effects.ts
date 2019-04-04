@@ -169,8 +169,8 @@ export class ProfilesEffects {
 
   @Effect()
   profileGetOpinions = this.actions$.pipe(
-    ofType(UserActions.TRY_GET_OPINIONS_CANDIDATE),
-    map((action: UserActions.TryGetOpinionsCandidate) => {
+    ofType(UserActions.TRY_GET_OPINIONS_USER),
+    map((action: UserActions.TryGetOpinionsUser) => {
       return action.payload;
     }),
     withLatestFrom(this.store$.pipe(select(state => state.auth))),
@@ -187,14 +187,14 @@ export class ProfilesEffects {
             data: any[],
             total: number,
           }) => {
-            // console.log(res);
+             console.log(res);
             return {
-              type: UserActions.SET_OPINIONS_CANDIDATE,
+              type: UserActions.SET_OPINIONS_USER,
               payload: res,
             };
           }),
           catchError((err: HttpErrorResponse) => {
-            throwError(this.handleError('getOpinionsCandidate', err));
+            throwError(this.handleError('getOpinionsUser', err));
             return [
               {
                 type: UserActions.OPERATION_ERROR,
