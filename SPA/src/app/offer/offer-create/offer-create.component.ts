@@ -48,6 +48,11 @@ export class OfferCreateComponent implements OnInit {
       'bulletedList', 'numberedList', 'blockQuote',
       'undo', 'redo']
   };
+
+  public ConfigLimited = {
+    toolbar: ['heading', '|', 'bold', 'italic',
+      'undo', 'redo']
+  };
   public DataDesc = '<p>Your text...</p>';
   public DataReq = '<p>Your text...</p>';
   public DataRes = '<p>Your text...</p>';

@@ -164,7 +164,8 @@
           <div
             [innerHTML]="(offerState | async).offer.requeriments"
             fxLayout="column"
-            style="white-space: pre-wrap; margin-bottom: 16px">
+            style="white-space: pre-wrap; margin-bottom: 16px"
+          id="requeriments">
           </div>
         </div>
 
@@ -198,7 +199,7 @@
           </div>
         </div>
       </mat-card-content>
-      <button (click)="download()"
+      <button (click)="downloadPDF()"
               color="accent"
               mat-raised-button style="color: black">{{'Dowload' | uppercase }}</button>
     </mat-card>

@@ -125,6 +125,11 @@ export class SignupOffererComponent implements OnInit {
       'workField': new FormControl(null, Validators.required),
       'address1': new FormControl(null, Validators.required),
       'terms': new FormControl(null, Validators.required),
+      'city': new FormControl(null, Validators.required),
+      'state': new FormControl(null, Validators.required),
+      'postal': new FormControl(null, Validators.required),
+      'country': new FormControl(null, Validators.required),
+      'contact': new FormControl(null, Validators.required),
       'profile': new FormControl(null)
     });
 
@@ -178,8 +183,8 @@ export class SignupOffererComponent implements OnInit {
       SignupOffererComponent.maxDate.bind(this.thirdFormGroup),
     ]);
 
-    this.secondFormGroup.controls['year'].valueChanges.subscribe(value => {
-      this.secondFormGroup.controls['year'].updateValueAndValidity();
+    this.thirdFormGroup.controls['year'].valueChanges.subscribe(value => {
+      this.thirdFormGroup.controls['year'].updateValueAndValidity();
     });
 
 

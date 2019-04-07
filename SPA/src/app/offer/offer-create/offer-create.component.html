@@ -23,7 +23,7 @@
         <h3>Description</h3>
         <div class="line2" fxLayout="column">
           <mat-form-field class="noUnderline">
-            <ckeditor (change)="onChangeDescription($event)" [config]="Config" [data]="DataDesc"
+            <ckeditor (change)="onChangeDescription($event)" [config]="ConfigLimited" [data]="DataDesc"
                       [editor]="Editor"></ckeditor>
             <input [hidden]="true" formControlName="description" matInput required>
             <mat-error *ngIf="!form.get('description').valid ">
