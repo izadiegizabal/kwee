@@ -7,7 +7,6 @@ import {ActivatedRoute} from '@angular/router';
 import {Observable} from 'rxjs';
 import * as fromProfiles from '../../store/profiles.reducers';
 import {MatPaginator, PageEvent} from '@angular/material';
-import * as OffersActions from '../../../offer/store/offers.actions';
 
 @Component({
   selector: 'app-candidate-profile-opinions',
@@ -93,7 +92,7 @@ export class CandidateProfileOpinionsComponent implements OnInit {
 
   ngOnInit() {
     const params = this.activatedRoute.snapshot.params;
-    this.store$.dispatch(new ProfilesActions.TryGetOpinionsCandidate({id: params.id, limit: 5, page: 1 }));
+    this.store$.dispatch(new ProfilesActions.TryGetOpinionsUser({id: params.id, limit: 5, page: 1 }));
     this.profilesState = this.store$.pipe(select(state => state.profiles));
   }
 
@@ -103,7 +102,7 @@ export class CandidateProfileOpinionsComponent implements OnInit {
 
   changePage() {
     const params = this.activatedRoute.snapshot.params;
-    this.store$.dispatch(new ProfilesActions.TryGetOpinionsCandidate({id: params.id,  page: this.pageEvent.pageIndex + 1,
+    this.store$.dispatch(new ProfilesActions.TryGetOpinionsUser({id: params.id,  page: this.pageEvent.pageIndex + 1,
       limit: this.pageEvent.pageSize}));
 
     window.scrollTo(0, 0);

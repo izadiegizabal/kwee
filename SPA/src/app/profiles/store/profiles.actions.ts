@@ -8,8 +8,8 @@ export const USER_TRY_UPDATE_CANDIDATE = 'USER_TRY_UPDATE_CANDIDATE';
 export const USER_TRY_UPDATE_BUSINESS = 'USER_TRY_UPDATE_BUSINESS';
 export const USER_UPDATE_CANDIDATE = 'USER_UPDATE_CANDIDATE';
 export const USER_UPDATE_BUSINESS = 'USER_UPDATE_BUSINESS';
-export const TRY_GET_OPINIONS_CANDIDATE = 'TRY_GET_OPINIONS_CANDIDATE';
-export const SET_OPINIONS_CANDIDATE = 'SET_OPINIONS_CANDIDATE';
+export const TRY_GET_OPINIONS_USER = 'TRY_GET_OPINIONS_USER';
+export const SET_OPINIONS_USER = 'SET_OPINIONS_USER';
 export const OPERATION_ERROR = 'OPERATION_ERROR';
 
 
@@ -79,15 +79,15 @@ export class UserUpdateBusiness implements Action {
 }
 
 
-export class TryGetOpinionsCandidate implements Action {
-  readonly type = TRY_GET_OPINIONS_CANDIDATE;
+export class TryGetOpinionsUser implements Action {
+  readonly type = TRY_GET_OPINIONS_USER;
 
   constructor(public payload: { id: number, limit: number, page: number }) {
   }
 }
 
-export class SetOpinionsCandidate implements Action {
-  readonly type = SET_OPINIONS_CANDIDATE;
+export class SetOpinionsUser implements Action {
+  readonly type = SET_OPINIONS_USER;
 
   constructor(public payload: any) {
   }
@@ -100,5 +100,5 @@ export type ProfilesActions =
   SetProfileBusiness |
   UserTryUpdateCandidate | UserTryUpdateBusiness |
   UserUpdateCandidate | UserUpdateBusiness |
-  TryGetOpinionsCandidate | SetOpinionsCandidate |
+  TryGetOpinionsUser | SetOpinionsUser |
   OperationError;

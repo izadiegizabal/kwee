@@ -88,7 +88,7 @@ export function profilesReducer(state = initialState, action: ProfilesActions.Pr
         ...state,
         business: action.payload
       };
-    case ProfilesActions.SET_OPINIONS_CANDIDATE:
+    case ProfilesActions.SET_OPINIONS_USER:
       return {
         ...state,
         opinions: action.payload

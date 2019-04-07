@@ -53,7 +53,7 @@
         <app-icon-with-text [text]="getOfferSalary()" icon="local-atm"></app-icon-with-text>
       </div>
       <div>
-        <button [routerLink]="offerUrl" color="accent" mat-button>{{'More Info' | uppercase }}</button>
+        <button [routerLink]="urlfyDetail()" color="accent" mat-button>{{'More Info' | uppercase }}</button>
         <button (click)="openShareDialog()" mat-icon-button>
           <mat-icon aria-label="Share offer in social networks" color="accent" svgIcon="share"></mat-icon>
         </button>
