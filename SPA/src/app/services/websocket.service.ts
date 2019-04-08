@@ -20,13 +20,11 @@ export class WebsocketService {
   checkStatus() {
 
     this.socket.on('connect', (client) => {
-      console.log('Conectado al servidor');
       this.socketStatus = true;
       this.getStorage();
     });
 
     this.socket.on('disconnect', () => {
-      console.log('Desonectado del servidor');
       this.socketStatus = false;
     });
 
