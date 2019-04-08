@@ -429,19 +429,20 @@ module.exports = (app, db) => {
                     img: user.img,
                     bio: user.bio,
                     rol: applicant.rol,
-                    social_networks: []
+                    social_networks: {}
                 };
 
                 let networks = await db.social_networks.findOne({
                     where: {userId: user.id}
                 });
 
-                if (networks) {
-                    networks.google ? userApplicant.social_networks.push({google: networks.google}) : null;
-                    networks.twitter ? userApplicant.social_networks.push({twitter: networks.twitter}) : null;
-                    networks.instagram ? userApplicant.social_networks.push({instagram: networks.instagram}) : null;
-                    networks.telegram ? userApplicant.social_networks.push({telegram: networks.telegram}) : null;
-                    networks.linkedin ? userApplicant.social_networks.push({linkeding: networks.linkedin}) : null;
+                if ( networks ) {
+                    networks.google ? userApplicant.social_networks.google = networks.google : null;
+                    networks.twitter ? userApplicant.social_networks.twitter = networks.twitter : null;
+                    networks.github ? userApplicant.social_networks.github = networks.github : null;
+                    networks.instagram ? userApplicant.social_networks.instagram = networks.instagram : null;
+                    networks.telegram ? userApplicant.social_networks.telegram = networks.telegram : null;
+                    networks.linkedin ? userApplicant.social_networks.linkedin = networks.linkedin : null;
                 }
 
                 getData(applicant, userApplicant).then((applicantDates) => {
@@ -531,6 +532,27 @@ module.exports = (app, db) => {
             if (applicant) {
                 saveLogES('POST', 'applicant/info', aUser.name);
                 var user = {};
+
+                if (body.social_networks.length > 0) {
+                    let sn = body.social_networks;
+                    let snUpdates = {};
+                    sn.forEach(social_network => {
+                        if ( social_network.google ) snUpdates.google = social_network.google;
+                        if ( social_network.twitter ) snUpdates.twitter = social_network.twitter;
+                        if ( social_network.github ) snUpdates.github = social_network.github;
+                        if ( social_network.instagram ) snUpdates.instagram = social_network.instagram;
+                        if ( social_network.telegram ) snUpdates.telegram = social_network.telegram;
+                        if ( social_network.linkedin ) snUpdates.linkedin = social_network.linkedin;
+                    });
+                    snUpdates.userId = applicant.userId;
+                    let social_networks = await db.social_networks.findOne({ where: { userId: applicant.userId }});
+                    if ( social_networks ) {
+                        await db.social_networks.update(snUpdates, { where: {userId: applicant.userId }});
+                    } else {
+                        await db.social_networks.create(snUpdates);
+                    }
+                }
+
                 if (body.img && checkImg(body.img)) {
                     var imgName = uploadImg(req, res, next, 'applicants');
                     user.img = imgName;
@@ -835,6 +857,26 @@ module.exports = (app, db) => {
                 elasticsearch.rol = body.rol;
             }
 
+            if (body.social_networks.length > 0) {
+                let sn = body.social_networks;
+                let snUpdates = {};
+                sn.forEach(social_network => {
+                    if ( social_network.google ) snUpdates.google = social_network.google;
+                    if ( social_network.twitter ) snUpdates.twitter = social_network.twitter;
+                    if ( social_network.github ) snUpdates.github = social_network.github;
+                    if ( social_network.instagram ) snUpdates.instagram = social_network.instagram;
+                    if ( social_network.telegram ) snUpdates.telegram = social_network.telegram;
+                    if ( social_network.linkedin ) snUpdates.linkedin = social_network.linkedin;
+                });
+                snUpdates.userId = applicant.userId;
+                let social_networks = await db.social_networks.findOne({ where: { userId: applicant.userId }});
+                if ( social_networks ) {
+                    await db.social_networks.update(snUpdates, { where: {userId: applicant.userId }});
+                } else {
+                    await db.social_networks.create(snUpdates);
+                }
+            }
+
             if (body.premium) {
                 createInvoice( id, body.premium );
                 userApp.premium = body.premium;
@@ -864,7 +906,7 @@ module.exports = (app, db) => {
                 }
 
                 applicantUser = await db.users.update(body, {
-                    where: {id}
+                    where: { id }
                 })
             }
 

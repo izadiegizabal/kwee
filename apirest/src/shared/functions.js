@@ -487,7 +487,7 @@ function uploadImg(req, res, next, type,) {
                 next({type: 'error', error: err});
             }
         });
-        return imgname;
+        return path;
     } catch (err) {
         next({type: 'error', error: err});
     }
