@@ -4,9 +4,10 @@
   </div>
 
   <form [formGroup]="form" fxLayout="column"
-        fxLayoutAlign="start center"
-        fxLayoutGap="16px" fxLayoutGap.gt-sm="32px">
-    <mat-horizontal-stepper #stepper linear="true">
+        fxLayoutAlign.gt-sm="center center"
+        fxFlex="auto"
+        fxLayoutGap="16px" fxLayoutGap.gt-xs="32px">
+    <mat-horizontal-stepper linear="true">
       <mat-step>
         <ng-template matStepLabel>Describe your offer</ng-template>
 
@@ -22,7 +23,7 @@
         <h3>Description</h3>
         <div class="line2" fxLayout="column">
           <mat-form-field class="noUnderline">
-            <ckeditor (change)="onChangeDescription($event)" [config]="Config" [data]="DataDesc"
+            <ckeditor (change)="onChangeDescription($event)" [config]="ConfigLimited" [data]="DataDesc"
                       [editor]="Editor"></ckeditor>
             <input [hidden]="true" formControlName="description" matInput required>
             <mat-error *ngIf="!form.get('description').valid ">
@@ -63,7 +64,7 @@
         </div>
         <br>
         <h4>Contract type</h4>
-        <div class="line1" fxLayout="column">
+        <div  fxLayout="column" [ngClass.gt-xs]="{'line1':true}" [ngClass.lt-sm]="{'line2': true}">
           <mat-form-field>
             <mat-select formControlName="contractType" placeholder="Contract type" required>
               <mat-option *ngFor="let value of contractType" [value]="value.value">
@@ -79,7 +80,7 @@
         </div>
         <br>
         <h4>Seniority Level</h4>
-        <div class="line1" fxLayout="column">
+        <div [ngClass.gt-xs]="{'line1':true}" [ngClass.lt-sm]="{'line2': true}" fxLayout="column">
           <mat-form-field>
             <mat-select formControlName="seniority" placeholder="Seniority" required>
               <mat-option *ngFor="let value of seniority" [value]="value.value">

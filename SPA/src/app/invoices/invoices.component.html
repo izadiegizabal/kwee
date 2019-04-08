@@ -6,7 +6,7 @@
   <div class="line1" fxFlex="80%" fxFlex.lt-md="100%" fxLayout="row" fxLayoutAlign="start center"><h2 class="mat-h1">My
     Invoices</h2></div>
   <mat-accordion fxLayout="column">
-    <div *ngFor="let invoice of  invoices;" fxLayout="row">
+    <div *ngFor="let invoice of  invoices; let i =index;" fxLayout="row">
       <mat-checkbox #toggle style="display: none"></mat-checkbox>
       <mat-expansion-panel [(expanded)]="toggle.checked" class="line1" fxFlex="80%" fxFlex.lt-md="100%">
         <mat-expansion-panel-header>
@@ -36,6 +36,7 @@
           <div>
             <button
               color="primary"
+              (click)="downloadPDF(i)"
               mat-raised-button type="button">Download
             </button>
           </div>

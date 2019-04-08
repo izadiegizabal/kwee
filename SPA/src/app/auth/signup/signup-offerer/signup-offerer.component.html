@@ -167,8 +167,58 @@
           <h4>Address</h4>
         </div>
 
-        <div class="line1" fxLayout="column">
+        <div class="line1" fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
           <mat-form-field>
+            <input  formControlName="address1" id="address1" matInput
+                   placeholder="Address" required>
+            <mat-icon color="primary" matPrefix svgIcon="place"></mat-icon>
+            <mat-error *ngIf="!secondFormGroup.get('address1').valid ">
+              Address is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
+          <mat-form-field>
+            <mat-icon color="primary" matPrefix svgIcon="place"></mat-icon>
+            <input formControlName="city" matInput placeholder="City"
+                   required>
+            <mat-error *ngIf="!secondFormGroup.get('city').valid">
+              City is required
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-icon color="primary" matPrefix svgIcon="place"></mat-icon>
+            <input formControlName="state" matInput placeholder="State/Province"
+                   required>
+            <mat-error *ngIf="!secondFormGroup.get('state').valid">
+              State/Province is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
+          <mat-form-field>
+            <mat-icon color="primary" matPrefix svgIcon="place"></mat-icon>
+            <input formControlName="country" matInput placeholder="Country"
+                   required>
+            <mat-error *ngIf="!secondFormGroup.get('country').valid">
+              Country is required
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-icon color="primary" matPrefix svgIcon="place"></mat-icon>
+            <input formControlName="postal" matInput placeholder="Zip/Postal Code"
+                   required>
+            <mat-error *ngIf="!secondFormGroup.get('postal').valid">
+              Zip/Postal Code is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+
+        <div class="line1" fxLayout="column">
+          <mat-form-field fxHide>
             <input (keyup)="onKey($event)" [matAutocomplete]="auto" formControlName="address1" id="address" matInput
                    placeholder="Street and City" required>
             <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">

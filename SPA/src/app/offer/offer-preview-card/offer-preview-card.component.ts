@@ -27,6 +27,8 @@ export class OfferPreviewCardComponent implements OnInit {
   nameToRate: string;
   userId: number;
   allRated = false;
+  business: boolean;
+
 
   @Input() offer: any;
   @Input() selection: boolean;
@@ -50,7 +52,7 @@ export class OfferPreviewCardComponent implements OnInit {
 
     // console.log(this.offer);
 
-    this.offerUrl = this.urlfyPosition();
+    this.offerUrl = this.urlfyPosition(null);
 
     this.authState = this.store$.pipe(select('auth'));
     this.authState.pipe(
@@ -59,7 +61,10 @@ export class OfferPreviewCardComponent implements OnInit {
       (user) => {
         // console.log(user);
         if (user) {
+          this.offerUrl = this.urlfyPosition(user);
+
           this.candidate = user.type === 'candidate';
+          this.business = user.type === 'business';
           if (this.candidate) {
             this.nameToRate = this.offer.offererName;
             this.userId = user.id;
@@ -68,10 +73,19 @@ export class OfferPreviewCardComponent implements OnInit {
       });
   }
 
-  urlfyPosition() {
-    return '/offer/' + this.offer.id + '/' + getUrlfiedString(this.offer.title);
+  urlfyPosition(user) {
+    let url = '/offer/' + this.offer.id + '/' + getUrlfiedString(this.offer.title);
+
+    if (this.offer.status === 3 && user && (this.offer.fk_offerer === user.id) && this.selection === true) {
+      url = '/my-offers/' + this.offer.id + '/selection';
+    }
+
+    return url;
   }
 
+  urlfyDetail() {
+    return '/offer/' + this.offer.id + '/' + getUrlfiedString(this.offer.title);
+  }
 
   getPublishedDate() {
     if (this.offer && this.offer.datePublished) {
@@ -82,7 +96,7 @@ export class OfferPreviewCardComponent implements OnInit {
   openShareDialog() {
     this.dialog.open(SnsShareDialogComponent, {
       data: {
-        offer: {title: this.offer.title, url: location.hostname + this.urlfyPosition()}
+        offer: {title: this.offer.title, url: location.hostname + this.urlfyPosition(null)}
       }
     });
   }

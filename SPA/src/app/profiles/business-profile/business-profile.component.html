@@ -13,7 +13,7 @@
       fxFlex.gt-sm="80%">
       <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap.lt-sm="16px">
         <!-- Basic info -->
-        <mat-card [fxFlex]="mine? 70 : 100">
+        <mat-card [fxFlex]="(mine || twitterAccount === '')? 70 : 100">
           <mat-card-title>
             <app-offerer-name-overview
               [index]="(profilesState | async).business.index"
@@ -82,6 +82,12 @@
               Upgrade to Premium
             </button>
           </mat-card-actions>
+        </mat-card>
+        <mat-card *ngIf="!mine && twitterAccount !== ''"
+                  fxHide.lt-lg
+                  class="twitter-wrapper"
+                  fxFlex="30" fxFlexOffset.gt-xs="32px">
+          <a class="twitter-timeline" [href]="'https://twitter.com/' + twitterAccount">Tweets by @{{twitterAccount}}</a>
         </mat-card>
       </div>
       <div fxLayout="row" style="margin-top: 16px">

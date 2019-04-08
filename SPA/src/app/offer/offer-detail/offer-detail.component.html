@@ -8,7 +8,7 @@
   </div>
   <div fxLayout="row"
        fxLayoutAlign="center center">
-    <mat-card
+    <mat-card id="id"
       *ngIf="(offerState | async).offer"
       fxFlex="95%"
       fxFlex.gt-lg="50%" fxFlex.gt-md="60%" fxFlex.gt-sm="75%" fxLayout="column">
@@ -110,13 +110,13 @@
                  style="width: 100%">
               <div fxLayout="column" fxLayout.lt-sm="row"
                    fxLayoutGap="8px">
-                <a (click)="goEdit()"
-                   *ngIf="(offerState | async).offer.fk_offerer === this.id ; else apply">
+
                   <button
+                    (click)="goEdit()"
+                    *ngIf="(offerState | async).offer.fk_offerer === this.id ; else apply"
                     color="accent"
                     mat-raised-button
                     style="color: white" type="button">{{'Edit Offer' | uppercase }}</button>
-                </a>
                 <ng-template #apply>
                   <button (click)="postApplication()"
                           *ngIf="(offerState | async).applications===null && id"
@@ -130,7 +130,7 @@
 
                   <button (click)="deleteApplication()"
                           *ngIf="(offerState | async).applications && ((offerState | async).offer.status === 0 ||
-                (offerState | async).offer.status === 3) && (offerState | async).applications.status < 2"
+                (offerState | async).offer.status === 3) && (offerState | async).applications.status < 2 && id"
                           color="warn"
                           mat-raised-button style="color: white">{{'Delete Application' | uppercase }}</button>
 
@@ -164,7 +164,8 @@
           <div
             [innerHTML]="(offerState | async).offer.requeriments"
             fxLayout="column"
-            style="white-space: pre-wrap; margin-bottom: 16px">
+            style="white-space: pre-wrap; margin-bottom: 16px"
+          id="requeriments">
           </div>
         </div>
 
@@ -198,6 +199,9 @@
           </div>
         </div>
       </mat-card-content>
+      <button (click)="downloadPDF()"
+              color="accent"
+              mat-raised-button style="color: black">{{'Dowload' | uppercase }}</button>
     </mat-card>
   </div>
 </div>

@@ -19,9 +19,15 @@ export class AuthEffects {
       return action.payload;
     }),
     switchMap(
-      (authData: { email: string, password: string }) => {
-        const body = JSON.stringify({email: authData.email, password: authData.password});
+      (authData) => {
+
         const headers = new HttpHeaders().set('Content-Type', 'application/json');
+        let body = JSON.stringify({email: authData.email, password: authData.password});
+
+        if (authData.token) {
+          body = JSON.stringify({token: authData.token, password: authData.password});
+        }
+
         return this.httpClient.post(environment.apiUrl + 'login', body, {headers: headers}).pipe(
           mergeMap((res: {
             token: string,

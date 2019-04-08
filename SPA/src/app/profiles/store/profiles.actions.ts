@@ -4,6 +4,12 @@ export const TRY_GET_PROFILE_CANDIDATE = 'TRY_GET_PROFILE_CANDIDATE';
 export const SET_PROFILE_CANDIDATE = 'SET_PROFILE_CANDIDATE';
 export const TRY_GET_PROFILE_BUSINESS = 'TRY_GET_PROFILE_BUSINESS';
 export const SET_PROFILE_BUSINESS = 'SET_PROFILE_BUSINESS';
+export const USER_TRY_UPDATE_CANDIDATE = 'USER_TRY_UPDATE_CANDIDATE';
+export const USER_TRY_UPDATE_BUSINESS = 'USER_TRY_UPDATE_BUSINESS';
+export const USER_UPDATE_CANDIDATE = 'USER_UPDATE_CANDIDATE';
+export const USER_UPDATE_BUSINESS = 'USER_UPDATE_BUSINESS';
+export const TRY_GET_OPINIONS_USER = 'TRY_GET_OPINIONS_USER';
+export const SET_OPINIONS_USER = 'SET_OPINIONS_USER';
 export const OPERATION_ERROR = 'OPERATION_ERROR';
 
 
@@ -42,9 +48,57 @@ export class OperationError implements Action {
   }
 }
 
+
+export class UserTryUpdateCandidate implements Action {
+  readonly type = USER_TRY_UPDATE_CANDIDATE;
+
+  constructor(public payload: { updatedCandidate: any }) {
+  }
+}
+
+export class UserTryUpdateBusiness implements Action {
+  readonly type = USER_TRY_UPDATE_BUSINESS;
+
+  constructor(public payload: {updatedBusiness: any }) {
+  }
+}
+
+export class UserUpdateCandidate implements Action {
+  readonly type = USER_UPDATE_CANDIDATE;
+
+  constructor(public payload: { updatedCandidate: any }) {
+  }
+}
+
+
+export class UserUpdateBusiness implements Action {
+  readonly type = USER_UPDATE_BUSINESS;
+
+  constructor(public payload: { updatedBusiness: any }) {
+  }
+}
+
+
+export class TryGetOpinionsUser implements Action {
+  readonly type = TRY_GET_OPINIONS_USER;
+
+  constructor(public payload: { id: number, limit: number, page: number }) {
+  }
+}
+
+export class SetOpinionsUser implements Action {
+  readonly type = SET_OPINIONS_USER;
+
+  constructor(public payload: any) {
+  }
+}
+
 export type ProfilesActions =
   TryGetProfileCandidate |
   SetProfileCandidate |
   TryGetProfileBusiness |
   SetProfileBusiness |
+  UserTryUpdateCandidate | UserTryUpdateBusiness |
+  UserUpdateCandidate | UserUpdateBusiness |
+  TryGetOpinionsUser | SetOpinionsUser |
   OperationError;
