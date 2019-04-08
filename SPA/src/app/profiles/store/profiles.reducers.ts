@@ -13,7 +13,7 @@ export interface State {
     lastAccess: Date,
     img: string,
     bio: string,
-    social_networks: string[],
+    social_networks: any,
     skills: string[],
     educations: string[],
     languages: string[],
@@ -34,7 +34,7 @@ export interface State {
     lastAccess: Date,
     name: string,
     premium: number,
-    social_networks: string[]
+    social_networks: any,
     status: number,
     website: string,
     workField: number,

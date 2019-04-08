@@ -120,23 +120,23 @@
 
               <div *ngIf="candidate.social_networks.linkedin">
                 <button mat-icon-button>
-                  <a href="https://linkedin.com/in/{{(profilesState | async).candidate.social_networks.linkedin}}">
+                  <a href="https://linkedin.com/in/{{candidate.social_networks.linkedin}}">
                     <mat-icon fontIcon="fa-linkedin" fontSet="fab"></mat-icon>
                   </a>
                 </button>
               </div>
 
-              <div *ngIf="(profilesState | async).candidate.social_networks.github">
+              <div *ngIf="candidate.social_networks.github">
                 <button mat-icon-button>
-                  <a href="https://github.com/{{(profilesState | async).candidate.social_networks.github}}">
+                  <a href="https://github.com/{{candidate.social_networks.github}}">
                     <mat-icon fontIcon="fa-github" fontSet="fab"></mat-icon>
                   </a>
                 </button>
               </div>
 
-              <div *ngIf="(profilesState | async).candidate.social_networks.telegram">
+              <div *ngIf="candidate.social_networks.telegram">
                 <button mat-icon-button>
-                  <a href="https://telegram.me/{{(profilesState | async).candidate.social_networks.telegram}}">
+                  <a href="https://telegram.me/{{candidate.social_networks.telegram}}">
                     <mat-icon fontIcon="fa-telegram" fontSet="fab"></mat-icon>
                   </a>
                 </button>

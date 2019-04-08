@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Title} from '@angular/platform-browser';
 import {Location} from '@angular/common';
@@ -17,7 +17,7 @@ import {environment} from '../../../environments/environment';
     './business-profile.component.scss',
   ]
 })
-export class BusinessProfileComponent implements OnInit {
+export class BusinessProfileComponent implements OnInit, AfterViewInit {
   business = {
     name: 'Facebook',
     kweeIndex: 56,
@@ -72,12 +72,17 @@ export class BusinessProfileComponent implements OnInit {
     this.profilesState.subscribe(s => {
       if (s.business) {
         this.busi = s.business;
-        if (this.busi.social_networks && this.busi.social_network.twitter) {
-          this.twitterAccount = this.busi.social_network.twitter;
+        if (this.busi && this.busi.social_networks && this.busi.social_networks.twitter) {
+          this.twitterAccount = this.busi.social_networks.twitter;
         }
         this.titleService.setTitle('Kwee - ' + s.business.name);
       }
     });
+  }
+
+  ngAfterViewInit() {
+    // @ts-ignore
+    twttr.widgets.load();
   }
 
   goToMyOffers(tabIndex: number) {
