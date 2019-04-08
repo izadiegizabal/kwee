@@ -318,7 +318,7 @@ class TResourceMesh extends TResource{
 
 
         var matWorldUniformLocation = global.gl.getUniformLocation(global.program, 'uMVMatrix');
-        global.gl.uniformMatrix4fv(matWorldUniformLocation, false, rotation);
+        global.gl.uniformMatrix4fv(matWorldUniformLocation, false, worldMatrix);
 
         let aux = glMatrix.mat4.create();
         /// SORRRRRY, I HAD TO

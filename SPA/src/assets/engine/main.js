@@ -102,15 +102,19 @@ async function mainR(texture) {
     if (texture) {
       let tex = await manager.getResource('continents.jpg');
       land.entity.mesh.tex = tex;
-      // console.log(land);
+       console.log(land);
     } else {
-      land.entity.mesh.tex = undefined;
+      //land.entity.mesh.tex = undefined;
     }
     //motor.rotate(land, -90, 'z');
-    let sphere = await motor.loadMesh(scene, 'sea.json');
+    //let sphere = await motor.loadMesh(scene, 'sea.json');
     //motor.rotate(sphere, -90, 'z');
-    motor.scale(sphere, [0.995, 0.995, 0.995]);
+    //motor.scale(sphere, [0.995, 0.995, 0.995]);
 
+    console.log(convertLatLonToVec3(40.415363, -3.707398));
+    let point = await motor.loadMesh(scene, 'sea.json');
+    motor.scale(point, [0.01, 0.01, 0.01]);
+    motor.translate(point, convertLatLonToVec3(40.415363, -3.707398))
     ///// 0 === false ; 1 === true
     let uWireframe = global.gl.getUniformLocation(global.program, 'uWireframe');
     global.gl.uniform1i(uWireframe, 0);
@@ -192,13 +196,33 @@ async function mainR(texture) {
       if (draw) {
         //global.gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
         //global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
-        changeAngle(performance.now() / 1000 / 12 * 2 * Math.PI);
+        //changeAngle(performance.now() / 1000 / 12 * 2 * Math.PI);
         scene.draw();
         requestAnimationFrame(loop);
       }
     };
     requestAnimationFrame(loop);
   }
+}
+
+
+function convertLatLonToVec3 ( lat, lon ) {
+  /*lat =  lat * Math.PI / 180.0;
+  lon = -lon * Math.PI / 180.0;
+  return [
+    Math.cos(lat) * Math.cos(lon),
+    Math.sin(lat),
+    Math.cos(lat) * Math.sin(lon)];*/
+  var cosLat = Math.cos(lat * Math.PI / 180.0);
+  var sinLat = Math.sin(lat * Math.PI / 180.0);
+  var cosLon = Math.cos(lon * Math.PI / 180.0);
+  var sinLon = Math.sin(lon * Math.PI / 180.0);
+  var rad = 1.27227*50;
+  var f = 1.0 / 298.257224;
+  var C = 1.0 / Math.sqrt(cosLat * cosLat + (1 - f) * (1 - f) * sinLat * sinLat);
+  var S = (1.0 - f) * (1.0 - f) * C;
+  var h = 0.0;
+  return [(rad * C + h) * cosLat * cosLon, (rad * C + h) * cosLat * sinLon, (rad * S + h) * sinLat];
 }
 
 export {
