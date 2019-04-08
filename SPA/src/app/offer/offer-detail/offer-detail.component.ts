@@ -232,6 +232,25 @@ export class OfferDetailComponent implements OnInit {
     });
   }
 
+  htmlToStringBasic(content: NodeList) {
+    // ❯ ➖ •
+    let text = '';
+    content.forEach(e => {
+      if ((e as HTMLElement).tagName === 'UL') {
+        (e as HTMLElement).childNodes.forEach(ulli => {
+          text += '\t❯ ' + (ulli as HTMLElement).innerText + '\n';
+        });
+      } else if ((e as HTMLElement).tagName === 'OL') {
+        (e as HTMLElement).childNodes.forEach((olli, i) => {
+          text += '\t' + (i + 1) + '. ' + (olli as HTMLElement).innerText + '\n';
+        });
+      } else {
+        text += (e as HTMLElement).innerText + '\n';
+      }
+    });
+    return text;
+  }
+
   download() {
 
     const doc = new jspdf();
@@ -278,17 +297,13 @@ export class OfferDetailComponent implements OnInit {
 
     doc.setFontSize(11);
     const desc = new DOMParser().parseFromString(offer.description, 'text/html').body.childNodes;
-    let text = '';
-    desc.forEach( e => {
-      text += (e as HTMLElement).innerText + '\n';
-    });
-    const description = text;
+    const description = out.htmlToStringBasic(desc);
     console.log(description);
-    var lineHeight = doc.getLineHeight(description) / doc.internal.scaleFactor;
+    let lineHeight = doc.getLineHeight(description) / doc.internal.scaleFactor;
     const splittedText = doc.splitTextToSize(description, 140);
-    var lines = splittedText.length;
-    var blockHeight = lines * lineHeight;
-    var yPos = 65;
+    let lines = splittedText.length;
+    let blockHeight = lines * lineHeight;
+    let yPos = 65;
     doc.text(50, yPos, splittedText);
     yPos += blockHeight;
 // doc.text(50, yPos, '----- This text follows the previous text block.')
@@ -326,20 +341,14 @@ export class OfferDetailComponent implements OnInit {
     yPos += 10;
 
     doc.setFontSize(12);
-    const descript = new DOMParser().parseFromString(offer.responsabilities, 'text/html').body.childNodes;
-    text = '';
-    descript.forEach( e => {
-      text += (e as HTMLElement).innerText + '\n';
-    });
-    const responsabilities = text;
-    console.log(responsabilities);
-    var resp = text;
-//resp+=resp;
-    var lineHeight = doc.getLineHeight(resp) / doc.internal.scaleFactor;
-    var sppl = doc.splitTextToSize(resp, 180);
-    var lines = sppl.length;
-    var blockHeight = lines * lineHeight;
-    var antPos = yPos;
+    const responsibilitiesNodes = new DOMParser().parseFromString(offer.responsabilities, 'text/html').body.childNodes;
+    const responsibilities = out.htmlToStringBasic(responsibilitiesNodes);
+    // resp+=resp;
+    lineHeight = doc.getLineHeight(responsibilities) / doc.internal.scaleFactor;
+    let sppl = doc.splitTextToSize(responsibilities, 180);
+    lines = sppl.length;
+    blockHeight = lines * lineHeight;
+    let antPos = yPos;
     doc.text(sppl, 15, yPos);
     yPos += blockHeight + 10;
 
@@ -352,13 +361,13 @@ export class OfferDetailComponent implements OnInit {
       doc.addPage();
 
 
-      var newl = 284 - antPos;
-      var total = yPos - antPos;
+      const newl = 284 - antPos;
+      const total = yPos - antPos;
       if (total > newl) {
         // doc.text(String(Math.trunc(newl/lineHeight)), 15, 15);
-        let lineasFaltantes = Math.trunc(total / lineHeight) - Math.trunc(newl / lineHeight);
+        const lineasFaltantes = Math.trunc(total / lineHeight) - Math.trunc(newl / lineHeight);
         // doc.text(String(lineasFaltantes), 15, 20);
-        var init = -(lines - lineasFaltantes) * lineHeight + 5;
+        const init = -(lines - lineasFaltantes) * lineHeight + 5;
         doc.text(sppl, 15, init);
         yPos = init + blockHeight + 10;
         doc.setFontSize(17);
@@ -384,7 +393,8 @@ export class OfferDetailComponent implements OnInit {
 
 
     doc.setFontSize(12);
-    const req = offer.requeriments;
+    const requeriments = new DOMParser().parseFromString(offer.requeriments, 'text/html').body.childNodes;
+    const req = out.htmlToStringBasic(requeriments);
     // req+=req;
     lineHeight = doc.getLineHeight(req) / doc.internal.scaleFactor;
     sppl = doc.splitTextToSize(req, 180);
@@ -448,8 +458,8 @@ export class OfferDetailComponent implements OnInit {
     doc.rect(0, 0, 210, 16, 'F');
 
     const skills = offer.skills;
-    //skills+=skills;
-    //skills+=skills;
+    // skills+=skills;
+    // skills+=skills;
     const sk = skills.split(',');
     yPos += 10;
     doc.setFontSize(12);
