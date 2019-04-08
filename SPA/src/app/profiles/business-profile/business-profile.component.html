@@ -13,7 +13,7 @@
       fxFlex.gt-sm="80%">
       <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap.lt-sm="16px">
         <!-- Basic info -->
-        <mat-card [fxFlex]="(mine || twitterAccount === '')? 70 : 100">
+        <mat-card [fxFlex]="(mine || twitterAccount !== '')? 70 : 100">
           <mat-card-title>
             <app-offerer-name-overview
               [index]="(profilesState | async).business.index"
