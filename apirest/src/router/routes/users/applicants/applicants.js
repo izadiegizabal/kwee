@@ -857,7 +857,7 @@ module.exports = (app, db) => {
                 elasticsearch.rol = body.rol;
             }
 
-            if (body.social_networks.length > 0) {
+            if ( body.social_networks && body.social_networks.length > 0 ) {
                 let sn = body.social_networks;
                 let snUpdates = {};
                 sn.forEach(social_network => {

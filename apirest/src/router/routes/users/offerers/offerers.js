@@ -695,7 +695,7 @@ module.exports = (app, db) => {
             body.workField ? userOff.workField = body.workField : null;
             body.website ? userOff.website = body.website : null;
 
-            if (body.social_networks.length > 0) {
+            if ( body.social_networks && body.social_networks.length > 0 ) {
                 let sn = body.social_networks;
                 let snUpdates = {};
 
