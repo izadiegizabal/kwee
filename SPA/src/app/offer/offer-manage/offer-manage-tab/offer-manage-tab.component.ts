@@ -56,8 +56,12 @@ export class OfferManageTabComponent implements OnInit {
           status: this.status
         }));
       } else {
-        // llamada nueva
-        console.log('Aquí saldrían las ofertas aceptadas');
+        // this.store$.dispatch(new OfferManageActions.TryGetApplicationsAccepted({
+        //   id: this.id,
+        //   page: 1,
+        //   limit: this.pageSize,
+        //   status: 3
+        // }));
       }
     }
 
@@ -82,8 +86,12 @@ export class OfferManageTabComponent implements OnInit {
           status: this.status
         }));
       } else {
-        // llamada nueva
-        console.log('Aquí saldrían las ofertas aceptadas');
+        // this.store$.dispatch(new OfferManageActions.TryGetApplicationsAccepted({
+        //   id: this.id,
+        //   page: this.pageEvent.pageIndex + 1,
+        //   limit: this.pageEvent.pageSize,
+        //   status: 3
+        // }));
       }
     }
 
@@ -111,6 +119,10 @@ export class OfferManageTabComponent implements OnInit {
       case 3:
         return count[3].Selection;
         break;
+
+      // case 4:
+      //   return count[0].Total;
+      //   break;
     }
   }
 }

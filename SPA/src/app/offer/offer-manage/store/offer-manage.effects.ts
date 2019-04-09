@@ -9,6 +9,9 @@ import {environment} from '../../../../environments/environment';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
 import {CandidatePreview} from '../../../../models/candidate-preview.model';
+import {SetApplicationsAccepted} from './offer-manage.actions';
+import {TRY_GET_APPLICATIONS_ACCEPTED} from './offer-manage.actions';
+import {TryGetApplicationsAccepted} from './offer-manage.actions';
 
 function reformatCandidates(apiApplicationCandidates: any[]): CandidatePreview[] {
   // if no applications found return empty array
@@ -238,6 +241,60 @@ export class OfferManageEffects {
     share()
   );
 
+
+
+  @Effect()
+  GetApplicationsAccepted = this.actions$.pipe(
+    ofType(OfferManageActions.TRY_GET_APPLICATIONS_ACCEPTED),
+    map((action: OfferManageActions.TryGetApplicationsAccepted) => {
+      return action.payload;
+    }),
+    withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    switchMap(([payload, authState]) => {
+      const token = authState.token;
+      const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+      const apiEndpointUrl = environment.apiUrl + 'application/' + payload.id +
+          '?page=' + payload.page + '&limit=' + payload.limit + '&status=' + payload.status;
+
+        return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
+          map((res: {
+            ok: boolean,
+            message: any,
+            data: any[],
+            total: number,
+          }) => {
+            console.log(res);
+            if (res.ok) {
+              return {
+                type: OfferManageActions.SET_APPLICATIONS_ACCEPTED,
+                payload: res,
+              };
+            } else {
+              return [
+                {
+                  type: OfferManageActions.OPERATION_ERROR,
+                  payload: 'Error from API'
+                }
+              ];
+            }
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('getApplicationsAccepted', err));
+            const error = err ? err : '';
+            return [
+              {
+                type: OfferManageActions.OPERATION_ERROR,
+                payload: error
+              }
+            ];
+          })
+        );
+      }
+    ),
+    share()
+  );
+
+
   @Effect()
   ChangeApplicationStatus = this.actions$.pipe(
     ofType(OfferManageActions.TRY_CHANGE_APPLICATION_STATUS),
@@ -259,8 +316,7 @@ export class OfferManageEffects {
               if (payload.refresh) {
                 this.refreshCandidates();
               } else {
-                this.store$.dispatch(new OfferManageActions
-                  .TryGetOffersApplicant({
+                this.store$.dispatch(new OfferManageActions.TryGetOffersApplicant({
                     id: payload.candidateId,
                     page: 1,
                     limit: 10,
