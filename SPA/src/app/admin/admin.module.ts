@@ -18,6 +18,8 @@ import {EffectsModule} from '@ngrx/effects';
 import {AdminEffects} from './store/admin.effects';
 import {AlertDialogComponent} from '../shared/alert-dialog/alert-dialog.component';
 import {AlertDialogModule} from '../shared/alert-dialog/alert-dialog.module';
+import { AdminManageOffersComponent } from './admin-manage-offers/admin-manage-offers.component';
+import { OfferOverviewComponent } from './admin-manage-offers/offer-overview/offer-overview.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +32,8 @@ import {AlertDialogModule} from '../shared/alert-dialog/alert-dialog.module';
     AdminMessagesComponent,
     CandidateOverviewComponent,
     BusinessOverviewComponent,
+    AdminManageOffersComponent,
+    OfferOverviewComponent,
   ],
   imports: [
     AdminRoutingModule,

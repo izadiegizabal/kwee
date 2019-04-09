@@ -7,6 +7,7 @@ import {AdminManageBusinessesComponent} from './admin-manage-businesses/admin-ma
 import {AdminVerifyComponent} from './admin-verify/admin-verify.component';
 import {AdminReportsComponent} from './admin-reports/admin-reports.component';
 import {AdminMessagesComponent} from './admin-messages/admin-messages.component';
+import {AdminManageOffersComponent} from './admin-manage-offers/admin-manage-offers.component';
 
 const adminRoutes: Routes = [
   {
@@ -14,6 +15,7 @@ const adminRoutes: Routes = [
       {path: '', redirectTo: 'manage-candidates', pathMatch: 'full'},
       {path: 'manage-candidates', component: AdminManageCandidatesComponent},
       {path: 'manage-businesses', component: AdminManageBusinessesComponent},
+      {path: 'manage-offers', component: AdminManageOffersComponent},
       {path: 'verify', component: AdminVerifyComponent},
       {path: 'reports', component: AdminReportsComponent},
       {path: 'messages', component: AdminMessagesComponent},
