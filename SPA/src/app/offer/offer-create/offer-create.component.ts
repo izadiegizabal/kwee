@@ -261,7 +261,7 @@ export class OfferCreateComponent implements OnInit {
     }
   }
 
-  onSave(create: boolean) {
+  onSave(create: boolean, draft?: boolean) {
     this.dialogShown = false;
     if (this.form.status === 'VALID') {
 
@@ -281,7 +281,7 @@ export class OfferCreateComponent implements OnInit {
       console.log(options);
 
       const obj = {
-        'status': '0',
+        'status': draft ? '2' : '0',
         'title': this.form.controls['title'].value,
         'description': this.form.controls['description'].value,
         'datePublished': new Date(),
@@ -397,6 +397,10 @@ export class OfferCreateComponent implements OnInit {
       this.form.get('duration').enable();
       this.durationReq = true;
     }
+  }
+
+  onDraft() {
+    this.onSave(true, true);
   }
 
   capitalizeFirstLetter(string: string) {

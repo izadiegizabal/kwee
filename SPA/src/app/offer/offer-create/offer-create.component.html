@@ -272,8 +272,11 @@
         <br>
         <div fxLayout="row" fxLayoutAlign="end">
           <button color="primary" mat-button matStepperPrevious type="button">Back</button>
-          <button (click)="onSave(true)" *ngIf="!edit; else update" color="accent" mat-button type="button">Publish
-          </button>
+          <div *ngIf="!edit; else update">
+            <button (click)="onDraft()" color="primary" mat-button type="button">Save as Draft</button>
+            <button (click)="onSave(true)" color="accent" mat-button type="button">Publish
+            </button>
+          </div>
           <ng-template #update>
             <button (click)="onSave(false)" color="accent" mat-button type="button">Update</button>
           </ng-template>

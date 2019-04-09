@@ -108,7 +108,7 @@
             <div fxFlex="33%" fxFlex.lt-sm="100%"
                  fxLayoutAlign="center center"
                  style="width: 100%">
-              <div fxLayout="column" fxLayout.lt-sm="row"
+              <div fxLayout="column"
                    fxLayoutGap="8px">
 
                   <button
@@ -145,7 +145,17 @@
                   </div>
 
                 </ng-template>
-                <app-sns-share [offer]="getShareableOffer((offerState | async).offer.title)"></app-sns-share>
+                <div fxLayout="row">
+                  <app-sns-share [offer]="getShareableOffer((offerState | async).offer.title)"></app-sns-share>
+                  <button (click)="downloadPDF()"
+                          mat-icon-button>
+                    <mat-icon
+                      aria-label="Download Offer"
+                      class="svg"
+                      color="primary"
+                      svgIcon="arrow-down"></mat-icon>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -199,9 +209,6 @@
           </div>
         </div>
       </mat-card-content>
-      <button (click)="downloadPDF()"
-              color="accent"
-              mat-raised-button style="color: black">{{'Dowload' | uppercase }}</button>
     </mat-card>
   </div>
 </div>

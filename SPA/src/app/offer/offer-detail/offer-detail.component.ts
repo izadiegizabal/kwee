@@ -24,6 +24,16 @@ import html2canvas from 'html2canvas';
   styleUrls: ['./offer-detail.component.scss']
 })
 export class OfferDetailComponent implements OnInit {
+
+  constructor(
+    private titleService: Title,
+    private store$: Store<fromApp.AppState>,
+    private activatedRoute: ActivatedRoute,
+    private offerEffects$: OfferEffects,
+    private router: Router,
+    private http: HttpClient,
+    private location: Location) {
+  }
   offerSkills: [' '];
   offerState: Observable<fromOffer.State>;
   authState: any;
@@ -37,14 +47,9 @@ export class OfferDetailComponent implements OnInit {
   offer: any;
   JSONData: any;
 
-  constructor(
-    private titleService: Title,
-    private store$: Store<fromApp.AppState>,
-    private activatedRoute: ActivatedRoute,
-    private offerEffects$: OfferEffects,
-    private router: Router,
-    private http: HttpClient,
-    private location: Location) {
+  static getDate(dt: Date) {
+    const date = new Date(dt);
+    return date.getUTCDay() + '/' + date.getUTCMonth() + '/' + date.getUTCFullYear();
   }
 
   ngOnInit() {
@@ -238,11 +243,11 @@ export class OfferDetailComponent implements OnInit {
     content.forEach(e => {
       if ((e as HTMLElement).tagName === 'UL') {
         (e as HTMLElement).childNodes.forEach(ulli => {
-          text += '\t❯ ' + (ulli as HTMLElement).innerText + '\n';
+          text += '        ' + '- ' + (ulli as HTMLElement).innerText + '\n';
         });
       } else if ((e as HTMLElement).tagName === 'OL') {
         (e as HTMLElement).childNodes.forEach((olli, i) => {
-          text += '\t' + (i + 1) + '. ' + (olli as HTMLElement).innerText + '\n';
+          text += '        ' + (i + 1) + '. ' + (olli as HTMLElement).innerText + '\n';
         });
       } else {
         text += (e as HTMLElement).innerText + '\n';
@@ -257,9 +262,8 @@ export class OfferDetailComponent implements OnInit {
 
     const img = this.image;
     const offer = this.offer;
-    console.log(offer);
     const data = this.JSONData;
-    const getDate = this.getDate;
+    const getDate = OfferDetailComponent.getDate;
     const out = this;
 
 
@@ -298,7 +302,6 @@ export class OfferDetailComponent implements OnInit {
     doc.setFontSize(11);
     const desc = new DOMParser().parseFromString(offer.description, 'text/html').body.childNodes;
     const description = out.htmlToStringBasic(desc);
-    console.log(description);
     let lineHeight = doc.getLineHeight(description) / doc.internal.scaleFactor;
     const splittedText = doc.splitTextToSize(description, 140);
     let lines = splittedText.length;
@@ -306,12 +309,11 @@ export class OfferDetailComponent implements OnInit {
     let yPos = 65;
     doc.text(50, yPos, splittedText);
     yPos += blockHeight;
-// doc.text(50, yPos, '----- This text follows the previous text block.')
+    // doc.text(50, yPos, '----- This text follows the previous text block.')
 
     doc.setFontSize(17);
     doc.setFont('Plex', 'bold');
     yPos += 5;
-    console.log(yPos);
     if (yPos < 110) {
       yPos = 110;
     }
@@ -324,7 +326,7 @@ export class OfferDetailComponent implements OnInit {
     doc.addImage(data.images[2], 'JPEG', 76, yPos, 5, 5);
     doc.text(out.getOfferContractType(offer.contractType), 83, yPos + 3.8);
     doc.addImage(data.images[3], 'JPEG', 136, yPos, 5, 5);
-    doc.text(out.getOfferSalary(offer.salaryAmount , offer.salaryCurrency , offer.salaryFrequency), 143, yPos + 3.8);
+    doc.text(out.getOfferSalary(offer.salaryAmount, offer.salaryCurrency, offer.salaryFrequency), 143, yPos + 3.8);
     yPos += 10;
     doc.addImage(data.images[4], 'JPEG', 16, yPos, 5, 5);
     doc.text(out.getOfferLocation(offer.location, offer.workLocation), 23, yPos + 3.7);
@@ -339,127 +341,79 @@ export class OfferDetailComponent implements OnInit {
 
     doc.setFont('Plex', 'normal');
     yPos += 10;
-
+    // ======================================================= Responsabilities
     doc.setFontSize(12);
     const responsibilitiesNodes = new DOMParser().parseFromString(offer.responsabilities, 'text/html').body.childNodes;
     const responsibilities = out.htmlToStringBasic(responsibilitiesNodes);
-    // resp+=resp;
     lineHeight = doc.getLineHeight(responsibilities) / doc.internal.scaleFactor;
     let sppl = doc.splitTextToSize(responsibilities, 180);
     lines = sppl.length;
     blockHeight = lines * lineHeight;
-    let antPos = yPos;
-    doc.text(sppl, 15, yPos);
-    yPos += blockHeight + 10;
-
-// Filled
-    doc.setDrawColor(0);
-    doc.setFillColor(255);
-    doc.rect(0, 284, 210, 100, 'F');
-
-    if (yPos > 282) {
-      doc.addPage();
-
-
-      const newl = 284 - antPos;
-      const total = yPos - antPos;
-      if (total > newl) {
-        // doc.text(String(Math.trunc(newl/lineHeight)), 15, 15);
-        const lineasFaltantes = Math.trunc(total / lineHeight) - Math.trunc(newl / lineHeight);
-        // doc.text(String(lineasFaltantes), 15, 20);
-        const init = -(lines - lineasFaltantes) * lineHeight + 5;
-        doc.text(sppl, 15, init);
-        yPos = init + blockHeight + 10;
-        doc.setFontSize(17);
-        doc.setFont('Plex', 'bold');
-        doc.text('Requeriments', 15, yPos);
-        doc.setFont('Plex', 'normal');
-
+    let lastLineRes = Math.trunc((282 - yPos) / lineHeight);
+    let startingLineRes = 0;
+    let drawnRes = 0;
+    while (drawnRes < blockHeight) {
+      if (lastLineRes > lines) {
+        lastLineRes = lines;
       }
-
-      // Filled
-      doc.setDrawColor(0);
-      doc.setFillColor(255);
-      doc.rect(0, 284, 210, 100, 'F');
-      doc.setDrawColor(0);
-      doc.setFillColor(255);
-      doc.rect(0, 0, 210, 16, 'F');
-    } else {
-      doc.setFontSize(17);
-      doc.setFont('Plex', 'bold');
-      doc.text('Requeriments', 15, yPos);
-      doc.setFont('Plex', 'normal');
+      doc.text(sppl.slice(startingLineRes, lastLineRes), 15, yPos);
+      yPos += ((lastLineRes - startingLineRes) * lineHeight) + 30;
+      drawnRes += (lastLineRes - startingLineRes) * lineHeight;
+      startingLineRes = lastLineRes;
+      if (yPos > 282) {
+        doc.addPage();
+        yPos = 20;
+      }
+      lastLineRes += Math.trunc((282 - yPos) / lineHeight);
     }
 
-
-    doc.setFontSize(12);
-    const requeriments = new DOMParser().parseFromString(offer.requeriments, 'text/html').body.childNodes;
-    const req = out.htmlToStringBasic(requeriments);
-    // req+=req;
-    lineHeight = doc.getLineHeight(req) / doc.internal.scaleFactor;
-    sppl = doc.splitTextToSize(req, 180);
-    lines = sppl.length;
-    console.log(lines);
-    console.log(sppl);
-    blockHeight = lines * lineHeight;
+    yPos = yPos === 20 ? 20 : yPos - 30;
     yPos += 10;
-    antPos = yPos;
-    console.log((282 - yPos) / lineHeight);
-    const lastLine = Math.trunc((282 - yPos) / lineHeight);
-    doc.text(sppl.slice(0, lastLine), 15, yPos);
-    yPos += blockHeight + 10;
+    doc.setFontSize(17);
+    doc.setFont('Plex', 'bold');
+    doc.text('Requeriments', 15, yPos);
+    doc.setFont('Plex', 'normal');
+    doc.setFontSize(12);
 
-    // Filled
-    doc.setDrawColor(0);
-    doc.setFillColor(255);
-    doc.rect(0, 284, 210, 100, 'F');
-    doc.setDrawColor(0);
-    doc.setFillColor(255);
-    doc.rect(0, 0, 210, 15, 'F');
+    yPos += 10;
 
-    if (yPos > 282) {
-      doc.addPage();
-
-      const newl = 284 - antPos;
-      const total = yPos - antPos;
-      if (total > newl) {
-        // doc.text(String(Math.trunc(newl/lineHeight)), 15, 15);
-        const lineasFaltantes = Math.trunc(total / lineHeight) - Math.trunc(newl / lineHeight);
-        // doc.text(String(lineasFaltantes), 15, 20);
-        const init = 15;
-        doc.text(sppl.slice(lastLine), 15, 20);
-        yPos = init + (lineHeight * (sppl.length - lastLine)) + 15;
-        doc.setFontSize(17);
-        doc.setFont('Plex', 'bold');
-        doc.text('Skills', 15, yPos);
-        doc.setFont('Plex', 'normal');
+    // ======================================================= Requirements
+    doc.setFontSize(12);
+    const requerimentsNodes = new DOMParser().parseFromString(offer.requeriments, 'text/html').body.childNodes;
+    const requirements = out.htmlToStringBasic(requerimentsNodes);
+    lineHeight = doc.getLineHeight(requirements) / doc.internal.scaleFactor;
+    sppl = doc.splitTextToSize(requirements, 180);
+    lines = sppl.length;
+    blockHeight = lines * lineHeight;
+    lastLineRes = Math.trunc((282 - yPos) / lineHeight);
+    startingLineRes = 0;
+    drawnRes = 0;
+    while (drawnRes < blockHeight) {
+      if (lastLineRes > lines) {
+        lastLineRes = lines;
       }
-
-      doc.setDrawColor(0);
-      doc.setFillColor(255);
-      doc.rect(0, 284, 210, 100, 'F');
-      doc.setDrawColor(0);
-      doc.setFillColor(255);
-      doc.rect(0, 0, 210, 16, 'F');
-    } else {
-      doc.setFontSize(17);
-      doc.setFont('Plex', 'bold');
-      doc.text('Skills', 15, yPos);
-
-      doc.setFont('Plex', 'normal');
-
+      doc.text(sppl.slice(startingLineRes, lastLineRes), 15, yPos);
+      yPos += ((lastLineRes - startingLineRes) * lineHeight) + 30;
+      drawnRes += (lastLineRes - startingLineRes) * lineHeight;
+      startingLineRes = lastLineRes;
+      if (yPos > 282) {
+        doc.addPage();
+        yPos = 20;
+      }
+      lastLineRes += Math.trunc((282 - yPos) / lineHeight);
     }
 
-    doc.setDrawColor(0);
-    doc.setFillColor(255);
-    doc.rect(0, 284, 210, 100, 'F');
-    doc.setDrawColor(0);
-    doc.setFillColor(255);
-    doc.rect(0, 0, 210, 16, 'F');
+    yPos = yPos === 20 ? 20 : yPos - 30;
+    yPos += 10;
+    doc.setFontSize(17);
+    doc.setFont('Plex', 'bold');
+    doc.text('Skills', 15, yPos);
+    doc.setFont('Plex', 'normal');
+    doc.setFontSize(12);
+
+    // ======================================================= Skills
 
     const skills = offer.skills;
-    // skills+=skills;
-    // skills+=skills;
     const sk = skills.split(',');
     yPos += 10;
     doc.setFontSize(12);
@@ -520,22 +474,15 @@ export class OfferDetailComponent implements OnInit {
     }
 
 
-
-
     doc.save(offer.title + '.pdf');
   }
 
-  getDate(dt: Date) {
-    const date = new Date(dt);
-    return date.getUTCDay() + '/' + date.getUTCMonth() + '/' + date.getUTCFullYear();
-  }
-
-  getJSON(): Observable < any > {
-      return this.http.get('./assets/toPDF.json');
+  getJSON(): Observable<any> {
+    return this.http.get('./assets/toPDF.json');
   }
 
   getImage(imageUrl: string): Observable<Blob> {
-    return this.http.get(imageUrl, { responseType: 'blob' });
+    return this.http.get(imageUrl, {responseType: 'blob'});
   }
 
 }
