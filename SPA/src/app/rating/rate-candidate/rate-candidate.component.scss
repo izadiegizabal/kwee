@@ -40,6 +40,32 @@ h2:nth-child(3) {
   margin-top: 8px;
 }
 
+.narrowMarginTop{
+  margin-top: 8px;
+}
+
+.narrowMarginBottom{
+  margin-bottom: 8px;
+}
+
+.h4narrowMargins h4{
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.noOverflow h4{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.maxWidth{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
 p:nth-child(4) {
   margin-bottom: 8px;
 }
@@ -70,4 +96,16 @@ p:nth-child(4) {
 ::ng-deep .ng-animating div mat-accordion mat-expansion-panel div.mat-expansion-panel-content {
   height: 0px;
   visibility: hidden;
+}
+
+@media only screen and (max-width: 500px) {
+  .maxWidth{
+    max-width: 100px;
+  }
+}
+
+@media only screen and (max-width: 370px) {
+  .maxWidth{
+    max-width: 60px;
+  }
 }

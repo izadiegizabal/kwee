@@ -6,17 +6,18 @@
       <mat-form-field class="example-full-width">
         <textarea formControlName="opinion" matInput placeholder="Opinion"></textarea>
       </mat-form-field>
-      <h2>Details</h2>
-      <p>All the detail star ratings are required.</p>
+      <h2 class="narrowMarginTop">Details</h2>
+      <p class="narrowMarginBottom">All the detail star ratings are required.</p>
       <div
         class="stars"
         fxLayout="row"
         fxLayout.lt-sm="column"
-        fxLayoutGap="16px">
+        fxLayoutGap.gt-xs="16px" class="h4narrowMargins"
+        [ngClass.lt-md]="{'noOverflow': true}" [ngClass.gt-sm]="{'noOverflow': false}">
         <div
           fxFlex="30%"
           fxFlex.lt-sm="100%"
-          fxLayout="column">
+          fxLayout="column" >
           <h4 *ngIf="data.candidate">Efficiency</h4>
           <h4 *ngIf="!data.candidate">Facilities</h4>
           <mat-form-field class="noUnderline">
@@ -105,13 +106,13 @@
               <mat-expansion-panel-header>
                 <mat-panel-title>
                   <div class="index" [style.background-color]="getBGColour()"><span>{{getIndex(i)}}</span></div>
-                  <p>{{getName(i)}}</p>
+                  <p [ngClass.xs]="{'maxWidth': true}" [ngClass.gt-xs]="{'maxWidth': false}" >{{getName(i)}}</p>
                 </mat-panel-title>
                 <mat-panel-description fxLayoutAlign="end">
-                  <div *ngIf="!getRated(i) " fxLayout="row" fxAlign="center" fxLayoutGap="8px"><span>Unrated</span>
+                  <div *ngIf="!getRated(i) " fxLayout="row" fxAlign="center" fxLayoutGap="8px"><span fxHide.xs>Unrated</span>
                     <mat-icon color="warn" svgIcon="error"></mat-icon>
                   </div>
-                  <div *ngIf="getRated(i) " fxLayout="row" fxAlign="center" fxLayoutGap="8px"><span>Rated</span>
+                  <div *ngIf="getRated(i) " fxLayout="row" fxAlign="center" fxLayoutGap="8px"><span fxHide.xs>Rated</span>
                     <mat-icon color="accent" svgIcon="check-circle"></mat-icon>
                   </div>
                 </mat-panel-description>
@@ -127,7 +128,8 @@
                 class="stars"
                 fxLayout="row"
                 fxLayout.lt-sm="column"
-                fxLayoutGap="16px">
+                fxLayoutGap.gt-xs="16px"
+                [ngClass.lt-md]="{'noOverflow': true}" [ngClass.gt-sm]="{'noOverflow': false}">
                 <div
                   fxLayout="column"
                   fxFlex="30%"

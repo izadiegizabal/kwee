@@ -47,13 +47,22 @@ export class OfferManageTabComponent implements OnInit {
         limit: this.pageSize,
         status: this.status
       }));
-    } else {
-      this.store$.dispatch(new OfferManageActions.TryGetOffersApplicant({
-        id: this.id,
-        page: 1,
-        limit: this.pageSize,
-        status: this.status
-      }));
+    } else if (this.id && this.type === 1) {
+      if (this.status !== 4) {
+        this.store$.dispatch(new OfferManageActions.TryGetOffersApplicant({
+          id: this.id,
+          page: 1,
+          limit: this.pageSize,
+          status: this.status
+        }));
+      } else {
+        // this.store$.dispatch(new OfferManageActions.TryGetApplicationsAccepted({
+        //   id: this.id,
+        //   page: 1,
+        //   limit: this.pageSize,
+        //   status: 3
+        // }));
+      }
     }
 
     this.offerManageState = this.store$.pipe(select(state => state.offerManage));
@@ -61,20 +70,29 @@ export class OfferManageTabComponent implements OnInit {
 
   changePage() {
 
-    if (this.type === 0) {
+    if (this.id && this.type === 0 && this.status !== 4) {
       this.store$.dispatch(new OfferManageActions.TryGetOffersOfferer({
         id: this.id,
         page: this.pageEvent.pageIndex + 1,
         limit: this.pageEvent.pageSize,
         status: this.status
       }));
-    } else {
-      this.store$.dispatch(new OfferManageActions.TryGetOffersApplicant({
-        id: this.id,
-        page: this.pageEvent.pageIndex + 1,
-        limit: this.pageEvent.pageSize,
-        status: this.status
-      }));
+    } else if (this.id && this.type === 1) {
+      if (this.status !== 4) {
+        this.store$.dispatch(new OfferManageActions.TryGetOffersApplicant({
+          id: this.id,
+          page: this.pageEvent.pageIndex + 1,
+          limit: this.pageEvent.pageSize,
+          status: this.status
+        }));
+      } else {
+        // this.store$.dispatch(new OfferManageActions.TryGetApplicationsAccepted({
+        //   id: this.id,
+        //   page: this.pageEvent.pageIndex + 1,
+        //   limit: this.pageEvent.pageSize,
+        //   status: 3
+        // }));
+      }
     }
 
     window.scrollTo(0, 0);
@@ -101,6 +119,10 @@ export class OfferManageTabComponent implements OnInit {
       case 3:
         return count[3].Selection;
         break;
+
+      // case 4:
+      //   return count[0].Total;
+      //   break;
     }
   }
 }

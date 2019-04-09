@@ -3,20 +3,12 @@
     fxLayout="row"
     fxLayout.lt-sm="column"
     fxLayoutAlign="space-between">
+
     <mat-card-title
-      *ngIf="offer.status === 0 && (authState | async).user && offer.fk_offerer === (authState | async).user.id && selection === true; else detail"
-      (click)="startSelectionProcess()"
+      [routerLink]="offerUrl"
       style="cursor: pointer">
       {{offer.title}}
     </mat-card-title>
-
-    <ng-template #detail>
-      <mat-card-title
-        [routerLink]="offerUrl"
-        style="cursor: pointer">
-        {{offer.title}}
-      </mat-card-title>
-    </ng-template>
 
     <mat-card-subtitle>
       <app-offerer-name-overview
@@ -61,7 +53,7 @@
         <app-icon-with-text [text]="getOfferSalary()" icon="local-atm"></app-icon-with-text>
       </div>
       <div>
-        <button [routerLink]="offerUrl" color="accent" mat-button>{{'More Info' | uppercase }}</button>
+        <button [routerLink]="urlfyDetail()" color="accent" mat-button>{{'More Info' | uppercase }}</button>
         <button (click)="openShareDialog()" mat-icon-button>
           <mat-icon aria-label="Share offer in social networks" color="accent" svgIcon="share"></mat-icon>
         </button>

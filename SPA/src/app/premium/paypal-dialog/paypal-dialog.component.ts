@@ -6,12 +6,11 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import * as fromAuth from '../../auth/store/auth.reducers';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
-import * as AdminActions from '../../admin/store/admin.actions';
 import * as fromAdmin from '../../admin/store/admin.reducers';
 import * as fromInvoice from '../../invoices/store/invoice.reducers';
-import * as InvoiceActions from '../../invoices/store/invoice.actions';
 
 import {Router} from '@angular/router';
+import * as ProfilesActions from '../../profiles/store/profiles.actions';
 
 
 export interface DialogData {
@@ -96,12 +95,12 @@ export class PaypalDialogComponent implements OnInit {
           };
 
           if (this.profileType === 'candidate') {
-            this.store$.dispatch(new AdminActions.TryUpdateCandidate({id: this.userId, updatedCandidate: updateuser}));
+            console.log(updateuser);
+            this.store$.dispatch(new ProfilesActions.UserTryUpdateCandidate({ updatedCandidate: updateuser}));
+            console.log('candidate ');
           } else if (this.profileType === 'business') {
-            this.store$.dispatch(new AdminActions.TryUpdateBusiness({id: this.userId, updatedBusiness: updateuser}));
+            this.store$.dispatch(new ProfilesActions.UserTryUpdateBusiness({ updatedBusiness: updateuser}));
           }
-          this.invoiceState = this.store$.pipe(select('invoices'));
-          this.store$.dispatch(new InvoiceActions.TryPostInvoice({obj: {product: this.data.product, price: this.data.price}}));
         },
         onCancel: (data, actions) => {
           console.log('OnCancel');

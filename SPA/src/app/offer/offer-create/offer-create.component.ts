@@ -44,9 +44,14 @@ export class OfferCreateComponent implements OnInit {
 
   public Editor = ClassicEditor;
   public Config = {
-    toolbar: ['heading', '|', 'bold', 'italic', 'link',
+    toolbar: ['heading', '|', 'bold', 'italic',
       'bulletedList', 'numberedList', 'blockQuote',
-      'insertTable', 'undo', 'redo']
+      'undo', 'redo']
+  };
+
+  public ConfigLimited = {
+    toolbar: ['heading', '|', 'bold', 'italic',
+      'undo', 'redo']
   };
   public DataDesc = '<p>Your text...</p>';
   public DataReq = '<p>Your text...</p>';
@@ -210,25 +215,25 @@ export class OfferCreateComponent implements OnInit {
       // ---------------------------------------------------------------------
       'datePublished': new FormControl(null),
       // ---------------------------------------------------------------------
-      'dateStart': new FormControl(this.offer ? this.offer.dateStart : null, Validators.required),
-      'dateEnd': new FormControl(this.offer ? this.offer.dateEnd : null, Validators.required),
+      'dateStart': new FormControl(this.offer ? new Date(this.offer.dateStart) : null, Validators.required),
+      'dateEnd': new FormControl(this.offer ? new Date(this.offer.dateEnd) : null, Validators.required),
       'location': new FormControl(loc, Validators.required),
       'salary': new FormControl(this.offer ? this.offer.salaryAmount : null, Validators.required),
-      'salaryFrequency': new FormControl(this.offer ? this.offer.salaryFrecuency : null, Validators.required),
+      'salaryFrequency': new FormControl(this.offer ? this.offer.salaryFrequency : null, Validators.required),
       'salaryCurrency': new FormControl(this.offer ? this.offer.salaryCurrency : null, Validators.required),
       'seniority': new FormControl(this.offer ? this.offer.seniority : null, Validators.required),
       'maxApplicants': new FormControl(this.offer ? this.offer.maxApplicants : null, Validators.required),
-      'duration': new FormControl(this.offer ? this.offer.duration : null),
-      'durationUnit': new FormControl(this.offer ? this.offer.durationUnit : null),
+      'duration': new FormControl(this.offer && !this.offer.isIndefinite ? this.offer.duration : null),
+      'durationUnit': new FormControl(this.offer && !this.offer.isIndefinite ? this.offer.durationUnit : null),
       'contractType': new FormControl(this.offer ? this.offer.contractType : null, Validators.required),
-      'isIndefinite': new FormControl(this.offer ? !this.offer.isIndefinite : null),
+      'isIndefinite': new FormControl(this.offer ? this.offer.isIndefinite : null),
       'workLocation': new FormControl(this.offer ? this.offer.workLocation : null, Validators.required),
       'skills': new FormArray(this.getSkills(this.offer ? this.offer.skills : null)),
       'requirements': new FormControl(this.offer ? this.offer.requeriments : null),
       'responsabilities': new FormControl(this.offer ? this.offer.responsabilities : null)
     });
 
-    if (this.offer && !this.offer.isIndefinite) {
+    if (this.offer && this.offer.isIndefinite) {
       this.disableDuration();
     }
 
@@ -256,7 +261,7 @@ export class OfferCreateComponent implements OnInit {
     }
   }
 
-  onSave(create: boolean) {
+  onSave(create: boolean, draft: boolean) {
     this.dialogShown = false;
     if (this.form.status === 'VALID') {
 
@@ -276,7 +281,7 @@ export class OfferCreateComponent implements OnInit {
       console.log(options);
 
       const obj = {
-        'status': '0',
+        'status': draft ? '2' : '0',
         'title': this.form.controls['title'].value,
         'description': this.form.controls['description'].value,
         'datePublished': new Date(),
@@ -392,6 +397,26 @@ export class OfferCreateComponent implements OnInit {
       this.form.get('duration').enable();
       this.durationReq = true;
     }
+  }
+
+  onDraft() {
+    this.onSave(true, true);
+  }
+
+  updateDraft(publish: boolean) {
+    if (publish) {
+      this.onSave(false, false);
+    } else {
+      this.onSave(false, true);
+    }
+  }
+
+  onPublish() {
+    this.onSave(true, false);
+  }
+
+  onUpdate() {
+    this.onSave(false, false);
   }
 
   capitalizeFirstLetter(string: string) {
