@@ -51,6 +51,75 @@ export class InvoiceEffects {
     share()
   );
 
+  @Effect()
+  getInvoiceOfferer = this.actions$.pipe(
+    ofType(InvoiceActions.TRY_GET_INVOICES_OFFERER),
+    map((action: InvoiceActions.TryGetInvoicesOfferer) => {
+      return action.payload;
+    }),
+    withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    switchMap(([payload, authState]) => {
+      const apiEndpointUrl = environment.apiUrl + 'invoices/offerer/' + payload.id;
+      const token = authState.token;
+      const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+      return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
+        map((res: any) => {
+          return {
+            type: InvoiceActions.GET_INVOICES_OFFERER,
+            payload: res
+          };
+        }),
+        catchError((err: HttpErrorResponse) => {
+          throwError(this.handleError('getInvoiceOfferer', err));
+          const error = err.error.message ? err.error.message : err;
+          return [
+            {
+              type: InvoiceActions.OPERATION_ERROR,
+              payload: error
+            }
+          ];
+        })
+      );
+      }
+    ),
+    share()
+  );
+
+  @Effect()
+  getInvoiceApplicant = this.actions$.pipe(
+    ofType(InvoiceActions.TRY_GET_INVOICES_APPLICANT),
+    map((action: InvoiceActions.TryGetInvoicesApplicant) => {
+      return action.payload;
+    }),
+    withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    switchMap(([payload, authState]) => {
+        const apiEndpointUrl = environment.apiUrl + 'invoices/applicant/' + payload.id;
+        const token = authState.token;
+        const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+        return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
+          map((res: any) => {
+            return {
+              type: InvoiceActions.GET_INVOICES_OFFERER,
+              payload: res
+            };
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('getInvoiceApplicant', err));
+            const error = err.error.message ? err.error.message : err;
+            return [
+              {
+                type: InvoiceActions.OPERATION_ERROR,
+                payload: error
+              }
+            ];
+          })
+        );
+      }
+    ),
+    share()
+  );
+
+
   constructor(private actions$: Actions, private store$: Store<fromApp.AppState>, private router: Router, private httpClient: HttpClient) {
   }
 

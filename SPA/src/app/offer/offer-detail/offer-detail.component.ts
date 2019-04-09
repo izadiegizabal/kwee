@@ -249,6 +249,8 @@ export class OfferDetailComponent implements OnInit {
         (e as HTMLElement).childNodes.forEach((olli, i) => {
           text += '        ' + (i + 1) + '. ' + (olli as HTMLElement).innerText + '\n';
         });
+      } else if ((e as HTMLElement).tagName === undefined) {
+          text += e.textContent + '\n';
       } else {
         text += (e as HTMLElement).innerText + '\n';
       }
@@ -322,14 +324,16 @@ export class OfferDetailComponent implements OnInit {
     yPos += 5;
     doc.setFontSize(12);
     doc.addImage(data.images[1], 'JPEG', 16, yPos, 5, 5);
-    doc.text(out.getOfferDuration(offer.duration, offer.durationUnit, offer.isIndefinite), 23, yPos + 3.8);
+    doc.text(out.getOfferDuration(offer.isIndefinite, offer.duration, offer.durationUnit), 23, yPos + 3.8);
     doc.addImage(data.images[2], 'JPEG', 76, yPos, 5, 5);
     doc.text(out.getOfferContractType(offer.contractType), 83, yPos + 3.8);
     doc.addImage(data.images[3], 'JPEG', 136, yPos, 5, 5);
     doc.text(out.getOfferSalary(offer.salaryAmount, offer.salaryCurrency, offer.salaryFrequency), 143, yPos + 3.8);
     yPos += 10;
     doc.addImage(data.images[4], 'JPEG', 16, yPos, 5, 5);
-    doc.text(out.getOfferLocation(offer.location, offer.workLocation), 23, yPos + 3.7);
+    const location = out.getOfferLocation(offer.location, offer.workLocation);
+    const split = location.split(' - ');
+    doc.text(split[0] , 23, yPos + 3.7);
     doc.addImage(data.images[5], 'JPEG', 76, yPos, 5, 5);
     doc.text(out.getOfferSeniorityLevel(offer.seniority), 83, yPos + 3.7);
     doc.addImage(data.images[6], 'JPEG', 136, yPos, 5, 5);
