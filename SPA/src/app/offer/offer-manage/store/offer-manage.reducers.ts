@@ -76,6 +76,12 @@ export function OfferManageReducer(state = initialState, action: OfferManageActi
         offers: action.payload
       };
 
+    case OfferManageActions.SET_APPLICATIONS_ACCEPTED:
+      return {
+        ...state,
+        offers: action.payload
+      };
+
     case OfferManageActions.SET_OFFER_CANDIDATES:
       let newSelection = null;
       switch (action.payload.status) {
