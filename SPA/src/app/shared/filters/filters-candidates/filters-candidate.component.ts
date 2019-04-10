@@ -79,9 +79,7 @@ export class FiltersCandidateComponent implements OnInit {
     this.filters.controls['minIndex'].valueChanges.subscribe(() => {
       this.router.navigate(['/search-candidates'],
         {
-          queryParams: {
-            index: JSON.stringify({'gte': this.filters.controls['minIndex'].value})
-          }, queryParamsHandling: 'merge'
+          queryParams: {index: this.filters.controls['minIndex'].value}, queryParamsHandling: 'merge'
         });
     });
 
@@ -154,7 +152,7 @@ export class FiltersCandidateComponent implements OnInit {
     });
 
     this.filters.controls['maxAge'].valueChanges.subscribe(() => {
-      this.maxDateSearch();
+      this.minDateSearch();
     });
 
   }
@@ -221,70 +219,70 @@ export class FiltersCandidateComponent implements OnInit {
   }
 
   countWorkField() {
-    const queryWorkF = [];
+    let queryWorkF = '';
 
     if (this.filters.controls['workfield0'].value) {
-      queryWorkF.push(0);
+      queryWorkF += '0 ';
     }
     if (this.filters.controls['workfield1'].value) {
-      queryWorkF.push(1);
+      queryWorkF += '1 ';
     }
     if (this.filters.controls['workfield2'].value) {
-      queryWorkF.push(2);
+      queryWorkF += '2 ';
     }
     if (this.filters.controls['workfield3'].value) {
-      queryWorkF.push(3);
+      queryWorkF += '3 ';
     }
     if (this.filters.controls['workfield4'].value) {
-      queryWorkF.push(4);
+      queryWorkF += '4 ';
     }
     if (this.filters.controls['workfield5'].value) {
-      queryWorkF.push(5);
+      queryWorkF += '5 ';
     }
     if (this.filters.controls['workfield6'].value) {
-      queryWorkF.push(6);
+      queryWorkF += '6 ';
     }
     if (this.filters.controls['workfield7'].value) {
-      queryWorkF.push(7);
+      queryWorkF += '7 ';
     }
     if (this.filters.controls['workfield8'].value) {
-      queryWorkF.push(8);
+      queryWorkF += '8 ';
     }
     if (this.filters.controls['workfield9'].value) {
-      queryWorkF.push(9);
+      queryWorkF += '9 ';
     }
     if (this.filters.controls['workfield10'].value) {
-      queryWorkF.push(10);
+      queryWorkF += '10 ';
     }
     if (this.filters.controls['workfield11'].value) {
-      queryWorkF.push(11);
+      queryWorkF += '11 ';
     }
     if (this.filters.controls['workfield12'].value) {
-      queryWorkF.push(12);
+      queryWorkF += '12 ';
     }
     if (this.filters.controls['workfield13'].value) {
-      queryWorkF.push(13);
+      queryWorkF += '13 ';
     }
     if (this.filters.controls['workfield14'].value) {
-      queryWorkF.push(14);
+      queryWorkF += '14 ';
     }
     if (this.filters.controls['workfield15'].value) {
-      queryWorkF.push(15);
+      queryWorkF += '15 ';
     }
     if (this.filters.controls['workfield16'].value) {
-      queryWorkF.push(16);
+      queryWorkF += '16 ';
     }
     if (this.filters.controls['workfield17'].value) {
-      queryWorkF.push(17);
+      queryWorkF += '17 ';
     }
     if (this.filters.controls['workfield18'].value) {
-      queryWorkF.push(18);
+      queryWorkF += '18 ';
     }
     if (this.filters.controls['workfield19'].value) {
-      queryWorkF.push(19);
+      queryWorkF += '19 ';
     }
     if (this.filters.controls['workfield20'].value) {
-      queryWorkF.push(20);
+      queryWorkF += '20 ';
     }
 
     this.router.navigate(['/search-candidates'],
@@ -293,24 +291,30 @@ export class FiltersCandidateComponent implements OnInit {
 
   minDateSearch() {
     const today = new Date();
-    const mdate = new Date(today.getFullYear() - this.filters.controls['minAge'].value, today.getMonth(), today.getDay());
+    let mindate = '';
+
+    let dia = '' + today.getDate();
+    if (today.getDate() < 10) {
+      dia = '0' + today.getDate();
+    }
+    let mes = '' + today.getMonth();
+    if (today.getMonth() < 10) {
+      mes = '0' + today.getMonth();
+    }
+
+    if (this.filters.controls['minAge'].value) {
+      mindate +=
+        'lte:' + (today.getFullYear() - this.filters.controls['minAge'].value) + '-' + mes + '-' + dia + ':';
+    }
+
+    if (this.filters.controls['maxAge'].value) {
+      mindate += 'gte:' + (today.getFullYear() - this.filters.controls['maxAge'].value) + '-' + mes + '-' + dia;
+    }
 
     this.router.navigate(['/search-candidates'],
       {
         queryParams: {
-          dateBorn: JSON.stringify({'lte': mdate})
-        }, queryParamsHandling: 'merge'
-      });
-  }
-
-  maxDateSearch() {
-    const today = new Date();
-    const mdate = new Date(today.getFullYear() - this.filters.controls['maxAge'].value, today.getMonth(), today.getDay());
-
-    this.router.navigate(['/search-candidates'],
-      {
-        queryParams: {
-          dateBorn: JSON.stringify({'gte': mdate})
+          dateBorn: mindate
         }, queryParamsHandling: 'merge'
       });
   }

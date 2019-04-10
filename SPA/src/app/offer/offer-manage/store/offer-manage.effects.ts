@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Actions, Effect, ofType} from '@ngrx/effects';
-import {catchError, map, share, switchMap, withLatestFrom} from 'rxjs/operators';
+import {catchError, map, mergeMap, share, switchMap, withLatestFrom} from 'rxjs/operators';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {Observable, of, throwError} from 'rxjs';
@@ -11,6 +11,11 @@ import * as fromApp from '../../../store/app.reducers';
 import {CandidatePreview} from '../../../../models/candidate-preview.model';
 
 function reformatCandidates(apiApplicationCandidates: any[]): CandidatePreview[] {
+  // if no applications found return empty array
+  if (!apiApplicationCandidates) {
+    return [];
+  }
+
   const correctCandidates: CandidatePreview[] = [];
   for (const apiCandidate of apiApplicationCandidates) {
     if (apiCandidate) {
@@ -22,6 +27,10 @@ function reformatCandidates(apiApplicationCandidates: any[]): CandidatePreview[]
 
 @Injectable()
 export class OfferManageEffects {
+  offerId: number;
+  page: number;
+  limit: number;
+
   @Effect()
   GetOffersOfferer = this.actions$.pipe(
     ofType(OfferManageActions.TRY_GET_OFFERS_OFFERER),
@@ -33,6 +42,8 @@ export class OfferManageEffects {
         let apiEndpointUrl = environment.apiUrl + 'offerer/' + payload.id
           + '/offers?page=' + payload.page + '&limit=' + payload.limit
           + '&summary=0';
+
+        console.log(apiEndpointUrl);
 
         if (payload.status !== -1) {
           apiEndpointUrl = apiEndpointUrl + '&status=' + payload.status;
@@ -122,12 +133,65 @@ export class OfferManageEffects {
   );
 
   @Effect()
+  ChangeOfferStatus = this.actions$.pipe(
+    ofType(OfferManageActions.TRY_CHANGE_OFFER_STATUS),
+    map((action: OfferManageActions.TryChangeOfferStatus) => {
+      return action.payload;
+    }),
+    withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    switchMap(([payload, authState]) => {
+        const apiEndpointUrl = environment.apiUrl + 'offer/' + payload.offerId;
+        const token = authState.token;
+        const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+        const body = JSON.stringify({status: payload.newStatus});
+        return this.httpClient.put(apiEndpointUrl, body, {headers: headers}).pipe(
+          map((res: {
+            ok: boolean,
+          }) => {
+            if (res.ok) {
+              console.log(res);
+              return {
+                type: OfferManageActions.SET_CHANGE_OFFER_STATUS,
+                payload: { offerId: payload.offerId, newStatus: payload.newStatus },
+              };
+            } else {
+              return [
+                {
+                  type: OfferManageActions.OPERATION_ERROR,
+                  payload: 'Error from API'
+                }
+              ];
+            }
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('getOffersOfferer', err));
+            console.log(err);
+            return [
+              {
+                type: OfferManageActions.OPERATION_ERROR,
+                payload: err.error.error
+              }
+            ];
+          })
+        );
+      }
+    ),
+    share()
+  );
+
+  @Effect()
   GetOfferCandidates = this.actions$.pipe(
     ofType(OfferManageActions.TRY_GET_OFFER_CANDIDATES),
     map((action: OfferManageActions.TryGetOfferCandidates) => {
       return action.payload;
     }),
-    switchMap((payload) => {
+    mergeMap((payload) => {
+
+        // Save pagination values for later
+        this.offerId = payload.id;
+        this.page = payload.page;
+        this.limit = payload.limit;
+
         let apiEndpointUrl = environment.apiUrl + 'offer/' + payload.id +
           '/applications?page=' + payload.page + '&limit=' + payload.limit;
 
@@ -142,7 +206,6 @@ export class OfferManageEffects {
             data: any[],
             total: number,
           }) => {
-            console.log(res);
             if (res.ok) {
               const newCandidates = reformatCandidates(res.data);
               return {
@@ -181,7 +244,7 @@ export class OfferManageEffects {
       return action.payload;
     }),
     withLatestFrom(this.store$.pipe(select(state => state.auth))),
-    switchMap(([payload, authState]) => {
+    mergeMap(([payload, authState]) => {
         const apiEndpointUrl = environment.apiUrl + 'application/' + payload.applicationId;
         const token = authState.token;
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
@@ -191,10 +254,22 @@ export class OfferManageEffects {
             ok: boolean,
           }) => {
             if (res.ok) {
-              return {
-                type: OfferManageActions.SET_CHANGE_APPLICATION_STATUS,
-                payload: {status: payload.status, candidateId: payload.candidateId},
-              };
+              // If change okay get all the candidates
+              if (payload.refresh) {
+                this.refreshCandidates();
+
+                return {
+                  type: OfferManageActions.SET_CHANGE_APPLICATION_STATUS,
+                  payload: {status: payload.status, candidateId: payload.candidateId},
+                };
+              } else {
+                return [
+                  {
+                    type: OfferManageActions.SET_CHANGE_APPLICATION_STATUS,
+                    payload: {status: payload.status, candidateId: payload.candidateId},
+                  }
+                ];
+              }
             } else {
               return [
                 {
@@ -206,6 +281,7 @@ export class OfferManageEffects {
           }),
           catchError((err: HttpErrorResponse) => {
             throwError(this.handleError('getOffersOfferer', err));
+            console.log(err);
             return [
               {
                 type: OfferManageActions.OPERATION_ERROR,
@@ -218,6 +294,95 @@ export class OfferManageEffects {
     ),
     share()
   );
+
+  @Effect()
+  RejectApplication = this.actions$.pipe(
+    ofType(OfferManageActions.TRY_REJECT_APPLICATION),
+    map((action: OfferManageActions.TryRejectApplication) => {
+      return action.payload;
+    }),
+    withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    mergeMap(([payload, authState]) => {
+        const apiEndpointUrl = environment.apiUrl + 'application/' + payload;
+        const token = authState.token;
+        const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+        return this.httpClient.delete(apiEndpointUrl, {headers: headers}).pipe(
+          map((res: {
+            ok: boolean,
+          }) => {
+            if (res.ok) {
+              // If change okay get all the candidates
+              this.refreshCandidates();
+              return {
+                type: OfferManageActions.REJECT_APPLICATION,
+                payload: payload,
+              };
+            } else {
+              return [
+                {
+                  type: OfferManageActions.OPERATION_ERROR,
+                  payload: 'Error from API'
+                }
+              ];
+            }
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('getOffersOfferer', err));
+            console.log(err);
+            return [
+              {
+                type: OfferManageActions.OPERATION_ERROR,
+                payload: err.error.error
+              }
+            ];
+          })
+        );
+      }
+    ),
+    share()
+  );
+
+  private refreshCandidates() {
+    // pending
+    this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({
+      id: this.offerId,
+      page: this.page,
+      limit: this.limit,
+      status: 0
+    }));
+
+    // faved
+    this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({
+      id: this.offerId,
+      page: this.page,
+      limit: this.limit,
+      status: 1
+    }));
+
+    // selected
+    this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({
+      id: this.offerId,
+      page: this.page,
+      limit: this.limit,
+      status: 2
+    }));
+
+    // accepted
+    this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({
+      id: this.offerId,
+      page: this.page,
+      limit: this.limit,
+      status: 3
+    }));
+
+    // rejected
+    this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({
+      id: this.offerId,
+      page: this.page,
+      limit: this.limit,
+      status: 4
+    }));
+  }
 
   constructor(private actions$: Actions, private store$: Store<fromApp.AppState>, private router: Router, private httpClient: HttpClient) {
   }

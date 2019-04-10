@@ -1,7 +1,7 @@
-<div class="container"
+<div [ngClass]="{'isLanding': isLanding, 'container': true}"
      fxLayout="column"
      fxLayoutGap="8px">
-  <header>
+  <header *ngIf="!isLanding">
     <app-header></app-header>
   </header>
 
@@ -9,7 +9,7 @@
 
   <div
     class="content">
-    <router-outlet></router-outlet>
+    <router-outlet (activate)="onActivate($event)" (deactivate)="onDeactivate($event)"></router-outlet>
   </div>
 
   <footer>

@@ -1,41 +1,11 @@
 // TNode
-import {
-    TNode,
-    calculateViews,
-    calculateLights,
-    goToRoot,
-    getLigthsViews
-} from './TNode.js';
 // TEntity
-import {
-    TTransform,
-    TCamera,
-    TLight,
-    TAnimation,
-    TMesh
-} from './TEntity.js';
 // TResourceManager
-import {
-    TResourceManager,
-    TResourceMesh,
-    TResourceMaterial,
-    TResourceTexture,
-    TResourceShader,
-    loadImage
-} from './resourceManager.js';
+import {TResourceManager} from './resourceManager.js';
 // TMotor
-import { TMotorTAG } from './TMotorTAG.js';
-
+import {TMotorTAG} from './TMotorTAG.js';
 // Commons
-import {
-    canvas,
-    gl,
-    program,
-    TEntity,
-    angle,
-    changeAngle,
-    texture
-} from './commons.js';
+import {canvas, changeAngle, global} from './commons.js';
 
 let draw = true;
 let manager = null;
@@ -43,29 +13,11 @@ let allowActions = {
   value: false
 };
 
-async function mainInit(){
-  return new Promise(resolve => {
+async function mainInit() {
+  return new Promise(async resolve => {
 
-  //gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  console.log('== Loading Image ==');
-  const image = new Image();
-  image.onload = async function(){
-    console.log('== Image loaded ==');
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-    //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.bindTexture(gl.TEXTURE_2D, null);
-
-
-    /// @todo: MOVE TO MESH DRAW
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.uniform1i(program.sampler, 0);
-
+    //global.gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
+    global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
 
 
     manager = new TResourceManager();
@@ -75,176 +27,183 @@ async function mainInit(){
     let VShader = await manager.getResource('shader.vs');
     let FShader = await manager.getResource('shader.fs');
 
-    let vertexShader = gl.createShader(gl.VERTEX_SHADER);
-    let fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
 
-    gl.shaderSource(vertexShader, VShader);
-    gl.shaderSource(fragmentShader, FShader);
+    let vertexShader = global.gl.createShader(global.gl.VERTEX_SHADER);
+    let fragmentShader = global.gl.createShader(global.gl.FRAGMENT_SHADER);
 
-    gl.compileShader(vertexShader);
-    if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
-      console.error('ERROR compiling vertex shader', gl.getShaderInfoLog(vertexShader));
+    global.gl.shaderSource(vertexShader, VShader);
+    global.gl.shaderSource(fragmentShader, FShader);
+
+    global.gl.compileShader(vertexShader);
+    if (!global.gl.getShaderParameter(vertexShader, global.gl.COMPILE_STATUS)) {
+      console.error('ERROR compiling vertex shader', global.gl.getShaderInfoLog(vertexShader));
       return;
     }
 
-    gl.compileShader(fragmentShader);
-    if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
-      console.error('ERROR compiling fragment shader', gl.getShaderInfoLog(fragmentShader));
+    global.gl.compileShader(fragmentShader);
+    if (!global.gl.getShaderParameter(fragmentShader, global.gl.COMPILE_STATUS)) {
+      console.error('ERROR compiling fragment shader', global.gl.getShaderInfoLog(fragmentShader));
       return;
     }
 
-    gl.attachShader(program, vertexShader);
-    gl.attachShader(program, fragmentShader);
-    gl.linkProgram(program);
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      console.error('ERROR linking program', gl.getProgramInfoLog(program));
+    global.gl.attachShader(global.program, vertexShader);
+    global.gl.attachShader(global.program, fragmentShader);
+    global.gl.linkProgram(global.program);
+    if (!global.gl.getProgramParameter(global.program, global.gl.LINK_STATUS)) {
+      console.error('ERROR linking global.program', global.gl.getProgramInfoLog(global.program));
       return;
     }
-    gl.validateProgram(program);
-    if (!gl.getProgramParameter(program, gl.VALIDATE_STATUS)) {
-      console.error('ERROR validating program', gl.getProgramInfoLog(program));
+    global.gl.validateProgram(global.program);
+    if (!global.gl.getProgramParameter(global.program, global.gl.VALIDATE_STATUS)) {
+      console.error('ERROR validating global.program', global.gl.getProgramInfoLog(global.program));
       return;
     }
     console.log('== Ready to run ==');
     draw = true;
     allowActions.value = true;
     resolve(allowActions.value);
-  }
-  image.src = '../assets/assets/textures/continents.jpg';
   });
 }
 
-async function resetCanvas(){
+async function resetCanvas() {
   draw = false;
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
 }
 
 
-async function mainR( model ){
-  draw = true;
-  allowActions.value = false;
-  let motor = new TMotorTAG(manager);
-  let scene = motor.createRootNode();
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////                                         INIT CONFIG
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+async function mainR(texture) {
+  if(global.gl && global.program) {
+    draw = true;
+    allowActions.value = false;
+    let motor = new TMotorTAG(manager);
+    let scene = motor.createRootNode();
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         INIT CONFIG
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  // gl.clearColor(0.266, 0.294, 0.329, 1.0); // our grey
-  //gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  gl.enable(gl.DEPTH_TEST);
-  gl.enable(gl.CULL_FACE);
-  gl.frontFace(gl.CCW);
-  gl.cullFace(gl.BACK);
+    // global.gl.clearColor(0.266, 0.294, 0.329, 1.0); // our grey
+    // global.gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
+    global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
+    global.gl.enable(global.gl.DEPTH_TEST);
+    global.gl.enable(global.gl.CULL_FACE);
+    global.gl.frontFace(global.gl.CCW);
+    global.gl.cullFace(global.gl.BACK);
 
-  /// @todo: CREATE PROGRAM OBJECT
-  gl.useProgram(program);
+    /// @todo: CREATE global.PROGRAM OBJECT
+    global.gl.useProgram(global.program);
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////                                         TREE & RESOURCES
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  let cam = motor.createCamera(scene);
-  let light = motor.createLight(scene);
-  let land = null
-  if (model === 'hollow') {
-    land = await motor.loadMesh(scene, 'earth_fbx.json');
-    motor.rotate(land, -90, 'z');
-  } else {
-    land = await motor.loadMesh(scene, 'textured_earth.json');
-    motor.rotate(land, -90, 'z');
-  }
-
-  let sphere = null
-  if (model === 'hollow') {
-    sphere = await motor.loadMesh(scene, 'sea.json');
-    motor.rotate(sphere, -90, 'z');
-    motor.scale(sphere, [0.995,0.995,0.995]);
-  } else {
-    sphere = await motor.loadMesh(scene, 'textured_earth.json');
-    motor.rotate(sphere, -90, 'z');
-  }
-
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////                                         CAMERAS
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  
-
-  console.log("scene:");
-  console.log(scene);
-
-  motor.lookAt(cam, [0, 0, 2], [0, 0, 0], [0, 1, 0]);
-
-  motor.calculateLights();
-  motor.calculateViews();
-  //   console.log('Lights : ');
-  //   console.log(TEntity.Lights);
-  //   console.log('Views/cameras: ');
-  //   console.log(TEntity.Views);
-  //   console.log('Lights array: ');
-  //   console.log(TEntity.AuxLights);
-  //   console.log('Views/cameras array: ');
-  //   console.log(TEntity.AuxViews);
-  //   console.log('Lights : ');
-  //   console.log(motor.allLights);
-  //   console.log('Views/cameras: ');
-  //   console.log(motor.allCameras);
-  //   console.log('Lights array: ');
-  //   console.log(TEntity.AuxLights);
-  //   console.log('Views/cameras array: ');
-  //   console.log(TEntity.AuxViews);
-
-
-  // @todo: DEAL WITH UMVMATRIX
-  let projMatrix = new Float32Array(16);
-  let viewMatrix = motor.positionCameras[0]; // viewMatrix = TEntity.AuxViews[0];
-  glMatrix.mat4.perspective(projMatrix, glMatrix.glMatrix.toRadian(45), canvas.clientWidth / canvas.clientHeight, 0.1, 1000.0);
-  let matViewUniformLocation = gl.getUniformLocation(program, 'uVMatrix');
-  let matProjUniformLocation = gl.getUniformLocation(program, 'uPMatrix');
-  
-  gl.uniformMatrix4fv(matViewUniformLocation, false, viewMatrix);
-  gl.uniformMatrix4fv(matProjUniformLocation, false, projMatrix);
-
-  let off = gl.getUniformLocation(program, 'uOffscreen');
-  gl.uniform1i(off, false);
-  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////                                         LIGHTNING
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  let lightPos = gl.getUniformLocation(program, 'uLightPosition');
-  let lightAmb = gl.getUniformLocation(program, 'uLightAmbient');
-  let lightDiff = gl.getUniformLocation(program, 'uLightDiffuse');
-  let alpha = gl.getUniformLocation(program, 'uAlpha');
-
-  /// @todo: MOVE TO TNODE
-  gl.uniform3fv(lightPos,   [5,5,5]);
-  gl.uniform4fv(lightAmb,    [0.1,0.1,0.1,1.0]);
-  gl.uniform4fv(lightDiff,    [1.0,1.0,1.0,1.0]);
-  gl.uniform1f(alpha, 1.0);
-
-
-  ///////// CHAPUZA MASTER AYY LMAO
-  allowActions.value = true;
-  document.getElementById("kweelive").click();
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////                                         LOOP
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  var loop = function () {
-    if(draw) {
-      //gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
-      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-      changeAngle(performance.now() / 1000 / 6 * 2 * Math.PI);
-      scene.draw();
-      requestAnimationFrame(loop);
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         TREE & RESOURCES
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    let cam = motor.createCamera(scene);
+    let light = motor.createLight(scene);
+    let land;
+    land = await motor.loadMesh(scene, 'earthobj.json');
+    if (texture) {
+      let tex = await manager.getResource('continents.jpg');
+      land.entity.mesh.tex = tex;
+      // console.log(land);
+    } else {
+      land.entity.mesh.tex = undefined;
     }
-  };
-  requestAnimationFrame(loop);
+    //motor.rotate(land, -90, 'z');
+    let sphere = await motor.loadMesh(scene, 'sea.json');
+    //motor.rotate(sphere, -90, 'z');
+    motor.scale(sphere, [0.995, 0.995, 0.995]);
 
+    ///// 0 === false ; 1 === true
+    let uWireframe = global.gl.getUniformLocation(global.program, 'uWireframe');
+    global.gl.uniform1i(uWireframe, 0);
+    let uUseVertexColor = global.gl.getUniformLocation(global.program, 'uUseVertexColor');
+    global.gl.uniform1i(uUseVertexColor, 0);
+    let uUseTextures = global.gl.getUniformLocation(global.program, 'uUseTextures');
+    global.gl.uniform1i(uUseTextures, 0);
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         CAMERAS
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    // console.log("scene:");
+    // console.log(scene);
+
+    motor.lookAt(cam, [0, 0, 2], [0, 1, 0], [0, 1, 0]);
+
+    motor.calculateLights();
+    motor.calculateViews();
+
+    // @todo: DEAL WITH UMVMATRIX
+    let projMatrix = new Float32Array(16);
+    let viewMatrix = motor.positionCameras[0]; // viewMatrix = TEntity.AuxViews[0];
+    glMatrix.mat4.perspective(projMatrix, glMatrix.glMatrix.toRadian(45), canvas.clientWidth / canvas.clientHeight, 0.1, 1000.0);
+    let matViewUniformLocation = global.gl.getUniformLocation(global.program, 'uVMatrix');
+    let matProjUniformLocation = global.gl.getUniformLocation(global.program, 'uPMatrix');
+
+    global.gl.uniformMatrix4fv(matViewUniformLocation, false, viewMatrix);
+    global.gl.uniformMatrix4fv(matProjUniformLocation, false, projMatrix);
+
+    let off = global.gl.getUniformLocation(global.program, 'uOffscreen');
+    global.gl.uniform1i(off, 0);
+    global.gl.bindFramebuffer(global.gl.FRAMEBUFFER, null);
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         LIGHTNING
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    let lightPos = global.gl.getUniformLocation(global.program, 'uLightPosition');
+    let lightAmb = global.gl.getUniformLocation(global.program, 'uLightAmbient');
+    let lightDiff = global.gl.getUniformLocation(global.program, 'uLightDiffuse');
+    let alpha = global.gl.getUniformLocation(global.program, 'uAlpha');
+
+    /// @todo: MOVE TO TNODE
+    global.gl.uniform3fv(lightPos, [5, 5, 5]);
+    global.gl.uniform4fv(lightAmb, [0.0, 0.0, 0.0, 1.0]);
+    global.gl.uniform4fv(lightDiff, [1.0, 1.0, 1.0, 1.0]);
+    global.gl.uniform1f(alpha, 1.0);
+
+
+    ///////// CHAPUZA MASTER AYY LMAO
+    allowActions.value = true;
+    // document.getElementById("kweelive").click();
+    document.body.click();
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         FAKE TEXTURE
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /*
+      If seems that it doesn't matter if the shader only accesses the texture when uUseTextures is true.
+      What matters is the shader uses a texture at all.
+
+      Instead of using two different pair of shader, we are going to bind a one pixel white texture to avoid the error.
+      It is said to be a good practice.Then, we overwrite it in case we need to use textures.
+
+      link: https://gamedev.stackexchange.com/questions/166886/render-warning-there-is-no-texture-bound-to-the-unit-0-when-not-rendering-tex
+     */
+    const whiteTexture = global.gl.createTexture();
+    global.gl.bindTexture(global.gl.TEXTURE_2D, whiteTexture);
+    global.gl.texImage2D(
+      global.gl.TEXTURE_2D, 0, global.gl.RGBA, 1, 1, 0,
+      global.gl.RGBA, global.gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
+    global.gl.useProgram(global.program);
+    global.gl.bindTexture(global.gl.TEXTURE_2D, whiteTexture);
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         LOOP
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    var loop = function () {
+      if (draw) {
+        //global.gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
+        //global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
+        changeAngle(performance.now() / 1000 / 12 * 2 * Math.PI);
+        scene.draw();
+        requestAnimationFrame(loop);
+      }
+    };
+    requestAnimationFrame(loop);
+  }
 }
 
 export {
-    mainInit,
-    mainR,
-    resetCanvas,
-    allowActions
+  mainInit,
+  mainR,
+  resetCanvas,
+  allowActions
 }

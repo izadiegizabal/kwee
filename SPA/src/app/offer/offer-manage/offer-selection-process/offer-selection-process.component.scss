@@ -27,6 +27,10 @@ mat-sidenav h3 {
   margin-bottom: 4px;
 }
 
+.hide {
+  display: none !important;
+}
+
 ::ng-deep app-offer-selection-process .mat-step-header .mat-step-icon-selected,
 app-offer-selection-process mat-step-header .mat-step-icon-state-done,
 app-offer-selection-process mat-step-header .mat-step-icon-state-edit{

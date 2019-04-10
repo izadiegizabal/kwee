@@ -68,7 +68,7 @@
         color="primary"
         [ngClass]="{
           'profileLogo': true,
-          'business': userType === 'business' || userType === 'admin'
+          'business': isLanding || userType === 'business' || userType === 'admin'
         }">
   <a [matMenuTriggerFor]="menu">
     <mat-icon svgIcon="account-circle"></mat-icon>
