@@ -69,7 +69,7 @@ export enum SeniorityLevel {
 export enum JobDurationUnit {
   Days = 0,
   Months = 1,
-  Years = 3
+  Years = 2
 }
 
 export enum Distances {
