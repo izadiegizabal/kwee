@@ -2,6 +2,7 @@ const {tokenId, logger, pagination, prepareOffersToShow, sendEmailSelected, send
 const {checkToken} = require('../../middlewares/authentication');
 const {algorithm} = require('../../shared/algorithm');
 const {Op} = require('../../database/op');
+const moment = require('moment');
 
 // ============================
 // ===== CRUD application ======
@@ -257,9 +258,15 @@ module.exports = (app, db) => {
                     if (status == 3 || status == 4) {
                         if (application.status == 2 || application.status == 3) {
                             if (applicant.userId == application.fk_applicant) {
-                                await db.applications.update({status}, {
-                                    where: {id}
-                                });
+                                if ( status == 3 ) {
+                                    await db.applications.update({ status, acceptedAt: moment() }, {
+                                        where: {id}
+                                    });
+                                } else {
+                                    await db.applications.update({ status }, {
+                                        where: {id}
+                                    });
+                                }
 
                                 notifyOfferer(applicant, application, id, status, res);
 
@@ -284,28 +291,33 @@ module.exports = (app, db) => {
                 } else {
                     let offerer = await db.offerers.findOne({where: {userId: user}});
                     if (offerer) {
-                        let offers = await offerer.getOffers();
-                        let offerToUpdate = offers.find(offer => offer.id == application.fk_offer);
+                        if ( status != 3 ) {
 
-                        if (offerToUpdate) {
-                            if (offerToUpdate.id == application.fk_offer) {
-                                await db.applications.update({status}, {
-                                    where: {id}
-                                });
-                                notifyApplicant(offerer, application, id, status, res);
-                                await algorithm.indexUpdate(user);
-                                return res.status(201).json({
-                                    ok: true,
-                                    message: "Application updated to status " + status
-                                });
+                            let offers = await offerer.getOffers();
+                            let offerToUpdate = offers.find(offer => offer.id == application.fk_offer);
+                            
+                            if (offerToUpdate) {
+                                if (offerToUpdate.id == application.fk_offer) {
+                                    await db.applications.update({status}, {
+                                        where: {id}
+                                    });
+                                    notifyApplicant(offerer, application, id, status, res);
+                                    await algorithm.indexUpdate(user);
+                                    return res.status(201).json({
+                                        ok: true,
+                                        message: "Application updated to status " + status
+                                    });
+                                } else {
+                                    return next({
+                                        type: 'error',
+                                        error: "Unauthorized to update applications of other user"
+                                    });
+                                }
                             } else {
-                                return next({
-                                    type: 'error',
-                                    error: "Unauthorized to update applications of other user"
-                                });
+                                return next({type: 'error', error: "Unauthorized to update applications of other user"});
                             }
                         } else {
-                            return next({type: 'error', error: "Unauthorized to update applications of other user"});
+                            return next({type: 'error', error: "Unauthorized to update applications to accepted being offerer" });
                         }
                     }
                 }

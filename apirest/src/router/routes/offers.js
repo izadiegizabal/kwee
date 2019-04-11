@@ -247,6 +247,7 @@ module.exports = (app, db) => {
                         applicantShow.applicationId = application.id;
                         applicantShow.applicationStatus = application.status;
                         applicantShow.aHasRated = application.aHasRated;
+                        applicantShow.aHasRatedDate = application.aHasRatedDate;
                         applicantShow.applicantId = applicantUser.id;
                         applicantShow.applicantName = applicantUser.name;
                         applicantShow.applicantStatus = applicantUser.status;

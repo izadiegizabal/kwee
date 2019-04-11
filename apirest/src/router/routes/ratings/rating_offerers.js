@@ -1,7 +1,7 @@
 const {checkToken, checkAdmin} = require('../../../middlewares/authentication');
 const {logger, tokenId} = require('../../../shared/functions');
-const bcrypt = require('bcryptjs');
 const {algorithm} = require('../../../shared/algorithm');
+const moment = require('moment');
 
 // ============================
 // ======== CRUD rating =========
@@ -186,7 +186,7 @@ module.exports = (app, db) => {
                             await transaction.commit();
 
                             // to check + clean
-                            await db.applications.update({aHasRated: 1}, {
+                            await db.applications.update({ aHasRated: 1, aHasRatedDate: moment() }, {
                                 where: {id: fk_application}
                             });
 

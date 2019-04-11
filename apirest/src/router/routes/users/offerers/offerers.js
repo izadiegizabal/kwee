@@ -339,6 +339,8 @@ module.exports = (app, db) => {
                         applicantShow.applicationStatus = a.status;
                         applicantShow.aHasRated = a.aHasRated;
                         applicantShow.oHasRated = a.oHasRated;
+                        applicantShow.aHasRatedDate = a.aHasRatedDate;
+                        applicantShow.oHasRatedDate = a.oHasRatedDate;
                         applicantShow.applicantId = applicantUser.id;
                         applicantShow.applicantName = applicantUser.name;
                         applicantShow.applicantIndex = applicantUser.index;

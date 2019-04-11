@@ -61,6 +61,21 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: false
         },
+        
+        aHasRatedDate: {
+            type: DataTypes.DATE,
+            defaultValue: null
+        },
+
+        oHasRatedDate: {
+            type: DataTypes.DATE,
+            defaultValue: null
+        },
+        
+        acceptedAt: {
+            type: DataTypes.DATE,
+            defaultValue: null
+        },
     });
     return Application;
 };
