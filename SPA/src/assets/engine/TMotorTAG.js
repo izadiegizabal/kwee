@@ -52,6 +52,10 @@ class TMotorTAG{
       return node;
     }
 
+    setChildren(node, children) {
+      node.addChild(children.father.father.father);
+    }
+
     createNode(father, entity){
         var node = new TNode(father, entity);
         father.addChild(node);
@@ -95,6 +99,24 @@ class TMotorTAG{
                 node.father.father.entity.rotate(angle, axis);
                 break;
         }
+    }
+
+    setRotation( node, angle, axis ) {
+      node.father.father.entity.identity();
+      switch (axis) {
+        case 'x':
+          node.father.father.entity.rotateX(angle);
+          break;
+        case 'y':
+          node.father.father.entity.rotateY(angle);
+          break;
+        case 'z':
+          node.father.father.entity.rotateZ(angle);
+          break;
+        default:
+          node.father.father.entity.rotate(angle, axis);
+          break;
+      }
     }
 
     translate( node, units ) {

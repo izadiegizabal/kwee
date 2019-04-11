@@ -5,7 +5,7 @@ import {TResourceManager} from './resourceManager.js';
 // TMotor
 import {TMotorTAG} from './TMotorTAG.js';
 // Commons
-import {canvas, changeAngle, global} from './commons.js';
+import {canvas, changeAngle, global, angle} from './commons.js';
 
 let draw = true;
 let manager = null;
@@ -107,14 +107,39 @@ async function mainR(texture) {
       //land.entity.mesh.tex = undefined;
     }
     //motor.rotate(land, -90, 'z');
-    //let sphere = await motor.loadMesh(scene, 'sea.json');
+    let sphere = await motor.loadMesh(scene, 'sea.json');
     //motor.rotate(sphere, -90, 'z');
-    //motor.scale(sphere, [0.995, 0.995, 0.995]);
+    motor.scale(sphere, [0.995, 0.995, 0.995]);
 
-    console.log(convertLatLonToVec3(40.415363, -3.707398));
-    let point = await motor.loadMesh(scene, 'sea.json');
-    motor.scale(point, [0.01, 0.01, 0.01]);
-    motor.translate(point, convertLatLonToVec3(40.415363, -3.707398))
+    //////////////////////////////////
+    ///////           Markers
+    //////////////////////////////////
+    // Madrid 40.415363, -3.707398
+    let point1 = await motor.loadMesh(land, 'marker.json');
+    motor.scale(point1, [0.01, 0.01, 0.01]);
+    motor.translate(point1, convertLatLonToVec3(10.500000, -66.916664));
+    // Caracas 10.500000, -66.916664
+    let point2 = await motor.loadMesh(land, 'marker.json');
+    motor.scale(point2, [0.01, 0.01, 0.01]);
+    motor.translate(point2, convertLatLonToVec3(40.415363, -3.707398));
+    // Roma 41.89193, 12.51133
+    let point3 = await motor.loadMesh(land, 'marker.json');
+    motor.scale(point3, [0.01, 0.01, 0.01]);
+    motor.translate(point3, convertLatLonToVec3(41.89193, 12.51133));
+    // Sydney -33.865143, 151.209900
+    let point4 = await motor.loadMesh(land, 'marker.json');
+    motor.scale(point4, [0.01, 0.01, 0.01]);
+    motor.translate(point4, convertLatLonToVec3(-33.865143, 151.209900));
+    // Wellington -41.28664, 174.77557
+    let point5 = await motor.loadMesh(land, 'marker.json');
+    motor.scale(point5, [0.01, 0.01, 0.01]);
+    motor.translate(point5, convertLatLonToVec3(-41.28664, 174.77557));
+    // Tokyo 35.6895, 139.69171
+    let point6 = await motor.loadMesh(land, 'marker.json');
+    motor.scale(point6, [0.01, 0.01, 0.01]);
+    motor.translate(point6, convertLatLonToVec3(35.6895, 139.69171));
+
+
     ///// 0 === false ; 1 === true
     let uWireframe = global.gl.getUniformLocation(global.program, 'uWireframe');
     global.gl.uniform1i(uWireframe, 0);
@@ -132,7 +157,7 @@ async function mainR(texture) {
     // console.log("scene:");
     // console.log(scene);
 
-    motor.lookAt(cam, [0, 0, 2], [0, 1, 0], [0, 1, 0]);
+    motor.lookAt(cam, [0, 0, 2], [0, 0, 1], [0, 1, 0]);
 
     motor.calculateLights();
     motor.calculateViews();
@@ -189,6 +214,10 @@ async function mainR(texture) {
       global.gl.RGBA, global.gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
     global.gl.useProgram(global.program);
     global.gl.bindTexture(global.gl.TEXTURE_2D, whiteTexture);
+
+
+
+    console.log(scene);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         LOOP
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -196,7 +225,10 @@ async function mainR(texture) {
       if (draw) {
         //global.gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
         //global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
-        //changeAngle(performance.now() / 1000 / 12 * 2 * Math.PI);
+        changeAngle(performance.now() / 1000 / 3 * 2 * Math.PI);
+        changeAngle(angle * 25);
+        motor.setRotation(land, angle, 'y');
+        motor.setRotation(sphere, angle, 'y');
         scene.draw();
         requestAnimationFrame(loop);
       }
@@ -207,22 +239,26 @@ async function mainR(texture) {
 
 
 function convertLatLonToVec3 ( lat, lon ) {
+  lon += -25.7;
+  lat -= 0.5;
   /*lat =  lat * Math.PI / 180.0;
   lon = -lon * Math.PI / 180.0;
   return [
     Math.cos(lat) * Math.cos(lon),
     Math.sin(lat),
     Math.cos(lat) * Math.sin(lon)];*/
-  var cosLat = Math.cos(lat * Math.PI / 180.0);
+  /*var cosLat = Math.cos(lat * Math.PI / 180.0);
   var sinLat = Math.sin(lat * Math.PI / 180.0);
   var cosLon = Math.cos(lon * Math.PI / 180.0);
   var sinLon = Math.sin(lon * Math.PI / 180.0);
   var rad = 1.27227*50;
-  var f = 1.0 / 298.257224;
-  var C = 1.0 / Math.sqrt(cosLat * cosLat + (1 - f) * (1 - f) * sinLat * sinLat);
-  var S = (1.0 - f) * (1.0 - f) * C;
-  var h = 0.0;
-  return [(rad * C + h) * cosLat * cosLon, (rad * C + h) * cosLat * sinLon, (rad * S + h) * sinLat];
+  return [(rad * cosLat * cosLon), (rad * cosLat * sinLon), (rad * sinLat)];
+  return [(rad * cosLat * cosLon)-49, (rad * cosLat * sinLon)+11, (rad * sinLat)+22];*/
+  var latRad = lat * (Math.PI / 180);
+  var lonRad = -lon * (Math.PI / 180);
+  var r = 1.27227*50;
+
+  return[Math.cos(latRad) * Math.cos(lonRad) * r , Math.sin(latRad) * r , Math.cos(latRad) * Math.sin(lonRad) * r];
 }
 
 export {
