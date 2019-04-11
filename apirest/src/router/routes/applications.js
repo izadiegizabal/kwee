@@ -1,4 +1,4 @@
-const {tokenId, logger, pagination, sendEmailSelected, sendNotification, getSocketUserId, createNotification,} = require('../../shared/functions');
+const {tokenId, logger, pagination, prepareOffersToShow, sendEmailSelected, sendNotification, getSocketUserId, createNotification,} = require('../../shared/functions');
 const {checkToken} = require('../../middlewares/authentication');
 const {algorithm} = require('../../shared/algorithm');
 const {Op} = require('../../database/op');
@@ -128,11 +128,12 @@ module.exports = (app, db) => {
     // GET applications by applicant id
     app.get("/application/:fk_applicant([0-9]+)", checkToken, async (req, res, next) => {
         const params = req.params;
+        const id = params.fk_applicant;
 
         try {
             var attr = {};
             let where = {};
-            where.fk_applicant = params.fk_applicant;
+            where.fk_applicant = id;
             attr.where = where;
             if ( req.query.status ) where.status = req.query.status;
             if ( req.query.limit && req.query.page ) {
@@ -142,45 +143,37 @@ module.exports = (app, db) => {
                 attr.limit = limit;
                 attr.offset = offset;
             }
-            
 
+            console.log("Usuario a mostrar con ID: ", id);
+
+            let users = await db.users.findAll();
             let count = await db.applications.findAndCountAll({ where });
             let applications = await db.applications.findAll(attr);
-            let user = await db.users.findOne({ where: { id: params.fk_applicant }, include: [db.applicants] });
             let offers = await db.offers.findAll();
 
-            let applicationsToShow = [];
+            // Search the offers where this applicant applicanted
+            let offersInApplication = [];
+
+            applications.forEach( application => {
+                offersInApplication.push( offers.find( offer => application.fk_offer === offer.id ) );
+            });
+
+            let offersShow = [];
+
+            offersInApplication.forEach(element => {
+                let offersAux = [],
+                offersToShowAux = [];
+                offersAux.push(element);
+                offersShow.push(prepareOffersToShow(offersAux, offersToShowAux, users.find(user => element.fk_offerer == user.id))[0]);
+                
+            });
 
             if ( count.count > 0 ) {
 
-                applications.forEach( application => {
-                    let object = {};
-                    let offerFind = offers.find( offer => offer.id === application.fk_offer );
-                    object.applicantId = application.fk_applicant;
-                    object.applicationId = application.id;
-                    object.offerId = application.fk_offer;
-                    object.applicantStatus = user.status;
-                    object.applicationStatus = application.status;
-                    object.offerStatus = offerFind.status;
-                    object.offerTitle = offerFind.title;
-                    object.index = user.index;
-                    object.name = user.name;
-                    object.email = user.email;
-                    object.city = user.applicant.city;
-                    object.dateBorn = user.applicant.dateBorn;
-                    object.premium = user.applicant.premium;
-                    object.rol = user.applicant.rol;
-                    object.lastAccess = user.lastAccess;
-                    object.createdAt = user.applicant.createdAt;
-                    object.img = user.img;
-                    object.bio = user.bio;
-                    applicationsToShow.push(object);
-                });
-
                 return res.status(200).json({
                     ok: true,
-                    message: `Showing applications of user ${ user.name } with id ${ user.id }`,
-                    data: applicationsToShow,
+                    message: `Showing applications of user with id ${ id }`,
+                    data: offersShow,
                     total: count.count,
                     page,
                     limit
