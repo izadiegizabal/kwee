@@ -45,14 +45,15 @@ module.exports = (app, db) => {
             switch ( table ) {
                 case 'offerers': herency = {
                                         model: db.offerers,
-                                        as: 'user',
+                                        as: 'offerer',
                                         where: { userId: id }
                                     }; 
                                 break;
                 case 'applicants': herency = {
                                         model: db.applicants,
+                                        as: 'applicant',
                                         where: { userId: id }
-                                    }; 
+                                    };
                                 break;
 
             }

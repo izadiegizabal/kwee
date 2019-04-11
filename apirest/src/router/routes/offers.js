@@ -417,16 +417,17 @@ module.exports = (app, db) => {
                                 let users = await db.users.findAll();
                                 let applications = await db.applications.findAll({where: {fk_offer: id}});
                                 let applicants = await offerToUpdate.getApplicants();
-                                applicants.forEach(applicant => {
-                                    user = users.find(usu => applicant.userId == usu.id);
-                                    createNotification(db, user.id, fk_offerer, 'offers', id, 'closed', true);
-                                    sendEmailOfferClosed(user, res, offerToUpdate);
-                                });
+                                // applicants.forEach(applicant => { // sólo a las applications con status 5
+                                //     user = users.find(usu => applicant.userId == usu.id);
+                                //     createNotification(db, user.id, fk_offerer, 'offers', id, 'closed', true);
+                                //     sendEmailOfferClosed(user, res, offerToUpdate);
+                                // });
                                 applications.forEach(async application => {
                                     if (application.status == 0 || application.status == 1 || application.status == 2) {
                                         await db.applications.update({status: 5}, {
                                             where: {id: application.id}
                                         });
+                                        createNotification(db, application.fk_applicant, fk_offerer, 'offers', id, 'closed', true);
                                     }
                                 });
                             }

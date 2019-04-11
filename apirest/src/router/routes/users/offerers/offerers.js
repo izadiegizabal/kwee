@@ -695,24 +695,14 @@ module.exports = (app, db) => {
             body.workField ? userOff.workField = body.workField : null;
             body.website ? userOff.website = body.website : null;
 
-            if (body.social_networks.length > 0) {
-                let sn = body.social_networks;
-                let snUpdates = {};
+            if ( body.social_networks ) {
+                body.social_networks.userId = offerer.userId;                
+                let social_networks = await db.social_networks.findOne({ where: { userId: applicant.userId }});
 
-                sn.forEach(social_network => {
-                    if ( social_network.google ) snUpdates.google = social_network.google;
-                    if ( social_network.twitter ) snUpdates.twitter = social_network.twitter;
-                    if ( social_network.github ) snUpdates.github = social_network.github;
-                    if ( social_network.instagram ) snUpdates.instagram = social_network.instagram;
-                    if ( social_network.telegram ) snUpdates.telegram = social_network.telegram;
-                    if ( social_network.linkedin ) snUpdates.linkedin = social_network.linkedin;
-                });
-                snUpdates.userId = offerer.userId;
-                let social_networks = await db.social_networks.findOne({ where: { userId: offerer.userId }});
                 if ( social_networks ) {
-                    await db.social_networks.update(snUpdates, { where: {userId: offerer.userId }});
+                    await db.social_networks.update( body.social_networks, { where: { userId: applicant.userId }});
                 } else {
-                    await db.social_networks.create(snUpdates);
+                    await db.social_networks.create( body.social_networks );
                 }
             }
 
