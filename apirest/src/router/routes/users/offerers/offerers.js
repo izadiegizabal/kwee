@@ -680,7 +680,7 @@ module.exports = (app, db) => {
             where: {userId: id}
         });
 
-        if (offerer) {
+        if ( offerer ) {
             delete body.root;
             delete body.dateVerification;
             let offererUser = true;
@@ -697,10 +697,10 @@ module.exports = (app, db) => {
 
             if ( body.social_networks ) {
                 body.social_networks.userId = offerer.userId;                
-                let social_networks = await db.social_networks.findOne({ where: { userId: applicant.userId }});
+                let social_networks = await db.social_networks.findOne({ where: { userId: offerer.userId }});
 
                 if ( social_networks ) {
-                    await db.social_networks.update( body.social_networks, { where: { userId: applicant.userId }});
+                    await db.social_networks.update( body.social_networks, { where: { userId: offerer.userId }});
                 } else {
                     await db.social_networks.create( body.social_networks );
                 }
