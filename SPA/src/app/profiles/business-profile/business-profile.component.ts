@@ -97,7 +97,7 @@ export class BusinessProfileComponent implements OnInit, AfterViewInit {
 
   getImg(img: string) {
     if (img) {
-      return environment.apiUrl + 'image/offerers/' + img;
+      return environment.apiUrl + img;
     } else {
       return this.business.img;
     }
