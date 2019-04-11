@@ -477,6 +477,7 @@ module.exports = (app, db) => {
                             body.companySize = 0;
                             body.year = null;
                             body.dateVerification = null;
+                            body.status = 0;
 
                             elastic.index({
                                 index: 'offerers',
