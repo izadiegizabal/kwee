@@ -41,6 +41,8 @@ export class InvoicesComponent implements OnInit {
 
   ngOnInit() {
 
+    // this.store$.dispatch(new InvoiceActions.Clear());
+
     this.authState = this.store$.pipe(select('auth'));
     this.authState.pipe(take(1),
       select((s: { user: any }) => s.user)

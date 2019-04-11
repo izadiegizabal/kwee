@@ -27,6 +27,11 @@ export function invoiceReducer(state = initialState, action: InvoiceActions.Invo
         ...state,
         invoices: action.payload
       };
+    case InvoiceActions.CLEAR:
+      return {
+        ...state,
+        invoices: {}
+      };
     default:
       return state;
   }

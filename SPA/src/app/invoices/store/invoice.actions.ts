@@ -7,6 +7,14 @@ export const GET_INVOICES_APPLICANT = 'GET_INVOICES_APPLICANT';
 export const TRY_GET_INVOICES_OFFERER = 'TRY_GET_INVOICES_OFFERER';
 export const GET_INVOICES_OFFERER = 'GET_INVOICES_OFFERER';
 export const OPERATION_ERROR = 'OPERATION_ERROR';
+export const CLEAR = 'CLEAR';
+
+export class Clear implements Action {
+  readonly type = CLEAR;
+
+  constructor() {
+  }
+}
 
 export class TryPostInvoice implements Action {
   readonly type = TRY_POST_INVOICE;
@@ -60,4 +68,4 @@ export class OperationError implements Action {
 export type InvoiceActions =
   TryPostInvoice | PostInvoice |
   OperationError | TryGetInvoicesApplicant | TryGetInvoicesOfferer |
-  GetInvoicesApplicant | GetInvoicesOfferer;
+  GetInvoicesApplicant | GetInvoicesOfferer | Clear;
