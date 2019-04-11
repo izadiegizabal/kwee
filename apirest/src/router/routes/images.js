@@ -4,7 +4,7 @@ const path = require('path');
 
 module.exports = (app, db) => {
 
-    app.get('/image/:type/:img', async (req, res, next) => {
+    app.get('/uploads/:type/:img', async (req, res, next) => {
 
         let type = req.params.type;
         let img = req.params.img;
