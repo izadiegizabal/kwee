@@ -224,7 +224,7 @@ export class OfferDetailComponent implements OnInit {
   downloadPDF() {
     this.getJSON().pipe(first()).subscribe(data => {
       this.JSONData = data;
-      this.getImage(this.environment.apiUrl + 'image/offerers/' + this.img).pipe(first()).subscribe(image => {
+      this.getImage(this.environment.apiUrl + this.img).pipe(first()).subscribe(image => {
         const reader = new FileReader();
         reader.addEventListener('load', () => {
           this.image = reader.result;

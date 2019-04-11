@@ -153,7 +153,7 @@ export class CandidateProfileComponent implements OnInit, AfterViewInit {
 
   getProfileImg() {
     if (this.cand && this.cand.img) {
-      this.imgPath = environment.apiUrl + 'image/applicants/' + this.cand.img;
+      this.imgPath = environment.apiUrl + this.cand.img;
     } else {
       this.imgPath = '../../../../assets/img/defaultProfileImg.png';
     }
