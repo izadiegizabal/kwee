@@ -45,10 +45,15 @@ export class SigninComponent implements OnInit {
     });
 
     this.authState = this.store$.pipe(select('auth'));
-  }
+    this.authEffects$.authSignin.pipe(
+      filter((action: Action) => action.type === AuthActions.SET_USER)
+    ).subscribe((action: { payload: any, type: string }) => {
+        if (action.payload.email) {
+          this.wsService.connectedUser(action.payload.email);
+        }
+      }
+    );
 
-  signIn() {
-    this.store$.dispatch(new AuthActions.TrySignin(this.user.value));
     this.authEffects$.authSignin.pipe(
       filter((action: Action) => action.type === AuthActions.AUTH_ERROR)
     ).subscribe((error: { payload: any, type: string }) => {
@@ -56,6 +61,10 @@ export class SigninComponent implements OnInit {
       this.user.controls['email'].setErrors({'incorrect': true});
       this.user.controls['password'].setErrors({'incorrect': true});
     });
+  }
+
+  signIn() {
+    this.store$.dispatch(new AuthActions.TrySignin(this.user.value));
   }
 
   openResetModal() {

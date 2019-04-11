@@ -18,7 +18,6 @@ export class WebsocketService {
   }
 
   checkStatus() {
-
     this.socket.on('connect', (client) => {
       this.socketStatus = true;
       this.getStorage();
@@ -38,7 +37,7 @@ export class WebsocketService {
   }
 
   emit(event: string, payload?: any, callback?: Function) {
-    console.log('Emit');
+    console.log('Emit', event, payload, callback);
     this.socket.emit(event, payload, callback);
   }
 
@@ -59,12 +58,10 @@ export class WebsocketService {
   }
 
   connectedUser(email: string) {
-    console.log('New Connected User');
-
     return new Promise((resolve, reject) => {
 
       this.emit('set-user', {email}, resp => {
-
+        console.log(resp);
         this.user = new User(email);
         this.setStorage();
 
@@ -73,7 +70,6 @@ export class WebsocketService {
       });
 
     });
-
   }
 
   setStorage() {
