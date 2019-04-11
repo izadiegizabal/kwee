@@ -4,6 +4,7 @@ export interface State {
   candidate: {
     id: number,
     index: number,
+    avg: any;
     name: string,
     email: string,
     city: string,
@@ -31,6 +32,7 @@ export interface State {
     id: number,
     img: string,
     index: number,
+    avg: any;
     lastAccess: Date,
     name: string,
     premium: number,

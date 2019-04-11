@@ -18,6 +18,7 @@ import {
   MatMenuModule,
   MatNativeDateModule,
   MatPaginatorModule,
+  MatProgressBarModule,
   MatProgressSpinnerModule,
   MatRadioModule,
   MatSelectModule,
@@ -61,6 +62,7 @@ import {CommonModule} from '@angular/common';
     MatPaginatorModule,
     MatMenuModule,
     MatSliderModule,
+    MatProgressBarModule,
     MatProgressSpinnerModule
   ],
 })
