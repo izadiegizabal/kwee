@@ -144,9 +144,13 @@ module.exports = (app, db) => {
                 attr.offset = offset;
             }
 
-            console.log("Usuario a mostrar con ID: ", id);
-
-            let users = await db.users.findAll();
+            let users = await db.users.findAll({
+                include: [{
+                    model: db.offerers,
+                    as: 'offerer'
+                    
+                }]
+            });
             let count = await db.applications.findAndCountAll({ where });
             let applications = await db.applications.findAll(attr);
             let offers = await db.offers.findAll();

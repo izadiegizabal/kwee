@@ -1,5 +1,5 @@
-const {tokenId, logger, pagination, prepareOffersToShow, saveLogES, sendEmailOfferClosed, createNotification} = require('../../shared/functions');
-const {checkToken} = require('../../middlewares/authentication');
+const {tokenId, logger, pagination, prepareOffersToShow, getOffererAVG, saveLogES, sendEmailOfferClosed, createNotification} = require('../../shared/functions');
+const {checkToken, checkAdmin} = require('../../middlewares/authentication');
 const elastic = require('../../database/elasticsearch');
 const env = require('../../tools/constants');
 const axios = require('axios');
@@ -97,7 +97,13 @@ module.exports = (app, db) => {
                 await elastic.search(searchParams, async function (err, response) {
                     if (err) throw err;
 
-                    let users = await db.users.findAll();
+                    let users = await db.users.findAll({
+                        include: [{
+                            model: db.offerers,
+                            as: 'offerer'
+                            
+                        }]
+                    });
                     let offersToShow = [];
 
                     if (response.hits.total != 0) {
@@ -172,7 +178,13 @@ module.exports = (app, db) => {
 
             if (output.data) {
                 offers = output.data;
-                users = await db.users.findAll();
+                users = await db.users.findAll({
+                    include: [{
+                        model: db.offerers,
+                        as: 'offerer'
+                        
+                    }]
+                });
 
                 var offersShow = [];
 
@@ -209,7 +221,13 @@ module.exports = (app, db) => {
             });
 
             if (offer) {
-                let users = await db.users.findAll();
+                let users = await db.users.findAll({
+                    include: [{
+                        model: db.offerers,
+                        as: 'offerer'
+                        
+                    }]
+                });
                 let user = users.find(usu => usu.id === offer.fk_offerer);
 
                 let offers = [],
@@ -386,8 +404,27 @@ module.exports = (app, db) => {
 
     });
 
-    // PUT single offer
+    // PUT single offer by offerer creator
     app.put('/offer/:id([0-9]+)', async (req, res, next) => {
+        updateOffer(req, res, next);
+    });
+
+    // PUT single offer by admin
+    app.put('/offer/:id([0-9]+)', checkAdmin, async (req, res, next) => {
+        updateOffer(req, res, next);
+    });
+
+    // DELETE single offer by themself
+    app.delete('/offer/:id([0-9]+)', async (req, res, next) => {
+        deleteOffer(req, res, next);
+    });
+    
+    // DELETE single offer by admin
+    app.delete('/offer/:id([0-9]+)', checkAdmin, async (req, res, next) => {
+        deleteOffer(req, res, next);
+    });
+
+    async function updateOffer(req, res, next) {
         const id = req.params.id;
         const updates = req.body;
 
@@ -395,15 +432,15 @@ module.exports = (app, db) => {
             let fk_offerer = tokenId.getTokenId(req.get('token'));
 
             let offerToUpdate = await db.offers.findOne({
-                where: {id}
+                where: { id }
             });
-            let user = db.users.findOne({
-                where: {id: fk_offerer}
+            let user = await db.users.findOne({
+                where: { id: fk_offerer }
             });
             saveLogES('PUT', 'offer/id', user.name);
 
             if (offerToUpdate) {
-                if (offerToUpdate.fk_offerer == fk_offerer) {
+                if ( offerToUpdate.fk_offerer == fk_offerer || user.root == 1 ) {
                     // Checking status to update, if is the same, not necessary to update
                     // if not and it is status = 1, sending notification that offer is closed
                     // to applicants that applicated to this offer.
@@ -411,7 +448,7 @@ module.exports = (app, db) => {
                         if (offerToUpdate.status == updates.status) {
                             delete updates.status;
                         } else {
-                            if (updates.status == 1) {
+                            if ( updates.status == 1 ) {
                                 // send mail to all applicants that applicated to this offer
                                 // to advise that the offer is closed
                                 let users = await db.users.findAll();
@@ -437,7 +474,7 @@ module.exports = (app, db) => {
                     // we have to do some additional check
                     if (!(Object.keys(updates).length === 0 && updates.constructor === Object)) {
                         await db.offers.update(updates, {
-                            where: {id, fk_offerer}
+                            where: { id }
                         }).then(result => {
                             if (result == 1) {
                                 axios.post(`http://${env.ES_URL}/offers/offer/${id}/_update?pretty=true`, {
@@ -471,38 +508,54 @@ module.exports = (app, db) => {
         } catch (err) {
             return next({type: 'error', error: err.message});
         }
-    });
+    }
 
-    // DELETE single offer
-    app.delete('/offer/:id([0-9]+)', checkToken, async (req, res, next) => {
+    async function deleteOffer( req, res, next ) {
         const id = req.params.id;
 
         try {
             let fk_offerer = tokenId.getTokenId(req.get('token'));
-            let user = db.users.findOne({
+            let offerToDelete = await db.offers.findOne({
+                where: { id }
+            });
+            let user = await db.users.findOne({
                 where: {id: fk_offerer}
             });
             saveLogES('DELETE', 'offer/id', user.name);
 
-            axios.delete(`http://${env.ES_URL}/offers/offers/${id}`)
-                .then((res) => {
-                    // deleted from elasticsearch database too
-                }).catch((error) => {
-                console.error(error)
-            });
+            if ( offerToDelete ) {
+                if ( offerToDelete.fk_offerer == fk_offerer || user.root == 1 ) {
 
-            await db.offers.destroy({
-                where: {id, fk_offerer}
-            });
+                    axios.delete(`http://${env.ES_URL}/offers/offer/${ id }`)
+                        .then((res) => {
+                            // deleted from elasticsearch database too
+                        }).catch((error) => {
+                        console.error(error)
+                    });
 
-            return res.json({
-                ok: true,
-                message: 'Offer deleted'
-            });
+                    await db.offers.destroy({
+                        where: { id }
+                    });
+
+                    return res.json({
+                        ok: true,
+                        message: 'Offer deleted'
+                    });
+
+                } else {
+                    return next({type: 'error', error: 'This offer is not yours'});
+                }
+            } else {
+                return res.status(200).json({
+                    ok: true,
+                    message: `No offers with this id`,
+                });
+            }
+
         } catch (err) {
             next({type: 'error', error: 'Error getting data'});
         }
-    });
+    }
 
     function buildSalaryRange(must, salaryAmount) {
         if (salaryAmount) {
@@ -617,6 +670,7 @@ module.exports = (app, db) => {
             offer.fk_offerer = offers[i]._source.fk_offerer;
             offer.offererName = user.name;
             offer.offererIndex = user.index;
+            offer.avg = getOffererAVG(user.offerer);
             offers[i]._source.img ? offer.img = offers[i]._source.img : offer.img = user.img;
             offer.title = offers[i]._source.title;
             offer.description = offers[i]._source.description;
