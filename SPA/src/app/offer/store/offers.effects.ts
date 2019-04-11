@@ -1,13 +1,15 @@
 import {Injectable} from '@angular/core';
 import {Actions, Effect, ofType} from '@ngrx/effects';
-import {catchError, map, share, switchMap} from 'rxjs/operators';
+import {catchError, map, share, switchMap, withLatestFrom} from 'rxjs/operators';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {Observable, of, throwError} from 'rxjs';
 import * as OffersActions from './offers.actions';
 import {environment} from '../../../environments/environment';
-import {Store} from '@ngrx/store';
+import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
+import * as AdminActions from '../../admin/store/admin.actions';
+import {TRY_UPDATE_OFFER} from './offers.actions';
 
 @Injectable()
 export class OffersEffects {
@@ -57,6 +59,82 @@ export class OffersEffects {
     share()
   );
 
+
+  @Effect()
+  OfferUpdate = this.actions$.pipe(
+    ofType(OffersActions.TRY_UPDATE_OFFER),
+    map((action: OffersActions.TryUpdateOffer) => {
+      return action.payload;
+    }),
+    withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    switchMap(([payload, authState]) => {
+        const apiEndpointUrl = environment.apiUrl + 'offer/' + payload.id;
+        const token = authState.token;
+        const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+        const body = JSON.stringify(payload.updateoffer);
+
+        // console.log(body);
+        // console.log(apiEndpointUrl);
+
+        return this.httpClient.put(apiEndpointUrl, body, {headers: headers}).pipe(
+          map((res) => {
+            // console.log(res);
+            return {
+              type: OffersActions.UPDATE_OFFER,
+              payload: {id: payload.id, updateoffer: payload.updateoffer}
+            };
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('updateOffer', err));
+            const error = err.error.message ? err.error.message : err;
+            return [
+              {
+                type: OffersActions.OPERATION_ERROR,
+                payload: error
+              }
+            ];
+          })
+        );
+      }
+    ),
+    share()
+  );
+
+
+  @Effect()
+  offerDelete = this.actions$.pipe(
+    ofType(OffersActions.TRY_DELETE_OFFER),
+    map((action: OffersActions.TryDeleteOffer) => {
+      return action.payload;
+    }),
+    withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    switchMap(([payload, authState]) => {
+        const apiEndpointUrl = environment.apiUrl + 'offer/' + payload;
+        const token = authState.token;
+        const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+        return this.httpClient.delete(apiEndpointUrl, {headers: headers}).pipe(
+          map((res) => {
+            console.log(res);
+            return {
+              type: OffersActions.DELETE_OFFER,
+              payload: payload
+            };
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('deleteOffer', err));
+            const error = err.error.message ? err.error.message : err;
+            return [
+              {
+                type: OffersActions.OPERATION_ERROR,
+                payload: error
+              }
+            ];
+          })
+        );
+      }
+    ),
+    share()
+  );
 
   constructor(private actions$: Actions, private store$: Store<fromApp.AppState>, private router: Router, private httpClient: HttpClient) {
   }
