@@ -1,7 +1,8 @@
-const {tokenId, logger, pagination, sendEmailSelected, sendNotification, getSocketUserId, createNotification,} = require('../../shared/functions');
+const {tokenId, logger, pagination, prepareOffersToShow, sendEmailSelected, sendNotification, getSocketUserId, createNotification,} = require('../../shared/functions');
 const {checkToken} = require('../../middlewares/authentication');
 const {algorithm} = require('../../shared/algorithm');
 const {Op} = require('../../database/op');
+const moment = require('moment');
 
 // ============================
 // ===== CRUD application ======
@@ -9,7 +10,7 @@ const {Op} = require('../../database/op');
 
 module.exports = (app, db) => {
     // GET all applications for kwee live
-    app.get("/applications/kweelive", checkToken, async (req, res, next) => {
+    app.get("/applications/kweelive", async (req, res, next) => {
         try {
             await logger.saveLog('GET', 'applications/kweelive', null, res);
             var applications;
@@ -128,11 +129,12 @@ module.exports = (app, db) => {
     // GET applications by applicant id
     app.get("/application/:fk_applicant([0-9]+)", checkToken, async (req, res, next) => {
         const params = req.params;
+        const id = params.fk_applicant;
 
         try {
             var attr = {};
             let where = {};
-            where.fk_applicant = params.fk_applicant;
+            where.fk_applicant = id;
             attr.where = where;
             if ( req.query.status ) where.status = req.query.status;
             if ( req.query.limit && req.query.page ) {
@@ -142,45 +144,41 @@ module.exports = (app, db) => {
                 attr.limit = limit;
                 attr.offset = offset;
             }
-            
 
+            let users = await db.users.findAll({
+                include: [{
+                    model: db.offerers,
+                    as: 'offerer'
+                    
+                }]
+            });
             let count = await db.applications.findAndCountAll({ where });
             let applications = await db.applications.findAll(attr);
-            let user = await db.users.findOne({ where: { id: params.fk_applicant }, include: [db.applicants] });
             let offers = await db.offers.findAll();
 
-            let applicationsToShow = [];
+            // Search the offers where this applicant applicanted
+            let offersInApplication = [];
+
+            applications.forEach( application => {
+                offersInApplication.push( offers.find( offer => application.fk_offer === offer.id ) );
+            });
+
+            let offersShow = [];
+
+            offersInApplication.forEach(element => {
+                let offersAux = [],
+                offersToShowAux = [];
+                offersAux.push(element);
+                offersShow.push(prepareOffersToShow(offersAux, offersToShowAux, users.find(user => element.fk_offerer == user.id))[0]);
+                
+            });
 
             if ( count.count > 0 ) {
 
-                applications.forEach( application => {
-                    let object = {};
-                    let offerFind = offers.find( offer => offer.id === application.fk_offer );
-                    object.applicantId = application.fk_applicant;
-                    object.applicationId = application.id;
-                    object.offerId = application.fk_offer;
-                    object.applicantStatus = user.status;
-                    object.applicationStatus = application.status;
-                    object.offerStatus = offerFind.status;
-                    object.offerTitle = offerFind.title;
-                    object.index = user.index;
-                    object.name = user.name;
-                    object.email = user.email;
-                    object.city = user.applicant.city;
-                    object.dateBorn = user.applicant.dateBorn;
-                    object.premium = user.applicant.premium;
-                    object.rol = user.applicant.rol;
-                    object.lastAccess = user.lastAccess;
-                    object.createdAt = user.applicant.createdAt;
-                    object.img = user.img;
-                    object.bio = user.bio;
-                    applicationsToShow.push(object);
-                });
-
                 return res.status(200).json({
                     ok: true,
-                    message: `Showing applications of user ${ user.name } with id ${ user.id }`,
-                    data: applicationsToShow,
+                    message: `Showing applications of user with id ${ id }`,
+                    data: offersShow,
                     total: count.count,
                     page,
                     limit
@@ -260,9 +258,15 @@ module.exports = (app, db) => {
                     if (status == 3 || status == 4) {
                         if (application.status == 2 || application.status == 3) {
                             if (applicant.userId == application.fk_applicant) {
-                                await db.applications.update({status}, {
-                                    where: {id}
-                                });
+                                if ( status == 3 ) {
+                                    await db.applications.update({ status, acceptedAt: moment() }, {
+                                        where: {id}
+                                    });
+                                } else {
+                                    await db.applications.update({ status }, {
+                                        where: {id}
+                                    });
+                                }
 
                                 notifyOfferer(applicant, application, id, status, res);
 
@@ -287,28 +291,33 @@ module.exports = (app, db) => {
                 } else {
                     let offerer = await db.offerers.findOne({where: {userId: user}});
                     if (offerer) {
-                        let offers = await offerer.getOffers();
-                        let offerToUpdate = offers.find(offer => offer.id == application.fk_offer);
+                        if ( status != 3 ) {
 
-                        if (offerToUpdate) {
-                            if (offerToUpdate.id == application.fk_offer) {
-                                await db.applications.update({status}, {
-                                    where: {id}
-                                });
-                                notifyApplicant(offerer, application, id, status, res);
-                                await algorithm.indexUpdate(user);
-                                return res.status(201).json({
-                                    ok: true,
-                                    message: "Application updated to status " + status
-                                });
+                            let offers = await offerer.getOffers();
+                            let offerToUpdate = offers.find(offer => offer.id == application.fk_offer);
+                            
+                            if (offerToUpdate) {
+                                if (offerToUpdate.id == application.fk_offer) {
+                                    await db.applications.update({status}, {
+                                        where: {id}
+                                    });
+                                    notifyApplicant(offerer, application, id, status, res);
+                                    await algorithm.indexUpdate(user);
+                                    return res.status(201).json({
+                                        ok: true,
+                                        message: "Application updated to status " + status
+                                    });
+                                } else {
+                                    return next({
+                                        type: 'error',
+                                        error: "Unauthorized to update applications of other user"
+                                    });
+                                }
                             } else {
-                                return next({
-                                    type: 'error',
-                                    error: "Unauthorized to update applications of other user"
-                                });
+                                return next({type: 'error', error: "Unauthorized to update applications of other user"});
                             }
                         } else {
-                            return next({type: 'error', error: "Unauthorized to update applications of other user"});
+                            return next({type: 'error', error: "Unauthorized to update applications to accepted being offerer" });
                         }
                     }
                 }

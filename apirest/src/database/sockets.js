@@ -31,7 +31,8 @@ io.sockets.on('connection', (client) => {
     disconnect(client);
 
     selected(client);
-
+    
+    rating(client);
 });
 
 module.exports = io;

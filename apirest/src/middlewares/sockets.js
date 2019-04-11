@@ -35,6 +35,13 @@ const selected = (client) => {
     });
 };
 
+const rating = (client) => {
+    client.on('rating', (payload) => {
+        console.log('sending notification of need to rate after 1 month to frontend');
+        io.emit('rating', client);
+    });
+};
+
 const setUser = (client, io) => {
     client.on('set-user', (payload, callback) => {
 

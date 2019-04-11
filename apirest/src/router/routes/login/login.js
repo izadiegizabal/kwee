@@ -63,7 +63,7 @@ module.exports = (app, db) => {
             if (user.root) {
                 type = 'admin';
             } else {
-                var avg = [];
+                var avg = {};
                 let offerer = await db.offerers.findOne({
                     where: {userId: id}
                 });

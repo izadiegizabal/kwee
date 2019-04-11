@@ -39,20 +39,19 @@ module.exports = (app, db) => {
     
     async function getUserInvoices( table, req, res, next ) {
         const id = req.params.id;
-        let herency;
+        let herency = {};
+        
 
         try {
             switch ( table ) {
                 case 'offerers': herency = {
                                         model: db.offerers,
-                                        as: 'offerer',
-                                        where: { userId: id }
+                                        as: 'offerer'
                                     }; 
                                 break;
                 case 'applicants': herency = {
                                         model: db.applicants,
-                                        as: 'applicant',
-                                        where: { userId: id }
+                                        as: 'applicant'
                                     };
                                 break;
 
@@ -77,10 +76,10 @@ module.exports = (app, db) => {
                 attr.limit = limit;
                 attr.offset = offset;
             }
-            
+
             let invoices = await db.users.findAll(attr);
 
-            if ( invoices ) {
+            if ( invoices.length > 0 ) {
                 return res.status(200).json({
                     ok: true,
                     message: 'Listing all invoices',

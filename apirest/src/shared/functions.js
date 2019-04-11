@@ -512,6 +512,7 @@ function prepareOffersToShow(offers, offersShow, user) {
         offer.fk_offerer = offers[i].fk_offerer;
         offer.offererName = user.name;
         offer.offererIndex = user.index;
+        offer.avg = getOffererAVG(user.offerer);
         offer.title = offers[i].title;
         offer.description = offers[i].description;
         offers[i].img ? offer.img = offers[i].img : offer.img = user.img;
@@ -595,14 +596,14 @@ async function createNotification(db, to, from, type, idTable, notification, sta
 
 function getOffererAVG( offerer ) {
 
-    var avg = [];
+    var avg = {};
     if ( offerer ) {
-        avg.push({salaryAVG: offerer.salaryAVG});
-        avg.push({environmentAVG: offerer.environmentAVG});
-        avg.push({partnersAVG: offerer.partnersAVG});
-        avg.push({servicesAVG: offerer.servicesAVG});
-        avg.push({installationsAVG: offerer.installationsAVG});
-        avg.push({satisfactionAVG: offerer.satisfactionAVG});
+        avg.salaryAVG = offerer.salaryAVG;
+        avg.environmentAVG = offerer.environmentAVG;
+        avg.partnersAVG = offerer.partnersAVG;
+        avg.servicesAVG = offerer.servicesAVG;
+        avg.installationsAVG = offerer.installationsAVG;
+        avg.satisfactionAVG = offerer.satisfactionAVG;
     }
 
     return avg;
@@ -610,14 +611,14 @@ function getOffererAVG( offerer ) {
 
 function getApplicantAVG( applicant ) {
 
-    var avg = [];
+    var avg = {};
     if ( applicant ) {
-        avg.push({efficiencyAVG: applicant.efficiencyAVG})
-        avg.push({skillsAVG: applicant.skillsAVG})
-        avg.push({punctualityAVG: applicant.punctualityAVG})
-        avg.push({hygieneAVG: applicant.hygieneAVG})
-        avg.push({teamworkAVG: applicant.teamworkAVG})
-        avg.push({satisfactionAVG: applicant.satisfactionAVG})
+        avg.efficiencyAVG = applicant.efficiencyAVG;
+        avg.skillsAVG = applicant.skillsAVG;
+        avg.punctualityAVG = applicant.punctualityAVG;
+        avg.hygieneAVG = applicant.hygieneAVG;
+        avg.teamworkAVG = applicant.teamworkAVG;
+        avg.satisfactionAVG = applicant.satisfactionAVG;
     }
 
     return avg;

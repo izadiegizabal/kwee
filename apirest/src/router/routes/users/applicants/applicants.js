@@ -273,6 +273,7 @@ module.exports = (app, db) => {
                             offer.status = allOffers[j].status;
                             offer.applicationStatus = applications[i].status;
                             offer.aHasRated = applications[i].aHasRated;
+                            offer.aHasRatedDate = applications[i].aHasRatedDate;
                             offer.salaryAmount = allOffers[j].salaryAmount;
                             offer.salaryFrequency = allOffers[j].salaryFrequency;
                             offer.salaryCurrency = allOffers[j].salaryCurrency;

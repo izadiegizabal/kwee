@@ -30,4 +30,8 @@ export class MessagesService {
     return this.wsService.listen('selected');
   }
 
+  getRating() {
+    return this.wsService.listen('rating');
+  }
+
 }

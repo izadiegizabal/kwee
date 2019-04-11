@@ -339,6 +339,8 @@ module.exports = (app, db) => {
                         applicantShow.applicationStatus = a.status;
                         applicantShow.aHasRated = a.aHasRated;
                         applicantShow.oHasRated = a.oHasRated;
+                        applicantShow.aHasRatedDate = a.aHasRatedDate;
+                        applicantShow.oHasRatedDate = a.oHasRatedDate;
                         applicantShow.applicantId = applicantUser.id;
                         applicantShow.applicantName = applicantUser.name;
                         applicantShow.applicantIndex = applicantUser.index;
@@ -477,6 +479,7 @@ module.exports = (app, db) => {
                             body.companySize = 0;
                             body.year = null;
                             body.dateVerification = null;
+                            body.status = 0;
 
                             elastic.index({
                                 index: 'offerers',

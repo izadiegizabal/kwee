@@ -137,6 +137,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DECIMAL(9, 6),
             allowNull: true,
             defaultValue: null,
+        },
+        
+        lastPayment: {
+            type: DataTypes.DATE,
+            defaultValue: null
         }
 
     }, {
