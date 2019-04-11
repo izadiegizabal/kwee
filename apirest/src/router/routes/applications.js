@@ -9,7 +9,7 @@ const {Op} = require('../../database/op');
 
 module.exports = (app, db) => {
     // GET all applications for kwee live
-    app.get("/applications/kweelive", checkToken, async (req, res, next) => {
+    app.get("/applications/kweelive", async (req, res, next) => {
         try {
             await logger.saveLog('GET', 'applications/kweelive', null, res);
             var applications;
