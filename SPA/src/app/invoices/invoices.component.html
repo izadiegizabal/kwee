@@ -14,17 +14,18 @@
             fxLayout="row"
             fxLayoutGap="10px">
             <span>Invoice #{{invoice.id}}</span>
-            <span fxHide fxShow.gt-xs>Total: {{invoice.total}} {{invoice.currency}}</span>
+            <span fxHide fxShow.gt-xs>Product: {{invoice.product | titlecase}}</span>
           </mat-panel-title>
           <mat-panel-description fxHide fxShow.gt-xs>
-            <span>Offer: {{invoice.offer}}</span>
+            <span>Total: {{invoice.total}}</span>
           </mat-panel-description>
         </mat-expansion-panel-header>
         <h2 class="mat-h2 no-margin">Invoice #{{invoice.id}}</h2>
-        <h3 class="mat-h3 no-margin">{{invoice.offer}}</h3>
-        <h4 class="mat-h4 no-margin">{{getDate(invoice.date)}}</h4>
+        <h3 class="mat-h3 no-margin">{{invoice.product | titlecase}}</h3>
+        <h4 class="mat-h4 no-margin">{{getDate(invoice.date) || async}}</h4>
 
-        <p class="mat-h3" fxLayoutAlign="end">Total:&nbsp;<b class="mat-h2">{{invoice.total}} {{invoice.currency}}</b>
+
+        <p class="mat-h3" fxLayoutAlign="end">Total:&nbsp;<b class="mat-h2">{{invoice.total}}</b>
         </p>
 
         <div fxLayout="row"

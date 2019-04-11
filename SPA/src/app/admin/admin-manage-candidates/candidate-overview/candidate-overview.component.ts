@@ -21,7 +21,7 @@ export class CandidateOverviewComponent implements OnInit {
 
   // paging
   pageSize = 5;
-  pageSizeOptions: number[] = [2, 5, 10, 25, 100];
+  pageSizeOptions: number[] = [5, 10, 25, 100];
 
   // MatPaginator Output
   pageEvent: PageEvent;

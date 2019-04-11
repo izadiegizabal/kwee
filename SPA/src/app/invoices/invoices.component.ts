@@ -1,15 +1,20 @@
 import {Component, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import * as jspdf from 'jspdf';
-import {first} from 'rxjs/operators';
-import {Observable} from 'rxjs';
+import {first, take} from 'rxjs/operators';
+import {Observable, Subscription} from 'rxjs';
+import * as InvoiceActions from './store/invoice.actions';
+import {select, Store} from '@ngrx/store';
+import * as fromApp from '../store/app.reducers';
+import * as fromInvoices from './store/invoice.reducers';
+
 
 interface Invoice {
   id: number;
   date: Date;
-  offer: string;
-  total: number;
-  currency: string;
+  total: string;
+  product: string;
+  currency?: string;
 }
 
 @Component({
@@ -19,16 +24,62 @@ interface Invoice {
 })
 export class InvoicesComponent implements OnInit {
 
+  public invoicesState: Observable<fromInvoices.State>;
+
   invoices: Invoice[] = [];
   JSONData: any;
+  subscription: Subscription;
+  authState: any;
+  candidate: boolean;
+  business: boolean;
+  address: string;
+  userId: number;
+  userName: string;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private store$: Store<fromApp.AppState>) {
   }
 
   ngOnInit() {
-    this.invoices.push({id: 1832, date: new Date(), offer: 'SEO Consultant', total: 5.95, currency: 'EUR'});
-    this.invoices.push({id: 2212, date: new Date(), offer: 'Dialogflow development', total: 5.95, currency: 'CAD'});
-    this.invoices.push({id: 4562, date: new Date(), offer: 'Backend Developer', total: 5.95, currency: 'EUR'});
+
+    // this.store$.dispatch(new InvoiceActions.Clear());
+
+    this.authState = this.store$.pipe(select('auth'));
+    this.authState.pipe(take(1),
+      select((s: { user: any }) => s.user)
+    ).subscribe(
+      (user) => {
+        if (user) {
+          this.candidate = user.type === 'candidate';
+          this.business = user.type === 'business';
+          this.userId = user.id;
+          this.userName = user.name;
+        }
+      });
+
+    if (this.business) {
+      this.store$.dispatch(new InvoiceActions.TryGetInvoicesOfferer({
+        id: this.userId,
+      }));
+    }
+
+    if (this.candidate) {
+      this.store$.dispatch(new InvoiceActions.TryGetInvoicesApplicant({
+        id: this.userId,
+      }));
+    }
+
+    if (this.business || this.candidate) {
+      this.invoicesState = this.store$.pipe(select(state => state.invoices));
+
+      this.subscription = this.invoicesState.pipe(take(1)).subscribe(
+        (invoice) => {
+          invoice.invoices.data.forEach(e => {
+            this.address = this.business ? e.user.address : '';
+            const inv = e.invoice;
+            this.invoices.push({id: inv.id, date: inv.createdAt, total: inv.price, product: inv.product});
+          });
+        });
+    }
   }
 
   getDate(date: Date) {
@@ -46,12 +97,14 @@ export class InvoicesComponent implements OnInit {
 
     const doc = new jspdf();
     const data = this.JSONData;
-    const getDate = this.getDate;
-    const out = this;
+    const date = this.getDate(this.invoices[index].date);
+    const product = this.titleCase(this.invoices[index].product);
     const num = this.invoices[index].id;
     const total = this.invoices[index].total;
     const curr = this.invoices[index].currency;
-    const totalCurr = this.invoices[index].total + ' ' + this.invoices[index].currency;
+    const totalCurr = this.invoices[index].total;
+    const name = this.userName;
+    const address = this.address;
 
 
     doc.setFontSize(40);
@@ -72,14 +125,14 @@ export class InvoicesComponent implements OnInit {
     doc.setFontSize(10);
     doc.setFont('Plex', 'normal');
     doc.text(String(num), 15, 81);
-    doc.text('1/4/2019', 67, 81);
+    doc.text(date, 67, 81);
     doc.setFont('Plex', 'bold');
     doc.setFontSize(12);
     doc.text('Billed To', 15, 95);
     doc.text('From', 67, 95);
     doc.setFontSize(10);
     doc.setFont('Plex', 'normal');
-    const ODir = 'Vultr VAT ID EU372005690 14 Cliffwood Ave Suite 300 Matawan, NJ 07747 United States';
+    const ODir = name + '\n' + address;
 
     let sppl = doc.splitTextToSize(ODir, 35);
     doc.text(sppl, 15, 101);
@@ -114,14 +167,14 @@ export class InvoicesComponent implements OnInit {
 
     doc.text('Tax:', 165, yPos + 47, null, null, 'right');
     doc.setFont('Plex', 'normal');
-    doc.text('0 ' + curr, 195, yPos + 47, null, null, 'right');
-    doc.text(String(5.95) + ' ' + curr, 195, yPos + 40, null, null, 'right');
+    doc.text('0', 195, yPos + 47, null, null, 'right');
+    doc.text(totalCurr, 195, yPos + 40, null, null, 'right');
 
 
     doc.setFontSize(11);
-    doc.text('Update to ' + 'Premium', 15, yPos + 25);
+    doc.text('Update to ' + product, 15, yPos + 25);
     doc.text('1', 165, yPos + 25, null, null, 'right');
-    doc.text(String(total) + ' ' + curr, 195, yPos + 25, null, null, 'right');
+    doc.text(String(total), 195, yPos + 25, null, null, 'right');
 
     yPos += 15;
     doc.setDrawColor(255);
@@ -145,11 +198,20 @@ export class InvoicesComponent implements OnInit {
     doc.setFont('Plex', 'bold');
     doc.text('Terms', 15, 270);
 
-    doc.save('Invoice' + '.pdf');
+    doc.save('Invoice_Kwee #' + num + '.pdf');
   }
 
   getJSON(): Observable<any> {
     return this.http.get('./assets/toPDF.json');
   }
 
+  titleCase(string: string) {
+    const str = string.toLowerCase();
+    const split = str.split(' ');
+    for (let i = 0; i < split.length; i++) {
+      split[i] = split[i].charAt(0).toUpperCase() + split[i].slice(1);
+    }
+
+    return split.join(' ');
+  }
 }

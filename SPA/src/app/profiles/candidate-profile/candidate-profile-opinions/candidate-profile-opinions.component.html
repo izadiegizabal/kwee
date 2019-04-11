@@ -16,7 +16,7 @@
             style="margin-bottom: 8px">
     <div fxLayout="row" fxLayoutGap="32px">
       <div fxLayout="column">
-        <div class="rating" fxLayout="row"><span>{{opinion.satisfaction}}</span></div>
+        <div class="rating" fxLayout="row"><span>{{opinion.overall | number:'1.0-1'}}</span></div>
         <div class="usefulness" fxLayout="row">
           <span>{{opinion.opinionScore ? opinion.opinionScore : opinionsNA.opinionScore}}</span>
           <button color="accent" mat-icon-button>
@@ -31,12 +31,12 @@
       </div>
       <div fxLayout="column">
         <mat-card-title>
-          {{opinion.offerTitle ? opinion.offerTitle : opinionsNA.offerTitle}}
+          {{opinion.title ? opinion.title : opinionsNA.offerTitle}}
         </mat-card-title>
         <mat-card-subtitle>
-          {{opinion.userName ? opinion.userName : opinionsNA.userName + " - " + getPublishedDate(opinion.updatedAt)}}
+          {{opinion.userName + " - " + getPublishedDate(opinion.createdAt)}}
         </mat-card-subtitle>
-        <p>{{opinion.opinion ? opinion.opinion : opinionsNA.opinion}}</p>
+        <p>{{opinion.opinion}}</p>
       </div>
     </div>
     <mat-card-content>
@@ -77,6 +77,10 @@
               <mat-list-item>
                 <span>{{opinion.teamwork}}</span>
                 Teamwork
+              </mat-list-item>
+              <mat-list-item>
+                <span>{{opinion.satisfaction}}</span>
+                Satisfaction
               </mat-list-item>
             </mat-list>
           </div>
