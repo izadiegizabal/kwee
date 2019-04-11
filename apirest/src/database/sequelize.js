@@ -51,9 +51,9 @@ db.applicants.removeAttribute('id');
 db.rating_applicants.removeAttribute('id');
 db.rating_offerers.removeAttribute('id');
 
-db.users.hasOne( db.offerers, { as: 'offerer' } );
-db.users.hasOne( db.applicants, { as: 'applicant' } );
-db.ratings.hasOne( db.rating_applicants, { as: 'rating' } );
+db.users.hasOne( db.offerers );
+db.users.hasOne( db.applicants );
+db.ratings.hasOne( db.rating_applicants );
 db.ratings.hasOne( db.rating_offerers );
 
 // 1:N
