@@ -62,8 +62,9 @@ export class InvoiceEffects {
       const apiEndpointUrl = environment.apiUrl + 'invoices/offerer/' + payload.id;
       const token = authState.token;
       const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+
       return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
-        map((res: any) => {
+        map((res) => {
           return {
             type: InvoiceActions.GET_INVOICES_OFFERER,
             payload: res
