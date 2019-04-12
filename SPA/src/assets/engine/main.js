@@ -218,6 +218,31 @@ async function mainR(texture) {
 
 
     console.log(scene);
+
+
+
+    var Caracas = convertLatLonToVec3(10.500000, -66.916664, true);
+    var Madrid = convertLatLonToVec3(40.415363, -3.707398, true);
+
+
+    var vertices = [
+      Madrid[0],Madrid[1],Madrid[2],
+      Caracas[0],Caracas[1],Caracas[2]
+    ];
+
+    // Create an empty buffer object
+    var vertex_buffer = global.gl.createBuffer();
+
+    // Bind appropriate array buffer to it
+    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, vertex_buffer);
+
+    // Pass the vertex data to the buffer
+    global.gl.bufferData(global.gl.ARRAY_BUFFER, new Float32Array(vertices), global.gl.STATIC_DRAW);
+
+    // Unbind the buffer
+    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
+    let uMaterialDiffuse = global.gl.getUniformLocation(global.program, 'uMaterialDiffuse');
+    let uMaterialAmbient = global.gl.getUniformLocation(global.program, 'uMaterialAmbient');
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         LOOP
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -230,6 +255,25 @@ async function mainR(texture) {
         motor.setRotation(land, angle, 'y');
         motor.setRotation(sphere, angle, 'y');
         scene.draw();
+
+
+        // Bind vertex buffer object
+        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, vertex_buffer);
+
+        // Get the attribute location
+        var coord = global.gl.getAttribLocation(global.program, "aVertexPosition");
+
+        // Point an attribute to the currently bound VBO
+        global.gl.vertexAttribPointer(coord, 3, global.gl.FLOAT, false, 0, 0);
+
+        // Enable the attribute
+        global.gl.enableVertexAttribArray(coord);
+        global.gl.uniform4fv(uMaterialDiffuse, [1, 0.039, 0.231, 1.0]);
+        global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+        global.gl.uniform1i(uUseTextures, 0);
+        global.gl.drawArrays(global.gl.LINES, 0, 2);
+
+
         requestAnimationFrame(loop);
       }
     };
@@ -238,7 +282,7 @@ async function mainR(texture) {
 }
 
 
-function convertLatLonToVec3 ( lat, lon ) {
+function convertLatLonToVec3 ( lat, lon, bool ) {
   lon += -25.7;
   lat -= 0.5;
   /*lat =  lat * Math.PI / 180.0;
@@ -257,6 +301,9 @@ function convertLatLonToVec3 ( lat, lon ) {
   var latRad = lat * (Math.PI / 180);
   var lonRad = -lon * (Math.PI / 180);
   var r = 1.27227*50;
+  if (bool) {
+    r = 0.7;
+  }
 
   return[Math.cos(latRad) * Math.cos(lonRad) * r , Math.sin(latRad) * r , Math.cos(latRad) * Math.sin(lonRad) * r];
 }
