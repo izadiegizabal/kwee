@@ -19,7 +19,6 @@ async function mainInit() {
     //global.gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
     global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
 
-
     manager = new TResourceManager();
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         SHADERS
@@ -77,6 +76,8 @@ async function mainR(texture) {
     allowActions.value = false;
     let motor = new TMotorTAG(manager);
     let scene = motor.createRootNode();
+    let quat = glMatrix.quat.create();
+    console.log(quat);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         INIT CONFIG
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -219,15 +220,83 @@ async function mainR(texture) {
 
     console.log(scene);
 
-
+    console.log('Bezier');
+    const arc = getBezierPoints(10.500000, -66.916664,40.415363, -3.707398);
 
     var Caracas = convertLatLonToVec3(10.500000, -66.916664, true);
     var Madrid = convertLatLonToVec3(40.415363, -3.707398, true);
 
 
-    var vertices = [
+    /*var vertices = [
       Madrid[0],Madrid[1],Madrid[2],
       Caracas[0],Caracas[1],Caracas[2]
+    ];*/
+
+    var vertices = [
+      ...arc[0],
+      ...arc[1],
+      ...arc[1],
+      ...arc[2],
+      ...arc[2],
+      ...arc[3],
+      ...arc[3],
+      ...arc[4],
+      ...arc[4],
+      ...arc[5],
+      ...arc[5],
+      ...arc[6],
+      ...arc[6],
+      ...arc[7],
+      ...arc[7],
+      ...arc[8],
+      ...arc[8],
+      ...arc[9],
+      ...arc[9],
+      ...arc[10],
+      ...arc[10],
+      ...arc[11],
+      ...arc[11],
+      ...arc[12],
+      ...arc[12],
+      ...arc[13],
+      ...arc[13],
+      ...arc[14],
+      ...arc[14],
+      ...arc[15],
+      ...arc[15],
+      ...arc[16],
+      ...arc[16],
+      ...arc[17],
+      ...arc[17],
+      ...arc[18],
+      ...arc[18],
+      ...arc[19],
+      ...arc[19],
+      ...arc[20],
+      ...arc[20],
+      ...arc[21],
+      ...arc[21],
+      ...arc[22],
+      ...arc[22],
+      ...arc[23],
+      ...arc[23],
+      ...arc[24],
+      ...arc[24],
+      ...arc[25],
+      ...arc[25],
+      ...arc[26],
+      ...arc[26],
+      ...arc[27],
+      ...arc[27],
+      ...arc[28],
+      ...arc[28],
+      ...arc[29],
+      ...arc[29],
+      ...arc[30],
+      ...arc[30],
+      ...arc[31],
+      ...arc[31],
+      ...arc[32],
     ];
 
     // Create an empty buffer object
@@ -253,6 +322,8 @@ async function mainR(texture) {
         changeAngle(performance.now() / 1000 / 3 * 2 * Math.PI);
         changeAngle(angle * 25);
         motor.setRotation(land, angle, 'y');
+        // glMatrix.mat4.getRotation(quat,land.father.father.entity.matrix);
+        // console.log(quat);
         motor.setRotation(sphere, angle, 'y');
         scene.draw();
 
@@ -271,7 +342,7 @@ async function mainR(texture) {
         global.gl.uniform4fv(uMaterialDiffuse, [1, 0.039, 0.231, 1.0]);
         global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
         global.gl.uniform1i(uUseTextures, 0);
-        global.gl.drawArrays(global.gl.LINES, 0, 2);
+        global.gl.drawArrays(global.gl.LINES, 0, 64);
 
 
         requestAnimationFrame(loop);
@@ -281,8 +352,39 @@ async function mainR(texture) {
   }
 }
 
+const GLOBE_RADIUS = 1.27227*50;
+const CURVE_MIN_ALTITUDE = 1;
+const CURVE_MAX_ALTITUDE = 2;
+const DEGREE_TO_RADIAN = Math.PI / 180;
 
-function convertLatLonToVec3 ( lat, lon, bool ) {
+export function clamp(num, min, max) {
+  return num <= min ? min : (num >= max ? max : num);
+}
+
+function getBezierPoints(startLat,startLon,endLat,endLon){
+    const start = convertLatLonToVec3(startLat,startLon,true);
+    const end = convertLatLonToVec3(endLat,endLon,true);
+
+  const altitude = clamp(glMatrix.vec3.dist(start,end) * .75, CURVE_MIN_ALTITUDE, CURVE_MAX_ALTITUDE);
+
+  const interpolate = geoInterpolate([startLon, startLat], [endLon, endLat]);
+  const midCoord1 = interpolate(0.25);
+  const midCoord2 = interpolate(0.75);
+  const mid1 = convertLatLonToVec3(midCoord1[1], midCoord1[0], true,altitude);
+  const mid2 = convertLatLonToVec3(midCoord2[1], midCoord2[0], true,altitude);
+
+  let arc = [];
+  const q = 1/32;
+  let auxVec = glMatrix.vec3.create();
+  for (let i = 0; i <= 1 ; i+=q) {
+    arc.push(glMatrix.vec3.fromValues(...glMatrix.vec3.bezier(auxVec,start,mid1,mid2,end, i)));
+  }
+  return arc;
+  // return [start,mid1,mid2,end];
+}
+
+
+function convertLatLonToVec3 ( lat, lon, bool, altitude ) {
   lon += -25.7;
   lat -= 0.5;
   /*lat =  lat * Math.PI / 180.0;
@@ -302,10 +404,83 @@ function convertLatLonToVec3 ( lat, lon, bool ) {
   var lonRad = -lon * (Math.PI / 180);
   var r = 1.27227*50;
   if (bool) {
-    r = 0.7;
+    r = 0.65;
   }
+  if(altitude) {
+    r = 0.1 + altitude;
+  }
+  return glMatrix.vec3.fromValues(Math.cos(latRad) * Math.cos(lonRad) * r , Math.sin(latRad) * r , Math.cos(latRad) * Math.sin(lonRad) * r);
+  // return[Math.cos(latRad) * Math.cos(lonRad) * r , Math.sin(latRad) * r , Math.cos(latRad) * Math.sin(lonRad) * r];
+}
 
-  return[Math.cos(latRad) * Math.cos(lonRad) * r , Math.sin(latRad) * r , Math.cos(latRad) * Math.sin(lonRad) * r];
+var epsilon = 1e-6;
+var epsilon2 = 1e-12;
+var pi = Math.PI;
+var halfPi = pi / 2;
+var quarterPi = pi / 4;
+var tau = pi * 2;
+
+var degrees = 180 / pi;
+var radians = pi / 180;
+
+var abs = Math.abs;
+var atan = Math.atan;
+var atan2 = Math.atan2;
+var cos = Math.cos;
+var ceil = Math.ceil;
+var exp = Math.exp;
+var log = Math.log;
+var pow = Math.pow;
+var sin = Math.sin;
+var sign = Math.sign || function(x) { return x > 0 ? 1 : x < 0 ? -1 : 0; };
+var sqrt = Math.sqrt;
+var tan = Math.tan;
+
+function acos(x) {
+  return x > 1 ? 0 : x < -1 ? pi : Math.acos(x);
+}
+
+function asin(x) {
+  return x > 1 ? halfPi : x < -1 ? -halfPi : Math.asin(x);
+}
+
+function haversin(x) {
+  return (x = sin(x / 2)) * x;
+}
+
+function geoInterpolate(a, b) {
+  let x0 = a[0] * radians,
+    y0 = a[1] * radians,
+    x1 = b[0] * radians,
+    y1 = b[1] * radians,
+    cy0 = cos(y0),
+    sy0 = sin(y0),
+    cy1 = cos(y1),
+    sy1 = sin(y1),
+    kx0 = cy0 * cos(x0),
+    ky0 = cy0 * sin(x0),
+    kx1 = cy1 * cos(x1),
+    ky1 = cy1 * sin(x1),
+    d = 2 * asin(sqrt(haversin(y1 - y0) + cy0 * cy1 * haversin(x1 - x0))),
+    k = sin(d);
+
+  let interpolate = d ? function(t) {
+    let B = sin(t *= d) / k,
+      A = sin(d - t) / k,
+      x = A * kx0 + B * kx1,
+      y = A * ky0 + B * ky1,
+      z = A * sy0 + B * sy1;
+    return [
+      atan2(y, x) * degrees,
+      atan2(z, sqrt(x * x + y * y)) * degrees
+    ];
+  } : function() {
+    return [x0 * degrees, y0 * degrees];
+  };
+
+  interpolate.distance = d;
+
+  return interpolate;
 }
 
 export {
