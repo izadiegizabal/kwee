@@ -11,7 +11,7 @@ import * as fromInvoices from './store/invoice.reducers';
 
 interface Invoice {
   id: number;
-  date: Date;
+  date: string;
   total: string;
   product: string;
   currency?: string;
@@ -35,6 +35,7 @@ export class InvoicesComponent implements OnInit {
   address: string;
   userId: number;
   userName: string;
+  noInvoices: boolean;
 
   constructor(private http: HttpClient, private store$: Store<fromApp.AppState>) {
   }
@@ -73,17 +74,25 @@ export class InvoicesComponent implements OnInit {
 
       this.subscription = this.invoicesState.pipe(take(1)).subscribe(
         (invoice) => {
-          invoice.invoices.data.forEach(e => {
-            this.address = this.business ? e.user.address : '';
-            const inv = e.invoice;
-            this.invoices.push({id: inv.id, date: inv.createdAt, total: inv.price, product: inv.product});
-          });
+          if (invoice.invoices.data.length > 0) {
+          console.log(invoice.invoices.data);
+            if ((this.business && invoice.invoices.data[0].offerer) || (this.candidate && invoice.invoices.data[0].applicant)) {
+              invoice.invoices.data.forEach(e => {
+                  this.address = this.business && e.offerer ? e.offerer.address : '';
+                  const inv = e.invoice;
+                  this.invoices.push({id: inv.id, date: this.getDate(inv.createdAt), total: inv.price, product: inv.product});
+              });
+            }
+          } else {
+            this.noInvoices = true;
+          }
         });
     }
   }
 
-  getDate(date: Date) {
-    return date.getDay() + '/' + date.getMonth() + '/' + date.getFullYear();
+  getDate(dateFrom: any) {
+    const date = new Date(dateFrom);
+    return date.getDate() + '/' + ( date.getMonth() + 1 ) + '/' + date.getUTCFullYear();
   }
 
   downloadPDF(index: number) {
@@ -97,7 +106,7 @@ export class InvoicesComponent implements OnInit {
 
     const doc = new jspdf();
     const data = this.JSONData;
-    const date = this.getDate(this.invoices[index].date);
+    const date = this.invoices[index].date;
     const product = this.titleCase(this.invoices[index].product);
     const num = this.invoices[index].id;
     const total = this.invoices[index].total;
