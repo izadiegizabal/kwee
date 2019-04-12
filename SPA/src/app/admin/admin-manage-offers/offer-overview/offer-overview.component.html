@@ -7,8 +7,11 @@
       <mat-expansion-panel-header>
         <mat-panel-title fxFlex="75%"
                          fxFlex.gt-lg="30%" fxFlex.gt-md="35%" fxFlex.gt-sm="40%" fxLayoutAlign="start center">
-          <app-offerer-name-overview [index]="offer.offererIndex"
-                                     [name]="offer.title"></app-offerer-name-overview>
+          <app-offerer-name-overview
+            [index]="offer.offererIndex"
+            [businessIndexBreakdown]="offer.avg"
+            [name]="offer.title">
+          </app-offerer-name-overview>
         </mat-panel-title>
         <mat-panel-description
           fxFlex="25%"
@@ -28,7 +31,7 @@
             <mat-icon class="svg" color="primary" svgIcon="access-time"></mat-icon>
             <span>{{offer.datePublished| date:'d/M/y, HH:mm'}}</span>
           </div>
-          <div fxLayout="row" fxLayoutAlign="end" >
+          <div fxLayout="row" fxLayoutAlign="end">
             <button (click)="edit(offer)" color="accent" mat-button>Edit</button>
             <button (click)="callAlertDialogDelete(offer.id)" color="warn" mat-button>Delete</button>
 
@@ -144,7 +147,7 @@
 </div>
 
 
-<div *ngIf="(offersState | async).offers && (offersState | async).offers.data" >
+<div *ngIf="(offersState | async).offers && (offersState | async).offers.data">
   <mat-paginator #paginator
                  (page)="pageEvent = $event; changePage();"
                  [length]="(offersState | async).offers.total"

@@ -18,6 +18,7 @@
           <mat-card-title>
             <app-offerer-name-overview
               [index]="(profilesState | async).candidate.index ? (profilesState | async).candidate.index : candidate.kweeIndex"
+              [candidateIndexBreakdown]="(profilesState | async).candidate.avg"
               [name]="(profilesState | async).candidate.name ? (profilesState | async).candidate.name : candidate.name"
               size="title">
             </app-offerer-name-overview>
