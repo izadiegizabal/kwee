@@ -197,7 +197,7 @@ export class ProfilesEffects {
             return [
               {
                 type: UserActions.OPERATION_ERROR,
-                payload: err.error.error
+                payload: err
               }
             ];
           })

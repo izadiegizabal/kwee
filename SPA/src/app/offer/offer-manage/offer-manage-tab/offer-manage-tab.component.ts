@@ -5,7 +5,6 @@ import * as OfferManageActions from '../store/offer-manage.actions';
 import {PageEvent} from '@angular/material';
 import {Observable} from 'rxjs';
 import * as fromOfferManage from '../store/offer-manage.reducers';
-import {changeAngle} from '../../../../assets/engine/commons';
 
 @Component({
   selector: 'app-offer-manage-tab',
