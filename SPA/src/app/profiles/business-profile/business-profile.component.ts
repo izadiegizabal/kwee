@@ -69,8 +69,6 @@ export class BusinessProfileComponent implements OnInit, AfterViewInit {
       }
     );
 
-    console.log(params.id);
-
     this.profilesState.subscribe(s => {
       if (s.business) {
         this.busi = s.business;
