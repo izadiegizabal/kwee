@@ -27,6 +27,7 @@ export interface State {
       offererName: string,
       img: string,
       offererIndex: number,
+      avg: any
     }[],
     total: number,
     message: string;

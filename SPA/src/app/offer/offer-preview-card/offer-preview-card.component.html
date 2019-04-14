@@ -13,6 +13,7 @@
     <mat-card-subtitle>
       <app-offerer-name-overview
         [index]="offer.offererIndex"
+        [businessIndexBreakdown]="offer.avg"
         [name]="offer.offererName"
         [routerLink]="urlOfferer()"
         style="cursor: pointer">

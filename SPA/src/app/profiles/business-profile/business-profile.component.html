@@ -17,6 +17,7 @@
           <mat-card-title>
             <app-offerer-name-overview
               [index]="(profilesState | async).business.index"
+              [businessIndexBreakdown]="(profilesState | async).business.avg"
               [name]="(profilesState | async).business.name"
               size="title">
             </app-offerer-name-overview>

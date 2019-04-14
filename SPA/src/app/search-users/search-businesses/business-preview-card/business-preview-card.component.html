@@ -11,6 +11,7 @@
     <mat-card-subtitle>
       <app-offerer-name-overview
         [index]="user.index"
+        [businessIndexBreakdown]="user.avg"
         [name]="getWorkfield()"
         [routerLink]="urlfyPosition()"
         style="cursor: pointer">

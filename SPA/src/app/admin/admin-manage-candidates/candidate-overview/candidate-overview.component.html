@@ -7,8 +7,11 @@
       <mat-expansion-panel-header>
         <mat-panel-title fxFlex="75%"
                          fxFlex.gt-lg="30%" fxFlex.gt-md="35%" fxFlex.gt-sm="40%" fxLayoutAlign="start center">
-          <app-offerer-name-overview [index]="user.index? user.index: 88"
-                                     [name]="user.name"></app-offerer-name-overview>
+          <app-offerer-name-overview
+            [index]="user.index? user.index: 88"
+            [candidateIndexBreakdown]="user.avg"
+            [name]="user.name">
+          </app-offerer-name-overview>
         </mat-panel-title>
         <mat-panel-description
           fxFlex="25%"

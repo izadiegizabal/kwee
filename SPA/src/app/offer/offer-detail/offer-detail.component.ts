@@ -49,7 +49,7 @@ export class OfferDetailComponent implements OnInit {
 
   static getDate(dt: Date) {
     const date = new Date(dt);
-    return date.getUTCDay() + '/' + date.getUTCMonth() + '/' + date.getUTCFullYear();
+    return date.getUTCDate() + '/' + ( date.getUTCMonth() + 1 ) + '/' + date.getUTCFullYear();
   }
 
   ngOnInit() {
