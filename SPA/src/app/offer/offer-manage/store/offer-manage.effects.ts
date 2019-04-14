@@ -9,9 +9,7 @@ import {environment} from '../../../../environments/environment';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
 import {CandidatePreview} from '../../../../models/candidate-preview.model';
-import {SetApplicationsAccepted} from './offer-manage.actions';
-import {TRY_GET_APPLICATIONS_ACCEPTED} from './offer-manage.actions';
-import {TryGetApplicationsAccepted} from './offer-manage.actions';
+
 
 function reformatCandidates(apiApplicationCandidates: any[]): CandidatePreview[] {
   // if no applications found return empty array
