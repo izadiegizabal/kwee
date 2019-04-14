@@ -23,8 +23,8 @@ export class BusinessMoreInfoComponent implements OnInit {
     industry: 'Online Service Company',
     year: '2004',
     location: {
-      lat: -74.20,
-      lon: 40.51,
+      lon: -74.20,
+      lat: 40.51,
     },
     address: '770 Broadway, New York, NY 10003, USA',
     twitter: 'Facebook',

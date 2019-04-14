@@ -8,7 +8,7 @@
     Opinions
   </h2>
   <p>Here you'll be able to find what other users have to say about the business above. </p>
-  <div *ngIf="(profilesState | async).opinions">
+  <div *ngIf="(profilesState | async).opinions; else noOpinions">
     <mat-card
       *ngFor="let opinion of (profilesState | async).opinions.data"
       [ngClass]="{
@@ -102,3 +102,10 @@
     </mat-paginator>
   </div>
 </div>
+
+<ng-template #noOpinions>
+  <div fxLayoutAlign="center center" fxLayout="column" style="margin: 16px; min-height: 256px">
+    <img alt="Iwi Mascot" src="../../../../assets/branding/iwi.svg" width="128px"/>
+    <p>Sorry, there aren't any opinions yet.</p>
+  </div>
+</ng-template>
