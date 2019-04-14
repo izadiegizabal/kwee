@@ -68,6 +68,7 @@ export class ProfilesEffects {
             message: any[],
             data: any[],
           }) => {
+            console.log('jhdkajhsgdsagd ' + res);
             if (!res.data) {
               this.router.navigate(['error/404']);
             }

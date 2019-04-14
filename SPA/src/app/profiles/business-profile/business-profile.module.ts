@@ -7,6 +7,10 @@ import {BusinessMoreInfoComponent} from './business-more-info/business-more-info
 import {BusinessProfileOpinionsComponent} from './business-profile-opinions/business-profile-opinions.component';
 import {NgxMapboxGLModule} from 'ngx-mapbox-gl';
 import {environment} from '../../../environments/environment';
+import {EffectsModule} from '@ngrx/effects';
+import {ProfilesEffects} from '../store/profiles.effects';
+import {StoreModule} from '@ngrx/store';
+import {profilesReducer} from '../store/profiles.reducers';
 
 @NgModule({
   declarations: [
@@ -18,6 +22,8 @@ import {environment} from '../../../environments/environment';
     SharedModule,
     BusinessProfileRoutingModule,
     OffererNameOverviewModule,
+    EffectsModule.forFeature([ProfilesEffects]),
+    StoreModule.forFeature('profiles', profilesReducer),
     NgxMapboxGLModule.withConfig({
       accessToken: environment.mapboxAPIKey,
     }),
