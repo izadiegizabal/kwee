@@ -59,9 +59,7 @@ export class BusinessProfileComponent implements OnInit, AfterViewInit {
   ) {
   }
 
-  ngOnInit() {
-    this.params = this.activatedRoute.snapshot.params;
-
+  goToCorrectTab() {
     if (this.params['tabPosition']) {
       switch (this.params['tabPosition']) {
         case 'more-info':
@@ -75,6 +73,16 @@ export class BusinessProfileComponent implements OnInit, AfterViewInit {
           break;
       }
     }
+  }
+
+  ngOnInit() {
+    this.params = this.activatedRoute.snapshot.params;
+    this.goToCorrectTab();
+
+    this.activatedRoute.params.subscribe(() => {
+      this.params = this.activatedRoute.snapshot.params;
+      this.goToCorrectTab();
+    });
 
     this.store$.dispatch(new ProfilesActions.TryGetProfileBusiness({id: this.params.id}));
     this.profilesState = this.store$.pipe(select(state => state.profiles));

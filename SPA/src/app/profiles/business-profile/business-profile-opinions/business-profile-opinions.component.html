@@ -1,4 +1,5 @@
 <div
+  *ngIf="(profilesState | async).opinions; else noOpinions"
   fxFlex="92%"
   fxFlex.gt-sm="60%"
   fxFlexOffset="4%"
@@ -8,7 +9,7 @@
     Opinions
   </h2>
   <p>Here you'll be able to find what other users have to say about the business above. </p>
-  <div *ngIf="(profilesState | async).opinions; else noOpinions">
+  <div>
     <mat-card
       *ngFor="let opinion of (profilesState | async).opinions.data"
       [ngClass]="{
@@ -104,7 +105,7 @@
 </div>
 
 <ng-template #noOpinions>
-  <div fxLayoutAlign="center center" fxLayout="column" style="margin: 16px; min-height: 256px">
+  <div fxLayoutAlign="center center" fxLayout="column" style="margin: 16px; min-height: 384px">
     <img alt="Iwi Mascot" src="../../../../assets/branding/iwi.svg" width="128px"/>
     <p>Sorry, there aren't any opinions yet.</p>
   </div>
