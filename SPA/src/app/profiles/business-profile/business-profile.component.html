@@ -16,8 +16,8 @@
         <mat-card [fxFlex]="(mine || twitterAccount !== '')? 70 : 100">
           <mat-card-title>
             <app-offerer-name-overview
-              [index]="(profilesState | async).business.index"
               [businessIndexBreakdown]="(profilesState | async).business.avg"
+              [index]="(profilesState | async).business.index"
               [name]="(profilesState | async).business.name"
               size="title">
             </app-offerer-name-overview>
@@ -85,10 +85,10 @@
           </mat-card-actions>
         </mat-card>
         <mat-card *ngIf="!mine && twitterAccount !== ''"
-                  fxHide.lt-lg
                   class="twitter-wrapper"
-                  fxFlex="30" fxFlexOffset.gt-xs="32px">
-          <a class="twitter-timeline" [href]="'https://twitter.com/' + twitterAccount">Tweets by @{{twitterAccount}}</a>
+                  fxFlex="30"
+                  fxFlexOffset.gt-xs="32px" fxHide.lt-lg>
+          <a [href]="'https://twitter.com/' + twitterAccount" class="twitter-timeline">Tweets by @{{twitterAccount}}</a>
         </mat-card>
       </div>
       <div fxLayout="row" style="margin-top: 16px">

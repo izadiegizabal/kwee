@@ -47,8 +47,8 @@ export class BusinessProfileComponent implements OnInit, AfterViewInit {
 
   // TODO: load this dynamically
   twitterAccount = '';
-  private params: Params;
   selectedIndex: number;
+  private params: Params;
 
   constructor(
     private titleService: Title,
@@ -65,11 +65,14 @@ export class BusinessProfileComponent implements OnInit, AfterViewInit {
     if (this.params['tabPosition']) {
       switch (this.params['tabPosition']) {
         case 'more-info':
-          this.changeTab(0); break;
+          this.changeTab(0);
+          break;
         case 'opinions':
-          this.changeTab(1); break;
+          this.changeTab(1);
+          break;
         case 'jobs':
-          this.changeTab(2); break;
+          this.changeTab(2);
+          break;
       }
     }
 

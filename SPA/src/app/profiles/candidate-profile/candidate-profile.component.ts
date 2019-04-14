@@ -106,9 +106,9 @@ export class CandidateProfileComponent implements OnInit, AfterViewInit {
   profilesState: Observable<fromProfiles.State>;
   // To check if this is my profile
   mine = false;
-  private cand: any;
   // TODO: load this dynamically
   twitterAccount = '';
+  private cand: any;
 
   constructor(
     private titleService: Title,

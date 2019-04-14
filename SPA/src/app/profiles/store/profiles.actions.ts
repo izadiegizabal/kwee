@@ -59,7 +59,7 @@ export class UserTryUpdateCandidate implements Action {
 export class UserTryUpdateBusiness implements Action {
   readonly type = USER_TRY_UPDATE_BUSINESS;
 
-  constructor(public payload: {updatedBusiness: any }) {
+  constructor(public payload: { updatedBusiness: any }) {
   }
 }
 
