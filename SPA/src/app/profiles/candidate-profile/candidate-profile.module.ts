@@ -13,6 +13,7 @@ import {EffectsModule} from '@ngrx/effects';
 import {CandidateProfileOpinionsComponent} from './candidate-profile-opinions/candidate-profile-opinions.component';
 import { PastPositionsComponent } from './past-positions/past-positions.component';
 import { PastPositionCardComponent } from './past-positions/past-position-card/past-position-card.component';
+import {IconWithTextModule} from '../../shared/icon-with-text/icon-with-text.module';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { PastPositionCardComponent } from './past-positions/past-position-card/p
     SharedModule,
     CandidateProfileRoutingModule,
     OffererNameOverviewModule,
+    IconWithTextModule,
     ExperienceFormsModule,
     EducationsFormsModule,
     EffectsModule.forFeature([ProfilesEffects]),

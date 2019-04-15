@@ -1,3 +1,45 @@
-<p>
-  past-position-card works!
-</p>
+<mat-card fxFlex="100%" fxFlex.gt-md="712px" fxFlex.gt-sm="656px" fxFlex.gt-xs="600px">
+  <mat-card-header
+    fxLayout="row"
+    fxLayout.lt-sm="column"
+    fxLayoutAlign="space-between">
+    <div
+      class="quickInfo"
+      fxFlexAlign="start start"
+      fxLayout="row"
+      fxLayoutGap="16px">
+      <app-icon-with-text [text]="offer.location" icon="place"></app-icon-with-text>
+      <app-icon-with-text [text]="offer.dateStart | date" icon="access-time"></app-icon-with-text>
+    </div>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div fxLayout="column" fxFlex="100%">
+      <div fxLayout="row">
+        <div fxLayout="column">
+          <img
+            [src]="apiURL + offer.img"
+            alt="Business Logo"
+            height="88px"
+            width="88px"
+            style="object-fit: cover">
+          <app-offerer-name-overview
+            [index]="offer.offererIndex"
+            [businessIndexBreakdown]="offer.avg"
+            [name]="offer.offererName"
+            [routerLink]="offererUrl"
+            style="cursor: pointer">
+          </app-offerer-name-overview>
+        </div>
+        <mat-icon color="primary" svgIcon="handshake"></mat-icon>
+      </div>
+      <div
+        fxFlex="100%"
+        fxLayout="row"
+        [routerLink]="offerUrl"
+        style="cursor: pointer">
+        {{offer.title}}
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
