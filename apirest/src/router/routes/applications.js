@@ -109,7 +109,7 @@ module.exports = (app, db) => {
     });
 
     // GET one application by id
-    app.get("/application/:fk_applicant([0-9]+)/:fk_offer([0-9]+)", checkToken, async (req, res, next) => {
+    app.get("/application/:fk_applicant([0-9]+)/:fk_offer([0-9]+)", async (req, res, next) => {
         const params = req.params;
 
         try {
