@@ -123,5 +123,8 @@ export class MaterialAngularModule {
     matIconRegistry.addSvgIcon('kwee-logo-dark', domSanitizer.bypassSecurityTrustResourceUrl('assets/branding/logo-kwee-dark.svg'));
     matIconRegistry.addSvgIcon('kwee-icon', domSanitizer.bypassSecurityTrustResourceUrl('assets/branding/icon.svg'));
     matIconRegistry.addSvgIcon('kwee-icon-dark', domSanitizer.bypassSecurityTrustResourceUrl('assets/branding/iconBnw.svg'));
+
+    // Others
+    matIconRegistry.addSvgIcon('handshake', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/handshake.svg'));
   }
 }

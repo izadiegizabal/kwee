@@ -59,22 +59,6 @@ export class BusinessProfileComponent implements OnInit, AfterViewInit {
   ) {
   }
 
-  goToCorrectTab() {
-    if (this.params['tabPosition']) {
-      switch (this.params['tabPosition']) {
-        case 'more-info':
-          this.changeTab(0);
-          break;
-        case 'opinions':
-          this.changeTab(1);
-          break;
-        case 'jobs':
-          this.changeTab(2);
-          break;
-      }
-    }
-  }
-
   ngOnInit() {
     this.params = this.activatedRoute.snapshot.params;
     this.goToCorrectTab();
@@ -127,6 +111,22 @@ export class BusinessProfileComponent implements OnInit, AfterViewInit {
           } else {
             this.router.navigate(['jobs'], {relativeTo: this.activatedRoute.parent});
           }
+          break;
+      }
+    }
+  }
+
+  goToCorrectTab() {
+    if (this.params['tabPosition']) {
+      switch (this.params['tabPosition']) {
+        case 'more-info':
+          this.changeTab(0);
+          break;
+        case 'opinions':
+          this.changeTab(1);
+          break;
+        case 'jobs':
+          this.changeTab(2);
           break;
       }
     }

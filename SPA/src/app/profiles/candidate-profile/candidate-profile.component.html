@@ -94,7 +94,7 @@
       </div>
       <div fxLayout="row" style="margin-top: 16px">
         <mat-card fxFlex="100" style="padding: 0 !important;">
-          <mat-tab-group (selectedIndexChange)="goToMyOffers($event)">
+          <mat-tab-group (selectedIndexChange)="changeTab($event)" [selectedIndex]="selectedIndex">
             <mat-tab label="More Info">
               <ng-template matTabContent>
                 <!--TODO: change dynamically this content-->
@@ -108,7 +108,11 @@
                 <app-candidate-profile-opinions></app-candidate-profile-opinions>
               </ng-template>
             </mat-tab>
-            <mat-tab label="Offers"></mat-tab>
+            <mat-tab label="Past Positions">
+              <ng-template matTabContent>
+                <app-past-positions></app-past-positions>
+              </ng-template>
+            </mat-tab>
           </mat-tab-group>
         </mat-card>
       </div>
