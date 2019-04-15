@@ -86,7 +86,10 @@ module.exports = (app, db) => {
                     data: invoices
                 });
             } else {
-                return next({type: 'error', error: 'No invoices'});
+                return res.status(200).json({
+                    ok: true,
+                    message: 'No invoices'
+                });
             }
         } catch (err) {
             next({type: 'error', error: err.message});
