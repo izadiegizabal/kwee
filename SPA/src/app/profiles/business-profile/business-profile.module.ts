@@ -11,22 +11,27 @@ import {EffectsModule} from '@ngrx/effects';
 import {ProfilesEffects} from '../store/profiles.effects';
 import {StoreModule} from '@ngrx/store';
 import {profilesReducer} from '../store/profiles.reducers';
+import {BusinessOpenOffersComponent} from './business-open-offers/business-open-offers.component';
+import {OfferPreviewCardModule} from '../../offer/offer-preview-card/offer-preview-card.module';
 
 @NgModule({
   declarations: [
     BusinessProfileComponent,
     BusinessMoreInfoComponent,
     BusinessProfileOpinionsComponent,
+    BusinessOpenOffersComponent,
   ],
   imports: [
     SharedModule,
     BusinessProfileRoutingModule,
     OffererNameOverviewModule,
+    OfferPreviewCardModule,
     EffectsModule.forFeature([ProfilesEffects]),
     StoreModule.forFeature('profiles', profilesReducer),
     NgxMapboxGLModule.withConfig({
       accessToken: environment.mapboxAPIKey,
     }),
+    OfferPreviewCardModule,
   ]
 })
 export class BusinessProfileModule {

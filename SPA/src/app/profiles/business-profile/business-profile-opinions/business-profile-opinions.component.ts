@@ -92,7 +92,7 @@ export class BusinessProfileOpinionsComponent implements OnInit {
 
   ngOnInit() {
     const params = this.activatedRoute.snapshot.params;
-    this.store$.dispatch(new ProfilesActions.TryGetOpinionsUser({id: params.id, limit: 5, page: 1 }));
+    this.store$.dispatch(new ProfilesActions.TryGetOpinionsUser({id: params.id, limit: 5, page: 1}));
     this.profilesState = this.store$.pipe(select(state => state.profiles));
   }
 
@@ -102,8 +102,10 @@ export class BusinessProfileOpinionsComponent implements OnInit {
 
   changePage() {
     const params = this.activatedRoute.snapshot.params;
-    this.store$.dispatch(new ProfilesActions.TryGetOpinionsUser({id: params.id,  page: this.pageEvent.pageIndex + 1,
-      limit: this.pageEvent.pageSize}));
+    this.store$.dispatch(new ProfilesActions.TryGetOpinionsUser({
+      id: params.id, page: this.pageEvent.pageIndex + 1,
+      limit: this.pageEvent.pageSize
+    }));
 
     window.scrollTo(0, 0);
   }

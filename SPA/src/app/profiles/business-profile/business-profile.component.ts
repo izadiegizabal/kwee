@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 import {Title} from '@angular/platform-browser';
 import {Location} from '@angular/common';
 import {Observable} from 'rxjs';
@@ -47,6 +47,8 @@ export class BusinessProfileComponent implements OnInit, AfterViewInit {
 
   // TODO: load this dynamically
   twitterAccount = '';
+  selectedIndex: number;
+  private params: Params;
 
   constructor(
     private titleService: Title,
@@ -57,14 +59,37 @@ export class BusinessProfileComponent implements OnInit, AfterViewInit {
   ) {
   }
 
+  goToCorrectTab() {
+    if (this.params['tabPosition']) {
+      switch (this.params['tabPosition']) {
+        case 'more-info':
+          this.changeTab(0);
+          break;
+        case 'opinions':
+          this.changeTab(1);
+          break;
+        case 'jobs':
+          this.changeTab(2);
+          break;
+      }
+    }
+  }
+
   ngOnInit() {
-    const params = this.activatedRoute.snapshot.params;
-    this.store$.dispatch(new ProfilesActions.TryGetProfileBusiness({id: params.id}));
+    this.params = this.activatedRoute.snapshot.params;
+    this.goToCorrectTab();
+
+    this.activatedRoute.params.subscribe(() => {
+      this.params = this.activatedRoute.snapshot.params;
+      this.goToCorrectTab();
+    });
+
+    this.store$.dispatch(new ProfilesActions.TryGetProfileBusiness({id: this.params.id}));
     this.profilesState = this.store$.pipe(select(state => state.profiles));
     this.store$.pipe(select(state => state.auth)).subscribe(
       s => {
         if (s.user) {
-          this.mine = Number(params.id) === s.user.id;
+          this.mine = Number(this.params.id) === s.user.id;
         }
       }
     );
@@ -85,9 +110,25 @@ export class BusinessProfileComponent implements OnInit, AfterViewInit {
     twttr.widgets.load();
   }
 
-  goToMyOffers(tabIndex: number) {
-    if (tabIndex && tabIndex === 2) {
-      this.router.navigate(['/my-offers']);
+  changeTab(tabIndex: number) {
+    this.selectedIndex = tabIndex;
+
+    if (this.params) {
+      switch (tabIndex) {
+        case 0:
+          this.router.navigate(['more-info'], {relativeTo: this.activatedRoute.parent});
+          break;
+        case 1:
+          this.router.navigate(['opinions'], {relativeTo: this.activatedRoute.parent});
+          break;
+        case 2:
+          if (this.mine) {
+            this.router.navigate(['/my-offers']);
+          } else {
+            this.router.navigate(['jobs'], {relativeTo: this.activatedRoute.parent});
+          }
+          break;
+      }
     }
   }
 

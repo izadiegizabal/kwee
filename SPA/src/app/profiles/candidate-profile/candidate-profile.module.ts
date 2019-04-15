@@ -11,12 +11,16 @@ import {ProfilesEffects} from '../store/profiles.effects';
 import {StoreModule} from '@ngrx/store';
 import {EffectsModule} from '@ngrx/effects';
 import {CandidateProfileOpinionsComponent} from './candidate-profile-opinions/candidate-profile-opinions.component';
+import { PastPositionsComponent } from './past-positions/past-positions.component';
+import { PastPositionCardComponent } from './past-positions/past-position-card/past-position-card.component';
 
 @NgModule({
   declarations: [
     CandidateProfileComponent,
     CandidateMoreInfoComponent,
     CandidateProfileOpinionsComponent,
+    PastPositionsComponent,
+    PastPositionCardComponent,
   ],
   imports: [
     SharedModule,

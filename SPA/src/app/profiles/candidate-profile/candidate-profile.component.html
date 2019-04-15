@@ -14,11 +14,11 @@
       <div fxLayout="row" fxLayout.lt-sm="column"
            fxLayoutGap.lt-sm="16px">
         <!-- Basic info -->
-        <mat-card [fxFlex]="(mine || twitterAccount !== '') ? 70 : 100" fxLayoutAlign="space-between" fxLayout="column">
+        <mat-card [fxFlex]="(mine || twitterAccount !== '') ? 70 : 100" fxLayout="column" fxLayoutAlign="space-between">
           <mat-card-title>
             <app-offerer-name-overview
-              [index]="(profilesState | async).candidate.index ? (profilesState | async).candidate.index : candidate.kweeIndex"
               [candidateIndexBreakdown]="(profilesState | async).candidate.avg"
+              [index]="(profilesState | async).candidate.index ? (profilesState | async).candidate.index : candidate.kweeIndex"
               [name]="(profilesState | async).candidate.name ? (profilesState | async).candidate.name : candidate.name"
               size="title">
             </app-offerer-name-overview>
@@ -86,10 +86,10 @@
           </mat-card-actions>
         </mat-card>
         <mat-card *ngIf="!mine && twitterAccount !== ''"
-                  fxHide.lt-lg
                   class="twitter-wrapper"
-                  fxFlex="30" fxFlexOffset.gt-xs="32px">
-          <a class="twitter-timeline" [href]="'https://twitter.com/' + twitterAccount">Tweets by @{{twitterAccount}}</a>
+                  fxFlex="30"
+                  fxFlexOffset.gt-xs="32px" fxHide.lt-lg>
+          <a [href]="'https://twitter.com/' + twitterAccount" class="twitter-timeline">Tweets by @{{twitterAccount}}</a>
         </mat-card>
       </div>
       <div fxLayout="row" style="margin-top: 16px">
@@ -99,7 +99,8 @@
               <ng-template matTabContent>
                 <!--TODO: change dynamically this content-->
                 <!--<app-candidate-more-info [candidate]="(profilesState | async).candidate" [isPremium]="isPremium"></app-candidate-more-info>-->
-                <app-candidate-more-info [candidate]="(profilesState | async).candidate" [isPremium]="!mine"></app-candidate-more-info>
+                <app-candidate-more-info [candidate]="(profilesState | async).candidate"
+                                         [isPremium]="!mine"></app-candidate-more-info>
               </ng-template>
             </mat-tab>
             <mat-tab label="Opinions">

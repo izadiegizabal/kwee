@@ -40,7 +40,7 @@ export interface State {
     status: number,
     website: string,
     workField: number,
-    year: Date,
+    year: Date
   };
 
   opinions: {

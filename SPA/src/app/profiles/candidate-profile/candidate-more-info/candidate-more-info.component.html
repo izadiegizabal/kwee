@@ -5,7 +5,7 @@
   fxLayoutGap="32px">
   <div fxFlex="50%" fxLayout="column" style="padding-bottom: 32px">
     <h2>Experience</h2>
-    <mat-accordion style="margin-bottom: 16px" *ngIf="candidate.experiences.length > 0; else infoNA">
+    <mat-accordion *ngIf="candidate.experiences.length > 0; else infoNA" style="margin-bottom: 16px">
       <mat-expansion-panel *ngFor="let experience of candidate.experiences">
         <mat-expansion-panel-header>
           <mat-panel-title>
@@ -15,8 +15,8 @@
           </mat-panel-title>
           <mat-panel-description style="margin-top: 20px">
             <!--{{experience.company +-->
-          <!--" - " +-->
-          {{(experience.dateStart | date:'y') + "/" + (experience.dateEnd | date:'y')}}
+            <!--" - " +-->
+            {{(experience.dateStart | date:'y') + "/" + (experience.dateEnd | date:'y')}}
           </mat-panel-description>
         </mat-expansion-panel-header>
 
@@ -30,7 +30,7 @@
 
 
     <h2>Education</h2>
-    <mat-accordion style="margin-bottom: 16px" *ngIf="candidate.educations.length > 0; else infoNA2">
+    <mat-accordion *ngIf="candidate.educations.length > 0; else infoNA2" style="margin-bottom: 16px">
       <mat-expansion-panel *ngFor="let education of candidate.educations">
         <mat-expansion-panel-header>
           <mat-panel-title>
@@ -53,10 +53,10 @@
     <ng-template #infoNA2><p>{{infoNAMess}}</p></ng-template>
 
 
-    <p> </p>
+    <p></p>
 
     <h2 style="margin-bottom: 0">Languages</h2>
-    <mat-list style="margin-bottom: 16px" *ngIf="candidate.languages.length > 0; else infoNA3">
+    <mat-list *ngIf="candidate.languages.length > 0; else infoNA3" style="margin-bottom: 16px">
       <div
         *ngFor="let language of  candidate.languages"
         style="margin-left: -20px">
@@ -70,10 +70,10 @@
 
     <h2>Skills</h2>
     <div
-      fxLayout="row" *ngIf="candidate.skills.length > 0; else infoNA4">
+      *ngIf="candidate.skills.length > 0; else infoNA4" fxLayout="row">
       <mat-list
         fxFlex="50%"
-        style="padding-top: 0" >
+        style="padding-top: 0">
         <div
           *ngFor="let skill of candidate.skills; let i = index"
           style="margin-left: -20px">
@@ -107,7 +107,8 @@
     <div fxLayout="column">
       <div>
         <div fxLayout="column">
-          <div *ngIf="candidate.social_networks.twitter || candidate.social_networks.linkedin || candidate.social_networks.github || candidate.social_networks.telegram">
+          <div
+            *ngIf="candidate.social_networks.twitter || candidate.social_networks.linkedin || candidate.social_networks.github || candidate.social_networks.telegram">
             <h2>Social Networks</h2>
             <div fxLayout="row">
               <div *ngIf="candidate.social_networks.twitter">

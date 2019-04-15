@@ -63,7 +63,7 @@
     <p
       style="margin: 0">{{business.address ? business.address : mockBusiness.address}}</p>
     <mgl-map
-      [center]="[business.lat ? business.lat : mockBusiness.location.lat, business.lon ? business.lon : mockBusiness.location.lon]"
+      [center]="[business.lon ? business.lon : mockBusiness.location.lon, business.lat ? business.lat : mockBusiness.location.lat]"
       [style]="'mapbox://styles/mapbox/streets-v9'"
       [zoom]="[8]"
       fxFlex.lt-sm="100%"
@@ -71,7 +71,7 @@
       style="margin-top: 16px"
     >
       <mgl-marker
-        [lngLat]="[business.lat ? business.lat : mockBusiness.location.lat, business.lon ? business.lon : mockBusiness.location.lon]">
+        [lngLat]="[business.lon ? business.lon : mockBusiness.location.lon, business.lat ? business.lat : mockBusiness.location.lat]">
         <mat-icon color="primary" svgIcon="place"></mat-icon>
       </mgl-marker>
     </mgl-map>
