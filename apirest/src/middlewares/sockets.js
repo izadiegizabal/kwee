@@ -62,5 +62,6 @@ module.exports = {
     selected,
     connectClient,
     setUser,
-    usersConnected
+    usersConnected,
+    rating
 };

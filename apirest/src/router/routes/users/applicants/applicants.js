@@ -1,4 +1,4 @@
-const {tokenId, logger, sendVerificationEmail, getOffererAVG, getApplicantAVG, pagination, checkImg, deleteFile, uploadImg, saveLogES} = require('../../../../shared/functions');
+const {tokenId, logger, sendVerificationEmail, getOffererAVG, getApplicantAVG, pagination, prepareOffersToShow, checkImg, deleteFile, uploadImg, saveLogES} = require('../../../../shared/functions');
 const {checkToken, checkAdmin} = require('../../../../middlewares/authentication');
 const elastic = require('../../../../database/elasticsearch');
 const env = require('../../../../tools/constants');
@@ -1194,12 +1194,12 @@ module.exports = (app, db) => {
             let educations = await applicant.getEducations();
             let languages = await applicant.getLanguages();
             let experiences = await applicant.getExperiences();
-            let applications = await db.applications.findAll();
+            let applications = await db.applications.findAll({ where: { fk_applicant: applicant.userId, status: 3 }});
             let skillsArray = [];
             let languagesArray = [];
             let educationsArray = [];
             let experiencesArray = [];
-            let applicationsArray = [];
+
             if (skills) {
                 for (let i = 0; i < skills.length; i++) {
                     skillsArray.push(skills[i]);
@@ -1225,12 +1225,27 @@ module.exports = (app, db) => {
                 data.experiences = experiencesArray;
             }
             if (applications) {
-                for (let i = 0; i < applications.length; i++) {
-                    if (applications[i].fk_applicant == applicant.userId) {
-                        applicationsArray.push(applications[i]);
-                    }
-                }
-                data.applications = applicationsArray;
+                let offers = await db.offers.findAll();
+                let users = await db.users.findAll();
+                 // Search the offers where this applicant applicanted
+                let offersInApplication = [];
+
+                applications.forEach( application => {
+                    offersInApplication.push( offers.find( offer => application.fk_offer === offer.id ) );
+                });
+
+                let offersShow = [];
+
+                offersInApplication.forEach(element => {
+                    let offersAux = [],
+                    offersToShowAux = [];
+                    offersAux.push(element);
+                    offersShow.push(prepareOffersToShow(offersAux, offersToShowAux, users.find(user => element.fk_offerer == user.id))[0]);
+                    
+                });
+
+                data.applications = offersInApplication;
+
             }
         } catch (error) {
             throw new Error(error);

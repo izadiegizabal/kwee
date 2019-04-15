@@ -1,7 +1,7 @@
 const env = require('../tools/constants');
 const socketIO = require('socket.io');
 const {server} = require('./express');
-const {disconnect, message, selected, connectClient, setUser} = require('../middlewares/sockets');
+const {disconnect, message, selected, connectClient, setUser, rating} = require('../middlewares/sockets');
 
 var io = socketIO(server);
 
