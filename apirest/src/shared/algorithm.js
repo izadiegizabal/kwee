@@ -142,7 +142,6 @@ class Algorithm {
         return accumulated;
     }
 
-
     async getProfile(id) {
         let out = null;
         switch (await this.checkRole(id)) {
@@ -258,130 +257,157 @@ class Algorithm {
             let teamwork = [];
             let satisfaction = [];
 
+            let out = false;
 
-            // 2- find applications: status = accepted 
-            let applicationsAccepted = await db.applications.findAll({
+            let opinions = await db.rating_applicants.findAll({
                 where: {
-                    status: '0' /* status Accepted */,
-                    fk_applicant: id
-                },
-                attributes: [
-                    'id'
-                ]
-            });
-
-            //console.log("applicationsAccepted: " + applicationsAccepted[0].id);
-            if (applicationsAccepted && applicationsAccepted.length > 0) {
-                //console.log("applications accepted: " + applicationsAccepted.length);
-                // has accepted applications
-                // --> find ratingsID
-
-
-                await algorithm.asyncForEach(applicationsAccepted, null, async (applicationAccepted, index) => {
-
-                    let applicationAcceptedID = applicationAccepted.id;
-                    //
-                    console.log(" aplication accepted id: " + applicationAcceptedID);
-
-                    let ratingId = await db.ratings.findOne({
-                        where: {
-                            fk_application: applicationAcceptedID
-                        },
-                        attributes: [
-                            'id'
-                        ]
-                    });
-
-                    if (ratingId) {
-                        let valoration = await db.rating_applicants.findOne({
-                            where: {
-                                ratingId: ratingId.id
-                            },
-                            attributes: [
-                                'efficiency',
-                                'skills',
-                                'punctuality',
-                                'hygiene',
-                                'teamwork',
-                                'satisfaction'
-                            ]
-                        });
-
-                        if (valoration) {
-                            //
-                            console.log(" - valoration:");
-                            console.log(" - " + valoration.efficiency + " " + valoration.skills + " " + valoration.punctuality + " " + valoration.hygiene + " " + valoration.teamwork);
-
-                            efficiency.push(valoration.efficiency);
-                            skills.push(valoration.skills);
-                            punctuality.push(valoration.punctuality);
-                            hygiene.push(valoration.hygiene);
-                            teamwork.push(valoration.teamwork);
-                            satisfaction.push(valoration.satisfaction);
-
-                            totalOpinions++;
-                        }
-
-
-                    }
-                });
-            } else {
-                console.log("No applications");
-            }
-
-            if (totalOpinions > 0) {
-                // calculate averages
+                    userRated: id
+                }
+            })
+            console.log("Applicant" +id+ " has " + opinions.length + " opinions");
+            if(opinions.length > 0){
+                for(var op in opinions){
+                    efficiency.push(opinions[op].efficiency);
+                    skills.push(opinions[op].skills);
+                    punctuality.push(opinions[op].punctuality);
+                    hygiene.push(opinions[op].hygiene);
+                    teamwork.push(opinions[op].teamwork);
+                    satisfaction.push(opinions[op].satisfaction);
+                }
+    
                 efficiency = await algorithm.average(efficiency);
                 skills = await algorithm.average(skills);
                 punctuality = await algorithm.average(punctuality);
                 hygiene = await algorithm.average(hygiene);
                 teamwork = await algorithm.average(teamwork);
                 satisfaction = await algorithm.average(satisfaction);
-            } else {
-                efficiency = 0;
-                skills = 0;
-                punctuality = 0;
-                hygiene = 0;
-                teamwork = 0;
-                satisfaction = 0;
-            }
-
-            let values = {
-                efficiency,
-                skills,
-                punctuality,
-                hygiene,
-                teamwork,
-                satisfaction
-            };
-
-            // console.log("==========================");
-            // console.log(values);
-            // console.log("==========================");
-
-            // UPDATE AVERAGES
-            let out = await db.applicants.update(
-                {
-                    efficiencyAVG: values.efficiency,
-                    skillsAVG: values.skills,
-                    punctualityAVG: values.punctuality,
-                    hygieneAVG: values.hygiene,
-                    teamworkAVG: values.teamwork,
-                    satisfactionAVG: values.satisfaction,
-                    nOpinions: totalOpinions
-                },
-                {where: {userId: id}})
-                .then(x => {
-                    if (x) {
-                        console.log("averages updated to: ");
-                        console.log(values);
-                        return values
-                    } else {
-                        console.log("averages not updated");
-                        return false;
-                    }
-                });
-
+    
+                console.log("then");
+                ////////////////
+                // // 2- find applications: status = accepted 
+                // let applicationsAccepted = await db.applications.findAll({
+                //     where: {
+                //         status: '0' /* status Accepted */,
+                //         fk_applicant: id
+                //     },
+                //     attributes: [
+                //         'id'
+                //     ]
+                // });
+    
+                // //console.log("applicationsAccepted: " + applicationsAccepted[0].id);
+                // if (applicationsAccepted && applicationsAccepted.length > 0) {
+                //     //console.log("applications accepted: " + applicationsAccepted.length);
+                //     // has accepted applications
+                //     // --> find ratingsID
+    
+    
+                //     await algorithm.asyncForEach(applicationsAccepted, null, async (applicationAccepted, index) => {
+    
+                //         let applicationAcceptedID = applicationAccepted.id;
+                //         //
+                //         console.log(" aplication accepted id: " + applicationAcceptedID);
+    
+                //         let ratingId = await db.ratings.findOne({
+                //             where: {
+                //                 fk_application: applicationAcceptedID
+                //             },
+                //             attributes: [
+                //                 'id'
+                //             ]
+                //         });
+    
+                //         if (ratingId) {
+                //             let valoration = await db.rating_applicants.findOne({
+                //                 where: {
+                //                     ratingId: ratingId.id
+                //                 },
+                //                 attributes: [
+                //                     'efficiency',
+                //                     'skills',
+                //                     'punctuality',
+                //                     'hygiene',
+                //                     'teamwork',
+                //                     'satisfaction'
+                //                 ]
+                //             });
+    
+                //             if (valoration) {
+                //                 //
+                //                 console.log(" - valoration:");
+                //                 console.log(" - " + valoration.efficiency + " " + valoration.skills + " " + valoration.punctuality + " " + valoration.hygiene + " " + valoration.teamwork);
+    
+                //                 efficiency.push(valoration.efficiency);
+                //                 skills.push(valoration.skills);
+                //                 punctuality.push(valoration.punctuality);
+                //                 hygiene.push(valoration.hygiene);
+                //                 teamwork.push(valoration.teamwork);
+                //                 satisfaction.push(valoration.satisfaction);
+    
+                //                 totalOpinions++;
+                //             }
+    
+    
+                //         }
+                //     });
+                // } else {
+                //     console.log("No applications");
+                // }
+    
+                // if (totalOpinions > 0) {
+                //     // calculate averages
+                //     efficiency = await algorithm.average(efficiency);
+                //     skills = await algorithm.average(skills);
+                //     punctuality = await algorithm.average(punctuality);
+                //     hygiene = await algorithm.average(hygiene);
+                //     teamwork = await algorithm.average(teamwork);
+                //     satisfaction = await algorithm.average(satisfaction);
+                // } else {
+                //     efficiency = 0;
+                //     skills = 0;
+                //     punctuality = 0;
+                //     hygiene = 0;
+                //     teamwork = 0;
+                //     satisfaction = 0;
+                // }
+    
+                let values = {
+                    efficiency,
+                    skills,
+                    punctuality,
+                    hygiene,
+                    teamwork,
+                    satisfaction
+                };
+    
+                // console.log("==========================");
+                // console.log(values);
+                // console.log("==========================");
+    
+                // UPDATE AVERAGES
+                out = await db.applicants.update(
+                    {
+                        efficiencyAVG: values.efficiency,
+                        skillsAVG: values.skills,
+                        punctualityAVG: values.punctuality,
+                        hygieneAVG: values.hygiene,
+                        teamworkAVG: values.teamwork,
+                        satisfactionAVG: values.satisfaction,
+                        nOpinions: totalOpinions
+                    },
+                    {where: {userId: id}})
+                    .then(x => {
+                        if (x) {
+                            console.log("averages updated to: ");
+                            console.log(values);
+                            return values
+                        } else {
+                            console.log("averages not updated");
+                            return false;
+                        }
+                    });
+        
+                }
             return out;
         }
 
@@ -394,153 +420,76 @@ class Algorithm {
             let installations = [];
             let satisfaction = [];
 
-            // 1- find Offers ID: closed --> get IDs
-            let offersClosed = await db.offers.findAll({
+            let out = false;
+
+            let opinions = await db.rating_offerers.findAll({
                 where: {
-                    status: 1 /* Closed */,
-                    fk_offerer: id
+                    userRated: id
                 }
-            });
-
-            // 2- find applications: status = accepted & offerId = id --> get IDs
-            //let offerApplicationsAccepted = null;
-            if (offersClosed.length >= 1) {
-                //console.log("offersclosed with length");
-                await algorithm.asyncForEach(offersClosed, null, async (offerClosed, index) => {
-
-                    let offerClosedID = offerClosed.id;
-                    console.log("finding offers closed with id: " + offerClosedID);
-                    let applicationsAccepted = await db.applications.findAll({
-                        where: {
-                            status: '0' /* status Accepted */,
-                            fk_offer: offerClosedID
-                        }
-                    });
-                    //console.log("applicationsAccepted: " + applicationsAccepted[0].id);
-                    if (applicationsAccepted) {
-                        // console.log("has applications accepted (" + applicationsAccepted.length + ")");
-                        await algorithm.asyncForEach(applicationsAccepted, null, async (applicationAccepted, index) => {
-                            let applicationAcceptedID = applicationAccepted.id;
-                            console.log("application accepted id: " + applicationAcceptedID);
-
-                            let ratingId = await db.ratings.findOne({
-                                where: {
-                                    fk_application: applicationAcceptedID
-                                },
-                                attributes: [
-                                    'id'
-                                ]
-                            });
-
-                            if (ratingId) {
-
-                                let valoration = await db.rating_offerers.findOne({
-                                    where: {
-                                        ratingId: ratingId.id
-                                    },
-                                    attributes: [
-                                        'salary',
-                                        'environment',
-                                        'partners',
-                                        'services',
-                                        'installations',
-                                        'satisfaction'
-                                    ]
-                                });
-                                if (valoration) {
-                                    salary.push(valoration.salary);
-                                    environment.push(valoration.environment);
-                                    partners.push(valoration.partners);
-                                    services.push(valoration.services);
-                                    installations.push(valoration.installations);
-                                    satisfaction.push(valoration.satisfaction);
-
-                                    totalOpinions++;
-
-                                }
-
-                            }
-                        });
-                    } else {
-                        console.log("no applications");
-                        //console.log("salary: " +salary);
-                    }
-                });
-            } else {
-                console.log("no offers closed");
-                //console.log("salary: " +salary);
-            }
-
-            if (totalOpinions > 0) {
-                // calculate averages
-
-                console.log("Pre-averages:");
-                console.log(salary);
-                console.log(partners);
-                console.log(environment);
-                console.log(services);
-                console.log(installations);
-                console.log(satisfaction);
-
+            })
+            console.log("Offerer " +id+ " has " + opinions.length + " opinions");
+            if(opinions.length > 0) {
+                for(var op in opinions){
+                    salary.push(opinions[op].salary);
+                    environment.push(opinions[op].environment);
+                    partners.push(opinions[op].partners);
+                    services.push(opinions[op].services);
+                    installations.push(opinions[op].installations);
+                    satisfaction.push(opinions[op].satisfaction);
+                }
+    
                 salary = await algorithm.average(salary);
                 partners = await algorithm.average(partners);
                 environment = await algorithm.average(environment);
                 services = await algorithm.average(services);
                 installations = await algorithm.average(installations);
                 satisfaction = await algorithm.average(satisfaction);
-
-
-            } else {
-                // NO calculate averages                
-                salary = 0;
-                partners = 0;
-                environment = 0;
-                services = 0;
-                installations = 0;
-                satisfaction = 0;
+    
+                ////////////////
+    
+                let values = {
+                    salary,
+                    partners,
+                    environment,
+                    services,
+                    installations,
+                    satisfaction
+                };
+    
+                // // todo 
+                console.log("Going to update those values:");
+                console.log("salary: " + values.salary);
+                console.log("partners: " + values.partners);
+                console.log("environment: " + values.environment);
+                console.log("services: " + values.services);
+                console.log("installations: " + values.installations);
+    
+                // UPDATE AVERAGES
+                out = await db.offerers.update(
+                    {
+                        salaryAVG: values.salary,
+                        partnersAVG: values.partners,
+                        environmentAVG: values.environment,
+                        servicesAVG: values.services,
+                        installationsAVG: values.installations,
+                        satisfactionAVG: values.satisfaction,
+                        nOpinions: 1
+                    },
+                    {where: {userId: id}}
+                )
+                    .then(x => {
+                        if (x) {
+                            console.log("averages SUCCESSFULLY updated to: ");
+                            console.log(values);
+                            return values
+                        } else {
+                            console.log("averages not updated");
+                            return false;
+                        }
+                    });
+                
             }
-
-            let values = {
-                salary,
-                partners,
-                environment,
-                services,
-                installations,
-                satisfaction
-            };
-
-            // // todo 
-            console.log("Going to update those values:");
-            console.log(values.salary);
-            console.log(values.partners);
-            console.log(values.environment);
-            console.log(values.services);
-            console.log(values.installations);
-
-            // UPDATE AVERAGES
-            let out = await db.offerers.update(
-                {
-                    salaryAVG: values.salary,
-                    partnersAVG: values.partners,
-                    environmentAVG: values.environment,
-                    servicesAVG: values.services,
-                    installationsAVG: values.installations,
-                    satisfactionAVG: values.satisfaction,
-                    nOpinions: 1
-                },
-                {where: {userId: id}}
-            )
-                .then(x => {
-                    if (x) {
-                        console.log("averages updated to: ");
-                        console.log(values);
-                        return values
-                    } else {
-                        console.log("averages not updated");
-                        return false;
-                    }
-                });
-            //let out = true;
+            
             return out;
         }
     }
