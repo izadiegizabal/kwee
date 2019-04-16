@@ -1,8 +1,17 @@
-<mat-card fxFlex="100%" fxFlex.gt-md="712px" fxFlex.gt-sm="656px" fxFlex.gt-xs="600px">
+<mat-card
+  *ngIf="offer.img"
+  fxFlex="100%" fxFlex.gt-md="712px" fxFlex.gt-sm="656px" fxFlex.gt-xs="600px">
   <mat-card-header
     fxLayout="row"
     fxLayout.lt-sm="column"
     fxLayoutAlign="space-between">
+    <mat-card-title
+      fxFlex="100%"
+      fxLayout="row"
+      [routerLink]="'/offer/' + offer.id + '/' + offer.title"
+      style="cursor: pointer">
+      {{offer.title}}
+    </mat-card-title>
     <div
       class="quickInfo"
       fxFlexAlign="start start"
@@ -13,32 +22,46 @@
     </div>
   </mat-card-header>
 
-  <mat-card-content>
-    <div fxLayout="column" fxFlex="100%">
-      <div fxLayout="row">
+  <mat-card-content *ngIf="(store$ | async).profiles && (store$ | async).profiles.candidate" style="margin-bottom: 8px">
+    <div fxLayout="column" fxFlex="100%" style="margin-top: 16px">
+      <div fxLayout="row"
+           fxLayoutAlign="center center"
+           fxFlex="100%"
+           fxLayoutGap="8px" fxLayoutGap.gt-xs="64px" fxLayoutGap.gt-sm="112px">
         <div fxLayout="column">
-          <img
-            [src]="apiURL + offer.img"
-            alt="Business Logo"
-            height="88px"
-            width="88px"
-            style="object-fit: cover">
+          <div fxFlex="100%" fxLayoutAlign="center center">
+            <img
+              [src]="apiURL + offer.img"
+              alt="Business Logo"
+              height="88px"
+              width="88px">
+          </div>
           <app-offerer-name-overview
             [index]="offer.offererIndex"
             [businessIndexBreakdown]="offer.avg"
             [name]="offer.offererName"
-            [routerLink]="offererUrl"
+            [routerLink]="'/business/' + offer.fk_offerer + '/' + offer.offererName"
             style="cursor: pointer">
           </app-offerer-name-overview>
         </div>
         <mat-icon color="primary" svgIcon="handshake"></mat-icon>
-      </div>
-      <div
-        fxFlex="100%"
-        fxLayout="row"
-        [routerLink]="offerUrl"
-        style="cursor: pointer">
-        {{offer.title}}
+        <div fxLayout="column">
+          <div fxFlex="100%" fxLayoutAlign="center center">
+            <img
+              [src]=" (store$ | async).profiles.candidate.img ?
+              apiURL + (store$ | async).profiles.candidate.img
+              : '../../../../../assets/img/defaultProfileImg.png'"
+              alt="Profile Picture"
+              height="88px"
+              width="88px"
+              style="object-fit: cover">
+          </div>
+          <app-offerer-name-overview
+            [index]="(store$ | async).profiles.candidate.index"
+            [candidateIndexBreakdown]="(store$ | async).profiles.candidate.avg"
+            [name]="(store$ | async).profiles.candidate.name">
+          </app-offerer-name-overview>
+        </div>
       </div>
     </div>
   </mat-card-content>

@@ -1,5 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {environment} from '../../../../../environments/environment';
+import {Store} from '@ngrx/store';
+import * as fromApp from '../../../../store/app.reducers';
 
 @Component({
   selector: 'app-past-position-card',
@@ -9,9 +11,9 @@ import {environment} from '../../../../../environments/environment';
 export class PastPositionCardComponent implements OnInit {
 
   apiURL = environment.apiUrl;
-  offerUrl: string;
-  offererUrl: string;
-  offer = {
+
+  @Input() offer = {
+    id: 5,
     title: 'SEO Expert',
     fk_offerer: 28,
     offererName: 'Demizz',
@@ -29,10 +31,11 @@ export class PastPositionCardComponent implements OnInit {
     img: 'uploads/offerers/1555020388829.png',
   };
 
-  constructor() {
+  constructor(private store$: Store<fromApp.AppState>) {
   }
 
   ngOnInit() {
+    console.log(this.offer);
   }
 
 }
