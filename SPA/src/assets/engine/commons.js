@@ -6,7 +6,7 @@ let global = {
   gl: null,
   program: null
 }
-let angle = 30;
+let angle = 0;
 
 function shared() {
   return new Promise(async resolve => {

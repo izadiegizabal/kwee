@@ -207,6 +207,7 @@ class TResourceMesh extends TResource{
           file == "textured_earth.json" ||
           file == "sea.json" ||
           file == "marker.json" ||
+          file == "card.json" ||
           file == "mesh_continents.json" ||
           file == "earth.json") {
           this.alias = file;
@@ -274,6 +275,10 @@ class TResourceMesh extends TResource{
           global.gl.uniform1i(uUseTextures, 0);
         } else if (this.name === 'marker.json') {
           global.gl.uniform4fv(uMaterialDiffuse, [1, 0.039, 0.231, 1.0]);
+          global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+          global.gl.uniform1i(uUseTextures, 0);
+        } else if (this.name === 'card.json') {
+          global.gl.uniform4fv(uMaterialDiffuse, [0.313, 0.678, 0.949, 1.0]);
           global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
           global.gl.uniform1i(uUseTextures, 0);
         } else {

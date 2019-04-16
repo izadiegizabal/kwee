@@ -1,6 +1,6 @@
 
 import {TNode} from './TNode.js';
-import {TTransform, TCamera, TLight, TAnimation, TMesh} from './TEntity.js';
+import {TTransform, TCamera, TLight, TAnimation, TMesh, TArc} from './TEntity.js';
 import {TResourceManager, TResourceMesh, TResourceMaterial, TResourceTexture, TResourceShader} from './resourceManager.js';
 
 class TMotorTAG{
@@ -201,6 +201,12 @@ class TMotorTAG{
         this.allLights.push(NLight);
 
         return NLight;
+    }
+
+    createArc(father, startLat, startLon, endLat, endLon, quality){
+        let arc = new TArc(startLat, startLon, endLat, endLon, quality);
+        let NArc = this.createBranch(father, arc);
+        return NArc;
     }
 
     // returns TNodeMesh

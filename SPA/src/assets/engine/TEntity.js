@@ -2,8 +2,8 @@
 ///////
 ////
 
-import {TResourceManager, TResourceMesh, TResourceMaterial, TResourceTexture, TResourceShader} from './resourceManager.js';
 import {TEntity} from './commons.js';
+import {getBezierPoints, convertLatLonToVec3, degrees} from './tools/utils.js';
 
 
 // Our stack class
@@ -61,7 +61,7 @@ TEntity.stack = new Stack();
     }
 
     translate(translation) {
-        return glMatrix.mat4.translate(this.matrix, this.matrix, translation);
+        return glMatrix.mat4.translate(this.matrix, this.matrix, glMatrix.vec3.fromValues(...translation));
     }
 
     rotateX(angle) {
@@ -264,6 +264,39 @@ TEntity.stack = new Stack();
 
 }
 
+class TArc extends TEntity {
+
+  constructor(startLat, startLon, endLat, endLon, quality) {
+    super();
+    this.arc = getBezierPoints(startLat, startLon, endLat, endLon, quality);
+  }
+
+  getArc(){
+    return this.arc;
+  }
+
+  create(startLat, startLon, endLat, endLon, quality) {
+    this.arc = getBezierPoints(startLat, startLon, endLat, endLon, quality);
+  }
+
+  setArc(arc){
+    this.arc = arc;
+  }
+
+  beginDraw() {}
+  endDraw() {}
+}
+
+class TMarker extends TEntity {
+
+  constructor() {
+    super();
+  }
+
+  beginDraw() {}
+  endDraw() {}
+}
+
  class TMesh extends TEntity {
 
     constructor(mesh) {
@@ -343,7 +376,8 @@ export {
     TAnimation,
     TLight,
     TTransform,
-    TEntity
+    TEntity,
+    TArc
 }
 
 

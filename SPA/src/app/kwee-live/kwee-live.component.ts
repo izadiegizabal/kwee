@@ -4,7 +4,7 @@ import {TCamera, TMesh, TAnimation, TLight, TTransform, TEntity} from '../../ass
 import {TNode} from '../../assets/engine/TNode';
 import {TResourceManager, TResourceMaterial, TResourceMesh, TResourceShader, TResourceTexture} from '../../assets/engine/resourceManager';
 import {shared} from '../../assets/engine/commons.js';
-import {main, mainInit, mainR, mainTest, resetCanvas, allowActions, pls} from '../../assets/engine/main.js';
+import {main, mainInit, mainR, mainTest, resetCanvas, allowActions, pls, rotateMesh} from '../../assets/engine/main.js';
 
 // import {TMotorTAG} from '../../assets/engine/TMotorTAG.js';
 // import {glMatrix, mat2, mat2d, mat3, mat4, quat, quat2, vec2, vec3, vec4} from 'gl-matrix';
@@ -53,6 +53,15 @@ export class KweeLiveComponent implements OnInit, OnDestroy {
   draw() {
     resetCanvas();
     mainR(true, this.particles);
+  }
+
+  drawLine() {
+    resetCanvas();
+    mainR(false, null, true);
+  }
+
+  rotate() {
+    rotateMesh();
   }
 
   async reset() {
