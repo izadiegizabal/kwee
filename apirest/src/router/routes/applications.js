@@ -188,7 +188,10 @@ module.exports = (app, db) => {
             }
 
         } catch (err) {
-            return next({type: 'error', error: err.message});
+            if ( err.message == 'Invalid token'){
+                return next({ type: 'error', error: 'Invalid token' });
+            }
+            return next({ type: 'error', error: err.message });
         }
     });
 
@@ -198,7 +201,7 @@ module.exports = (app, db) => {
         const offerToAdd = body.fk_offer;
 
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
 
             let applicant = await db.applicants.findOne({
                 where: {userId: id}
@@ -246,7 +249,7 @@ module.exports = (app, db) => {
 
         try {
             // Applicants and offerers may update applications
-            let user = tokenId.getTokenId(req.get('token'));
+            let user = tokenId.getTokenId(req.get('token'), res);
             let application = await db.applications.findOne({where: {id}});
             let applicant = await db.applicants.findOne({where: {userId: user}});
 
@@ -338,7 +341,7 @@ module.exports = (app, db) => {
             let application = await db.applications.findOne({where: {id: applicationId}});
             if (application) {
 
-                let id = tokenId.getTokenId(req.get('token'));
+                let id = tokenId.getTokenId(req.get('token'), res);
 
                 let applicant = await db.applicants.findOne({
                     where: {userId: id}

@@ -77,7 +77,7 @@ module.exports = (app, db) => {
         let body = req.body;
 
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
             let education = await db.educations.create({
                 title: body.title
             });

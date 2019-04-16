@@ -6,25 +6,25 @@ const moment = require('moment');
 module.exports = (app, db) => {
 
     app.post('/login', async (req, res, next) => {
-        let logId = await logger.saveLog('POST', 'login', null, res, req.body.email);
         let user;
+        let logId;
         let body = req.body;
         
         try {
-                
+            
             if ( body.email ) {
-                user = await db.users.findOne({where: {email: body.email}});
+                logId = await logger.saveLog('POST', 'login', null, res, body.email);
+                user = await db.users.findOne({ where: { email: body.email }});
             } else if ( body.token ) {
-                console.log("hay token");
                 var idToken = tokenId.getTokenId(body.token);
-                console.log('despues del id token');
                 user = await db.users.findOne({where: { id: idToken }});
+                logId = await logger.saveLog('POST', 'login', null, res, user.email);
             } else {
                 return next({type: 'error', error: 'Error getting data'});
             }
 
 
-            if (!user) {
+            if ( !user ) {
                 logger.updateLog(logId, false);
                 return res.status(400).json({
                     ok: false,
@@ -32,7 +32,7 @@ module.exports = (app, db) => {
                 });
             }
 
-            if (!bcrypt.compareSync(body.password, user.password)) {
+            if ( !bcrypt.compareSync(body.password, user.password) ) {
                 logger.updateLog(logId, false);
                 return res.status(400).json({
                     ok: false,

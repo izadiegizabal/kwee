@@ -137,7 +137,7 @@ module.exports = (app, db) => {
 
         try {
             const body = req.body;
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
             let fk_application = body.fk_application;
             let overall;
             let opinion;
@@ -230,7 +230,7 @@ module.exports = (app, db) => {
         delete body.opinion;
 
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
 
             let offerer = await db.offerers.findOne({where: {userId: id}});
             let offers = await offerer.getOffers();
@@ -289,7 +289,7 @@ module.exports = (app, db) => {
         const ratingId = req.params.id;
 
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
 
             let offerer = await db.offerers.findOne({where: {userId: id}});
             let offers = await offerer.getOffers();

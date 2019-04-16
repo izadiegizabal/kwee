@@ -117,7 +117,7 @@ module.exports = (app, db) => {
         const body = req.body;
 
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
             let user = await db.users.findOne({where: {id}});
 
             let invoice = await db.invoices.create({

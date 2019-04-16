@@ -522,7 +522,7 @@ module.exports = (app, db) => {
         const body = req.body;
 
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
             let applicant = await db.applicants.findOne({
                 where: {userId: id}
             });
@@ -602,7 +602,7 @@ module.exports = (app, db) => {
     app.put('/applicant', async (req, res, next) => {
         try {
             let logId = await logger.saveLog('PUT', 'applicant', null, res);
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
             let user = await db.users.findOne({
                 where: {id}
             });
@@ -629,7 +629,7 @@ module.exports = (app, db) => {
 
     app.delete('/applicant/applications', async (req, res, next) => {
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
             let applicant = await db.applicants.findOne({where: {userId: id}});
             let applications = await db.applications.findAll();
 
@@ -660,7 +660,7 @@ module.exports = (app, db) => {
     // DELETE by themself
     app.delete('/applicant', async (req, res, next) => {
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
 
             await logger.saveLog('DELETE', 'applicant', id, res);
 

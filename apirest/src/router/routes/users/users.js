@@ -123,7 +123,7 @@ module.exports = (app, db) => {
         try {
             let logId = await logger.saveLog('PUT', 'user', null, res);
 
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
 
             logger.updateLog(logId, id);
 

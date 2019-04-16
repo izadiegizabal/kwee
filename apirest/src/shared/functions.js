@@ -12,8 +12,8 @@ const fs = require('fs');
 
 
 class TokenId {
-    getTokenId(token) {
-        return auth.auth.decode(token);
+    getTokenId(token, res) {
+        return auth.auth.decode(token, res);
     }
 }
 
