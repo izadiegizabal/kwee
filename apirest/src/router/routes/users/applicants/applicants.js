@@ -1226,7 +1226,7 @@ module.exports = (app, db) => {
             }
             if (applications) {
                 let offers = await db.offers.findAll();
-                let users = await db.users.findAll();
+                let users = await db.users.findAll({ include: [db.offerers] });
                  // Search the offers where this applicant applicanted
                 let offersInApplication = [];
 
@@ -1240,8 +1240,7 @@ module.exports = (app, db) => {
                     let offersAux = [],
                     offersToShowAux = [];
                     offersAux.push(element);
-                    let theOffer = prepareOffersToShow(offersAux, offersToShowAux, users.find(user => element.fk_offerer == user.id));
-                    offersShow.push(theOffer);
+                    offersShow.push(prepareOffersToShow(offersAux, offersToShowAux, users.find(user => element.fk_offerer == user.id))[0]);
                 });
 
                 data.applications = offersShow;
