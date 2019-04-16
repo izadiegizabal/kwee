@@ -616,6 +616,48 @@ function prepareOffersToShow(offers, offersShow, user) {
     return offersShow;
 }
 
+function buildOffersToShow(users, offersToShow, offers) {
+    for (let i = 0; i < offers.length; i++) {
+        let user = users.find(element => offers[i]._source.fk_offerer == element.id);
+        let offer = {};
+
+        offer.id = offers[i]._id;
+        offer.fk_offerer = offers[i]._source.fk_offerer;
+        offer.offererName = user.name;
+        offer.offererIndex = user.index;
+        offer.avg = getOffererAVG(user.offerer);
+        offers[i]._source.img ? offer.img = offers[i]._source.img : offer.img = user.img;
+        offer.title = offers[i]._source.title;
+        offer.description = offers[i]._source.description;
+        offer.dateStart = offers[i]._source.dateStart;
+        offer.dateEnd = offers[i]._source.dateEnd;
+        offer.datePublished = offers[i]._source.datePublished;
+        offer.location = offers[i]._source.location;
+        offer.status = offers[i]._source.status;
+        offer.salaryAmount = offers[i]._source.salaryAmount;
+        offer.salaryFrequency = offers[i]._source.salaryFrequency;
+        offer.salaryCurrency = offers[i]._source.salaryCurrency;
+        offer.workLocation = offers[i]._source.workLocation;
+        offer.seniority = offers[i]._source.seniority;
+        offer.maxApplicants = offers[i]._source.maxApplicants;
+        offer.currentApplications = offers[i]._source.currentApplications;
+        offer.duration = offers[i]._source.duration;
+        offer.durationUnit = offers[i]._source.durationUnit;
+        offer.isIndefinite = offers[i]._source.isIndefinite;
+        offer.contractType = offers[i]._source.contractType;
+        offer.responsabilities = offers[i]._source.responsabilities;
+        offer.requeriments = offers[i]._source.requeriments;
+        offer.skills = offers[i]._source.skills;
+        offer.lat = offers[i]._source.lat;
+        offer.lon = offers[i]._source.lon;
+        offer.createdAt = offers[i]._source.createdAt;
+        offer.updatedAt = offers[i]._source.updatedAt;
+        offer.deletedAt = offers[i]._source.deletedAt;
+
+        offersToShow.push(offer);
+    }
+}
+
 function saveLogES(action, actionToRoute, user) {
     moment.locale('es');
 
@@ -711,6 +753,7 @@ module.exports = {
     checkImg,
     deleteFile,
     prepareOffersToShow,
+    buildOffersToShow,
     isEmpty,
     saveLogES,
     sendNotification,
