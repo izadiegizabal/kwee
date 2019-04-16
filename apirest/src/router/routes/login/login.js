@@ -22,9 +22,7 @@ module.exports = (app, db) => {
             } else {
                 return next({type: 'error', error: 'Error getting data'});
             }
-                
-             
-            let type;
+
 
             if (!user) {
                 logger.updateLog(logId, false);
@@ -42,6 +40,7 @@ module.exports = (app, db) => {
                 });
             }
 
+            let type;
             let id = user.id;
             let dateNow = moment().format();
 
