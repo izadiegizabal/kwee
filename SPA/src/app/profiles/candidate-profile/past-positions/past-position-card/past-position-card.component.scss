@@ -1,5 +1,19 @@
 @import "~src/common-utils";
 
 mat-icon {
-  @include md-icon-size(56px);
+  @include md-icon-size(64px);
+}
+
+app-offerer-name-overview {
+  margin-top: 8px;
+}
+
+mat-card-title {
+  margin-top: -4px;
+  font-size: 1.5rem !important;
+}
+
+img {
+  object-fit: cover;
+  border-radius: 4px;
 }

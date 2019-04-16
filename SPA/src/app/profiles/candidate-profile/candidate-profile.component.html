@@ -110,7 +110,7 @@
             </mat-tab>
             <mat-tab label="Past Positions">
               <ng-template matTabContent>
-                <app-past-positions></app-past-positions>
+                <app-past-positions [applications]="(profilesState | async).candidate.applications"></app-past-positions>
               </ng-template>
             </mat-tab>
           </mat-tab-group>

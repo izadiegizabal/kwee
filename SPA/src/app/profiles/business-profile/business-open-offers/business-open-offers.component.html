@@ -1,7 +1,6 @@
 <div
   *ngIf="(store$ | async).offerManage && (store$ | async).offerManage.offers && (store$ | async).offerManage.offers.length > 0; else noOffers"
   fxFlex="92%"
-  fxFlex.gt-sm="60%"
   fxFlexOffset="4%"
   fxLayout="column"
   fxLayoutGap="16px">
