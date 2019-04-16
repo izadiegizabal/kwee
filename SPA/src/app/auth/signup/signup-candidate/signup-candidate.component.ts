@@ -277,7 +277,7 @@ export class SignupCandidateComponent implements OnInit {
   onSave(stepper: MatStepper) {
     this.dialogShown = false;
     // console.log(this.secondFormGroup);
-    console.log('save');
+    // this.isSocialNetwork = true;
     if (this.secondFormGroup.status === 'VALID') {
       console.log('form valid');
       if (!this.isSocialNetwork) {
@@ -310,36 +310,52 @@ export class SignupCandidateComponent implements OnInit {
           'lat': (this.secondFormGroup.controls['location'].value as City).geo.lat
         };
 
-        // console.log(this.candidate);
         this.store$.dispatch(new AuthActions.TrySignupCandidate(this.candidate));
-        this.authEffects$.authSignin.pipe(
-          filter((action: Action) => action.type === AuthActions.SIGNIN)
-        ).subscribe(() => {
-          stepper.next();
-        });
-        this.authEffects$.authSignupCandidate.pipe(
-          filter((action: Action) => action.type === AuthActions.AUTH_ERROR)
-        ).subscribe((error: { payload: any, type: string }) => {
-          if (!this.dialogShown) {
-            console.log(error.payload);
-            this.dialog.open(DialogErrorComponent, {
-              data: {
-                header: 'The Sing Up has failed. Please go back and try again.',
-                error: 'Error: ' + error.payload,
-              }
-            });
-            this.dialogShown = true;
-          }
-        });
+
       } else {
         console.log('viene por red social');
         // Update of user that is coming by social network with his birthday, role and location
         const updateuser = {
+          'name': this.secondFormGroup.controls['name'].value,
+          'city': (this.secondFormGroup.controls['location'].value as City).name
+            ? (this.secondFormGroup.controls['location'].value as City).name
+            : this.secondFormGroup.controls['location'].value,
           'dateBorn': this.secondFormGroup.controls['birthday'].value,
-          'rol': this.secondFormGroup.controls['role'].value
+          'rol': this.secondFormGroup.controls['role'].value.toString(),
+          'lng': (this.secondFormGroup.controls['location'].value as City).geo.lng,
+          'lat': (this.secondFormGroup.controls['location'].value as City).geo.lat
         };
-        // this.store$.dispatch(new AuthActions.TryUpdateCandidate({updatedCandidate: updateuser}));
+
+        // console.log(updateuser);
+
+         // this.snToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NDMxLCJpYXQiOjE1NTUzNjMwNzMsImV4cCI6MTU1NTM2N
+        // jY3MywiaXNzIjoiV21lbG9uQ29ycF9Ld2VlX2lzc3VlciJ9.I34bsbU1q3odn7g3TilUC-lGTZTaYCdmFRCTwWo8e14';
+        this.store$.dispatch(new AuthActions.TrySNCandidate({
+          'email': this.secondFormGroup.controls['email'].value,
+          'token': this.snToken,
+          'user': updateuser
+        }));
       }
+
+      this.authEffects$.authSignin.pipe(
+        filter((action: Action) => action.type === AuthActions.SIGNIN)
+      ).subscribe(() => {
+        stepper.next();
+      });
+      this.authEffects$.authSignupCandidate.pipe(
+        filter((action: Action) => action.type === AuthActions.AUTH_ERROR)
+      ).subscribe((error: { payload: any, type: string }) => {
+        if (!this.dialogShown) {
+          console.log(error.payload);
+          this.dialog.open(DialogErrorComponent, {
+            data: {
+              header: 'The Sing Up has failed. Please go back and try again.',
+              error: 'Error: ' + error.payload,
+            }
+          });
+          this.dialogShown = true;
+        }
+      });
     } else {
       console.log('not valid form');
       for (const i of Object.keys(this.secondFormGroup.controls)) {
@@ -494,25 +510,24 @@ export class SignupCandidateComponent implements OnInit {
     // stepper.next();
   }
 
-  gitHubSignUp(stepper: MatStepper) {
+  gitHubSignUp() {
     window.location.href = 'http://h203.eps.ua.es/api/auth/github';
-    // this.router.navigate(['/api/auth/github']);
-    // stepper.next();
   }
 
-  linkedInSignUp(stepper: MatStepper) {
-    console.log('linkedIn Sign Up');
-    this.store$.dispatch(new AuthActions.TrySignupLinkedIn());
-    window.location.href = environment.apiUrl + 'auth/linkedin';
-    // stepper.next();
-  }
-
-  twitterSignUp(stepper: MatStepper) {
-    console.log('twitter Sign Up');
-    window.location.href = environment.apiUrl + 'auth/twitter';
-    // stepper.next();
-
-  }
+  //
+  // linkedInSignUp(stepper: MatStepper) {
+  //   console.log('linkedIn Sign Up');
+  //   this.store$.dispatch(new AuthActions.TrySignupLinkedIn());
+  //   window.location.href = environment.apiUrl + 'auth/linkedin';
+  //   // stepper.next();
+  // }
+  //
+  // twitterSignUp(stepper: MatStepper) {
+  //   console.log('twitter Sign Up');
+  //   window.location.href = environment.apiUrl + 'auth/twitter';
+  //   // stepper.next();
+  //
+  // }
 
   deletePhoto() {
     (document.getElementById('photo_profile') as HTMLInputElement).src = '../../../../assets/img/defaultProfileImg.png';

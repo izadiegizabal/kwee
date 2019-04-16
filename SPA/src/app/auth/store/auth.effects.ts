@@ -225,6 +225,43 @@ export class AuthEffects {
     share()
   );
 
+
+  @Effect()
+  authSNCandidate = this.actions$.pipe(
+    ofType(AuthActions.TRY_SN_CANDIDATE),
+    map((action: AuthActions.TrySNCandidate) => {
+      return action.payload;
+    }),
+    switchMap(
+      (payload) => {
+        const body = JSON.stringify(payload.user);
+        const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', payload.token);
+        return this.httpClient.put(environment.apiUrl + 'applicant', body, {headers: headers}).pipe(
+          mergeMap((res) => {
+            // console.log(res);
+            return [
+              {
+                type: AuthActions.TRY_SIGNIN,
+                payload: {email: payload.email, token: payload.token}
+              }
+            ];
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('signUp', err));
+            const error = err.error.message ? err.error.message : err;
+            return [
+              {
+                type: AuthActions.AUTH_ERROR,
+                payload: error
+              }
+            ];
+          }),
+        );
+      }
+    ),
+    share()
+  );
+
   @Effect()
   authSignupBusiness = this.actions$.pipe(
     ofType(AuthActions.TRY_SIGNUP_BUSINESS),
