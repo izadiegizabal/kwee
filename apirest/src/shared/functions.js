@@ -278,6 +278,76 @@ function sendEmailInactiveUser(user) {
     });
 }
 
+function sendEmailPremiumExpiresAdvise(user) {
+    // Generate test SMTP service account from gmail
+    let data = fs.readFileSync(path.join(__dirname, '../templates/sendEmailPremiumExpiresAdvise.html'), 'utf-8');
+    let url = `${ env.URL }`;
+
+    nodemailer.createTestAccount((err, account) => {
+        // create reusable transporter object using the default SMTP transport
+
+        let transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false, // true for 465, false for other ports
+            auth: {
+                user: env.EMAIL,
+                pass: env.EMAIL_PASSWORD
+            }
+        });
+
+        // setup email data with unicode symbols
+        let mailOptions = {
+            from: '"Kwee 👻" <hello@kwee.ovh>', // sender address
+            to: user.email,
+            subject: 'We miss you', // Subject line
+            html: data.replace('@@name@@', user.email).replace('@@url@@', url)
+        };
+
+        // send mail with defined transport object
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                throw new Error(error);
+            }
+        });
+    });
+}
+
+function sendEmailPremiumExpires(user) {
+    // Generate test SMTP service account from gmail
+    let data = fs.readFileSync(path.join(__dirname, '../templates/sendEmailPremiumExpires.html'), 'utf-8');
+    let url = `${ env.URL }`;
+
+    nodemailer.createTestAccount((err, account) => {
+        // create reusable transporter object using the default SMTP transport
+
+        let transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false, // true for 465, false for other ports
+            auth: {
+                user: env.EMAIL,
+                pass: env.EMAIL_PASSWORD
+            }
+        });
+
+        // setup email data with unicode symbols
+        let mailOptions = {
+            from: '"Kwee 👻" <hello@kwee.ovh>', // sender address
+            to: user.email,
+            subject: 'We miss you', // Subject line
+            html: data.replace('@@name@@', user.email).replace('@@url@@', url)
+        };
+
+        // send mail with defined transport object
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                throw new Error(error);
+            }
+        });
+    });
+}
+
 function isEmpty(obj) {
     for (var key in obj) {
         if (obj.hasOwnProperty(key))
@@ -546,6 +616,48 @@ function prepareOffersToShow(offers, offersShow, user) {
     return offersShow;
 }
 
+function buildOffersToShow(users, offersToShow, offers) {
+    for (let i = 0; i < offers.length; i++) {
+        let user = users.find(element => offers[i]._source.fk_offerer == element.id);
+        let offer = {};
+
+        offer.id = offers[i]._id;
+        offer.fk_offerer = offers[i]._source.fk_offerer;
+        offer.offererName = user.name;
+        offer.offererIndex = user.index;
+        offer.avg = getOffererAVG(user.offerer);
+        offers[i]._source.img ? offer.img = offers[i]._source.img : offer.img = user.img;
+        offer.title = offers[i]._source.title;
+        offer.description = offers[i]._source.description;
+        offer.dateStart = offers[i]._source.dateStart;
+        offer.dateEnd = offers[i]._source.dateEnd;
+        offer.datePublished = offers[i]._source.datePublished;
+        offer.location = offers[i]._source.location;
+        offer.status = offers[i]._source.status;
+        offer.salaryAmount = offers[i]._source.salaryAmount;
+        offer.salaryFrequency = offers[i]._source.salaryFrequency;
+        offer.salaryCurrency = offers[i]._source.salaryCurrency;
+        offer.workLocation = offers[i]._source.workLocation;
+        offer.seniority = offers[i]._source.seniority;
+        offer.maxApplicants = offers[i]._source.maxApplicants;
+        offer.currentApplications = offers[i]._source.currentApplications;
+        offer.duration = offers[i]._source.duration;
+        offer.durationUnit = offers[i]._source.durationUnit;
+        offer.isIndefinite = offers[i]._source.isIndefinite;
+        offer.contractType = offers[i]._source.contractType;
+        offer.responsabilities = offers[i]._source.responsabilities;
+        offer.requeriments = offers[i]._source.requeriments;
+        offer.skills = offers[i]._source.skills;
+        offer.lat = offers[i]._source.lat;
+        offer.lon = offers[i]._source.lon;
+        offer.createdAt = offers[i]._source.createdAt;
+        offer.updatedAt = offers[i]._source.updatedAt;
+        offer.deletedAt = offers[i]._source.deletedAt;
+
+        offersToShow.push(offer);
+    }
+}
+
 function saveLogES(action, actionToRoute, user) {
     moment.locale('es');
 
@@ -632,6 +744,8 @@ module.exports = {
     sendEmailResetPassword,
     sendEmailSelected,
     sendEmailOfferClosed,
+    sendEmailPremiumExpiresAdvise,
+    sendEmailPremiumExpires,
     pagination,
     validateDate,
     uploadFile,
@@ -639,6 +753,7 @@ module.exports = {
     checkImg,
     deleteFile,
     prepareOffersToShow,
+    buildOffersToShow,
     isEmpty,
     saveLogES,
     sendNotification,

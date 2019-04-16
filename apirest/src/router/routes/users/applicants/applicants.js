@@ -1240,11 +1240,11 @@ module.exports = (app, db) => {
                     let offersAux = [],
                     offersToShowAux = [];
                     offersAux.push(element);
-                    offersShow.push(prepareOffersToShow(offersAux, offersToShowAux, users.find(user => element.fk_offerer == user.id))[0]);
-                    
+                    let theOffer = prepareOffersToShow(offersAux, offersToShowAux, users.find(user => element.fk_offerer == user.id));
+                    offersShow.push(theOffer);
                 });
 
-                data.applications = offersInApplication;
+                data.applications = offersShow;
 
             }
         } catch (error) {
