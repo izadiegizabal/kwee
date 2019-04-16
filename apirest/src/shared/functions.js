@@ -278,6 +278,76 @@ function sendEmailInactiveUser(user) {
     });
 }
 
+function sendEmailPremiumExpiresAdvise(user) {
+    // Generate test SMTP service account from gmail
+    let data = fs.readFileSync(path.join(__dirname, '../templates/sendEmailPremiumExpiresAdvise.html'), 'utf-8');
+    let url = `${ env.URL }`;
+
+    nodemailer.createTestAccount((err, account) => {
+        // create reusable transporter object using the default SMTP transport
+
+        let transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false, // true for 465, false for other ports
+            auth: {
+                user: env.EMAIL,
+                pass: env.EMAIL_PASSWORD
+            }
+        });
+
+        // setup email data with unicode symbols
+        let mailOptions = {
+            from: '"Kwee 👻" <hello@kwee.ovh>', // sender address
+            to: user.email,
+            subject: 'We miss you', // Subject line
+            html: data.replace('@@name@@', user.email).replace('@@url@@', url)
+        };
+
+        // send mail with defined transport object
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                throw new Error(error);
+            }
+        });
+    });
+}
+
+function sendEmailPremiumExpires(user) {
+    // Generate test SMTP service account from gmail
+    let data = fs.readFileSync(path.join(__dirname, '../templates/sendEmailPremiumExpires.html'), 'utf-8');
+    let url = `${ env.URL }`;
+
+    nodemailer.createTestAccount((err, account) => {
+        // create reusable transporter object using the default SMTP transport
+
+        let transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false, // true for 465, false for other ports
+            auth: {
+                user: env.EMAIL,
+                pass: env.EMAIL_PASSWORD
+            }
+        });
+
+        // setup email data with unicode symbols
+        let mailOptions = {
+            from: '"Kwee 👻" <hello@kwee.ovh>', // sender address
+            to: user.email,
+            subject: 'We miss you', // Subject line
+            html: data.replace('@@name@@', user.email).replace('@@url@@', url)
+        };
+
+        // send mail with defined transport object
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                throw new Error(error);
+            }
+        });
+    });
+}
+
 function isEmpty(obj) {
     for (var key in obj) {
         if (obj.hasOwnProperty(key))
@@ -632,6 +702,8 @@ module.exports = {
     sendEmailResetPassword,
     sendEmailSelected,
     sendEmailOfferClosed,
+    sendEmailPremiumExpiresAdvise,
+    sendEmailPremiumExpires,
     pagination,
     validateDate,
     uploadFile,
