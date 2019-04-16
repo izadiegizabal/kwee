@@ -4,6 +4,7 @@
 
 import {TEntity} from './commons.js';
 import {getBezierPoints, convertLatLonToVec3, degrees} from './tools/utils.js';
+import {global} from "./commons";
 
 
 // Our stack class
@@ -370,6 +371,125 @@ class TCamera extends TEntity {
     }
 }
 
+class TFocus extends TEntity {
+  // @todo => position to lat&long coords
+
+  // size     => integer
+  // position => [0,0,0] e.g.
+  constructor(size, position){
+    super();
+    this.size = size;                               // Focus size
+    this.position = position;                       // Focus position
+    this.particleArray = new Float32Array(size*4);  // bind to vertexShader
+    this.particles = [];                            // array of <Particles>
+    for(let i = 0; i<size; i++){
+      let particle = {};
+
+      this.resetParticle(particle);
+      // particleArray = [posX,posY,posZ,vLifeSpan]
+      // aParticle(?)      x     y    z     w  ==>> vertexShader
+      this.particleArray[(i*4)+0] = particle.pos[0];
+      this.particleArray[(i*4)+1] = particle.pos[1];
+      this.particleArray[(i*4)+2] = particle.pos[2];
+      this.particleArray[(i*4)+3] = particle.remainingLife / particle.lifespan;
+
+      particle.id = i;
+      // Store particle object
+      this.particles.push(particle);
+    }
+    global.gl.useProgram(global.gl.particlesProgram);
+
+    this.buffer = global.gl.createBuffer();
+    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.buffer);
+    global.gl.bufferData(global.gl.ARRAY_BUFFER, this.particleArray, global.gl.STATIC_DRAW);
+    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
+
+    global.gl.useProgram(global.program);
+
+  }
+
+  getSize(){
+    return this.size;
+  }
+
+  getPosition(){
+    return this.position;
+  }
+
+  getBuffer(){
+    return this.buffer;
+  }
+
+  getParticles(){
+    return this.particles.length;
+  }
+  resetParticle(particle){
+    // Initial position
+    particle.pos = this.position;
+    // Initial velocity
+    particle.vel = [
+      (Math.random() * 3.0) -1,
+      (Math.random() * 50.0),
+      (Math.random() * 3.0) -1,
+    ];
+    // Lifespan
+    particle.lifespan = (Math.random() * 3.0);
+    // RemainingLife
+    particle.remainingLife = particle.lifespan;
+    //console.log("particle reset " + particle.id);
+  }
+
+
+  updateParticle(elapsedTime){
+
+    for(let i = 0; i<this.particles.length; i++){
+      let particle = this.particles[i];
+
+      particle.remainingLife -= elapsedTime;
+      if(particle.remainingLife<=0){
+        // If particle die, restart
+        this.resetParticle(particle);
+      }
+
+
+      ///////////////
+      ///////////////
+      // if(i==0){
+      //     console.log("-- particle[0]: --");
+      //     console.log("pos[0]: " + particle.pos[0]);
+      // }
+      ///////////////
+      ///////////////
+
+      particle.pos[0] = particle.vel[0] * elapsedTime;
+      particle.pos[1] = particle.vel[1] * elapsedTime;
+      particle.pos[2] = particle.vel[2] * elapsedTime;
+
+      // Update particleArray
+      this.particleArray[(i*4)+0] = particle.pos[0];
+      this.particleArray[(i*4)+1] = particle.pos[1];
+      this.particleArray[(i*4)+2] = particle.pos[2];
+      this.particleArray[(i*4)+3] = particle.remainingLife/particle.lifespan;
+
+      ///////////////
+      ///////////////
+      // if(i==0){
+      //     console.log("updating to: " + particle.pos[0]);
+      // }
+      ///////////////
+      ///////////////
+    }
+    global.gl.useProgram(global.particlesProgram);
+    // Once we are done looping through all the particles, update the buffer once
+
+    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.buffer);
+    global.gl.bufferData(global.gl.ARRAY_BUFFER, this.particleArray, global.gl.STATIC_DRAW);
+    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
+
+    global.gl.useProgram(global.program);
+  }
+}
+
 export {
     TCamera,
     TMesh,
@@ -377,7 +497,8 @@ export {
     TLight,
     TTransform,
     TEntity,
-    TArc
+    TArc,
+    TFocus
 }
 
 

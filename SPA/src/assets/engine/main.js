@@ -16,6 +16,8 @@ let allowActions = {
   value: false
 };
 
+let lastFrameTime = 0.0;
+
 async function mainInit() {
   return new Promise(async resolve => {
 
@@ -60,6 +62,43 @@ async function mainInit() {
       console.error('ERROR validating global.program', global.gl.getProgramInfoLog(global.program));
       return;
     }
+
+    // PARTICLES
+    let particlesFragmentSource = await manager.getResource('particles.fs');
+    let particlesVertexSource = await manager.getResource('particles.vs');
+    let vertexBuffer = global.gl.createShader(global.gl.VERTEX_SHADER);
+    let fragmentBuffer = global.gl.createShader(global.gl.FRAGMENT_SHADER);
+
+    global.gl.shaderSource(vertexBuffer, particlesVertexSource);
+    global.gl.shaderSource(fragmentBuffer, particlesFragmentSource);
+
+    global.gl.compileShader(vertexBuffer);
+    if (!global.gl.getShaderParameter(vertexBuffer, global.gl.COMPILE_STATUS)) {
+      console.error('ERROR compiling vertex shader', global.gl.getShaderInfoLog(vertexBuffer));
+      return;
+    }
+
+    global.gl.compileShader(fragmentBuffer);
+    if (!global.gl.getShaderParameter(fragmentBuffer, global.gl.COMPILE_STATUS)) {
+      console.error('ERROR compiling fragment shader', global.gl.getShaderInfoLog(fragmentBuffer));
+      return;
+    }
+
+    global.gl.attachShader(global.particlesProgram, vertexBuffer);
+    global.gl.attachShader(global.particlesProgram, fragmentBuffer);
+
+    global.gl.linkProgram(global.particlesProgram);
+    if (!global.gl.getProgramParameter(global.particlesProgram, global.gl.LINK_STATUS)) {
+      console.error('ERROR linking particlesProgram', global.gl.getProgramInfoLog(global.particlesProgram));
+      return;
+    }
+    global.gl.validateProgram(global.particlesProgram);
+    if (!global.gl.getProgramParameter(global.particlesProgram, global.gl.VALIDATE_STATUS)) {
+      console.error('ERROR validating particlesProgram', global.gl.getProgramInfoLog(global.particlesProgram));
+      return;
+    }
+
+
     console.log('== Ready to run ==');
     draw = true;
     allowActions.value = true;
@@ -186,6 +225,15 @@ async function mainR(texture, particles, line) {
 
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         particles
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    let TFocus = motor.createFocus(scene,100,[1,1,1]).entity;
+
+    let particlesTexture = await manager.getResource('spark.png');
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         CAMERAS
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -289,10 +337,10 @@ async function mainR(texture, particles, line) {
     var num = 0;
     var rotation = -1;
     var maxLines = vertices.length/3;
-    var loop = function (now, now2) {
+    var loop = async function (now, now2) {
       if (draw) {
-
-        //global.gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
+        global.gl.useProgram(global.program);
+        //global.gl.clearColor(0.435, 0.909, 0.827, 1.0); // our blue
         //global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
 
 
@@ -352,10 +400,89 @@ async function mainR(texture, particles, line) {
         }
 
 
-
+        //await particlesDraw();
         requestAnimationFrame(loop);
       }
     };
+    let particlesDraw = async function() {
+
+      var time = Date.now();
+
+      // Update the particle positions
+      motor.updateParticles((time - lastFrameTime) / 1000.0);
+
+      lastFrameTime = time;
+
+      // gl.viewport(0, 0, c_width, c_height);
+      // gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+      try{
+
+
+        global.gl.enable(global.gl.BLEND);
+
+        //gl.bindAttribLocation(particlesProgram, 0 , "aVertexPosition");
+        global.gl.useProgram(global.particlesProgram);
+        //gl.enableVertexAttribArray(0);
+
+
+        // //let pMatrix = new Float32Array(16);
+        // let camera = motor.positionCameras[0]; // viewMatrix = TEntity.AuxViews[0];
+        // let mvMatrix = glMatrix.mat4.create();
+        // let pMatrix = glMatrix.mat4.create();
+        // let nMatrix = glMatrix.mat4.create();
+        // let cMatrix = glMatrix.mat4.create();
+
+        // // calculate Model View
+        // let m = glMatrix.mat4.create();
+        // glMatrix.mat4.invert(camera,m)
+        // mvMatrix = m;
+
+        // // setMatrixUniforms() = calcNormal + mapUniforms
+        // //  calcNormal()
+        // glMatrix.mat4.identity(nMatrix);
+        // glMatrix.mat4.set(mvMatrix, nMatrix);
+        // glMatrix.mat4.invert(nMatrix, nMatrix);
+        // glMatrix.mat4.transpose(nMatrix, nMatrix);
+
+        //  mapUniforms()
+        let uniformMVMatrix = global.gl.getUniformLocation(global.particlesProgram, "uMVMatrix");
+        let uniformPMatrix = global.gl.getUniformLocation(global.particlesProgram, "uPMatrix");
+        global.gl.uniformMatrix4fv(uniformMVMatrix, false, viewMatrix);  //Maps the Model-View matrix to the uniform prg.uMVMatrix
+        global.gl.uniformMatrix4fv(uniformPMatrix, false, projMatrix);    //Maps the Perspective matrix to the uniform prg.uPMatrix
+
+
+
+        // uPointSize = size of each particle
+        let uniformPointSize = global.gl.getUniformLocation(global.particlesProgram, "uPointSize");
+        global.gl.uniform1f(uniformPointSize, 14.0);
+        // console.log(TFocus);
+        let attributeParticle = global.gl.getAttribLocation(global.particlesProgram, "aParticle");
+        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, TFocus.getBuffer());
+        global.gl.vertexAttribPointer(attributeParticle, 4, global.gl.FLOAT, false, 0, 0);
+        global.gl.enableVertexAttribArray(attributeParticle);
+
+        global.gl.activeTexture(global.gl.TEXTURE1);
+
+        global.gl.bindTexture(global.gl.TEXTURE_2D, particlesTexture.tex);
+        let uniformSampler = global.gl.getUniformLocation(global.particlesProgram, "uSampler");
+        global.gl.uniform1i(uniformSampler, 1);
+        global.gl.drawArrays(global.gl.POINTS, 0, TFocus.getParticles());
+        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
+
+        /////////
+        // hard try
+        /////////
+
+
+
+      }
+      catch(err){
+        //alert(err);
+        console.error(err);
+      }
+    }
+
     requestAnimationFrame(loop);
 
   }

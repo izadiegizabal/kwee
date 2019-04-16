@@ -4,7 +4,8 @@ import * as glMatrix from "./dependencies/gl-matrix";
 let canvas = null;
 let global = {
   gl: null,
-  program: null
+  program: null,
+  particlesProgram: null
 }
 let angle = 0;
 
@@ -14,6 +15,7 @@ function shared() {
     if (canvas) {
       global.gl = canvas.getContext('webgl');
       global.program = global.gl.createProgram();
+      global.particlesProgram = global.gl.createProgram();
     }
     resolve(true);
   });
@@ -44,6 +46,7 @@ TEntity.AuxLights = [];
 TEntity.Aux = [];
 // Static attribute stack
 TEntity.stack = null;
+TEntity.buffer = null;
 
 function getEntity(){
     return TEntity;

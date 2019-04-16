@@ -1,6 +1,6 @@
 
 import {TNode} from './TNode.js';
-import {TTransform, TCamera, TLight, TAnimation, TMesh, TArc} from './TEntity.js';
+import {TTransform, TCamera, TLight, TAnimation, TMesh, TArc, TFocus} from './TEntity.js';
 import {TResourceManager, TResourceMesh, TResourceMaterial, TResourceTexture, TResourceShader} from './resourceManager.js';
 
 class TMotorTAG{
@@ -17,6 +17,7 @@ class TMotorTAG{
         this.positionCameras = [];
 
         this.aux = [];
+        this.allFocuses = []
 
         this.resourceManager = resourceManager;
     }
@@ -201,6 +202,23 @@ class TMotorTAG{
         this.allLights.push(NLight);
 
         return NLight;
+    }
+
+    createFocus(father, size, position){
+      console.log("cuando creo focus");
+      let focus = new TFocus(size, position);
+      console.log("creo rama");
+      let NFocus = this.createBranch(father, focus);
+
+      this.allFocuses.push(NFocus);
+
+      return NFocus;
+    }
+
+    updateParticles(time){
+      for(let i=0;i<this.allFocuses.length;i++){
+        this.allFocuses[i].entity.updateParticle(time);
+      }
     }
 
     createArc(father, startLat, startLon, endLat, endLon, quality){
