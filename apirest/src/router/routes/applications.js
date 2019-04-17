@@ -9,56 +9,14 @@ const moment = require('moment');
 // ============================
 
 module.exports = (app, db) => {
+    // Search 
+    app.post('/applications/search', async (req, res, next) => {
+        searchInApplications( req, res, next );
+    });
+
     // GET all applications for kwee live
     app.get("/applications/kweelive", async (req, res, next) => {
-        try {
-            await logger.saveLog('GET', 'applications/kweelive', null, res);
-            var applications;
-            var output = await pagination(
-                db.applications,
-                "applications",
-                req.query.limit,
-                req.query.page,
-                '',
-                res,
-                next
-            );
-
-            if (output.data) {
-                applications = output.data;
-
-                var applicationsToShow = [];
-
-                for (let application in applications) {
-                    let appli = {};
-                    let user = await db.users.findOne({ 
-                        where: { id: applications[application].fk_applicant }
-                    });
-                    let offer = await db.offers.findOne({ where: {
-                        id: applications[application].fk_offer
-                    }});
-                    appli.id = applications[application].id;
-                    appli.applicantLAT = user.lat;
-                    appli.applicantLON = user.lon;
-                    appli.offerLAT = offer.lat;
-                    appli.offerLON = offer.lon;
-                    applicationsToShow.push(appli);
-                }
-                
-                return res.status(200).json({
-                    ok: true,
-                    message: output.message,
-                    data: applicationsToShow,
-                    total: output.count,
-                    page: Number(req.query.page),
-                    pages: Math.ceil(output.count / req.query.limit)
-                });
-            } else {
-                next({type: 'error', error: 'No applications'});
-            }
-        } catch (err) {
-            next({type: 'error', error: err.message});
-        }
+        applicationsForKweeLive( req, res, next );
     });
     // GET all applications
     app.get("/applications", checkToken, async (req, res, next) => {
@@ -477,7 +435,58 @@ module.exports = (app, db) => {
         }
     }
 
-    async function applicationsForKweeLive( application ) {
+    async function applicationsForKweeLive( req, res, next ) {
+        try {
+            await logger.saveLog('GET', 'applications/kweelive', null, res);
+            var applications;
+            var output = await pagination(
+                db.applications,
+                "applications",
+                req.query.limit,
+                req.query.page,
+                '',
+                res,
+                next
+            );
+
+            if (output.data) {
+                applications = output.data;
+
+                var applicationsToShow = [];
+
+                for (let application in applications) {
+                    let appli = {};
+                    let user = await db.users.findOne({ 
+                        where: { id: applications[application].fk_applicant }
+                    });
+                    let offer = await db.offers.findOne({ where: {
+                        id: applications[application].fk_offer
+                    }});
+                    appli.id = applications[application].id;
+                    appli.applicantLAT = user.lat;
+                    appli.applicantLON = user.lon;
+                    appli.offerLAT = offer.lat;
+                    appli.offerLON = offer.lon;
+                    applicationsToShow.push(appli);
+                }
+                
+                return res.status(200).json({
+                    ok: true,
+                    message: output.message,
+                    data: applicationsToShow,
+                    total: output.count,
+                    page: Number(req.query.page),
+                    pages: Math.ceil(output.count / req.query.limit)
+                });
+            } else {
+                next({type: 'error', error: 'No applications'});
+            }
+        } catch (err) {
+            next({type: 'error', error: err.message});
+        }
+    }
+
+    async function searchInApplications ( res, res, next ) {
 
     }
 

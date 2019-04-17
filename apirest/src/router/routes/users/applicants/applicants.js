@@ -46,11 +46,8 @@ module.exports = (app, db) => {
                         [
                             "name",
                             "email",
-                            // "status",
                             "city",
-                            // "dateBorn",
                             "rol",
-                            // "index",
                             "bio",
                             "skills",
                             "languages",
