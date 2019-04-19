@@ -9,6 +9,7 @@ export class CandidatePreview {
     public applicationId: number = -1,
     public applicationStatus: number = -1,
     public index: number,
+    public avg: any,
     public name: string,
     public bio: string,
     public city: string,

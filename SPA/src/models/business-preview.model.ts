@@ -7,6 +7,7 @@ export class BusinessPreview {
   constructor(
     public id: number,
     public index: number,
+    public avg: any,
     public name: string,
     public bio: string,
     public address: string,

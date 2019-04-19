@@ -253,6 +253,7 @@ export class RateCandidateComponent implements OnInit {
         for (const i of Object.keys((<FormGroup>(<FormArray>this.form.get('array')).controls[num]).controls)) {
           (<FormGroup>(<FormArray>this.form.get('array')).controls[num]).controls[i].markAsTouched();
         }
+        return true;
       } else {
         for (const i of Object.keys(this.form.controls)) {
           this.form.controls[i].markAsTouched();

@@ -47,6 +47,15 @@
           <app-offer-manage-tab [status]="1" [type]="1"></app-offer-manage-tab>
         </ng-template>
       </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon" color="primary" svgIcon="accepted"></mat-icon>
+          Accepted
+        </ng-template>
+        <ng-template matTabContent>
+          <app-offer-manage-tab [status]="4" [type]="1"></app-offer-manage-tab>
+        </ng-template>
+      </mat-tab>
     </mat-tab-group>
   </mat-card>
 </div>

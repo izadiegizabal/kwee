@@ -13,9 +13,10 @@
       fxFlex.gt-sm="80%">
       <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap.lt-sm="16px">
         <!-- Basic info -->
-        <mat-card [fxFlex]="mine? 70 : 100">
+        <mat-card [fxFlex]="(mine || twitterAccount !== '')? 70 : 100">
           <mat-card-title>
             <app-offerer-name-overview
+              [businessIndexBreakdown]="(profilesState | async).business.avg"
               [index]="(profilesState | async).business.index"
               [name]="(profilesState | async).business.name"
               size="title">
@@ -83,10 +84,16 @@
             </button>
           </mat-card-actions>
         </mat-card>
+        <mat-card *ngIf="!mine && twitterAccount !== ''"
+                  class="twitter-wrapper"
+                  fxFlex="30"
+                  fxFlexOffset.gt-xs="32px" fxHide.lt-lg>
+          <a [href]="'https://twitter.com/' + twitterAccount" class="twitter-timeline">Tweets by @{{twitterAccount}}</a>
+        </mat-card>
       </div>
       <div fxLayout="row" style="margin-top: 16px">
         <mat-card fxFlex="100" style="padding: 0 !important;">
-          <mat-tab-group (selectedIndexChange)="goToMyOffers($event)">
+          <mat-tab-group (selectedIndexChange)="changeTab($event)" [selectedIndex]="selectedIndex">
             <mat-tab label="More Info">
               <ng-template matTabContent>
                 <app-business-more-info [business]="(profilesState | async).business"></app-business-more-info>
@@ -97,7 +104,11 @@
                 <app-business-profile-opinions></app-business-profile-opinions>
               </ng-template>
             </mat-tab>
-            <mat-tab label="Offers"></mat-tab>
+            <mat-tab label="Jobs">
+              <ng-template matTabContent>
+                <app-business-past-offers [businessID]="(profilesState | async).business.id"></app-business-past-offers>
+              </ng-template>
+            </mat-tab>
           </mat-tab-group>
         </mat-card>
       </div>

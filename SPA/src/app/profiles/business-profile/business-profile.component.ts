@@ -1,5 +1,5 @@
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 import {Title} from '@angular/platform-browser';
 import {Location} from '@angular/common';
 import {Observable} from 'rxjs';
@@ -17,7 +17,7 @@ import {environment} from '../../../environments/environment';
     './business-profile.component.scss',
   ]
 })
-export class BusinessProfileComponent implements OnInit {
+export class BusinessProfileComponent implements OnInit, AfterViewInit {
   business = {
     name: 'Facebook',
     kweeIndex: 56,
@@ -45,6 +45,11 @@ export class BusinessProfileComponent implements OnInit {
   mine = false;
   busi: any;
 
+  // TODO: load this dynamically
+  twitterAccount = '';
+  selectedIndex: number;
+  private params: Params;
+
   constructor(
     private titleService: Title,
     private store$: Store<fromApp.AppState>,
@@ -55,13 +60,20 @@ export class BusinessProfileComponent implements OnInit {
   }
 
   ngOnInit() {
-    const params = this.activatedRoute.snapshot.params;
-    this.store$.dispatch(new ProfilesActions.TryGetProfileBusiness({id: params.id}));
+    this.params = this.activatedRoute.snapshot.params;
+    this.goToCorrectTab();
+
+    this.activatedRoute.params.subscribe(() => {
+      this.params = this.activatedRoute.snapshot.params;
+      this.goToCorrectTab();
+    });
+
+    this.store$.dispatch(new ProfilesActions.TryGetProfileBusiness({id: this.params.id}));
     this.profilesState = this.store$.pipe(select(state => state.profiles));
     this.store$.pipe(select(state => state.auth)).subscribe(
       s => {
         if (s.user) {
-          this.mine = Number(params.id) === s.user.id;
+          this.mine = Number(this.params.id) === s.user.id;
         }
       }
     );
@@ -69,14 +81,54 @@ export class BusinessProfileComponent implements OnInit {
     this.profilesState.subscribe(s => {
       if (s.business) {
         this.busi = s.business;
+        if (this.busi && this.busi.social_networks && this.busi.social_networks.twitter) {
+          this.twitterAccount = this.busi.social_networks.twitter;
+        }
         this.titleService.setTitle('Kwee - ' + s.business.name);
       }
     });
   }
 
-  goToMyOffers(tabIndex: number) {
-    if (tabIndex && tabIndex === 2) {
-      this.router.navigate(['/my-offers']);
+  ngAfterViewInit() {
+    // @ts-ignore
+    twttr.widgets.load();
+  }
+
+  changeTab(tabIndex: number) {
+    this.selectedIndex = tabIndex;
+
+    if (this.params) {
+      switch (tabIndex) {
+        case 0:
+          this.router.navigate(['more-info'], {relativeTo: this.activatedRoute.parent});
+          break;
+        case 1:
+          this.router.navigate(['opinions'], {relativeTo: this.activatedRoute.parent});
+          break;
+        case 2:
+          if (this.mine) {
+            this.router.navigate(['/my-offers']);
+          } else {
+            this.router.navigate(['jobs'], {relativeTo: this.activatedRoute.parent});
+          }
+          break;
+      }
+    }
+  }
+
+  goToCorrectTab() {
+    if (this.params['tabPosition']) {
+      switch (this.params['tabPosition']) {
+        case 'more-info':
+          this.changeTab(0);
+          break;
+        case 'opinions':
+          this.changeTab(1);
+          break;
+        case 'jobs':
+          this.changeTab(2);
+          break;
+      }
     }
   }
 
@@ -86,7 +138,7 @@ export class BusinessProfileComponent implements OnInit {
 
   getImg(img: string) {
     if (img) {
-      return environment.apiUrl + 'image/offerers/' + img;
+      return environment.apiUrl + img;
     } else {
       return this.business.img;
     }

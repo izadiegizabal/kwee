@@ -6,7 +6,10 @@
   <div class="line1" fxFlex="80%" fxFlex.lt-md="100%" fxLayout="row" fxLayoutAlign="start center"><h2 class="mat-h1">My
     Invoices</h2></div>
   <mat-accordion fxLayout="column">
-    <div *ngFor="let invoice of  invoices;" fxLayout="row">
+    <div *ngIf="noInvoices">
+      <h2 class="mat-h2 no-margin">You don't have any invoices yet.</h2>
+    </div>
+    <div *ngFor="let invoice of  invoices; let i =index;" fxLayout="row">
       <mat-checkbox #toggle style="display: none"></mat-checkbox>
       <mat-expansion-panel [(expanded)]="toggle.checked" class="line1" fxFlex="80%" fxFlex.lt-md="100%">
         <mat-expansion-panel-header>
@@ -14,17 +17,18 @@
             fxLayout="row"
             fxLayoutGap="10px">
             <span>Invoice #{{invoice.id}}</span>
-            <span fxHide fxShow.gt-xs>Total: {{invoice.total}} {{invoice.currency}}</span>
+            <span fxHide fxShow.gt-xs>Product: {{invoice.product | titlecase}}</span>
           </mat-panel-title>
           <mat-panel-description fxHide fxShow.gt-xs>
-            <span>Offer: {{invoice.offer}}</span>
+            <span>Total: {{invoice.total}}</span>
           </mat-panel-description>
         </mat-expansion-panel-header>
         <h2 class="mat-h2 no-margin">Invoice #{{invoice.id}}</h2>
-        <h3 class="mat-h3 no-margin">{{invoice.offer}}</h3>
-        <h4 class="mat-h4 no-margin">{{getDate(invoice.date)}}</h4>
+        <h3 class="mat-h3 no-margin">{{invoice.product | titlecase}}</h3>
+        <h4 class="mat-h4 no-margin">{{invoice.date}}</h4>
 
-        <p class="mat-h3" fxLayoutAlign="end">Total:&nbsp;<b class="mat-h2">{{invoice.total}} {{invoice.currency}}</b>
+
+        <p class="mat-h3" fxLayoutAlign="end">Total:&nbsp;<b class="mat-h2">{{invoice.total}}</b>
         </p>
 
         <div fxLayout="row"
@@ -36,6 +40,7 @@
           <div>
             <button
               color="primary"
+              (click)="downloadPDF(i)"
               mat-raised-button type="button">Download
             </button>
           </div>

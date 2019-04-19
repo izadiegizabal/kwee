@@ -8,11 +8,11 @@
         <mat-panel-title fxFlex="75%"
                          fxFlex.gt-lg="30%" fxFlex.gt-md="35%" fxFlex.gt-sm="40%" fxLayoutAlign="start center"
                          fxLayoutGap="8px">
-          <app-offerer-name-overview [index]="user.index" [name]="user.name"></app-offerer-name-overview>
-          <div fxLayoutAlign="end">
-            <button (click)="edit(user)" color="accent" mat-button>Edit</button>
-            <button (click)="callAlertDialogDelete(user.id)" color="warn" mat-button>Delete</button>
-          </div>
+          <app-offerer-name-overview
+            [index]="user.index"
+            [businessIndexBreakdown]="user.avg"
+            [name]="user.name">
+          </app-offerer-name-overview>
         </mat-panel-title>
         <mat-panel-description
           fxFlex="25%"

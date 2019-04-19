@@ -8,10 +8,10 @@
   </div>
   <div fxLayout="row"
        fxLayoutAlign="center center">
-    <mat-card
-      *ngIf="(offerState | async).offer"
-      fxFlex="95%"
-      fxFlex.gt-lg="50%" fxFlex.gt-md="60%" fxFlex.gt-sm="75%" fxLayout="column">
+    <mat-card id="id"
+              *ngIf="(offerState | async).offer"
+              fxFlex="95%"
+              fxFlex.gt-lg="50%" fxFlex.gt-md="60%" fxFlex.gt-sm="75%" fxLayout="column">
       <mat-card-header fxLayoutAlign="space-between">
         <mat-card-title fxLayout="row" fxLayoutGap="16px">
           <span>{{(offerState | async).offer.title }}</span>
@@ -24,8 +24,11 @@
         <span
           [routerLink]="urlOfferer((offerState | async).offer.fk_offerer, (offerState | async).offer.offererName)"
           style="cursor: pointer">
-          <app-offerer-name-overview [index]="(offerState | async).offer.offererIndex"
-                                     [name]="(offerState | async).offer.offererName"></app-offerer-name-overview>
+          <app-offerer-name-overview
+            [index]="(offerState | async).offer.offererIndex"
+            [businessIndexBreakdown]="(offerState | async).offer.avg"
+            [name]="(offerState | async).offer.offererName">
+          </app-offerer-name-overview>
         </span>
         </mat-card-subtitle>
         <div
@@ -60,7 +63,7 @@
         <div
           fxLayout="row"
           fxLayout.lt-sm="column" fxLayoutGap="16px">
-          <img [src]="(offerState | async).offer.img ? environment.apiUrl + 'image/offerers/' + (offerState | async).offer.img :
+          <img [src]="(offerState | async).offer.img ? environment.apiUrl + (offerState | async).offer.img :
             'https://cdn.vox-cdn.com/thumbor/Pkmq1nm3skO0-j693JTMd7RL0Zk=/0x0:2012x1341/1200x800/filters:focal(0x0:2012x1341)/' +
             'cdn.vox-cdn.com/uploads/chorus_image/image/47070706/google2.0.0.jpg'"
                alt="Business Logo"
@@ -108,15 +111,15 @@
             <div fxFlex="33%" fxFlex.lt-sm="100%"
                  fxLayoutAlign="center center"
                  style="width: 100%">
-              <div fxLayout="column" fxLayout.lt-sm="row"
+              <div fxLayout="column"
                    fxLayoutGap="8px">
-                <a (click)="goEdit()"
-                   *ngIf="(offerState | async).offer.fk_offerer === this.id ; else apply">
-                  <button
-                    color="accent"
-                    mat-raised-button
-                    style="color: white" type="button">{{'Edit Offer' | uppercase }}</button>
-                </a>
+
+                <button
+                  (click)="goEdit()"
+                  *ngIf="(offerState | async).offer.fk_offerer === this.id ; else apply"
+                  color="accent"
+                  mat-raised-button
+                  style="color: white" type="button">{{'Edit Offer' | uppercase }}</button>
                 <ng-template #apply>
                   <button (click)="postApplication()"
                           *ngIf="(offerState | async).applications===null && id"
@@ -130,7 +133,7 @@
 
                   <button (click)="deleteApplication()"
                           *ngIf="(offerState | async).applications && ((offerState | async).offer.status === 0 ||
-                (offerState | async).offer.status === 3) && (offerState | async).applications.status < 2"
+                (offerState | async).offer.status === 3) && (offerState | async).applications.status < 2 && id"
                           color="warn"
                           mat-raised-button style="color: white">{{'Delete Application' | uppercase }}</button>
 
@@ -145,7 +148,17 @@
                   </div>
 
                 </ng-template>
-                <app-sns-share [offer]="getShareableOffer((offerState | async).offer.title)"></app-sns-share>
+                <div fxLayout="row">
+                  <app-sns-share [offer]="getShareableOffer((offerState | async).offer.title)"></app-sns-share>
+                  <button (click)="downloadPDF()"
+                          mat-icon-button>
+                    <mat-icon
+                      aria-label="Download Offer"
+                      class="svg"
+                      color="primary"
+                      svgIcon="arrow-down"></mat-icon>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -164,7 +177,8 @@
           <div
             [innerHTML]="(offerState | async).offer.requeriments"
             fxLayout="column"
-            style="white-space: pre-wrap; margin-bottom: 16px">
+            style="white-space: pre-wrap; margin-bottom: 16px"
+            id="requeriments">
           </div>
         </div>
 

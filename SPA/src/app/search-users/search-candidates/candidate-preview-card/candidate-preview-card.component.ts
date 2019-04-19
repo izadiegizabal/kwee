@@ -92,7 +92,7 @@ export class CandidatePreviewCardComponent implements OnInit {
   getImg() {
     const defaultImg = '../../../../../assets/img/defaultProfileImg.png';
     if (this.user.img) {
-      return environment.apiUrl + 'image/applicants/' + this.user.img;
+      return environment.apiUrl + this.user.img;
     } else {
       return defaultImg;
     }

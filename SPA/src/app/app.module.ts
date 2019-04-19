@@ -32,7 +32,7 @@ const config: SocketIoConfig = {
 
 export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {
   return localStorageSync({
-    keys: ['auth', 'admin', 'offers', 'offer', 'profiles', 'offerManage', 'invoices'],
+    keys: ['auth', 'admin', 'offers', 'offer', 'profiles', 'offerManage', 'invoices', 'kweeLive'],
     rehydrate: true
   })(reducer);
 }

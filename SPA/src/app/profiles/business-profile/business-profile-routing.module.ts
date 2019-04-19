@@ -4,7 +4,10 @@ import {BusinessProfileComponent} from './business-profile.component';
 
 const businessProfileRoutes: Routes = [
   {
-    path: '', component: BusinessProfileComponent,
+    path: '', redirectTo: 'more-info', pathMatch: 'full',
+  },
+  {
+    path: ':tabPosition', component: BusinessProfileComponent,
   }
 ];
 

@@ -1,36 +1,116 @@
-@import "../../common-utils";
+// @import "../../common-utils";
 
-.example-container {
-  width: 500px;
-  height: 300px;
-  border: 1px solid rgba(0, 0, 0, 0.5);
-}
+// .example-container {
+//   width: 500px;
+//   height: 300px;
+//   border: 1px solid rgba(0, 0, 0, 0.5);
+// }
 
-.example-sidenav-content {
-  display: flex;
-  height: 100%;
-  align-items: center;
-  justify-content: center;
-}
+// .example-sidenav-content {
+//   display: flex;
+//   height: 100%;
+//   align-items: center;
+//   justify-content: center;
+// }
 
-.example-sidenav {
-  padding: 20px;
-}
+// .example-sidenav {
+//   padding: 20px;
+// }
 
-.example-form {
-  min-width: 150px;
-  max-width: 500px;
-  width: 100%;
-}
+// .example-form {
+//   min-width: 150px;
+//   max-width: 500px;
+//   width: 100%;
+// }
 
-.example-full-width {
-  width: 100%;
-}
+// .example-full-width {
+//   width: 100%;
+// }
 
+// .container {
+//   left: 40px;
+// }
+
+// .mat-list-icon {
+//   color: rgba(0, 0, 0, 0.54);
+// }
+
+
+/* Chat containers */
 .container {
-  left: 40px;
+  border: 2px solid #dedede;
+  background-color: #f1f1f1;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px 0;
 }
 
-.mat-list-icon {
-  color: rgba(0, 0, 0, 0.54);
+.list {
+  border: 2px solid #dedede;
+  background-color: #fff;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px 55px 10px 10px;
+}
+
+/* Darker chat container */
+.darker {
+  border-color: #ccc;
+  background-color: #ddd;
+}
+
+/* Clear floats */
+.container::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+/* Style images */
+.container img {
+  float: left;
+  max-width: 60px;
+  width: 100%;
+  margin-right: 20px;
+  border-radius: 50%;
+}
+
+/* Style the right image */
+.container img.rightImg {
+  float: right;
+  margin-left: 20px;
+  margin-right:0;
+}
+
+/* Style time text */
+.time-right {
+  float: right;
+  color: #aaa;
+}
+
+/* Style time text */
+.time-left {
+  float: left;
+  color: #999;
+}
+
+/* Style time text */
+.right {
+  position: relative;
+  float: right;
+  width: 70%;
+  height: 400px;
+  right: 5%;
+}
+
+/* Style time text */
+.left {
+  position: relative;
+  float: left;
+  width: 20%;
+  height: 400px;
+  left: 5%;
+}
+.box {
+  height: 100%;
 }

@@ -1,0 +1,158 @@
+<div fxLayout="row">
+  <mat-accordion fxFlex="99%">
+    <mat-expansion-panel
+      (closed)="isPanelOpen = !isPanelOpen; isInEditMode = false; offerForm.reset()"
+      (opened)="isPanelOpen = !isPanelOpen;"
+      *ngFor="let offer of (offersState | async).offers.data;" [formGroup]="offerForm">
+      <mat-expansion-panel-header>
+        <mat-panel-title fxFlex="75%"
+                         fxFlex.gt-lg="30%" fxFlex.gt-md="35%" fxFlex.gt-sm="40%" fxLayoutAlign="start center">
+          <app-offerer-name-overview
+            [index]="offer.offererIndex"
+            [businessIndexBreakdown]="offer.avg"
+            [name]="offer.title">
+          </app-offerer-name-overview>
+        </mat-panel-title>
+        <mat-panel-description
+          fxFlex="25%"
+          fxFlex.gt-sm="75%" fxLayout="row"
+          fxLayoutAlign="space-between center">
+          <div fxFlex="60%"
+               fxFlex.md="75%"
+               fxHide fxLayout="row"
+               fxLayoutAlign="start center" fxShow.gt-sm>
+            <mat-icon class="svg" color="primary" svgIcon="domain"></mat-icon>
+            <span>{{offer.offererName}}</span>
+          </div>
+          <div fxFlex="40%"
+               fxHide
+               fxLayout="row"
+               fxLayoutAlign="start center" fxShow.gt-lg>
+            <mat-icon class="svg" color="primary" svgIcon="access-time"></mat-icon>
+            <span>{{offer.datePublished| date:'d/M/y, HH:mm'}}</span>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="end">
+            <button (click)="edit(offer)" color="accent" mat-button>Edit</button>
+            <button (click)="callAlertDialogDelete(offer.id)" color="warn" mat-button>Delete</button>
+
+            <!--<button (click)="callAlertDialogDelete(offer.id)" color="warn" mat-button>Delete</button>-->
+          </div>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div fxLayout="column" fxLayout.gt-sm="row"
+           fxLayoutGap="0" fxLayoutGap.gt-sm="24px">
+        <div class="mat-body" fxFlex="50%">
+          <span class="mat-small">{{'Offer Title' | uppercase}}</span>
+          <br>
+          <div *ngIf="!isInEditMode || !isPanelOpen">
+            {{offer.title}}
+          </div>
+          <div *ngIf="isInEditMode && isPanelOpen">
+            <mat-form-field>
+              <label>
+                <input [value]="offer.title" formControlName="title" matInput>
+              </label>
+              <mat-error *ngIf="!offerForm.get('title').valid">
+                This field is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="mat-body" fxFlex="50%">
+          <span class="mat-small">{{'Location' | uppercase}}</span>
+          <br>
+          <div *ngIf="!isInEditMode || !isPanelOpen">
+            {{getOfferLocation(offer)}}
+          </div>
+          <div *ngIf="isInEditMode && isPanelOpen">
+            <mat-form-field>
+              <label>
+                <input [value]="offer.location" formControlName="location" matInput>
+              </label>
+              <mat-error *ngIf="!offerForm.get('location').valid">
+                This field is required
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field>
+              <mat-select formControlName="workLocation" placeholder="Working location" required>
+                <mat-option *ngFor="let value of workLocation" [value]="value.value">
+                  {{value.viewValue}}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="!offerForm.get('workLocation').valid ">
+                This field is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+      <div fxLayout="column" fxLayout.gt-sm="row"
+           fxLayoutGap="0" fxLayoutGap.gt-sm="24px">
+        <div [fxLayout]="(isInEditMode && isPanelOpen) ? 'column': 'row'"
+             class="mat-body" fxFlex="100%"
+             fxFlex.gt-sm="50%"
+             fxLayout.gt-sm="row" fxLayoutGap="24px">
+          <div>
+            <span class="mat-small">{{'State' | uppercase}}</span>
+            <br>
+            <div *ngIf="!isInEditMode || !isPanelOpen">
+              {{ getOfferStatus(offer.status) }}
+            </div>
+            <div *ngIf="isInEditMode && isPanelOpen">
+              <mat-form-field>
+                <mat-select [(value)]="offer.status" formControlName="offerState">
+                  <mat-option *ngFor="let state of states" [value]="state.value">
+                    {{state.viewValue}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="!isInEditMode || !isPanelOpen"
+             class="mat-body"
+             fxFlex="100%"
+             fxFlex.gt-sm="50%"
+             fxLayout="row" fxLayoutGap="24px">
+          <p>
+            <span class="mat-small">{{'Created Time' | uppercase}}</span>
+            <br>
+            {{offer.createdAt | date:'d/M/y, HH:mm' | titlecase}}
+          </p>
+
+          <p>
+            <span class="mat-small">{{'Publish Date' | uppercase}}</span>
+            <br>
+            {{offer.datePublished | date:'d/M/y, HH:mm' | titlecase}}
+          </p>
+
+        </div>
+      </div>
+      <br>
+      <div fxLayout="row"
+           fxLayoutAlign="end" fxLayoutGap="0"
+           fxLayoutGap.gt-sm="8px">
+        <button [routerLink]="urlfyDetail(offer)" color="primary" mat-button>More Info</button>
+        <button color="primary" mat-button>View Log</button>
+        <div *ngIf="!isInEditMode || !isPanelOpen">
+          <button (click)="edit(offer)" color="accent" mat-button>Edit</button>
+        </div>
+        <div *ngIf="isInEditMode && isPanelOpen">
+          <button (click)="callAlertDialogUpdate(offer.id)" color="accent" mat-button type="submit">Done</button>
+        </div>
+        <button (click)="callAlertDialogDelete(offer.id)" color="warn" mat-button>Delete</button>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>
+
+
+<div *ngIf="(offersState | async).offers && (offersState | async).offers.data">
+  <mat-paginator #paginator
+                 (page)="pageEvent = $event; changePage();"
+                 [length]="(offersState | async).offers.total"
+                 [pageSizeOptions]="pageSizeOptions"
+                 [pageSize]="pageSize">
+  </mat-paginator>
+</div>
+

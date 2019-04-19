@@ -70,8 +70,8 @@ export class AdminEffects {
           apiEndpointUrl += '&sort=' + payload.order;
         }
 
-        // console.log(apiEndpointUrl);
-        // console.log(body);
+        console.log(apiEndpointUrl);
+        console.log(body);
 
         return this.httpClient.post(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res: {

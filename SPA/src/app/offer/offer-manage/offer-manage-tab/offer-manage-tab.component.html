@@ -5,19 +5,19 @@
      style="padding: 8px">
 
   <div
-    *ngIf="(offerManageState | async).offers.data && (offerManageState | async).offers.data.length > 0"
+    *ngIf="(offerManageState | async).offers && (offerManageState | async).offers.length > 0"
     fxLayout="column"
     fxLayoutGap="16px"
     style="min-height: 368px; padding-top: 8px">
     <app-offer-preview-card
-      *ngFor="let offer of (offerManageState | async).offers.data;"
+      *ngFor="let offer of (offerManageState | async).offers;"
       [offer]="offer"
       [selection]="true"
       fxLayout="row">
     </app-offer-preview-card>
   </div>
   <div
-    *ngIf="!(offerManageState | async).offers.data || (offerManageState | async).offers.data.length === 0"
+    *ngIf="!(offerManageState | async).offers || (offerManageState | async).offers.length === 0"
     fxLayout="column"
     fxLayoutAlign="center center"
     style="padding-top: 144px">
@@ -28,8 +28,8 @@
   <div>
     <mat-paginator
       (page)="pageEvent = $event; changePage();"
-      *ngIf="(offerManageState | async).offers.data && (offerManageState | async).offers.data.length > 0"
-      [length]="totalOffers((offerManageState | async).offers.count)"
+      *ngIf="(offerManageState | async).offers && (offerManageState | async).offers.length > 0"
+      [length]="totalOffers((offerManageState | async).count ,(offerManageState | async).total)"
       [pageSizeOptions]="pageSizeOptions"
       [pageSize]="pageSize">
     </mat-paginator>

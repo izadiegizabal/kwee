@@ -1,9 +1,14 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../environments/environment';
 import {ActivatedRoute} from '@angular/router';
 import {Title} from '@angular/platform-browser';
+import {select, Store} from '@ngrx/store';
+import * as AuthActions from '../auth/store/auth.actions';
+import * as fromApp from '../store/app.reducers';
+import {Observable} from 'rxjs';
+import * as fromAuth from '../auth/store/auth.reducers';
 
 @Component({
   selector: 'app-reset-password',
@@ -19,13 +24,17 @@ export class ResetPasswordComponent implements OnInit {
 
   isOkay = 0;
   private errorMsg: string;
+  authState: Observable<fromAuth.State>;
+
 
   // 0 = nothing done, 1 = changed correctly, 2 = error while changing password
 
   constructor(
     private titleService: Title,
     private http: HttpClient,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private _formBuilder: FormBuilder,
+    private store$: Store<fromApp.AppState>,
   ) {
   }
 
@@ -71,6 +80,8 @@ export class ResetPasswordComponent implements OnInit {
           token: this.token,
           password: newPassword
         });
+
+
       const headers = new HttpHeaders().set('Content-Type', 'application/json');
       this.http.post(environment.apiUrl + 'reset', body, {headers: headers}).subscribe(
         (res: {
@@ -79,6 +90,9 @@ export class ResetPasswordComponent implements OnInit {
         }) => {
           console.log(res);
           this.showResult(res.ok, res.message);
+
+          // sign in with token
+          this.signIn();
         },
         (err) => {
           console.log(err);
@@ -99,5 +113,11 @@ export class ResetPasswordComponent implements OnInit {
       this.isOkay = 1;
     }
 
+  }
+
+  signIn() {
+    this.authState = this.store$.pipe(select('auth'));
+    this.store$.dispatch(new AuthActions.TrySignin(
+      {email: null, password: this.onlyFormGroup.controls['password'].value, token: this.token}));
   }
 }

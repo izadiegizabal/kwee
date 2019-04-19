@@ -2,8 +2,11 @@ import * as InvoiceActions from './invoice.actions';
 
 export interface State {
   invoices: {
-    ok: boolean,
-    message: string,
+    id: number,
+    product: string,
+    createdAt: Date,
+    price: string,
+    data: any
   };
 }
 
@@ -17,6 +20,17 @@ export function invoiceReducer(state = initialState, action: InvoiceActions.Invo
       return {
         ...state,
         invoices: action.payload
+      };
+    case InvoiceActions.GET_INVOICES_APPLICANT:
+    case InvoiceActions.GET_INVOICES_OFFERER:
+      return {
+        ...state,
+        invoices: action.payload
+      };
+    case InvoiceActions.CLEAR:
+      return {
+        ...state,
+        invoices: {}
       };
     default:
       return state;

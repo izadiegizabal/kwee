@@ -36,10 +36,13 @@ interface Address {
 })
 export class SignupOffererComponent implements OnInit {
 
-  options: City[] = [];
+  options = [];
   address: Address;
   fileEvent = null;
   file: any;
+  cities = [];
+  countries = [];
+
 
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
@@ -125,6 +128,10 @@ export class SignupOffererComponent implements OnInit {
       'workField': new FormControl(null, Validators.required),
       'address1': new FormControl(null, Validators.required),
       'terms': new FormControl(null, Validators.required),
+      'city': new FormControl(null, Validators.required),
+      'state': new FormControl(null, Validators.required),
+      'postal': new FormControl(null, Validators.required),
+      'country': new FormControl(null, Validators.required),
       'profile': new FormControl(null)
     });
 
@@ -178,8 +185,8 @@ export class SignupOffererComponent implements OnInit {
       SignupOffererComponent.maxDate.bind(this.thirdFormGroup),
     ]);
 
-    this.secondFormGroup.controls['year'].valueChanges.subscribe(value => {
-      this.secondFormGroup.controls['year'].updateValueAndValidity();
+    this.thirdFormGroup.controls['year'].valueChanges.subscribe(value => {
+      this.thirdFormGroup.controls['year'].updateValueAndValidity();
     });
 
 
@@ -250,26 +257,34 @@ export class SignupOffererComponent implements OnInit {
     // console.log(this.secondFormGroup);
     if (this.secondFormGroup.status === 'VALID') {
 
-      if ((this.secondFormGroup.controls['address1'].value as City).geo === undefined) {
-        if (this.options.length > 0) {
-          this.secondFormGroup.controls['address1'].setValue(this.options[0]);
-        } else {
-          const auxCity = {
-            name: this.secondFormGroup.controls['address1'].value,
-            geo: {
-              lat: SignupOffererComponent.generateRandomLat(),
-              lng: SignupOffererComponent.generateRandomLong()
-            }
-          };
-          this.secondFormGroup.controls['address1'].setValue(auxCity);
-        }
+      let finalAddress = '';
+      finalAddress += this.secondFormGroup.controls['address1'].value.name ?
+        this.secondFormGroup.controls['address1'].value.name : this.secondFormGroup.controls['address1'].value;
+      finalAddress += this.secondFormGroup.controls['city'].value.name ?
+        ', ' + this.secondFormGroup.controls['city'].value.name : ', ' + this.secondFormGroup.controls['city'].value;
+      finalAddress += ', ' + this.secondFormGroup.controls['state'].value;
+      finalAddress += ', ' + this.secondFormGroup.controls['postal'].value;
+      finalAddress += ', ' + this.secondFormGroup.controls['country'].value;
+      let lat = SignupOffererComponent.generateRandomLat(), lng = SignupOffererComponent.generateRandomLong();
+      if (this.secondFormGroup.controls['address1'].value.geo) {
+        lat = this.secondFormGroup.controls['address1'].value.geo.lat;
+        lng = this.secondFormGroup.controls['address1'].value.geo.lng;
+      } else if (this.secondFormGroup.controls['city'].value.geo) {
+        lat = this.secondFormGroup.controls['city'].value.geo.lat;
+        lng = this.secondFormGroup.controls['city'].value.geo.lng;
+      } else if (this.options.length > 0) {
+        lat = this.options[0].geo.lat;
+        lng = this.options[0].geo.lng;
+      } else if (this.cities.length > 0 && this.cities[0].geo) {
+        lat = this.cities[0].geo.lat;
+        lng = this.cities[0].geo.lng;
       }
 
       this.offerer = {
         'name': this.secondFormGroup.controls['businessName'].value,
         'password': this.secondFormGroup.controls['password'].value,
         'email': this.secondFormGroup.controls['email'].value,
-        'address': this.secondFormGroup.controls['address1'].value.name,
+        'address': finalAddress,
         'cif': this.secondFormGroup.controls['vat'].value,
         'workField': this.secondFormGroup.controls['workField'].value,
         'premium': '0',
@@ -277,10 +292,9 @@ export class SignupOffererComponent implements OnInit {
         'bio': '',
         'img': this.file,
         'status': '0',
-        'lng': (this.secondFormGroup.controls['address1'].value as City).geo.lng,
-        'lat': (this.secondFormGroup.controls['address1'].value as City).geo.lat
+        'lng': lng,
+        'lat': lat
       };
-
       // console.log(this.offerer);
 
       // POST new offerer
@@ -332,24 +346,118 @@ export class SignupOffererComponent implements OnInit {
         this.router.navigate(['/']);
       }, (error: any) => {
         // console.log(error);
-        /*if (!this.dialogShown) {
+        if (!this.dialogShown) {
           this.dialog.open(DialogErrorComponent, {
             data: {
-              error: 'We had some issue creating your offer. Please try again later',
+              header: 'We had some issue signing up',
+              error: 'Please try again later',
             }
           });
           this.dialogShown = true;
-        }*/
+        }
       });
   }
 
-  displayFn(city?: City): string | undefined {
+  displayFn(city?: any): string | undefined {
     return city ? city.name : undefined;
   }
 
-  onKey(event: any) { // without type info
-    // q=benidorm&format=json&addressdetails=1&limit=5&polygon_svg=1
+  displayFnAddress(address?: any): string | undefined {
+    return address ? address.name : undefined;
+  }
 
+  searchCity(event: any) {
+    if (event.key !== 'ArrowUp' &&
+      event.key !== 'ArrowRight' &&
+      event.key !== 'ArrowDown' &&
+      event.key !== 'ArrowLeft' &&
+      event.key !== 'Enter') {
+
+      const city = this.secondFormGroup.get('city').value;
+
+      if ((city as string).length > 2) {
+        const options = {
+          params: new HttpParams().set('query', city)
+            .append('type', 'city'),
+          headers: new HttpHeaders().append('X-Algolia-Application-Id', environment.algoliaAppId)
+            .append('X-Algolia-API-Key', environment.algoliaAPIKey)
+        };
+        this.cities = [];
+        this.httpClient.get('https://places-dsn.algolia.net/1/places/query', options)
+          .subscribe((data: any) => {
+            this.cities = [];
+            data.hits.forEach((e, i) => {
+              if (data.hits[i].locale_names.default) {
+                const cityObj = {
+                  name: data.hits[i].locale_names.default[0],
+                  admin: data.hits[i].administrative ? data.hits[i].administrative[0] : '',
+                  country: data.hits[i].country ? data.hits[i].country.default : '',
+                  postcode: data.hits[i].postcode ? data.hits[i].postcode[0] : '',
+                  geo: data.hits[i]._geoloc ? data.hits[i]._geoloc : {}
+                };
+                if (!this.cities.some(element => element.name === cityObj.name)) {
+                  this.cities.push(cityObj);
+                }
+              }
+            });
+          });
+      } else {
+        this.cities = [];
+      }
+    }
+  }
+
+  log() {
+    const address = this.secondFormGroup.get('city').value;
+    this.secondFormGroup.get('country').setValue(address.country);
+    this.secondFormGroup.get('postal').setValue(address.postcode);
+    this.secondFormGroup.get('state').setValue(address.admin);
+  }
+
+  logAddress() {
+    const address = this.secondFormGroup.get('address1').value;
+    this.secondFormGroup.get('city').setValue(address.city);
+    this.secondFormGroup.get('country').setValue(address.country);
+    this.secondFormGroup.get('postal').setValue(address.postcode);
+    this.secondFormGroup.get('state').setValue(address.admin);
+  }
+
+  searchCountry(event: any) {
+    if (event.key !== 'ArrowUp' &&
+      event.key !== 'ArrowRight' &&
+      event.key !== 'ArrowDown' &&
+      event.key !== 'ArrowLeft' &&
+      event.key !== 'Enter') {
+
+      const country = this.secondFormGroup.get('country').value;
+
+      if ((country as string).length > 2) {
+        const options = {
+          params: new HttpParams().set('query', country)
+            .append('type', 'country'),
+          headers: new HttpHeaders().append('X-Algolia-Application-Id', environment.algoliaAppId)
+            .append('X-Algolia-API-Key', environment.algoliaAPIKey)
+        };
+        this.countries = [];
+        this.httpClient.get('https://places-dsn.algolia.net/1/places/query', options)
+          .subscribe((data: any) => {
+            this.countries = [];
+            data.hits.forEach((e, i) => {
+              if (data.hits[i].locale_names.default) {
+                if (!this.countries.some(element => element === data.hits[i].locale_names.default)) {
+                  this.countries.push(data.hits[i].locale_names.default);
+                }
+              }
+            });
+          });
+      } else {
+        this.countries = [];
+      }
+    }
+  }
+
+  searchAddress(event: any) { // without type info
+    // q=benidorm&format=json&addressdetails=1&limit=5&polygon_svg=1
     if (event.key !== 'ArrowUp' &&
       event.key !== 'ArrowRight' &&
       event.key !== 'ArrowDown' &&
@@ -357,14 +465,6 @@ export class SignupOffererComponent implements OnInit {
       event.key !== 'Enter') {
 
       const ad1 = this.secondFormGroup.get('address1').value;
-      /*if (!ad1.first) {
-        ad1 = this.secondFormGroup.get('address1').value;
-        this.secondFormGroup.get('address2').setValue(null);
-      } else {
-        ad1 = ad1.first;
-      }*/
-
-      // const ad2 = this.secondFormGroup.get('address2').value;
 
       if ((ad1 as string).length > 2) {
         const options = {
@@ -378,10 +478,16 @@ export class SignupOffererComponent implements OnInit {
           .subscribe((data: any) => {
             data.hits.forEach((e, i) => {
               const auxCity = {
-                name: data.hits[i].locale_names.default
-                  + ', ' + (data.hits[i].city ? data.hits[i].city.default : '')
-                  + ', ' + (data.hits[i].postcode ? data.hits[i].postcode[0] : '')
-                  + ', ' + (data.hits[i].country ? data.hits[i].country.default : ''),
+                name: data.hits[i].locale_names.default[0],
+                city: {
+                  name: data.hits[i].city ? data.hits[i].city.default[0] : '',
+                  admin: data.hits[i].administrative ? data.hits[i].administrative[0] : '',
+                  country: data.hits[i].country ? data.hits[i].country.default : '',
+                  postcode: data.hits[i].postcode ? data.hits[i].postcode[0] : ''
+                },
+                admin: data.hits[i].administrative ? data.hits[i].administrative[0] : '',
+                country: data.hits[i].country ? data.hits[i].country.default : '',
+                postcode: data.hits[i].postcode ? data.hits[i].postcode[0] : '',
                 geo: data.hits[i]._geoloc ? data.hits[i]._geoloc : {}
               };
               if (data.hits[i].locale_names.default) {
