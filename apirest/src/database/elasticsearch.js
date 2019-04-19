@@ -155,96 +155,96 @@ client.indices.exists({
     }
 });
 
-client.indices.exists({
-    index: 'applications'
-}).then(function (exists) {
-    if (!exists) {
-        client.indices.create({
-            index: "applications",
-            body: {
-                mappings: {
-                    offer: {
-                        properties: {
-                            status: {type: "text", "fielddata": true},
-                            title: {type: "text", "fielddata": true},
-                            location: {type: "text", "fielddata": true},
-                            createdAt: {type: "date", "doc_values": true},
-                            dateStart: {type: "date", "doc_values": true},
-                            dateEnd: {type: "date", "doc_values": true},
-                            datePublished: {type: "date", "doc_values": true},
-                            offererName: {type: "text", "fielddata": true},
-                            offererIndex: {type: "integer", "doc_values": true},
-                            salaryAmount: {type: "integer", "doc_values": true},
-                            seniority: {type: "text", "fielddata": true},
-                            contractType: {type: "text", "fielddata": true},
-                            salaryCurrency: {type: "text", "fielddata": true},
-                            description: {type: "text"},
-                            skills: {type: "text", "fielddata": true},
-                            workLocation: {type: "text", "fielddata": true},
-                        }
-                    },
-                    offerer: {
-                        properties: {
-                            name: {type: "text", "fielddata": true},
-                            email: {type: "text"},
-                            status: {type: "integer", "doc_values": true},
-                            address: {type: "text", "fielddata": true},
-                            bio: {type: "text", "fielddata": true},
-                            index: {type: "integer", "doc_values": true},
-                            companySize: {type: "integer", "doc_values": true},
-                            workField: {type: "text", "fielddata": true},
-                            year: {type: "integer", "doc_values": true},
-                            dateVerification: {type: "date", "doc_values": true},
-                        }
-                    },
-                    applicant: {
-                        properties: {
-                            name: {type: "text", "fielddata": true},
-                            email: {type: "text"},
-                            status: {type: "integer", "doc_values": true},
-                            city: {type: "text", "fielddata": true},
-                            dateBorn: {type: "date"},
-                            rol: {type: "text", "fielddata": true},
-                            index: {type: "integer", "doc_values": true},
-                            bio: {type: "text", "fielddata": true},
-                            skills: {
-                                type: "nested",
-                                properties: {
-                                    name: {type: "text"},
-                                    level: {type: "keyword"},
-                                },
-                            },
-                            languages: {
-                                type: "nested",
-                                properties: {
-                                    language: {type: "text"},
-                                    level: {type: "keyword"},
-                                },
-                            },
-                            educations: {
-                                type: "nested",
-                                properties: {
-                                    title: {type: "text"},
-                                    institution: {type: "text"},
-                                    dateStart: {type: "date"},
-                                    dateEnd: {type: "date"},
-                                },
-                            },
-                            experiences: {
-                                type: "nested",
-                                properties: {
-                                    title: {type: "text"},
-                                    dateStart: {type: "date"},
-                                    dateEnd: {type: "date"},
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        })
-    }
-});
+// client.indices.exists({
+//     index: 'applications'
+// }).then(function (exists) {
+//     if (!exists) {
+//         client.indices.create({
+//             index: "applications",
+//             body: {
+//                 mappings: {
+//                     offer: {
+//                         properties: {
+//                             status: {type: "text", "fielddata": true},
+//                             title: {type: "text", "fielddata": true},
+//                             location: {type: "text", "fielddata": true},
+//                             createdAt: {type: "date", "doc_values": true},
+//                             dateStart: {type: "date", "doc_values": true},
+//                             dateEnd: {type: "date", "doc_values": true},
+//                             datePublished: {type: "date", "doc_values": true},
+//                             offererName: {type: "text", "fielddata": true},
+//                             offererIndex: {type: "integer", "doc_values": true},
+//                             salaryAmount: {type: "integer", "doc_values": true},
+//                             seniority: {type: "text", "fielddata": true},
+//                             contractType: {type: "text", "fielddata": true},
+//                             salaryCurrency: {type: "text", "fielddata": true},
+//                             description: {type: "text"},
+//                             skills: {type: "text", "fielddata": true},
+//                             workLocation: {type: "text", "fielddata": true},
+//                         }
+//                     },
+//                     offerer: {
+//                         properties: {
+//                             name: {type: "text", "fielddata": true},
+//                             email: {type: "text"},
+//                             status: {type: "integer", "doc_values": true},
+//                             address: {type: "text", "fielddata": true},
+//                             bio: {type: "text", "fielddata": true},
+//                             index: {type: "integer", "doc_values": true},
+//                             companySize: {type: "integer", "doc_values": true},
+//                             workField: {type: "text", "fielddata": true},
+//                             year: {type: "integer", "doc_values": true},
+//                             dateVerification: {type: "date", "doc_values": true},
+//                         }
+//                     },
+//                     applicant: {
+//                         properties: {
+//                             name: {type: "text", "fielddata": true},
+//                             email: {type: "text"},
+//                             status: {type: "integer", "doc_values": true},
+//                             city: {type: "text", "fielddata": true},
+//                             dateBorn: {type: "date"},
+//                             rol: {type: "text", "fielddata": true},
+//                             index: {type: "integer", "doc_values": true},
+//                             bio: {type: "text", "fielddata": true},
+//                             skills: {
+//                                 type: "nested",
+//                                 properties: {
+//                                     name: {type: "text"},
+//                                     level: {type: "keyword"},
+//                                 },
+//                             },
+//                             languages: {
+//                                 type: "nested",
+//                                 properties: {
+//                                     language: {type: "text"},
+//                                     level: {type: "keyword"},
+//                                 },
+//                             },
+//                             educations: {
+//                                 type: "nested",
+//                                 properties: {
+//                                     title: {type: "text"},
+//                                     institution: {type: "text"},
+//                                     dateStart: {type: "date"},
+//                                     dateEnd: {type: "date"},
+//                                 },
+//                             },
+//                             experiences: {
+//                                 type: "nested",
+//                                 properties: {
+//                                     title: {type: "text"},
+//                                     dateStart: {type: "date"},
+//                                     dateEnd: {type: "date"},
+//                                 }
+//                             }
+//                         }
+//                     }
+//                 }
+//             }
+//         })
+//     }
+// });
 
 client.cluster.health({}, function (err, resp, status) {
 //     // console.log("-- Client Health --",resp);
