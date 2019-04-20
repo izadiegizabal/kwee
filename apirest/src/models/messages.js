@@ -2,6 +2,13 @@ module.exports = (sequelize, DataTypes) => {
 
     const Message = sequelize.define('messages', {
 
+        id: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
+            allowNull: false
+        },
+
         fk_sender: {
             type: DataTypes.INTEGER,
             allowNull: false
@@ -14,18 +21,8 @@ module.exports = (sequelize, DataTypes) => {
 
         message: {
             type: DataTypes.TEXT,
-            field: 'message'
-        },
-
-        status: {
-            type: DataTypes.ENUM,
-            field: 'status',
-            values: ['active', 'pending', 'deleted'],
-            defaultValue: 'pending',
-            allowNull: false,
-            validate: {
-                notEmpty: true
-            }
+            field: 'message',
+            allowNull: false
         }
     }, {
         paranoid: true
