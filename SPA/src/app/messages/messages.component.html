@@ -17,12 +17,12 @@
             <!-- <img src="/w3images/avatar_g2.jpg" alt="Avatar" class="righImg"> -->
             <span *ngIf="message.senderId == authUser.id;else receiver">
                 <p class="right">{{ message.message }}
-                    <span class="time-left">{{ message.date }}</span>
+                    <span class="time-left">{{ message.hour }}</span>
                 </p>
             </span>
             <ng-template #receiver>
                     <p>{{ message.message }}
-                        <span class="time-right">{{ message.date }}</span>
+                        <span class="time-right">{{ message.hour }}</span>
                     </p>
             </ng-template>
             
@@ -35,5 +35,7 @@
     </ng-template>
 </div>
 <div class="container right">
-    <input type="text" placeholder="Send message...">Enviar
+    <form action="" (ngSubmit)="send(sendText.value)">
+        <input #sendText type="text" placeholder="Send message..."><button>Enviar</button>
+    </form>
 </div>

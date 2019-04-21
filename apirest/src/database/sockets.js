@@ -25,14 +25,14 @@ io.sockets.on('connection', (client) => {
     setUser(client, io);
 
     // Messages
-    message(client);
+    message(client, io);
 
     // Disconnect
     disconnect(client);
 
-    selected(client);
+    selected(client, io);
     
-    rating(client);
+    rating( client, io );
 });
 
 module.exports = io;

@@ -8,6 +8,11 @@ import {select, Store} from '@ngrx/store';
 import * as fromApp from '../store/app.reducers';
 import * as fromMessages from './store/message.reducers';
 
+import * as _moment from 'moment';
+import {Moment} from 'moment';
+
+const moment = _moment;
+
 export interface Users {
   id: number;
   name: string;
@@ -55,6 +60,7 @@ export class MessagesComponent implements OnInit {
   userSelected = false;
   userList: Users[] = [];
   differentUsers: number;
+  messageToSend: Message;
 
   authState: any;
   token;
@@ -88,6 +94,7 @@ export class MessagesComponent implements OnInit {
       });
 
     this.messageService.getMessage().subscribe(msg => {
+      console.log('Mensaje recibido');
       console.log(msg);
     });
 
@@ -116,14 +123,31 @@ export class MessagesComponent implements OnInit {
       (conver) => {
         if ( conver.messages && conver.messages.total > 0 ) {
           this.conversation = conver.messages.data;
-          console.log('message: ', conver.messages.data);
+          this.messageToSend = this.conversation[0];
+          if ( this.messageToSend.senderId !== this.authUser.id ) {
+            this.messageToSend.receiverId = this.messageToSend.senderId;
+            this.messageToSend.receiverName = this.messageToSend.senderName;
+            this.messageToSend.senderId = this.authUser.id;
+            this.messageToSend.senderName = this.authUser.name;
+          }
         }
       });
   }
 
-  send() {
-    this.messageService.sendMessage(this.text);
-    this.text = '';
+  send( msg ) {
+    const dateNow = new Date();
+    const hourNow = moment().format('HH:mm:ss');
+
+    this.messageToSend.message = msg;
+    this.messageToSend.date = this.getDate(dateNow);
+    this.messageToSend.hour = hourNow;
+
+    this.messageService.sendMessage(this.messageToSend);
+
+    const obj: any = this.messageToSend;
+
+    this.store$.dispatch( new MessageActions.TryPostMessage( obj ));
+
   }
 
   getDate(dateFrom: any) {

@@ -202,7 +202,7 @@ module.exports = (app, db) => {
 
     async function createMessage( req, res, next ) {
         const body = req.body;
-        const fk_receiver = body.fk_receiver;
+        const fk_receiver = body.receiverId;
 
         try {
             let id = tokenId.getTokenId(req.get('token'), res);
@@ -214,26 +214,6 @@ module.exports = (app, db) => {
             });
 
             if ( receiver ) {
-                // let messageInMongo = await Message.findOne({ 
-                //     $or: [
-                //         { $and: [{ 'senderId': id }, { 'receiverId': fk_receiver }] },
-                //         { $and: [{ 'receiverId': fk_receiver }, { 'senderId': id }] }
-                //     ]
-                // });
-                // if ( messageInMongo ) {
-                //     let existentsMessages = messageInMongo.messages;
-                //     existentsMessages.push({ 
-                //         message: body.message, 
-                //         date:  moment().format('YYYY/MM/DD HH:mm:ss') 
-                //     });
-                //     Message.findByIdAndUpdate( messageInMongo.id, { messages: existentsMessages }, (err, userDB) => {
-                //         if (err) throw new Error(err);
-                //         return res.json({
-                //             ok: true,
-                //             message: 'Added message to conversation'
-                //         });
-                //     });
-                // } else {
                     let toMessage = {
                         senderId: sender.id,
                         senderName: sender.name,

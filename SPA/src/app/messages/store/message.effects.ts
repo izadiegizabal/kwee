@@ -22,7 +22,7 @@ export class MessageEffects {
         const apiEndpointUrl = environment.apiUrl + 'message' ;
         const token = authState.token;
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
-        const body = JSON.stringify(payload.obj);
+        const body = JSON.stringify(payload);
 
         return this.httpClient.post(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res: {
