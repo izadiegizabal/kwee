@@ -1,39 +1,38 @@
 <div class="grid-container grid-container--fit row">
-    <div class="container grid-element div1">
-        <div class="list">
-            <img src="/w3images/bandmember.jpg" alt="Avatar">
-            <p>Carlos Aldaravi</p>
-        </div>
-        <div class="list">
-            <img src="/w3images/bandmember.jpg" alt="Avatar">
-            <p>Facebook</p>
+    <div *ngIf="areConversations;else no_messages_list" class="container grid-element div1">
+        <div *ngFor="let user of userList" class="list">
+            <button (click)="selectUser(user.id)">
+                <!-- <img src="{{user.img}}" alt="Avatar"> -->
+                <p>{{user.name}}</p>
+            </button>
         </div>
     </div>
-    <div class="container grid-element div2">
-        <div class="container">
-            <img src="/w3images/bandmember.jpg" alt="Avatar">
-            <p>Hello. How are you today?</p>
-            <span class="time-right">11:00</span>
+    <ng-template #no_messages_list>
+        <div class="list">
+            <p>No users</p>
         </div>
-
-        <div class="container darker">
-            <img src="/w3images/avatar_g2.jpg" alt="Avatar" class="righImg">
-            <p>Hey! I'm fine. Thanks for asking!</p>
-            <span class="time-left">11:01</span>
-        </div>
-
-        <div class="container">
-            <img src="/w3images/bandmember.jpg" alt="Avatar">
-            <p>Sweet! So, what do you wanna do today?</p>
-            <span class="time-right">11:02</span>
-        </div>
-
-        <div class="container darker">
-            <img src="/w3images/avatar_g2.jpg" alt="Avatar" class="rightImg">
-            <p>Nah, I dunno. Play soccer.. or learn more coding perhaps?</p>
-            <span class="time-left">11:05</span>
+    </ng-template>
+    <div *ngIf="userSelected;else no_user_selected" class="container grid-element div2">
+        <div *ngFor="let message of conversation" class="container darker">
+            <!-- <img src="/w3images/avatar_g2.jpg" alt="Avatar" class="righImg"> -->
+            <span *ngIf="message.senderId == authUser.id;else receiver">
+                <p class="right">{{ message.message }}
+                    <span class="time-left">{{ message.date }}</span>
+                </p>
+            </span>
+            <ng-template #receiver>
+                    <p>{{ message.message }}
+                        <span class="time-right">{{ message.date }}</span>
+                    </p>
+            </ng-template>
+            
         </div>
     </div>
+    <ng-template #no_user_selected>
+        <div class="container">
+            <p>Please, select first some user</p>
+        </div>
+    </ng-template>
 </div>
 <div class="container right">
     <input type="text" placeholder="Send message...">Enviar

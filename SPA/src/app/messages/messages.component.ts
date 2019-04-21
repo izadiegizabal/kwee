@@ -1,12 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {MessagesService} from '../services/messages.service';
-import {select, Store} from '@ngrx/store';
 import {first, take} from 'rxjs/operators';
-import * as fromApp from '../store/app.reducers';
 import {WebsocketService} from '../services/websocket.service';
 import { Observable, Subscription } from 'rxjs';
-import * as fromMessages from './store/message.reducers';
 import * as MessageActions from './store/message.actions';
+import {select, Store} from '@ngrx/store';
+import * as fromApp from '../store/app.reducers';
+import * as fromMessages from './store/message.reducers';
 
 export interface Users {
   id: number;
@@ -22,11 +22,20 @@ export interface Tile {
   text: string;
 }
 
-interface Message {
+export interface Message {
+  senderId: number;
   senderName: string;
+  receiverId: number;
   receiverName: string;
   message: string;
-  createdAt: Date;
+  date: string;
+  hour: string;
+  total: number;
+}
+
+export interface Users {
+  id: number;
+  name: string;
 }
 
 @Component({
@@ -39,13 +48,17 @@ export class MessagesComponent implements OnInit {
 
   public messagesState: Observable<fromMessages.State>;
 
-  messages: Message[] = [];
+  conversation: any[] = [];
   subscription: Subscription;
-  noMessages: boolean;
+  subscription2: Subscription;
+  areConversations = false;
+  userSelected = false;
+  userList: Users[] = [];
+  differentUsers: number;
 
   authState: any;
   token;
-  users: any = [];
+  authUser: any;
   name: string;
 
   text = '';
@@ -71,43 +84,51 @@ export class MessagesComponent implements OnInit {
       select((s: { user: string }) => s.user)
     ).subscribe(
       (user) => {
-        this.users.push(user);
+        this.authUser = user;
       });
-
-    console.log(this.users);
 
     this.messageService.getMessage().subscribe(msg => {
       console.log(msg);
     });
 
-    this.store$.dispatch(new MessageActions.TryGetMessages({
-      id: this.name,
-    }));
+    this.store$.dispatch(new MessageActions.TryGetMessages({}));
 
     this.messagesState = this.store$.pipe(select(state => state.messages));
 
-    this.subscription = this.messagesState.pipe(take(1)).subscribe(
+    this.subscription = this.messagesState.pipe().subscribe(
       (message) => {
-        console.log('message: ', message);
-        if ( message.messages && message.messages.data.length > 0) {
-        console.log(message.messages.data);
-          // if ((this.business && message.messages.data[0].offerer) || (this.candidate && message.messages.data[0].applicant)) {
-          //   message.messages.data.forEach(e => {
-          //       this.address = this.business && e.offerer ? e.offerer.address : '';
-          //       const inv = e.message;
-          //       this.messages.push({id: inv.id, date: this.getDate(inv.createdAt), total: inv.price, product: inv.product});
-          //   });
-          // }
-        } else {
-          this.noMessages = true;
+        if ( message.messages && message.messages.total > 0 ) {
+          this.differentUsers = message.messages.total;
+          this.userList = message.messages.data;
+          this.areConversations = true;
         }
       });
 
   }
 
+  selectUser( id ) {
+    this.userSelected = true;
+    this.store$.dispatch(new MessageActions.TryGetConversation({ id }));
+
+    this.messagesState = this.store$.pipe(select(state => state.messages));
+
+    this.subscription2 = this.messagesState.pipe().subscribe(
+      (conver) => {
+        if ( conver.messages && conver.messages.total > 0 ) {
+          this.conversation = conver.messages.data;
+          console.log('message: ', conver.messages.data);
+        }
+      });
+  }
+
   send() {
     this.messageService.sendMessage(this.text);
     this.text = '';
+  }
+
+  getDate(dateFrom: any) {
+    const date = new Date(dateFrom);
+    return date.getDate() + '/' + ( date.getMonth() + 1 ) + '/' + date.getUTCFullYear();
   }
 
 }

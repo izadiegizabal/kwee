@@ -4,6 +4,8 @@ export const TRY_POST_MESSAGE = 'TRY_POST_MESSAGE';
 export const POST_MESSAGE = 'POST_MESSAGE';
 export const TRY_GET_MESSAGES = 'TRY_GET_MESSAGES';
 export const GET_MESSAGES = 'GET_MESSAGES';
+export const TRY_GET_CONVERSATION = 'TRY_GET_CONVERSATION';
+export const GET_CONVERSATION = 'GET_CONVERSATION';
 export const OPERATION_ERROR = 'OPERATION_ERROR';
 export const CLEAR = 'CLEAR';
 
@@ -42,6 +44,20 @@ export class GetMessages implements Action {
   }
 }
 
+export class TryGetConversation implements Action {
+  readonly type = TRY_GET_CONVERSATION;
+
+  constructor(public payload: { id: number }) {
+  }
+}
+
+export class GetConversation implements Action {
+  readonly type = GET_CONVERSATION;
+
+  constructor(public payload: any) {
+  }
+}
+
 export class OperationError implements Action {
   readonly type = OPERATION_ERROR;
 
@@ -52,4 +68,5 @@ export class OperationError implements Action {
 export type MessageActions =
   TryPostMessage | PostMessage |
   OperationError | TryGetMessages |
-  GetMessages | Clear;
+  GetMessages | TryGetConversation |
+  GetConversation | Clear;

@@ -62,9 +62,9 @@
 // .right {
 //   position: relative;
 //   float: right;
-//   width: 100%;
-//   height: 400px;
-//   right: 3%;
+  // width: 100%;
+  // height: 400px;
+  // right: 3%;
 // }
 
 // /* Style time text */
@@ -81,6 +81,14 @@
 // }
 /* important stuff for this example */
 
+.right p {
+  position: relative;
+  right: 0;
+}
+.right p span {
+    position: absolute;
+    left: 0;
+}
 
 .row {
   display:flex;

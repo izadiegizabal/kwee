@@ -73,8 +73,8 @@ db.users.hasMany( db.comments, {foreignKey: 'fk_user'} );
 db.offers.belongsToMany( db.applicants, {through: 'applications', foreignKey: 'fk_offer'} );
 db.applicants.belongsToMany( db.offers, {through: 'applications', foreignKey: 'fk_applicant'} );
 
-db.users.belongsToMany( db.users, { through: 'messages', as: 'sender', foreignKey: 'fk_sender' } );
-db.users.belongsToMany( db.users, { through: 'messages', as: 'receiver', foreignKey: 'fk_receiver' } );
+db.users.belongsToMany( db.users, { through: 'messages', as: 'sender', foreignKey: 'fk_sender', unique: false } );
+db.users.belongsToMany( db.users, { through: 'messages', as: 'receiver', foreignKey: 'fk_receiver', unique: false } );
 
 db.applicants.belongsToMany( db.educations, { through: 'applicant_educations', foreignKey: 'fk_applicant' } );
 db.educations.belongsToMany( db.applicants, { through: 'applicant_educations', foreignKey: 'fk_education' } );

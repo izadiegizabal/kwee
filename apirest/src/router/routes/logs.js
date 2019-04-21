@@ -21,7 +21,7 @@ module.exports = (app, db) => {
                     });
                 }
 
-                Log.count({}, (err, count) => {
+                Log.countDocuments({}, (err, count) => {
                     res.json({
                         ok: true,
                         logs,

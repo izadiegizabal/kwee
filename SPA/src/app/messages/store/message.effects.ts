@@ -54,7 +54,6 @@ export class MessageEffects {
   getMessage = this.actions$.pipe(
     ofType(MessageActions.TRY_GET_MESSAGES),
     map((action: MessageActions.TryGetMessages) => {
-console.log('!!!!!!!!!!!!!');
 
     }),
     withLatestFrom(this.store$.pipe(select(state => state.auth))),
@@ -62,12 +61,9 @@ console.log('!!!!!!!!!!!!!');
       const apiEndpointUrl = environment.apiUrl + 'messages';
       const token = authState.token;
       const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
-console.log('askdjhfakjsdhfis');
 
       return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
         map((res: any) => {
-          console.log('res: ', res);
-
           return {
             type: MessageActions.GET_MESSAGES,
             payload: res
@@ -75,6 +71,41 @@ console.log('askdjhfakjsdhfis');
         }),
         catchError((err: HttpErrorResponse) => {
           throwError(this.handleError('getMessage', err));
+          const error = err.error.message ? err.error.message : err;
+          return [
+            {
+              type: MessageActions.OPERATION_ERROR,
+              payload: error
+            }
+          ];
+        })
+      );
+      }
+    ),
+    share()
+  );
+
+  @Effect()
+  getConversation = this.actions$.pipe(
+    ofType(MessageActions.TRY_GET_CONVERSATION),
+    map((action: MessageActions.TryGetConversation) => {
+      return action.payload;
+    }),
+    withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    switchMap(([payload, authState]) => {
+      const apiEndpointUrl = environment.apiUrl + 'messages/' + payload.id;
+      const token = authState.token;
+      const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+
+      return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
+        map((res: any) => {
+          return {
+            type: MessageActions.GET_CONVERSATION,
+            payload: res
+          };
+        }),
+        catchError((err: HttpErrorResponse) => {
+          throwError(this.handleError('getConversation', err));
           const error = err.error.message ? err.error.message : err;
           return [
             {

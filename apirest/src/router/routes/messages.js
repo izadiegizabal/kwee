@@ -1,6 +1,8 @@
 const { checkToken } = require('../../middlewares/authentication');
 const { logger, tokenId } = require('../../shared/functions');
 const { Op } = require('../../database/op');
+const Message = require('../../models/messages');
+const moment = require('moment');
 
 // ============================
 // ===== CRUD message ======
@@ -60,12 +62,19 @@ module.exports = (app, db) => {
 
     // GET all messages by token id
     app.get("/messages", async ( req, res, next ) => {
-        getAllUserMessages( req, res, next );
+        // getAllUserMessages( req, res, next );
+        getMessageFromMongo( req, res, next );
+    });
+    
+    app.get("/messages/:fk_receiver([0-9]+)", async ( req, res, next ) => {
+        // getAllUserMessages( req, res, next );
+        getMessagesBeetweenUsers( req, res, next );
     });
 
     // POST single message
     app.post("/message", checkToken, async (req, res, next) => {
-        postMessage( req, res, next );
+        // postMessage( req, res, next );
+        createMessage( req, res, next );
     });
 
     // PUT single message
@@ -189,5 +198,137 @@ module.exports = (app, db) => {
         } catch (err) {
             next({type: 'error', error: err.message});
         }
+    }
+
+    async function createMessage( req, res, next ) {
+        const body = req.body;
+        const fk_receiver = body.fk_receiver;
+
+        try {
+            let id = tokenId.getTokenId(req.get('token'), res);
+            let sender = await db.users.findOne({
+                where: { id }
+            });
+            let receiver = await db.users.findOne({
+                where: { id: fk_receiver }
+            });
+
+            if ( receiver ) {
+                // let messageInMongo = await Message.findOne({ 
+                //     $or: [
+                //         { $and: [{ 'senderId': id }, { 'receiverId': fk_receiver }] },
+                //         { $and: [{ 'receiverId': fk_receiver }, { 'senderId': id }] }
+                //     ]
+                // });
+                // if ( messageInMongo ) {
+                //     let existentsMessages = messageInMongo.messages;
+                //     existentsMessages.push({ 
+                //         message: body.message, 
+                //         date:  moment().format('YYYY/MM/DD HH:mm:ss') 
+                //     });
+                //     Message.findByIdAndUpdate( messageInMongo.id, { messages: existentsMessages }, (err, userDB) => {
+                //         if (err) throw new Error(err);
+                //         return res.json({
+                //             ok: true,
+                //             message: 'Added message to conversation'
+                //         });
+                //     });
+                // } else {
+                    let toMessage = {
+                        senderId: sender.id,
+                        senderName: sender.name,
+                        receiverId: receiver.id,
+                        receiverName: receiver.name,
+                        message: body.message, 
+                        date: moment().format('YYYY/MM/DD'),
+                        hour: moment().format('HH:mm:ss')
+                    };
+                    
+                    let message = new Message(toMessage);
+                    
+                    return await new Promise(resolve => {
+                        message.save((err, messageDB) => {
+                            if (err) {
+                                return res.status(400).json({
+                                    ok: false,
+                                    error: "Message not create"
+                                });
+                            }
+                            resolve(messageDB._id);
+                            return res.json({
+                                ok: true,
+                                message: 'Created conversation'
+                            });
+                        });
+                    });
+                // }
+            } else {
+                return res.status(200).json({
+                    ok: true,
+                    message: "This user not exists"
+                });
+            }
+        } catch (err) {
+            next({type: 'error', error: err.message});
+        }
+    }
+
+    async function getMessageFromMongo( req, res, next ) {
+        let id = tokenId.getTokenId(req.get('token'), res);
+
+        Message.find({ 
+            $or: [{ 
+                'senderId': id 
+                }, { 
+                'receiverId': id 
+                } 
+            ]}, function(err, messages) {
+                var usersNames = [];
+                var users = [];
+            
+                messages.forEach(function(message) {
+                    if ( !usersNames.includes( message.senderName ) && message.senderId != id ) {
+                        usersNames.push( message.senderName );
+                        users.push( { id: message.senderId, name: message.senderName } );
+                    }
+                    if ( !usersNames.includes( message.receiverName ) && message.receiverId != id ) {
+                        usersNames.push( message.receiverName );
+                        users.push( { id: message.receiverId, name: message.receiverName } );
+                    }
+                });
+
+
+                return res.json({
+                    ok: true,
+                    message: 'Listing messages',
+                    data: users,
+                    total: users.length
+                });
+          });
+    }
+
+    async function getMessagesBeetweenUsers( req, res, next ) {
+        const fk_receiver = req.params.fk_receiver;
+        let id = tokenId.getTokenId(req.get('token'), res);
+
+        Message.find({ 
+            $or: [
+                { $and: [{ 'senderId': id }, { 'receiverId': fk_receiver }] },
+                { $and: [{ 'receiverId': id }, { 'senderId': fk_receiver }] }
+            
+            ]}, function(err, messages) {
+                var messageMap = [];
+            
+                messages.forEach(function(message) {
+                    messageMap.push(message);
+                });
+
+                return res.json({
+                    ok: true,
+                    message: 'Listing messages',
+                    data: messageMap,
+                    total: messageMap.length
+                });
+          });
     }
 };

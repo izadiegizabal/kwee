@@ -54,7 +54,7 @@ class Logger {
 
         Log.findByIdAndUpdate(id, updates, (err, userDB) => {
             if (err) throw new Error(err);
-        })
+        });
     }
 }
 

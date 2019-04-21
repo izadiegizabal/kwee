@@ -2,10 +2,14 @@ import * as MessageActions from './message.actions';
 
 export interface State {
   messages: {
-    sender: string,
-    receiver: string,
+    senderId: number,
+    senderName: string,
+    receiverId: number,
+    receiverName: string,
     message: string,
-    createdAt: Date,
+    date: string,
+    hour: string,
+    total: number,
     data: any
   };
 }
@@ -22,6 +26,11 @@ export function messageReducer(state = initialState, action: MessageActions.Mess
         messages: action.payload
       };
     case MessageActions.GET_MESSAGES:
+      return {
+        ...state,
+        messages: action.payload
+      };
+    case MessageActions.GET_CONVERSATION:
       return {
         ...state,
         messages: action.payload
