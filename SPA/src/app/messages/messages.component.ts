@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import {MessagesService} from '../services/messages.service';
 import {first, take} from 'rxjs/operators';
 import {WebsocketService} from '../services/websocket.service';
@@ -7,25 +7,7 @@ import * as MessageActions from './store/message.actions';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../store/app.reducers';
 import * as fromMessages from './store/message.reducers';
-
-import * as _moment from 'moment';
-import {Moment} from 'moment';
-
-const moment = _moment;
-
-export interface Users {
-  id: number;
-  name: string;
-  type: string;
-  email: string;
-}
-
-export interface Tile {
-  color: string;
-  cols: number;
-  rows: number;
-  text: string;
-}
+import * as moment from 'moment';
 
 export interface Message {
   senderId: number;
@@ -52,30 +34,27 @@ export interface Users {
 export class MessagesComponent implements OnInit {
 
   public messagesState: Observable<fromMessages.State>;
+  public messagesState2: Observable<fromMessages.State>;
 
-  conversation: any[] = [];
+  bdMessages: any[] = [];
   subscription: Subscription;
   subscription2: Subscription;
-  areConversations = false;
+  areMessages = false;
   userSelected = false;
   userList: Users[] = [];
   differentUsers: number;
   messageToSend: Message;
 
   authState: any;
-  token;
   authUser: any;
   name: string;
 
   text = '';
+  element: HTMLElement;
+
   showFiller = false;
 
   public data: any = [];
-
-  tiles: Tile[] = [
-    {text: 'Users', cols: 1, rows: 2, color: 'lightblue'},
-    {text: 'Chat', cols: 3, rows: 2, color: 'lightgray'},
-  ];
 
   constructor(
     public messageService: MessagesService,
@@ -96,6 +75,11 @@ export class MessagesComponent implements OnInit {
     this.messageService.getMessage().subscribe(msg => {
       console.log('Mensaje recibido');
       console.log(msg);
+      this.bdMessages.push( msg );
+      this.element = document.getElementById('chat-messages');
+      setTimeout( () => {
+        this.element.scrollTop = this.element.scrollHeight;
+      }, 50);
     });
 
     this.store$.dispatch(new MessageActions.TryGetMessages({}));
@@ -107,52 +91,77 @@ export class MessagesComponent implements OnInit {
         if ( message.messages && message.messages.total > 0 ) {
           this.differentUsers = message.messages.total;
           this.userList = message.messages.data;
-          this.areConversations = true;
+          this.areMessages = true;
         }
+        console.log('userList: ', this.userList);
+        console.log('differentUsers: ', this.differentUsers);
+
       });
+
 
   }
 
+  // tslint:disable-next-line:use-life-cycle-interface
+  ngOnDestroy() {
+    if ( this.subscription ) {
+      this.subscription.unsubscribe();
+    }
+
+    if ( this.subscription2 ) {
+      this.subscription2.unsubscribe();
+    }
+  }
+
   selectUser( id ) {
+    this.subscription.unsubscribe();
     this.userSelected = true;
     this.store$.dispatch(new MessageActions.TryGetConversation({ id }));
 
-    this.messagesState = this.store$.pipe(select(state => state.messages));
+    this.messagesState2 = this.store$.pipe(select(state => state.messages));
 
-    this.subscription2 = this.messagesState.pipe().subscribe(
+    this.subscription2 = this.messagesState2.pipe().subscribe(
       (conver) => {
+
         if ( conver.messages && conver.messages.total > 0 ) {
-          this.conversation = conver.messages.data;
-          this.messageToSend = this.conversation[0];
+
+          this.bdMessages = conver.messages.data;
+          this.messageToSend = this.bdMessages[0];
+
           if ( this.messageToSend.senderId !== this.authUser.id ) {
             this.messageToSend.receiverId = this.messageToSend.senderId;
             this.messageToSend.receiverName = this.messageToSend.senderName;
             this.messageToSend.senderId = this.authUser.id;
             this.messageToSend.senderName = this.authUser.name;
           }
+
         }
+        console.log('userList: ', this.userList);
+        console.log('differentUsers: ', this.differentUsers);
       });
+    this.subscription2.unsubscribe();
   }
 
-  send( msg ) {
-    const dateNow = new Date();
-    const hourNow = moment().format('HH:mm:ss');
+  send( ) {
+    if ( this.text.trim().length === 0 ) {
+      return;
+    }
+    this.messageToSend.message = this.text;
+    this.messageToSend.date =  moment().format('YYYY/MM/DD');
+    this.messageToSend.hour = moment().format('HH:mm:ss');
 
-    this.messageToSend.message = msg;
-    this.messageToSend.date = this.getDate(dateNow);
-    this.messageToSend.hour = hourNow;
+    // this.bdMessages.push( this.messageToSend );
+    this.element = document.getElementById('chat-messages');
+    setTimeout( () => {
+      this.element.scrollTop = this.element.scrollHeight;
+    }, 50);
 
     this.messageService.sendMessage(this.messageToSend);
 
     const obj: any = this.messageToSend;
 
     this.store$.dispatch( new MessageActions.TryPostMessage( obj ));
+    this.text = '';
 
-  }
-
-  getDate(dateFrom: any) {
-    const date = new Date(dateFrom);
-    return date.getDate() + '/' + ( date.getMonth() + 1 ) + '/' + date.getUTCFullYear();
   }
 
 }

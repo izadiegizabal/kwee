@@ -1,5 +1,5 @@
 <div class="grid-container grid-container--fit row">
-    <div *ngIf="areConversations;else no_messages_list" class="container grid-element div1">
+    <div *ngIf="areMessages;else no_messages_list" class="container grid-element div1">
         <div *ngFor="let user of userList" class="list">
             <button (click)="selectUser(user.id)">
                 <!-- <img src="{{user.img}}" alt="Avatar"> -->
@@ -12,8 +12,8 @@
             <p>No users</p>
         </div>
     </ng-template>
-    <div *ngIf="userSelected;else no_user_selected" class="container grid-element div2">
-        <div *ngFor="let message of conversation" class="container darker">
+    <div *ngIf="userSelected;else no_user_selected" id="chat-messages" class="container grid-element div2">
+        <div *ngFor="let message of bdMessages" class="container darker">
             <!-- <img src="/w3images/avatar_g2.jpg" alt="Avatar" class="righImg"> -->
             <span *ngIf="message.senderId == authUser.id;else receiver">
                 <p class="right">{{ message.message }}
@@ -35,7 +35,7 @@
     </ng-template>
 </div>
 <div class="container right">
-    <form action="" (ngSubmit)="send(sendText.value)">
-        <input #sendText type="text" placeholder="Send message..."><button>Enviar</button>
+    <form action="" (ngSubmit)="send()">
+        <input #sendText type="text" [(ngModel)]="text" name="text" class="form-control" placeholder="Send message..." autofocus autocomplete="off"><button>Enviar</button>
     </form>
 </div>
