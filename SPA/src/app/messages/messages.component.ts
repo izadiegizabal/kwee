@@ -77,9 +77,11 @@ export class MessagesComponent implements OnInit {
       console.log(msg);
       this.bdMessages.push( msg );
       this.element = document.getElementById('chat-messages');
-      setTimeout( () => {
-        this.element.scrollTop = this.element.scrollHeight;
-      }, 50);
+      if ( this.element ) {
+        setTimeout( () => {
+          this.element.scrollTop = this.element.scrollHeight;
+        }, 50);
+      }
     });
 
     this.store$.dispatch(new MessageActions.TryGetMessages({}));
@@ -93,8 +95,8 @@ export class MessagesComponent implements OnInit {
           this.userList = message.messages.data;
           this.areMessages = true;
         }
-        console.log('userList: ', this.userList);
-        console.log('differentUsers: ', this.differentUsers);
+        // console.log('userList: ', this.userList);
+        // console.log('differentUsers: ', this.differentUsers);
 
       });
 
@@ -135,8 +137,6 @@ export class MessagesComponent implements OnInit {
           }
 
         }
-        console.log('userList: ', this.userList);
-        console.log('differentUsers: ', this.differentUsers);
       });
     this.subscription2.unsubscribe();
   }
@@ -148,14 +148,17 @@ export class MessagesComponent implements OnInit {
     this.messageToSend.message = this.text;
     this.messageToSend.date =  moment().format('YYYY/MM/DD');
     this.messageToSend.hour = moment().format('HH:mm:ss');
+    this.messageService.sendMessage(this.messageToSend);
 
-    // this.bdMessages.push( this.messageToSend );
+    console.log('dbMessages antes push: ', this.bdMessages);
+    console.log('messageToSend: ', this.messageToSend);
+    this.bdMessages.push( this.messageToSend );
+    console.log('dbMessages después push: ', this.bdMessages);
+
     this.element = document.getElementById('chat-messages');
     setTimeout( () => {
       this.element.scrollTop = this.element.scrollHeight;
     }, 50);
-
-    this.messageService.sendMessage(this.messageToSend);
 
     const obj: any = this.messageToSend;
 
