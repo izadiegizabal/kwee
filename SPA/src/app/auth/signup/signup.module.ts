@@ -15,7 +15,6 @@ import {EducationsFormsModule} from './signup-candidate/education-forms/educatio
 import {ExperienceFormsModule} from './signup-candidate/experience-forms/experience-forms.module';
 import {ImageCropperModule} from 'ngx-image-cropper';
 import {DialogImageCropComponent} from './dialog-image-crop/dialog-image-crop.component';
-import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -33,7 +32,6 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     EducationsFormsModule,
     ExperienceFormsModule,
     ImageCropperModule,
-    MatCheckboxModule,
     StoreModule.forFeature('auth', authReducer),
     EffectsModule.forFeature([AuthEffects])
   ],

@@ -14,7 +14,7 @@ import {Router} from '@angular/router';
 import {BusinessIndustries, BusinessSize} from '../../../../models/Business.model';
 import {isStringNotANumber} from '../../../../models/Offer.model';
 
-interface City {
+export interface City {
   name: string;
   geo: {
     lat: number,
@@ -22,7 +22,7 @@ interface City {
   };
 }
 
-interface Address {
+export interface Address {
   ad1: string;
   ad2: string;
 }
@@ -457,7 +457,6 @@ export class SignupOffererComponent implements OnInit {
   }
 
   searchAddress(event: any) { // without type info
-    // q=benidorm&format=json&addressdetails=1&limit=5&polygon_svg=1
     if (event.key !== 'ArrowUp' &&
       event.key !== 'ArrowRight' &&
       event.key !== 'ArrowDown' &&

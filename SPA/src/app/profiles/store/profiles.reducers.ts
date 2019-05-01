@@ -28,6 +28,7 @@ export interface State {
     companySize: number,
     createdAt: Date,
     dateVerification: Date,
+    bio: string,
     email: string,
     id: number,
     img: string,

@@ -1,0 +1,72 @@
+<div fxLayout="row" fxFlex="100%">
+  <form [formGroup]="profileFormGroup"
+        fxFlex="100%"
+        fxFlexOffset="25%"
+        fxFlexOffset.lt-lg="32px"
+        fxFlexOffset.lt-md="0"
+        style="padding-right: 32px">
+    <div *ngIf="(profilesState | async).business"
+         fxLayout="column"
+         fxLayoutGap="8px">
+
+      <div class="mat-h1" style="padding-top: 16px">My Profile</div>
+
+      <div fxLayout="column" fxFlex="100%">
+        <h2>About us</h2>
+        <mat-form-field fxFlex="100%">
+          <textarea rows="4" formControlName="about" matInput placeholder="Tell us more about you"></textarea>
+        </mat-form-field>
+      </div>
+
+      <div fxLayout.lt-md="column" fxLayout="row" fxLayoutGap="32px" fxFlex="100%">
+        <div fxLayout="column" fxFlex="50" fxFlex.lt-md="100">
+          <h2>Company Details</h2>
+          <p>Complete your profile with more information about your business.</p>
+          <mat-form-field>
+            <input formControlName="website" matInput placeholder="Website">
+            <mat-icon color="primary" matPrefix svgIcon="public"></mat-icon>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-select formControlName="companySize" placeholder="Company size">
+              <mat-option *ngFor="let companySize of companySizes" [value]="companySize.value">
+                {{companySize.viewValue}}
+              </mat-option>
+            </mat-select>
+            <mat-icon color="primary" matPrefix svgIcon="domain"></mat-icon>
+          </mat-form-field>
+          <mat-form-field>
+            <input [max]="getMaxYear()" formControlName="year" matInput placeholder="Date funded" type="number">
+            <mat-error *ngIf="!profileFormGroup.get('year').valid">
+              Please enter a valid year
+            </mat-error>
+            <mat-icon color="primary" matPrefix svgIcon="cake"></mat-icon>
+          </mat-form-field>
+        </div>
+        <div fxLayout="column" fxFlex="500" fxFlex.lt-md="100">
+          <h2>Social Media</h2>
+          <p>Type your username to add your social media accounts to your profile.</p>
+          <mat-form-field>
+            <input formControlName="twitter" matInput placeholder="Twitter username">
+            <mat-icon class="social-icons" color="primary" fontIcon="fa-twitter" fontSet="fab" matPrefix></mat-icon>
+          </mat-form-field>
+          <mat-form-field>
+            <input formControlName="github" matInput placeholder="Github username">
+            <mat-icon class="social-icons" color="primary" fontIcon="fa-github" fontSet="fab" matPrefix></mat-icon>
+          </mat-form-field>
+          <mat-form-field>
+            <input formControlName="linkedIn" matInput placeholder="LinkedIn username">
+            <mat-icon class="social-icons" color="primary" fontIcon="fa-linkedin-in" fontSet="fab" matPrefix></mat-icon>
+          </mat-form-field>
+          <mat-form-field>
+            <input formControlName="telegram" matInput placeholder="Telegram username">
+            <mat-icon class="social-icons" color="primary" fontIcon="fa-telegram" fontSet="fab" matPrefix></mat-icon>
+          </mat-form-field>
+        </div>
+      </div>
+      <br>
+      <div fxLayout="row" fxLayoutAlign="end" fxFlex="100%">
+        <button (click)="onUpdate()" color="accent" mat-raised-button type="button">Done</button>
+      </div>
+    </div>
+  </form>
+</div>

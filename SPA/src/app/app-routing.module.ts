@@ -87,6 +87,9 @@ const routes: Routes = [
   // INVOICES
   {path: 'invoices', loadChildren: './invoices/invoices.module#InvoicesModule'},
 
+  // SETTINGS
+  {path: 'settings', loadChildren: './settings/settings.module#SettingsModule'},
+
   // OTHERS
   {path: 'privacy', component: PrivacyComponent},
   {path: 'email-verified/:token', loadChildren: './email-verified/email-verified.module#EmailVerifiedModule'},

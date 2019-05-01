@@ -1,4 +1,4 @@
-<div fxLayout="row">
+<div fxLayout="row" *ngIf="(adminState | async).businesses && (adminState | async).businesses.data">
   <mat-accordion fxFlex="99%">
     <mat-expansion-panel
       (closed)="isPanelOpen = !isPanelOpen; isInEditMode = false; userForm.reset()"
