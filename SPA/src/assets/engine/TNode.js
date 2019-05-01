@@ -56,17 +56,17 @@ class TNode {
     }
 
     draw() {
-        if (this.entity && this.entity != null) {
-            this.entity.beginDraw();
-        }
-        if (this.children && this.children.length > 0) {
-            this.children.forEach((e) => {
-                e.draw();
-            });
-        }
-        if (this.entity && this.entity != null) {
-            this.entity.endDraw();
-        }
+      if (this.entity && this.entity != null) {
+          this.entity.beginDraw();
+      }
+      if (this.children && this.children.length > 0) {
+          this.children.forEach((e) => {
+              e.draw();
+          });
+      }
+      if (this.entity && this.entity != null) {
+          this.entity.endDraw();
+      }
     }
 
 }

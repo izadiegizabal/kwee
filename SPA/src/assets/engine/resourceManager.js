@@ -167,6 +167,13 @@ class TResourceMesh extends TResource{
         this.nbo;
         this.ibo;
         this.vbo;
+
+        this.color = null;
+    }
+
+
+    setColor( value ){
+        this.color = value;
     }
 
     async loadFile(file){
@@ -178,6 +185,8 @@ class TResourceMesh extends TResource{
 
       ///////////////////////////////////////////////////////////////////////////////// GET INFO FROM FILE
 
+      console.log("loaded:");
+      console.log(jsonMesh);
         this.alias = jsonMesh.alias;
 
         if( file == "earth_fbx.json" ||
@@ -191,6 +200,8 @@ class TResourceMesh extends TResource{
             this.textures = jsonMesh.meshes[0].texturecoords[0];
             this.normals = jsonMesh.meshes[0].normals;
 
+            console.log("== greentoken.de loader ==");
+
         } else if (file == "test.json") {
             this.alias = file;
 
@@ -198,6 +209,8 @@ class TResourceMesh extends TResource{
             this.triVertices = jsonMesh.model.meshes[0].indices;
             this.textures = jsonMesh.model.vertices[0].texCoord0.data;
             this.normals = jsonMesh.model.vertices[0].normal.data;
+
+            console.log("== Playcanvas loader ==");
 
         }
         else if (file == "test1.json" ||
@@ -209,22 +222,36 @@ class TResourceMesh extends TResource{
           file == "marker.json" ||
           file == "card.json" ||
           file == "mesh_continents.json" ||
-          file == "earth.json") {
+          file == "earth.json" ||
+          file == "earth_fixed.json" ||
+          file == "earthOriginal_simple.json") {
+          // Blender JSON Mesh exporter
           this.alias = file;
 
           this.vertices = jsonMesh.positions;
           this.triVertices = jsonMesh.indices;
           this.textures = jsonMesh.texcoords ? jsonMesh.texcoords.UVMap : null;
-          this.normals = jsonMesh.normals;
+          //this.normals = jsonMesh.normals;
+          this.normals = calculateNormals(this.vertices, this.triVertices); 
+          console.log("== json mesh exporter ==");
 
         }
-        else{
+        else if(jsonMesh.indices!=undefined && jsonMesh.verts != undefined){
+          this.vertices = jsonMesh.verts;
+          this.triVertices = jsonMesh.indices;
+          //this.normals = jsonMesh.normals;
+          this.normals = calculateNormals(this.vertices, this.triVertices);
 
+          console.log("== kurilo.su loader ==");
+        }
+        else{
+          // python OBJ -> json
             this.vertices = jsonMesh.vertices;
             this.triVertices = jsonMesh.indices;
             this.textures = jsonMesh.uvs;
             this.normals = jsonMesh.normals;
 
+            console.log("== python loader ==");
         }
 
         this.nTris = this.triVertices.length;
@@ -263,84 +290,105 @@ class TResourceMesh extends TResource{
     }
 
     draw(){
+
+
+
+
       // if(global.gl && global.program) {
         ///////////////////////////////////////////////////////////////////////////////////////////// ""MATERIALS"" (NOPE)
-        let uMaterialDiffuse = global.gl.getUniformLocation(global.program, 'uMaterialDiffuse');
-        let uMaterialAmbient = global.gl.getUniformLocation(global.program, 'uMaterialAmbient');
-        let uUseTextures = global.gl.getUniformLocation(global.program, 'uUseTextures');
+        // let uMaterialDiffuse = global.gl.getUniformLocation(global.program, 'uMaterialDiffuse');
+        // let uMaterialAmbient = global.gl.getUniformLocation(global.program, 'uMaterialAmbient');
+        // let uUseTextures = global.gl.getUniformLocation(global.program, 'uUseTextures');
         /// CHAPUZA CHANGE COLORS
-        if (this.name === 'sea.json') {
-          global.gl.uniform4fv(uMaterialDiffuse, [0.313, 0.678, 0.949, 1.0]);
-          global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
-          global.gl.uniform1i(uUseTextures, 0);
-        } else if (this.name === 'marker.json') {
-          global.gl.uniform4fv(uMaterialDiffuse, [1, 0.039, 0.231, 1.0]);
-          global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
-          global.gl.uniform1i(uUseTextures, 0);
-        } else if (this.name === 'card.json') {
-          global.gl.uniform4fv(uMaterialDiffuse, [0.313, 0.678, 0.949, 1.0]);
-          global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
-          global.gl.uniform1i(uUseTextures, 0);
-        } else {
-          if (this.tex && this.tex.tex) {
-            global.gl.uniform4fv(uMaterialDiffuse, [1.0, 1.0, 1.0, 1.0]);
-            global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
-            global.gl.activeTexture(global.gl.TEXTURE0);
-            global.gl.bindTexture(global.gl.TEXTURE_2D, this.tex.tex);
-            global.gl.uniform1i(global.program.sampler, 0);
-            global.gl.uniform1i(uUseTextures, 1);
-          } else {
-            global.gl.uniform4fv(uMaterialDiffuse, [0.258, 0.960, 0.6, 1.0]);
-            global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
-            global.gl.uniform1i(uUseTextures, 0);
-          }
-        }
+        // if (this.name === 'sea.json') {
+        //   global.gl.uniform4fv(uMaterialDiffuse, [0.313, 0.678, 0.949, 1.0]);
+        //   global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+        //   global.gl.uniform1i(uUseTextures, 0);
+        // } else if (this.name === 'marker.json') {
+        //   global.gl.uniform4fv(uMaterialDiffuse, [1, 0.039, 0.231, 1.0]);
+        //   global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+        //   global.gl.uniform1i(uUseTextures, 0);
+        // } else if (this.name === 'card.json') {
+        //   global.gl.uniform4fv(uMaterialDiffuse, [0.313, 0.678, 0.949, 1.0]);
+        //   global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+        //   global.gl.uniform1i(uUseTextures, 0);
+        // } else {
+        //   if (this.tex && this.tex.tex) {
+        //     global.gl.uniform4fv(uMaterialDiffuse, [1.0, 1.0, 1.0, 1.0]);
+        //     global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+        //     global.gl.activeTexture(global.gl.TEXTURE0);
+        //     global.gl.bindTexture(global.gl.TEXTURE_2D, this.tex.tex);
+        //     global.gl.uniform1i(global.program.sampler, 0);
+        //     global.gl.uniform1i(uUseTextures, 1);
+        //   } else {
+        //     global.gl.uniform4fv(uMaterialDiffuse, [0.258, 0.960, 0.6, 1.0]);
+        //     global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+        //     global.gl.uniform1i(uUseTextures, 0);
+        //   }
+        // }
         ///////////////////////////////////////////////////////////////////////////////////////////// BIND BUFFERS
-        let positionAttribLocation = global.gl.getAttribLocation(global.program, 'aVertexPosition');
-        let normalAttribLocation = global.gl.getAttribLocation(global.program, 'aVertexNormal');
-        global.gl.enableVertexAttribArray(positionAttribLocation);
-        global.gl.enableVertexAttribArray(normalAttribLocation);
+        
+        // global.gl.enableVertexAttribArray(global.programAttributes.aVertexPosition);
+        // global.gl.enableVertexAttribArray(global.programAttributes.aVertexNormal);
+      if(this.color != null){
+        // draw material with that color
+        global.gl.uniform4fv(global.programUniforms.uMaterialDiffuse, this.color);
 
+      }
 
         global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.vbo);
-        global.gl.vertexAttribPointer(positionAttribLocation, 3, global.gl.FLOAT, global.gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
-        global.gl.enableVertexAttribArray(positionAttribLocation);
+        global.gl.vertexAttribPointer(global.programAttributes.aVertexPosition, 3, global.gl.FLOAT, global.gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
+        global.gl.enableVertexAttribArray(global.programAttributes.aVertexPosition);
 
 
         global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.nbo);
-        global.gl.vertexAttribPointer(normalAttribLocation, 3, global.gl.FLOAT, global.gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
-        global.gl.enableVertexAttribArray(normalAttribLocation);
+        global.gl.vertexAttribPointer(global.programAttributes.aVertexNormal, 3, global.gl.FLOAT, global.gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
+        global.gl.enableVertexAttribArray(global.programAttributes.aVertexNormal);
 
 
-        if (this.tex && this.tex.tex) {
-          let texCoordAttribLocation = global.gl.getAttribLocation(global.program, 'aVertexTextureCoords');
-          global.gl.enableVertexAttribArray(texCoordAttribLocation);
-          global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.cbo);
-          global.gl.vertexAttribPointer(texCoordAttribLocation, 2, global.gl.FLOAT, global.gl.FALSE, 2 * Float32Array.BYTES_PER_ELEMENT, 0);
-          global.gl.enableVertexAttribArray(texCoordAttribLocation);
-        }
+        // if (this.tex && this.tex.tex) {
+        //   let texCoordAttribLocation = global.gl.getAttribLocation(global.program, 'aVertexTextureCoords');
+        //   global.gl.enableVertexAttribArray(texCoordAttribLocation);
+        //   global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.cbo);
+        //   global.gl.vertexAttribPointer(texCoordAttribLocation, 2, global.gl.FLOAT, global.gl.FALSE, 2 * Float32Array.BYTES_PER_ELEMENT, 0);
+        //   global.gl.enableVertexAttribArray(texCoordAttribLocation);
+        // }
 
 
         ///////////////////////////////////////////////////////////////////////////////// POSITION & ROTATION STUFF
-        var worldMatrix = TEntity.Model;
-        var rotation = glMatrix.mat4.create();
-        //glMatrix.mat4.rotate(rotation, worldMatrix, angle, [0, 1, 0]);
+        //var rotation = glMatrix.mat4.create();
+        // //glMatrix.mat4.rotate(rotation, worldMatrix, angle, [0, 1, 0]);
+        
+        // MVMatrix
+        var worldMatrix = global.auxMatrix;
+        global.gl.uniformMatrix4fv(global.programUniforms.uMVMatrix, false, worldMatrix);
 
+        // NMatrix
+        let normalMatrix = glMatrix.mat4.create();
+        glMatrix.mat4.set(worldMatrix, normalMatrix);
+        glMatrix.mat4.invert(normalMatrix, normalMatrix);
+        glMatrix.mat4.transpose(normalMatrix, normalMatrix);
+        global.gl.uniformMatrix4fv(global.programUniforms.uNMatrix, false, normalMatrix);
 
-        var matWorldUniformLocation = global.gl.getUniformLocation(global.program, 'uMVMatrix');
-        global.gl.uniformMatrix4fv(matWorldUniformLocation, false, worldMatrix);
+         // Projection Matrix
+        global.gl.uniformMatrix4fv(global.programUniforms.uPMatrix, false, global.projectionMatrix);
 
-        let aux = glMatrix.mat4.create();
-        /// SORRRRRY, I HAD TO
-        glMatrix.mat4.set(aux, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -2, 1);
-        let auxAux = glMatrix.mat4.create();
-        glMatrix.mat4.multiply(auxAux, rotation, aux);
+        
+        // let aux = glMatrix.mat4.create();
+        // /// SORRRRRY, I HAD TO
+        // glMatrix.mat4.set(aux, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -2, 1);
+        // let auxAux = glMatrix.mat4.create();
+        // glMatrix.mat4.multiply(auxAux, rotation, aux);
 
-        glMatrix.mat4.invert(auxAux, auxAux);
-        glMatrix.mat4.transpose(auxAux, auxAux);
+        // glMatrix.mat4.invert(auxAux, auxAux);
+        // glMatrix.mat4.transpose(auxAux, auxAux);
 
-        var normal = global.gl.getUniformLocation(global.program, 'uNMatrix');
-        global.gl.uniformMatrix4fv(normal, false, auxAux);
+        // // let NMatrix = glMatrix.mat4.create();
+        // // glMatrix.mat4.set(global.modelViewMatrix, NMatrix);
+        // // glMatrix.mat4.invert(NMatrix, NMatrix);
+        // // glMatrix.mat4.transpose(NMatrix, NMatrix);
+
+       
         ///////////////////////////////////////////////////////////////////////////////// DRAW
         global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, this.ibo);
         global.gl.drawElements(global.gl.TRIANGLES, this.nTris, global.gl.UNSIGNED_SHORT, 0);
@@ -524,6 +572,74 @@ async function loadMTL(filename){
 
     return file;
 }
+
+function calculateNormals(vs, ind){
+  var x=0; 
+  var y=1;
+  var z=2;
+  
+  var ns = [];
+  for(var i=0;i<vs.length;i++){ //for each vertex, initialize normal x, normal y, normal z
+      ns[i]=0.0;
+  }
+  
+  for(var i=0;i<ind.length;i=i+3){ //we work on triads of vertices to calculate normals so i = i+3 (i = indices index)
+      var v1 = [];
+      var v2 = [];
+      var normal = [];
+      //p1 - p0
+       v1[x] = vs[3*ind[i+1]+x] - vs[3*ind[i]+x];
+       v1[y] = vs[3*ind[i+1]+y] - vs[3*ind[i]+y];
+       v1[z] = vs[3*ind[i+1]+z] - vs[3*ind[i]+z];
+     // p0 - p1
+       v2[x] = vs[3*ind[i+2]+x] - vs[3*ind[i+1]+x];
+       v2[y] = vs[3*ind[i+2]+y] - vs[3*ind[i+1]+y];
+       v2[z] = vs[3*ind[i+2]+z] - vs[3*ind[i+1]+z];            
+      //p2 - p1
+      // v1[x] = vs[3*ind[i+2]+x] - vs[3*ind[i+1]+x];
+      // v1[y] = vs[3*ind[i+2]+y] - vs[3*ind[i+1]+y];
+      // v1[z] = vs[3*ind[i+2]+z] - vs[3*ind[i+1]+z];
+     // p0 - p1
+      // v2[x] = vs[3*ind[i]+x] - vs[3*ind[i+1]+x];
+      // v2[y] = vs[3*ind[i]+y] - vs[3*ind[i+1]+y];
+      // v2[z] = vs[3*ind[i]+z] - vs[3*ind[i+1]+z];
+      //cross product by Sarrus Rule
+      normal[x] = v1[y]*v2[z] - v1[z]*v2[y];
+      normal[y] = v1[z]*v2[x] - v1[x]*v2[z];
+      normal[z] = v1[x]*v2[y] - v1[y]*v2[x];
+      
+      // ns[3*ind[i]+x] += normal[x];
+      // ns[3*ind[i]+y] += normal[y];
+      // ns[3*ind[i]+z] += normal[z];
+       for(let j=0;j<3;j++){ //update the normals of that triangle: sum of vectors
+          ns[3*ind[i+j]+x] =  ns[3*ind[i+j]+x] + normal[x];
+           ns[3*ind[i+j]+y] =  ns[3*ind[i+j]+y] + normal[y];
+           ns[3*ind[i+j]+z] =  ns[3*ind[i+j]+z] + normal[z];
+       }
+  }
+  //normalize the result
+  for(var i=0;i<vs.length;i=i+3){ //the increment here is because each vertex occurs with an offset of 3 in the array (due to x, y, z contiguous values)
+  
+      var nn=[];
+      nn[x] = ns[i+x];
+      nn[y] = ns[i+y];
+      nn[z] = ns[i+z];
+      
+      var len = Math.sqrt((nn[x]*nn[x])+(nn[y]*nn[y])+(nn[z]*nn[z]));
+      if (len == 0) len = 0.00001;
+      
+      nn[x] = nn[x]/len;
+      nn[y] = nn[y]/len;
+      nn[z] = nn[z]/len;
+      
+      ns[i+x] = nn[x];
+      ns[i+y] = nn[y];
+      ns[i+z] = nn[z];
+  }
+  
+  return ns;
+}
+
 
 export {
     TResourceManager,

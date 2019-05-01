@@ -16,10 +16,11 @@ uniform sampler2D uSampler;
 varying vec3 vNormal;
 varying vec3 vLightRay;
 varying vec3 vEyeVec;
-varying vec4 vFinalColor;
 varying vec2 vTextureCoord;
 
-void main(void)
+varying vec4 vFinalColor;
+
+void gmain(void)
 {
     if(uOffscreen){
         gl_FragColor = uMaterialDiffuse;
@@ -62,5 +63,11 @@ void main(void)
             gl_FragColor = finalColor;
         }
     }
+
+}
+
+void main(void){
+    gl_FragColor = vFinalColor;
+    //gl_FragColor = vec4(1.0,0.0,1.0,1.0);
 
 }

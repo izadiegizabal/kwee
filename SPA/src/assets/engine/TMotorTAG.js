@@ -2,6 +2,7 @@
 import {TNode} from './TNode.js';
 import {TTransform, TCamera, TLight, TAnimation, TMesh, TArc, TFocus} from './TEntity.js';
 import {TResourceManager, TResourceMesh, TResourceMaterial, TResourceTexture, TResourceShader} from './resourceManager.js';
+import { global } from './commons.js';
 
 class TMotorTAG{
 
@@ -17,6 +18,9 @@ class TMotorTAG{
         this.positionCameras = [];
 
         this.aux = [];
+
+        this.MVMatrix = null;
+
         this.allFocuses = []
 
         this.resourceManager = resourceManager;
@@ -128,7 +132,7 @@ class TMotorTAG{
         node.father.father.father.entity.scale(units);
     }
 
-    lookAt(TNodeCam, eye, center, up) {
+    async lookAt(TNodeCam, eye, center, up) {
         let x0, x1, x2, y0, y1, y2, z0, z1, z2, len;
         let eyex = eye[0];
         let eyey = eye[1];
@@ -184,9 +188,9 @@ class TMotorTAG{
   
 
         var out = glMatrix.mat4.create();
-        out = glMatrix.mat4.set(out, x0, y0, z0, 0, x1, y1, z1, 0, x2, y2, z2, 0, -(x0 * eyex + x1 * eyey + x2 * eyez), -(y0 * eyex + y1 * eyey + y2 * eyez), -(z0 * eyex + z1 * eyey + z2 * eyez), 1);   
+        out = await glMatrix.mat4.set(out, x0, y0, z0, 0, x1, y1, z1, 0, x2, y2, z2, 0, -(x0 * eyex + x1 * eyey + x2 * eyez), -(y0 * eyex + y1 * eyey + y2 * eyez), -(z0 * eyex + z1 * eyey + z2 * eyez), 1);   
   
-        out = glMatrix.mat4.invert(out, out);
+        out = await glMatrix.mat4.invert(out, out);
   
         TNodeCam.father.entity.setTranslation([out[12], out[13], out[14]]);
         TNodeCam.father.father.entity.setRotation([out[0], out[1], out[2], out[4], out[5], out[6], out[8], out[9], out[10]]);
@@ -205,9 +209,9 @@ class TMotorTAG{
     }
 
     createFocus(father, size, position){
-      console.log("cuando creo focus");
+      
       let focus = new TFocus(size, position);
-      console.log("creo rama");
+      
       let NFocus = this.createBranch(father, focus);
 
       this.allFocuses.push(NFocus);
@@ -215,11 +219,11 @@ class TMotorTAG{
       return NFocus;
     }
 
-    updateParticles(time){
-      for(let i=0;i<this.allFocuses.length;i++){
-        this.allFocuses[i].entity.updateParticle(time);
-      }
-    }
+    // updateParticles(time){
+    //   for(let i=0;i<this.allFocuses.length;i++){
+    //     this.allFocuses[i].entity.updateParticle(time);
+    //   }
+    // }
 
     createArc(father, startLat, startLon, endLat, endLon, quality){
         let arc = new TArc(startLat, startLon, endLat, endLon, quality);
@@ -235,26 +239,41 @@ class TMotorTAG{
 
         let mesh = new TMesh(meshResource);
 
-        return this.createFullBranch(father, mesh);
+        let NMesh = this.createFullBranch(father, mesh);
+        
+        return NMesh;
     }
 
     draw(){
-      /*
-        /// ESTO ESTA MAL
-        var loop = function () {
-            // default color
-            gl.clearColor(0.435, 0.909, 0.827, 1.0)
-            gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
-            //////
-            // gl.bindTexture(gl.TEXTURE_2D, earthTexture);
-            // gl.activeTexture(gl.TEXTURE0);
+      // Clear
+      global.gl.useProgram(global.program);
+      global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
+      global.gl.enable(global.gl.DEPTH_TEST);
+      global.gl.enable(global.gl.CULL_FACE);
+      global.gl.frontFace(global.gl.CCW);
+      global.gl.cullFace(global.gl.BACK);
 
-            gl.drawElements(gl.TRIANGLES, gl.UNSIGNED_SHORT, 0);
+      // global.gl.enable(global.gl.BLEND);
+      // global.gl.blendFunc(global.gl.SRC_ALPHA, global.gl.ONE_MINUS_SRC_ALPHA);
 
-            requestAnimationFrame(loop);
-        };
-        requestAnimationFrame(loop);
-      */
+      // // -- BINDINGS --
+      // // ModelView Matrix
+      // let uMVMatrix = global.gl.getUniformLocation(global.program, 'uMVMatrix');
+      // global.gl.uniformMatrix4fv(uMVMatrix, false, global.modelViewMatrix);
+    
+      // // Normal matrix
+      // let uNMatrix = global.gl.getUniformLocation(global.program, 'uNMatrix');
+      // let normalMatrix = glMatrix.mat4.create();
+      // glMatrix.mat4.set(uMVMatrix, normalMatrix);
+      // glMatrix.mat4.invert(normalMatrix, normalMatrix);
+      // glMatrix.mat4.transpose(normalMatrix, normalMatrix);
+      // global.gl.uniformMatrix4fv(uNMatrix, false, normalMatrix);
+      
+      // // Projection Matrix
+      // let uPMatrix = global.gl.getUniformLocation(global.program, 'uPMatrix');
+      // global.gl.uniformMatrix4fv(uPMatrix, false, global.projectionMatrix);
+
+      this.scene.draw();
     }
 
     /*Métodos para el registro y manejo de las cámaras Métodos para el registro 
@@ -263,34 +282,47 @@ class TMotorTAG{
 
     // calculate all the light matices from the Lighs static array and drop them into the AuxLights array
     calculateLights() {
-        let aux = glMatrix.mat4.create();
-        
+
+        let lights = glMatrix.mat4.create();
+
         this.allLights.forEach((e) => {
             this.goToRoot(e);
             
             for (let i = this.aux.length - 1; i >= 0; i--) {
-                glMatrix.mat4.mul(aux, aux, this.aux[i])
+                glMatrix.mat4.mul(lights, lights, this.aux[i])
             }
-            this.allLights.push(aux);
+            this.allLights.push(lights);
 
             this.aux = [];
         });
     }
     
     // same as calculateLights but for the Cameras
-    calculateViews() {
-        let aux = glMatrix.mat4.create();
+    async calculateViews() {
         
+        let cameras = await glMatrix.mat4.create();
+       
         this.allCameras.forEach((e) => {
-        this.goToRoot(e);
-        for (let i = this.aux.length - 1; i >= 0; i--) {
-            glMatrix.mat4.mul(aux,  aux, this.aux[i])
-            glMatrix.mat4.invert(aux, aux);
-        }
-        this.positionCameras.push(aux);
+          this.goToRoot(e);
+          for (let i = this.aux.length - 1; i >= 0; i--) {
+              glMatrix.mat4.mul(cameras, cameras, this.aux[i])
+              glMatrix.mat4.invert(cameras, cameras);
+          }
 
-        this.aux = [];
+          this.positionCameras.push(cameras);
+          
+          // Set viewMatrix to active camera
+          // (this will be the first matrix to be multiplied to the objects position)
+          global.auxMatrix = cameras;
+
+          this.aux = [];
         });
+        
+        // Inverse of cameras matrix = MVMatrix
+        glMatrix.mat4.invert(cameras, cameras);
+
+        global.modelViewMatrix = cameras;
+
     }
     
     // go from the leaf to the root
@@ -302,8 +334,6 @@ class TMotorTAG{
             this.goToRoot(obj.father);
         }
     }
-  
-
 }
 
 // Static attributes of TMotorTag

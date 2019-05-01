@@ -60,6 +60,12 @@ export class KweeLiveComponent implements OnInit, OnDestroy {
     mainR(false, null, true);
   }
 
+  drawParticles() {
+    this.particles = !this.particles;
+    resetCanvas();
+    mainR(false, this.particles);
+  }
+
   rotate() {
     rotateMesh();
   }
@@ -68,10 +74,6 @@ export class KweeLiveComponent implements OnInit, OnDestroy {
     resetCanvas();
   }
 
-  drawParticles() {
-    this.particles = !this.particles;
-    console.log('Particles ' + this.particles);
-  }
 
   ngOnDestroy() {
     resetCanvas();

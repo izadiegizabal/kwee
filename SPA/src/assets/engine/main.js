@@ -5,7 +5,7 @@ import {TResourceManager} from './resourceManager.js';
 // TMotor
 import {TMotorTAG} from './TMotorTAG.js';
 // Commons
-import {canvas, changeAngle, global, angle} from './commons.js';
+import {canvas, changeAngle, global, angle, TEntity, loadAttribAndUniformsLocations} from './commons.js';
 
 import {getBezierPoints, convertLatLonToVec3, quatFromVectors, getEuler, degrees, convertLatLonToVec3Rotated} from './tools/utils.js'
 
@@ -22,7 +22,7 @@ async function mainInit() {
   return new Promise(async resolve => {
 
     //global.gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
-    global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
+    //global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
 
     manager = new TResourceManager();
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -99,9 +99,14 @@ async function mainInit() {
     }
 
 
+    global.gl.useProgram(global.program);
+
     console.log('== Ready to run ==');
     draw = true;
     allowActions.value = true;
+
+    loadAttribAndUniformsLocations()
+
     resolve(allowActions.value);
   });
 }
@@ -112,13 +117,15 @@ function rotateMesh() {
 
 async function resetCanvas() {
   draw = false;
-  global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
+  //global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
 }
 
 
 async function mainR(texture, particles, line) {
   rotateMeshBool = false;
   if(global.gl && global.program) {
+
+
     draw = true;
     allowActions.value = false;
     let motor = new TMotorTAG(manager);
@@ -130,6 +137,9 @@ async function mainR(texture, particles, line) {
     var quatsArray = [];
     var quatQ = 1 / 16;
     var quatBQ = 16;
+
+    global.lastFrameTime = await Date.now();
+
 
     quats = quatFromVectors(quats, convertLatLonToVec3(40.415363, -3.707398), vec3.fromValues(0,0,100));
     for (let i = 0 ; i < quatBQ ; i += quatQ){
@@ -151,13 +161,7 @@ async function mainR(texture, particles, line) {
 
     // global.gl.clearColor(0.266, 0.294, 0.329, 1.0); // our grey
     // global.gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
-    global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
-    global.gl.enable(global.gl.DEPTH_TEST);
-    global.gl.enable(global.gl.CULL_FACE);
-    global.gl.frontFace(global.gl.CCW);
-    global.gl.cullFace(global.gl.BACK);
 
-    /// @todo: CREATE global.PROGRAM OBJECT
     global.gl.useProgram(global.program);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -169,52 +173,60 @@ async function mainR(texture, particles, line) {
     // motor.translate(card, [-5, 0, 0] );
     // motor.scale(card, [0.2, 0.1, 0.2] );
     //motor.translate(card, convertLatLonToVec3(40.415363, -3.707398));
+
     let cam = motor.createCamera(scene);
     let light = motor.createLight(scene);
-    let land;
-    land = await motor.loadMesh(scene, 'earthobj.json');
-    if (texture) {
-      let tex = await manager.getResource('continents.jpg');
-      land.entity.mesh.tex = tex;
-       console.log(land);
-    } else {
-      //land.entity.mesh.tex = undefined;
-    }
+
+    //land = await motor.loadMesh(scene, 'earthobj.json');
+    let land = await motor.loadMesh(scene, 'earth_LP.json');
+    land.entity.mesh.setColor( [ 0.2, 0.9, 0.2, 1.0] );
+    motor.scale(land, [5.0, 5.0, 5.0]);
+
+    // if (texture) {
+    //   let tex = await manager.getResource('continents.jpg');
+    //   land.entity.mesh.tex = tex;
+    //    console.log(land);
+    // } else {
+    //   //land.entity.mesh.tex = undefined;
+    // }
     //motor.rotate(land, -90, 'z');
+
     let sphere = await motor.loadMesh(scene, 'sea.json');
-    //motor.rotate(sphere, -90, 'z');
-    motor.scale(sphere, [0.995, 0.995, 0.995]);
+    sphere.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 1.0] );
+    motor.scale(sphere, [5.0, 5.0, 5.0]);
+
+    //motor.scale(sphere, [4.88, 4.88, 4.88]);
+    //motor.scale(sphere, [5.05, 5.05, 5.05]);
 
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         Markers
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Madrid 40.415363, -3.707398
-    let point1 = await motor.loadMesh(land, 'marker.json');
-    motor.scale(point1, [0.01, 0.01, 0.01]);
-    motor.translate(point1, convertLatLonToVec3(10.500000, -66.916664));
-    // Caracas 10.500000, -66.916664
-    let point2 = await motor.loadMesh(land, 'marker.json');
-    motor.scale(point2, [0.01, 0.01, 0.01]);
-    motor.translate(point2, convertLatLonToVec3(40.415363, -3.707398));
-    // Roma 41.89193, 12.51133
-    let point3 = await motor.loadMesh(land, 'marker.json');
-    motor.scale(point3, [0.01, 0.01, 0.01]);
-    motor.translate(point3, convertLatLonToVec3(41.89193, 12.51133));
-    // Sydney -33.865143, 151.209900
-    let point4 = await motor.loadMesh(land, 'marker.json');
-    motor.scale(point4, [0.01, 0.01, 0.01]);
-    motor.translate(point4, convertLatLonToVec3(-33.865143, 151.209900));
-    // Wellington -41.28664, 174.77557
-    let point5 = await motor.loadMesh(land, 'marker.json');
-    motor.scale(point5, [0.01, 0.01, 0.01]);
-    motor.translate(point5, convertLatLonToVec3(-41.28664, 174.77557));
-    // Tokyo 35.6895, 139.69171
-    let point6 = await motor.loadMesh(land, 'marker.json');
-    motor.scale(point6, [0.01, 0.01, 0.01]);
-    motor.translate(point6, convertLatLonToVec3(35.6895, 139.69171));
-
-
+    // let point1 = await motor.loadMesh(land, 'marker.json');
+    // motor.scale(point1, [0.01, 0.01, 0.01]);
+    // motor.translate(point1, convertLatLonToVec3(10.500000, -66.916664));
+    // // Caracas 10.500000, -66.916664
+    // let point2 = await motor.loadMesh(land, 'marker.json');
+    // motor.scale(point2, [0.01, 0.01, 0.01]);
+    // motor.translate(point2, convertLatLonToVec3(40.415363, -3.707398));
+    // // Roma 41.89193, 12.51133
+    // let point3 = await motor.loadMesh(land, 'marker.json');
+    // motor.scale(point3, [0.01, 0.01, 0.01]);
+    // motor.translate(point3, convertLatLonToVec3(41.89193, 12.51133));
+    // // Sydney -33.865143, 151.209900
+    // let point4 = await motor.loadMesh(land, 'marker.json');
+    // motor.scale(point4, [0.01, 0.01, 0.01]);
+    // motor.translate(point4, convertLatLonToVec3(-33.865143, 151.209900));
+    // // Wellington -41.28664, 174.77557
+    // let point5 = await motor.loadMesh(land, 'marker.json');
+    // motor.scale(point5, [0.01, 0.01, 0.01]);
+    // motor.translate(point5, convertLatLonToVec3(-41.28664, 174.77557));
+    // // Tokyo 35.6895, 139.69171
+    // let point6 = await motor.loadMesh(land, 'marker.json');
+    // motor.scale(point6, [0.01, 0.01, 0.01]);
+    // motor.translate(point6, convertLatLonToVec3(35.6895, 139.69171));
+    
     ///// 0 === false ; 1 === true
     let uWireframe = global.gl.getUniformLocation(global.program, 'uWireframe');
     global.gl.uniform1i(uWireframe, 0);
@@ -228,7 +240,7 @@ async function mainR(texture, particles, line) {
     /////////////////////                                         particles
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    let TFocus = motor.createFocus(scene,100,[1,1,1]).entity;
+    let TFocus = motor.createFocus(scene, 50, convertLatLonToVec3(-33.865143, 151.209900) ).entity;
 
     let particlesTexture = await manager.getResource('spark.png');
 
@@ -240,40 +252,45 @@ async function mainR(texture, particles, line) {
 
     // console.log("scene:");
     // console.log(scene);
-
-    motor.lookAt(cam, [0, 0, 2], [0, 0, 1], [0, 1, 0]);
-
+    
+    motor.translate(cam, [0.0 , 0.0, -10]);
+    // -- not working: 
+    //motor.lookAt(cam, [0, 0, -2], [0, 0, 1], [0, 1, 0]);
+    
     motor.calculateLights();
     motor.calculateViews();
-
-    // @todo: DEAL WITH UMVMATRIX
-    let projMatrix = new Float32Array(16);
-    let viewMatrix = motor.positionCameras[0]; // viewMatrix = TEntity.AuxViews[0];
-    glMatrix.mat4.perspective(projMatrix, glMatrix.glMatrix.toRadian(45), canvas.clientWidth / canvas.clientHeight, 0.1, 1000.0);
-    let matViewUniformLocation = global.gl.getUniformLocation(global.program, 'uVMatrix');
-    let matProjUniformLocation = global.gl.getUniformLocation(global.program, 'uPMatrix');
-
-    global.gl.uniformMatrix4fv(matViewUniformLocation, false, viewMatrix);
-    global.gl.uniformMatrix4fv(matProjUniformLocation, false, projMatrix);
+    
+    //global.modelViewMatrix = await glMatrix.mat4.translate(global.modelViewMatrix,global.modelViewMatrix, [0.0 , 0.0, -25]);
 
     let off = global.gl.getUniformLocation(global.program, 'uOffscreen');
     global.gl.uniform1i(off, 0);
-    global.gl.bindFramebuffer(global.gl.FRAMEBUFFER, null);
+    //global.gl.bindFramebuffer(global.gl.FRAMEBUFFER, null);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         LIGHTNING
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    let lightPos = global.gl.getUniformLocation(global.program, 'uLightPosition');
-    let lightAmb = global.gl.getUniformLocation(global.program, 'uLightAmbient');
-    let lightDiff = global.gl.getUniformLocation(global.program, 'uLightDiffuse');
-    let alpha = global.gl.getUniformLocation(global.program, 'uAlpha');
+    // let lightPos = global.gl.getUniformLocation(global.program, 'uLightPosition');
+    // let lightAmb = global.gl.getUniformLocation(global.program, 'uLightAmbient');
+    // let lightDiff = global.gl.getUniformLocation(global.program, 'uLightDiffuse');
+    // let alpha = global.gl.getUniformLocation(global.program, 'uAlpha');
 
-    /// @todo: MOVE TO TNODE
-    global.gl.uniform3fv(lightPos, [5, 5, 5]);
-    global.gl.uniform4fv(lightAmb, [0.0, 0.0, 0.0, 1.0]);
-    global.gl.uniform4fv(lightDiff, [1.0, 1.0, 1.0, 1.0]);
-    global.gl.uniform1f(alpha, 1.0);
+    // /// @todo: MOVE TO TNODE
+    // global.gl.uniform3fv(lightPos, [5, 5, 5]);
+    // global.gl.uniform4fv(lightAmb, [0.0, 0.0, 0.0, 1.0]);
+    // global.gl.uniform4fv(lightDiff, [1.0, 1.0, 1.0, 1.0]);
+    // global.gl.uniform1f(alpha, 1.0);
 
+           // Lights
+          //  let uLightDirection = global.gl.getUniformLocation(global.program, 'uLightDirection');
+          //  let uLightAmbient = global.gl.getUniformLocation(global.program, 'uLightAmbient');
+          //  let uLightDiffuse = global.gl.getUniformLocation(global.program, 'uLightDiffuse');
+          //  let uMaterialDiffuse = global.gl.getUniformLocation(global.program, 'uMaterialDiffuse');
+           global.gl.uniform3f(global.programUniforms.uLightDirection,   10.0, 10.0, 10.0);
+           global.gl.uniform4f(global.programUniforms.uLightAmbient,     0.2,0.2,0.2,1.0);
+           global.gl.uniform4f(global.programUniforms.uLightDiffuse,     0.5,0.5,0.5,1.0);	
+           global.gl.uniform4f(global.programUniforms.uMaterialDiffuse,  0.5,0.8,0.1,1.0);
+    
+    
 
     ///////// CHAPUZA MASTER AYY LMAO
     allowActions.value = true;
@@ -316,6 +333,11 @@ async function mainR(texture, particles, line) {
       }
     }
 
+
+    // ====================
+    // drawing arcs --> to TArc:: draw()
+    // ====================
+
     // Create an empty buffer object
     var vertex_buffer = global.gl.createBuffer();
 
@@ -327,8 +349,11 @@ async function mainR(texture, particles, line) {
 
     // Unbind the buffer
     global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
-    let uMaterialDiffuse = global.gl.getUniformLocation(global.program, 'uMaterialDiffuse');
-    let uMaterialAmbient = global.gl.getUniformLocation(global.program, 'uMaterialAmbient');
+
+
+    // let uMaterialDiffuse = global.gl.getUniformLocation(global.program, 'uMaterialDiffuse');
+    // let uMaterialAmbient = global.gl.getUniformLocation(global.program, 'uMaterialAmbient');
+    
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         LOOP
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -337,21 +362,27 @@ async function mainR(texture, particles, line) {
     var num = 0;
     var rotation = -1;
     var maxLines = vertices.length/3;
+    let number = 0.3;
     var loop = async function (now, now2) {
       if (draw) {
+        // (0.435, 0.909, 0.827, 0.0); // our blue
+        // (0.266, 0.294, 0.329, 1.0); // grey??
+
         global.gl.useProgram(global.program);
-        //global.gl.clearColor(0.435, 0.909, 0.827, 1.0); // our blue
-        //global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
+        
+        global.time = await Date.now();
+      
+        ////////////////////////////////////////////////////////////////
+        
+     
 
+        ////////////////////////////////////////////////////////////////
+        if(land!=null){ motor.setRotation(land, number, 'y'); }
+        if(sphere!=null){ motor.setRotation(sphere, number, 'y'); }
 
-        //changeAngle(performance.now() / 1000 / 3 * 2 * Math.PI);
-        //changeAngle(angle * 25);
-        //motor.setRotation(land, angle, 'y');
-        //motor.setRotation(sphere, angle, 'y');
-
-
-        scene.draw();
-
+        motor.draw();
+        
+        // @todo Replace now2 and last with global.time and global.lastFrameTime
         if(rotateMeshBool) {
           if(!last2 || now2 - last >= 1*1000) {
             last2 = now2;
@@ -369,9 +400,6 @@ async function mainR(texture, particles, line) {
           motor.rotate(sphere, vec[1] * degrees, 'y');
           motor.rotate(sphere, vec[2] * degrees, 'z');
         }
-
-
-
         if(line){
           if(!last || now - last >= 0.02*1000) {
             last = now;
@@ -399,91 +427,14 @@ async function mainR(texture, particles, line) {
           global.gl.drawArrays(global.gl.LINES, 0, num);
         }
 
+        global.lastFrameTime = global.time;
 
-        //await particlesDraw();
         requestAnimationFrame(loop);
       }
+      number = number + 0.3;
     };
-    let particlesDraw = async function() {
 
-      var time = Date.now();
-
-      // Update the particle positions
-      motor.updateParticles((time - lastFrameTime) / 1000.0);
-
-      lastFrameTime = time;
-
-      // gl.viewport(0, 0, c_width, c_height);
-      // gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-      try{
-
-
-        global.gl.enable(global.gl.BLEND);
-
-        //gl.bindAttribLocation(particlesProgram, 0 , "aVertexPosition");
-        global.gl.useProgram(global.particlesProgram);
-        //gl.enableVertexAttribArray(0);
-
-
-        // //let pMatrix = new Float32Array(16);
-        // let camera = motor.positionCameras[0]; // viewMatrix = TEntity.AuxViews[0];
-        // let mvMatrix = glMatrix.mat4.create();
-        // let pMatrix = glMatrix.mat4.create();
-        // let nMatrix = glMatrix.mat4.create();
-        // let cMatrix = glMatrix.mat4.create();
-
-        // // calculate Model View
-        // let m = glMatrix.mat4.create();
-        // glMatrix.mat4.invert(camera,m)
-        // mvMatrix = m;
-
-        // // setMatrixUniforms() = calcNormal + mapUniforms
-        // //  calcNormal()
-        // glMatrix.mat4.identity(nMatrix);
-        // glMatrix.mat4.set(mvMatrix, nMatrix);
-        // glMatrix.mat4.invert(nMatrix, nMatrix);
-        // glMatrix.mat4.transpose(nMatrix, nMatrix);
-
-        //  mapUniforms()
-        let uniformMVMatrix = global.gl.getUniformLocation(global.particlesProgram, "uMVMatrix");
-        let uniformPMatrix = global.gl.getUniformLocation(global.particlesProgram, "uPMatrix");
-        global.gl.uniformMatrix4fv(uniformMVMatrix, false, viewMatrix);  //Maps the Model-View matrix to the uniform prg.uMVMatrix
-        global.gl.uniformMatrix4fv(uniformPMatrix, false, projMatrix);    //Maps the Perspective matrix to the uniform prg.uPMatrix
-
-
-
-        // uPointSize = size of each particle
-        let uniformPointSize = global.gl.getUniformLocation(global.particlesProgram, "uPointSize");
-        global.gl.uniform1f(uniformPointSize, 14.0);
-        // console.log(TFocus);
-        let attributeParticle = global.gl.getAttribLocation(global.particlesProgram, "aParticle");
-        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, TFocus.getBuffer());
-        global.gl.vertexAttribPointer(attributeParticle, 4, global.gl.FLOAT, false, 0, 0);
-        global.gl.enableVertexAttribArray(attributeParticle);
-
-        global.gl.activeTexture(global.gl.TEXTURE1);
-
-        global.gl.bindTexture(global.gl.TEXTURE_2D, particlesTexture.tex);
-        let uniformSampler = global.gl.getUniformLocation(global.particlesProgram, "uSampler");
-        global.gl.uniform1i(uniformSampler, 1);
-        global.gl.drawArrays(global.gl.POINTS, 0, TFocus.getParticles());
-        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
-
-        /////////
-        // hard try
-        /////////
-
-
-
-      }
-      catch(err){
-        //alert(err);
-        console.error(err);
-      }
-    }
-
-    requestAnimationFrame(loop);
+    loop();
 
   }
 }
