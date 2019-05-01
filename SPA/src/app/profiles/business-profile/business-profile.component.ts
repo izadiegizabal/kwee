@@ -74,6 +74,8 @@ export class BusinessProfileComponent implements OnInit, AfterViewInit {
       s => {
         if (s.user) {
           this.mine = Number(this.params.id) === s.user.id;
+        } else {
+          this.mine = false;
         }
       }
     );
@@ -86,6 +88,7 @@ export class BusinessProfileComponent implements OnInit, AfterViewInit {
         }
         this.titleService.setTitle('Kwee - ' + s.business.name);
       }
+      console.log(this.twitterAccount);
     });
   }
 

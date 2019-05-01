@@ -13,7 +13,7 @@
       fxFlex.gt-sm="80%">
       <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap.lt-sm="16px">
         <!-- Basic info -->
-        <mat-card [fxFlex]="(mine || twitterAccount !== '')? 70 : 100">
+        <mat-card [fxFlex.lt-md]="(mine || twitterAccount !== '')? 70 : 100" fxFlex="100">
           <mat-card-title>
             <app-offerer-name-overview
               [businessIndexBreakdown]="(profilesState | async).business.avg"
@@ -60,7 +60,7 @@
         <!-- Premium info -->
         <mat-card
           *ngIf="mine"
-          fxFlex="30" fxFlexOffset.gt-xs="32px">
+          fxFlex="30%" fxFlex.lt-sm="100%" fxFlexOffset.gt-xs="32px">
           <mat-card-subtitle style="text-align: center">Active account type:</mat-card-subtitle>
           <mat-card-title style="text-align: center">
             Basic

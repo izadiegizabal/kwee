@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {BusinessIndustries} from '../../../../models/Business.model';
+import {BusinessIndustries, BusinessModel} from '../../../../models/Business.model';
 
 @Component({
   selector: 'app-business-more-info',
@@ -8,7 +8,7 @@ import {BusinessIndustries} from '../../../../models/Business.model';
 })
 export class BusinessMoreInfoComponent implements OnInit {
 
-  @Input() business: any;
+  @Input() business: BusinessModel;
 
   mockBusiness = {
     name: 'Facebook',

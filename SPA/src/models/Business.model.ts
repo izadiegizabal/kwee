@@ -1,31 +1,35 @@
 export class BusinessModel {
   id: number;
-  kweeIndex: {
-    total: number,
-    salary: number,
-    environment: number,
-    partners: number,
-    services: number,
-    installations: number
+  avg: {
+    environmentAVG: number,
+    installationsAVG: number
+    partnersAVG: number,
+    salaryAVG: number,
+    satisfactionAVG: number,
+    servicesAVG: number,
   };
   name: string;
   img: string;
   cif: string;
   email: string;
-  industry: BusinessIndustries;
+  workField: BusinessIndustries;
   state: BusinessAccountStates;
   premium: BusinessAccountSubscriptions;
+  social_networks: {
+    twitter: string,
+    linkedin: string,
+    github: string,
+    telegram: string
+  };
   lastAccess: Date;
   createdAt: Date;
   address: string;
-  location: {
-    long: number,
-    lat: number
-  };
+  lon: number;
+  lat: number;
   bio: string;
   website: string;
-  size: BusinessSize;
-  foundationDate: Date;
+  companySize: BusinessSize;
+  year: number;
 
   opinions: [{
     opinionId: number,

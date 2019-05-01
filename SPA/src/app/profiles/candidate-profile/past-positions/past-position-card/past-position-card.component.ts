@@ -35,7 +35,9 @@ export class PastPositionCardComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(this.offer);
+    if (this.offer[0]) {
+      this.offer = this.offer[0];
+    }
   }
 
 }

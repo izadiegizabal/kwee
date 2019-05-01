@@ -11,10 +11,9 @@
       fxFlex="95%"
       fxFlex.gt-md="=70%"
       fxFlex.gt-sm="80%">
-      <div fxLayout="row" fxLayout.lt-sm="column"
-           fxLayoutGap.lt-sm="16px">
+      <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap.lt-sm="16px">
         <!-- Basic info -->
-        <mat-card [fxFlex]="(mine || twitterAccount !== '') ? 70 : 100" fxLayout="column" fxLayoutAlign="space-between">
+        <mat-card fxFlex="100" [fxFlex.lt-md]="(mine || twitterAccount !== '') ? 70 : 100" fxLayout="column" fxLayoutAlign="space-between">
           <mat-card-title>
             <app-offerer-name-overview
               [candidateIndexBreakdown]="(profilesState | async).candidate.avg"
@@ -43,6 +42,7 @@
           <mat-card-actions fxLayoutAlign="end end">
             <button
               *ngIf="mine"
+              routerLink="/settings"
               color="accent"
               mat-button>
               Edit
@@ -61,7 +61,7 @@
         <!-- Premium info -->
         <mat-card
           *ngIf="mine"
-          fxFlex="30" fxFlexOffset.gt-xs="32px">
+          fxFlex="30%" fxFlex.lt-sm="100%" fxFlexOffset.gt-xs="32px">
           <mat-card-subtitle style="text-align: center">Active account type:</mat-card-subtitle>
           <mat-card-title style="text-align: center">
             Basic
