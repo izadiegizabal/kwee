@@ -4,12 +4,12 @@
       <h2 class="mat-h2">Settings</h2>
       <mat-action-list>
         <button (click)="closeDrawerIfMobile()"
-                mat-list-item routerLink="/settings/account">
+                mat-list-item routerLink="/settings/business/account">
           <mat-icon color="primary" matListIcon svgIcon="people"></mat-icon>
           Modify Account
         </button>
         <button (click)="closeDrawerIfMobile()"
-                mat-list-item routerLink="/settings/profile">
+                mat-list-item routerLink="/settings/business/profile">
           <mat-icon color="primary" matListIcon svgIcon="domain"></mat-icon>
           Modify Profile
         </button>
@@ -22,7 +22,7 @@
     </mat-sidenav>
 
     <mat-sidenav-content fxFlex="100%"
-                         fxFlex.gt-md="60%"
+                         fxFlex.gt-md="80%"
                          fxLayout="column"
                          class="mat-typography">
       <button *ngIf="isMobile()" mat-icon-button>

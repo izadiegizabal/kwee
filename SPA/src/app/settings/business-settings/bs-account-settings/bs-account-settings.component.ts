@@ -13,8 +13,9 @@ import {DialogImageCropComponent} from '../../../auth/signup/dialog-image-crop/d
 import {Observable} from 'rxjs';
 import * as fromAuth from '../../../auth/store/auth.reducers';
 import * as fromProfiles from '../../../profiles/store/profiles.reducers';
-import {BusinessIndustries, BusinessSize} from '../../../../models/Business.model';
+import {BusinessIndustries} from '../../../../models/Business.model';
 import {isStringNotANumber} from '../../../../models/Offer.model';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-bs-account-settings',
@@ -52,15 +53,23 @@ export class BsAccountSettingsComponent implements OnInit {
 
   constructor(private _formBuilder: FormBuilder,
               public dialog: MatDialog,
+              private router: Router,
               private store$: Store<fromApp.AppState>,
               private httpClient: HttpClient) {
   }
 
   ngOnInit() {
+    // Get profile
     this.authState = this.store$.pipe(select(state => state.auth));
     this.authState.subscribe((state) => {
       if (state && state.user && state.user.id > 0) {
         this.token = state.token;
+
+        // If it's not a business redirect to home
+        if (state.user.type !== 'business') {
+          this.router.navigate(['/']);
+        }
+
         this.store$.dispatch(new ProfilesActions.TryGetProfileBusiness({id: state.user.id}));
       }
     });
@@ -234,7 +243,7 @@ export class BsAccountSettingsComponent implements OnInit {
             if (!this.dialogShown) {
               this.dialog.open(DialogErrorComponent, {
                 data: {
-                  header: 'We had some issue signing up',
+                  header: 'We had some issues updating your settings',
                   error: 'Please try again later',
                 }
               });
@@ -391,7 +400,7 @@ export class BsAccountSettingsComponent implements OnInit {
     this.fileEvent = event;
     /// 3MB IMAGES MAX
     if (event.target.files[0]) {
-      if (event.target.files[0].companySize < 3000000) {
+      if (event.target.files[0].size < 3000000) {
         // @ts-ignore
         const preview = (document.getElementById('photo_profile') as HTMLInputElement);
         const file = (document.getElementById('file_profile') as HTMLInputElement).files[0];

@@ -74,14 +74,6 @@ export class SignupCandidateComponent implements OnInit {
     return <FormArray>this.thirdFormGroup.get('languages');
   }
 
-  get formExperience() {
-    return <FormArray>this.thirdFormGroup.get('experience');
-  }
-
-  get formEducation() {
-    return <FormArray>this.thirdFormGroup.get('education');
-  }
-
   static minDate(control: FormControl): { [s: string]: { [s: string]: boolean } } {
     const today = new Date();
     const mdate = new Date(today.getFullYear() - 16, today.getMonth(), today.getDay());
@@ -514,20 +506,20 @@ export class SignupCandidateComponent implements OnInit {
     window.location.href = 'http://h203.eps.ua.es/api/auth/github';
   }
 
-  //
-  // linkedInSignUp(stepper: MatStepper) {
-  //   console.log('linkedIn Sign Up');
-  //   this.store$.dispatch(new AuthActions.TrySignupLinkedIn());
-  //   window.location.href = environment.apiUrl + 'auth/linkedin';
-  //   // stepper.next();
-  // }
-  //
-  // twitterSignUp(stepper: MatStepper) {
-  //   console.log('twitter Sign Up');
-  //   window.location.href = environment.apiUrl + 'auth/twitter';
-  //   // stepper.next();
-  //
-  // }
+
+  linkedInSignUp(stepper: MatStepper) {
+    console.log('linkedIn Sign Up');
+    this.store$.dispatch(new AuthActions.TrySignupLinkedIn());
+    window.location.href = environment.apiUrl + 'auth/linkedin';
+    // stepper.next();
+  }
+
+  twitterSignUp(stepper: MatStepper) {
+    console.log('twitter Sign Up');
+    window.location.href = environment.apiUrl + 'auth/twitter';
+    // stepper.next();
+
+  }
 
   deletePhoto() {
     (document.getElementById('photo_profile') as HTMLInputElement).src = '../../../../assets/img/defaultProfileImg.png';
@@ -540,7 +532,7 @@ export class SignupCandidateComponent implements OnInit {
     this.fileEvent = event;
     /// 3MB IMAGES MAX
     if (event.target.files[0]) {
-      if (event.target.files[0].companySize < 300000) {
+      if (event.target.files[0].size < 300000) {
         // @ts-ignore
         const preview = (document.getElementById('photo_profile') as HTMLInputElement);
         const file = (document.getElementById('file_profile') as HTMLInputElement).files[0];
