@@ -49,8 +49,6 @@ export class AuthEffects {
                 break;
             }
 
-            this.router.navigate(['/']);
-
             return [
               {
                 type: AuthActions.SIGNIN
