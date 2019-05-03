@@ -144,12 +144,14 @@
                   <mat-checkbox #toggle [checked]="true" style="display: none"></mat-checkbox>
                   <mat-expansion-panel [(expanded)]="toggle.checked">
                     <mat-expansion-panel-header>
-                      <mat-panel-title>
+                      <mat-panel-title *ngIf="language">
                         <span *ngIf="language.value; else l">{{language.value}}</span>
                         <ng-template #l><span>Language</span></ng-template>
                       </mat-panel-title>
                       <mat-panel-description fxHide fxShow.gt-xs>
-                        <span *ngIf="proficiency.value>=0; else p">{{getProf(proficiency.value)}}</span>
+                        <span *ngIf="thirdFormGroup.get('languages').controls[j].controls.level; else p">
+                          {{getProf(thirdFormGroup.get('languages').controls[j].controls.level.value)}}
+                        </span>
                         <ng-template #p><span>Proficiency</span></ng-template>
                       </mat-panel-description>
                     </mat-expansion-panel-header>
@@ -172,9 +174,9 @@
                       </div>
                       <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
                         <mat-form-field>
-                          <mat-select #proficiency formControlName="proficiency" placeholder="Proficiency" required>
-                            <mat-option *ngFor="let proficiency of proficiencies" [value]="proficiency.value">
-                              {{proficiency.viewValue}}
+                          <mat-select #level formControlName="level" placeholder="Proficiency" required>
+                            <mat-option *ngFor="let level of proficiencies" [value]="level.value">
+                              {{level.viewValue}}
                             </mat-option>
                           </mat-select>
                           <mat-error
@@ -205,7 +207,7 @@
               </div>
             </div>
             <div class="divBtn" fxLayout="column" fxLayoutAlign="end">
-              <button (click)="addLanguage()" mat-button type="button">
+              <button (click)="addLanguage();" mat-button type="button">
                 Add
               </button>
             </div>

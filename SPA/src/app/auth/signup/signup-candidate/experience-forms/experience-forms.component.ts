@@ -83,7 +83,7 @@ export class ExperienceFormsComponent implements OnInit {
   addExperienceGroup(): FormGroup {
     return this._formBuilder.group({
       'title': new FormControl(null, Validators.required),
-      'company': new FormControl(null),
+      // 'company': new FormControl(null),
       'start': new FormControl(null, [ExperienceFormsComponent.maxMinDate, ExperienceFormsComponent.maxDate]),
       'end': new FormControl(null, [ExperienceFormsComponent.maxMinDate, ExperienceFormsComponent.maxDate]),
       'description': new FormControl(null)
@@ -102,7 +102,7 @@ export class ExperienceFormsComponent implements OnInit {
   addExperience() {
     (<FormArray>this.experiences.controls['experience']).push(this.addExperienceGroup());
     this.iskilex++;
-    console.log(this.formExperience.value);
+    // console.log(this.formExperience.value);
   }
 
   deleteExperience(i) {
@@ -114,7 +114,7 @@ export class ExperienceFormsComponent implements OnInit {
     if (e.checked) {
       document.getElementById(`toExp${s}`).setAttribute('disabled', 'true');
       (<FormGroup>(<FormArray>this.experiences.get('experience')).controls[s]).controls.end.setValue(null);
-      console.log((<FormGroup>(<FormArray>this.experiences.get('experience')).controls[s]).controls.start);
+      // console.log((<FormGroup>(<FormArray>this.experiences.get('experience')).controls[s]).controls.start);
 
     } else {
       document.getElementById(`toExp${s}`).removeAttribute('disabled');

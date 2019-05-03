@@ -62,7 +62,7 @@ export class BsAccountSettingsComponent implements OnInit {
     // Get profile
     this.authState = this.store$.pipe(select(state => state.auth));
     this.authState.subscribe((state) => {
-      if (state && state.user && state.user.id > 0) {
+      if (state && state.user && state.user.id > 0 && !this.token) {
         this.token = state.token;
 
         // If it's not a business redirect to home

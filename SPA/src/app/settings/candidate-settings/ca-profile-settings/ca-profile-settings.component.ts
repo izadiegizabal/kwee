@@ -17,6 +17,10 @@ import {LanguageLevels} from '../../../../models/Candidate.model';
 import {isStringNotANumber} from '../../../../models/Offer.model';
 import {OkDialogComponent} from '../../../shared/ok-dialog/ok-dialog.component';
 
+import * as _moment from 'moment';
+
+const moment = _moment;
+
 @Component({
   selector: 'app-ca-profile-settings',
   templateUrl: './ca-profile-settings.component.html',
@@ -60,7 +64,7 @@ export class CaProfileSettingsComponent implements OnInit {
     // Get profile
     this.authState = this.store$.pipe(select(state => state.auth));
     this.authState.subscribe((state) => {
-      if (state && state.user && state.user.id > 0) {
+      if (state && state.user && state.user.id > 0 && !this.token) {
         this.token = state.token;
 
         // If it's not a candidate redirect to home
@@ -91,34 +95,16 @@ export class CaProfileSettingsComponent implements OnInit {
     this.profilesState.subscribe((state) => {
         if (state.candidate) {
           // console.log(state.candidate);
+
           this.thirdFormGroup.controls['bio'].setValue(state.candidate.bio);
           // this.thirdFormGroup.controls['companySize'].setValue(state.business.companySize);
           // this.thirdFormGroup.controls['year'].setValue(state.business.year);
           // this.thirdFormGroup.controls['website'].setValue(state.business.website);
 
-          if (state.candidate.social_networks.twitter) {
-            this.thirdFormGroup.controls['twitter'].setValue(state.candidate.social_networks.twitter);
-          } else {
-            this.thirdFormGroup.controls['twitter'].setValue('');
-          }
+          this.prefillSNS(state.candidate);
+          this.prefillLanguages(state.candidate.languages);
 
-          if (state.candidate.social_networks.linkedin) {
-            this.thirdFormGroup.controls['linkedIn'].setValue(state.candidate.social_networks.linkedin);
-          } else {
-            this.thirdFormGroup.controls['linkedIn'].setValue('');
-          }
-
-          if (state.candidate.social_networks.github) {
-            this.thirdFormGroup.controls['github'].setValue(state.candidate.social_networks.github);
-          } else {
-            this.thirdFormGroup.controls['github'].setValue('');
-          }
-
-          if (state.candidate.social_networks.telegram) {
-            this.thirdFormGroup.controls['telegram'].setValue(state.candidate.social_networks.telegram);
-          } else {
-            this.thirdFormGroup.controls['telegram'].setValue('');
-          }
+          // console.log(this.thirdFormGroup.value);
         }
       }
     );
@@ -164,13 +150,9 @@ export class CaProfileSettingsComponent implements OnInit {
   }
 
   onSaveOptional() {
-    console.log(this.thirdFormGroup);
-    const auxSkills = (this.thirdFormGroup.controls['skills'].value as Array<string>).filter(e => {
-      return (e !== null);
-    }).join(',');
+    // console.log(this.thirdFormGroup);
 
     const update = {
-      'img': this.file,
       'bio': this.thirdFormGroup.controls['bio'].value,
       'social_networks': {
         'twitter': this.thirdFormGroup.controls['twitter'].value,
@@ -178,21 +160,73 @@ export class CaProfileSettingsComponent implements OnInit {
         'github': this.thirdFormGroup.controls['github'].value,
         'telegram': this.thirdFormGroup.controls['telegram'].value,
       },
-      'skills': auxSkills
-      // 'languages': this._formBuilder.array([]),
-      // 'experience': this._formBuilder.array([]),
-      // 'education': this._formBuilder.array([])
+      'languages': this.thirdFormGroup.controls['languages'].value,
+      'experiences': this.getFormattedExperiences(),
+      'educations': this.getFormattedEducations(),
+      'skills': this.getFormattedSkills()
     };
+    if (this.file) {
+      update['img'] = this.file;
+    }
 
-    // Submit the update
-    // PUT modified candidate
+    console.log(update);
+
+    this.submitUpdate(update);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Helper methods ////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
+  // Prefill form with stored data
+  private prefillSNS(candidate: any) {
+    if (candidate.social_networks.twitter) {
+      this.thirdFormGroup.controls['twitter'].setValue(candidate.social_networks.twitter);
+    } else {
+      this.thirdFormGroup.controls['twitter'].setValue('');
+    }
+
+    if (candidate.social_networks.linkedin) {
+      this.thirdFormGroup.controls['linkedIn'].setValue(candidate.social_networks.linkedin);
+    } else {
+      this.thirdFormGroup.controls['linkedIn'].setValue('');
+    }
+
+    if (candidate.social_networks.github) {
+      this.thirdFormGroup.controls['github'].setValue(candidate.social_networks.github);
+    } else {
+      this.thirdFormGroup.controls['github'].setValue('');
+    }
+
+    if (candidate.social_networks.telegram) {
+      this.thirdFormGroup.controls['telegram'].setValue(candidate.social_networks.telegram);
+    } else {
+      this.thirdFormGroup.controls['telegram'].setValue('');
+    }
+  }
+
+  private prefillLanguages(languages: { language: string, applicant_languages: { level: string } }[]) {
+    if ((<FormArray>this.thirdFormGroup.controls['languages'].value).length === 0) {
+      for (const language of languages) {
+        (<FormArray>this.thirdFormGroup.controls['languages']).push(
+          this._formBuilder.group({
+            'language': new FormControl(language.language, Validators.required),
+            'level': new FormControl(language.applicant_languages.level, Validators.required)
+          }));
+        this.iskillang++;
+      }
+      console.log(this.thirdFormGroup.controls['languages'].value);
+    }
+  }
+
+  // Submit modified candidate
+  submitUpdate(update: any) {
     const options = {
       headers: new HttpHeaders().append('token', this.token)
         .append('Content-Type', 'application/json')
     };
-    this.httpClient.put(environment.apiUrl + 'applicant', update, options)
+    this.httpClient.post(environment.apiUrl + 'applicant/info', update, options)
       .subscribe((data: any) => {
-        // console.log(data);
         if (!this.dialogShown) {
           this.dialog.open(OkDialogComponent, {
             data: {
@@ -215,9 +249,68 @@ export class CaProfileSettingsComponent implements OnInit {
       });
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  // Helper methods ////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////
+  // Format data for the API
+  getFormattedSkills(): any[] {
+    const skills = [];
+    for (const skill of this.thirdFormGroup.controls['skills'].value) {
+
+      if (skill) {
+        const newSkill = {
+          name: skill as string,
+          description: '',
+          level: '',
+        };
+
+        skills.push(newSkill);
+      }
+    }
+    return skills;
+  }
+
+  getFormattedExperiences(): any[] {
+    const experiences = [];
+    for (const experience of this.thirdFormGroup.controls['experience'].value) {
+
+      // Go from Moment object to the desired data format
+      if (experience.end) {
+        experience.end = moment(experience.end).format('YYYY-MM-DD');
+      } else {
+        experience.end = moment().format('YYYY-MM-DD');
+      }
+      experience.start = moment(experience.start).format('YYYY-MM-DD');
+
+      // Rename the keys
+      Object.defineProperty(experience, 'dateEnd', Object.getOwnPropertyDescriptor(experience, 'end'));
+      delete experience['end'];
+      Object.defineProperty(experience, 'dateStart', Object.getOwnPropertyDescriptor(experience, 'start'));
+      delete experience['start'];
+
+      experiences.push(experience);
+    }
+    return experiences;
+  }
+
+  getFormattedEducations(): any[] {
+    const educations = [];
+    for (const education of this.thirdFormGroup.controls['education'].value) {
+      // Go from Moment object to the desired data format
+      if (education.end) {
+        education.end = moment(education.end).format('YYYY-MM-DD');
+      } else {
+        education.end = moment().format('YYYY-MM-DD');
+      }
+      education.start = moment(education.start).format('YYYY-MM-DD');
+
+      // Rename the keys
+      Object.defineProperty(education, 'dateEnd', Object.getOwnPropertyDescriptor(education, 'end'));
+      delete education['end'];
+      Object.defineProperty(education, 'dateStart', Object.getOwnPropertyDescriptor(education, 'start'));
+      delete education['start'];
+
+      educations.push(education);
+    }
+    return educations;
+  }
 
   ///////////////////////////////
   // Form
@@ -268,8 +361,12 @@ export class CaProfileSettingsComponent implements OnInit {
     this.iskillang--;
   }
 
-  getProf(n: number) {
-    return this.proficiencies[n].viewValue;
+  getProf(n: string) {
+    for (const proficiency of this.proficiencies) {
+      if (proficiency.value === n) {
+        return proficiency.viewValue;
+      }
+    }
   }
 
   onDoneLang(index: number) {

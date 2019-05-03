@@ -51,7 +51,7 @@ export class BsProfileSettingsComponent implements OnInit {
   ngOnInit() {
     this.authState = this.store$.pipe(select(state => state.auth));
     this.authState.subscribe((state) => {
-      if (state && state.user && state.user.id > 0) {
+      if (state && state.user && state.user.id > 0 && !this.token) {
         this.token = state.token;
         this.store$.dispatch(new ProfilesActions.TryGetProfileBusiness({id: state.user.id}));
       }

@@ -8,6 +8,7 @@ export interface State {
     name: string,
     email: string,
     city: string,
+    rol: number,
     dateBorn: Date,
     premium: number,
     status: number,
@@ -17,7 +18,7 @@ export interface State {
     social_networks: any,
     skills: string[],
     educations: string[],
-    languages: string[],
+    languages: any[],
     experiences: string[],
     applications: string[]
   };

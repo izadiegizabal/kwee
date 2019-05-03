@@ -16,7 +16,7 @@
           <mat-panel-description style="margin-top: 20px">
             <!--{{experience.company +-->
             <!--" - " +-->
-            {{(experience.dateStart | date:'y') + "/" + (experience.dateEnd | date:'y')}}
+            {{(experience.dateStart | date:'y') + " / " + (experience.dateEnd | date:'y')}}
           </mat-panel-description>
         </mat-expansion-panel-header>
 
@@ -29,8 +29,8 @@
     <ng-template #infoNA><p>{{infoNAMess}}</p></ng-template>
 
 
-    <h2>Education</h2>
-    <mat-accordion *ngIf="candidate.educations.length > 0; else infoNA2" style="margin-bottom: 16px">
+    <h2 style="margin-bottom: 0">Education</h2>
+    <mat-accordion *ngIf="candidate.educations.length > 0; else infoNA2" style="margin: 16px 0">
       <mat-expansion-panel *ngFor="let education of candidate.educations">
         <mat-expansion-panel-header>
           <mat-panel-title>
@@ -62,7 +62,7 @@
         style="margin-left: -20px">
         <mat-list-item>
           <mat-icon color="primary">chevron_right</mat-icon>
-          {{' ' + language.language + ' - ' + language.applicant_languages.level}}</mat-list-item>
+          {{' ' + language.language + ' - ' + getProf(language.applicant_languages.level)}}</mat-list-item>
       </div>
     </mat-list>
     <ng-template #infoNA3><p>{{infoNAMess}}</p></ng-template>

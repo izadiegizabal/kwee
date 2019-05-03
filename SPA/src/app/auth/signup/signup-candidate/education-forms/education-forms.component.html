@@ -61,7 +61,7 @@
                    fxLayoutGap="16px"
                    fxLayoutGap.xs="0px">
                 <mat-form-field fxFlex="30%">
-                  <input #istart [matDatepicker]="start" formControlName="dateStart" matInput placeholder="Start">
+                  <input #istart [matDatepicker]="start" formControlName="start" matInput placeholder="Start">
                   <mat-datepicker-toggle [for]="start" matPrefix></mat-datepicker-toggle>
                   <mat-datepicker #start
 
@@ -78,12 +78,12 @@
                     Please enter a valid date
                   </mat-error>
                   <mat-error #dsds
-                             *ngIf="educations.get('education').controls[s].controls.dateStart.hasError('tooOld')"
+                             *ngIf="educations.get('education').controls[s].controls.start.hasError('tooOld')"
                   >
                     Your date is too old
                   </mat-error>
                   <mat-error
-                    *ngIf="educations.get('education').controls[s].controls.dateStart.hasError('matDatepickerParse')"
+                    *ngIf="educations.get('education').controls[s].controls.start.hasError('matDatepickerParse')"
                   >
                     Please enter a valid date
                   </mat-error>
@@ -94,7 +94,7 @@
                 <p> To: </p>
                 <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
                   <mat-form-field fxFlex="50%" fxFlex.xs="70%">
-                    <input #iend [matDatepicker]="end" formControlName="dateEnd" id="{{'toExp'+s}}" matInput
+                    <input #iend [matDatepicker]="end" formControlName="end" id="{{'toExp'+s}}" matInput
                            placeholder="End">
                     <mat-datepicker-toggle [for]="end" matPrefix></mat-datepicker-toggle>
                     <mat-datepicker #end
@@ -111,12 +111,12 @@
                       Please enter a valid date
                     </mat-error>
                     <mat-error
-                      *ngIf="educations.get('education').controls[s].controls.dateEnd.hasError('tooOld') && educations.get('education').controls[s].controls.end.touched && !current.checked"
+                      *ngIf="educations.get('education').controls[s].controls.end.hasError('tooOld') && educations.get('education').controls[s].controls.end.touched && !current.checked"
                     >
                       Your date is too old
                     </mat-error>
                     <mat-error
-                      *ngIf="educations.get('education').controls[s].controls.dateEnd.hasError('matDatepickerParse')"
+                      *ngIf="educations.get('education').controls[s].controls.end.hasError('matDatepickerParse')"
                     >
                       Please enter a valid date
                     </mat-error>
