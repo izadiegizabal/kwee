@@ -45,10 +45,11 @@ export class SigninComponent implements OnInit {
     });
 
     this.authState = this.store$.pipe(select('auth'));
-  }
-
-  signIn() {
-    this.store$.dispatch(new AuthActions.TrySignin(this.user.value));
+    this.authEffects$.authSignin.pipe(
+      filter((action: Action) => action.type === AuthActions.SET_USER)
+    ).subscribe((error: { payload: any, type: string }) => {
+      this.router.navigate(['/']);
+    });
     this.authEffects$.authSignin.pipe(
       filter((action: Action) => action.type === AuthActions.AUTH_ERROR)
     ).subscribe((error: { payload: any, type: string }) => {
@@ -56,6 +57,27 @@ export class SigninComponent implements OnInit {
       this.user.controls['email'].setErrors({'incorrect': true});
       this.user.controls['password'].setErrors({'incorrect': true});
     });
+    this.authEffects$.authSignin.pipe(
+      filter((action: Action) => action.type === AuthActions.SET_USER)
+    ).subscribe((res: {
+        payload: {
+          root: boolean,
+          email: string
+        },
+        type: string
+      }) => {
+        this.wsService.connectedUser( res.payload.email );
+        if (res.payload.root) {
+          this.router.navigate(['/admin']);
+        } else {
+          this.router.navigate(['/']);
+        }
+      }
+    );
+  }
+
+  signIn() {
+    this.store$.dispatch(new AuthActions.TrySignin(this.user.value));
   }
 
   openResetModal() {

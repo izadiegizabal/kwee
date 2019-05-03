@@ -14,7 +14,7 @@ import {Router} from '@angular/router';
 import {BusinessIndustries, BusinessSize} from '../../../../models/Business.model';
 import {isStringNotANumber} from '../../../../models/Offer.model';
 
-interface City {
+export interface City {
   name: string;
   geo: {
     lat: number,
@@ -22,7 +22,7 @@ interface City {
   };
 }
 
-interface Address {
+export interface Address {
   ad1: string;
   ad2: string;
 }
@@ -457,7 +457,6 @@ export class SignupOffererComponent implements OnInit {
   }
 
   searchAddress(event: any) { // without type info
-    // q=benidorm&format=json&addressdetails=1&limit=5&polygon_svg=1
     if (event.key !== 'ArrowUp' &&
       event.key !== 'ArrowRight' &&
       event.key !== 'ArrowDown' &&
@@ -519,7 +518,7 @@ export class SignupOffererComponent implements OnInit {
     this.fileEvent = event;
     /// 3MB IMAGES MAX
     if (event.target.files[0]) {
-      if (event.target.files[0].size < 3000000) {
+      if (event.target.files[0].companySize < 3000000) {
         // @ts-ignore
         const preview = (document.getElementById('photo_profile') as HTMLInputElement);
         const file = (document.getElementById('file_profile') as HTMLInputElement).files[0];

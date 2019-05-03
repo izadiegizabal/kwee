@@ -22,7 +22,7 @@ module.exports = (app, db) => {
     //     let page = Number(req.params.page);
 
     //     try {
-    //         let id = tokenId.getTokenId(req.get('token'));
+    //         let id = tokenId.getTokenId(req.get('token'), res);
     //         await logger.saveLog('GET', `notifications/${page}`, null, res);
 
     //         let count = await db.notifications.findAndCountAll({where: {to: id}});
@@ -60,7 +60,7 @@ module.exports = (app, db) => {
     //     const idNotification = req.params.id;
 
     //     try {
-    //         let id = tokenId.getTokenId(req.get('token'));
+    //         let id = tokenId.getTokenId(req.get('token'), res);
     //         let notification = await db.notifications.findOne({where: {id: idNotification}});
     //         if (notification) {
     //             if (notification.to === id) {
@@ -85,7 +85,7 @@ module.exports = (app, db) => {
     //     const idNotification = req.params.id;
 
     //     try {
-    //         let id = tokenId.getTokenId(req.get('token'));
+    //         let id = tokenId.getTokenId(req.get('token'), res);
     //         let notification = db.notifications.findOne({where: {id: idNotification}});
     //         if (notification) {
     //             if (notification.to === id) {
@@ -106,7 +106,7 @@ module.exports = (app, db) => {
     // });
     async function getNotificationsOfTokenUser( req, res, next ) {
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
             await logger.saveLog('GET', 'notifications', null, res);
 
             let notificationsToShow = [];
@@ -183,7 +183,7 @@ module.exports = (app, db) => {
         const idNotification = req.params.id;
 
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
             let notification = await db.notifications.findOne({where: {id: idNotification}});
             if (notification) {
                 if (notification.to === id) {

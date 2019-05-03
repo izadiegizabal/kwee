@@ -110,7 +110,7 @@ export class ProfilesEffects {
           map((res) => {
             return {
               type: UserActions.USER_UPDATE_CANDIDATE,
-              payload: { updatedCandidate: payload.updatedCandidate}
+              payload: {updatedCandidate: payload.updatedCandidate}
             };
           }),
           catchError((err: HttpErrorResponse) => {
@@ -146,7 +146,7 @@ export class ProfilesEffects {
           map(() => {
             return {
               type: UserActions.USER_UPDATE_BUSINESS,
-              payload: { updatedBusiness: payload.updatedBusiness}
+              payload: {updatedBusiness: payload.updatedBusiness}
             };
           }),
           catchError((err: HttpErrorResponse) => {
@@ -186,7 +186,7 @@ export class ProfilesEffects {
             data: any[],
             total: number,
           }) => {
-             console.log(res);
+            console.log(res);
             return {
               type: UserActions.SET_OPINIONS_USER,
               payload: res,
@@ -197,7 +197,7 @@ export class ProfilesEffects {
             return [
               {
                 type: UserActions.OPERATION_ERROR,
-                payload: err.error.error
+                payload: err
               }
             ];
           })
@@ -206,7 +206,6 @@ export class ProfilesEffects {
     ),
     share()
   );
-
 
 
   constructor(private actions$: Actions, private store$: Store<fromApp.AppState>, private router: Router, private httpClient: HttpClient) {

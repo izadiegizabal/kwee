@@ -46,11 +46,8 @@ module.exports = (app, db) => {
                         [
                             "name",
                             "email",
-                            // "status",
                             "city",
-                            // "dateBorn",
                             "rol",
-                            // "index",
                             "bio",
                             "skills",
                             "languages",
@@ -522,7 +519,7 @@ module.exports = (app, db) => {
         const body = req.body;
 
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
             let applicant = await db.applicants.findOne({
                 where: {userId: id}
             });
@@ -592,7 +589,9 @@ module.exports = (app, db) => {
                 return next({type: 'error', error: 'You are not applicant'});
             }
         } catch (err) {
-            deleteFile('uploads/applicants/' + user.img);
+            if ( user.img ) {
+                deleteFile('uploads/applicants/' + user.img);
+            }
             return next({type: 'error', error: err.message});
         }
 
@@ -602,7 +601,7 @@ module.exports = (app, db) => {
     app.put('/applicant', async (req, res, next) => {
         try {
             let logId = await logger.saveLog('PUT', 'applicant', null, res);
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
             let user = await db.users.findOne({
                 where: {id}
             });
@@ -629,7 +628,7 @@ module.exports = (app, db) => {
 
     app.delete('/applicant/applications', async (req, res, next) => {
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
             let applicant = await db.applicants.findOne({where: {userId: id}});
             let applications = await db.applications.findAll();
 
@@ -660,7 +659,7 @@ module.exports = (app, db) => {
     // DELETE by themself
     app.delete('/applicant', async (req, res, next) => {
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
 
             await logger.saveLog('DELETE', 'applicant', id, res);
 
@@ -1226,7 +1225,7 @@ module.exports = (app, db) => {
             }
             if (applications) {
                 let offers = await db.offers.findAll();
-                let users = await db.users.findAll();
+                let users = await db.users.findAll({ include: [db.offerers] });
                  // Search the offers where this applicant applicanted
                 let offersInApplication = [];
 
@@ -1240,8 +1239,7 @@ module.exports = (app, db) => {
                     let offersAux = [],
                     offersToShowAux = [];
                     offersAux.push(element);
-                    let theOffer = prepareOffersToShow(offersAux, offersToShowAux, users.find(user => element.fk_offerer == user.id));
-                    offersShow.push(theOffer);
+                    offersShow.push(prepareOffersToShow(offersAux, offersToShowAux, users.find(user => element.fk_offerer == user.id))[0]);
                 });
 
                 data.applications = offersShow;

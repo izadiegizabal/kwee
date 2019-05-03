@@ -522,7 +522,7 @@ module.exports = (app, db) => {
         try {
             let logId = await logger.saveLog('PUT', 'offerer', null, res);
 
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
             let user = await db.users.findOne({
                 where: {id}
             });
@@ -548,7 +548,7 @@ module.exports = (app, db) => {
 
     app.delete('/offerer/applications', async (req, res, next) => {
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
             let offerer = await db.offerers.findOne({where: {userId: id}});
             let offers = await offerer.getOffers();
             let applications = await db.applications.findAll();
@@ -589,7 +589,7 @@ module.exports = (app, db) => {
     // DELETE by themself
     app.delete('/offerer', async (req, res, next) => {
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
 
             await logger.saveLog('DELETE', 'offerer', id, res);
 

@@ -77,7 +77,7 @@ module.exports = (app, db) => {
         let fk_language = body.fk_language;
 
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
 
             let applicant = await db.applicants.findOne({
                 where: {userId: id}
@@ -135,7 +135,7 @@ module.exports = (app, db) => {
         const body = req.body;
 
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
 
             let applicant = await db.applicants.findOne({
                 where: {userId: id}
@@ -195,7 +195,7 @@ module.exports = (app, db) => {
 
         try {
 
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
 
             let applicant = await db.applicants.findOne({
                 where: {userId: id}

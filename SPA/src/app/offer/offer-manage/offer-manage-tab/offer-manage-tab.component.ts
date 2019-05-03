@@ -5,7 +5,6 @@ import * as OfferManageActions from '../store/offer-manage.actions';
 import {PageEvent} from '@angular/material';
 import {Observable} from 'rxjs';
 import * as fromOfferManage from '../store/offer-manage.reducers';
-import {changeAngle} from '../../../../assets/engine/commons';
 
 @Component({
   selector: 'app-offer-manage-tab',
@@ -56,12 +55,13 @@ export class OfferManageTabComponent implements OnInit {
           status: this.status
         }));
       } else {
-        // this.store$.dispatch(new OfferManageActions.TryGetApplicationsAccepted({
-        //   id: this.id,
-        //   page: 1,
-        //   limit: this.pageSize,
-        //   status: 3
-        // }));
+        console.log('aceptadas');
+        this.store$.dispatch(new OfferManageActions.TryGetApplicationsAccepted({
+          id: this.id,
+          page: 1,
+          limit: this.pageSize,
+          status: 3
+        }));
       }
     }
 
@@ -86,19 +86,23 @@ export class OfferManageTabComponent implements OnInit {
           status: this.status
         }));
       } else {
-        // this.store$.dispatch(new OfferManageActions.TryGetApplicationsAccepted({
-        //   id: this.id,
-        //   page: this.pageEvent.pageIndex + 1,
-        //   limit: this.pageEvent.pageSize,
-        //   status: 3
-        // }));
+        this.store$.dispatch(new OfferManageActions.TryGetApplicationsAccepted({
+          id: this.id,
+          page: this.pageEvent.pageIndex + 1,
+          limit: this.pageEvent.pageSize,
+          status: 3
+        }));
       }
     }
 
     window.scrollTo(0, 0);
   }
 
-  totalOffers(count) {
+  totalOffers(count, total) {
+    if (total) {
+      return total;
+    }
+
     switch (this.status) {
       case -1:
         return count[0].Total;
@@ -119,10 +123,6 @@ export class OfferManageTabComponent implements OnInit {
       case 3:
         return count[3].Selection;
         break;
-
-      // case 4:
-      //   return count[0].Total;
-      //   break;
     }
   }
 }

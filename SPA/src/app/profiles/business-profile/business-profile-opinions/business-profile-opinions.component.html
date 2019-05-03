@@ -1,4 +1,5 @@
 <div
+  *ngIf="(profilesState | async).opinions; else noOpinions"
   fxFlex="92%"
   fxFlex.gt-sm="60%"
   fxFlexOffset="4%"
@@ -8,88 +9,89 @@
     Opinions
   </h2>
   <p>Here you'll be able to find what other users have to say about the business above. </p>
-  <mat-card *ngFor="let opinion of (profilesState | async).opinions.data"
-            [ngClass]="{
+  <div>
+    <mat-card
+      *ngFor="let opinion of (profilesState | async).opinions.data"
+      [ngClass]="{
               'mat-elevation-z0' : !opinion.panelOpenState
             }"
-            style="margin-bottom: 8px"
-  >
-    <div fxLayout="row" fxLayoutGap="32px">
-      <div fxLayout="column">
-        <div class="rating" fxLayout="row"><span>{{opinion.overall | number:'1.0-1'}}</span></div>
-        <div class="usefulness" fxLayout="row">
-          <span>{{opinion.opinionScore}}</span>
-          <button color="accent" mat-icon-button>
-            <mat-icon color="primary" svgIcon="thumb-up"></mat-icon>
-          </button>
-          <button
-            color="warn"
-            mat-icon-button style="margin-left: -16px">
-            <mat-icon color="primary" svgIcon="thumb-down"></mat-icon>
-          </button>
-        </div>
-      </div>
-      <div fxLayout="column">
-        <mat-card-title>
-          {{opinion.title}}
-        </mat-card-title>
-        <mat-card-subtitle>
-          {{opinion.userName + " - " + getPublishedDate(opinion.createdAt)}}
-        </mat-card-subtitle>
-        <p>{{opinion.opinion}}</p>
-      </div>
-    </div>
-    <mat-card-content>
-      <mat-expansion-panel
-        (closed)="opinion.panelOpenState = false"
-        (opened)="opinion.panelOpenState = true"
-        class="mat-elevation-z0 opinionDetails"
-      >
-        <mat-expansion-panel-header>
-          <mat-panel-title fxLayoutAlign="end">
-            <p class="mat-button">More Details</p>
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-
-        <h4>Details</h4>
-        <div fxLayout="row">
-          <div fxFlex="50%" fxLayout="column">
-            <mat-list>
-              <mat-list-item>
-                <span>{{opinion.salary}}</span>
-                Salary
-              </mat-list-item>
-              <mat-list-item>
-                <span>{{opinion.environment}}</span>
-                Environment
-              </mat-list-item>
-              <mat-list-item>
-                <span>{{opinion.partners}}</span>
-                Coworkers
-              </mat-list-item>
-            </mat-list>
-          </div>
-          <div fxFlex="50%" fxLayout="column">
-            <mat-list>
-              <mat-list-item>
-                <span>{{opinion.services}}</span>
-                Services
-              </mat-list-item>
-              <mat-list-item>
-                <span>{{opinion.installations}}</span>
-                Work Space
-              </mat-list-item>
-              <mat-list-item>
-                <span>{{opinion.satisfaction}}</span>
-                Satisfaction
-              </mat-list-item>
-            </mat-list>
+      style="margin-bottom: 8px">
+      <div fxLayout="row" fxLayoutGap="32px">
+        <div fxLayout="column">
+          <div class="rating" fxLayout="row"><span>{{opinion.overall | number:'1.0-1'}}</span></div>
+          <div class="usefulness" fxLayout="row">
+            <span>{{opinion.opinionScore}}</span>
+            <button color="accent" mat-icon-button>
+              <mat-icon color="primary" svgIcon="thumb-up"></mat-icon>
+            </button>
+            <button
+              color="warn"
+              mat-icon-button style="margin-left: -16px">
+              <mat-icon color="primary" svgIcon="thumb-down"></mat-icon>
+            </button>
           </div>
         </div>
+        <div fxLayout="column">
+          <mat-card-title>
+            {{opinion.title}}
+          </mat-card-title>
+          <mat-card-subtitle>
+            {{opinion.userName + " - " + getPublishedDate(opinion.createdAt.toString())}}
+          </mat-card-subtitle>
+          <p>{{opinion.opinion}}</p>
+        </div>
+      </div>
+      <mat-card-content>
+        <mat-expansion-panel
+          (closed)="opinion.panelOpenState = false"
+          (opened)="opinion.panelOpenState = true"
+          class="mat-elevation-z0 opinionDetails">
+          <mat-expansion-panel-header>
+            <mat-panel-title fxLayoutAlign="end">
+              <p class="mat-button">More Details</p>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
 
-      </mat-expansion-panel>
-    </mat-card-content>
-  </mat-card>
+          <h4>Details</h4>
+          <div fxLayout="row">
+            <div fxFlex="50%" fxLayout="column">
+              <mat-list>
+                <mat-list-item>
+                  <span>{{opinion.salary}}</span>
+                  Salary
+                </mat-list-item>
+                <mat-list-item>
+                  <span>{{opinion.environment}}</span>
+                  Environment
+                </mat-list-item>
+                <mat-list-item>
+                  <span>{{opinion.partners}}</span>
+                  Coworkers
+                </mat-list-item>
+              </mat-list>
+            </div>
+            <div fxFlex="50%" fxLayout="column">
+              <mat-list>
+                <mat-list-item>
+                  <span>{{opinion.services}}</span>
+                  Services
+                </mat-list-item>
+                <mat-list-item>
+                  <span>{{opinion.installations}}</span>
+                  Work Space
+                </mat-list-item>
+                <mat-list-item>
+                  <span>{{opinion.satisfaction}}</span>
+                  Satisfaction
+                </mat-list-item>
+              </mat-list>
+            </div>
+          </div>
+
+        </mat-expansion-panel>
+      </mat-card-content>
+    </mat-card>
+  </div>
 
   <div *ngIf="(profilesState | async).opinions" fxLayout="row"
        fxLayoutAlign="end end">
@@ -101,3 +103,10 @@
     </mat-paginator>
   </div>
 </div>
+
+<ng-template #noOpinions>
+  <div fxLayoutAlign="center center" fxLayout="column" style="margin: 16px; min-height: 384px">
+    <img alt="Iwi Mascot" src="../../../../assets/branding/iwi.svg" width="128px"/>
+    <p>Sorry, there aren't any opinions yet.</p>
+  </div>
+</ng-template>

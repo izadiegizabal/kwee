@@ -70,8 +70,8 @@ export class AdminEffects {
           apiEndpointUrl += '&sort=' + payload.order;
         }
 
-        // console.log(apiEndpointUrl);
-        // console.log(body);
+        console.log(apiEndpointUrl);
+        console.log(body);
 
         return this.httpClient.post(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res: {
@@ -150,6 +150,7 @@ export class AdminEffects {
         const token = authState.token;
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
         const body = JSON.stringify(payload.updatedBusiness);
+        console.log(body);
         return this.httpClient.put(apiEndpointUrl, body, {headers: headers}).pipe(
           map(() => {
             return {

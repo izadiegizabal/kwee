@@ -24,7 +24,6 @@ import {
 import {Title} from '@angular/platform-browser';
 import {OkDialogComponent} from '../../shared/ok-dialog/ok-dialog.component';
 import {DialogErrorComponent} from '../../auth/signup/dialog-error/dialog-error.component';
-import {AlertDialogComponent} from '../../shared/alert-dialog/alert-dialog.component';
 
 
 interface City {

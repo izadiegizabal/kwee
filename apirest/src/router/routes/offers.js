@@ -411,7 +411,7 @@ module.exports = (app, db) => {
     });
 
     // PUT single offer by admin
-    app.put('/offer/:id([0-9]+)', checkAdmin, async (req, res, next) => {
+    app.put('/offer/admin/:id([0-9]+)', checkAdmin, async (req, res, next) => {
         updateOffer(req, res, next);
     });
 
@@ -421,7 +421,7 @@ module.exports = (app, db) => {
     });
     
     // DELETE single offer by admin
-    app.delete('/offer/:id([0-9]+)', checkAdmin, async (req, res, next) => {
+    app.delete('/offer/admin/:id([0-9]+)', checkAdmin, async (req, res, next) => {
         deleteOffer(req, res, next);
     });
 
@@ -430,7 +430,7 @@ module.exports = (app, db) => {
         const updates = req.body;
 
         try {
-            let fk_offerer = tokenId.getTokenId(req.get('token'));
+            let fk_offerer = tokenId.getTokenId(req.get('token'), res);
 
             let offerToUpdate = await db.offers.findOne({
                 where: { id }

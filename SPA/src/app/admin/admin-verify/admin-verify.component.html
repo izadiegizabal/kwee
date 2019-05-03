@@ -1,5 +1,5 @@
 <h2 class="mat-h1">Verify Profiles</h2>
-<div fxLayout="row">
+<div fxLayout="row" *ngIf="(adminState | async).businesses && (adminState | async).businesses.data">
   <mat-accordion fxFlex="99%">
     <mat-expansion-panel
       (closed)="isPanelOpen = !isPanelOpen;"
@@ -9,7 +9,11 @@
         <mat-panel-title fxFlex="55%"
                          fxFlex.gt-lg="30%" fxFlex.gt-md="35%" fxFlex.gt-sm="40%" fxLayoutAlign="start center"
                          fxLayoutGap="8px">
-          <app-offerer-name-overview [index]="user.index" [name]="user.name"></app-offerer-name-overview>
+          <app-offerer-name-overview
+            [index]="user.index"
+            [businessIndexBreakdown]="user.avg"
+            [name]="user.name">
+          </app-offerer-name-overview>
         </mat-panel-title>
         <mat-panel-description
           fxFlex="25%"

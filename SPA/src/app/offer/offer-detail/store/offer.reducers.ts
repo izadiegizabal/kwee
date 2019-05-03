@@ -28,6 +28,7 @@ export interface State {
     fk_offerer: number,
     offererName: string,
     offererIndex: number,
+    avg: any,
     img: string,
   };
 

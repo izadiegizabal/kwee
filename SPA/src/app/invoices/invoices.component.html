@@ -6,6 +6,9 @@
   <div class="line1" fxFlex="80%" fxFlex.lt-md="100%" fxLayout="row" fxLayoutAlign="start center"><h2 class="mat-h1">My
     Invoices</h2></div>
   <mat-accordion fxLayout="column">
+    <div *ngIf="noInvoices">
+      <h2 class="mat-h2 no-margin">You don't have any invoices yet.</h2>
+    </div>
     <div *ngFor="let invoice of  invoices; let i =index;" fxLayout="row">
       <mat-checkbox #toggle style="display: none"></mat-checkbox>
       <mat-expansion-panel [(expanded)]="toggle.checked" class="line1" fxFlex="80%" fxFlex.lt-md="100%">
@@ -22,7 +25,7 @@
         </mat-expansion-panel-header>
         <h2 class="mat-h2 no-margin">Invoice #{{invoice.id}}</h2>
         <h3 class="mat-h3 no-margin">{{invoice.product | titlecase}}</h3>
-        <h4 class="mat-h4 no-margin">{{getDate(invoice.date) || async}}</h4>
+        <h4 class="mat-h4 no-margin">{{invoice.date}}</h4>
 
 
         <p class="mat-h3" fxLayoutAlign="end">Total:&nbsp;<b class="mat-h2">{{invoice.total}}</b>

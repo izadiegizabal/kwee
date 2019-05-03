@@ -12,8 +12,8 @@ const fs = require('fs');
 
 
 class TokenId {
-    getTokenId(token) {
-        return auth.auth.decode(token);
+    getTokenId(token, res) {
+        return auth.auth.decode(token, res);
     }
 }
 
@@ -54,7 +54,7 @@ class Logger {
 
         Log.findByIdAndUpdate(id, updates, (err, userDB) => {
             if (err) throw new Error(err);
-        })
+        });
     }
 }
 

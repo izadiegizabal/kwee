@@ -160,10 +160,10 @@ async function checkPayments() {
             }
         );
 
-    var users = applicants.concat(offerers);
+    var usersConcat = applicants.concat(offerers);
 
-    usersToNotify(users);
-    usersToRevokePremium(users);
+    usersToNotify(usersConcat);
+    usersToRevokePremium(usersConcat);
 }
 
 

@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {BusinessIndustries} from '../../../../models/Business.model';
+import {BusinessIndustries, BusinessModel} from '../../../../models/Business.model';
 
 @Component({
   selector: 'app-business-more-info',
@@ -8,7 +8,7 @@ import {BusinessIndustries} from '../../../../models/Business.model';
 })
 export class BusinessMoreInfoComponent implements OnInit {
 
-  @Input() business: any;
+  @Input() business: BusinessModel;
 
   mockBusiness = {
     name: 'Facebook',
@@ -23,8 +23,8 @@ export class BusinessMoreInfoComponent implements OnInit {
     industry: 'Online Service Company',
     year: '2004',
     location: {
-      lat: -74.20,
-      lon: 40.51,
+      lon: -74.20,
+      lat: 40.51,
     },
     address: '770 Broadway, New York, NY 10003, USA',
     twitter: 'Facebook',

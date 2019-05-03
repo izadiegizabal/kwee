@@ -1,0 +1,30 @@
+<div
+  *ngIf="(store$ | async).offerManage && (store$ | async).offerManage.offers && (store$ | async).offerManage.offers.length > 0; else noOffers"
+  fxFlex="92%"
+  fxFlexOffset="4%"
+  fxLayout="column"
+  fxLayoutGap="16px">
+  <h2 style="margin-bottom: 0">
+    Open Offers
+  </h2>
+  <p>Here you can see all the open positions available right now.</p>
+  <app-offer-preview-card *ngFor="let offer of (store$ | async).offerManage.offers" [offer]="offer">
+
+  </app-offer-preview-card>
+
+  <mat-paginator
+    (page)="pageEvent = $event; changePage();"
+    [length]="(store$ | async).offerManage.count[2].Open"
+    [pageSizeOptions]="pageSizeOptions"
+    [pageSize]="pageSize">
+  </mat-paginator>
+</div>
+<ng-template #noOffers>
+  <div
+    fxLayoutAlign="center center"
+    fxLayout="column"
+    style="margin: 16px; min-height: 384px">
+    <img alt="Iwi Mascot" src="../../../../assets/branding/iwi.svg" width="128px"/>
+    <p>Sorry, there aren't any open positions currently.</p>
+  </div>
+</ng-template>

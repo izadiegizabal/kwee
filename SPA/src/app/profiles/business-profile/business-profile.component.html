@@ -13,11 +13,11 @@
       fxFlex.gt-sm="80%">
       <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap.lt-sm="16px">
         <!-- Basic info -->
-        <mat-card [fxFlex]="(mine || twitterAccount !== '')? 70 : 100">
+        <mat-card [fxFlex.lt-md]="(mine || twitterAccount !== '')? 70 : 100" fxFlex="100">
           <mat-card-title>
             <app-offerer-name-overview
-              [index]="(profilesState | async).business.index"
               [businessIndexBreakdown]="(profilesState | async).business.avg"
+              [index]="(profilesState | async).business.index"
               [name]="(profilesState | async).business.name"
               size="title">
             </app-offerer-name-overview>
@@ -60,7 +60,7 @@
         <!-- Premium info -->
         <mat-card
           *ngIf="mine"
-          fxFlex="30" fxFlexOffset.gt-xs="32px">
+          fxFlex="30%" fxFlex.lt-sm="100%" fxFlexOffset.gt-xs="32px">
           <mat-card-subtitle style="text-align: center">Active account type:</mat-card-subtitle>
           <mat-card-title style="text-align: center">
             Basic
@@ -85,15 +85,15 @@
           </mat-card-actions>
         </mat-card>
         <mat-card *ngIf="!mine && twitterAccount !== ''"
-                  fxHide.lt-lg
                   class="twitter-wrapper"
-                  fxFlex="30" fxFlexOffset.gt-xs="32px">
-          <a class="twitter-timeline" [href]="'https://twitter.com/' + twitterAccount">Tweets by @{{twitterAccount}}</a>
+                  fxFlex="30"
+                  fxFlexOffset.gt-xs="32px" fxHide.lt-lg>
+          <a [href]="'https://twitter.com/' + twitterAccount" class="twitter-timeline">Tweets by @{{twitterAccount}}</a>
         </mat-card>
       </div>
       <div fxLayout="row" style="margin-top: 16px">
         <mat-card fxFlex="100" style="padding: 0 !important;">
-          <mat-tab-group (selectedIndexChange)="goToMyOffers($event)">
+          <mat-tab-group (selectedIndexChange)="changeTab($event)" [selectedIndex]="selectedIndex">
             <mat-tab label="More Info">
               <ng-template matTabContent>
                 <app-business-more-info [business]="(profilesState | async).business"></app-business-more-info>
@@ -104,7 +104,11 @@
                 <app-business-profile-opinions></app-business-profile-opinions>
               </ng-template>
             </mat-tab>
-            <mat-tab label="Offers"></mat-tab>
+            <mat-tab label="Jobs">
+              <ng-template matTabContent>
+                <app-business-past-offers [businessID]="(profilesState | async).business.id"></app-business-past-offers>
+              </ng-template>
+            </mat-tab>
           </mat-tab-group>
         </mat-card>
       </div>

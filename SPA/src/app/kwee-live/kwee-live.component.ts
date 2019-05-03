@@ -6,6 +6,11 @@ import {TResourceManager, TResourceMaterial, TResourceMesh, TResourceShader, TRe
 import {shared} from '../../assets/engine/commons.js';
 import {allowActions, main, mainInit, mainR, mainTest, pls, resetCanvas} from '../../assets/engine/main.js';
 import {Title} from '@angular/platform-browser';
+import * as KweeLiveActions from './store/kwee-live.actions';
+import * as fromApp from '../store/app.reducers';
+import {HttpClient} from '@angular/common/http';
+import {Store} from '@ngrx/store';
+
 
 // import {TMotorTAG} from '../../assets/engine/TMotorTAG.js';
 // import {glMatrix, mat2, mat2d, mat3, mat4, quat, quat2, vec2, vec3, vec4} from 'gl-matrix';
@@ -32,7 +37,7 @@ export class KweeLiveComponent implements OnInit, OnDestroy {
 
   @ViewChild('rendererContainer') rendererContainer: ElementRef;
 
-  constructor(private titleService: Title) {
+  constructor(private titleService: Title, private http: HttpClient, private store$: Store<fromApp.AppState> ) {
     this.disabled = true;
   }
 
@@ -41,6 +46,8 @@ export class KweeLiveComponent implements OnInit, OnDestroy {
     this.disabled = false;
     await shared();
     await mainInit();
+
+    this.store$.dispatch(new KweeLiveActions.TryGetApplications({page: 1, limit: 5}));
   }
 
   getAllow() {

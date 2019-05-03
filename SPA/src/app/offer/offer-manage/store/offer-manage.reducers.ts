@@ -3,46 +3,45 @@ import {CandidatePreview} from '../../../../models/candidate-preview.model';
 
 export interface State {
   offers: {
-    data: {
-      offer: {
-        id: number,
-        status: number,
-        title: string,
-        description: string,
-        datePublished: Date,
-        dateStart: Date,
-        dateEnd: Date,
-        location: string,
-        salaryAmount: number,
-        salaryFrequency: number,
-        salaryCurrency: string,
-        workLocation: number,
-        seniority: number,
-        isIndefinite: boolean,
-        duration: number,
-        durationUnit: number,
-        fk_offerer: number,
-        contractType: number,
-        maxApplicants: number,
-        currentApplications: number,
-        applications: any[]
-      },
-      user: {
-        id: number,
-        name: string,
-        img: string,
-        bio: string,
-        index: number,
-      }
-    }[],
-    count: {
-      Total: number,
-      Draft: number,
-      Open: number,
-      Selection: number,
-      Closed: number,
-    }[]
-  };
+    offer: {
+      id: number,
+      status: number,
+      title: string,
+      description: string,
+      datePublished: Date,
+      dateStart: Date,
+      dateEnd: Date,
+      location: string,
+      salaryAmount: number,
+      salaryFrequency: number,
+      salaryCurrency: string,
+      workLocation: number,
+      seniority: number,
+      isIndefinite: boolean,
+      duration: number,
+      durationUnit: number,
+      fk_offerer: number,
+      contractType: number,
+      maxApplicants: number,
+      currentApplications: number,
+      applications: any[]
+    },
+    user: {
+      id: number,
+      name: string,
+      img: string,
+      bio: string,
+      index: number,
+    }
+  }[];
+  count: {
+    Total: number,
+    Draft: number,
+    Open: number,
+    Selection: number,
+    Closed: number,
+  }[];
+  total: number;
   selection: {
     all: CandidatePreview[],
     faved: CandidatePreview[],
@@ -55,31 +54,36 @@ export interface State {
 
 const initialState: State = {
   offers: null,
-  selection: {
-    all: [],
-    faved: [],
-    selected: [],
-    accepted: [],
-    refused: [],
-  }
+  count: null,
+  total: null,
+  selection: null,
+  // selection: {
+  //   all: [],
+  //   faved: [],
+  //   selected: [],
+  //   accepted: [],
+  //   refused: [],
+  // }
 };
 
 export function OfferManageReducer(state = initialState, action: OfferManageActions.OfferManageActions) {
   switch (action.type) {
     case OfferManageActions.EMPTY_STATE:
-      return {offers: null, selection: null};
+      return {offers: null, count: null, total: null, selection: null};
 
     case OfferManageActions.SET_OFFERS_OFFERER:
     case OfferManageActions.SET_OFFERS_APPLICANT:
       return {
         ...state,
-        offers: action.payload
+        offers: action.payload.data,
+        count: action.payload.count,
       };
 
     case OfferManageActions.SET_APPLICATIONS_ACCEPTED:
       return {
         ...state,
-        offers: action.payload
+        offers: action.payload.data,
+        total: action.payload.total,
       };
 
     case OfferManageActions.SET_OFFER_CANDIDATES:

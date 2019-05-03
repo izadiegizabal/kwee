@@ -93,7 +93,7 @@ export class EducationFormsComponent implements OnInit {
   addEducation() {
     (<FormArray>this.educations.controls['education']).push(this.addEducationGroup());
     this.iskiled++;
-    console.log(this.formEducation.value);
+    // console.log(this.formEducation.value);
   }
 
   deleteEducation(i) {
@@ -105,8 +105,7 @@ export class EducationFormsComponent implements OnInit {
     if (e.checked) {
       document.getElementById(`toExp${s}`).setAttribute('disabled', 'true');
       (<FormGroup>(<FormArray>this.educations.get('education')).controls[s]).controls.end.setValue(null);
-      console.log((<FormGroup>(<FormArray>this.educations.get('education')).controls[s]).controls.start);
-
+      // console.log((<FormGroup>(<FormArray>this.educations.get('education')).controls[s]).controls.start);
     } else {
       document.getElementById(`toExp${s}`).removeAttribute('disabled');
     }

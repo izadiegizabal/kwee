@@ -80,7 +80,7 @@ module.exports = (app, db) => {
 
         const body = req.body;
         let fk_education = body.fk_education;
-        let id = tokenId.getTokenId(req.get('token'));
+        let id = tokenId.getTokenId(req.get('token'), res);
 
 
         if (fk_education.length > 1) {
@@ -158,7 +158,7 @@ module.exports = (app, db) => {
     app.put("/applicant_education", checkToken, async (req, res, next) => {
         const body = req.body;
 
-        let id = tokenId.getTokenId(req.get('token'));
+        let id = tokenId.getTokenId(req.get('token'), res);
 
         try {
             let applicant = await db.applicants.findOne({
@@ -225,7 +225,7 @@ module.exports = (app, db) => {
     app.delete("/applicant_education", checkToken, async (req, res, next) => {
         const body = req.body;
 
-        let id = tokenId.getTokenId(req.get('token'));
+        let id = tokenId.getTokenId(req.get('token'), res);
 
         try {
             let applicant = await db.applicants.findOne({

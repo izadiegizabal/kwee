@@ -77,7 +77,7 @@ module.exports = (app, db) => {
         const body = req.body;
 
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
 
             let social_network = await db.social_networks.create({
                 userId: id,
@@ -104,7 +104,7 @@ module.exports = (app, db) => {
         const updates = req.body;
 
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
             delete updates.userId;
 
             let social_network = await db.social_networks.update(updates, {

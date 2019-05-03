@@ -9,9 +9,9 @@
   <div fxLayout="row"
        fxLayoutAlign="center center">
     <mat-card id="id"
-      *ngIf="(offerState | async).offer"
-      fxFlex="95%"
-      fxFlex.gt-lg="50%" fxFlex.gt-md="60%" fxFlex.gt-sm="75%" fxLayout="column">
+              *ngIf="(offerState | async).offer"
+              fxFlex="95%"
+              fxFlex.gt-lg="50%" fxFlex.gt-md="60%" fxFlex.gt-sm="75%" fxLayout="column">
       <mat-card-header fxLayoutAlign="space-between">
         <mat-card-title fxLayout="row" fxLayoutGap="16px">
           <span>{{(offerState | async).offer.title }}</span>
@@ -24,8 +24,11 @@
         <span
           [routerLink]="urlOfferer((offerState | async).offer.fk_offerer, (offerState | async).offer.offererName)"
           style="cursor: pointer">
-          <app-offerer-name-overview [index]="(offerState | async).offer.offererIndex"
-                                     [name]="(offerState | async).offer.offererName"></app-offerer-name-overview>
+          <app-offerer-name-overview
+            [index]="(offerState | async).offer.offererIndex"
+            [businessIndexBreakdown]="(offerState | async).offer.avg"
+            [name]="(offerState | async).offer.offererName">
+          </app-offerer-name-overview>
         </span>
         </mat-card-subtitle>
         <div
@@ -111,12 +114,12 @@
               <div fxLayout="column"
                    fxLayoutGap="8px">
 
-                  <button
-                    (click)="goEdit()"
-                    *ngIf="(offerState | async).offer.fk_offerer === this.id ; else apply"
-                    color="accent"
-                    mat-raised-button
-                    style="color: white" type="button">{{'Edit Offer' | uppercase }}</button>
+                <button
+                  (click)="goEdit()"
+                  *ngIf="(offerState | async).offer.fk_offerer === this.id ; else apply"
+                  color="accent"
+                  mat-raised-button
+                  style="color: white" type="button">{{'Edit Offer' | uppercase }}</button>
                 <ng-template #apply>
                   <button (click)="postApplication()"
                           *ngIf="(offerState | async).applications===null && id"
@@ -175,7 +178,7 @@
             [innerHTML]="(offerState | async).offer.requeriments"
             fxLayout="column"
             style="white-space: pre-wrap; margin-bottom: 16px"
-          id="requeriments">
+            id="requeriments">
           </div>
         </div>
 

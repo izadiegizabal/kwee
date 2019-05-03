@@ -9,56 +9,14 @@ const moment = require('moment');
 // ============================
 
 module.exports = (app, db) => {
+    // Search 
+    app.post('/applications/search', async (req, res, next) => {
+        searchInApplications( req, res, next );
+    });
+
     // GET all applications for kwee live
     app.get("/applications/kweelive", async (req, res, next) => {
-        try {
-            await logger.saveLog('GET', 'applications/kweelive', null, res);
-            var applications;
-            var output = await pagination(
-                db.applications,
-                "applications",
-                req.query.limit,
-                req.query.page,
-                '',
-                res,
-                next
-            );
-
-            if (output.data) {
-                applications = output.data;
-
-                var applicationsToShow = [];
-
-                for (let application in applications) {
-                    let appli = {};
-                    let user = await db.users.findOne({ 
-                        where: { id: applications[application].fk_applicant }
-                    });
-                    let offer = await db.offers.findOne({ where: {
-                        id: applications[application].fk_offer
-                    }});
-                    appli.id = applications[application].id;
-                    appli.applicantLAT = user.lat;
-                    appli.applicantLON = user.lon;
-                    appli.offerLAT = offer.lat;
-                    appli.offerLON = offer.lon;
-                    applicationsToShow.push(appli);
-                }
-                
-                return res.status(200).json({
-                    ok: true,
-                    message: output.message,
-                    data: applicationsToShow,
-                    total: output.count,
-                    page: Number(req.query.page),
-                    pages: Math.ceil(output.count / req.query.limit)
-                });
-            } else {
-                next({type: 'error', error: 'No applications'});
-            }
-        } catch (err) {
-            next({type: 'error', error: err.message});
-        }
+        applicationsForKweeLive( req, res, next );
     });
     // GET all applications
     app.get("/applications", checkToken, async (req, res, next) => {
@@ -145,13 +103,7 @@ module.exports = (app, db) => {
                 attr.offset = offset;
             }
 
-            let users = await db.users.findAll({
-                include: [{
-                    model: db.offerers,
-                    as: 'offerer'
-                    
-                }]
-            });
+            let users = await db.users.findAll({ include: [db.offerers] });
             let count = await db.applications.findAndCountAll({ where });
             let applications = await db.applications.findAll(attr);
             let offers = await db.offers.findAll();
@@ -188,7 +140,10 @@ module.exports = (app, db) => {
             }
 
         } catch (err) {
-            return next({type: 'error', error: err.message});
+            if ( err.message == 'Invalid token'){
+                return next({ type: 'error', error: 'Invalid token' });
+            }
+            return next({ type: 'error', error: err.message });
         }
     });
 
@@ -198,7 +153,7 @@ module.exports = (app, db) => {
         const offerToAdd = body.fk_offer;
 
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
 
             let applicant = await db.applicants.findOne({
                 where: {userId: id}
@@ -246,7 +201,7 @@ module.exports = (app, db) => {
 
         try {
             // Applicants and offerers may update applications
-            let user = tokenId.getTokenId(req.get('token'));
+            let user = tokenId.getTokenId(req.get('token'), res);
             let application = await db.applications.findOne({where: {id}});
             let applicant = await db.applicants.findOne({where: {userId: user}});
 
@@ -338,7 +293,7 @@ module.exports = (app, db) => {
             let application = await db.applications.findOne({where: {id: applicationId}});
             if (application) {
 
-                let id = tokenId.getTokenId(req.get('token'));
+                let id = tokenId.getTokenId(req.get('token'), res);
 
                 let applicant = await db.applicants.findOne({
                     where: {userId: id}
@@ -480,7 +435,58 @@ module.exports = (app, db) => {
         }
     }
 
-    async function applicationsForKweeLive( application ) {
+    async function applicationsForKweeLive( req, res, next ) {
+        try {
+            await logger.saveLog('GET', 'applications/kweelive', null, res);
+            var applications;
+            var output = await pagination(
+                db.applications,
+                "applications",
+                req.query.limit,
+                req.query.page,
+                '',
+                res,
+                next
+            );
+
+            if (output.data) {
+                applications = output.data;
+
+                var applicationsToShow = [];
+
+                for (let application in applications) {
+                    let appli = {};
+                    let user = await db.users.findOne({ 
+                        where: { id: applications[application].fk_applicant }
+                    });
+                    let offer = await db.offers.findOne({ where: {
+                        id: applications[application].fk_offer
+                    }});
+                    appli.id = applications[application].id;
+                    appli.applicantLAT = user.lat;
+                    appli.applicantLON = user.lon;
+                    appli.offerLAT = offer.lat;
+                    appli.offerLON = offer.lon;
+                    applicationsToShow.push(appli);
+                }
+                
+                return res.status(200).json({
+                    ok: true,
+                    message: output.message,
+                    data: applicationsToShow,
+                    total: output.count,
+                    page: Number(req.query.page),
+                    pages: Math.ceil(output.count / req.query.limit)
+                });
+            } else {
+                next({type: 'error', error: 'No applications'});
+            }
+        } catch (err) {
+            next({type: 'error', error: err.message});
+        }
+    }
+
+    async function searchInApplications ( res, res, next ) {
 
     }
 

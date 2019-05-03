@@ -11,12 +11,12 @@
       fxFlex="95%"
       fxFlex.gt-md="=70%"
       fxFlex.gt-sm="80%">
-      <div fxLayout="row" fxLayout.lt-sm="column"
-           fxLayoutGap.lt-sm="16px">
+      <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap.lt-sm="16px">
         <!-- Basic info -->
-        <mat-card [fxFlex]="(mine || twitterAccount !== '') ? 70 : 100" fxLayoutAlign="space-between" fxLayout="column">
+        <mat-card fxFlex="100" [fxFlex.lt-md]="(mine || twitterAccount !== '') ? 70 : 100" fxLayout="column" fxLayoutAlign="space-between">
           <mat-card-title>
             <app-offerer-name-overview
+              [candidateIndexBreakdown]="(profilesState | async).candidate.avg"
               [index]="(profilesState | async).candidate.index ? (profilesState | async).candidate.index : candidate.kweeIndex"
               [name]="(profilesState | async).candidate.name ? (profilesState | async).candidate.name : candidate.name"
               size="title">
@@ -42,6 +42,7 @@
           <mat-card-actions fxLayoutAlign="end end">
             <button
               *ngIf="mine"
+              routerLink="/settings"
               color="accent"
               mat-button>
               Edit
@@ -60,7 +61,7 @@
         <!-- Premium info -->
         <mat-card
           *ngIf="mine"
-          fxFlex="30" fxFlexOffset.gt-xs="32px">
+          fxFlex="30%" fxFlex.lt-sm="100%" fxFlexOffset.gt-xs="32px">
           <mat-card-subtitle style="text-align: center">Active account type:</mat-card-subtitle>
           <mat-card-title style="text-align: center">
             Basic
@@ -85,20 +86,21 @@
           </mat-card-actions>
         </mat-card>
         <mat-card *ngIf="!mine && twitterAccount !== ''"
-                  fxHide.lt-lg
                   class="twitter-wrapper"
-                  fxFlex="30" fxFlexOffset.gt-xs="32px">
-          <a class="twitter-timeline" [href]="'https://twitter.com/' + twitterAccount">Tweets by @{{twitterAccount}}</a>
+                  fxFlex="30"
+                  fxFlexOffset.gt-xs="32px" fxHide.lt-lg>
+          <a [href]="'https://twitter.com/' + twitterAccount" class="twitter-timeline">Tweets by @{{twitterAccount}}</a>
         </mat-card>
       </div>
       <div fxLayout="row" style="margin-top: 16px">
         <mat-card fxFlex="100" style="padding: 0 !important;">
-          <mat-tab-group (selectedIndexChange)="goToMyOffers($event)">
+          <mat-tab-group (selectedIndexChange)="changeTab($event)" [selectedIndex]="selectedIndex">
             <mat-tab label="More Info">
               <ng-template matTabContent>
                 <!--TODO: change dynamically this content-->
                 <!--<app-candidate-more-info [candidate]="(profilesState | async).candidate" [isPremium]="isPremium"></app-candidate-more-info>-->
-                <app-candidate-more-info [candidate]="(profilesState | async).candidate" [isPremium]="!mine"></app-candidate-more-info>
+                <app-candidate-more-info [candidate]="(profilesState | async).candidate"
+                                         [isPremium]="!mine"></app-candidate-more-info>
               </ng-template>
             </mat-tab>
             <mat-tab label="Opinions">
@@ -106,7 +108,11 @@
                 <app-candidate-profile-opinions></app-candidate-profile-opinions>
               </ng-template>
             </mat-tab>
-            <mat-tab label="Offers"></mat-tab>
+            <mat-tab label="Past Positions">
+              <ng-template matTabContent>
+                <app-past-positions [applications]="(profilesState | async).candidate.applications"></app-past-positions>
+              </ng-template>
+            </mat-tab>
           </mat-tab-group>
         </mat-card>
       </div>
