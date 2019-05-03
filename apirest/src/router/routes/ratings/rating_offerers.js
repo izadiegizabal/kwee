@@ -1,7 +1,7 @@
 const {checkToken, checkAdmin} = require('../../../middlewares/authentication');
 const {logger, tokenId} = require('../../../shared/functions');
-const bcrypt = require('bcryptjs');
 const {algorithm} = require('../../../shared/algorithm');
+const moment = require('moment');
 
 // ============================
 // ======== CRUD rating =========
@@ -138,7 +138,7 @@ module.exports = (app, db) => {
 
         try {
             const body = req.body;
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
             let fk_application = body.fk_application;
             let overall;
             let opinion;
@@ -186,7 +186,7 @@ module.exports = (app, db) => {
                             await transaction.commit();
 
                             // to check + clean
-                            await db.applications.update({aHasRated: 1}, {
+                            await db.applications.update({ aHasRated: 1, aHasRatedDate: moment() }, {
                                 where: {id: fk_application}
                             });
 
@@ -231,7 +231,7 @@ module.exports = (app, db) => {
         delete body.opinion;
 
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
 
             let rating_offerer = await db.rating_offerers.findOne({
                 where: {ratingId}
@@ -292,7 +292,7 @@ module.exports = (app, db) => {
         const ratingId = req.params.id;
 
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
             let rating_offerer = await db.rating_offerers.findOne({
                 where: {ratingId}
             });

@@ -56,6 +56,17 @@ export class WebsocketService {
     });
   }
 
+  rating(event: string) {
+    console.log('en el rating');
+
+    this.socket.on('rating', function (data) {
+      const username: any = data.username;
+      const message: any = data.message;
+
+      alert(username + ': ' + message);
+    });
+  }
+
   connectedUser(email: string) {
 
     return new Promise((resolve, reject) => {

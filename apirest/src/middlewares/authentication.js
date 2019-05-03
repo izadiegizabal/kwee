@@ -11,7 +11,7 @@ let checkToken = async (req, res, next) => {
 
     let token = req.get('token');
 
-    let decoded = await auth.auth.decode(token);
+    let decoded = await auth.auth.decode(token, res);
 
     if (typeof decoded === "number") {
         req.user = decoded;

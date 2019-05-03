@@ -62,34 +62,97 @@ module.exports = (app, db) => {
         let id = req.params.id;
 
         try {
+            let count;
             let attr = {};
-            attr.where = { userRated: id };
+            let where = { userRated: id };
+            let ratingsToShow = [];
+            attr.where = where;
             if ( req.query.limit && req.query.page ) {
                 var limit = Number(req.query.limit);
                 var page = Number(req.query.page)
                 var offset = req.query.limit * (req.query.page - 1)
                 attr.limit = limit;
                 attr.offset = offset;
-            } 
-            let rating = [];
-            let applicant = await db.applicants.findOne({ where: { userId: id }});
+            }
+            let ratingA = [];
+            let ratingO = [];
+            let applicants = await db.applicants.findAll();
+            let applicant = applicants.find( appli => appli.userId == id );
 
             if ( applicant ) {
-                rating = await db.rating_applicants.findAll(attr);
+                count = await db.rating_applicants.findAndCountAll({ where });
+                ratingA = await db.rating_applicants.findAll(attr);
                 
             } else {
+                let offerers = await db.offerers.findAll({ where: { userId: id }});
+                let offerer = offerers.find( off => off.userId == id);
                 if ( offerer ) {
-                    rating = await db.rating_offerers.findAll(attr);
+                    count = await db.rating_offerers.findAndCountAll({ where });
+                    ratingO = await db.rating_offerers.findAll(attr);
                 } else {
                     return next({type: 'error', error: 'No user with this id'});   
                 }
             }
-            if ( rating.length > 0 ) {
+
+            if ( count.count > 0 ) {
+                let ratingTable = await db.ratings.findAll();
+                let applications = await db.applications.findAll();
+                let offers = await db.offers.findAll();
+                let users = await db.users.findAll();
+                // We need agregate info that is in rating table
+                if ( ratingA.length > 0 ) {
+                    ratingA.forEach( rate => {
+                        let object = {};
+                        let ratingFind = ratingTable.find( element => element.id == rate.ratingId );
+                        let applicationFind = applications.find( application => application.id == ratingFind.fk_application );
+                        let offer = offers.find( off => off.id == applicationFind.fk_offer );
+                        let user = users.find( usu => usu.id == offer.fk_offerer );
+                        object.id = rate.ratingId;
+                        object.userName = user.name;
+                        object.title = offer.title;
+                        object.overall = ratingFind.overall;
+                        object.opinion = ratingFind.opinion;
+                        object.efficiency = rate.efficiency;
+                        object.skills = rate.skills;
+                        object.punctuality = rate.punctuality;
+                        object.hygiene = rate.hygiene;
+                        object.teamwork = rate.teamwork;
+                        object.satisfaction = rate.satisfaction;
+                        object.createdAt = rate.createdAt;
+                        ratingsToShow.push(object);
+                    });
+                }
+                    
+                if ( ratingO.length > 0 ){
+                    ratingO.forEach( rate => {
+                        let object = {};
+                        let ratingFind = ratingTable.find( element => element.id == rate.ratingId );
+                        let applicationFind = applications.find( application => application.id == ratingFind.fk_application );
+                        let offer = offers.find( off => off.id == applicationFind.fk_offer );
+                        let user = users.find( usu => usu.id == applicationFind.fk_applicant );
+                        object.id = rate.ratingId;
+                        object.userName = user.name;
+                        object.title = offer.title;
+                        object.overall = ratingFind.overall;
+                        object.opinion = ratingFind.opinion;
+                        object.satisfaction = rate.satisfaction;
+                        object.salary = rate.salary;
+                        object.environment = rate.environment;
+                        object.partners = rate.partners;
+                        object.services = rate.services;
+                        object.installations = rate.installations;
+                        object.createdAt = rate.createdAt;
+                        ratingsToShow.push(object);
+                    });
+                }
+
                 return res.json({
                     ok: true,
                     message: `Listing all rates done to user ${ id }`,
-                    data: rating,
-                    total: rating.length
+                    data: ratingsToShow,
+                    total: count.count,
+                    page,
+                    limit
                 });
             } else {
                 return next({type: 'error', error: 'This user does not have rates yet'});

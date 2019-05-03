@@ -115,18 +115,6 @@ module.exports = (sequelize, DataTypes) => {
             }
         },
 
-        twitter: {
-            type: DataTypes.STRING,
-            allowNull: true,
-            defaultValue: null,
-        },
-
-        telegram: {
-            type: DataTypes.STRING,
-            allowNull: true,
-            defaultValue: null,
-        },
-
         lat: {
             type: DataTypes.DECIMAL(9, 6),
             allowNull: true,
@@ -137,6 +125,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DECIMAL(9, 6),
             allowNull: true,
             defaultValue: null,
+        },
+        
+        lastPayment: {
+            type: DataTypes.DATE,
+            defaultValue: null
         }
 
     }, {

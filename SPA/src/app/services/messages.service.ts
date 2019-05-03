@@ -11,15 +11,8 @@ export class MessagesService {
   ) {
   }
 
-  sendMessage(msg: string) {
-
-    const payload = {
-      from: 'Carlos',
-      body: msg
-    };
-
+  sendMessage(payload: any) {
     this.wsService.emit('message', payload);
-
   }
 
   getMessage() {
@@ -28,6 +21,10 @@ export class MessagesService {
 
   getSelected() {
     return this.wsService.listen('selected');
+  }
+
+  getRating() {
+    return this.wsService.listen('rating');
   }
 
 }

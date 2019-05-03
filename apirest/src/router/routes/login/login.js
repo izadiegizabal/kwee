@@ -6,42 +6,56 @@ const moment = require('moment');
 module.exports = (app, db) => {
 
     app.post('/login', async (req, res, next) => {
-        let logId = await logger.saveLog('POST', 'login', null, res, req.body.email);
-        let id, user;
-        
+        let user;
+        let logId;
         let body = req.body;
         
         try {
-            if ( req.get('token') ) id = tokenId.getTokenId(req.get('token'));
-            if ( body.email ) user = await db.users.findOne({where: {email: body.email}});
-            else if ( id ) user = await db.users.findOne({where: { id }});
-             
+            
+            if ( body.email ) {
+                logId = await logger.saveLog('POST', 'login', null, res, body.email);
+                user = await db.users.findOne({ where: { email: body.email }});
+            } else if ( body.token ) {
+                var idToken = tokenId.getTokenId(body.token, res);
+
+                user = await db.users.findOne({where: { id: idToken }});
+                if ( user ){
+                    logId = await logger.saveLog('POST', 'login', null, res, user.email);
+                } else {
+                    return null;
+                }
+            } else {
+                return next({type: 'error', error: 'Error getting data'});
+            }
+
+
+            if ( !user ) {
+                logger.updateLog(logId, false);
+                return res.status(400).json({
+                    ok: false,
+                    message: 'User or password incorrect'
+                });
+            }
+
+            if ( body.password ) {
+                if ( !bcrypt.compareSync(body.password, user.password) ) {
+                    logger.updateLog(logId, false);
+                    return res.status(400).json({
+                        ok: false,
+                        message: 'User or password incorrect'
+                    });
+                }
+            }
+
             let type;
-
-            if (!user) {
-                logger.updateLog(logId, false);
-                return res.status(400).json({
-                    ok: false,
-                    message: 'User or password incorrect'
-                });
-            }
-
-            if (!bcrypt.compareSync(body.password, user.password)) {
-                logger.updateLog(logId, false);
-                return res.status(400).json({
-                    ok: false,
-                    message: 'User or password incorrect'
-                });
-            }
-
             let id = user.id;
             let dateNow = moment().format();
 
-            await db.users.update({lastAccess: dateNow}, {
-                where: {id}
+            await db.users.update({ lastAccess: dateNow }, {
+                where: { id }
             });
 
-            let userUpdated = await db.users.findOne({where: {id}});
+            let userUpdated = await db.users.findOne({ where: { id }});
 
             delete userUpdated.dataValues.password;
 
@@ -55,7 +69,7 @@ module.exports = (app, db) => {
             if (user.root) {
                 type = 'admin';
             } else {
-                var avg = [];
+                var avg = {};
                 let offerer = await db.offerers.findOne({
                     where: {userId: id}
                 });
@@ -66,8 +80,12 @@ module.exports = (app, db) => {
                     let applicant = await db.applicants.findOne({
                         where: {userId: id}
                     });
-                    avg = getApplicantAVG(applicant);
-                    type = 'applicant';
+                    if ( applicant ) {
+                        avg = getApplicantAVG(applicant);
+                        type = 'applicant';
+                    } else {
+                        return next({type: 'error', error: 'User not found'});
+                    }
                 }
             }
 

@@ -70,7 +70,7 @@ module.exports = (app, db) => {
         const body = req.body;
         let fk_skill = body.fk_skill;
 
-        let id = tokenId.getTokenId(req.get('token'));
+        let id = tokenId.getTokenId(req.get('token'), res);
 
         try {
             let applicant = await db.applicants.findOne({
@@ -131,7 +131,7 @@ module.exports = (app, db) => {
     app.put("/applicant_skill", checkToken, async (req, res, next) => {
         const body = req.body;
 
-        let id = tokenId.getTokenId(req.get('token'));
+        let id = tokenId.getTokenId(req.get('token'), res);
 
         try {
             let applicant = await db.applicants.findOne({
@@ -182,7 +182,7 @@ module.exports = (app, db) => {
     app.delete("/applicant_skill", checkToken, async (req, res, next) => {
         const body = req.body;
 
-        let id = tokenId.getTokenId(req.get('token'));
+        let id = tokenId.getTokenId(req.get('token'), res);
 
         try {
             let applicant = await db.applicants.findOne({

@@ -12,8 +12,8 @@ const fs = require('fs');
 
 
 class TokenId {
-    getTokenId(token) {
-        return auth.auth.decode(token);
+    getTokenId(token, res) {
+        return auth.auth.decode(token, res);
     }
 }
 
@@ -54,7 +54,7 @@ class Logger {
 
         Log.findByIdAndUpdate(id, updates, (err, userDB) => {
             if (err) throw new Error(err);
-        })
+        });
     }
 }
 
@@ -246,6 +246,76 @@ function sendEmailOfferClosed(user, res, offer) {
 function sendEmailInactiveUser(user) {
     // Generate test SMTP service account from gmail
     let data = fs.readFileSync(path.join(__dirname, '../templates/emailInactiveUser.html'), 'utf-8');
+    let url = `${ env.URL }`;
+
+    nodemailer.createTestAccount((err, account) => {
+        // create reusable transporter object using the default SMTP transport
+
+        let transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false, // true for 465, false for other ports
+            auth: {
+                user: env.EMAIL,
+                pass: env.EMAIL_PASSWORD
+            }
+        });
+
+        // setup email data with unicode symbols
+        let mailOptions = {
+            from: '"Kwee 👻" <hello@kwee.ovh>', // sender address
+            to: user.email,
+            subject: 'We miss you', // Subject line
+            html: data.replace('@@name@@', user.email).replace('@@url@@', url)
+        };
+
+        // send mail with defined transport object
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                throw new Error(error);
+            }
+        });
+    });
+}
+
+function sendEmailPremiumExpiresAdvise(user) {
+    // Generate test SMTP service account from gmail
+    let data = fs.readFileSync(path.join(__dirname, '../templates/sendEmailPremiumExpiresAdvise.html'), 'utf-8');
+    let url = `${ env.URL }`;
+
+    nodemailer.createTestAccount((err, account) => {
+        // create reusable transporter object using the default SMTP transport
+
+        let transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false, // true for 465, false for other ports
+            auth: {
+                user: env.EMAIL,
+                pass: env.EMAIL_PASSWORD
+            }
+        });
+
+        // setup email data with unicode symbols
+        let mailOptions = {
+            from: '"Kwee 👻" <hello@kwee.ovh>', // sender address
+            to: user.email,
+            subject: 'We miss you', // Subject line
+            html: data.replace('@@name@@', user.email).replace('@@url@@', url)
+        };
+
+        // send mail with defined transport object
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                throw new Error(error);
+            }
+        });
+    });
+}
+
+function sendEmailPremiumExpires(user) {
+    // Generate test SMTP service account from gmail
+    let data = fs.readFileSync(path.join(__dirname, '../templates/sendEmailPremiumExpires.html'), 'utf-8');
     let url = `${ env.URL }`;
 
     nodemailer.createTestAccount((err, account) => {
@@ -487,7 +557,7 @@ function uploadImg(req, res, next, type,) {
                 next({type: 'error', error: err});
             }
         });
-        return imgname;
+        return path;
     } catch (err) {
         next({type: 'error', error: err});
     }
@@ -512,6 +582,7 @@ function prepareOffersToShow(offers, offersShow, user) {
         offer.fk_offerer = offers[i].fk_offerer;
         offer.offererName = user.name;
         offer.offererIndex = user.index;
+        offer.avg = getOffererAVG(user.offerer);
         offer.title = offers[i].title;
         offer.description = offers[i].description;
         offers[i].img ? offer.img = offers[i].img : offer.img = user.img;
@@ -543,6 +614,48 @@ function prepareOffersToShow(offers, offersShow, user) {
         offersShow.push(offer);
     }
     return offersShow;
+}
+
+function buildOffersToShow(users, offersToShow, offers) {
+    for (let i = 0; i < offers.length; i++) {
+        let user = users.find(element => offers[i]._source.fk_offerer == element.id);
+        let offer = {};
+
+        offer.id = offers[i]._id;
+        offer.fk_offerer = offers[i]._source.fk_offerer;
+        offer.offererName = user.name;
+        offer.offererIndex = user.index;
+        offer.avg = getOffererAVG(user.offerer);
+        offers[i]._source.img ? offer.img = offers[i]._source.img : offer.img = user.img;
+        offer.title = offers[i]._source.title;
+        offer.description = offers[i]._source.description;
+        offer.dateStart = offers[i]._source.dateStart;
+        offer.dateEnd = offers[i]._source.dateEnd;
+        offer.datePublished = offers[i]._source.datePublished;
+        offer.location = offers[i]._source.location;
+        offer.status = offers[i]._source.status;
+        offer.salaryAmount = offers[i]._source.salaryAmount;
+        offer.salaryFrequency = offers[i]._source.salaryFrequency;
+        offer.salaryCurrency = offers[i]._source.salaryCurrency;
+        offer.workLocation = offers[i]._source.workLocation;
+        offer.seniority = offers[i]._source.seniority;
+        offer.maxApplicants = offers[i]._source.maxApplicants;
+        offer.currentApplications = offers[i]._source.currentApplications;
+        offer.duration = offers[i]._source.duration;
+        offer.durationUnit = offers[i]._source.durationUnit;
+        offer.isIndefinite = offers[i]._source.isIndefinite;
+        offer.contractType = offers[i]._source.contractType;
+        offer.responsabilities = offers[i]._source.responsabilities;
+        offer.requeriments = offers[i]._source.requeriments;
+        offer.skills = offers[i]._source.skills;
+        offer.lat = offers[i]._source.lat;
+        offer.lon = offers[i]._source.lon;
+        offer.createdAt = offers[i]._source.createdAt;
+        offer.updatedAt = offers[i]._source.updatedAt;
+        offer.deletedAt = offers[i]._source.deletedAt;
+
+        offersToShow.push(offer);
+    }
 }
 
 function saveLogES(action, actionToRoute, user) {
@@ -595,28 +708,30 @@ async function createNotification(db, to, from, type, idTable, notification, sta
 
 function getOffererAVG( offerer ) {
 
-    var avg = [];
-
-    avg.push({salaryAVG: offerer.salaryAVG});
-    avg.push({environmentAVG: offerer.environmentAVG});
-    avg.push({partnersAVG: offerer.partnersAVG});
-    avg.push({servicesAVG: offerer.servicesAVG});
-    avg.push({installationsAVG: offerer.installationsAVG});
-    avg.push({satisfactionAVG: offerer.satisfactionAVG});
+    var avg = {};
+    if ( offerer ) {
+        avg.salaryAVG = offerer.salaryAVG;
+        avg.environmentAVG = offerer.environmentAVG;
+        avg.partnersAVG = offerer.partnersAVG;
+        avg.servicesAVG = offerer.servicesAVG;
+        avg.installationsAVG = offerer.installationsAVG;
+        avg.satisfactionAVG = offerer.satisfactionAVG;
+    }
 
     return avg;
 }
 
 function getApplicantAVG( applicant ) {
 
-    var avg = [];
-
-    avg.push({efficiencyAVG: applicant.efficiencyAVG})
-    avg.push({skillsAVG: applicant.skillsAVG})
-    avg.push({punctualityAVG: applicant.punctualityAVG})
-    avg.push({hygieneAVG: applicant.hygieneAVG})
-    avg.push({teamworkAVG: applicant.teamworkAVG})
-    avg.push({satisfactionAVG: applicant.satisfactionAVG})
+    var avg = {};
+    if ( applicant ) {
+        avg.efficiencyAVG = applicant.efficiencyAVG;
+        avg.skillsAVG = applicant.skillsAVG;
+        avg.punctualityAVG = applicant.punctualityAVG;
+        avg.hygieneAVG = applicant.hygieneAVG;
+        avg.teamworkAVG = applicant.teamworkAVG;
+        avg.satisfactionAVG = applicant.satisfactionAVG;
+    }
 
     return avg;
 }
@@ -629,6 +744,8 @@ module.exports = {
     sendEmailResetPassword,
     sendEmailSelected,
     sendEmailOfferClosed,
+    sendEmailPremiumExpiresAdvise,
+    sendEmailPremiumExpires,
     pagination,
     validateDate,
     uploadFile,
@@ -636,6 +753,7 @@ module.exports = {
     checkImg,
     deleteFile,
     prepareOffersToShow,
+    buildOffersToShow,
     isEmpty,
     saveLogES,
     sendNotification,

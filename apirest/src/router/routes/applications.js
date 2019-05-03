@@ -1,62 +1,22 @@
-const {tokenId, logger, pagination, sendEmailSelected, sendNotification, getSocketUserId, createNotification,} = require('../../shared/functions');
+const {tokenId, logger, pagination, prepareOffersToShow, sendEmailSelected, sendNotification, getSocketUserId, createNotification,} = require('../../shared/functions');
 const {checkToken} = require('../../middlewares/authentication');
 const {algorithm} = require('../../shared/algorithm');
+const {Op} = require('../../database/op');
+const moment = require('moment');
 
 // ============================
 // ===== CRUD application ======
 // ============================
 
 module.exports = (app, db) => {
+    // Search 
+    app.post('/applications/search', async (req, res, next) => {
+        searchInApplications( req, res, next );
+    });
+
     // GET all applications for kwee live
-    app.get("/applications/kweelive", checkToken, async (req, res, next) => {
-        try {
-            await logger.saveLog('GET', 'applications/kweelive', null, res);
-            var applications;
-            var output = await pagination(
-                db.applications,
-                "applications",
-                req.query.limit,
-                req.query.page,
-                '',
-                res,
-                next
-            );
-
-            if (output.data) {
-                applications = output.data;
-
-                var applicationsToShow = [];
-
-                for (let application in applications) {
-                    let appli = {};
-                    let user = await db.users.findOne({ 
-                        where: { id: applications[application].fk_applicant }
-                    });
-                    let offer = await db.offers.findOne({ where: {
-                        id: applications[application].fk_offer
-                    }});
-                    appli.id = applications[application].id;
-                    appli.applicantLAT = user.lat;
-                    appli.applicantLON = user.lon;
-                    appli.offerLAT = offer.lat;
-                    appli.offerLON = offer.lon;
-                    applicationsToShow.push(appli);
-                }
-                
-                return res.status(200).json({
-                    ok: true,
-                    message: output.message,
-                    data: applicationsToShow,
-                    total: output.count,
-                    page: Number(req.query.page),
-                    pages: Math.ceil(output.count / req.query.limit)
-                });
-            } else {
-                next({type: 'error', error: 'No applications'});
-            }
-        } catch (err) {
-            next({type: 'error', error: err.message});
-        }
+    app.get("/applications/kweelive", async (req, res, next) => {
+        applicationsForKweeLive( req, res, next );
     });
     // GET all applications
     app.get("/applications", checkToken, async (req, res, next) => {
@@ -107,7 +67,7 @@ module.exports = (app, db) => {
     });
 
     // GET one application by id
-    app.get("/application/:fk_applicant([0-9]+)/:fk_offer([0-9]+)", checkToken, async (req, res, next) => {
+    app.get("/application/:fk_applicant([0-9]+)/:fk_offer([0-9]+)", async (req, res, next) => {
         const params = req.params;
 
         try {
@@ -127,18 +87,63 @@ module.exports = (app, db) => {
     // GET applications by applicant id
     app.get("/application/:fk_applicant([0-9]+)", checkToken, async (req, res, next) => {
         const params = req.params;
+        const id = params.fk_applicant;
 
         try {
-            res.status(200).json({
-                ok: true,
-                message: `Showing applications of user ${params.fk_applicant}`,
-                data: await db.applications.findAll({
-                    where: {fk_applicant: params.fk_applicant}
-                })
+            var attr = {};
+            let where = {};
+            where.fk_applicant = id;
+            attr.where = where;
+            if ( req.query.status ) where.status = req.query.status;
+            if ( req.query.limit && req.query.page ) {
+                var limit = Number(req.query.limit);
+                var page = Number(req.query.page)
+                var offset = req.query.limit * (req.query.page - 1)
+                attr.limit = limit;
+                attr.offset = offset;
+            }
+
+            let users = await db.users.findAll({ include: [db.offerers] });
+            let count = await db.applications.findAndCountAll({ where });
+            let applications = await db.applications.findAll(attr);
+            let offers = await db.offers.findAll();
+
+            // Search the offers where this applicant applicanted
+            let offersInApplication = [];
+
+            applications.forEach( application => {
+                offersInApplication.push( offers.find( offer => application.fk_offer === offer.id ) );
             });
 
+            let offersShow = [];
+
+            offersInApplication.forEach(element => {
+                let offersAux = [],
+                offersToShowAux = [];
+                offersAux.push(element);
+                offersShow.push(prepareOffersToShow(offersAux, offersToShowAux, users.find(user => element.fk_offerer == user.id))[0]);
+                
+            });
+
+            if ( count.count > 0 ) {
+
+                return res.status(200).json({
+                    ok: true,
+                    message: `Showing applications of user with id ${ id }`,
+                    data: offersShow,
+                    total: count.count,
+                    page,
+                    limit
+                });
+            } else {
+                return next({type: 'error', error: 'This user does not have applications'});
+            }
+
         } catch (err) {
-            next({type: 'error', error: err.message});
+            if ( err.message == 'Invalid token'){
+                return next({ type: 'error', error: 'Invalid token' });
+            }
+            return next({ type: 'error', error: err.message });
         }
     });
 
@@ -148,7 +153,7 @@ module.exports = (app, db) => {
         const offerToAdd = body.fk_offer;
 
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
 
             let applicant = await db.applicants.findOne({
                 where: {userId: id}
@@ -158,8 +163,16 @@ module.exports = (app, db) => {
                 let offer = await db.offers.findOne({where: {id: offerToAdd}});
                 if ( offer ) {
                     if ( applicant.premium == 0 ) {
-                        let applications = await applicant.getOffers();
-                        if ( applications <= 5 ) {
+                        let applications = await db.applications.findAll({
+                                                where: {
+                                                    fk_applicant: applicant.userId,
+                                                    status: {
+                                                        [Op.or]: [0, 1, 2]
+                                                    }
+                                                }
+                                            });
+
+                        if ( applications.length < 5 ) {
 
                             createApplication( id, applicant, offerToAdd, offer, res, next );
                             
@@ -188,7 +201,7 @@ module.exports = (app, db) => {
 
         try {
             // Applicants and offerers may update applications
-            let user = tokenId.getTokenId(req.get('token'));
+            let user = tokenId.getTokenId(req.get('token'), res);
             let application = await db.applications.findOne({where: {id}});
             let applicant = await db.applicants.findOne({where: {userId: user}});
 
@@ -200,9 +213,15 @@ module.exports = (app, db) => {
                     if (status == 3 || status == 4) {
                         if (application.status == 2 || application.status == 3) {
                             if (applicant.userId == application.fk_applicant) {
-                                await db.applications.update({status}, {
-                                    where: {id}
-                                });
+                                if ( status == 3 ) {
+                                    await db.applications.update({ status, acceptedAt: moment() }, {
+                                        where: {id}
+                                    });
+                                } else {
+                                    await db.applications.update({ status }, {
+                                        where: {id}
+                                    });
+                                }
 
                                 notifyOfferer(applicant, application, id, status, res);
 
@@ -227,28 +246,33 @@ module.exports = (app, db) => {
                 } else {
                     let offerer = await db.offerers.findOne({where: {userId: user}});
                     if (offerer) {
-                        let offers = await offerer.getOffers();
-                        let offerToUpdate = offers.find(offer => offer.id == application.fk_offer);
+                        if ( status != 3 ) {
 
-                        if (offerToUpdate) {
-                            if (offerToUpdate.id == application.fk_offer) {
-                                await db.applications.update({status}, {
-                                    where: {id}
-                                });
-                                notifyApplicant(offerer, application, id, status, res);
-                                await algorithm.indexUpdate(user);
-                                return res.status(201).json({
-                                    ok: true,
-                                    message: "Application updated to status " + status
-                                });
+                            let offers = await offerer.getOffers();
+                            let offerToUpdate = offers.find(offer => offer.id == application.fk_offer);
+                            
+                            if (offerToUpdate) {
+                                if (offerToUpdate.id == application.fk_offer) {
+                                    await db.applications.update({status}, {
+                                        where: {id}
+                                    });
+                                    notifyApplicant(offerer, application, id, status, res);
+                                    await algorithm.indexUpdate(user);
+                                    return res.status(201).json({
+                                        ok: true,
+                                        message: "Application updated to status " + status
+                                    });
+                                } else {
+                                    return next({
+                                        type: 'error',
+                                        error: "Unauthorized to update applications of other user"
+                                    });
+                                }
                             } else {
-                                return next({
-                                    type: 'error',
-                                    error: "Unauthorized to update applications of other user"
-                                });
+                                return next({type: 'error', error: "Unauthorized to update applications of other user"});
                             }
                         } else {
-                            return next({type: 'error', error: "Unauthorized to update applications of other user"});
+                            return next({type: 'error', error: "Unauthorized to update applications to accepted being offerer" });
                         }
                     }
                 }
@@ -269,7 +293,7 @@ module.exports = (app, db) => {
             let application = await db.applications.findOne({where: {id: applicationId}});
             if (application) {
 
-                let id = tokenId.getTokenId(req.get('token'));
+                let id = tokenId.getTokenId(req.get('token'), res);
 
                 let applicant = await db.applicants.findOne({
                     where: {userId: id}
@@ -411,7 +435,58 @@ module.exports = (app, db) => {
         }
     }
 
-    async function applicationsForKweeLive( application ) {
+    async function applicationsForKweeLive( req, res, next ) {
+        try {
+            await logger.saveLog('GET', 'applications/kweelive', null, res);
+            var applications;
+            var output = await pagination(
+                db.applications,
+                "applications",
+                req.query.limit,
+                req.query.page,
+                '',
+                res,
+                next
+            );
+
+            if (output.data) {
+                applications = output.data;
+
+                var applicationsToShow = [];
+
+                for (let application in applications) {
+                    let appli = {};
+                    let user = await db.users.findOne({ 
+                        where: { id: applications[application].fk_applicant }
+                    });
+                    let offer = await db.offers.findOne({ where: {
+                        id: applications[application].fk_offer
+                    }});
+                    appli.id = applications[application].id;
+                    appli.applicantLAT = user.lat;
+                    appli.applicantLON = user.lon;
+                    appli.offerLAT = offer.lat;
+                    appli.offerLON = offer.lon;
+                    applicationsToShow.push(appli);
+                }
+                
+                return res.status(200).json({
+                    ok: true,
+                    message: output.message,
+                    data: applicationsToShow,
+                    total: output.count,
+                    page: Number(req.query.page),
+                    pages: Math.ceil(output.count / req.query.limit)
+                });
+            } else {
+                next({type: 'error', error: 'No applications'});
+            }
+        } catch (err) {
+            next({type: 'error', error: err.message});
+        }
+    }
+
+    async function searchInApplications ( res, res, next ) {
 
     }
 

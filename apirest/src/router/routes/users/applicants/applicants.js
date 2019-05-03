@@ -1,4 +1,4 @@
-const {tokenId, logger, sendVerificationEmail, getOffererAVG, getApplicantAVG, pagination, checkImg, deleteFile, uploadImg, saveLogES} = require('../../../../shared/functions');
+const {tokenId, logger, sendVerificationEmail, getOffererAVG, getApplicantAVG, pagination, prepareOffersToShow, checkImg, deleteFile, uploadImg, saveLogES} = require('../../../../shared/functions');
 const {checkToken, checkAdmin} = require('../../../../middlewares/authentication');
 const elastic = require('../../../../database/elasticsearch');
 const env = require('../../../../tools/constants');
@@ -46,11 +46,8 @@ module.exports = (app, db) => {
                         [
                             "name",
                             "email",
-                            // "status",
                             "city",
-                            // "dateBorn",
                             "rol",
-                            // "index",
                             "bio",
                             "skills",
                             "languages",
@@ -273,6 +270,7 @@ module.exports = (app, db) => {
                             offer.status = allOffers[j].status;
                             offer.applicationStatus = applications[i].status;
                             offer.aHasRated = applications[i].aHasRated;
+                            offer.aHasRatedDate = applications[i].aHasRatedDate;
                             offer.salaryAmount = allOffers[j].salaryAmount;
                             offer.salaryFrequency = allOffers[j].salaryFrequency;
                             offer.salaryCurrency = allOffers[j].salaryCurrency;
@@ -429,19 +427,20 @@ module.exports = (app, db) => {
                     img: user.img,
                     bio: user.bio,
                     rol: applicant.rol,
-                    social_networks: []
+                    social_networks: {}
                 };
 
                 let networks = await db.social_networks.findOne({
                     where: {userId: user.id}
                 });
 
-                if (networks) {
-                    networks.google ? userApplicant.social_networks.push({google: networks.google}) : null;
-                    networks.twitter ? userApplicant.social_networks.push({twitter: networks.twitter}) : null;
-                    networks.instagram ? userApplicant.social_networks.push({instagram: networks.instagram}) : null;
-                    networks.telegram ? userApplicant.social_networks.push({telegram: networks.telegram}) : null;
-                    networks.linkedin ? userApplicant.social_networks.push({linkeding: networks.linkedin}) : null;
+                if ( networks ) {
+                    networks.google ? userApplicant.social_networks.google = networks.google : null;
+                    networks.twitter ? userApplicant.social_networks.twitter = networks.twitter : null;
+                    networks.github ? userApplicant.social_networks.github = networks.github : null;
+                    networks.instagram ? userApplicant.social_networks.instagram = networks.instagram : null;
+                    networks.telegram ? userApplicant.social_networks.telegram = networks.telegram : null;
+                    networks.linkedin ? userApplicant.social_networks.linkedin = networks.linkedin : null;
                 }
 
                 getData(applicant, userApplicant).then((applicantDates) => {
@@ -520,7 +519,7 @@ module.exports = (app, db) => {
         const body = req.body;
 
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
             let applicant = await db.applicants.findOne({
                 where: {userId: id}
             });
@@ -531,6 +530,18 @@ module.exports = (app, db) => {
             if (applicant) {
                 saveLogES('POST', 'applicant/info', aUser.name);
                 var user = {};
+
+                if ( body.social_networks ) {
+                    body.social_networks.userId = applicant.userId;                
+                    let social_networks = await db.social_networks.findOne({ where: { userId: applicant.userId }});
+                    
+                    if ( social_networks ) {
+                        await db.social_networks.update( body.social_networks, { where: { userId: applicant.userId }});
+                    } else {
+                        await db.social_networks.create( body.social_networks );
+                    }
+                }
+
                 if (body.img && checkImg(body.img)) {
                     var imgName = uploadImg(req, res, next, 'applicants');
                     user.img = imgName;
@@ -578,7 +589,9 @@ module.exports = (app, db) => {
                 return next({type: 'error', error: 'You are not applicant'});
             }
         } catch (err) {
-            deleteFile('uploads/applicants/' + user.img);
+            if ( user.img ) {
+                deleteFile('uploads/applicants/' + user.img);
+            }
             return next({type: 'error', error: err.message});
         }
 
@@ -588,7 +601,7 @@ module.exports = (app, db) => {
     app.put('/applicant', async (req, res, next) => {
         try {
             let logId = await logger.saveLog('PUT', 'applicant', null, res);
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
             let user = await db.users.findOne({
                 where: {id}
             });
@@ -615,7 +628,7 @@ module.exports = (app, db) => {
 
     app.delete('/applicant/applications', async (req, res, next) => {
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
             let applicant = await db.applicants.findOne({where: {userId: id}});
             let applications = await db.applications.findAll();
 
@@ -646,7 +659,7 @@ module.exports = (app, db) => {
     // DELETE by themself
     app.delete('/applicant', async (req, res, next) => {
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
 
             await logger.saveLog('DELETE', 'applicant', id, res);
 
@@ -835,6 +848,17 @@ module.exports = (app, db) => {
                 elasticsearch.rol = body.rol;
             }
 
+            if ( body.social_networks ) {
+                body.social_networks.userId = applicant.userId;                
+                let social_networks = await db.social_networks.findOne({ where: { userId: applicant.userId }});
+
+                if ( social_networks ) {
+                    await db.social_networks.update( body.social_networks, { where: { userId: applicant.userId }});
+                } else {
+                    await db.social_networks.create( body.social_networks );
+                }
+            }
+
             if (body.premium) {
                 createInvoice( id, body.premium );
                 userApp.premium = body.premium;
@@ -864,7 +888,7 @@ module.exports = (app, db) => {
                 }
 
                 applicantUser = await db.users.update(body, {
-                    where: {id}
+                    where: { id }
                 })
             }
 
@@ -1169,12 +1193,12 @@ module.exports = (app, db) => {
             let educations = await applicant.getEducations();
             let languages = await applicant.getLanguages();
             let experiences = await applicant.getExperiences();
-            let applications = await db.applications.findAll();
+            let applications = await db.applications.findAll({ where: { fk_applicant: applicant.userId, status: 3 }});
             let skillsArray = [];
             let languagesArray = [];
             let educationsArray = [];
             let experiencesArray = [];
-            let applicationsArray = [];
+
             if (skills) {
                 for (let i = 0; i < skills.length; i++) {
                     skillsArray.push(skills[i]);
@@ -1200,12 +1224,26 @@ module.exports = (app, db) => {
                 data.experiences = experiencesArray;
             }
             if (applications) {
-                for (let i = 0; i < applications.length; i++) {
-                    if (applications[i].fk_applicant == applicant.userId) {
-                        applicationsArray.push(applications[i]);
-                    }
-                }
-                data.applications = applicationsArray;
+                let offers = await db.offers.findAll();
+                let users = await db.users.findAll({ include: [db.offerers] });
+                 // Search the offers where this applicant applicanted
+                let offersInApplication = [];
+
+                applications.forEach( application => {
+                    offersInApplication.push( offers.find( offer => application.fk_offer === offer.id ) );
+                });
+
+                let offersShow = [];
+
+                offersInApplication.forEach(element => {
+                    let offersAux = [],
+                    offersToShowAux = [];
+                    offersAux.push(element);
+                    offersShow.push(prepareOffersToShow(offersAux, offersToShowAux, users.find(user => element.fk_offerer == user.id))[0]);
+                });
+
+                data.applications = offersShow;
+
             }
         } catch (error) {
             throw new Error(error);

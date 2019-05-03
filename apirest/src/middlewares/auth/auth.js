@@ -9,13 +9,16 @@ class Auth {
             {expiresIn: expires ? expires : env.JSONWEBTOKEN_EXPIRES, issuer: env.JSONWEBTOKEN_ISSUER});
     }
 
-    decode(token) {
+    decode(token, res) {
         try {
             // token = token.replace('Bearer ', '');
             return (jwt.verify(token, env.JSONWEBTOKEN_SECRET, {issuer: env.JSONWEBTOKEN_ISSUER})).id;
         } catch (e) {
             // throw new HttpException('Su token ha expirado', HttpStatus.UNAUTHORIZED);
-            throw new Error('Invalid token');
+            res.status(400).json({
+                ok: false,
+                message: 'Invalid token'
+            })
         }
     }
 }

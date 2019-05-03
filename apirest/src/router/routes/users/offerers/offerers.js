@@ -54,14 +54,9 @@ module.exports = (app, db) => {
                         [
                             "name",
                             "email",
-                            // "status",
                             "address",
                             "bio",
                             "workField",
-                            // "index",
-                            // "companySize",
-                            // "year",
-                            // "dateVerification"
                         ]
                 }
             });
@@ -215,7 +210,7 @@ module.exports = (app, db) => {
 
     });
 
-    // GET one offerer offers by id
+    // GET all offers of offerer id
     app.get('/offerer/:id([0-9]+)/offers', async (req, res, next) => {
         const id = req.params.id;
         let limit = Number(req.query.limit);
@@ -344,6 +339,8 @@ module.exports = (app, db) => {
                         applicantShow.applicationStatus = a.status;
                         applicantShow.aHasRated = a.aHasRated;
                         applicantShow.oHasRated = a.oHasRated;
+                        applicantShow.aHasRatedDate = a.aHasRatedDate;
+                        applicantShow.oHasRatedDate = a.oHasRatedDate;
                         applicantShow.applicantId = applicantUser.id;
                         applicantShow.applicantName = applicantUser.name;
                         applicantShow.applicantIndex = applicantUser.index;
@@ -382,11 +379,11 @@ module.exports = (app, db) => {
             saveLogES('GET', 'offerer/id', 'Visitor');
 
             let user = await db.users.findOne({
-                where: {id}
+                where: { id }
             });
 
             let offerer = await db.offerers.findOne({
-                where: {userId: id}
+                where: { userId: id }
             });
 
             if (user && offerer) {
@@ -411,19 +408,20 @@ module.exports = (app, db) => {
                     bio: user.bio,
                     lat: user.lat,
                     lon: user.lon,
-                    social_networks: []
+                    social_networks: {}
                 };
 
                 let networks = await db.social_networks.findOne({
                     where: {userId: user.id}
                 });
 
-                if (networks) {
-                    networks.google ? userOfferer.social_networks.push({google: networks.google}) : null;
-                    networks.twitter ? userOfferer.social_networks.push({twitter: networks.twitter}) : null;
-                    networks.instagram ? userOfferer.social_networks.push({instagram: networks.instagram}) : null;
-                    networks.telegram ? userOfferer.social_networks.push({telegram: networks.telegram}) : null;
-                    networks.linkedin ? userOfferer.social_networks.push({linkeding: networks.linkedin}) : null;
+                if ( networks ) {
+                    networks.google ? userOfferer.social_networks.google = networks.google : null;
+                    networks.twitter ? userOfferer.social_networks.twitter = networks.twitter : null;
+                    networks.github ? userOfferer.social_networks.github = networks.github : null;
+                    networks.instagram ? userOfferer.social_networks.instagram = networks.instagram : null;
+                    networks.telegram ? userOfferer.social_networks.telegram = networks.telegram : null;
+                    networks.linkedin ? userOfferer.social_networks.linkedin = networks.linkedin : null;
                 }
 
                 return res.status(200).json({
@@ -481,6 +479,7 @@ module.exports = (app, db) => {
                             body.companySize = 0;
                             body.year = null;
                             body.dateVerification = null;
+                            body.status = 0;
 
                             elastic.index({
                                 index: 'offerers',
@@ -523,7 +522,7 @@ module.exports = (app, db) => {
         try {
             let logId = await logger.saveLog('PUT', 'offerer', null, res);
 
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
             let user = await db.users.findOne({
                 where: {id}
             });
@@ -549,7 +548,7 @@ module.exports = (app, db) => {
 
     app.delete('/offerer/applications', async (req, res, next) => {
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
             let offerer = await db.offerers.findOne({where: {userId: id}});
             let offers = await offerer.getOffers();
             let applications = await db.applications.findAll();
@@ -590,7 +589,7 @@ module.exports = (app, db) => {
     // DELETE by themself
     app.delete('/offerer', async (req, res, next) => {
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
 
             await logger.saveLog('DELETE', 'offerer', id, res);
 
@@ -684,7 +683,7 @@ module.exports = (app, db) => {
             where: {userId: id}
         });
 
-        if (offerer) {
+        if ( offerer ) {
             delete body.root;
             delete body.dateVerification;
             let offererUser = true;
@@ -698,6 +697,17 @@ module.exports = (app, db) => {
             }
             body.workField ? userOff.workField = body.workField : null;
             body.website ? userOff.website = body.website : null;
+
+            if ( body.social_networks ) {
+                body.social_networks.userId = offerer.userId;                
+                let social_networks = await db.social_networks.findOne({ where: { userId: offerer.userId }});
+
+                if ( social_networks ) {
+                    await db.social_networks.update( body.social_networks, { where: { userId: offerer.userId }});
+                } else {
+                    await db.social_networks.create( body.social_networks );
+                }
+            }
 
             if ( body.premium ) {
                 createInvoice( id, body.premium );

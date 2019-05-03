@@ -79,7 +79,7 @@ module.exports = (app, db) => {
         let body = req.body;
 
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
             let experience = await db.experiences.create({
                 fk_applicant: id,
                 title: body.title,
@@ -107,7 +107,7 @@ module.exports = (app, db) => {
         const updates = req.body;
 
         try {
-            let fk_applicant = tokenId.getTokenId(req.get('token'));
+            let fk_applicant = tokenId.getTokenId(req.get('token'), res);
 
             await db.experiences.update(updates, {
                 where: {id, fk_applicant}
@@ -146,7 +146,7 @@ module.exports = (app, db) => {
         const id = req.params.id;
 
         try {
-            let fk_applicant = tokenId.getTokenId(req.get('token'));
+            let fk_applicant = tokenId.getTokenId(req.get('token'), res);
 
             await db.experiences.destroy({
                 where: {id, fk_applicant}
