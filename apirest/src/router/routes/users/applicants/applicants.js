@@ -589,7 +589,9 @@ module.exports = (app, db) => {
                 return next({type: 'error', error: 'You are not applicant'});
             }
         } catch (err) {
-            deleteFile('uploads/applicants/' + user.img);
+            if ( user.img ) {
+                deleteFile('uploads/applicants/' + user.img);
+            }
             return next({type: 'error', error: err.message});
         }
 
