@@ -40,7 +40,6 @@ export class SignupCandidateComponent implements OnInit {
   candidate: any;
   hide = false;
   iskill = 0;
-  iskillang = 0;
   isSocialNetwork = false;
   snToken;
   token;
@@ -63,7 +62,6 @@ export class SignupCandidateComponent implements OnInit {
               private activatedRoute: ActivatedRoute,
               private router: Router) {
     this.iskill = 0;
-    this.iskillang = 0;
   }
 
   get formSkills() {
@@ -412,7 +410,6 @@ export class SignupCandidateComponent implements OnInit {
 
   addLanguage() {
     (<FormArray>this.thirdFormGroup.controls['languages']).push(this.addLanguageGroup());
-    this.iskillang++;
     // console.log(this.formLanguages);
   }
 
@@ -423,7 +420,6 @@ export class SignupCandidateComponent implements OnInit {
 
   deleteLanguage(i) {
     (<FormArray>this.thirdFormGroup.controls['languages']).removeAt(i);
-    this.iskillang--;
   }
 
   onDoneLang(index: number) {

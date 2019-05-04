@@ -18,6 +18,8 @@ import {isStringNotANumber} from '../../../../models/Offer.model';
 import {OkDialogComponent} from '../../../shared/ok-dialog/ok-dialog.component';
 
 import * as _moment from 'moment';
+import {ExperienceFormsComponent} from '../../../auth/signup/signup-candidate/experience-forms/experience-forms.component';
+import {EducationFormsComponent} from '../../../auth/signup/signup-candidate/education-forms/education-forms.component';
 
 const moment = _moment;
 
@@ -40,7 +42,6 @@ export class CaProfileSettingsComponent implements OnInit {
   // Control variables
   private dialogShown = false;
   iskill = 0;
-  iskillang = 0;
 
   // Form
   thirdFormGroup: FormGroup;
@@ -56,8 +57,7 @@ export class CaProfileSettingsComponent implements OnInit {
               private router: Router,
               private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects,
               private httpClient: HttpClient) {
-    this.iskill = 0;
-    this.iskillang = 0;
+    this.iskill = -1;
   }
 
   ngOnInit() {
@@ -84,7 +84,7 @@ export class CaProfileSettingsComponent implements OnInit {
       'linkedIn': new FormControl(null),
       'github': new FormControl(null),
       'telegram': new FormControl(null),
-      'skills': new FormArray([new FormControl(null)]),
+      'skills': new FormArray([]),
       'languages': this._formBuilder.array([]),
       'experience': this._formBuilder.array([]),
       'education': this._formBuilder.array([])
@@ -94,17 +94,12 @@ export class CaProfileSettingsComponent implements OnInit {
     this.profilesState = this.store$.pipe(select(state => state.profiles));
     this.profilesState.subscribe((state) => {
         if (state.candidate) {
-          // console.log(state.candidate);
-
           this.thirdFormGroup.controls['bio'].setValue(state.candidate.bio);
-          // this.thirdFormGroup.controls['companySize'].setValue(state.business.companySize);
-          // this.thirdFormGroup.controls['year'].setValue(state.business.year);
-          // this.thirdFormGroup.controls['website'].setValue(state.business.website);
-
           this.prefillSNS(state.candidate);
           this.prefillLanguages(state.candidate.languages);
-
-          // console.log(this.thirdFormGroup.value);
+          this.prefillExperiences(state.candidate.experiences);
+          this.prefillEducation(state.candidate.educations);
+          this.prefillSkills(state.candidate.skills);
         }
       }
     );
@@ -169,7 +164,7 @@ export class CaProfileSettingsComponent implements OnInit {
       update['img'] = this.file;
     }
 
-    console.log(update);
+    // console.log(update);
 
     this.submitUpdate(update);
   }
@@ -213,9 +208,49 @@ export class CaProfileSettingsComponent implements OnInit {
             'language': new FormControl(language.language, Validators.required),
             'level': new FormControl(language.applicant_languages.level, Validators.required)
           }));
-        this.iskillang++;
       }
-      console.log(this.thirdFormGroup.controls['languages'].value);
+    }
+  }
+
+  private prefillExperiences(experiences: any[]) {
+    if ((<FormArray>this.thirdFormGroup.controls['experience'].value).length === 0) {
+      for (const experience of experiences) {
+        (<FormArray>this.thirdFormGroup.controls['experience']).push(
+          this._formBuilder.group({
+            'title': new FormControl(experience.title, Validators.required),
+            'start': new FormControl(moment(experience.dateStart), [ExperienceFormsComponent.maxMinDate, ExperienceFormsComponent.maxDate]),
+            'end': new FormControl(moment(experience.dateEnd), [ExperienceFormsComponent.maxMinDate, ExperienceFormsComponent.maxDate]),
+            'description': new FormControl(experience.description)
+          }));
+      }
+    }
+  }
+
+  private prefillEducation(educations: any[]) {
+    if ((<FormArray>this.thirdFormGroup.controls['education'].value).length === 0) {
+      for (const education of educations) {
+        (<FormArray>this.thirdFormGroup.controls['education']).push(
+          this._formBuilder.group({
+            'title': new FormControl(education.title, Validators.required),
+            'institution': new FormControl(education.applicant_educations.institution),
+            'start': new FormControl(moment(education.applicant_educations.dateStart), EducationFormsComponent.maxMinDate),
+            'end': new FormControl(moment(education.applicant_educations.dateEnd), EducationFormsComponent.maxMinDate),
+            'description': new FormControl(education.applicant_educations.description)
+          }));
+      }
+    }
+  }
+
+  private prefillSkills(skills: any[]) {
+    if ((<FormArray>this.thirdFormGroup.controls['skills'].value).length === 0) {
+      for (const skill of skills) {
+        (<FormArray>this.thirdFormGroup.controls['skills']).push(new FormControl(skill.name));
+        this.iskill++;
+      }
+      if ((<FormArray>this.thirdFormGroup.controls['skills'].value).length === 0) {
+        (<FormArray>this.thirdFormGroup.controls['skills']).push(new FormControl(null));
+        this.iskill++;
+      }
     }
   }
 
@@ -345,7 +380,6 @@ export class CaProfileSettingsComponent implements OnInit {
 
   addLanguage() {
     (<FormArray>this.thirdFormGroup.controls['languages']).push(this.addLanguageGroup());
-    this.iskillang++;
     // console.log(this.formLanguages);
   }
 
@@ -358,7 +392,6 @@ export class CaProfileSettingsComponent implements OnInit {
 
   deleteLanguage(i) {
     (<FormArray>this.thirdFormGroup.controls['languages']).removeAt(i);
-    this.iskillang--;
   }
 
   getProf(n: string) {
