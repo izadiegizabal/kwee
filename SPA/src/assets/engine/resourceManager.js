@@ -291,7 +291,7 @@ class TResourceMesh extends TResource{
 
     draw(){
 
-
+      global.gl.useProgram(global.program);
 
 
       // if(global.gl && global.program) {
@@ -330,11 +330,10 @@ class TResourceMesh extends TResource{
         
         // global.gl.enableVertexAttribArray(global.programAttributes.aVertexPosition);
         // global.gl.enableVertexAttribArray(global.programAttributes.aVertexNormal);
-      if(this.color != null){
-        // draw material with that color
-        global.gl.uniform4fv(global.programUniforms.uMaterialDiffuse, this.color);
-
-      }
+       
+        this.color ? global.gl.uniform4fv(global.programUniforms.uMaterialDiffuse, this.color) : global.gl.uniform4fv(global.programUniforms.uMaterialDiffuse, [1,0,0,1]); 
+         
+       
 
         global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.vbo);
         global.gl.vertexAttribPointer(global.programAttributes.aVertexPosition, 3, global.gl.FLOAT, global.gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
@@ -359,35 +358,18 @@ class TResourceMesh extends TResource{
         //var rotation = glMatrix.mat4.create();
         // //glMatrix.mat4.rotate(rotation, worldMatrix, angle, [0, 1, 0]);
         
-        // MVMatrix
-        var worldMatrix = global.auxMatrix;
-        global.gl.uniformMatrix4fv(global.programUniforms.uMVMatrix, false, worldMatrix);
+        // MVMatrix = model * view
+        let viewModel = [];
+        glMatrix.mat4.multiply(viewModel, global.viewMatrix, global.modelMatrix);
+        global.gl.uniformMatrix4fv(global.programUniforms.uMVMatrix, false, viewModel);
+
+        // uPMatrix * uMVMatrix (on shader)
 
         // NMatrix
         let normalMatrix = glMatrix.mat4.create();
-        glMatrix.mat4.set(worldMatrix, normalMatrix);
-        glMatrix.mat4.invert(normalMatrix, normalMatrix);
+        glMatrix.mat4.invert(normalMatrix, viewModel);
         glMatrix.mat4.transpose(normalMatrix, normalMatrix);
         global.gl.uniformMatrix4fv(global.programUniforms.uNMatrix, false, normalMatrix);
-
-         // Projection Matrix
-        global.gl.uniformMatrix4fv(global.programUniforms.uPMatrix, false, global.projectionMatrix);
-
-        
-        // let aux = glMatrix.mat4.create();
-        // /// SORRRRRY, I HAD TO
-        // glMatrix.mat4.set(aux, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -2, 1);
-        // let auxAux = glMatrix.mat4.create();
-        // glMatrix.mat4.multiply(auxAux, rotation, aux);
-
-        // glMatrix.mat4.invert(auxAux, auxAux);
-        // glMatrix.mat4.transpose(auxAux, auxAux);
-
-        // // let NMatrix = glMatrix.mat4.create();
-        // // glMatrix.mat4.set(global.modelViewMatrix, NMatrix);
-        // // glMatrix.mat4.invert(NMatrix, NMatrix);
-        // // glMatrix.mat4.transpose(NMatrix, NMatrix);
-
        
         ///////////////////////////////////////////////////////////////////////////////// DRAW
         global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, this.ibo);

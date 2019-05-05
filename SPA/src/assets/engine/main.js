@@ -22,7 +22,9 @@ async function mainInit() {
   return new Promise(async resolve => {
 
     //global.gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
-    //global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
+
+    // (0.435, 0.909, 0.827, 0.0); // our blue
+    // (0.266, 0.294, 0.329, 1.0); // our grey
 
     manager = new TResourceManager();
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -159,8 +161,7 @@ async function mainR(texture, particles, line) {
     /////////////////////                                         INIT CONFIG
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // global.gl.clearColor(0.266, 0.294, 0.329, 1.0); // our grey
-    // global.gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
+
 
     global.gl.useProgram(global.program);
 
@@ -174,13 +175,12 @@ async function mainR(texture, particles, line) {
     // motor.scale(card, [0.2, 0.1, 0.2] );
     //motor.translate(card, convertLatLonToVec3(40.415363, -3.707398));
 
-    let cam = motor.createCamera(scene);
-    let light = motor.createLight(scene);
-
-    //land = await motor.loadMesh(scene, 'earthobj.json');
+    // EARTH
     let land = await motor.loadMesh(scene, 'earth_LP.json');
     land.entity.mesh.setColor( [ 0.2, 0.9, 0.2, 1.0] );
-    motor.scale(land, [5.0, 5.0, 5.0]);
+
+    // motor.scale(land, [5.0, 5.0, 5.0]);
+    // motor.scale(land, [0.25, 0.25, 0.25]);
 
     // if (texture) {
     //   let tex = await manager.getResource('continents.jpg');
@@ -189,16 +189,12 @@ async function mainR(texture, particles, line) {
     // } else {
     //   //land.entity.mesh.tex = undefined;
     // }
-    //motor.rotate(land, -90, 'z');
-
+    
+    // SEA
     let sphere = await motor.loadMesh(scene, 'sea.json');
     sphere.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 1.0] );
-    motor.scale(sphere, [5.0, 5.0, 5.0]);
-
-    //motor.scale(sphere, [4.88, 4.88, 4.88]);
-    //motor.scale(sphere, [5.05, 5.05, 5.05]);
-
-
+    
+    
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         Markers
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -228,69 +224,70 @@ async function mainR(texture, particles, line) {
     // motor.translate(point6, convertLatLonToVec3(35.6895, 139.69171));
     
     ///// 0 === false ; 1 === true
-    let uWireframe = global.gl.getUniformLocation(global.program, 'uWireframe');
-    global.gl.uniform1i(uWireframe, 0);
-    let uUseVertexColor = global.gl.getUniformLocation(global.program, 'uUseVertexColor');
-    global.gl.uniform1i(uUseVertexColor, 0);
-    let uUseTextures = global.gl.getUniformLocation(global.program, 'uUseTextures');
-    global.gl.uniform1i(uUseTextures, 0);
+    // let uWireframe = global.gl.getUniformLocation(global.program, 'uWireframe');
+    // global.gl.uniform1i(uWireframe, 0);
+    // let uUseVertexColor = global.gl.getUniformLocation(global.program, 'uUseVertexColor');
+    // global.gl.uniform1i(uUseVertexColor, 0);
+    // let uUseTextures = global.gl.getUniformLocation(global.program, 'uUseTextures');
+    // global.gl.uniform1i(uUseTextures, 0);
 
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         particles
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    let TFocus = motor.createFocus(scene, 50, convertLatLonToVec3(-33.865143, 151.209900) ).entity;
+    //let TFocus = motor.createFocus(scene, 50, convertLatLonToVec3(-33.865143, 151.209900) ).entity;
+    let positionTFocus = [-0.8,0.5,0.0];
+    let TFocus = motor.createFocus(scene, 100, positionTFocus );
 
+    let point6 = await motor.loadMesh(scene, 'marker.json');
+    motor.scale(point6, [0.3, 0.3, 0.3]);
+    motor.translate(point6, positionTFocus);
+    point6.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 0.5] );
+
+
+    // let point5 = await motor.loadMesh(scene, 'marker.json');
+    // motor.scale(point5, [0.5, 0.5, 0.5]);
+    // motor.translate(point5, [-0.3,0.0,0.0]);
+
+
+    // let point4 = await motor.loadMesh(scene, 'marker.json');
+    // motor.scale(point4, [0.8, 0.8, 0.8]);
+    // motor.translate(point4, [-0.6,0.0,0.0]);
+
+
+    // let point3 = await motor.loadMesh(scene, 'marker.json');
+    // motor.scale(point3, [1,1,1]);
+    // motor.translate(point3, [-0.9,0.0,0.0]);
+    
     let particlesTexture = await manager.getResource('spark.png');
 
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         CAMERAS
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // console.log("scene:");
-    // console.log(scene);
+    let cam = motor.createCamera(scene);
+    let radius = 4;
+    // working
+    motor.translate(cam, [0.0 , 0.0, -radius]);
+    //motor.lookAt(cam, [0, 0, 0.05], [0, 0, 0], [0, 1, 0]);
     
-    motor.translate(cam, [0.0 , 0.0, -10]);
-    // -- not working: 
-    //motor.lookAt(cam, [0, 0, -2], [0, 0, 1], [0, 1, 0]);
-    
-    motor.calculateLights();
+    // motor.cameraLookAt( cam, [
+    //     radius * Math.sin(0*Math.PI/180),
+    //     0,
+    //     radius * Math.cos(0*Math.PI/180)
+    //   ]);
+
     motor.calculateViews();
     
-    //global.modelViewMatrix = await glMatrix.mat4.translate(global.modelViewMatrix,global.modelViewMatrix, [0.0 , 0.0, -25]);
 
-    let off = global.gl.getUniformLocation(global.program, 'uOffscreen');
-    global.gl.uniform1i(off, 0);
-    //global.gl.bindFramebuffer(global.gl.FRAMEBUFFER, null);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         LIGHTNING
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //                           father  type    ambient      specular       diffuse         direction
+    let light = motor.createLight(scene, 1, [0.2,0.2,0.2,1.0], null, [0.5,0.5,0.5,1.0], [10.0, 10.0, 10.0]);
 
-    // let lightPos = global.gl.getUniformLocation(global.program, 'uLightPosition');
-    // let lightAmb = global.gl.getUniformLocation(global.program, 'uLightAmbient');
-    // let lightDiff = global.gl.getUniformLocation(global.program, 'uLightDiffuse');
-    // let alpha = global.gl.getUniformLocation(global.program, 'uAlpha');
-
-    // /// @todo: MOVE TO TNODE
-    // global.gl.uniform3fv(lightPos, [5, 5, 5]);
-    // global.gl.uniform4fv(lightAmb, [0.0, 0.0, 0.0, 1.0]);
-    // global.gl.uniform4fv(lightDiff, [1.0, 1.0, 1.0, 1.0]);
-    // global.gl.uniform1f(alpha, 1.0);
-
-           // Lights
-          //  let uLightDirection = global.gl.getUniformLocation(global.program, 'uLightDirection');
-          //  let uLightAmbient = global.gl.getUniformLocation(global.program, 'uLightAmbient');
-          //  let uLightDiffuse = global.gl.getUniformLocation(global.program, 'uLightDiffuse');
-          //  let uMaterialDiffuse = global.gl.getUniformLocation(global.program, 'uMaterialDiffuse');
-           global.gl.uniform3f(global.programUniforms.uLightDirection,   10.0, 10.0, 10.0);
-           global.gl.uniform4f(global.programUniforms.uLightAmbient,     0.2,0.2,0.2,1.0);
-           global.gl.uniform4f(global.programUniforms.uLightDiffuse,     0.5,0.5,0.5,1.0);	
-           global.gl.uniform4f(global.programUniforms.uMaterialDiffuse,  0.5,0.8,0.1,1.0);
-    
-    
+    motor.calculateLights();
 
     ///////// CHAPUZA MASTER AYY LMAO
     allowActions.value = true;
@@ -318,7 +315,6 @@ async function mainR(texture, particles, line) {
 
 
 
-    console.log(scene);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         ARCS
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -351,9 +347,7 @@ async function mainR(texture, particles, line) {
     global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
 
 
-    // let uMaterialDiffuse = global.gl.getUniformLocation(global.program, 'uMaterialDiffuse');
-    // let uMaterialAmbient = global.gl.getUniformLocation(global.program, 'uMaterialAmbient');
-    
+    console.log(scene);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         LOOP
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -362,26 +356,29 @@ async function mainR(texture, particles, line) {
     var num = 0;
     var rotation = -1;
     var maxLines = vertices.length/3;
-    let number = 0.3;
+    let number = 0;
     var loop = async function (now, now2) {
       if (draw) {
-        // (0.435, 0.909, 0.827, 0.0); // our blue
-        // (0.266, 0.294, 0.329, 1.0); // grey??
-
+        
         global.gl.useProgram(global.program);
         
         global.time = await Date.now();
       
         ////////////////////////////////////////////////////////////////
         
-     
-
-        ////////////////////////////////////////////////////////////////
-        if(land!=null){ motor.setRotation(land, number, 'y'); }
-        if(sphere!=null){ motor.setRotation(sphere, number, 'y'); }
+        // motor.cameraLookAt( cam, [
+        //   radius * Math.sin(number*Math.PI/180),
+        //   0,
+        //   radius * Math.cos(number*Math.PI/180)
+        // ]);
+        
+        motor.calculateViews();
 
         motor.draw();
         
+        ////////////////////////////////////////////////////////////////
+        
+       
         // @todo Replace now2 and last with global.time and global.lastFrameTime
         if(rotateMeshBool) {
           if(!last2 || now2 - last >= 1*1000) {
@@ -431,7 +428,8 @@ async function mainR(texture, particles, line) {
 
         requestAnimationFrame(loop);
       }
-      number = number + 0.3;
+      number = number + 0.01;
+      if(number>2) number = 0;
     };
 
     loop();

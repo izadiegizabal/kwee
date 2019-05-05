@@ -109,14 +109,12 @@ import {global} from "./commons";
 
     beginDraw() {
         // push the model matrix
-        let MVMatrix = global.auxMatrix;
-        global.stack.push( MVMatrix );
-        //TEntity.stack.push(TEntity.Model);
+        global.stack.push( global.modelMatrix.slice(0) );
         
         // multiply the current model matrix with the TTransform matrix with
-        glMatrix.mat4.multiply(MVMatrix, MVMatrix, this.matrix);
+        glMatrix.mat4.multiply(global.modelMatrix, global.modelMatrix, this.matrix);
 
-        global.auxMatrix = [...MVMatrix];
+       
         /*console.log('--------');
         console.log('----------------------');
         console.log('-------------------------------------- Stack');
@@ -130,9 +128,8 @@ import {global} from "./commons";
 
     endDraw() {
         // pop and set the current model matrix
-        let mat = global.stack.pop();
+        global.modelMatrix = global.stack.pop();
         
-        global.auxMatrix = mat;
     }
 
 }
@@ -144,7 +141,7 @@ import {global} from "./commons";
     // specular vec4: r g b a ?
     // direction vec4: x y z ?
     // s coeficient
-    constructor(typ, intensity /* = ambient */, specular, diffuse, direction) {
+    constructor(typ, intensity /* = ambient */, specular, diffuse, direction, coef) {
         super();
         this.typ = typ;
         this.intensity = glMatrix.vec4.create();
@@ -161,15 +158,22 @@ import {global} from "./commons";
         }
         this.direction = glMatrix.vec4.create();
         if (direction) {
-            this.direction = (direction.length === 4)
-                ? glMatrix.vec4.fromValues(...direction)
-                : glMatrix.vec4.fromValues(...direction, 1.0);
+            this.direction = (direction.length === 3)
+                ? glMatrix.vec3.fromValues(...direction)
+                : null;
         }
         this.diffuse = glMatrix.vec4.create();
         if (diffuse) {
             this.diffuse = (diffuse.length === 4)
                 ? glMatrix.vec4.fromValues(...diffuse)
                 : glMatrix.vec4.fromValues(...diffuse, 1.0);
+        }
+
+        this.coef = glMatrix.vec4.create();
+        if(coef){
+            this.coef = (coef.length == 4 )
+                ? glMatrix.vec4.fromValues(...coef)
+                : glMatrix.vec4.fromValues(...coef, 1.0);
         }
 
 
@@ -405,13 +409,13 @@ class TFocus extends TEntity {
     
             //  mapUniforms
             
-            //global.gl.uniformMatrix4fv(uniformMVMatrix, false, global.modelViewMatrix);  //Maps the Model-View matrix to the uniform prg.uMVMatrix
-            global.gl.uniformMatrix4fv(global.particlesUniforms.uMVMatrix, false, global.auxMatrix);  //Maps the Model-View matrix to the uniform prg.uMVMatrix            
+            let viewModel = [];
+            glMatrix.mat4.mul(viewModel, global.viewMatrix, global.modelMatrix);
+            global.gl.uniformMatrix4fv(global.particlesUniforms.uMVMatrix, false, viewModel);  //Maps the Model-View matrix to the uniform prg.uMVMatrix            
             global.gl.uniformMatrix4fv(global.particlesUniforms.uPMatrix, false, global.projectionMatrix);    //Maps the Perspective matrix to the uniform prg.uPMatrix
             
     
             // uPointSize = size of each particle
-            //let uniformPointSize = global.gl.getUniformLocation(global.particlesProgram, "uPointSize");
             global.gl.uniform1f(global.particlesUniforms.uPointSize, 14.0);
             
             // let attributeParticle = global.gl.getAttribLocation(global.particlesProgram, "aParticle");

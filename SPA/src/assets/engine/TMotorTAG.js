@@ -106,6 +106,7 @@ class TMotorTAG{
         }
     }
 
+    // angle in degrees!
     setRotation( node, angle, axis ) {
       node.father.father.entity.identity();
       switch (axis) {
@@ -132,6 +133,15 @@ class TMotorTAG{
         node.father.father.father.entity.scale(units);
     }
 
+    cameraLookAt( node, cameraPosition, target = [0,0,0], up = [0,1,0]) {
+      glMatrix.mat4.lookAt(
+        node.father.entity.matrix,
+        cameraPosition,
+        target,
+        up
+      )
+    }
+
     async lookAt(TNodeCam, eye, center, up) {
         let x0, x1, x2, y0, y1, y2, z0, z1, z2, len;
         let eyex = eye[0];
@@ -143,10 +153,12 @@ class TMotorTAG{
         let centerx = center[0];
         let centery = center[1];
         let centerz = center[2];
+        var out = await glMatrix.mat4.create();
+        
         if (Math.abs(eyex - centerx) < glMatrix.glMatrix.EPSILON &&
             Math.abs(eyey - centery) < glMatrix.glMatrix.EPSILON &&
             Math.abs(eyez - centerz) < glMatrix.glMatrix.EPSILON) {
-          return identity(out);
+          return glMatrix.mat4.identity(out);
         }
         z0 = eyex - centerx;
         z1 = eyey - centery;
@@ -187,7 +199,6 @@ class TMotorTAG{
         var coso = [x0, y0, z0, 0 , x1, y1, z1, 0 , x2, y2, z2, 0,  -(x0 * eyex + x1 * eyey + x2 * eyez), -(y0 * eyex + y1 * eyey + y2 * eyez), -(z0 * eyex + z1 * eyey + z2 * eyez), 1];
   
 
-        var out = glMatrix.mat4.create();
         out = await glMatrix.mat4.set(out, x0, y0, z0, 0, x1, y1, z1, 0, x2, y2, z2, 0, -(x0 * eyex + x1 * eyey + x2 * eyez), -(y0 * eyex + y1 * eyey + y2 * eyez), -(z0 * eyex + z1 * eyey + z2 * eyez), 1);   
   
         out = await glMatrix.mat4.invert(out, out);
@@ -197,10 +208,11 @@ class TMotorTAG{
 
       }
 
-    createLight(father, typ, intensity, specular, direction, s){
+    createLight(father, typ, intensity, specular, diffuse, direction, coef){
 
         // typ, intensity, specular, direction, s
-        let light = new TLight(typ, intensity, specular, direction, s);
+        // typ, intensity /* = ambient */, specular, diffuse, direction, coef
+        let light = new TLight(typ, intensity, specular, diffuse, direction, coef);
         let NLight = this.createBranch(father, light);
 
         this.allLights.push(NLight);
@@ -244,6 +256,7 @@ class TMotorTAG{
         return NMesh;
     }
 
+
     draw(){
       // Clear
       global.gl.useProgram(global.program);
@@ -252,26 +265,15 @@ class TMotorTAG{
       global.gl.enable(global.gl.CULL_FACE);
       global.gl.frontFace(global.gl.CCW);
       global.gl.cullFace(global.gl.BACK);
-
       // global.gl.enable(global.gl.BLEND);
       // global.gl.blendFunc(global.gl.SRC_ALPHA, global.gl.ONE_MINUS_SRC_ALPHA);
 
-      // // -- BINDINGS --
-      // // ModelView Matrix
-      // let uMVMatrix = global.gl.getUniformLocation(global.program, 'uMVMatrix');
-      // global.gl.uniformMatrix4fv(uMVMatrix, false, global.modelViewMatrix);
-    
-      // // Normal matrix
-      // let uNMatrix = global.gl.getUniformLocation(global.program, 'uNMatrix');
-      // let normalMatrix = glMatrix.mat4.create();
-      // glMatrix.mat4.set(uMVMatrix, normalMatrix);
-      // glMatrix.mat4.invert(normalMatrix, normalMatrix);
-      // glMatrix.mat4.transpose(normalMatrix, normalMatrix);
-      // global.gl.uniformMatrix4fv(uNMatrix, false, normalMatrix);
       
-      // // Projection Matrix
-      // let uPMatrix = global.gl.getUniformLocation(global.program, 'uPMatrix');
-      // global.gl.uniformMatrix4fv(uPMatrix, false, global.projectionMatrix);
+      // We can set the PMatrix once here (it will be the same for every Entity)
+      // -- MVMatrix and NMatrix will change over the rest of Entities
+
+      // Projection Matrix
+      global.gl.uniformMatrix4fv(global.programUniforms.uPMatrix, false, global.projectionMatrix);
 
       this.scene.draw();
     }
@@ -285,6 +287,13 @@ class TMotorTAG{
 
         let lights = glMatrix.mat4.create();
 
+
+        // todo & to fix:
+        global.gl.uniform4f(global.programUniforms.uLightAmbient,     ...this.allLights[0].entity.getIntensity());
+        global.gl.uniform3f(global.programUniforms.uLightDirection,   ...this.allLights[0].entity.getDirection());
+        global.gl.uniform4f(global.programUniforms.uLightDiffuse,     ...this.allLights[0].entity.getDiffuse());	
+        
+
         this.allLights.forEach((e) => {
             this.goToRoot(e);
             
@@ -295,6 +304,7 @@ class TMotorTAG{
 
             this.aux = [];
         });
+
     }
     
     // same as calculateLights but for the Cameras
@@ -304,24 +314,28 @@ class TMotorTAG{
        
         this.allCameras.forEach((e) => {
           this.goToRoot(e);
-          for (let i = this.aux.length - 1; i >= 0; i--) {
-              glMatrix.mat4.mul(cameras, cameras, this.aux[i])
-              glMatrix.mat4.invert(cameras, cameras);
+          if(this.aux.length!=0)
+          {
+            for (let i = this.aux.length - 1; i >= 0; i--) {
+                glMatrix.mat4.mul(cameras, cameras, this.aux[i])
+                //glMatrix.mat4.invert(cameras, cameras);
+            }
           }
 
-          this.positionCameras.push(cameras);
+          this.positionCameras.push(cameras.slice(0));
           
           // Set viewMatrix to active camera
           // (this will be the first matrix to be multiplied to the objects position)
-          global.auxMatrix = cameras;
+          //global.auxMatrix = cameras;
 
           this.aux = [];
         });
         
         // Inverse of cameras matrix = MVMatrix
-        glMatrix.mat4.invert(cameras, cameras);
+        // ----- not needed (?) -----------
+        // glMatrix.mat4.invert(cameras, cameras);
 
-        global.modelViewMatrix = cameras;
+        global.viewMatrix = cameras;
 
     }
     

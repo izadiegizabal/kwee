@@ -6,12 +6,13 @@ var global = {
   gl: null,
   program: null,
   particlesProgram: null,
-  modelViewMatrix: null,
-  projectionMatrix: null,
+  modelMatrix: null,      // model Matrix
+  viewMatrix: null,       // view Matrix
+  projectionMatrix: null, // projection Matrix
+  stack : null,           // stack of models Matrix
   auxMatrix: null,
   time: null,
   lastFrameTime: null,
-  stack : null,
   programAttributes: {
     aVertexPosition: null,
     aVertexNormal: null,
@@ -49,15 +50,17 @@ function shared() {
         global.particlesProgram = global.gl.createProgram();
 
         // init matrix
-        global.modelViewMatrix = await glMatrix.mat4.create();
+        global.modelMatrix = await glMatrix.mat4.create();
+        global.viewMatrix = await glMatrix.mat4.create();
         global.projectionMatrix = await glMatrix.mat4.create();
         global.projectionMatrix = await glMatrix.mat4.perspective(global.projectionMatrix, glMatrix.glMatrix.toRadian(45), canvas.clientWidth / canvas.clientHeight, 0.1, 1000.0);
 
         // mvMatrix to be multiplied when exploring the tree
-        global.auxMatrix = await glMatrix.mat4.create();
+        // global.auxMatrix = await glMatrix.mat4.create();
 
         // Stack to save mvMatrix multiplied
         global.stack = new Stack(); 
+        global.stack.push(global.modelMatrix);
 
     }
     resolve(true);
