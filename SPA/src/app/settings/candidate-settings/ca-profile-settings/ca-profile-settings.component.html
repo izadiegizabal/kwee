@@ -136,12 +136,10 @@
       <div>
         <div fxFlex="99%" fxLayout="column" fxLayoutGap="16px">
           <div *ngIf="this.formLanguages.value" fxLayout="column" fxLayoutGap="16px">
-            <div *ngFor="let language of formLanguages.controls; let j =index;" formArrayName="languages"
-                 fxLayout="column"
-                 fxLayoutGap="16px">
-              <div [formGroupName]="j" fxFlex=80%; fxLayout="column">
-                <mat-accordion>
-                  <mat-checkbox #toggle [checked]="true" style="display: none"></mat-checkbox>
+            <mat-accordion>
+              <div *ngFor="let language of formLanguages.controls; let j =index;" formArrayName="languages">
+                <div [formGroupName]="j">
+                  <mat-checkbox #toggle [checked]="false" style="display: none"></mat-checkbox>
                   <mat-expansion-panel [(expanded)]="toggle.checked">
                     <mat-expansion-panel-header>
                       <mat-panel-title *ngIf="language">
@@ -149,7 +147,7 @@
                         <ng-template #l><span>Language</span></ng-template>
                       </mat-panel-title>
                       <mat-panel-description fxHide fxShow.gt-xs>
-                        <span *ngIf="thirdFormGroup.get('languages').controls[j].controls.level; else p">
+                        <span *ngIf="thirdFormGroup.get('languages').controls[j].controls.level.value; else p">
                           {{getProf(thirdFormGroup.get('languages').controls[j].controls.level.value)}}
                         </span>
                         <ng-template #p><span>Proficiency</span></ng-template>
@@ -203,9 +201,9 @@
 
                     </div>
                   </mat-expansion-panel>
-                </mat-accordion>
+                </div>
               </div>
-            </div>
+            </mat-accordion>
             <div class="divBtn" fxLayout="column" fxLayoutAlign="end">
               <button (click)="addLanguage();" mat-button type="button">
                 Add

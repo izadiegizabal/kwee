@@ -40,13 +40,9 @@ export class ExperienceFormsComponent implements OnInit {
 
   @Output() formReady = new EventEmitter<FormArray>();
   experiences: FormGroup;
-  iskilex = 0;
 
   constructor(private _formBuilder: FormBuilder,
               public dialog: MatDialog) {
-
-    this.iskilex = 0;
-
   }
 
   get formExperience() {
@@ -101,13 +97,10 @@ export class ExperienceFormsComponent implements OnInit {
 
   addExperience() {
     (<FormArray>this.experiences.controls['experience']).push(this.addExperienceGroup());
-    this.iskilex++;
-    // console.log(this.formExperience.value);
   }
 
   deleteExperience(i) {
     (<FormArray>this.experiences.controls['experience']).removeAt(i);
-    this.iskilex--;
   }
 
   onChange(e, s, dsds) {
