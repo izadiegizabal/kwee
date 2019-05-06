@@ -176,7 +176,8 @@ async function mainR(texture, particles, line) {
     //motor.translate(card, convertLatLonToVec3(40.415363, -3.707398));
 
     // EARTH
-    let land = await motor.loadMesh(scene, 'earth_LP.json');
+    //let land = await motor.loadMesh(scene, 'earth_LP.json');
+    let land = await motor.loadMesh(scene, 'earth_LP_high.json');
     land.entity.mesh.setColor( [ 0.2, 0.9, 0.2, 1.0] );
 
     // motor.scale(land, [5.0, 5.0, 5.0]);
@@ -237,28 +238,21 @@ async function mainR(texture, particles, line) {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //let TFocus = motor.createFocus(scene, 50, convertLatLonToVec3(-33.865143, 151.209900) ).entity;
-    let positionTFocus = [-0.8,0.5,0.0];
-    let TFocus = motor.createFocus(scene, 100, positionTFocus );
+//    let positionTFocus = [0.0,0.0,-1.0];
+    let positionTFocus = [-1.0,0.0,0.0];
+    let targetPos = [0.0, 0.7, 0.0]
+    let TFocus = motor.createFocus(scene, 50, positionTFocus );
+    //motor.rotate(TFocus, 45, 'x')
+    
+    let origin = await motor.loadMesh(scene, 'marker.json');
+    motor.scale(origin, [0.1, 0.1, 0.1]);
+    motor.translate(origin, positionTFocus);
+    origin.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 0.5] );
 
-    let point6 = await motor.loadMesh(scene, 'marker.json');
-    motor.scale(point6, [0.3, 0.3, 0.3]);
-    motor.translate(point6, positionTFocus);
-    point6.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 0.5] );
-
-
-    // let point5 = await motor.loadMesh(scene, 'marker.json');
-    // motor.scale(point5, [0.5, 0.5, 0.5]);
-    // motor.translate(point5, [-0.3,0.0,0.0]);
-
-
-    // let point4 = await motor.loadMesh(scene, 'marker.json');
-    // motor.scale(point4, [0.8, 0.8, 0.8]);
-    // motor.translate(point4, [-0.6,0.0,0.0]);
-
-
-    // let point3 = await motor.loadMesh(scene, 'marker.json');
-    // motor.scale(point3, [1,1,1]);
-    // motor.translate(point3, [-0.9,0.0,0.0]);
+    // let target = await motor.loadMesh(scene, 'marker.json');
+    // motor.scale(target, [0.1, 0.1, 0.1]);
+    // motor.translate(target, targetPos);
+    // target.entity.mesh.setColor( [ 1, 0.3, 0.8, 1] );
     
     let particlesTexture = await manager.getResource('spark.png');
 
@@ -267,16 +261,17 @@ async function mainR(texture, particles, line) {
     /////////////////////                                         CAMERAS
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     let cam = motor.createCamera(scene);
-    let radius = 4;
-    // working
-    motor.translate(cam, [0.0 , 0.0, -radius]);
-    //motor.lookAt(cam, [0, 0, 0.05], [0, 0, 0], [0, 1, 0]);
+    motor.enableCam(cam);
+
+    let radius = 1.7; // normal
+    //let radius = 5; // debug
+    //motor.translate(cam, [0.0 , 0.0, -radius]);
     
-    // motor.cameraLookAt( cam, [
-    //     radius * Math.sin(0*Math.PI/180),
-    //     0,
-    //     radius * Math.cos(0*Math.PI/180)
-    //   ]);
+    motor.cameraLookAt( cam, [
+      radius * Math.sin(0*Math.PI/180),
+      0,
+      radius * Math.cos(0*Math.PI/180)
+    ]);
 
     motor.calculateViews();
     
@@ -361,18 +356,25 @@ async function mainR(texture, particles, line) {
       if (draw) {
         
         global.gl.useProgram(global.program);
-        
+
         global.time = await Date.now();
       
         ////////////////////////////////////////////////////////////////
         
-        // motor.cameraLookAt( cam, [
-        //   radius * Math.sin(number*Math.PI/180),
-        //   0,
-        //   radius * Math.cos(number*Math.PI/180)
-        // ]);
-        
+        motor.cameraLookAt( cam, [
+          radius * Math.sin(number*Math.PI/180),
+          0,
+          radius * Math.cos(number*Math.PI/180),
+        ]);
+
+       
         motor.calculateViews();
+
+        global.gl.uniform3f(global.programUniforms.uLightDirection, 
+          radius * Math.sin(number*Math.PI/180),
+          0,
+          radius * Math.cos(number*Math.PI/180)
+        );
 
         motor.draw();
         
@@ -428,10 +430,11 @@ async function mainR(texture, particles, line) {
 
         requestAnimationFrame(loop);
       }
-      number = number + 0.01;
-      if(number>2) number = 0;
+      number = number + 0.3;
+      if(number>360) number = 0;
     };
 
+    motor.init();
     loop();
 
   }

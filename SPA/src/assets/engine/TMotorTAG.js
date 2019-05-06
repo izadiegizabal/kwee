@@ -126,20 +126,35 @@ class TMotorTAG{
     }
 
     translate( node, units ) {
-        node.father.entity.translate(units);
+      // TMesh: Transl - Rota - Scale - MESH
+      if(node.entity instanceof TMesh){
+        // go to translate node
+        node.father.father.father.entity.translate(units);
+      }
+      else{
+        // else: Transl - Rota - ENTITY
+        node.father.father.entity.translate(units);
+      }
+
     }
 
     scale( node, units ) {
-        node.father.father.father.entity.scale(units);
+        node.father.entity.scale(units);
     }
 
+
     cameraLookAt( node, cameraPosition, target = [0,0,0], up = [0,1,0]) {
+      let matOutput = glMatrix.mat4.create();
       glMatrix.mat4.lookAt(
-        node.father.entity.matrix,
+        matOutput,
         cameraPosition,
         target,
         up
-      )
+      );
+
+      node.father.entity.setRotation([matOutput[0], matOutput[1], matOutput[2], matOutput[4], matOutput[5], matOutput[6], matOutput[8], matOutput[9], matOutput[10]])
+      node.father.father.entity.setTranslation([matOutput[12], matOutput[13], matOutput[14]])
+    
     }
 
     async lookAt(TNodeCam, eye, center, up) {
@@ -220,7 +235,7 @@ class TMotorTAG{
         return NLight;
     }
 
-    createFocus(father, size, position){
+    createFocus(father, size, position, target = undefined){
       
       let focus = new TFocus(size, position);
       
@@ -256,8 +271,7 @@ class TMotorTAG{
         return NMesh;
     }
 
-
-    draw(){
+    init(){
       // Clear
       global.gl.useProgram(global.program);
       global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
@@ -265,9 +279,12 @@ class TMotorTAG{
       global.gl.enable(global.gl.CULL_FACE);
       global.gl.frontFace(global.gl.CCW);
       global.gl.cullFace(global.gl.BACK);
-      // global.gl.enable(global.gl.BLEND);
-      // global.gl.blendFunc(global.gl.SRC_ALPHA, global.gl.ONE_MINUS_SRC_ALPHA);
+    }
 
+    draw(){
+      // Clear
+      global.gl.useProgram(global.program);
+      global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
       
       // We can set the PMatrix once here (it will be the same for every Entity)
       // -- MVMatrix and NMatrix will change over the rest of Entities
@@ -294,46 +311,34 @@ class TMotorTAG{
         global.gl.uniform4f(global.programUniforms.uLightDiffuse,     ...this.allLights[0].entity.getDiffuse());	
         
 
-        this.allLights.forEach((e) => {
-            this.goToRoot(e);
+        // this.allLights.forEach((e) => {
+        //     this.goToRoot(e);
             
-            for (let i = this.aux.length - 1; i >= 0; i--) {
-                glMatrix.mat4.mul(lights, lights, this.aux[i])
-            }
-            this.allLights.push(lights);
+        //     for (let i = this.aux.length - 1; i >= 0; i--) {
+        //         glMatrix.mat4.mul(lights, lights, this.aux[i])
+        //     }
+        //     this.allLights.push(lights);
 
-            this.aux = [];
-        });
+        //     this.aux = [];
+        // });
 
     }
-    
+
+    enableCam( cam ){
+      this.activeCamera = cam;
+    }
+
     // same as calculateLights but for the Cameras
     async calculateViews() {
         
         let cameras = await glMatrix.mat4.create();
        
-        this.allCameras.forEach((e) => {
-          this.goToRoot(e);
-          if(this.aux.length!=0)
-          {
-            for (let i = this.aux.length - 1; i >= 0; i--) {
-                glMatrix.mat4.mul(cameras, cameras, this.aux[i])
-                //glMatrix.mat4.invert(cameras, cameras);
-            }
-          }
+        this.goToRoot(this.activeCamera);
 
-          this.positionCameras.push(cameras.slice(0));
-          
-          // Set viewMatrix to active camera
-          // (this will be the first matrix to be multiplied to the objects position)
-          //global.auxMatrix = cameras;
-
-          this.aux = [];
-        });
-        
-        // Inverse of cameras matrix = MVMatrix
-        // ----- not needed (?) -----------
-        // glMatrix.mat4.invert(cameras, cameras);
+        for (let i = this.aux.length - 1; i >= 0; i--) {
+          glMatrix.mat4.mul(cameras, cameras, this.aux[i])
+        }
+        this.aux = [];
 
         global.viewMatrix = cameras;
 

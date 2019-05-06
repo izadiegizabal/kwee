@@ -363,12 +363,13 @@ class TFocus extends TEntity {
 
     // size     => integer
     // position => [0,0,0] e.g.
-    constructor(size, position){
+    constructor(size, position, target = [3.0, 25.0, 3.0]){
         super();
         this.size = size;                               // Focus size
         this.position = position;                       // Focus position
         this.particleArray = new Float32Array(size*4);  // bind to vertexShader
         this.particles = [];                            // array of <Particles>
+        this.target = target;                           // "lookAt" particles (default is on Y-axis)
         for(let i = 0; i<size; i++){
             let particle = {};
 
@@ -411,6 +412,7 @@ class TFocus extends TEntity {
             
             let viewModel = [];
             glMatrix.mat4.mul(viewModel, global.viewMatrix, global.modelMatrix);
+            //glMatrix.mat4.rotate(viewModel, viewModel, (45*Math.PI/180) ,[1,0,0]);
             global.gl.uniformMatrix4fv(global.particlesUniforms.uMVMatrix, false, viewModel);  //Maps the Model-View matrix to the uniform prg.uMVMatrix            
             global.gl.uniformMatrix4fv(global.particlesUniforms.uPMatrix, false, global.projectionMatrix);    //Maps the Perspective matrix to the uniform prg.uPMatrix
             
@@ -459,11 +461,17 @@ class TFocus extends TEntity {
         particle.pos = [...this.position];
 
         // Initial velocity
+        // particle.vel = [
+        // (Math.random() * 3.0) -1,
+        // (Math.random() * 25.0),
+        // (Math.random() * 3.0) -1,
+        // ];
+  
         particle.vel = [
-        (Math.random() * 3.0) -1,
-        (Math.random() * 25.0),
-        (Math.random() * 3.0) -1,
-        ];
+            0,
+            (Math.random() * 25.0),
+            0,
+            ];
         // Lifespan
         particle.lifespan = (Math.random() * 3.0);
         // RemainingLife
@@ -494,9 +502,6 @@ class TFocus extends TEntity {
         this.particleArray[(i*4)+2] = particle.pos[2];
         this.particleArray[(i*4)+3] = particle.remainingLife/particle.lifespan;
 
-        //   if(particle.id==1){
-        //       console.log(particle.remainingLife);
-        //   }
         }
         global.gl.useProgram(global.particlesProgram);
         // Once we are done looping through all the particles, update the buffer once
