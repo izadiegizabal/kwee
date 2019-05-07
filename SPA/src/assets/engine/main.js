@@ -119,7 +119,7 @@ function rotateMesh() {
 
 async function resetCanvas() {
   draw = false;
-  //global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
+  global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
 }
 
 
@@ -237,25 +237,75 @@ async function mainR(texture, particles, line) {
     /////////////////////                                         particles
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //let TFocus = motor.createFocus(scene, 50, convertLatLonToVec3(-33.865143, 151.209900) ).entity;
-//    let positionTFocus = [0.0,0.0,-1.0];
     let positionTFocus = [-1.0,0.0,0.0];
-    let targetPos = [0.0, 0.7, 0.0]
+    let targetPos = [-2.0, 2.0, 0.0];
+
+    let particleVector = glMatrix.vec3.fromValues(0,5,0);
+    // 1- calc TargetVector (target - origen)
+    let targetVector = glMatrix.vec3.fromValues( targetPos[0]-positionTFocus[0], targetPos[1]-positionTFocus[1], targetPos[2]-positionTFocus[2] );
+
+    let quaternion = glMatrix.quat.create();
+    quatFromVectors(quaternion, particleVector, targetVector);
+
+    console.log("quaternion");
+    console.log(quaternion);
+
+    let rotations = glMatrix.vec3.create();
+    rotations = getEuler(quaternion);
+    
+    console.log(rotations);
+    console.log(Math.PI/4);
+
     let TFocus = motor.createFocus(scene, 50, positionTFocus );
-    //motor.rotate(TFocus, 45, 'x')
+
+    // motor.rotate(TFocus, rotations[0], 'x');
+    // motor.rotate(TFocus, rotations[1], 'y');   
+    // motor.rotate(TFocus, rotations[2]*100, 'z');
+
+    motor.rotate(TFocus, rotations[2]*Math.PI/180, 'y')
+    // motor.targetTo( TFocus,
+    //   positionTFocus,
+    //   targetPos);
+
+
+    // motor.targetTo( TFocus2,
+    //   [1.0, 0.0, 0.0],
+    //   targetPos);
+
+//    motor.cameraLookAt(TFocus, positionTFocus, targetPos)
     
     let origin = await motor.loadMesh(scene, 'marker.json');
     motor.scale(origin, [0.1, 0.1, 0.1]);
     motor.translate(origin, positionTFocus);
     origin.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 0.5] );
 
-    // let target = await motor.loadMesh(scene, 'marker.json');
-    // motor.scale(target, [0.1, 0.1, 0.1]);
-    // motor.translate(target, targetPos);
-    // target.entity.mesh.setColor( [ 1, 0.3, 0.8, 1] );
-    
+    let target = await motor.loadMesh(scene, 'marker.json');
+    motor.scale(target, [0.1, 0.1, 0.1]);
+    motor.translate(target, targetPos);
+    target.entity.mesh.setColor( [ 1, 0.3, 0.8, 1] );
+
+
+
+    ///////////
+    // cities
+    ///////////
+
+    let madrid = await motor.loadMesh(land, 'marker.json');
+    motor.scale(madrid, [0.01, 0.01, 0.01]);
+    motor.translate(madrid, convertLatLonToVec3(40.415363, -3.707398));
+
+    let roma = await motor.loadMesh(land, 'marker.json');
+    motor.scale(roma, [0.01, 0.01, 0.01]);
+    motor.translate(roma, convertLatLonToVec3(41.8905, 12.4942));
+
+    let paris = await motor.loadMesh(land, 'marker.json');
+    motor.scale(paris, [0.01, 0.01, 0.01]);
+    motor.translate(paris, convertLatLonToVec3(48.8667, 2.33333));
+
+
     let particlesTexture = await manager.getResource('spark.png');
 
+    
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         CAMERAS
@@ -263,15 +313,25 @@ async function mainR(texture, particles, line) {
     let cam = motor.createCamera(scene);
     motor.enableCam(cam);
 
-    let radius = 1.7; // normal
-    //let radius = 5; // debug
-    //motor.translate(cam, [0.0 , 0.0, -radius]);
+    //let radius = 1.7; // normal
+    let radius = 5; // debug
+    // motor.translate(cam, [0.0 , 0.0, -radius]);
+    
+    //motor.cameraLookAt(cam, [0,5,0], [0,0,0], [1,0,0])
     
     motor.cameraLookAt( cam, [
       radius * Math.sin(0*Math.PI/180),
-      0,
+      radius,
       radius * Math.cos(0*Math.PI/180)
-    ]);
+    ],
+    [0,0,0],
+    [0,1,0]);
+
+    // motor.cameraLookAt( cam, [
+    //   0,
+    //   -3,
+    //   0
+    // ]);
 
     motor.calculateViews();
     
@@ -359,72 +419,32 @@ async function mainR(texture, particles, line) {
 
         global.time = await Date.now();
       
+
+
+
         ////////////////////////////////////////////////////////////////
         
         motor.cameraLookAt( cam, [
           radius * Math.sin(number*Math.PI/180),
-          0,
+          radius,
           radius * Math.cos(number*Math.PI/180),
-        ]);
+        ],
+        [0,0,0],
+        [0,1,0]);
 
        
         motor.calculateViews();
 
-        global.gl.uniform3f(global.programUniforms.uLightDirection, 
-          radius * Math.sin(number*Math.PI/180),
-          0,
-          radius * Math.cos(number*Math.PI/180)
-        );
+        // global.gl.uniform3f(global.programUniforms.uLightDirection, 
+        //   radius * Math.sin(number*Math.PI/180),
+        //   radius,
+        //   radius * Math.cos(number*Math.PI/180)
+        // );
 
         motor.draw();
         
         ////////////////////////////////////////////////////////////////
-        
-       
-        // @todo Replace now2 and last with global.time and global.lastFrameTime
-        if(rotateMeshBool) {
-          if(!last2 || now2 - last >= 1*1000) {
-            last2 = now2;
-            rotation++;
-            if(rotation>16){
-              rotation = 16;
-              rotateMeshBool = false;
-            }
-          }
-          let vec = getEuler(quatsArray[rotation]);
-          motor.setRotation(land, vec[0] * degrees, 'x');
-          motor.rotate(land, vec[1] * degrees, 'y');
-          motor.rotate(land, vec[2] * degrees, 'z');
-          motor.setRotation(sphere, vec[0] * degrees, 'x');
-          motor.rotate(sphere, vec[1] * degrees, 'y');
-          motor.rotate(sphere, vec[2] * degrees, 'z');
-        }
-        if(line){
-          if(!last || now - last >= 0.02*1000) {
-            last = now;
-            num+=2;
-            if(num > maxLines) {
-              num = maxLines;
-            }
-          }
-
-
-          // Bind vertex buffer object
-          global.gl.bindBuffer(global.gl.ARRAY_BUFFER, vertex_buffer);
-
-          // Get the attribute location
-          var coord = global.gl.getAttribLocation(global.program, "aVertexPosition");
-
-          // Point an attribute to the currently bound VBO
-          global.gl.vertexAttribPointer(coord, 3, global.gl.FLOAT, false, 0, 0);
-
-          // Enable the attribute
-          global.gl.enableVertexAttribArray(coord);
-          global.gl.uniform4fv(uMaterialDiffuse, [1, 0.019, 0.792, 1]);
-          global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
-          global.gl.uniform1i(uUseTextures, 0);
-          global.gl.drawArrays(global.gl.LINES, 0, num);
-        }
+      
 
         global.lastFrameTime = global.time;
 
@@ -440,10 +460,251 @@ async function mainR(texture, particles, line) {
   }
 }
 
+async function interactiveMain(){
+  rotateMeshBool = false;
+  if(global.gl && global.program) {
+
+    draw = true;
+    allowActions.value = false;
+    let motor = new TMotorTAG(manager);
+    let scene = motor.createRootNode();
+    let quats = glMatrix.quat.create();
+    let quatsRot = glMatrix.quat.create();
+    let auxQuat = glMatrix.quat.create();
+    const vec3 = glMatrix.vec3;
+    var quatsArray = [];
+    var quatQ = 1 / 16;
+    var quatBQ = 16;
+
+    global.lastFrameTime = await Date.now();
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         INIT CONFIG
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+    global.gl.useProgram(global.program);
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         TREE & RESOURCES
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // EARTH
+    //let land = await motor.loadMesh(scene, 'earth_LP.json');
+    let land = await motor.loadMesh(scene, 'earth_LP_high.json');
+    land.entity.mesh.setColor( [ 0.2, 0.9, 0.2, 1.0] );
+    
+    // SEA
+    let sphere = await motor.loadMesh(scene, 'sea.json');
+    sphere.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 1.0] );
+    
+    
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         Markers
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // // Madrid 40.415363, -3.707398
+    // let point1 = await motor.loadMesh(land, 'marker.json');
+    // motor.scale(point1, [0.01, 0.01, 0.01]);
+    // motor.translate(point1, convertLatLonToVec3(10.500000, -66.916664));
+    // // Caracas 10.500000, -66.916664
+    // let point2 = await motor.loadMesh(land, 'marker.json');
+    // motor.scale(point2, [0.01, 0.01, 0.01]);
+    // motor.translate(point2, convertLatLonToVec3(40.415363, -3.707398));
+    // // Roma 41.89193, 12.51133
+    // let point3 = await motor.loadMesh(land, 'marker.json');
+    // motor.scale(point3, [0.01, 0.01, 0.01]);
+    // motor.translate(point3, convertLatLonToVec3(41.89193, 12.51133));
+    // // Sydney -33.865143, 151.209900
+    // let point4 = await motor.loadMesh(land, 'marker.json');
+    // motor.scale(point4, [0.01, 0.01, 0.01]);
+    // motor.translate(point4, convertLatLonToVec3(-33.865143, 151.209900));
+    // // Wellington -41.28664, 174.77557
+    // let point5 = await motor.loadMesh(land, 'marker.json');
+    // motor.scale(point5, [0.01, 0.01, 0.01]);
+    // motor.translate(point5, convertLatLonToVec3(-41.28664, 174.77557));
+    // // Tokyo 35.6895, 139.69171
+    // let point6 = await motor.loadMesh(land, 'marker.json');
+    // motor.scale(point6, [0.01, 0.01, 0.01]);
+    // motor.translate(point6, convertLatLonToVec3(35.6895, 139.69171));
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         particles
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    let positionTFocus = [-1.0,0.0,0.0];
+    let targetPos = [-2.0, 2.0, 0.0];
+
+   
+
+    let TFocus = motor.createFocus(scene, 50, positionTFocus );
+
+    // motor.targetTo( TFocus2,
+    //   [1.0, 0.0, 0.0],
+    //   targetPos);
+
+//    motor.cameraLookAt(TFocus, positionTFocus, targetPos)
+    
+    let origin = await motor.loadMesh(scene, 'marker.json');
+    motor.scale(origin, [0.1, 0.1, 0.1]);
+    motor.translate(origin, positionTFocus);
+    origin.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 0.5] );
+
+    // let target = await motor.loadMesh(scene, 'marker.json');
+    // motor.scale(target, [0.1, 0.1, 0.1]);
+    // motor.translate(target, targetPos);
+    // target.entity.mesh.setColor( [ 1, 0.3, 0.8, 1] );
+
+
+
+    ///////////
+    // cities
+    ///////////
+
+    let madrid = await motor.loadMesh(land, 'marker.json');
+    motor.scale(madrid, [0.01, 0.01, 0.01]);
+    motor.translate(madrid, convertLatLonToVec3(40.415363, -3.707398));
+
+    let roma = await motor.loadMesh(land, 'marker.json');
+    motor.scale(roma, [0.01, 0.01, 0.01]);
+    motor.translate(roma, convertLatLonToVec3(41.8905, 12.4942));
+
+    let paris = await motor.loadMesh(land, 'marker.json');
+    motor.scale(paris, [0.01, 0.01, 0.01]);
+    motor.translate(paris, convertLatLonToVec3(48.8667, 2.33333));
+
+
+    let particlesTexture = await manager.getResource('spark.png');
+
+    
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         CAMERAS
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    let cam = motor.createCamera(scene);
+    motor.enableCam(cam);
+
+    let radius = 1.7; // normal
+    //let radius = 5; // debug
+    
+    motor.cameraLookAt( cam, [
+      radius * Math.sin(0*Math.PI/180),
+      radius,
+      radius * Math.cos(0*Math.PI/180)
+    ],
+    [0,0,0],
+    [0,1,0]);
+
+    motor.calculateViews();
+    
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         LIGHTNING
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //                           father  type    ambient      specular       diffuse         direction
+    let light = motor.createLight(scene, 1, [0.2,0.2,0.2,1.0], null, [0.5,0.5,0.5,1.0], [10.0, 10.0, 10.0]);
+
+    motor.calculateLights();
+
+    ///////// CHAPUZA MASTER AYY LMAO
+    allowActions.value = true;
+    // document.getElementById("kweelive").click();
+    document.body.click();
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         FAKE TEXTURE
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /*
+      If seems that it doesn't matter if the shader only accesses the texture when uUseTextures is true.
+      What matters is the shader uses a texture at all.
+
+      Instead of using two different pair of shader, we are going to bind a one pixel white texture to avoid the error.
+      It is said to be a good practice.Then, we overwrite it in case we need to use textures.
+
+      link: https://gamedev.stackexchange.com/questions/166886/render-warning-there-is-no-texture-bound-to-the-unit-0-when-not-rendering-tex
+     */
+    const whiteTexture = global.gl.createTexture();
+    global.gl.bindTexture(global.gl.TEXTURE_2D, whiteTexture);
+    global.gl.texImage2D(
+      global.gl.TEXTURE_2D, 0, global.gl.RGBA, 1, 1, 0,
+      global.gl.RGBA, global.gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
+    global.gl.useProgram(global.program);
+    global.gl.bindTexture(global.gl.TEXTURE_2D, whiteTexture);
+
+    console.log(scene);
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         LOOP
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   
+    let number = 0;
+    var loop = async function (now, now2) {
+        
+      global.drag ? console.log(global.drag) : true;
+      if (!global.drag) {
+        global.dX *= global.AMORTIZATION, global.dY*=global.AMORTIZATION;
+        global.THETA+=global.dX, global.PHI+=global.dY;
+     }
+      global.gl.useProgram(global.program);
+
+      global.time = await Date.now();
+    
+      ////////////////////////////////////////////////////////////////
+      
+      let camX = radius * Math.sin(global.orbitSpeed*global.THETA*(Math.PI/180)) * Math.cos((global.orbitSpeed*global.PHI)*(Math.PI/180));
+      //let camY = radius * Math.sin((global.orbitSpeed*Math.min(Math.max(parseInt(global.PHI), -global.orbitMaxY), global.orbitMaxY))*(Math.PI/180));
+      let camY = radius * Math.sin((global.orbitSpeed*global.PHI*(Math.PI/180)));
+      let camZ = radius * -Math.cos((global.orbitSpeed*global.THETA)*(Math.PI/180)) * Math.cos((global.orbitSpeed*global.PHI)*(Math.PI/180));
+
+
+
+      motor.cameraLookAt( cam, [
+        camX,
+        camY,
+        camZ,
+      ],
+      [0,0,0],
+      [0,1,0]);
+      // motor.cameraLookAt( cam, [
+      //   radius * Math.sin(-global.THETA*10*Math.PI/180),
+      //   radius * global.PHI *0.8,
+      //   radius * Math.cos(-global.THETA*10*Math.PI/180),
+      // ],
+      // [0,0,0],
+      // [0,1,0]);
+
+      
+      motor.calculateViews();
+
+      global.gl.uniform3f(global.programUniforms.uLightDirection, 
+        radius * Math.sin(number*Math.PI/180),
+        radius,
+        radius * Math.cos(number*Math.PI/180)
+      );
+
+      motor.draw();
+      
+      ////////////////////////////////////////////////////////////////
+    
+
+      global.lastFrameTime = global.time;
+
+      requestAnimationFrame(loop);
+
+    }
+    number = number + 0.3;
+    if(number>360) number = 0;
+  
+
+    motor.init();
+    loop();
+  }; //
+}
+
 export {
   mainInit,
   mainR,
   resetCanvas,
   allowActions,
-  rotateMesh
+  rotateMesh,
+  interactiveMain
 }

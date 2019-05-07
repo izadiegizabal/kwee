@@ -54,8 +54,8 @@ function getBezierPoints(startLat, startLon, endLat, endLon, quality){
 
 
 function convertLatLonToVec3 ( lat, lon, bool, altitude ) {
-  lon += -25.7;
-  lat -= 0.5;
+  lon -= 0.8;
+  lat += 0.8;
   /*lat =  lat * Math.PI / 180.0;
   lon = -lon * Math.PI / 180.0;
   return [
@@ -71,7 +71,7 @@ function convertLatLonToVec3 ( lat, lon, bool, altitude ) {
   return [(rad * cosLat * cosLon)-49, (rad * cosLat * sinLon)+11, (rad * sinLat)+22];*/
   var latRad = lat * (Math.PI / 180);
   var lonRad = -lon * (Math.PI / 180);
-  var r = 1.27227*50;
+  var r = 0.62;
   if (bool) {
     r = 0.65;
   }

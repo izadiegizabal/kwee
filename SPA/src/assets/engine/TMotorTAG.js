@@ -34,25 +34,31 @@ class TMotorTAG{
     }
 
     // scale -> rotation -> translation -> node
-    createFullBranch(father, entity){
+    // createFullBranch(father, entity){
 
-      // node scale
-      let TransScale = new TTransform();
-      let nodeScale = this.createNode(father, TransScale );
+    //   // node scale
+    //   let TransScale = new TTransform();
+    //   let nodeScale = this.createNode(father, TransScale );
 
-      return this.createBranch(nodeScale, entity);
-    }
+    //   return this.createBranch(nodeScale, entity);
+    // }
+
     // rotation -> translation -> node
     createBranch(father, entity){
-      // node rotation
-      let TransRotation = new TTransform();
-      let nodeRotation = this.createNode(father, TransRotation );
 
       // node translation
       let TransTrans = new TTransform();
-      let nodeTranslation= this.createNode(nodeRotation, TransTrans );
+      let nodeTranslation= this.createNode(father, TransTrans );
 
-      let node = this.createNode(nodeTranslation, entity );
+      // + node rotation
+      let TransRotation = new TTransform();
+      let nodeRotation = this.createNode(nodeTranslation, TransRotation );
+
+      // + + node scale
+      let TransScale = new TTransform();
+      let nodeScale = this.createNode(nodeRotation, TransScale );
+
+      let node = this.createNode(nodeScale, entity );
 
       return node;
     }
@@ -126,22 +132,23 @@ class TMotorTAG{
     }
 
     translate( node, units ) {
-      // TMesh: Transl - Rota - Scale - MESH
-      if(node.entity instanceof TMesh){
+      // Transl - Rota - Scale - MESH
         // go to translate node
         node.father.father.father.entity.translate(units);
-      }
-      else{
-        // else: Transl - Rota - ENTITY
-        node.father.father.entity.translate(units);
-      }
-
     }
 
     scale( node, units ) {
         node.father.entity.scale(units);
     }
 
+    targetTo( node, position, target = [0,0,0], up = [0,0,0]){
+      let matrix = glMatrix.mat4.create();
+      glMatrix.mat4.targetTo( matrix, position, target, up);
+      
+      // TraslationNode - RotationNode - ScaleNode - NODE
+      node.father.father.entity.setRotation([matrix[0], matrix[1], matrix[2], matrix[4], matrix[5], matrix[6], matrix[8], matrix[9], matrix[10]])
+      node.father.father.father.entity.setTranslation([matrix[12], matrix[13], matrix[14]])  
+    }
 
     cameraLookAt( node, cameraPosition, target = [0,0,0], up = [0,1,0]) {
       let matOutput = glMatrix.mat4.create();
@@ -151,9 +158,9 @@ class TMotorTAG{
         target,
         up
       );
-
-      node.father.entity.setRotation([matOutput[0], matOutput[1], matOutput[2], matOutput[4], matOutput[5], matOutput[6], matOutput[8], matOutput[9], matOutput[10]])
-      node.father.father.entity.setTranslation([matOutput[12], matOutput[13], matOutput[14]])
+      // TraslationNode - RotationNode - ScaleNode - NODE
+      node.father.father.entity.setRotation([matOutput[0], matOutput[1], matOutput[2], matOutput[4], matOutput[5], matOutput[6], matOutput[8], matOutput[9], matOutput[10]])
+      node.father.father.father.entity.setTranslation([matOutput[12], matOutput[13], matOutput[14]])
     
     }
 
@@ -266,7 +273,7 @@ class TMotorTAG{
 
         let mesh = new TMesh(meshResource);
 
-        let NMesh = this.createFullBranch(father, mesh);
+        let NMesh = this.createBranch(father, mesh);
         
         return NMesh;
     }
@@ -277,13 +284,12 @@ class TMotorTAG{
       global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
       global.gl.enable(global.gl.DEPTH_TEST);
       global.gl.enable(global.gl.CULL_FACE);
-      global.gl.frontFace(global.gl.CCW);
+      //global.gl.frontFace(global.gl.CCW);
       global.gl.cullFace(global.gl.BACK);
     }
 
     draw(){
       // Clear
-      global.gl.useProgram(global.program);
       global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
       
       // We can set the PMatrix once here (it will be the same for every Entity)
@@ -335,9 +341,10 @@ class TMotorTAG{
        
         this.goToRoot(this.activeCamera);
 
-        for (let i = this.aux.length - 1; i >= 0; i--) {
-          glMatrix.mat4.mul(cameras, cameras, this.aux[i])
-        }
+        glMatrix.mat4.mul(cameras, cameras, this.aux[2])
+        glMatrix.mat4.mul(cameras, cameras, this.aux[1])
+        glMatrix.mat4.mul(cameras, cameras, this.aux[0]);
+
         this.aux = [];
 
         global.viewMatrix = cameras;

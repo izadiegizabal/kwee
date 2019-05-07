@@ -411,7 +411,15 @@ class TFocus extends TEntity {
             //  mapUniforms
             
             let viewModel = [];
+
+            let rotation = glMatrix.mat4.create();
+
             glMatrix.mat4.mul(viewModel, global.viewMatrix, global.modelMatrix);
+            
+            // glMatrix.mat4.targetTo( rotation, [-1.0, 0.0, 0.0], [-2.0, 2.0, 0.0], [0.0,0.0,0.0] );
+
+            // glMatrix.mat4.mul(viewModel, viewModel, rotation);
+
             //glMatrix.mat4.rotate(viewModel, viewModel, (45*Math.PI/180) ,[1,0,0]);
             global.gl.uniformMatrix4fv(global.particlesUniforms.uMVMatrix, false, viewModel);  //Maps the Model-View matrix to the uniform prg.uMVMatrix            
             global.gl.uniformMatrix4fv(global.particlesUniforms.uPMatrix, false, global.projectionMatrix);    //Maps the Perspective matrix to the uniform prg.uPMatrix
@@ -461,16 +469,18 @@ class TFocus extends TEntity {
         particle.pos = [...this.position];
 
         // Initial velocity
+        // ---- working with lookAt (no dispersion D:)
         // particle.vel = [
-        // (Math.random() * 3.0) -1,
-        // (Math.random() * 25.0),
-        // (Math.random() * 3.0) -1,
+        // (Math.random() * 0.0) -1,
+        // (Math.random() * 0.0) -1,
+        // -(Math.random() * 4.0) ,
         // ];
   
         particle.vel = [
+            //(Math.random() * 3.0) -1,
             0,
-            (Math.random() * 25.0),
-            0,
+            (Math.random() * 15.0),0
+            //(Math.random() * 3.0) -1,
             ];
         // Lifespan
         particle.lifespan = (Math.random() * 3.0);

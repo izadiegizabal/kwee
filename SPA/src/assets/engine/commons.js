@@ -35,7 +35,15 @@ var global = {
     uMVMatrix: null,
     uPMatrix: null,
     uPointSize: null,
-  }
+  },
+  AMORTIZATION: null,
+  drag: false,
+  THETA: null,
+  PHI: null,
+  dX: null,
+  dY: null,
+  orbitSpeed: null,
+  orbitMaxY: null
 }
 let angle = 0;
 
@@ -61,6 +69,22 @@ function shared() {
         // Stack to save mvMatrix multiplied
         global.stack = new Stack(); 
         global.stack.push(global.modelMatrix);
+
+        // Interactive stuff
+        global.drag = false;
+        global.AMORTIZATION = 0.95;
+        global.dX = 0;
+        global.dY = 0;
+        global.THETA = 0;
+        global.PHI = 0;
+        // Orbit setup
+        global.orbitSpeed = 8;
+        global.orbitMaxY = 11;
+
+        canvas.addEventListener("mousedown", mouseDown, false);
+        canvas.addEventListener("mouseup", mouseUp, false);
+        canvas.addEventListener("mouseout", mouseUp, false);
+        canvas.addEventListener("mousemove", mouseMove, false);
 
     }
     resolve(true);
@@ -92,6 +116,33 @@ function loadAttribAndUniformsLocations(){
     global.programAttributes.aVertexTextureCoords   = global.gl.getAttribLocation(global.program, "aVertexTextureCoords");
 
 }
+
+var AMORTIZATION = 0.95;
+var drag = false;
+var old_x, old_y;
+var dX = 0, dY = 0;
+
+var mouseDown = function(e) {
+  global.drag = true;
+  old_x = e.pageX, old_y = e.pageY;
+  e.preventDefault();
+  return false;
+};
+
+var mouseUp = function(e){
+  global.drag = false;
+};
+
+var mouseMove = function(e) {
+  if (!global.drag) return false;
+  global.dX = (e.pageX-old_x)*2*Math.PI/canvas.width,
+  global.dY = (e.pageY-old_y)*2*Math.PI/canvas.height;
+  global.THETA+= global.dX;
+  global.PHI+=global.dY;
+  old_x = e.pageX, old_y = e.pageY;
+  e.preventDefault();
+};
+
 
 function changeAngle(degrees) {
     angle = degrees;
