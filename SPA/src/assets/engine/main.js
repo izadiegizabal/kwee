@@ -660,8 +660,6 @@ async function interactiveMain(){
       let camY = radius * Math.sin(auxPHI);
       let camZ = radius * -Math.cos(auxTHETA) * Math.cos(auxPHI);
 
-      console.log(camY);
-
       motor.cameraLookAt( cam, [
         camX,
         camY,
