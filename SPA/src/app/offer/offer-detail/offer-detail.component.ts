@@ -16,7 +16,6 @@ import {Title} from '@angular/platform-browser';
 import {HttpClient} from '@angular/common/http';
 
 import * as jspdf from 'jspdf';
-import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-offer-detail',
@@ -34,6 +33,7 @@ export class OfferDetailComponent implements OnInit {
     private http: HttpClient,
     private location: Location) {
   }
+
   offerSkills: [' '];
   offerState: Observable<fromOffer.State>;
   authState: any;
@@ -49,7 +49,7 @@ export class OfferDetailComponent implements OnInit {
 
   static getDate(dt: Date) {
     const date = new Date(dt);
-    return date.getUTCDate() + '/' + ( date.getUTCMonth() + 1 ) + '/' + date.getUTCFullYear();
+    return date.getUTCDate() + '/' + (date.getUTCMonth() + 1) + '/' + date.getUTCFullYear();
   }
 
   ngOnInit() {
@@ -79,9 +79,11 @@ export class OfferDetailComponent implements OnInit {
       this.store$.dispatch(new OfferActions.TryGetOffer({id: params.id}));
       this.offerState = this.store$.pipe(select(state => state.offer));
       this.offerState.subscribe(s => {
-        this.titleService.setTitle('Kwee - ' + s.offer.title);
-        this.img = s.offer.img;
-        this.offer = s.offer;
+        if (s.offer) {
+          this.titleService.setTitle('Kwee - ' + s.offer.title);
+          this.img = s.offer.img;
+          this.offer = s.offer;
+        }
       });
 
       this.offerEffects$.offerGetoffer.pipe(
@@ -250,7 +252,7 @@ export class OfferDetailComponent implements OnInit {
           text += '        ' + (i + 1) + '. ' + (olli as HTMLElement).innerText + '\n';
         });
       } else if ((e as HTMLElement).tagName === undefined) {
-          text += e.textContent + '\n';
+        text += e.textContent + '\n';
       } else {
         text += (e as HTMLElement).innerText + '\n';
       }
@@ -333,7 +335,7 @@ export class OfferDetailComponent implements OnInit {
     doc.addImage(data.images[4], 'JPEG', 16, yPos, 5, 5);
     const location = out.getOfferLocation(offer.location, offer.workLocation);
     const split = location.split(' - ');
-    doc.text(split[0] , 23, yPos + 3.7);
+    doc.text(split[0], 23, yPos + 3.7);
     doc.addImage(data.images[5], 'JPEG', 76, yPos, 5, 5);
     doc.text(out.getOfferSeniorityLevel(offer.seniority), 83, yPos + 3.7);
     doc.addImage(data.images[6], 'JPEG', 136, yPos, 5, 5);
