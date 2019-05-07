@@ -472,8 +472,11 @@ module.exports = (app, db) => {
             let user = {};
             body.password ? user.password = bcrypt.hashSync(body.password, 10) : null;
             body.name ? user.name = body.name : null;
+            body.bio ? user.bio = body.bio : null;
             body.email ? user.email = body.email : null;
-
+            body.lat ? user.lat = body.lat : null;
+            body.lon ? user.lon = body.lon : null;
+            var uservar;
             saveLogES('POST', 'applicant', body.name);
 
             return db.sequelize.transaction(transaction => {
@@ -485,6 +488,8 @@ module.exports = (app, db) => {
                     .then(async ending => {
                         sendVerificationEmail(body, uservar);
                         delete body.password;
+                        delete lon;
+                        delete lat;
                         body.index = 15;
 
                         elastic.index({
@@ -542,13 +547,16 @@ module.exports = (app, db) => {
                     }
                 }
 
-                if (body.img && checkImg(body.img)) {
+                if ( body.img && checkImg(body.img) ) {
                     var imgName = uploadImg(req, res, next, 'applicants');
                     user.img = imgName;
                 }
 
                 body.bio ? user.bio = body.bio : null;
+                body.lat ? user.lat = body.lat : null;
+                body.lon ? user.lon = body.lon : null;
                 delete body.index;
+
                 applicantuser = await db.users.update(user, {
                     where: {id}
                 });
@@ -1255,45 +1263,50 @@ module.exports = (app, db) => {
     async function setEducations(applicant, body, next) {
         if (body.educations) {
             try {
-                if (body.educations.length > 0) {
-                    for (let i = 0; i < body.educations.length; i++) {
-                        // Search education in database, if not, create it
-                        let education = await db.educations.findOne({
-                            where: {title: body.educations[i].title}
-                        });
-
-                        let educationId;
-
-                        if (education) {
-                            educationId = education.id;
-                        } else {
-                            education = await db.educations.create({
-                                title: body.educations[i].title
+                if ( body.educations ) {
+                    await db.applicant_educations.destroy({
+                        where: { fk_applicant: applicant.userId }
+                    });
+                    if (body.educations.length > 0) {
+                        for (let i = 0; i < body.educations.length; i++) {
+                            // Search education in database, if not, create it
+                            let education = await db.educations.findOne({
+                                where: {title: body.educations[i].title}
                             });
+                            
+                            let educationId;
+                            
                             if (education) {
                                 educationId = education.id;
+                            } else {
+                                education = await db.educations.create({
+                                    title: body.educations[i].title
+                                });
+                                if (education) {
+                                    educationId = education.id;
+                                }
                             }
+                            
+                            new Promise(async (resolve, reject) => {
+                                await applicant.addEducation(educationId, {
+                                    through: {
+                                        description: body.educations[i].description,
+                                        dateStart: body.educations[i].dateStart,
+                                        dateEnd: body.educations[i].dateEnd,
+                                        institution: body.educations[i].institution
+                                    }
+                                }).then(result => {
+                                    if (result) {
+                                        delete body.educations[i].description;
+                                        return resolve('Education Added');
+                                    } else {
+                                        return reject(new Error('Education not added'));
+                                    }
+                                }).catch(err => {
+                                    return next({type: 'error', error: err.message});
+                                })
+                            });
                         }
-
-                        new Promise(async (resolve, reject) => {
-                            await applicant.addEducation(educationId, {
-                                through: {
-                                    description: body.educations[i].description,
-                                    dateStart: body.educations[i].dateStart,
-                                    dateEnd: body.educations[i].dateEnd,
-                                    institution: body.educations[i].institution
-                                }
-                            }).then(result => {
-                                if (result) {
-                                    delete body.educations[i].description;
-                                    return resolve('Education Added');
-                                } else {
-                                    return reject(new Error('Education not added'));
-                                }
-                            }).catch(err => {
-                                return next({type: 'error', error: err.message});
-                            })
-                        });
                     }
                 }
             } catch (err) {
@@ -1305,43 +1318,48 @@ module.exports = (app, db) => {
     async function setSkills(applicant, body, next) {
         if (body.skills) {
             try {
-                if (body.skills.length > 0) {
-                    for (let i = 0; i < body.skills.length; i++) {
-                        // Search skill in database, if not, create it
-                        let skill = await db.skills.findOne({
-                            where: {name: body.skills[i].name}
-                        });
-
-                        let skillId;
-
-                        if (skill) {
-                            skillId = skill.id;
-                        } else {
-                            skill = await db.skills.create({
-                                name: body.skills[i].name
+                if ( body.skills ) {
+                    await db.applicant_skills.destroy({
+                        where: { fk_applicant: applicant.userId }
+                    });
+                    if (body.skills.length > 0) {
+                        for (let i = 0; i < body.skills.length; i++) {
+                            // Search skill in database, if not, create it
+                            let skill = await db.skills.findOne({
+                                where: {name: body.skills[i].name}
                             });
+                            
+                            let skillId;
+                            
                             if (skill) {
                                 skillId = skill.id;
+                            } else {
+                                skill = await db.skills.create({
+                                    name: body.skills[i].name
+                                });
+                                if (skill) {
+                                    skillId = skill.id;
+                                }
                             }
+                            
+                            new Promise(async (resolve, reject) => {
+                                await applicant.addSkill(skillId, {
+                                    through: {
+                                        description: body.skills[i].description,
+                                        level: body.skills[i].level,
+                                    }
+                                }).then(result => {
+                                    if (result) {
+                                        delete body.skills[i].description;
+                                        return resolve('Skill added');
+                                    } else {
+                                        return reject(new Error('Skill not added'));
+                                    }
+                                }).catch(err => {
+                                    return next({type: 'error', error: err.message});
+                                })
+                            });
                         }
-
-                        new Promise(async (resolve, reject) => {
-                            await applicant.addSkill(skillId, {
-                                through: {
-                                    description: body.skills[i].description,
-                                    level: body.skills[i].level,
-                                }
-                            }).then(result => {
-                                if (result) {
-                                    delete body.skills[i].description;
-                                    return resolve('Skill added');
-                                } else {
-                                    return reject(new Error('Skill not added'));
-                                }
-                            }).catch(err => {
-                                return next({type: 'error', error: err.message});
-                            })
-                        });
                     }
                 }
             } catch (err) {
@@ -1353,41 +1371,46 @@ module.exports = (app, db) => {
     async function setLanguages(applicant, body, next) {
         if (body.languages) {
             try {
-                if (body.languages.length > 0) {
-                    for (let i = 0; i < body.languages.length; i++) {
-                        // Search language in database, if not, create it
-                        let language = await db.languages.findOne({
-                            where: {language: body.languages[i].language}
-                        });
-
-                        let languageId;
-
-                        if (language) {
-                            languageId = language.id;
-                        } else {
-                            language = await db.languages.create({
-                                language: body.languages[i].language
+                if ( body.languages ) {
+                    await db.applicant_languages.destroy({
+                        where: { fk_applicant: applicant.userId }
+                    });
+                    if (body.languages.length > 0) {
+                        for (let i = 0; i < body.languages.length; i++) {
+                            // Search language in database, if not, create it
+                            let language = await db.languages.findOne({
+                                where: {language: body.languages[i].language}
                             });
+                            
+                            let languageId;
+                            
                             if (language) {
                                 languageId = language.id;
+                            } else {
+                                language = await db.languages.create({
+                                    language: body.languages[i].language
+                                });
+                                if (language) {
+                                    languageId = language.id;
+                                }
                             }
-                        }
-
-                        new Promise(async (resolve, reject) => {
-                            await applicant.addLanguage(languageId, {
-                                through: {
-                                    level: body.languages[i].level,
-                                }
-                            }).then(result => {
-                                if (result) {
-                                    return resolve('Language added');
-                                } else {
-                                    return reject(new Error('Language not added'));
-                                }
-                            }).catch(err => {
-                                return next({type: 'error', error: err.message});
+                            
+                            new Promise(async (resolve, reject) => {
+                                await applicant.addLanguage(languageId, {
+                                    through: {
+                                        level: body.languages[i].level,
+                                    }
+                                }).then(result => {
+                                    if (result) {
+                                        return resolve('Language added');
+                                    } else {
+                                        return reject(new Error('Language not added'));
+                                    }
+                                }).catch(err => {
+                                    return next({type: 'error', error: err.message});
+                                });
                             });
-                        });
+                        }
                     }
                 }
             } catch (err) {
@@ -1399,16 +1422,21 @@ module.exports = (app, db) => {
     async function setExperiences(id, body, next) {
         if (body.experiences) {
             try {
-                if (body.experiences.length > 0) {
-                    for (let i = 0; i < body.experiences.length; i++) {
-                        await db.experiences.create({
-                            fk_applicant: id,
-                            title: body.experiences[i].title,
-                            description: body.experiences[i].description,
-                            dateStart: body.experiences[i].dateStart,
-                            dateEnd: body.experiences[i].dateEnd,
-                        });
-                        delete body.experiences[i].description;
+                if ( body.experiences ) {
+                    await db.experiences.destroy({
+                        where: { fk_applicant: id }
+                    });
+                    if (body.experiences.length > 0) {
+                        for (let i = 0; i < body.experiences.length; i++) {
+                            await db.experiences.create({
+                                fk_applicant: id,
+                                title: body.experiences[i].title,
+                                description: body.experiences[i].description,
+                                dateStart: body.experiences[i].dateStart,
+                                dateEnd: body.experiences[i].dateEnd,
+                            });
+                            delete body.experiences[i].description;
+                        }
                     }
                 }
             } catch (err) {
