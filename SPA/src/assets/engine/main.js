@@ -16,6 +16,12 @@ let allowActions = {
   value: false
 };
 
+let Motor = null;
+let Scene = null;
+let Land = null;
+let Sphere = null;
+let MeshArray = null;
+
 let lastFrameTime = 0.0;
 
 async function mainInit() {
@@ -131,7 +137,9 @@ async function mainR(texture, particles, line) {
     draw = true;
     allowActions.value = false;
     let motor = new TMotorTAG(manager);
+    Motor = motor;
     let scene = motor.createRootNode();
+    Scene = scene;
     let quats = glMatrix.quat.create();
     let quatsRot = glMatrix.quat.create();
     let auxQuat = glMatrix.quat.create();
@@ -179,7 +187,7 @@ async function mainR(texture, particles, line) {
     //let land = await motor.loadMesh(scene, 'earth_LP.json');
     let land = await motor.loadMesh(scene, 'earth_LP_high.json');
     land.entity.mesh.setColor( [ 0.2, 0.9, 0.2, 1.0] );
-
+    Land = land;
     // motor.scale(land, [5.0, 5.0, 5.0]);
     // motor.scale(land, [0.25, 0.25, 0.25]);
 
@@ -194,6 +202,7 @@ async function mainR(texture, particles, line) {
     // SEA
     let sphere = await motor.loadMesh(scene, 'sea.json');
     sphere.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 1.0] );
+    Sphere = sphere;
     
     
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -412,7 +421,7 @@ async function mainR(texture, particles, line) {
     var rotation = -1;
     var maxLines = vertices.length/3;
     let number = 0;
-    var loop = async function (now, now2) {
+    var loop = async function (now) {
       if (draw) {
         
         global.gl.useProgram(global.program);
@@ -455,9 +464,111 @@ async function mainR(texture, particles, line) {
     };
 
     motor.init();
-    loop();
+    requestAnimationFrame(loop);
+    requestAnimationFrame(animation);
 
   }
+}
+
+
+let then = 0;
+let last = 0;
+let arcsSec = 0;
+/*
+  Fases
+  0 => rotate
+  1 => show & animate card
+  2 => wait 3 seconds
+  3 => remove card
+ */
+let fase = 0;
+let arcs = [];
+let auxArc = null;
+
+
+//let fpsInterval = 1000/30;
+function animation(now) {
+
+  if(now - arcsSec >= 1000) {
+    arcsSec = now;
+    Motor.createAndAnimateArc(Sphere, generateRandomLat(), generateRandomLong(), generateRandomLat(), generateRandomLong(), 24, 1.5, 3);
+    Motor.createAndAnimateArc(Sphere, generateRandomLat(), generateRandomLong(), generateRandomLat(), generateRandomLong(), 24, 1.5, 3);
+  }
+
+  /*switch (fase) {
+    case 0:
+      if(now - last >= 5000) {
+        // console.log(MeshArray.entity);
+        console.log(0);
+        // auxArc = Motor.createAndAnimateArc(Scene, 10.500000, -66.916664,40.415363, -3.707398, 24, 1.5);
+        last = now;
+        fase = 1;
+      }
+      break;
+    case 1:
+      if(now - last >= 10000) {
+        console.log(1);
+        // Motor.animateMesh(MeshArray, 3, 1, 5);
+        //Motor.deleteArc(auxArc);
+        //console.log(Scene);
+        //console.log(Motor.allCountAnimations);
+        // const animaLand = Motor.animate(Land, 32, 1,10.500000, -66.916664, Land.father.father.entity.matrix);
+        // const animeSphere = Motor.animate(Sphere, 32, 1,10.500000, -66.916664,  Sphere.father.father.entity.matrix);
+        last = now;
+        fase = 0;
+      }
+      break;
+    default:
+      break;
+  }*/
+
+  // Convert the time to second
+  now *= 0.001;
+  // Subtract the previous time from the current time
+  var deltaTime = now - then;
+  // Remember the current time for the next frame.
+  then = now;
+
+  Motor.allCountAnimations.forEach( (e, i) => {
+    if(!e.update(deltaTime)){
+      Motor.allCountAnimations.splice(i, 1);
+      if(Motor.isArcAnimation(e)){
+        Motor.deleteArc(e.object);
+      }
+    }
+  });
+
+  //
+
+  /*
+
+  if(cont > 16){
+    cont = 0;
+    console.log('!!!!!!!!!!!!!!!!!!!!!!');
+  }
+
+  //console.log(deltaTime);
+  //console.log(Math.floor(deltaTime * (16 / 2)));
+  cont += deltaTime * (16 / 2);
+  console.log(Math.floor(cont));
+
+   */
+
+  //let now = Date.now();
+  //let elapsed = now - then;
+
+  if(draw) {
+    requestAnimationFrame(animation);
+  }
+}
+
+// LONGITUDE -180 to + 180
+function generateRandomLong() {
+  return (Math.random() * (180 - (-180)) + (-180)).toFixed(3) * 1;
+}
+// LATITUDE -90 to +90
+function generateRandomLat() {
+  return (Math.random() * (90 - (-90)) + (-90)).toFixed(3) * 1;
 }
 
 async function interactiveMain(){

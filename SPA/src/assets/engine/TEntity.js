@@ -2,11 +2,9 @@
 ///////
 ////
 
-import {TEntity} from './commons.js';
-import {getBezierPoints, convertLatLonToVec3, degrees} from './tools/utils.js';
-import {global} from "./commons";
-
-
+import {TEntity, global} from './commons';
+import {getBezierPoints, convertLatLonToVec3, degrees, convertLatLonToVec3Rotated, quatFromVectors, getEuler} from './tools/utils.js';
+import {TResourceMesh, TResourceMeshArray} from './resourceManager';
 
 
 //TEntity.stack = new Stack();
@@ -231,27 +229,210 @@ import {global} from "./commons";
     }
 }
 
- class TAnimation extends TEntity {
+  class TAnimation extends TEntity {
 
-    constructor(animationMeshes) {
+    constructor() {
         super();
-        this.animation = animationMeshes;   // Array of meshes for the different positions
     }
 
-    beginDraw() {
-        // console.log(this);
-    }
+    beginDraw() { }
 
-    endDraw() {
+    endDraw() { }
+
+    update(){ }
+
+  }
+
+class TArcAndMeshAnimation extends  TAnimation {
+  constructor(object, count, timeAnim, endAnim) {
+    super();
+    this.auxCount = 0;
+    this.endCount = 0;
+    this.count = count;
+    this.object = object;
+    // The end of animation must be greater than timeAnim, else default 2 * timeAnim
+    if(endAnim === -1) {
+      this.updateMethod = this.updateNotDie;
+    } else{
+      this.updateMethod = this.updateDie;
+      if(endAnim <= timeAnim){
+        this.endAnim = timeAnim * 2;
+      } else { this.endAnim = endAnim; }
+      // End of animation count
+      this.maxCount = count + (count * (this.endAnim / timeAnim));
     }
+    // increment
+    this.increment = count / timeAnim;
+  }
+
+  beginDraw() { }
+
+  endDraw() { }
+
+  update(dx) {
+    return this.updateMethod(dx);
+  }
+
+  updateDie(dx) {
+    if (this.endCount > this.maxCount) {
+      return false;
+    }
+    this.auxCount += dx * this.increment;
+    this.endCount += dx * this.increment;
+    // las position of count must be <= count
+    if (this.auxCount > this.maxCount) {
+      this.auxCount = 0;
+      this.endCount = 0;
+    }
+    if (this.auxCount > this.count) {
+      this.auxCount = this.count;
+    }
+    this.object.entity.setCount(Math.floor(this.auxCount));
+    return true;
+  }
+  updateNotDie(dx) {
+    this.auxCount += dx * this.increment;
+    // las position of count must be <= count
+    if(this.auxCount > (this.count + 1)){
+      this.auxCount = 0;
+    }
+    if(this.auxCount > this.count){
+      this.auxCount = this.count;
+    }
+    this.object.entity.setCount(Math.floor(this.auxCount));
+    return true;
+  }
 
 }
+
+class TRotationAnimation extends TAnimation {
+
+  constructor(object, count, timeAnim, lat, lon, rotationMatrix) {
+    super();
+    this.auxCount = 0;
+    this.count = count;
+    this.timeAnim = timeAnim;
+    this.object = object;
+    this.type = -1;
+    let quats = glMatrix.quat.create();
+    let auxQuat = glMatrix.quat.create();
+    const vec3 = glMatrix.vec3;
+    let quatQ = 1 / count;
+    let quatBQ = count;
+
+    this.quatsArray = [];
+    quats = quatFromVectors(quats, convertLatLonToVec3Rotated(lat, lon, rotationMatrix), vec3.fromValues(0,0,1));
+    for (let i = 0 ; i < quatBQ ; i += quatQ){
+      this.quatsArray.push(glMatrix.quat.fromValues(...glMatrix.quat.slerp(auxQuat, glMatrix.quat.create(), quats ,i)));
+    }
+  }
+
+  beginDraw() { }
+
+  endDraw() { }
+
+  update(dx) {
+    this.auxCount += dx * (this.count / this.timeAnim);
+    if(this.auxCount > (this.count + 1)){
+      this.auxCount = 0;
+    }
+    if(this.auxCount > this.count){
+      this.auxCount = this.count;
+    }
+    this.updateRotate(Math.floor(this.auxCount));
+  }
+
+  updateRotate(count){
+    if(count > 0) {
+      let vec = getEuler(this.quatsArray[count]);
+      this.setRotation(this.object, vec[0] * degrees, 'x');
+      this.rotate(this.object, vec[1] * degrees, 'y');
+      this.rotate(this.object, vec[2] * degrees, 'z');
+    }
+  };
+
+  rotate( node, angle, axis ) {
+    switch (axis) {
+      case 'x':
+        node.father.father.entity.rotateX(angle);
+        break;
+      case 'y':
+        node.father.father.entity.rotateY(angle);
+        break;
+      case 'z':
+        node.father.father.entity.rotateZ(angle);
+        break;
+      default:
+        node.father.father.entity.rotate(angle, axis);
+        break;
+    }
+  }
+
+  setRotation( node, angle, axis ) {
+    node.father.father.entity.identity();
+    switch (axis) {
+      case 'x':
+        node.father.father.entity.rotateX(angle);
+        break;
+      case 'y':
+        node.father.father.entity.rotateY(angle);
+        break;
+      case 'z':
+        node.father.father.entity.rotateZ(angle);
+        break;
+      default:
+        node.father.father.entity.rotate(angle, axis);
+        break;
+    }
+  }
+
+
+}
+
+
+
+
+
+
+
+
+
 
 class TArc extends TEntity {
 
   constructor(startLat, startLon, endLat, endLon, quality) {
-    super();
-    this.arc = getBezierPoints(startLat, startLon, endLat, endLon, quality);
+  super();
+  this.count = 0;
+  this.arc = getBezierPoints(startLat, startLon, endLat, endLon, quality);
+
+  let vertices = [];
+
+  for (let i = 0 ; i < this.arc.length ; i++) {
+    vertices.push(...this.arc[i]);
+    if (!(i === 0 || i === (this.arc.length - 1))) {
+      vertices.push(...this.arc[i]);
+    }
+  }
+
+  let vertexBuffer = global.gl.createBuffer();
+  global.gl.bindBuffer(global.gl.ARRAY_BUFFER, vertexBuffer);
+  global.gl.bufferData(global.gl.ARRAY_BUFFER, new Float32Array(vertices), global.gl.STATIC_DRAW);
+  this.buffer = vertexBuffer;
+
+  global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, null);
+  global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
+
+  // this.uMaterialDiffuse = global.gl.getUniformLocation(global.program, 'uMaterialDiffuse');
+  // this.uMaterialAmbient = global.gl.getUniformLocation(global.program, 'uMaterialAmbient');
+  // this.uUseTextures = global.gl.getUniformLocation(global.program, 'uUseTextures');
+  }
+
+  setCount(value){
+  this.count = value;
+  }
+
+  getCount(){
+  return this.count;
   }
 
   getArc(){
@@ -267,10 +448,27 @@ class TArc extends TEntity {
   }
 
   beginDraw() {
-
+    this.draw();
   }
-  endDraw() {
+  endDraw() {}
 
+  draw() {
+    if(this.count > 0) {
+      // global.gl.useProgram(global.program);
+      // Bind vertex buffer object
+      global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.buffer);
+      // Get the attribute location
+      // let aVertexPosition = global.gl.getAttribLocation(global.program, "aVertexPosition");
+
+      // Point an attribute to the currently bound VBO
+      global.gl.vertexAttribPointer(global.programAttributes.aVertexPosition, 3, global.gl.FLOAT, false, 0, 0);
+
+      // Enable the attribute
+      global.gl.enableVertexAttribArray(global.programAttributes.aVertexPosition);
+      global.gl.uniform4fv(global.programUniforms.uMaterialDiffuse, [1, 0.019, 0.792, 1]);
+      // global.gl.uniform4fv(this.uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+      global.gl.drawArrays(global.gl.LINES, 0, this.count * 2);
+    }
   }
 }
 
@@ -532,7 +730,9 @@ export {
     TTransform,
     TEntity,
     TArc,
-    TFocus
+    TFocus,
+    TRotationAnimation,
+    TArcAndMeshAnimation
 }
 
 

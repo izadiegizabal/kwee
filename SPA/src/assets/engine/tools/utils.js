@@ -243,6 +243,35 @@ function getPureEuler( te) {
   return [x, y, z];
 }
 
+function rotateVec3(point, roll, yaw, pitch) {
+  let cosa = Math.cos(yaw);
+  let sina = Math.sin(yaw);
+
+  let cosb = Math.cos(pitch);
+  let sinb = Math.sin(pitch);
+
+  let cosc = Math.cos(roll);
+  let sinc = Math.sin(roll);
+
+  let Axx = cosa*cosb;
+  let Axy = cosa*sinb*sinc - sina*cosc;
+  let Axz = cosa*sinb*cosc + sina*sinc;
+
+  let Ayx = sina*cosb;
+  let Ayy = sina*sinb*sinc + cosa*cosc;
+  let Ayz = sina*sinb*cosc - cosa*sinc;
+
+  let Azx = -sinb;
+  let Azy = cosb*sinc;
+  let Azz = cosb*cosc;
+
+  let px = point[0];
+  let py = point[1];
+  let pz = point[2];
+
+  return  [ Axx*px + Axy*py + Axz*pz, Ayx*px + Ayy*py + Ayz*pz, Azx*px + Azy*py + Azz*pz];
+}
+
 export {
   getBezierPoints,
   convertLatLonToVec3,
