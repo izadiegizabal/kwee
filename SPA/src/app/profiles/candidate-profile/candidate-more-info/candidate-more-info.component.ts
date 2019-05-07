@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {LanguageLevels} from '../../../../models/Candidate.model';
 import {isStringNotANumber} from '../../../../models/Offer.model';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-candidate-more-info',
@@ -18,7 +19,7 @@ export class CandidateMoreInfoComponent implements OnInit {
     .filter(isStringNotANumber)
     .map(key => ({value: LanguageLevels[key], viewValue: key}));
 
-  constructor() {
+  constructor(private router: Router) {
   }
 
   ngOnInit(): void {
@@ -30,5 +31,11 @@ export class CandidateMoreInfoComponent implements OnInit {
         return proficiency.viewValue;
       }
     }
+  }
+
+  searchSkill(skill) {
+    console.log(skill);
+    this.router.navigate(['/search-candidates'], {queryParams: {skill: skill}});
+
   }
 }
