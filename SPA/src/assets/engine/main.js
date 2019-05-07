@@ -8,7 +8,11 @@ import {TMotorTAG} from './TMotorTAG.js';
 import {canvas, changeAngle, global, angle} from './commons.js';
 
 import {getBezierPoints, convertLatLonToVec3, quatFromVectors, getEuler, degrees, convertLatLonToVec3Rotated} from './tools/utils.js'
-
+let Motor = null;
+let Scene = null;
+let Land = null;
+let Sphere = null;
+let MeshArray = null;
 let draw = true;
 let rotateMeshBool = false;
 let manager = null;
@@ -122,7 +126,9 @@ async function mainR(texture, particles, line) {
     draw = true;
     allowActions.value = false;
     let motor = new TMotorTAG(manager);
+    Motor = motor;
     let scene = motor.createRootNode();
+    Scene = scene;
     let quats = glMatrix.quat.create();
     let quatsRot = glMatrix.quat.create();
     let auxQuat = glMatrix.quat.create();
@@ -163,6 +169,13 @@ async function mainR(texture, particles, line) {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         TREE & RESOURCES
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /*let meshArray = await motor.loadMeshArray(scene, ['card.json', 'earthobj.json', 'sea.json']);
+    MeshArray = meshArray;
+    motor.rotate(meshArray, 0, 'z');
+    motor.rotate(meshArray, 90, 'y');
+    motor.translate(meshArray, [-5, 0, 0] );
+    motor.scale(meshArray, [0.2, 0.1, 0.2] );*/
+    // motor.animate(meshArray, 3, 1);
     // let card = await motor.loadMesh(scene, 'card.json');
     // motor.rotate(card, 0, 'z');
     // motor.rotate(card, 90, 'y');
@@ -180,8 +193,10 @@ async function mainR(texture, particles, line) {
     } else {
       //land.entity.mesh.tex = undefined;
     }
+    Land = land;
     //motor.rotate(land, -90, 'z');
     let sphere = await motor.loadMesh(scene, 'sea.json');
+    Sphere = sphere;
     //motor.rotate(sphere, -90, 'z');
     motor.scale(sphere, [0.995, 0.995, 0.995]);
 
@@ -241,7 +256,7 @@ async function mainR(texture, particles, line) {
     // console.log("scene:");
     // console.log(scene);
 
-    motor.lookAt(cam, [0, 0, 2], [0, 0, 1], [0, 1, 0]);
+    motor.lookAt(cam, [0, 0, 3], [0, 0, 0], [0, 1, 0]);
 
     motor.calculateLights();
     motor.calculateViews();
@@ -305,7 +320,12 @@ async function mainR(texture, particles, line) {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         ARCS
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    const Narc = motor.createArc(scene, 10.500000, -66.916664,40.415363, -3.707398, 32);
+    // const animatedArc = motor.createAndAnimateArc(scene, 10.500000, -66.916664,40.415363, -3.707398, 24, 1.5);
+    // const animatedArc2 = motor.createAndAnimateArc(scene, 35.6895, 139.69171,40.415363, -3.707398, 24, 1.5, 3);
+
+    // const animaLand = motor.animate(land, 32, 1,40.415363, -3.707398, land.father.father.entity.matrix);
+    // const animeSphere = motor.animate(sphere, 32, 1,40.415363, -3.707398,  land.father.father.entity.matrix);
+    /*const Narc = motor.createArc(scene, 10.500000, -66.916664,40.415363, -3.707398, 32);
     const arc = Narc.entity.arc;
     var vertices = [];
 
@@ -328,7 +348,7 @@ async function mainR(texture, particles, line) {
     // Unbind the buffer
     global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
     let uMaterialDiffuse = global.gl.getUniformLocation(global.program, 'uMaterialDiffuse');
-    let uMaterialAmbient = global.gl.getUniformLocation(global.program, 'uMaterialAmbient');
+    let uMaterialAmbient = global.gl.getUniformLocation(global.program, 'uMaterialAmbient');*/
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         LOOP
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -336,7 +356,10 @@ async function mainR(texture, particles, line) {
     var last2 = 0;
     var num = 0;
     var rotation = -1;
-    var maxLines = vertices.length/3;
+    //var maxLines = vertices.length/3;
+
+    var sceneTime = 0.0;
+
     var loop = async function (now, now2) {
       if (draw) {
         global.gl.useProgram(global.program);
@@ -368,35 +391,6 @@ async function mainR(texture, particles, line) {
           motor.setRotation(sphere, vec[0] * degrees, 'x');
           motor.rotate(sphere, vec[1] * degrees, 'y');
           motor.rotate(sphere, vec[2] * degrees, 'z');
-        }
-
-
-
-        if(line){
-          if(!last || now - last >= 0.02*1000) {
-            last = now;
-            num+=2;
-            if(num > maxLines) {
-              num = maxLines;
-            }
-          }
-
-
-          // Bind vertex buffer object
-          global.gl.bindBuffer(global.gl.ARRAY_BUFFER, vertex_buffer);
-
-          // Get the attribute location
-          var coord = global.gl.getAttribLocation(global.program, "aVertexPosition");
-
-          // Point an attribute to the currently bound VBO
-          global.gl.vertexAttribPointer(coord, 3, global.gl.FLOAT, false, 0, 0);
-
-          // Enable the attribute
-          global.gl.enableVertexAttribArray(coord);
-          global.gl.uniform4fv(uMaterialDiffuse, [1, 0.019, 0.792, 1]);
-          global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
-          global.gl.uniform1i(uUseTextures, 0);
-          global.gl.drawArrays(global.gl.LINES, 0, num);
         }
 
 
@@ -474,18 +468,117 @@ async function mainR(texture, particles, line) {
         // hard try
         /////////
 
-
-
       }
       catch(err){
         //alert(err);
         console.error(err);
       }
     }
-
     requestAnimationFrame(loop);
-
+    requestAnimationFrame(animation);
   }
+
+}
+
+
+let then = 0;
+let last = 0;
+let arcsSec = 0;
+/*
+  Fases
+  0 => rotate
+  1 => show & animate card
+  2 => wait 3 seconds
+  3 => remove card
+ */
+let fase = 0;
+let arcs = [];
+let auxArc = null;
+
+//let then = Date.now();
+//let fpsInterval = 1000/30;
+function animation(now) {
+
+  if(now - arcsSec >= 1000) {
+    arcsSec = now;
+    Motor.createAndAnimateArc(Scene, generateRandomLat(), generateRandomLong(), generateRandomLat(), generateRandomLong(), 24, 1.5, 3);
+    Motor.createAndAnimateArc(Scene, generateRandomLat(), generateRandomLong(), generateRandomLat(), generateRandomLong(), 24, 1.5, 3);
+  }
+
+  /*switch (fase) {
+    case 0:
+      if(now - last >= 5000) {
+        // console.log(MeshArray.entity);
+        console.log(0);
+        // auxArc = Motor.createAndAnimateArc(Scene, 10.500000, -66.916664,40.415363, -3.707398, 24, 1.5);
+        last = now;
+        fase = 1;
+      }
+      break;
+    case 1:
+      if(now - last >= 10000) {
+        console.log(1);
+        // Motor.animateMesh(MeshArray, 3, 1, 5);
+        //Motor.deleteArc(auxArc);
+        //console.log(Scene);
+        //console.log(Motor.allCountAnimations);
+        // const animaLand = Motor.animate(Land, 32, 1,10.500000, -66.916664, Land.father.father.entity.matrix);
+        // const animeSphere = Motor.animate(Sphere, 32, 1,10.500000, -66.916664,  Sphere.father.father.entity.matrix);
+        last = now;
+        fase = 0;
+      }
+      break;
+    default:
+      break;
+  }*/
+
+  // Convert the time to second
+  now *= 0.001;
+  // Subtract the previous time from the current time
+  var deltaTime = now - then;
+  // Remember the current time for the next frame.
+  then = now;
+
+  Motor.allCountAnimations.forEach( (e, i) => {
+    if(!e.update(deltaTime)){
+      Motor.allCountAnimations.splice(i, 1);
+      if(Motor.isArcAnimation(e)){
+        Motor.deleteArc(e.object);
+      }
+    }
+  });
+
+  //
+
+  /*
+
+  if(cont > 16){
+    cont = 0;
+    console.log('!!!!!!!!!!!!!!!!!!!!!!');
+  }
+
+  //console.log(deltaTime);
+  //console.log(Math.floor(deltaTime * (16 / 2)));
+  cont += deltaTime * (16 / 2);
+  console.log(Math.floor(cont));
+
+   */
+
+  //let now = Date.now();
+  //let elapsed = now - then;
+
+  if(draw) {
+    requestAnimationFrame(animation);
+  }
+}
+
+// LONGITUDE -180 to + 180
+function generateRandomLong() {
+  return (Math.random() * (180 - (-180)) + (-180)).toFixed(3) * 1;
+}
+// LATITUDE -90 to +90
+function generateRandomLat() {
+  return (Math.random() * (90 - (-90)) + (-90)).toFixed(3) * 1;
 }
 
 export {

@@ -139,6 +139,33 @@ class TResource {
     }
 }
 
+class TResourceMeshArray {
+
+  constructor(meshesArray){
+    this.meshes = meshesArray;
+    this.index = 0;
+  }
+
+  beginDraw() {
+    this.draw();
+  }
+
+  endDraw() {
+  }
+
+  draw(){
+    if(this.index > this.meshes.length -1){
+      this.index = this.meshes.length -1;
+    }
+    this.meshes[this.index].draw();
+  }
+
+  setCount(index){
+    this.index = index;
+  }
+
+}
+
 class TResourceMesh extends TResource{
 
     constructor(name){
@@ -530,5 +557,6 @@ export {
     TResourceMaterial,
     TResourceMesh,
     TResourceShader,
-    TResourceTexture
+    TResourceTexture,
+    TResourceMeshArray
 }

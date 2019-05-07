@@ -1,7 +1,7 @@
 
 import {TNode} from './TNode.js';
-import {TTransform, TCamera, TLight, TAnimation, TMesh, TArc, TFocus} from './TEntity.js';
-import {TResourceManager, TResourceMesh, TResourceMaterial, TResourceTexture, TResourceShader} from './resourceManager.js';
+import {TTransform, TCamera, TLight, TAnimation, TMesh, TArc, TFocus, TRotationAnimation, TArcAndMeshAnimation} from './TEntity.js';
+import {TResourceManager, TResourceMesh, TResourceMaterial, TResourceTexture, TResourceShader, TResourceMeshArray} from './resourceManager.js';
 
 class TMotorTAG{
 
@@ -20,6 +20,8 @@ class TMotorTAG{
         this.allFocuses = []
 
         this.resourceManager = resourceManager;
+
+        this.allCountAnimations = [];
     }
 
     createRootNode(){
@@ -28,6 +30,28 @@ class TMotorTAG{
         }
         return TMotorTAG.scene;
     }
+    deleteFullBranch() {
+
+    }
+
+    deleteArc(node){
+      let index = -1;
+      this.allCountAnimations.forEach( (e, i) => {
+        if(e.object === node.entity){
+          index = i;
+        }
+      });
+      if (index > -1) {
+        this.allCountAnimations.splice(index, 1);
+      }
+      node.father.father.father.father.remChild(node.father.father.father);
+    }
+
+    isArcAnimation(anim){
+      return (anim.object.entity instanceof TArc);
+    }
+
+
 
     // scale -> rotation -> translation -> node
     createFullBranch(father, entity){
@@ -227,6 +251,28 @@ class TMotorTAG{
         return NArc;
     }
 
+    createAndAnimateArc(father, startLat, startLon, endLat, endLon, quality, timeAnim, endAnim){
+      let arc = new TArc(startLat, startLon, endLat, endLon, quality);
+      let NArc = this.createFullBranch(father, arc);
+      let anim = new TArcAndMeshAnimation(NArc, quality, timeAnim, endAnim);
+      this.allCountAnimations.push(anim);
+      return NArc;
+    }
+
+    animate(node, quality, timeAnim, endAnim){
+      let anim = new TArcAndMeshAnimation(node, quality, timeAnim, endAnim);
+      this.allCountAnimations.push(anim);
+      return anim;
+    }
+
+    animateArc(node, quality, timeAnim, endAnim){
+      return this.animate(node, quality, timeAnim, endAnim);
+    }
+
+    animateMesh(node, quality, timeAnim, endAnim){
+      return this.animate(node, quality, timeAnim, endAnim);
+    }
+
     // returns TNodeMesh
     async loadMesh(father, file){
 
@@ -236,6 +282,31 @@ class TMotorTAG{
         let mesh = new TMesh(meshResource);
 
         return this.createFullBranch(father, mesh);
+    }
+
+    async loadMeshOnly(file){
+      let meshResource = await this.resourceManager.getResource(file);
+
+      return new TMesh(meshResource);
+    }
+
+    async loadMeshArray(father, files){
+
+      let meshesArray = [];
+
+      await this.asyncForEach(files, async (e) => {
+        meshesArray.push(await this.resourceManager.getResource(e));
+      });
+
+      let meshes = new TResourceMeshArray(meshesArray);
+
+      return this.createFullBranch(father, meshes);
+    }
+
+    async asyncForEach(array, callback) {
+      for (let index = 0; index < array.length; index++) {
+        await callback(array[index], index, array);
+      }
     }
 
     draw(){

@@ -82,19 +82,49 @@ function convertLatLonToVec3 ( lat, lon, bool, altitude ) {
   // return[Math.cos(latRad) * Math.cos(lonRad) * r , Math.sin(latRad) * r , Math.cos(latRad) * Math.sin(lonRad) * r];
 }
 
+function rotate(point, roll, yaw, pitch) {
+  let cosa = Math.cos(yaw);
+  let sina = Math.sin(yaw);
+
+  let cosb = Math.cos(pitch);
+  let sinb = Math.sin(pitch);
+
+  let cosc = Math.cos(roll);
+  let sinc = Math.sin(roll);
+
+  let Axx = cosa*cosb;
+  let Axy = cosa*sinb*sinc - sina*cosc;
+  let Axz = cosa*sinb*cosc + sina*sinc;
+
+  let Ayx = sina*cosb;
+  let Ayy = sina*sinb*sinc + cosa*cosc;
+  let Ayz = sina*sinb*cosc - cosa*sinc;
+
+  let Azx = -sinb;
+  let Azy = cosb*sinc;
+  let Azz = cosb*cosc;
+
+  let px = point[0];
+  let py = point[1];
+  let pz = point[2];
+
+  return  [ Axx*px + Axy*py + Axz*pz, Ayx*px + Ayy*py + Ayz*pz, Azx*px + Azy*py + Azz*pz];
+}
+
 function convertLatLonToVec3Rotated ( lat, lon, rotationMat) {
   lon += -25.7;
   lat -= 0.5;
   var latRad = lat * (Math.PI / 180);
   var lonRad = -lon * (Math.PI / 180);
   var r = 1.27227*50;
-  var aux = glMatrix.vec3.create();
+  // var aux = glMatrix.vec3.create();
   var vec3 = glMatrix.vec3.fromValues(Math.cos(latRad) * Math.cos(lonRad) * r , Math.sin(latRad) * r , Math.cos(latRad) * Math.sin(lonRad) * r);
   var rotations = getPureEuler(rotationMat);
   glMatrix.vec3.rotateX(vec3, vec3, [0, 0, 0], rotations[0] * degrees);
   glMatrix.vec3.rotateY(vec3, vec3, [0, 0, 0], rotations[1] * degrees);
   glMatrix.vec3.rotateZ(vec3, vec3, [0, 0, 0], rotations[2] * degrees);
   return vec3;
+  // return glMatrix.vec3.fromValues(...rotate(vec3, rotations[0], rotations[1], rotations[2]));
 }
 
 
