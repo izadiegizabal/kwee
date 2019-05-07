@@ -286,6 +286,10 @@ class TMotorTAG{
       global.gl.enable(global.gl.CULL_FACE);
       //global.gl.frontFace(global.gl.CCW);
       global.gl.cullFace(global.gl.BACK);
+
+      // Projection Matrix
+      global.gl.uniformMatrix4fv(global.programUniforms.uPMatrix, false, global.projectionMatrix);
+
     }
 
     draw(){
@@ -294,9 +298,6 @@ class TMotorTAG{
       
       // We can set the PMatrix once here (it will be the same for every Entity)
       // -- MVMatrix and NMatrix will change over the rest of Entities
-
-      // Projection Matrix
-      global.gl.uniformMatrix4fv(global.programUniforms.uPMatrix, false, global.projectionMatrix);
 
       this.scene.draw();
     }

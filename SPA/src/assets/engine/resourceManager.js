@@ -185,8 +185,6 @@ class TResourceMesh extends TResource{
 
       ///////////////////////////////////////////////////////////////////////////////// GET INFO FROM FILE
 
-      console.log("loaded:");
-      console.log(jsonMesh);
         this.alias = jsonMesh.alias;
 
         if( file == "earth_fbx.json" ||

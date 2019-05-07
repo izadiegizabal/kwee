@@ -645,6 +645,7 @@ async function interactiveMain(){
         global.dX *= global.AMORTIZATION, global.dY*=global.AMORTIZATION;
         global.THETA+=global.dX, global.PHI+=global.dY;
      }
+     
       global.gl.useProgram(global.program);
 
       global.time = await Date.now();
@@ -667,10 +668,12 @@ async function interactiveMain(){
       ],
       [0,0,0],
       [0,1,0]);
+
+      // Old camera lookAt (rotating X-axis camera)
       // motor.cameraLookAt( cam, [
-      //   radius * Math.sin(-global.THETA*10*Math.PI/180),
-      //   radius * global.PHI *0.8,
-      //   radius * Math.cos(-global.THETA*10*Math.PI/180),
+      //   radius * Math.sin(number*Math.PI/180),
+      //   radius,
+      //   radius * Math.cos(number*Math.PI/180),
       // ],
       // [0,0,0],
       // [0,1,0]);
@@ -691,12 +694,11 @@ async function interactiveMain(){
 
       global.lastFrameTime = global.time;
 
+      
+      number = number + 0.3;
+      
       requestAnimationFrame(loop);
-
     }
-    number = number + 0.3;
-    if(number>360) number = 0;
-  
 
     motor.init();
     loop();
