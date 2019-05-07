@@ -637,9 +637,10 @@ async function interactiveMain(){
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
    
     let number = 0;
+    let auxTHETA = 0;
+    let auxPHI = 0;
     var loop = async function (now, now2) {
-        
-      global.drag ? console.log(global.drag) : true;
+
       if (!global.drag) {
         global.dX *= global.AMORTIZATION, global.dY*=global.AMORTIZATION;
         global.THETA+=global.dX, global.PHI+=global.dY;
@@ -649,13 +650,17 @@ async function interactiveMain(){
       global.time = await Date.now();
     
       ////////////////////////////////////////////////////////////////
+
+      auxTHETA = global.orbitSpeed*global.THETA*(Math.PI/180);
+      auxPHI = (global.orbitSpeed*global.PHI)*(Math.PI/180);
       
-      let camX = radius * Math.sin(global.orbitSpeed*global.THETA*(Math.PI/180)) * Math.cos((global.orbitSpeed*global.PHI)*(Math.PI/180));
+      let camX = radius * Math.sin(auxTHETA) * Math.cos(auxPHI);
       //let camY = radius * Math.sin((global.orbitSpeed*Math.min(Math.max(parseInt(global.PHI), -global.orbitMaxY), global.orbitMaxY))*(Math.PI/180));
-      let camY = radius * Math.sin((global.orbitSpeed*global.PHI*(Math.PI/180)));
-      let camZ = radius * -Math.cos((global.orbitSpeed*global.THETA)*(Math.PI/180)) * Math.cos((global.orbitSpeed*global.PHI)*(Math.PI/180));
+      // let camY = radius * Math.sin((global.orbitSpeed*global.PHI*(Math.PI/180)));
+      let camY = radius * Math.sin(auxPHI);
+      let camZ = radius * -Math.cos(auxTHETA) * Math.cos(auxPHI);
 
-
+      console.log(camY);
 
       motor.cameraLookAt( cam, [
         camX,

@@ -78,7 +78,7 @@ function shared() {
         global.THETA = 0;
         global.PHI = 0;
         // Orbit setup
-        global.orbitSpeed = 8;
+        global.orbitSpeed = 12;
         global.orbitMaxY = 11;
 
         canvas.addEventListener("mousedown", mouseDown, false);
