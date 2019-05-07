@@ -125,7 +125,7 @@
               </mat-form-field>
             </div>
           </div>
-          <div>
+          <div *ngIf="subscriptions && user && user.premium && subscriptions[user.premium]">
             <span class="mat-small">{{'Subscription' | uppercase}}</span>
             <br>
             <div *ngIf="!isInEditMode || !isPanelOpen">
