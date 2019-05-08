@@ -1,13 +1,4 @@
-import {
-  trigger,
-  transition,
-  style,
-  query,
-  group,
-  animateChild,
-  animate,
-  keyframes,
-} from '@angular/animations';
+import {animate, group, query, style, transition, trigger,} from '@angular/animations';
 
 export const fader =
   trigger('routeAnimations', [
@@ -24,21 +15,21 @@ export const fader =
       ]),
       // Animate the new page in
       query(':enter', [
-        animate('300ms ease-in-out', style({ opacity: 1, transform: 'scale(1) translateY(0)' })),
+        animate('300ms ease-in-out', style({opacity: 1, transform: 'scale(1) translateY(0)'})),
       ])
     ]),
   ]);
 
 export const slider =
   trigger('routeAnimations', [
-    transition('* => isLeft', slideTo('left') ),
-    transition('* => isRight', slideTo('right') ),
-    transition('isRight => *', slideTo('left') ),
-    transition('isLeft => *', slideTo('right') )
+    transition('* => isLeft', slideTo('left')),
+    transition('* => isRight', slideTo('right')),
+    transition('isRight => *', slideTo('left')),
+    transition('isLeft => *', slideTo('right'))
   ]);
 
 function slideTo(direction) {
-  const optional = { optional: true };
+  const optional = {optional: true};
   return [
     query(':enter, :leave', [
       style({
@@ -49,14 +40,14 @@ function slideTo(direction) {
       })
     ], optional),
     query(':enter', [
-      style({ [direction]: '-100%'})
+      style({[direction]: '-100%'})
     ]),
     group([
       query(':leave', [
-        animate('250ms cubic-bezier(0.4, 0.0, 0.2, 1)', style({ [direction]: '100%'}))
+        animate('250ms cubic-bezier(0.4, 0.0, 0.2, 1)', style({[direction]: '100%'}))
       ], optional),
       query(':enter', [
-        animate('300ms cubic-bezier(0.4, 0.0, 0.2, 1)', style({ [direction]: '0%'}))
+        animate('300ms cubic-bezier(0.4, 0.0, 0.2, 1)', style({[direction]: '0%'}))
       ])
     ]),
     // Normalize the page style... Might not be necessary

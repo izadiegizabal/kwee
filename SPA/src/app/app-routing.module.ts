@@ -13,12 +13,20 @@ const routes: Routes = [
 
   // MAIN PAGES
   {path: '', redirectTo: '', canActivate: [HomeRedirectGuardService], pathMatch: 'full'},
-  {path: 'home', component: LandingComponent},
+  {path: 'home', component: LandingComponent, data: {animation: 'isLeft'}},
   {path: 'candidate-home', component: CandidateHomeComponent, data: {animation: 'isLeft'}},
 
   // PROFILES
-  {path: 'candidate/:id/:name', loadChildren: './profiles/candidate-profile/candidate-profile.module#CandidateProfileModule', data: {animation: 'isRight'}},
-  {path: 'business/:id/:name', loadChildren: './profiles/business-profile/business-profile.module#BusinessProfileModule', data: {animation: 'isRight'}},
+  {
+    path: 'candidate/:id/:name',
+    loadChildren: './profiles/candidate-profile/candidate-profile.module#CandidateProfileModule',
+    data: {animation: 'isRight'}
+  },
+  {
+    path: 'business/:id/:name',
+    loadChildren: './profiles/business-profile/business-profile.module#BusinessProfileModule',
+    data: {animation: 'isRight'}
+  },
 
   // OFFERS
   {
