@@ -7,6 +7,7 @@ import * as fromAuth from '../../../auth/store/auth.reducers';
 import {getUrlfiedString} from '../../../shared/utils.service';
 import {MessagesService} from '../../../services/messages.service';
 import {NotificationsService} from '../../../services/notifications.service';
+import * as fromMessages from '../../../messages/store/message.reducers';
 
 @Component({
   selector: 'app-user-menu',
@@ -17,18 +18,17 @@ export class UserMenuComponent implements OnInit {
   @Input() isLanding = false;
 
   authState: Observable<fromAuth.State>;
+  notiState: Observable<fromMessages.State>;
   username = '';
   userId = '';
   userType = '';
 
   numNotifications = 0;
   numMessages = 0;
-  notification = false;
   message = false;
 
   constructor(private store$: Store<fromApp.AppState>,
-              public messageService: MessagesService,
-              public notificationsService: NotificationsService) {
+              public messageService: MessagesService) {
   }
 
   ngOnInit() {
@@ -44,20 +44,24 @@ export class UserMenuComponent implements OnInit {
           this.userType = user.type;
           if (user.notifications > 0) {
             this.numNotifications = user.notifications;
-            this.notification = true;
           }
         }
       });
+
+    // Listen to notification changes
+    this.notiState = this.store$.pipe(select('messages'));
+    this.notiState.subscribe(state => {
+      if (state && state.notifications) {
+        if (this.numNotifications !== state.notifications.unread) {
+          this.numNotifications = state.notifications.unread;
+
+          // TODO: Show notification overlay
+        }
+      }
+    });
+
     this.messageService.getSelected().subscribe(msg => {
       this.numMessages++;
-      this.notification = true;
-    });
-    this.notificationsService.newNotification$.subscribe((data) => {
-      this.notification = data > 0;
-      this.numNotifications = data;
-    });
-    this.notificationsService.notificationAlert$.subscribe((value) => {
-      this.notification = value;
     });
   }
 

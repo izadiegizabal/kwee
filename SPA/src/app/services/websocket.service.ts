@@ -1,6 +1,9 @@
 import {Injectable} from '@angular/core';
-import {User} from '../../models/user';
 import {Socket} from 'ngx-socket-io';
+import {Observable} from 'rxjs';
+import * as fromAuth from '../auth/store/auth.reducers';
+import {select, Store} from '@ngrx/store';
+import * as fromApp from '../store/app.reducers';
 
 @Injectable({
   providedIn: 'root'
@@ -8,12 +11,20 @@ import {Socket} from 'ngx-socket-io';
 export class WebsocketService {
 
   public socketStatus = false;
-  public user: User = null;
+  authState: Observable<fromAuth.State>;
+  userEmail: string;
 
-  constructor(
-    private socket: Socket
-  ) {
-    this.getStorage();
+  constructor(private store$: Store<fromApp.AppState>,
+              private socket: Socket) {
+    // If logged in set user in server
+    this.authState = this.store$.pipe(select('auth'));
+    this.authState.subscribe(state => {
+        if (state && state.user && state.user.email !== this.userEmail) {
+          this.userEmail = state.user.email;
+          this.connectUser(this.userEmail);
+        }
+      }
+    );
     this.checkStatus();
   }
 
@@ -21,23 +32,14 @@ export class WebsocketService {
 
     this.socket.on('connect', (client) => {
       this.socketStatus = true;
-      this.getStorage();
     });
 
     this.socket.on('disconnect', () => {
       this.socketStatus = false;
     });
-
-    // this.socket.on('selected', function(data) {
-    //   console.log('en el selected');
-    //   const username: any = data.username;
-    //   const message: any = data.message;
-
-    //   alert(username + ': ' + message);
-    // });
   }
 
-  emit(event: string, payload?: any, callback?: Function) {
+  emit(event: string, payload?: any, callback?) {
     this.socket.emit(event, payload, callback);
   }
 
@@ -45,53 +47,13 @@ export class WebsocketService {
     return this.socket.fromEvent(event);
   }
 
-  selected(event: string) {
-    console.log('en el selected');
-
-    this.socket.on('selected', function (data) {
-      const username: any = data.username;
-      const message: any = data.message;
-
-      alert(username + ': ' + message);
-    });
-  }
-
-  rating(event: string) {
-    console.log('en el rating');
-
-    this.socket.on('rating', function (data) {
-      const username: any = data.username;
-      const message: any = data.message;
-
-      alert(username + ': ' + message);
-    });
-  }
-
-  connectedUser(email: string) {
+  connectUser(email: string) {
 
     return new Promise((resolve, reject) => {
-
       this.emit('set-user', {email}, resp => {
-
-        this.user = new User(email);
-        this.setStorage();
-
         resolve();
-
       });
-
     });
 
-  }
-
-  setStorage() {
-    localStorage.setItem('user', JSON.stringify(this.user));
-  }
-
-  getStorage() {
-    if (localStorage.getItem('user')) {
-      this.user = JSON.parse(localStorage.getItem('user'));
-      this.connectedUser(this.user.email);
-    }
   }
 }

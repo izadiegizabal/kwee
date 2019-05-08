@@ -12,10 +12,23 @@ export interface State {
     total: number,
     data: any
   };
+  notifications: {
+    notifications: {
+      id: number,
+      createdAt: Date,
+      read: boolean,
+      from: any,
+      type: string,
+      data: any
+    }[],
+    unread: number,
+    total: number,
+  };
 }
 
 const initialState: State = {
   messages: null,
+  notifications: null,
 };
 
 export function messageReducer(state = initialState, action: MessageActions.MessageActions) {
@@ -34,6 +47,11 @@ export function messageReducer(state = initialState, action: MessageActions.Mess
       return {
         ...state,
         messages: action.payload
+      };
+    case MessageActions.SET_NOTIFICATIONS:
+      return {
+        ...state,
+        notifications: action.payload
       };
     case MessageActions.CLEAR:
       return {

@@ -11,8 +11,6 @@ import * as fromAuth from '../store/auth.reducers';
 import {MatDialog} from '@angular/material';
 import {ResetDialogComponent} from './reset-dialog/reset-dialog.component';
 import {Title} from '@angular/platform-browser';
-import {WebsocketService} from '../../services/websocket.service';
-import {NotificationsService} from '../../services/notifications.service';
 
 
 @Component({
@@ -32,8 +30,6 @@ export class SigninComponent implements OnInit {
     public dialog: MatDialog,
     private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects,
     private router: Router,
-    public wsService: WebsocketService,
-    public notificationsService: NotificationsService
   ) {
   }
 
@@ -62,13 +58,17 @@ export class SigninComponent implements OnInit {
     ).subscribe((res: {
         payload: {
           root: boolean,
-          email: string
+          email: string,
+          type: string,
         },
         type: string
       }) => {
-        this.wsService.connectedUser( res.payload.email );
         if (res.payload.root) {
           this.router.navigate(['/admin']);
+        } else if (res.payload.type === 'candidate') {
+          this.router.navigate(['/candidate-home']);
+        } else if (res.payload.type === 'business') {
+          this.router.navigate(['/my-offers']);
         } else {
           this.router.navigate(['/']);
         }

@@ -1,5 +1,4 @@
 import * as OffersActions from './offers.actions';
-import * as AdminActions from '../../admin/store/admin.actions';
 
 export interface State {
   offers: {
