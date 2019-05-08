@@ -36,7 +36,8 @@ export class ErrorPageComponent implements OnInit {
   errorNum = 404;
   errorMessage = '';
 
-  constructor(private route: ActivatedRoute, private titleService: Title) {
+  constructor(private route: ActivatedRoute,
+              private titleService: Title) {
     this.errorNum = Number(this.route.snapshot.paramMap.get('errorNum'));
     this.errorNum = (this.gifPaths[0][+this.errorNum]) ? this.errorNum : 404; // if there aren't any gifs for error --> unknown error -> 404
     const currentGifArray = this.gifPaths[0][+this.errorNum];

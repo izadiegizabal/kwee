@@ -7,6 +7,7 @@ import * as InvoiceActions from './store/invoice.actions';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../store/app.reducers';
 import * as fromInvoices from './store/invoice.reducers';
+import {Title} from '@angular/platform-browser';
 
 
 interface Invoice {
@@ -37,10 +38,13 @@ export class InvoicesComponent implements OnInit {
   userName: string;
   noInvoices: boolean;
 
-  constructor(private http: HttpClient, private store$: Store<fromApp.AppState>) {
+  constructor(private http: HttpClient,
+              private store$: Store<fromApp.AppState>,
+              private titleService: Title) {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Kwee - Invoices');
 
     // this.store$.dispatch(new InvoiceActions.Clear());
 
@@ -75,12 +79,12 @@ export class InvoicesComponent implements OnInit {
       this.subscription = this.invoicesState.pipe(take(1)).subscribe(
         (invoice) => {
           if (invoice.invoices.data.length > 0) {
-          console.log(invoice.invoices.data);
+            console.log(invoice.invoices.data);
             if ((this.business && invoice.invoices.data[0].offerer) || (this.candidate && invoice.invoices.data[0].applicant)) {
               invoice.invoices.data.forEach(e => {
-                  this.address = this.business && e.offerer ? e.offerer.address : '';
-                  const inv = e.invoice;
-                  this.invoices.push({id: inv.id, date: this.getDate(inv.createdAt), total: inv.price, product: inv.product});
+                this.address = this.business && e.offerer ? e.offerer.address : '';
+                const inv = e.invoice;
+                this.invoices.push({id: inv.id, date: this.getDate(inv.createdAt), total: inv.price, product: inv.product});
               });
             }
           } else {
@@ -92,7 +96,7 @@ export class InvoicesComponent implements OnInit {
 
   getDate(dateFrom: any) {
     const date = new Date(dateFrom);
-    return date.getDate() + '/' + ( date.getMonth() + 1 ) + '/' + date.getUTCFullYear();
+    return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getUTCFullYear();
   }
 
   downloadPDF(index: number) {

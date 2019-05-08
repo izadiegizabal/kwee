@@ -1,13 +1,13 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {MessagesService} from '../services/messages.service';
-import {first, take} from 'rxjs/operators';
 import {WebsocketService} from '../services/websocket.service';
-import { Observable, Subscription } from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 import * as MessageActions from './store/message.actions';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../store/app.reducers';
 import * as fromMessages from './store/message.reducers';
 import * as moment from 'moment';
+import {Title} from '@angular/platform-browser';
 
 export interface Message {
   senderId: number;
@@ -57,6 +57,7 @@ export class MessagesComponent implements OnInit {
   public data: any = [];
 
   constructor(
+    private titleService: Title,
     public messageService: MessagesService,
     public wsService: WebsocketService,
     private store$: Store<fromApp.AppState>
@@ -64,6 +65,8 @@ export class MessagesComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Kwee - Messages');
+
     this.authState = this.store$.pipe(select('auth'));
     this.authState.pipe(
       select((s: { user: string }) => s.user)
@@ -75,10 +78,10 @@ export class MessagesComponent implements OnInit {
     this.messageService.getMessage().subscribe(msg => {
       console.log('Mensaje recibido');
       console.log(msg);
-      this.bdMessages.push( msg );
+      this.bdMessages.push(msg);
       this.element = document.getElementById('chat-messages');
-      if ( this.element ) {
-        setTimeout( () => {
+      if (this.element) {
+        setTimeout(() => {
           this.element.scrollTop = this.element.scrollHeight;
         }, 50);
       }
@@ -90,7 +93,7 @@ export class MessagesComponent implements OnInit {
 
     this.subscription = this.messagesState.pipe().subscribe(
       (message) => {
-        if ( message.messages && message.messages.total > 0 ) {
+        if (message.messages && message.messages.total > 0) {
           this.differentUsers = message.messages.total;
           this.userList = message.messages.data;
           this.areMessages = true;
@@ -105,31 +108,31 @@ export class MessagesComponent implements OnInit {
 
   // tslint:disable-next-line:use-life-cycle-interface
   ngOnDestroy() {
-    if ( this.subscription ) {
+    if (this.subscription) {
       this.subscription.unsubscribe();
     }
 
-    if ( this.subscription2 ) {
+    if (this.subscription2) {
       this.subscription2.unsubscribe();
     }
   }
 
-  selectUser( id ) {
+  selectUser(id) {
     this.subscription.unsubscribe();
     this.userSelected = true;
-    this.store$.dispatch(new MessageActions.TryGetConversation({ id }));
+    this.store$.dispatch(new MessageActions.TryGetConversation({id}));
 
     this.messagesState2 = this.store$.pipe(select(state => state.messages));
 
     this.subscription2 = this.messagesState2.pipe().subscribe(
       (conver) => {
 
-        if ( conver.messages && conver.messages.total > 0 ) {
+        if (conver.messages && conver.messages.total > 0) {
 
           this.bdMessages = conver.messages.data;
           this.messageToSend = this.bdMessages[0];
 
-          if ( this.messageToSend.senderId !== this.authUser.id ) {
+          if (this.messageToSend.senderId !== this.authUser.id) {
             this.messageToSend.receiverId = this.messageToSend.senderId;
             this.messageToSend.receiverName = this.messageToSend.senderName;
             this.messageToSend.senderId = this.authUser.id;
@@ -141,28 +144,28 @@ export class MessagesComponent implements OnInit {
     this.subscription2.unsubscribe();
   }
 
-  send( ) {
-    if ( this.text.trim().length === 0 ) {
+  send() {
+    if (this.text.trim().length === 0) {
       return;
     }
     this.messageToSend.message = this.text;
-    this.messageToSend.date =  moment().format('YYYY/MM/DD');
+    this.messageToSend.date = moment().format('YYYY/MM/DD');
     this.messageToSend.hour = moment().format('HH:mm:ss');
     this.messageService.sendMessage(this.messageToSend);
 
     console.log('dbMessages antes push: ', this.bdMessages);
     console.log('messageToSend: ', this.messageToSend);
-    this.bdMessages.push( this.messageToSend );
+    this.bdMessages.push(this.messageToSend);
     console.log('dbMessages después push: ', this.bdMessages);
 
     this.element = document.getElementById('chat-messages');
-    setTimeout( () => {
+    setTimeout(() => {
       this.element.scrollTop = this.element.scrollHeight;
     }, 50);
 
     const obj: any = this.messageToSend;
 
-    this.store$.dispatch( new MessageActions.TryPostMessage( obj ));
+    this.store$.dispatch(new MessageActions.TryPostMessage(obj));
     this.text = '';
 
   }

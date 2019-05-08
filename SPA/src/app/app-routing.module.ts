@@ -56,9 +56,6 @@ const routes: Routes = [
     canActivate: [AuthTokenGuard]
   },
 
-  // TESTING PAGES -> TODO: delete this once not needed
-  {path: 'paypal', loadChildren: './paypal/paypal.module#PaypalModule'},
-
   // AUTH
   {
     path: 'signup',
@@ -102,9 +99,9 @@ const routes: Routes = [
   {path: 'privacy', component: PrivacyComponent},
   {path: 'email-verified/:token', loadChildren: './email-verified/email-verified.module#EmailVerifiedModule'},
   {path: 'reset-password/:token', loadChildren: './reset-password/reset-password.module#ResetPasswordModule'},
-  {path: 'contact-support', loadChildren: './contact-support/contact-support.module#ContactSupportModule'},
   {path: 'error', loadChildren: './errors/errors.module#ErrorsModule'},
-  {path: 'premium', loadChildren: './premium/premium.module#PremiumModule'},
+  {path: 'premium', redirectTo: 'plans'}, // Fallback just in case some link wasn't change
+  {path: 'plans', loadChildren: './premium/premium.module#PremiumModule'},
 
   // If matching path not found show Error 404
   {path: '**', redirectTo: 'error/404'}

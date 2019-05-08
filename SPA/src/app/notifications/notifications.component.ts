@@ -5,6 +5,7 @@ import {NotificationsService} from '../services/notifications.service';
 import {Observable} from 'rxjs';
 import * as fromMessages from '../messages/store/message.reducers';
 import * as MessageAcctions from '../messages/store/message.actions';
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-notifications',
@@ -19,11 +20,13 @@ export class NotificationsComponent implements OnInit {
 
   constructor(
     private store$: Store<fromApp.AppState>,
-    public notificationsService: NotificationsService
-  ) {
+    private titleService: Title,
+    public notificationsService: NotificationsService) {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Kwee - Notifications');
+
     this.notiState = this.store$.pipe(select('messages'));
     this.notiState.subscribe(state => {
       if (state && state.notifications) {
