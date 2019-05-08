@@ -14,11 +14,11 @@ const routes: Routes = [
   // MAIN PAGES
   {path: '', redirectTo: '', canActivate: [HomeRedirectGuardService], pathMatch: 'full'},
   {path: 'home', component: LandingComponent},
-  {path: 'candidate-home', component: CandidateHomeComponent},
+  {path: 'candidate-home', component: CandidateHomeComponent, data: {animation: 'isLeft'}},
 
   // PROFILES
-  {path: 'candidate/:id/:name', loadChildren: './profiles/candidate-profile/candidate-profile.module#CandidateProfileModule'},
-  {path: 'business/:id/:name', loadChildren: './profiles/business-profile/business-profile.module#BusinessProfileModule'},
+  {path: 'candidate/:id/:name', loadChildren: './profiles/candidate-profile/candidate-profile.module#CandidateProfileModule', data: {animation: 'isRight'}},
+  {path: 'business/:id/:name', loadChildren: './profiles/business-profile/business-profile.module#BusinessProfileModule', data: {animation: 'isRight'}},
 
   // OFFERS
   {
