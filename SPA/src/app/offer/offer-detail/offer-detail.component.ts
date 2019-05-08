@@ -192,7 +192,7 @@ export class OfferDetailComponent implements OnInit {
       select((s: { applications: { id: Number } }) => s.applications ? s.applications.id : undefined)
     ).subscribe(
       (id) => {
-        console.log(id);
+        // console.log(id);
         this.idApplication = id;
       });
 
@@ -218,7 +218,7 @@ export class OfferDetailComponent implements OnInit {
   }
 
   searchSkill(skill) {
-    console.log(skill);
+   // console.log(skill);
     this.router.navigate(['/candidate-home'], {queryParams: {keywords: skill}});
 
   }
