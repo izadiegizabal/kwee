@@ -186,7 +186,7 @@ export class ProfilesEffects {
             data: any[],
             total: number,
           }) => {
-            console.log(res);
+            // console.log(res);
             return {
               type: UserActions.SET_OPINIONS_USER,
               payload: res,
