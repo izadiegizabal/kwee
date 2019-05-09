@@ -10,7 +10,7 @@ const moment = require('moment');
 module.exports = (app, db) => {
 
     // GET all ratings rating_offerers
-    app.get('/rating_offerers', checkToken, async (req, res, next) => {
+    app.get('/rating_offerers', async (req, res, next) => {
 
         try {
             await logger.saveLog('GET', 'rating_offerers', null, res);
@@ -211,8 +211,8 @@ module.exports = (app, db) => {
                     });
                 }
             } else {
-                return res.status(400).json({
-                    ok: false,
+                return res.status(200).json({
+                    ok: true,
                     message: 'No application with this id'
                 });
             }

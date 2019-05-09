@@ -11,7 +11,7 @@ const moment = require('moment');
 module.exports = (app, db) => {
 
     // GET all ratings rating_applicants
-    app.get('/rating_applicants', checkToken, async (req, res, next) => {
+    app.get('/rating_applicants', async (req, res, next) => {
 
         try {
             await logger.saveLog('GET', 'rating_applicants', null, res);
