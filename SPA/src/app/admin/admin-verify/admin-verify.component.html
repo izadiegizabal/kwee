@@ -80,7 +80,7 @@
             <br>
             {{states[user.status].viewValue  | titlecase }}
           </div>
-          <div>
+          <div *ngIf="subscriptions[user.premium]">
             <span class="mat-small">{{'Subscription' | uppercase}}</span>
             <br>
             {{subscriptions[user.premium].viewValue  | titlecase }}
