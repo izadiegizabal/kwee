@@ -32,6 +32,10 @@ module.exports = (app, db) => {
             });
     });
 
+    app.get("/logs/:id", (req, res, next) => {
+        showUserLog( req, res, next );
+    });
+
     app.delete('/log/:id', async (req, res, next) => {
 
         let id = req.params.id;
@@ -62,4 +66,36 @@ module.exports = (app, db) => {
         });
 
     });
+
+    async function showUserLog( req, res, next ) {
+        let from = req.query.from || 0;
+        let to = req.query.to || 10;
+        
+        from = Number(from);
+        to = Number(to);
+
+        let userId = req.params.id;
+
+        Log.find({ userId })
+            .skip(from)
+            .limit(to)
+            .exec(( err, logs ) => {
+                if (err) {
+                    return res.status(400).json({
+                        ok: false,
+                        message: err
+                    });
+                }
+
+                Log.countDocuments({ userId }, (err, count) => {
+                    res.json({
+                        ok: true,
+                        logs,
+                        total: count
+                    });
+                });
+
+            });
+    }
+
 };

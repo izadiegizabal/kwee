@@ -166,9 +166,11 @@ export class CandidateOverviewComponent implements OnInit {
       {page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize, params: this.query, order: this.orderby}));
   }
 
-  openLogModal() {
+  openLogModal(id) {
     this.dialog.open(UserLogComponent, {
-
+      data: {
+        id
+      }
     });
   }
 
