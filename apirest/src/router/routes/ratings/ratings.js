@@ -8,7 +8,7 @@ const {logger} = require('../../../shared/functions');
 module.exports = (app, db) => {
 
     // GET all ratings
-    app.get('/ratings', checkToken, async (req, res, next) => {
+    app.get('/ratings', async (req, res, next) => {
         try {
             await logger.saveLog('GET', 'ratings', null, res);
 
@@ -58,7 +58,7 @@ module.exports = (app, db) => {
     });
 
     // GET all ratings of user ID
-    app.get('/ratings/user/:id([0-9]+)', checkToken, async (req, res, next) => {
+    app.get('/ratings/user/:id([0-9]+)', async (req, res, next) => {
         let id = req.params.id;
 
         try {
@@ -155,7 +155,11 @@ module.exports = (app, db) => {
                     limit
                 });
             } else {
-                return next({type: 'error', error: 'This user does not have rates yet'});
+                return res.json({
+                    ok: true,
+                    message: 'No users',
+                    data: []
+                });
             }
         } catch (error) {
             return next({type: 'error', error: error.message});
