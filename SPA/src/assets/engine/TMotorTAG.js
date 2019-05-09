@@ -1,6 +1,7 @@
 import {TNode} from './TNode.js';
 import {TTransform, TCamera, TLight, TAnimation, TMesh, TArc, TFocus, TRotationAnimation, TArcAndMeshAnimation} from './TEntity.js';
 import {TResourceManager, TResourceMesh, TResourceMaterial, TResourceTexture, TResourceShader, TResourceMeshArray} from './resourceManager.js';
+import {convertLatLonToVec3offsetY} from './tools/utils';
 import { global } from './commons.js';
 
 class TMotorTAG {
@@ -23,6 +24,8 @@ class TMotorTAG {
         this.resourceManager = resourceManager;
 
         this.allCountAnimations = [];
+
+        this.allCamAnimations = [];
     }
 
     this.resourceManager = resourceManager;
@@ -206,6 +209,7 @@ class TMotorTAG {
     }
 
     cameraLookAt( node, cameraPosition, target = [0,0,0], up = [0,1,0]) {
+      global.viewPos = cameraPosition;
       let matOutput = glMatrix.mat4.create();
       glMatrix.mat4.lookAt(
         matOutput,
@@ -216,10 +220,10 @@ class TMotorTAG {
       // TraslationNode - RotationNode - ScaleNode - NODE
       node.father.father.entity.setRotation([matOutput[0], matOutput[1], matOutput[2], matOutput[4], matOutput[5], matOutput[6], matOutput[8], matOutput[9], matOutput[10]])
       node.father.father.father.entity.setTranslation([matOutput[12], matOutput[13], matOutput[14]])
-    
     }
 
     async lookAt(TNodeCam, eye, center, up) {
+        global.viewPos = eye;
         let x0, x1, x2, y0, y1, y2, z0, z1, z2, len;
         let eyex = eye[0];
         let eyey = eye[1];
@@ -362,6 +366,21 @@ class TMotorTAG {
 
     animateMesh(node, quality, timeAnim, endAnim){
       return this.animate(node, quality, timeAnim, endAnim);
+    }
+
+    animateCam(node, timeAnim, startLat, startLon, endLat, endLon, initPos, endPos){
+      let anim = new TRotationAnimation(node, timeAnim, startLat, startLon, endLat, endLon, initPos, endPos);
+      this.allCamAnimations.push(anim);
+      return anim;
+    }
+
+    rotateCamTo(endLat, endLon, timeAnim = 1){
+      this.animateCam(this.activeCamera, timeAnim, null, null, endLat, endLon, global.viewPos, null);
+    }
+
+    rotateCamToWithYOffset(endLat, endLon, timeAnim = 1, offsetY = - 20){
+      let endPos = convertLatLonToVec3offsetY(endLat, endLon, offsetY);
+      this.animateCam(this.activeCamera, timeAnim, null, null, null, null, global.viewPos, endPos);
     }
 
     async loadMeshOnly(file){

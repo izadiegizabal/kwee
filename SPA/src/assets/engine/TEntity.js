@@ -307,24 +307,29 @@ class TArcAndMeshAnimation extends  TAnimation {
 
 class TRotationAnimation extends TAnimation {
 
-  constructor(object, count, timeAnim, lat, lon, rotationMatrix) {
+  constructor(object, timeAnim, startLat, startLon, endLat, endLon, initPoint, endPos) {
     super();
     this.auxCount = 0;
-    this.count = count;
     this.timeAnim = timeAnim;
     this.object = object;
     this.type = -1;
-    let quats = glMatrix.quat.create();
-    let auxQuat = glMatrix.quat.create();
-    const vec3 = glMatrix.vec3;
-    let quatQ = 1 / count;
-    let quatBQ = count;
+    this.quat = glMatrix.quat.create();
+    this.auxQuat = glMatrix.quat.create();
+    this.lastVec3 = glMatrix.vec3.create();
+    this.increment = 0;
 
-    this.quatsArray = [];
-    quats = quatFromVectors(quats, convertLatLonToVec3Rotated(lat, lon, rotationMatrix), vec3.fromValues(0,0,1));
-    for (let i = 0 ; i < quatBQ ; i += quatQ){
-      this.quatsArray.push(glMatrix.quat.fromValues(...glMatrix.quat.slerp(auxQuat, glMatrix.quat.create(), quats ,i)));
+    if(initPoint){
+      this.vec3 =  glMatrix.vec3.fromValues(...initPoint);
+    } else {
+      this.vec3 = convertLatLonToVec3(startLat, startLon);
     }
+
+    if(endPos){
+      this.vecEnd =  glMatrix.vec3.fromValues(...endPos);
+    } else {
+      this.vecEnd = convertLatLonToVec3(endLat, endLon);
+    }
+    this.quat = quatFromVectors(this.quat, this.vec3, this.vecEnd);
   }
 
   beginDraw() { }
@@ -332,14 +337,34 @@ class TRotationAnimation extends TAnimation {
   endDraw() { }
 
   update(dx) {
-    this.auxCount += dx * (this.count / this.timeAnim);
-    if(this.auxCount > (this.count + 1)){
+    this.auxCount += dx;
+    if(this.auxCount > (this.timeAnim + 1)){
       this.auxCount = 0;
     }
-    if(this.auxCount > this.count){
-      this.auxCount = this.count;
+    if(this.auxCount > this.timeAnim){
+      return 1
     }
-    this.updateRotate(Math.floor(this.auxCount));
+    // this.increment = this.auxCount / this.timeAnim; //this.BezierBlend((this.auxCount/ this.timeAnim));
+    this.increment = this.ParametricBlend((this.auxCount / this.timeAnim));
+    return glMatrix.vec3.transformQuat(this.lastVec3, this.vec3, glMatrix.quat.slerp(this.auxQuat, glMatrix.quat.create(), this.quat , this.increment));
+    // return this.vec3;
+  }
+
+  InOutQuadBlend(t) {
+    if(t <= 0.5){
+      return 2.0 * Math.sqrt(t);
+    }
+    t -= 0.5;
+    return 2.0 * t * (1.0 - t) + 0.5;
+  }
+
+  BezierBlend(t) {
+  return Math.sqrt(t) * (3 - 2 * t);
+  }
+
+  ParametricBlend(t) {
+    let sqt = Math.sqrt(t);
+    return sqt / (2.0 * (sqt - t) + 1.0);
   }
 
   updateRotate(count){
@@ -465,7 +490,7 @@ class TArc extends TEntity {
 
       // Enable the attribute
       global.gl.enableVertexAttribArray(global.programAttributes.aVertexPosition);
-      global.gl.uniform4fv(global.programUniforms.uMaterialDiffuse, [1, 0.019, 0.792, 1]);
+      global.gl.uniform4fv(global.programUniforms.uMaterialDiffuse, [1, 1, 1, 1]);
       // global.gl.uniform4fv(this.uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
       global.gl.drawArrays(global.gl.LINES, 0, this.count * 2);
     }

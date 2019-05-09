@@ -1,5 +1,8 @@
-<div [ngStyle.lt-sm]="{'margin': '0'}"
-     [ngStyle]="{'margin': '0 16px'}"
+<div
+  style="position: relative;">
+
+<div fxLayout="column"
+     fxFlex="100%"
      class="container"
      fxFlex="100%"
      fxLayout="column">
@@ -17,12 +20,24 @@
     <div
       fxLayout="column"
       fxLayoutAlign="center center"
-      style="margin: 30px 0">
+      style="margin: 30px 0; position: relative;">
         <canvas
         id="kweelive"
         width="700px"
         height="700px"></canvas>
         <mat-spinner *ngIf="getAllow()"></mat-spinner>
+      <app-mini-offer
+        *ngIf="getShowCard()"
+        [@EnterLeave]
+        id="miniOffer"
+        [index]="50"
+        [id]="240"
+        [name]="'Facebook'"
+        [offer]="'Direct Accountability Specialist'"
+        [location]="'Alicante'"
+        [work]="'Full-Time'"
+        [image]="'image'"
+        [url]="'akjbdsabksadb'"></app-mini-offer>
     </div>
     <div
       fxLayout="column"
@@ -35,7 +50,9 @@
         <button mat-raised-button (click)="drawParticles()" color="primary" [disabled]="getAllow()">Draw Particles</button>
         <button mat-raised-button (click)="rotate()" color="primary" [disabled]="getAllow()">Rotate to Madrid</button>
         <button mat-raised-button (click)="interactive()" color="primary" [disabled]="getAllow()">Interactive world</button>
+        <button mat-raised-button (click)="changeShowCard()" color="primary" [disabled]="getAllow()">Toggle card</button>
         <button mat-raised-button (click)="reset()" color="warn" [disabled]="getAllow()">Reset</button>
     </div>
   </div>
+</div>
 </div>

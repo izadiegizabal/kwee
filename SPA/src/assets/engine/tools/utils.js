@@ -82,6 +82,25 @@ function convertLatLonToVec3 ( lat, lon, bool, altitude ) {
   // return[Math.cos(latRad) * Math.cos(lonRad) * r , Math.sin(latRad) * r , Math.cos(latRad) * Math.sin(lonRad) * r];
 }
 
+function convertLatLonToVec3offsetY ( lat, lon, offsetY) {
+  lon -= 0.8;
+  lat += 0.8;
+  let latRad = lat * (Math.PI / 180);
+  let lonRad = -lon * (Math.PI / 180);
+  let r = 0.62;
+  let point = glMatrix.vec3.fromValues(Math.cos(latRad) * Math.cos(lonRad) * r , Math.sin(latRad) * r , Math.cos(latRad) * Math.sin(lonRad) * r);
+
+  let vec3Cross = glMatrix.vec3.create();
+  vec3Cross = glMatrix.vec3.cross(vec3Cross, point, [0,1,0]);
+
+  let rot = glMatrix.mat4.create();
+  glMatrix.mat4.rotate(rot, rot, offsetY * radians, vec3Cross);
+
+  glMatrix.vec3.transformMat4(point, point, rot);
+
+  return point;
+}
+
 function convertLatLonToVec3Rotated ( lat, lon, rotationMat) {
   lon += -25.7;
   lat -= 0.5;
@@ -275,6 +294,7 @@ function rotateVec3(point, roll, yaw, pitch) {
 export {
   getBezierPoints,
   convertLatLonToVec3,
+  convertLatLonToVec3offsetY,
   convertLatLonToVec3Rotated,
   geoInterpolate,
   quatFromVectors,

@@ -1,0 +1,42 @@
+<div  id="offerBubble"
+        fxLayout="row"
+        [routerLink]="urlfyPosition()">
+  <div
+    fxLayout="column"
+    fxFlex="35%"
+    fxLayoutAlign="center center">
+    <img src="../../assets/img/defaultProfileImg.png"
+         alt="Company logo" width="60" height="60"
+         id="companyLogo"></div>
+  <div fxLayout="row" fxFlexOffset="10px">
+  <div
+    fxLayout="column"
+    fxFlex="100%"
+    fxLayoutAlign="center start">
+    <span style="width: 134px;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              margin: 0 0 0 -4px;
+              padding: 0;">{{offer}}</span>
+    <!--style="font-size: .9em"-->
+    <!--<span style="font-size: .7em">Facebook</span>-->
+    <div class="nameIndex" fxLayout="row" fxLayoutAlign="start center">
+        <div [style.background-color]="getBGColour()"><span>{{index}}</span></div>
+        <p>{{name}}</p>
+    </div>
+    <div
+      fxLayout="row"
+      fxLayoutAlign="center center"
+      fxLayoutGap="5px">
+      <div fxLayout="row" fxLayoutAlign="start center" class="iconData">
+        <mat-icon svgIcon="work"></mat-icon>
+        <p style="font-size: .7em">{{work}}</p>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="start center" class="iconData">
+        <mat-icon svgIcon="place"></mat-icon>
+        <p style="font-size: .7em">{{location}}</p>
+      </div>
+    </div>
+  </div></div>
+</div>

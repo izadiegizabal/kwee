@@ -8,6 +8,7 @@ var global = {
   particlesProgram: null,
   modelMatrix: null,      // model Matrix
   viewMatrix: null,       // view Matrix
+  viewPos: null,       // view Vec3 position
   projectionMatrix: null, // projection Matrix
   stack : null,           // stack of models Matrix
   auxMatrix: null,

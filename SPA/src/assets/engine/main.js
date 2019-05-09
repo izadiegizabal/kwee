@@ -13,14 +13,16 @@ let draw = true;
 let rotateMeshBool = false;
 let manager = null;
 let allowActions = {
-  value: false
+  value: false,
+  card: false
 };
-
+let arr = [[-41.28664, 174.77557], [10.500000, -66.916664], [41.89193, 12.51133], [-33.865143, 151.209900], [35.6895, 139.69171], [40.415363, -3.707398]];
 let Motor = null;
 let Scene = null;
 let Land = null;
 let Sphere = null;
 let MeshArray = null;
+let Cam = null;
 
 let lastFrameTime = 0.0;
 
@@ -108,12 +110,10 @@ async function mainInit() {
 
 
     global.gl.useProgram(global.program);
-
-    console.log('== Ready to run ==');
     draw = true;
     allowActions.value = true;
 
-    loadAttribAndUniformsLocations()
+    loadAttribAndUniformsLocations();
 
     resolve(allowActions.value);
   });
@@ -132,43 +132,18 @@ async function resetCanvas() {
 async function mainR(texture, particles, line) {
   rotateMeshBool = false;
   if(global.gl && global.program) {
-
-
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         INIT CONFIG
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     draw = true;
     allowActions.value = false;
     let motor = new TMotorTAG(manager);
     Motor = motor;
     let scene = motor.createRootNode();
     Scene = scene;
-    let quats = glMatrix.quat.create();
-    let quatsRot = glMatrix.quat.create();
-    let auxQuat = glMatrix.quat.create();
-    const vec3 = glMatrix.vec3;
-    var quatsArray = [];
-    var quatQ = 1 / 16;
-    var quatBQ = 16;
+
 
     global.lastFrameTime = await Date.now();
-
-
-    quats = quatFromVectors(quats, convertLatLonToVec3(40.415363, -3.707398), vec3.fromValues(0,0,100));
-    for (let i = 0 ; i < quatBQ ; i += quatQ){
-      quatsArray.push(glMatrix.quat.fromValues(...glMatrix.quat.slerp(auxQuat, glMatrix.quat.create(), quats ,i)));
-    }
-
-
-    /*
-    quats = quatFromVectors(quats, convertLatLonToVec3(40.415363, -3.707398), vec3.fromValues(0,0,100));
-    for (let i = 0 ; i < quatBQ ; i += quatQ){
-      quatsArray.push(glMatrix.quat.fromValues(...glMatrix.quat.slerp(auxQuat, glMatrix.quat.create(), quats ,i)));
-    }
-    convertLatLonToVec3Rotated
-     */
-    // console.log(quatsArray);
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////                                         INIT CONFIG
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 
     global.gl.useProgram(global.program);
@@ -176,13 +151,6 @@ async function mainR(texture, particles, line) {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         TREE & RESOURCES
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // let card = await motor.loadMesh(scene, 'card.json');
-    // motor.rotate(card, 0, 'z');
-    // motor.rotate(card, 90, 'y');
-    // motor.translate(card, [-5, 0, 0] );
-    // motor.scale(card, [0.2, 0.1, 0.2] );
-    //motor.translate(card, convertLatLonToVec3(40.415363, -3.707398));
-
     // EARTH
     //let land = await motor.loadMesh(scene, 'earth_LP.json');
     let land = await motor.loadMesh(scene, 'earth_LP_high.json');
@@ -245,7 +213,7 @@ async function mainR(texture, particles, line) {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         particles
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+/*
     let positionTFocus = [-1.0,0.0,0.0];
     let targetPos = [-2.0, 2.0, 0.0];
 
@@ -271,7 +239,7 @@ async function mainR(texture, particles, line) {
     // motor.rotate(TFocus, rotations[1], 'y');   
     // motor.rotate(TFocus, rotations[2]*100, 'z');
 
-    motor.rotate(TFocus, rotations[2]*Math.PI/180, 'y')
+    motor.rotate(TFocus, rotations[2]*Math.PI/180, 'y');
     // motor.targetTo( TFocus,
     //   positionTFocus,
     //   targetPos);
@@ -294,7 +262,7 @@ async function mainR(texture, particles, line) {
     target.entity.mesh.setColor( [ 1, 0.3, 0.8, 1] );
 
 
-
+*/
     ///////////
     // cities
     ///////////
@@ -320,14 +288,30 @@ async function mainR(texture, particles, line) {
     /////////////////////                                         CAMERAS
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     let cam = motor.createCamera(scene);
+    Cam = cam;
     motor.enableCam(cam);
 
     //let radius = 1.7; // normal
-    let radius = 5; // debug
+    let radius = 3; // debug
     // motor.translate(cam, [0.0 , 0.0, -radius]);
     
     //motor.cameraLookAt(cam, [0,5,0], [0,0,0], [1,0,0])
-    
+    let camPos = [];
+
+    let point = convertLatLonToVec3(40.415363, -3.707398);
+
+    let vec3Cross = glMatrix.vec3.create();
+    vec3Cross = glMatrix.vec3.cross(vec3Cross, point, [0,1,0]);
+
+    let rot = glMatrix.mat4.create();
+    glMatrix.mat4.rotate(rot, rot, -20 * (Math.PI / 180), vec3Cross);
+
+    glMatrix.vec3.transformMat4(point, point, rot);
+    // Array.prototype.push.apply(vegetables, moreVegs);
+    camPos.push(point[0] * radius);
+    camPos.push(point[1] * radius);
+    camPos.push(point[2] * radius);
+    /*
     motor.cameraLookAt( cam, [
       radius * Math.sin(0*Math.PI/180),
       radius,
@@ -335,6 +319,10 @@ async function mainR(texture, particles, line) {
     ],
     [0,0,0],
     [0,1,0]);
+    */
+    motor.cameraLookAt( cam, [...camPos],
+      [0,0,0],
+      [0,1,0]);
 
     // motor.cameraLookAt( cam, [
     //   0,
@@ -343,7 +331,16 @@ async function mainR(texture, particles, line) {
     // ]);
 
     motor.calculateViews();
-    
+
+
+    ///// CARD
+
+    // let card = await motor.loadMesh(scene, 'card.json');
+    // motor.rotate(card, 0, 'z');
+    // motor.rotate(card, 90, 'y');
+    // motor.translate(card, [-5, 0, 0] );
+    // motor.scale(card, [0.2, 0.1, 0.2] );
+    // motor.translate(card, convertLatLonToVec3(40.415363, -3.707398));
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         LIGHTNING
@@ -379,47 +376,10 @@ async function mainR(texture, particles, line) {
 
 
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////                                         ARCS
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    const Narc = motor.createArc(scene, 10.500000, -66.916664,40.415363, -3.707398, 32);
-    const arc = Narc.entity.arc;
-    var vertices = [];
-
-    for (let i = 0 ; i < arc.length ; i++) {
-      vertices.push(...arc[i]);
-      if (!(i === 0 || i === (arc.length - 1))) {
-        vertices.push(...arc[i]);
-      }
-    }
-
-
-    // ====================
-    // drawing arcs --> to TArc:: draw()
-    // ====================
-
-    // Create an empty buffer object
-    var vertex_buffer = global.gl.createBuffer();
-
-    // Bind appropriate array buffer to it
-    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, vertex_buffer);
-
-    // Pass the vertex data to the buffer
-    global.gl.bufferData(global.gl.ARRAY_BUFFER, new Float32Array(vertices), global.gl.STATIC_DRAW);
-
-    // Unbind the buffer
-    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
-
-
     console.log(scene);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         LOOP
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    var last = 0;
-    var last2 = 0;
-    var num = 0;
-    var rotation = -1;
-    var maxLines = vertices.length/3;
     let number = 0;
     var loop = async function (now) {
       if (draw) {
@@ -433,7 +393,7 @@ async function mainR(texture, particles, line) {
 
         ////////////////////////////////////////////////////////////////
         
-        motor.cameraLookAt( cam, [
+        /*motor.cameraLookAt( cam, [
           radius * Math.sin(number*Math.PI/180),
           radius,
           radius * Math.cos(number*Math.PI/180),
@@ -442,14 +402,18 @@ async function mainR(texture, particles, line) {
         [0,1,0]);
 
        
-        motor.calculateViews();
+        motor.calculateViews();*/
 
         // global.gl.uniform3f(global.programUniforms.uLightDirection, 
         //   radius * Math.sin(number*Math.PI/180),
         //   radius,
         //   radius * Math.cos(number*Math.PI/180)
         // );
-
+        requestAnimationFrame(loop);
+        motor.calculateViews();
+        global.gl.uniform3f(global.programUniforms.uLightDirection,
+            ...global.viewPos
+          );
         motor.draw();
         
         ////////////////////////////////////////////////////////////////
@@ -457,7 +421,7 @@ async function mainR(texture, particles, line) {
 
         global.lastFrameTime = global.time;
 
-        requestAnimationFrame(loop);
+
       }
       number = number + 0.3;
       if(number>360) number = 0;
@@ -474,6 +438,7 @@ async function mainR(texture, particles, line) {
 let then = 0;
 let last = 0;
 let arcsSec = 0;
+let arrVal = 0;
 /*
   Fases
   0 => rotate
@@ -481,7 +446,7 @@ let arcsSec = 0;
   2 => wait 3 seconds
   3 => remove card
  */
-let fase = 0;
+let fase = -1;
 let arcs = [];
 let auxArc = null;
 
@@ -491,23 +456,36 @@ function animation(now) {
 
   if(now - arcsSec >= 1000) {
     arcsSec = now;
-    Motor.createAndAnimateArc(Sphere, generateRandomLat(), generateRandomLong(), generateRandomLat(), generateRandomLong(), 24, 1.5, 3);
-    Motor.createAndAnimateArc(Sphere, generateRandomLat(), generateRandomLong(), generateRandomLat(), generateRandomLong(), 24, 1.5, 3);
+    // Motor.createAndAnimateArc(Sphere, generateRandomLat(), generateRandomLong(), generateRandomLat(), generateRandomLong(), 24, 1.5, 3);
+    // Motor.createAndAnimateArc(Sphere, generateRandomLat(), generateRandomLong(), generateRandomLat(), generateRandomLong(), 24, 1.5, 3);
   }
 
-  /*switch (fase) {
+  switch (fase) {
     case 0:
-      if(now - last >= 5000) {
+      if(now - last >= 1000) {
         // console.log(MeshArray.entity);
-        console.log(0);
         // auxArc = Motor.createAndAnimateArc(Scene, 10.500000, -66.916664,40.415363, -3.707398, 24, 1.5);
         last = now;
         fase = 1;
+        if(arrVal === arr.length){
+          arrVal = 0;
+        }
+        Motor.rotateCamToWithYOffset( ...arr[arrVal]);
+        arrVal++;
       }
       break;
     case 1:
-      if(now - last >= 10000) {
-        console.log(1);
+      if(now - last >= 1000) {
+        fase = 2;
+        allowActions.card = true;
+        document.body.click();
+      }
+      break;
+    case 2:
+      if(now - last >= 5000) {
+        allowActions.card = false;
+        document.body.click();
+        //Motor.rotateCamToWithYOffset( 40.415363, -3.707398);
         // Motor.animateMesh(MeshArray, 3, 1, 5);
         //Motor.deleteArc(auxArc);
         //console.log(Scene);
@@ -519,8 +497,9 @@ function animation(now) {
       }
       break;
     default:
+        fase = 0;
       break;
-  }*/
+  }
 
   // Convert the time to second
   now *= 0.001;
@@ -535,6 +514,29 @@ function animation(now) {
       if(Motor.isArcAnimation(e)){
         Motor.deleteArc(e.object);
       }
+    }
+  });
+
+  Motor.allCamAnimations.forEach( (e, i) => {
+    let val = e.update(deltaTime);
+    if(val !== 1){
+      // let mat = glMatrix.mat4.create();
+      // let mat4 = glMatrix.mat4.fromQuat(mat, val);
+      // mat4 = glMatrix.mat4.mul(mat4, global.viewMatrix, mat4);
+      // console.log(mat4);
+      // Motor.setView(Cam, mat4)
+
+      let radius = 2; // debug
+
+      val[0] = val[0] * radius;
+      val[1] = val[1] * radius;
+      val[2] = val[2] * radius;
+
+      Motor.cameraLookAt( Cam, [...val],
+        [0,0,0],
+        [0,1,0]);
+    } else {
+      Motor.allCamAnimations.splice(i, 1);
     }
   });
 

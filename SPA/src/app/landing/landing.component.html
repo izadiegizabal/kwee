@@ -18,15 +18,28 @@
       [ngClass.lt-sm]="{'worldContainerXS': true}"
       [ngClass]="{'worldContainer': true}"
       fxLayout="column"
-      fxLayoutAlign="center center"
-      style="overflow-x: hidden;">
-      <mat-spinner *ngIf="getAllow()" color="accent" style="margin-top: 600px"></mat-spinner>
+      style="overflow-x: hidden; position: relative"
+      fxLayoutAlign="center center">
+      <mat-spinner color="accent" style="margin-top: 600px" *ngIf="getAllow()"></mat-spinner>
       <canvas
         [ngStyle.lt-sm]="{'width': '200%'}"
         [ngStyle]="{'width': '123%'}"
         height="1400px"
         id="kweelive"
-        width="1400px"></canvas>
+        width="1400px"
+        height="1400px"></canvas>
+      <app-mini-offer
+        *ngIf="getShowCard()"
+        [@EnterLeave]
+        id="miniOffer"
+        [index]="50"
+        [id]="240"
+        [name]="'Facebook'"
+        [offer]="'Direct Accountability Specialist'"
+        [location]="'Alicante'"
+        [work]="'Full-Time'"
+        [image]="'image'"
+        [url]="'akjbdsabksadb'"></app-mini-offer>
     </div>
   </div>
 </div>

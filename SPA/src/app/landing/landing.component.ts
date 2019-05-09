@@ -6,12 +6,24 @@ import {TResourceManager, TResourceMaterial, TResourceMesh, TResourceShader, TRe
 import {shared} from '../../assets/engine/commons';
 import {allowActions, mainInit, mainR, resetCanvas} from '../../assets/engine/main';
 import {Router} from '@angular/router';
-import {Title} from '@angular/platform-browser';
+import {animate, style, transition, trigger} from '@angular/animations';
 
 @Component({
   selector: 'app-landing',
   templateUrl: './landing.component.html',
-  styleUrls: ['./landing.component.scss']
+  styleUrls: ['./landing.component.scss'],
+  animations: [
+    trigger('EnterLeave', [
+      transition(':enter', [
+        style({opacity: 0}),
+        animate('500ms', style({opacity: 1}))
+      ]),
+      transition(':leave', [
+        style({opacity: 1}),
+        animate('500ms', style({opacity: 0}))
+      ])
+    ])
+  ]
 })
 export class LandingComponent implements OnInit, OnDestroy {
 
@@ -47,6 +59,11 @@ export class LandingComponent implements OnInit, OnDestroy {
 
   onSearch(query: string) {
     this.router.navigate(['/candidate-home'], {queryParams: {keywords: query}});
+  }
+
+  getShowCard() {
+    // return true;
+    return allowActions.card;
   }
 
   ngOnDestroy() {
