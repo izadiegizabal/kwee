@@ -14,7 +14,7 @@
           </button>
         </div>
         <div class="signupButton">
-          <button (click)="gitHubSignUp(stepper)" color="primary" mat-raised-button type="button">
+          <button (click)="gitHubSignUp()" color="primary" mat-raised-button type="button">
             <mat-icon fontIcon="fa-github" fontSet="fab"></mat-icon>
             <span>Continue with GitHub</span>
           </button>
@@ -72,6 +72,7 @@
           </mat-form-field>
           <mat-form-field>
             <input formControlName="confEmail" matInput placeholder="Confirm Email" required>
+            <mat-icon matSuffix></mat-icon>
             <mat-error *ngIf="!secondFormGroup.get('confEmail').valid ">
               Emails do not match
             </mat-error>
@@ -81,14 +82,14 @@
         <div *ngIf="!isSocialNetwork" fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
           <mat-form-field>
             <mat-icon color="primary" matPrefix svgIcon="lock"></mat-icon>
-            <input [type]="hide ? 'text' : 'password'" formControlName="password" matInput placeholder="Password"
+            <input [type]="hide ? 'text' : 'password'" autocomplete="new-password" formControlName="password" matInput placeholder="Password"
                    required>
             <mat-error *ngIf="!secondFormGroup.get('password').valid ">
               Password must be 6 characters or more
             </mat-error>
           </mat-form-field>
           <mat-form-field>
-            <input [type]="hide ? 'text' : 'password'" formControlName="password2" matInput
+            <input [type]="hide ? 'text' : 'password'" autocomplete="new-password" formControlName="password2" matInput
                    placeholder="Confirm Password" required>
             <mat-icon (click)="hide = !hide" [svgIcon]="hide ? 'visibility' : 'visibility-off'" color="primary"
                       matSuffix></mat-icon>
@@ -158,6 +159,12 @@
           </mat-form-field>
         </div>
         <br>
+        <mat-checkbox formControlName="terms" required>Accept our terms and conditions. More info <a
+          [routerLink]="['/privacy']" target="_blank">here</a>.
+        </mat-checkbox>
+        <mat-error *ngIf="!secondFormGroup.get('terms').valid && secondFormGroup.get('terms').touched">
+          Please accept our terms and conditions
+        </mat-error>
         <div fxLayout="row" fxLayoutAlign="end">
           <button color="primary" mat-button matStepperPrevious type="button">Back</button>
           <button (click)="onSave(stepper);" color="accent" mat-button type="button">Sign Up!</button>

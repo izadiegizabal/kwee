@@ -1,91 +1,234 @@
-<mat-dialog-content>
-<h1>Rate {{selected}}</h1>
-  <form [formGroup]="form">
-    <h2>Opinion</h2>
-    <mat-form-field class="example-full-width">
-      <textarea matInput placeholder="Opinion" formControlName="opinion"></textarea>
-    </mat-form-field>
-    <h2>Details</h2>
-    <p>All the detail star ratings are required.</p>
-    <div
-      id="stars"
-      fxLayout="row"
-      fxLayout.lt-sm="column"
-      fxLayoutGap="16px">
-    <div
-      fxLayout="column"
-      fxFlex="30%"
-      fxFlex.lt-sm="100%">
-      <h4 *ngIf="data.candidate">Efficiency</h4>
-      <h4 *ngIf="!data.candidate">Facilities</h4>
-      <mat-form-field class="noUnderline">
-        <star-rating-control [starType]="'svg'" [hoverEnabled]="true" formControlName="one"></star-rating-control>
-        <input [hidden]="true" formControlName="one_aux" matInput required>
-        <mat-error *ngIf="!form.get('one_aux').valid ">
-          This field is required
-        </mat-error>
+<div *ngIf="!this.data.candidate">
+  <mat-dialog-content>
+    <h1>Rate {{selected}}</h1>
+    <form [formGroup]="form">
+      <h2>Opinion</h2>
+      <mat-form-field class="example-full-width">
+        <textarea formControlName="opinion" matInput placeholder="Opinion"></textarea>
       </mat-form-field>
-      <!--<star-rating-control [starType]="'svg'" [hoverEnabled]="true" formControlName="one"></star-rating-control>-->
-      <h4 *ngIf="data.candidate">Punctuality</h4>
-      <h4 *ngIf="!data.candidate">Working Environment</h4>
-      <mat-form-field class="noUnderline">
-        <star-rating-control [starType]="'svg'" [hoverEnabled]="true" formControlName="two"></star-rating-control>
-        <input [hidden]="true" formControlName="two_aux" matInput required>
-        <mat-error *ngIf="!form.get('two_aux').valid ">
-          This field is required
-        </mat-error>
-      </mat-form-field>
-    </div>
-    <div
-      fxLayout="column"
-      fxFlex="30%"
-      fxFlex.lt-sm="100%">
-      <h4 *ngIf="data.candidate">Skills</h4>
-      <h4 *ngIf="!data.candidate">Salary</h4>
-      <mat-form-field class="noUnderline">
-        <star-rating-control [starType]="'svg'" [hoverEnabled]="true" formControlName="three"></star-rating-control>
-        <input [hidden]="true" formControlName="three_aux" matInput required>
-        <mat-error *ngIf="!form.get('three_aux').valid ">
-          This field is required
-        </mat-error>
-      </mat-form-field>
-      <h4 *ngIf="data.candidate">Hygiene</h4>
-      <h4 *ngIf="!data.candidate">Coworkers</h4>
-      <mat-form-field class="noUnderline">
-        <star-rating-control [starType]="'svg'" [hoverEnabled]="true" formControlName="four"></star-rating-control>
-        <input [hidden]="true" formControlName="four_aux" matInput required>
-        <mat-error *ngIf="!form.get('four_aux').valid ">
-          This field is required
-        </mat-error>
-      </mat-form-field>
-    </div>
-    <div
-      fxLayout="column"
-      fxFlex="30%"
-      fxFlex.lt-sm="100%">
-    <h4 *ngIf="data.candidate">Teamwork</h4>
-      <h4 *ngIf="!data.candidate">Services</h4>
-      <mat-form-field class="noUnderline">
-        <star-rating-control [starType]="'svg'" [hoverEnabled]="true" formControlName="five"></star-rating-control>
-        <input [hidden]="true" formControlName="five_aux" matInput required>
-        <mat-error *ngIf="!form.get('five_aux').valid ">
-          This field is required
-        </mat-error>
-      </mat-form-field>
-    <h4>Overall Satisfaction</h4>
-      <mat-form-field class="noUnderline">
-        <star-rating-control [starType]="'svg'" [hoverEnabled]="true" formControlName="six"></star-rating-control>
-        <input [hidden]="true" formControlName="six_aux" matInput required>
-        <mat-error *ngIf="!form.get('six_aux').valid ">
-          This field is required
-        </mat-error>
-      </mat-form-field>
-    </div>
-    </div>
-  </form>
-</mat-dialog-content>
-<br>
-<mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Cancel</button>
-  <button color="primary" type="button"  mat-raised-button cdkFocusInitial (click)="rate()">Publish</button>
-</mat-dialog-actions>
+      <h2 class="narrowMarginTop">Details</h2>
+      <p class="narrowMarginBottom">All the detail star ratings are required.</p>
+      <div
+        class="stars"
+        fxLayout="row"
+        fxLayout.lt-sm="column"
+        fxLayoutGap.gt-xs="16px" class="h4narrowMargins"
+        [ngClass.lt-md]="{'noOverflow': true}" [ngClass.gt-sm]="{'noOverflow': false}">
+        <div
+          fxFlex="30%"
+          fxFlex.lt-sm="100%"
+          fxLayout="column" >
+          <h4 *ngIf="data.candidate">Efficiency</h4>
+          <h4 *ngIf="!data.candidate">Facilities</h4>
+          <mat-form-field class="noUnderline">
+            <star-rating-control [hoverEnabled]="true" [starType]="'svg'" formControlName="one"></star-rating-control>
+            <input [hidden]="true" formControlName="one_aux" matInput required>
+            <mat-error *ngIf="!form.get('one_aux').valid ">
+              This field is required
+            </mat-error>
+          </mat-form-field>
+          <!--<star-rating-control [starType]="'svg'" [hoverEnabled]="true" formControlName="one"></star-rating-control>-->
+          <h4 *ngIf="data.candidate">Punctuality</h4>
+          <h4 *ngIf="!data.candidate">Working Environment</h4>
+          <mat-form-field class="noUnderline">
+            <star-rating-control [hoverEnabled]="true" [starType]="'svg'" formControlName="two"></star-rating-control>
+            <input [hidden]="true" formControlName="two_aux" matInput required>
+            <mat-error *ngIf="!form.get('two_aux').valid ">
+              This field is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div
+          fxFlex="30%"
+          fxFlex.lt-sm="100%"
+          fxLayout="column">
+          <h4 *ngIf="data.candidate">Skills</h4>
+          <h4 *ngIf="!data.candidate">Salary</h4>
+          <mat-form-field class="noUnderline">
+            <star-rating-control [hoverEnabled]="true" [starType]="'svg'" formControlName="three"></star-rating-control>
+            <input [hidden]="true" formControlName="three_aux" matInput required>
+            <mat-error *ngIf="!form.get('three_aux').valid ">
+              This field is required
+            </mat-error>
+          </mat-form-field>
+          <h4 *ngIf="data.candidate">Hygiene</h4>
+          <h4 *ngIf="!data.candidate">Coworkers</h4>
+          <mat-form-field class="noUnderline">
+            <star-rating-control [hoverEnabled]="true" [starType]="'svg'" formControlName="four"></star-rating-control>
+            <input [hidden]="true" formControlName="four_aux" matInput required>
+            <mat-error *ngIf="!form.get('four_aux').valid ">
+              This field is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div
+          fxFlex="30%"
+          fxFlex.lt-sm="100%"
+          fxLayout="column">
+          <h4 *ngIf="data.candidate">Teamwork</h4>
+          <h4 *ngIf="!data.candidate">Services</h4>
+          <mat-form-field class="noUnderline">
+            <star-rating-control [hoverEnabled]="true" [starType]="'svg'" formControlName="five"></star-rating-control>
+            <input [hidden]="true" formControlName="five_aux" matInput required>
+            <mat-error *ngIf="!form.get('five_aux').valid ">
+              This field is required
+            </mat-error>
+          </mat-form-field>
+          <h4>Overall Satisfaction</h4>
+          <mat-form-field class="noUnderline">
+            <star-rating-control [hoverEnabled]="true" [starType]="'svg'" formControlName="six"></star-rating-control>
+            <input [hidden]="true" formControlName="six_aux" matInput required>
+            <mat-error *ngIf="!form.get('six_aux').valid ">
+              This field is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+    </form>
+  </mat-dialog-content>
+  <br>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button (click)="rate(-1)" cdkFocusInitial color="primary" mat-raised-button type="button">Publish</button>
+  </mat-dialog-actions>
+</div>
+
+
+<div *ngIf="this.data.candidate">
+  <mat-dialog-content style="padding-bottom: 16px">
+    <mat-accordion>
+      <div [formGroup]="form">
+
+        <div *ngFor="let rating of this.form.controls['array'].controls; let i =index;" formArrayName="array">
+          <div [formGroupName]="i">
+            <mat-checkbox #toggle style="display: none"></mat-checkbox>
+            <mat-expansion-panel [(expanded)]="toggle.checked">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  <div class="index" [style.background-color]="getBGColour()"><span>{{getIndex(i)}}</span></div>
+                  <p [ngClass.xs]="{'maxWidth': true}" [ngClass.gt-xs]="{'maxWidth': false}" >{{getName(i)}}</p>
+                </mat-panel-title>
+                <mat-panel-description fxLayoutAlign="end">
+                  <div *ngIf="!getRated(i) " fxLayout="row" fxAlign="center" fxLayoutGap="8px"><span fxHide.xs>Unrated</span>
+                    <mat-icon color="warn" svgIcon="error"></mat-icon>
+                  </div>
+                  <div *ngIf="getRated(i) " fxLayout="row" fxAlign="center" fxLayoutGap="8px"><span fxHide.xs>Rated</span>
+                    <mat-icon color="accent" svgIcon="check-circle"></mat-icon>
+                  </div>
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+              <h2>Rate {{getName(i)}}</h2>
+              <h3>Opinion</h3>
+              <mat-form-field class="example-full-width">
+                <textarea matInput placeholder="Opinion" formControlName="opinion"></textarea>
+              </mat-form-field>
+              <h3>Details</h3>
+              <p>All the detail star ratings are required.</p>
+              <div
+                class="stars"
+                fxLayout="row"
+                fxLayout.lt-sm="column"
+                fxLayoutGap.gt-xs="16px"
+                [ngClass.lt-md]="{'noOverflow': true}" [ngClass.gt-sm]="{'noOverflow': false}">
+                <div
+                  fxLayout="column"
+                  fxFlex="30%"
+                  fxFlex.lt-sm="100%">
+                  <h4 *ngIf="data.candidate">Efficiency</h4>
+                  <h4 *ngIf="!data.candidate">Facilities</h4>
+                  <mat-form-field class="noUnderline">
+                    <star-rating-control [starType]="'svg'" [hoverEnabled]="true"
+                                         formControlName="one"></star-rating-control>
+                    <input [hidden]="true" formControlName="one_aux" matInput required>
+                    <mat-error *ngIf="!form.get('array').controls[i].controls.one_aux.valid">
+                      This field is required
+                    </mat-error>
+                  </mat-form-field>
+                  <!--<star-rating-control [starType]="'svg'" [hoverEnabled]="true" formControlName="one"></star-rating-control>-->
+                  <h4 *ngIf="data.candidate">Punctuality</h4>
+                  <h4 *ngIf="!data.candidate">Working Environment</h4>
+                  <mat-form-field class="noUnderline">
+                    <star-rating-control [starType]="'svg'" [hoverEnabled]="true"
+                                         formControlName="two"></star-rating-control>
+                    <input [hidden]="true" formControlName="two_aux" matInput required>
+                    <mat-error *ngIf="!form.get('array').controls[i].controls.two_aux.valid">
+                      This field is required
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+                <div
+                  fxLayout="column"
+                  fxFlex="30%"
+                  fxFlex.lt-sm="100%">
+                  <h4 *ngIf="data.candidate">Skills</h4>
+                  <h4 *ngIf="!data.candidate">Salary</h4>
+                  <mat-form-field class="noUnderline">
+                    <star-rating-control [starType]="'svg'" [hoverEnabled]="true"
+                                         formControlName="three"></star-rating-control>
+                    <input [hidden]="true" formControlName="three_aux" matInput required>
+                    <mat-error *ngIf="!form.get('array').controls[i].controls.three_aux.valid">
+                      This field is required
+                    </mat-error>
+                  </mat-form-field>
+                  <h4 *ngIf="data.candidate">Hygiene</h4>
+                  <h4 *ngIf="!data.candidate">Coworkers</h4>
+                  <mat-form-field class="noUnderline">
+                    <star-rating-control [starType]="'svg'" [hoverEnabled]="true"
+                                         formControlName="four"></star-rating-control>
+                    <input [hidden]="true" formControlName="four_aux" matInput required>
+                    <mat-error *ngIf="!form.get('array').controls[i].controls.four_aux.valid">
+                      This field is required
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+                <div
+                  fxLayout="column"
+                  fxFlex="30%"
+                  fxFlex.lt-sm="100%">
+                  <h4 *ngIf="data.candidate">Teamwork</h4>
+                  <h4 *ngIf="!data.candidate">Services</h4>
+                  <mat-form-field class="noUnderline">
+                    <star-rating-control [starType]="'svg'" [hoverEnabled]="true"
+                                         formControlName="five"></star-rating-control>
+                    <input [hidden]="true" formControlName="five_aux" matInput required>
+                    <mat-error *ngIf="!form.get('array').controls[i].controls.five_aux.valid">
+                      This field is required
+                    </mat-error>
+                  </mat-form-field>
+                  <h4>Overall Satisfaction</h4>
+                  <mat-form-field class="noUnderline">
+                    <star-rating-control [starType]="'svg'" [hoverEnabled]="true"
+                                         formControlName="six"></star-rating-control>
+                    <input [hidden]="true" formControlName="six_aux" matInput required>
+                    <mat-error *ngIf="!form.get('array').controls[i].controls.six_aux.valid">
+                      This field is required
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+              </div>
+              <br>
+              <div fxLayout="row"
+                   fxLayoutAlign="end" fxLayoutGap="0"
+                   fxLayoutGap.gt-sm="8px">
+                <div>
+                  <button id="{{ 'close' + i }}" mat-button color="primary" type="button"
+                          (click)="toggle.checked = false">Close
+                  </button>
+                </div>
+                <div>
+                  <button *ngIf="!getRated(i)" mat-raised-button color="primary" type="button"
+                          (click)="toggle.checked = rate(i)">Rate
+                  </button>
+                </div>
+              </div>
+            </mat-expansion-panel>
+          </div>
+        </div>
+
+      </div>
+    </mat-accordion>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Close</button>
+  </mat-dialog-actions>
+</div>

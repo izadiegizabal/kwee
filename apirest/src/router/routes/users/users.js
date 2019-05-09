@@ -1,5 +1,5 @@
-const { tokenId, logger, sendVerificationEmail, sendEmailResetPassword, pagination } = require('../../../shared/functions');
-const { checkToken, checkAdmin } = require('../../../middlewares/authentication');
+const {tokenId, logger, sendVerificationEmail, sendEmailResetPassword, pagination} = require('../../../shared/functions');
+const {checkToken, checkAdmin} = require('../../../middlewares/authentication');
 const elastic = require('../../../database/elasticsearch');
 const bcrypt = require('bcryptjs');
 
@@ -11,7 +11,7 @@ const bcrypt = require('bcryptjs');
 module.exports = (app, db) => {
 
 
-    app.get('/users', async(req, res, next) => {
+    app.get('/users', async (req, res, next) => {
 
         try {
 
@@ -27,9 +27,9 @@ module.exports = (app, db) => {
                 attributes,
                 res,
                 next);
-            
-                
-            if ( output.data ) {   
+
+
+            if (output.data) {
                 return res.status(200).json({
                     ok: true,
                     message: output.message,
@@ -38,12 +38,12 @@ module.exports = (app, db) => {
                 });
             }
         } catch {
-            return next({ type: 'error', error: 'Error getting data' });
+            return next({type: 'error', error: 'Error getting data'});
         }
     });
 
     // GET one user by id
-    app.get('/user/:id([0-9]+)', async(req, res, next) => {
+    app.get('/user/:id([0-9]+)', async (req, res, next) => {
         const id = req.params.id;
 
         try {
@@ -55,7 +55,7 @@ module.exports = (app, db) => {
                         'password'
                     ]
                 },
-                where: { id }
+                where: {id}
             });
 
             if (user) {
@@ -71,21 +71,22 @@ module.exports = (app, db) => {
                 });
             }
         } catch (err) {
-            return next({ type: 'error', error: 'Error getting data' });
+            return next({type: 'error', error: 'Error getting data'});
         }
     });
 
     // POST new user
-    app.post('/user', async(req, res, next) => {
+    app.post('/user', async (req, res, next) => {
         try {
             await logger.saveLog('POST', 'user', null, res);
 
             const body = req.body;
             body.password ? body.password = bcrypt.hashSync(body.password, 10) : null;
-            if ( body.img && checkImg(body.img) ) {
+            if (body.img && checkImg(body.img)) {
                 var imgName = uploadImg(req, res, next, 'users');
-                    body.img = imgName;
+                body.img = imgName;
             }
+            delete body.root;
 
             let user = await db.users.create(body);
 
@@ -96,8 +97,8 @@ module.exports = (app, db) => {
                 body
 
             }, function (err, resp, status) {
-                if ( err ) {
-                    return next({ type: 'error', error: err.message });
+                if (err) {
+                    return next({type: 'error', error: err.message});
                 }
             });
 
@@ -109,32 +110,32 @@ module.exports = (app, db) => {
                     message: `User '${user.name}' with id ${user.id} has been created.`
                 });
             } else {
-                return next({ type: 'error', error: 'Error creating user' });
+                return next({type: 'error', error: 'Error creating user'});
             }
 
         } catch (err) {
-            return next({ type: 'error', error: (err.errors ? err.errors[0].message : err.message) });
+            return next({type: 'error', error: (err.errors ? err.errors[0].message : err.message)});
         }
     });
 
     // Update user by themself
-    app.put('/user', async(req, res, next) => {
+    app.put('/user', async (req, res, next) => {
         try {
             let logId = await logger.saveLog('PUT', 'user', null, res);
 
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
 
             logger.updateLog(logId, id);
 
             updateUser(id, req, res, next);
 
         } catch (err) {
-            return next({ type: 'error', error: (err.errors ? err.errors[0].message : err.message) });
+            return next({type: 'error', error: (err.errors ? err.errors[0].message : err.message)});
         }
     });
 
     // Update user by admin
-    app.put('/user/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
+    app.put('/user/:id([0-9]+)', [checkToken, checkAdmin], async (req, res, next) => {
 
         try {
             await logger.saveLog('PUT', 'user', req.params.id, res);
@@ -143,27 +144,27 @@ module.exports = (app, db) => {
             updateUser(id, req, res, next);
 
         } catch (err) {
-            return next({ type: 'error', error: (err.errors ? err.errors[0].message : err.message) });
+            return next({type: 'error', error: (err.errors ? err.errors[0].message : err.message)});
         }
     });
 
     // DELETE single user
     // This route will put 'deleteAt' to current timestamp,
     // never will delete it from database
-    app.delete('/user/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
+    app.delete('/user/:id([0-9]+)', [checkToken, checkAdmin], async (req, res, next) => {
         const id = req.params.id;
 
         try {
             await logger.saveLog('DELETE', 'user', id, res);
 
             let result = await db.users.destroy({
-                where: { id: id }
+                where: {id: id}
             });
 
             if (result > 0) {
                 return res.status(200).json({
                     ok: true,
-                    message: `User ${ id } deleted.`,
+                    message: `User ${id} deleted.`,
                     data: result
                 });
             } else {
@@ -176,16 +177,16 @@ module.exports = (app, db) => {
             // user: 1 -> Deleted
             // user: 0 -> User don't exists
         } catch (err) {
-            return next({ type: 'error', error: 'Error deleting user.' });
+            return next({type: 'error', error: 'Error deleting user.'});
         }
     });
 
-    app.post('/forgot', async(req, res, next) => {
+    app.post('/forgot', async (req, res, next) => {
         try {
             let email = req.body.email;
-            let user = await db.users.findOne({where: { email }});
+            let user = await db.users.findOne({where: {email}});
 
-            if( user ) {
+            if (user) {
                 sendEmailResetPassword(user, res);
             } else {
                 return res.status(400).json({
@@ -194,24 +195,24 @@ module.exports = (app, db) => {
                 });
             }
         } catch (error) {
-            return next({ type: 'error', error });
+            return next({type: 'error', error});
         }
     });
-    
-    app.post('/reset', async(req, res, next) => {
+
+    app.post('/reset', async (req, res, next) => {
         let token = req.body.token;
         let password = req.body.password;
 
         try {
             let id = tokenId.getTokenId(token);
-            let user = await db.users.findOne({where: { id }});
+            let user = await db.users.findOne({where: {id}});
 
-            if ( user ) {
-                password = bcrypt.hashSync(password, 10)
+            if (user) {
+                password = bcrypt.hashSync(password, 10);
                 let updated = await db.users.update({password}, {
-                    where: { id }
+                    where: {id}
                 });
-                if ( updated ) {
+                if (updated) {
                     return res.json({
                         ok: true,
                         message: 'Password changed'
@@ -229,7 +230,7 @@ module.exports = (app, db) => {
                 });
             }
         } catch (error) {
-            return next({ type: 'error', error });
+            return next({type: 'error', error});
         }
 
     });
@@ -241,25 +242,25 @@ module.exports = (app, db) => {
 
         if (body.password) body.password = bcrypt.hashSync(body.password, 10);
 
-        if ( body.img && checkImg(body.img) ) {
+        if (body.img && checkImg(body.img)) {
             let user = await db.users.findOne({
-                where: { id }
+                where: {id}
             });
-            if ( user.img ) deleteFile('uploads/users/' + user.img);
+            if (user.img) deleteFile('uploads/users/' + user.img);
 
             var imgName = uploadImg(req, res, next, 'users');
-                body.img = imgName;
+            body.img = imgName;
         }
 
         let updated = await db.users.update(body, {
-            where: { id }
+            where: {id}
         });
 
         if (updated > 0) {
             return res.status(200).json({
                 ok: true,
                 message: `Updated ${updated} rows. New values showing in message.`,
-                data: await db.users.findOne({ where: { id } })
+                data: await db.users.findOne({where: {id}})
             })
         } else {
             return res.status(400).json({
@@ -269,4 +270,4 @@ module.exports = (app, db) => {
         }
     }
 
-}
+};

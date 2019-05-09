@@ -1,87 +1,122 @@
-<div fxLayout="row" fxLayoutAlign="center start">
-  <div
-    fxFlex="95%"
-    fxFlex.gt-md="=70%"
-    fxFlex.gt-sm="80%">
-    <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap.lt-sm="16px">
-      <!-- Basic info -->
-      <mat-card fxFlex="70">
-        <mat-card-title>
-          <app-offerer-name-overview
-            [index]="(profilesState | async).candidate.index"
-            [name]="(profilesState | async).candidate.name"
-            size="title">
-          </app-offerer-name-overview>
-        </mat-card-title>
-        <mat-card-content
-          fxLayout="row"
-          fxLayout.lt-sm="column" fxLayoutAlign="center stretch"
-          fxLayoutAlign.lt-sm="center center" style="margin-top: 16px">
-          <img
-            alt="{{(profilesState | async).candidate.name + ' profile picture'}}'"
-            fxFlex="200px"
-            fxLayout="column" height="200px"
-            src="{{getProfileImg()}}"
-            width="200px"/>
-          <p
-            fxLayout="column"
-            fxLayoutAlign="center center">
-            {{(profilesState | async).candidate.bio}}
-          </p>
-        </mat-card-content>
-        <mat-card-actions fxLayoutAlign="end end">
-          <button
-            color="accent"
-            mat-button>
-            Edit
-          </button>
-        </mat-card-actions>
-      </mat-card>
+<div *ngIf="(profilesState | async).candidate" fxLayout="column" fxLayoutGap="16px" style="padding-bottom: 32px">
+  <div fxLayout="row">
+    <button (click)="backClicked()"
+            fxFlexOffset="0"
+            fxFlexOffset.gt-md="10%" fxFlexOffset.gt-sm="9.5%" mat-icon-button>
+      <mat-icon class="svg" color="primary" svgIcon="back"></mat-icon>
+    </button>
+  </div>
+  <div fxLayout="row" fxLayoutAlign="center start">
+    <div
+      fxFlex="95%"
+      fxFlex.gt-md="=70%"
+      fxFlex.gt-sm="80%">
+      <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap.lt-sm="16px">
+        <!-- Basic info -->
+        <mat-card fxFlex="100" [fxFlex.lt-md]="(mine || twitterAccount !== '') ? 70 : 100" fxLayout="column" fxLayoutAlign="space-between">
+          <mat-card-title>
+            <app-offerer-name-overview
+              [candidateIndexBreakdown]="(profilesState | async).candidate.avg"
+              [index]="(profilesState | async).candidate.index ? (profilesState | async).candidate.index : candidate.kweeIndex"
+              [name]="(profilesState | async).candidate.name ? (profilesState | async).candidate.name : candidate.name"
+              size="title">
+            </app-offerer-name-overview>
+          </mat-card-title>
+          <mat-card-content
+            fxLayout="row"
+            fxLayout.lt-sm="column"
+            fxLayoutAlign="start stretch" fxLayoutAlign.lt-sm="center center"
+            style="margin-top: 16px">
+            <img
+              alt="{{(profilesState | async).candidate.name + ' profile picture'}}'"
+              fxFlex="200px"
+              fxLayout="column" height="200px"
+              src="{{getProfileImg()}}"
+              width="200px"/>
+            <span
+              fxLayout="column"
+              fxLayoutAlign="center center">
+              {{(profilesState | async).candidate.bio}}
+            </span>
+          </mat-card-content>
+          <mat-card-actions fxLayoutAlign="end end">
+            <button
+              *ngIf="mine"
+              routerLink="/settings"
+              color="accent"
+              mat-button>
+              Edit
+            </button>
+            <button
+              (click)="contactUser()"
+              *ngIf="!mine"
+              color="primary"
+              mat-raised-button>
+              <mat-icon style="margin-right: 8px" svgIcon="chat"></mat-icon>
+              Contact
+            </button>
+          </mat-card-actions>
+        </mat-card>
 
-      <!-- Premium info -->
-      <mat-card
-        fxFlex="30" fxFlexOffset.gt-xs="32px">
-        <mat-card-subtitle style="text-align: center">Active account type:</mat-card-subtitle>
-        <mat-card-title style="text-align: center">
-          Basic
-        </mat-card-title>
-        <hr>
-        <mat-card-content>
-          <mat-list>
-            <mat-list-item><p>Unlimited concurrent applications.</p></mat-list-item>
-            <mat-list-item><p>Upload files to complete your profile.</p></mat-list-item>
-            <mat-list-item><p>Access to highlighted profiles section.</p></mat-list-item>
-            <mat-list-item><p>Help us maintain the platform.</p></mat-list-item>
-          </mat-list>
-        </mat-card-content>
-        <mat-card-actions fxLayoutAlign="center">
-          <button
-            color="accent"
-            mat-raised-button
-            style="color: white; margin-bottom: 16px">
-            Upgrade to Premium
-          </button>
-        </mat-card-actions>
-      </mat-card>
-    </div>
-    <div fxLayout="row" style="margin-top: 16px">
-      <mat-card fxFlex="100" style="padding: 0 !important;">
-        <mat-tab-group (selectedIndexChange)="goToMyOffers($event)">
-          <mat-tab label="More Info">
-            <ng-template matTabContent>
-              <!--<app-candidate-more-info [candidate]="(profilesState | async).candidate"></app-candidate-more-info>-->
-              <app-candidate-more-info [candidate]="candidate"></app-candidate-more-info>
-            </ng-template>
-          </mat-tab>
-          <mat-tab label="Opinions">
-            <ng-template matTabContent>
-              <app-candidate-profile-opinions></app-candidate-profile-opinions>
-            </ng-template>
-          </mat-tab>
-          <mat-tab label="Offers"></mat-tab>
-        </mat-tab-group>
-      </mat-card>
-    </div>
+        <!-- Premium info -->
+        <mat-card
+          *ngIf="mine"
+          fxFlex="30%" fxFlex.lt-sm="100%" fxFlexOffset.gt-xs="32px">
+          <mat-card-subtitle style="text-align: center">Active account type:</mat-card-subtitle>
+          <mat-card-title style="text-align: center">
+            Basic
+          </mat-card-title>
+          <hr>
+          <mat-card-content>
+            <mat-list>
+              <mat-list-item><p>Unlimited concurrent applications.</p></mat-list-item>
+              <mat-list-item><p>Upload files to complete your profile.</p></mat-list-item>
+              <mat-list-item><p>Access to highlighted profiles section.</p></mat-list-item>
+              <mat-list-item><p>Help us maintain the platform.</p></mat-list-item>
+            </mat-list>
+          </mat-card-content>
+          <mat-card-actions fxLayoutAlign="center">
+            <button
+              color="accent"
+              mat-raised-button
+              routerLink="/plans"
+              style="color: white; margin-bottom: 16px">
+              Upgrade to Premium
+            </button>
+          </mat-card-actions>
+        </mat-card>
+        <mat-card *ngIf="!mine && twitterAccount !== ''"
+                  class="twitter-wrapper"
+                  fxFlex="30"
+                  fxFlexOffset.gt-xs="32px" fxHide.lt-lg>
+          <a [href]="'https://twitter.com/' + twitterAccount" class="twitter-timeline">Tweets by @{{twitterAccount}}</a>
+        </mat-card>
+      </div>
+      <div fxLayout="row" style="margin-top: 16px">
+        <mat-card fxFlex="100" style="padding: 0 !important;">
+          <mat-tab-group (selectedIndexChange)="changeTab($event)" [selectedIndex]="selectedIndex">
+            <mat-tab label="More Info">
+              <ng-template matTabContent>
+                <!--TODO: change dynamically this content-->
+                <!--<app-candidate-more-info [candidate]="(profilesState | async).candidate" [isPremium]="isPremium"></app-candidate-more-info>-->
+                <app-candidate-more-info [candidate]="(profilesState | async).candidate"
+                                         [isPremium]="!mine"></app-candidate-more-info>
+              </ng-template>
+            </mat-tab>
+            <mat-tab label="Opinions">
+              <ng-template matTabContent>
+                <app-candidate-profile-opinions></app-candidate-profile-opinions>
+              </ng-template>
+            </mat-tab>
+            <mat-tab label="Past Positions">
+              <ng-template matTabContent>
+                <app-past-positions [applications]="(profilesState | async).candidate.applications"></app-past-positions>
+              </ng-template>
+            </mat-tab>
+          </mat-tab-group>
+        </mat-card>
+      </div>
 
+    </div>
   </div>
 </div>

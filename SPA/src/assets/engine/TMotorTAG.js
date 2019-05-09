@@ -1,23 +1,20 @@
-
 import {TNode} from './TNode.js';
 import {TTransform, TCamera, TLight, TAnimation, TMesh, TArc, TFocus, TRotationAnimation, TArcAndMeshAnimation} from './TEntity.js';
 import {TResourceManager, TResourceMesh, TResourceMaterial, TResourceTexture, TResourceShader, TResourceMeshArray} from './resourceManager.js';
 import { global } from './commons.js';
 
-class TMotorTAG{
+class TMotorTAG {
 
-    constructor(resourceManager) {
-        this.scene = this.createRootNode();
-        
-        this.allLights = [];
-        this.activeLights = [];
-        this.positionLights = [];
+  constructor(resourceManager) {
+    this.scene = this.createRootNode();
 
-        this.allCameras = [];
-        this.activeCamera = -1;
-        this.positionCameras = [];
+    this.allLights = [];
+    this.activeLights = [];
+    this.positionLights = [];
 
-        this.aux = [];
+    this.allCameras = [];
+    this.activeCamera = -1;
+    this.positionCameras = [];
 
         this.MVMatrix = null;
 
@@ -28,12 +25,15 @@ class TMotorTAG{
         this.allCountAnimations = [];
     }
 
-    createRootNode(){
-        if(this.scene==null){
-            TMotorTAG.scene = new TNode(null,null,null);
-        }
-        return TMotorTAG.scene;
+    this.resourceManager = resourceManager;
+  }
+
+  createRootNode() {
+    if (this.scene == null) {
+      TMotorTAG.scene = new TNode(null, null, null);
     }
+    return TMotorTAG.scene;
+  }
 
     // scale -> rotation -> translation -> node
     // createFullBranch(father, entity){
@@ -75,43 +75,96 @@ class TMotorTAG{
         return node;
     }
 
-    createCamera( father, isPerspective, near, far, right, left, top, bottom ){
+  createNode(father, entity) {
+    var node = new TNode(father, entity);
+    father.addChild(node);
+    return node;
+  }
 
-        // isPerspective, near, far, right, left, top, bottom
-        let cam = new TCamera(isPerspective, near, far, right, left, top, bottom);
-        let NCam = this.createBranch(father, cam);
+  createCamera(father, isPerspective, near, far, right, left, top, bottom) {
 
-        this.allCameras.push(NCam);
+    // isPerspective, near, far, right, left, top, bottom
+    let cam = new TCamera(isPerspective, near, far, right, left, top, bottom);
+    let NCam = this.createBranch(father, cam);
 
-        return NCam;
+    this.allCameras.push(NCam);
+
+    return NCam;
+  }
+
+  deleteCamera(TNodeCam) {
+    let array = TMotorTAG.allCameras;
+    TNodeCam.father.father.father.remChild(TNodeCam.father.father);
+    array.splice(array.indexOf(TNodeCam), 1);
+  }
+
+  /**
+   *
+   * @param {*} Node to rotate
+   * @param {*} angle Angle to rotate
+   * @param {*} axis Axis to rotate. If different for values 'x', 'y' or 'z', will use that axis
+   */
+  rotate(node, angle, axis) {
+    switch (axis) {
+      case 'x':
+        node.father.father.entity.rotateX(angle);
+        break;
+      case 'y':
+        node.father.father.entity.rotateY(angle);
+        break;
+      case 'z':
+        node.father.father.entity.rotateZ(angle);
+        break;
+      default:
+        node.father.father.entity.rotate(angle, axis);
+        break;
     }
+  }
 
-    deleteCamera( TNodeCam ) {
-        let array = TMotorTAG.allCameras;
-        TNodeCam.father.father.father.remChild(TNodeCam.father.father);
-        array.splice(array.indexOf(TNodeCam),1);
+  translate(node, units) {
+    node.father.entity.translate(units);
+  }
+
+  scale(node, units) {
+    node.father.father.father.entity.scale(units);
+  }
+
+  lookAt(TNodeCam, eye, center, up) {
+    let x0, x1, x2, y0, y1, y2, z0, z1, z2, len;
+    let eyex = eye[0];
+    let eyey = eye[1];
+    let eyez = eye[2];
+    let upx = up[0];
+    let upy = up[1];
+    let upz = up[2];
+    let centerx = center[0];
+    let centery = center[1];
+    let centerz = center[2];
+    if (Math.abs(eyex - centerx) < glMatrix.glMatrix.EPSILON &&
+      Math.abs(eyey - centery) < glMatrix.glMatrix.EPSILON &&
+      Math.abs(eyez - centerz) < glMatrix.glMatrix.EPSILON) {
+      return identity(out);
     }
-    /**
-     * 
-     * @param {*} Node to rotate
-     * @param {*} angle Angle to rotate
-     * @param {*} axis Axis to rotate. If different for values 'x', 'y' or 'z', will use that axis
-     */
-    rotate( node, angle, axis ) {
-        switch (axis) {
-            case 'x':
-                node.father.father.entity.rotateX(angle);
-                break;
-            case 'y':
-                node.father.father.entity.rotateY(angle);
-                break;
-            case 'z':
-                node.father.father.entity.rotateZ(angle);
-                break;
-            default:
-                node.father.father.entity.rotate(angle, axis);
-                break;
-        }
+    z0 = eyex - centerx;
+    z1 = eyey - centery;
+    z2 = eyez - centerz;
+    len = 1 / Math.sqrt(z0 * z0 + z1 * z1 + z2 * z2);
+    z0 *= len;
+    z1 *= len;
+    z2 *= len;
+    x0 = upy * z2 - upz * z1;
+    x1 = upz * z0 - upx * z2;
+    x2 = upx * z1 - upy * z0;
+    len = Math.sqrt(x0 * x0 + x1 * x1 + x2 * x2);
+    if (!len) {
+      x0 = 0;
+      x1 = 0;
+      x2 = 0;
+    } else {
+      len = 1 / len;
+      x0 *= len;
+      x1 *= len;
+      x2 *= len;
     }
 
     // angle in degrees!
@@ -230,7 +283,7 @@ class TMotorTAG{
         TNodeCam.father.entity.setTranslation([out[12], out[13], out[14]]);
         TNodeCam.father.father.entity.setRotation([out[0], out[1], out[2], out[4], out[5], out[6], out[8], out[9], out[10]]);
 
-      }
+    out = glMatrix.mat4.invert(out, out);
 
     createLight(father, typ, intensity, specular, diffuse, direction, coef){
 
@@ -239,10 +292,11 @@ class TMotorTAG{
         let light = new TLight(typ, intensity, specular, diffuse, direction, coef);
         let NLight = this.createBranch(father, light);
 
-        this.allLights.push(NLight);
+  createLight(father, typ, intensity, specular, direction, s) {
 
-        return NLight;
-    }
+    // typ, intensity, specular, direction, s
+    let light = new TLight(typ, intensity, specular, direction, s);
+    let NLight = this.createBranch(father, light);
 
     createFocus(father, size, position, target = undefined){
       
@@ -338,10 +392,11 @@ class TMotorTAG{
     // returns TNodeMesh
     async loadMesh(father, file){
 
-        //Crear la malla a partir del recurso malla y devolverla
-        let meshResource = await this.resourceManager.getResource(file); 
+    return NLight;
+  }
 
-        let mesh = new TMesh(meshResource);
+  // returns TNodeMesh
+  async loadMesh(father, file) {
 
         let NMesh = this.createBranch(father, mesh);
         
@@ -375,6 +430,11 @@ class TMotorTAG{
     /*Métodos para el registro y manejo de las cámaras Métodos para el registro 
     y manejo de las luces Métodos para el registro y manejo de los viewports*/
 
+          requestAnimationFrame(loop);
+      };
+      requestAnimationFrame(loop);
+    */
+  }
 
     // calculate all the light matices from the Lighs static array and drop them into the AuxLights array
     calculateLights() {
@@ -421,15 +481,8 @@ class TMotorTAG{
         global.viewMatrix = cameras;
 
     }
-    
-    // go from the leaf to the root
-    goToRoot(obj) {
-        if (obj.entity instanceof TTransform) {
-            this.aux.push(obj.entity.matrix);
-        }
-        if (obj.father) {
-            this.goToRoot(obj.father);
-        }
+    if (obj.father) {
+      this.goToRoot(obj.father);
     }
 }
 
@@ -437,7 +490,7 @@ class TMotorTAG{
 TMotorTAG.scene = null;
 
 export {
-    TMotorTAG
+  TMotorTAG
 }
 
 

@@ -1,10 +1,11 @@
 import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 
-import {TCamera, TMesh, TAnimation, TLight, TTransform, TEntity} from '../../assets/engine/TEntity';
+import {TAnimation, TCamera, TEntity, TLight, TMesh, TTransform} from '../../assets/engine/TEntity';
 import {TNode} from '../../assets/engine/TNode';
 import {TResourceManager, TResourceMaterial, TResourceMesh, TResourceShader, TResourceTexture} from '../../assets/engine/resourceManager';
 import {shared} from '../../assets/engine/commons.js';
 import {main, mainInit, mainR, interactiveMain, resetCanvas, allowActions, pls, rotateMesh} from '../../assets/engine/main.js';
+
 
 // import {TMotorTAG} from '../../assets/engine/TMotorTAG.js';
 // import {glMatrix, mat2, mat2d, mat3, mat4, quat, quat2, vec2, vec3, vec4} from 'gl-matrix';
@@ -31,14 +32,17 @@ export class KweeLiveComponent implements OnInit, OnDestroy {
 
   @ViewChild('rendererContainer') rendererContainer: ElementRef;
 
-  constructor() {
+  constructor(private titleService: Title, private http: HttpClient, private store$: Store<fromApp.AppState> ) {
     this.disabled = true;
   }
 
   async ngOnInit() {
+    this.titleService.setTitle('Kwee - Kwee Live');
     this.disabled = false;
     await shared();
     await mainInit();
+
+    this.store$.dispatch(new KweeLiveActions.TryGetApplications({page: 1, limit: 5}));
   }
 
   getAllow() {

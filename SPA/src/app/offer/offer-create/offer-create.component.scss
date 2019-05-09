@@ -4,7 +4,7 @@
   font-family: IBM Plex Sans, sans-serif;
 }
 
-:host ::ng-deep .ck-editor {
+:host ::ng-deep .ck-editor, .line2 {
   max-width: 600px;
 }
 
@@ -41,17 +41,17 @@ mat-datepicker-toggle {
   margin-left: -4;
 }
 
-#googleBtn.mat-button, #googleBtn.mat-raised-button {
-  background-color: #4285F4;
-}
-
-#twitterBtn.mat-button, #twitterBtn.mat-raised-button {
-  background-color: #1da1f2;
-}
-
-#linkedinBtn.mat-button, #linkedinBtn.mat-raised-button {
-  background-color: #0077b5;
-}
+//#googleBtn.mat-button, #googleBtn.mat-raised-button {
+//  background-color: #4285F4;
+//}
+//
+//#twitterBtn.mat-button, #twitterBtn.mat-raised-button {
+//  background-color: #1da1f2;
+//}
+//
+//#linkedinBtn.mat-button, #linkedinBtn.mat-raised-button {
+//  background-color: #0077b5;
+//}
 
 .btnAdd {
   max-height: 30px;
@@ -63,10 +63,6 @@ mat-datepicker-toggle {
 
 .line1 {
   max-width: 500px;
-}
-
-.line2 {
-  max-width: 600px;
 }
 
 .divskill {
@@ -90,4 +86,12 @@ img {
   min-width: 150px;
   width: 30%;
   margin: .5em 0;
+}
+
+:host ::ng-deep .ck.ck-editor__top .ck-sticky-panel .ck-toolbar{
+  background-color: #546e7a;
+}
+
+:host ::ng-deep .ck.ck-icon, :host ::ng-deep .ck.ck-dropdown.ck-heading-dropdown .ck-dropdown__button .ck-button__label{
+  color: #fff;
 }

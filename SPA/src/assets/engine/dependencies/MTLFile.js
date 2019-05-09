@@ -8,6 +8,14 @@ class MTLFile {
     this.fileContents = fileContents;
   }
 
+  static _stripComments(lineString) {
+    let commentIndex = lineString.indexOf('#');
+    if (commentIndex > -1)
+      return lineString.substring(0, commentIndex);
+    else
+      return lineString;
+  }
+
   _reset() {
     this.materials = [];
     this.currentMaterial = null;
@@ -32,8 +40,7 @@ class MTLFile {
         return; // Skip blank lines
       }
 
-      switch(lineItems[0].toLowerCase())
-      {
+      switch (lineItems[0].toLowerCase()) {
         case 'newmtl':  // Starts a new material, assigns a name to it
           this._parseNewMTL(lineItems);
           break;
@@ -127,14 +134,6 @@ class MTLFile {
     return this.materials;
   }
 
-  static _stripComments(lineString) {
-    let commentIndex = lineString.indexOf('#');
-    if(commentIndex > -1)
-      return lineString.substring(0, commentIndex);
-    else
-      return lineString;
-  }
-
   _createMaterial(name) {
     const newMaterial = {
       name: name,
@@ -173,6 +172,7 @@ class MTLFile {
     };
     this.materials.push(newMaterial);
   }
+
   _getCurrentMaterial() {
     if (this.materials.length == 0) {
       this._createMaterial(this.defaultMaterialName);
@@ -379,4 +379,4 @@ class MTLFile {
 
 }
 
-export { MTLFile }
+export {MTLFile}

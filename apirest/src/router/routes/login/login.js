@@ -1,37 +1,53 @@
-const env = require('../../../tools/constants');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const moment = require('moment');
+const { logger, tokenId, getOffererAVG, getApplicantAVG } = require('../../../shared/functions');
 const auth = require('../../../middlewares/auth/auth');
-const { logger } = require('../../../shared/functions');
+const bcrypt = require('bcryptjs');
+const moment = require('moment');
 
 module.exports = (app, db) => {
 
-    app.post('/login', async(req, res, next) => {
-        let logId = await logger.saveLog('POST', 'login', null, res, req.body.email);
-
+    app.post('/login', async (req, res, next) => {
+        let user;
+        let logId;
         let body = req.body;
-
+        
         try {
-            let user = await db.users.findOne({ where: { email: body.email } });
+            
+            if ( body.email ) {
+                logId = await logger.saveLog('POST', 'login', null, res, body.email);
+                user = await db.users.findOne({ where: { email: body.email }});
+            } else if ( body.token ) {
+                var idToken = tokenId.getTokenId(body.token, res);
+
+                user = await db.users.findOne({where: { id: idToken }});
+                if ( user ){
+                    logId = await logger.saveLog('POST', 'login', null, res, user.email);
+                } else {
+                    return null;
+                }
+            } else {
+                return next({type: 'error', error: 'Error getting data'});
+            }
+
+
+            if ( !user ) {
+                logger.updateLog(logId, false);
+                return res.status(400).json({
+                    ok: false,
+                    message: 'User or password incorrect'
+                });
+            }
+
+            if ( body.password ) {
+                if ( !bcrypt.compareSync(body.password, user.password) ) {
+                    logger.updateLog(logId, false);
+                    return res.status(400).json({
+                        ok: false,
+                        message: 'User or password incorrect'
+                    });
+                }
+            }
+
             let type;
-
-            if (!user) {
-                logger.updateLog(logId, false);
-                return res.status(400).json({
-                    ok: false,
-                    message: 'User or password incorrect'
-                });
-            }
-
-            if (!bcrypt.compareSync(body.password, user.password)) {
-                logger.updateLog(logId, false);
-                return res.status(400).json({
-                    ok: false,
-                    message: 'User or password incorrect'
-                });
-            }
-
             let id = user.id;
             let dateNow = moment().format();
 
@@ -39,23 +55,37 @@ module.exports = (app, db) => {
                 where: { id }
             });
 
-            let userUpdated = await db.users.findOne({ where: { id } })
+            let userUpdated = await db.users.findOne({ where: { id }});
 
             delete userUpdated.dataValues.password;
+
+            let notifications = await db.notifications.findAll({where: {to: id, read: false}});
+
+            notifications ? notifications = notifications.length : notifications = 0;
 
             let token = auth.auth.encode(userUpdated);
             logger.updateLog(logId, true, id);
 
-            if( user.root ){
+            if (user.root) {
                 type = 'admin';
             } else {
+                var avg = {};
                 let offerer = await db.offerers.findOne({
-                    where: { userId: id }
+                    where: {userId: id}
                 });
-                if ( offerer ) {
+                if (offerer) {
+                    avg = getOffererAVG(offerer);
                     type = 'offerer';
                 } else {
-                    type = 'applicant';
+                    let applicant = await db.applicants.findOne({
+                        where: {userId: id}
+                    });
+                    if ( applicant ) {
+                        avg = getApplicantAVG(applicant);
+                        type = 'applicant';
+                    } else {
+                        return next({type: 'error', error: 'User not found'});
+                    }
                 }
             }
 
@@ -70,15 +100,20 @@ module.exports = (app, db) => {
                     bio: userUpdated.bio,
                     lastAccess: userUpdated.lastAccess,
                     index: userUpdated.index,
+                    avg,
                     status: userUpdated.status,
+                    notifications,
                     type
                 },
                 token
             });
 
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            if (err.message == 'Invalid token') {
+                return next({type: 'error', error: 'Invalid token'});
+            }
+            return next({type: 'error', error: err.message});
         }
     });
 
-}
+};

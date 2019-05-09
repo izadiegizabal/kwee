@@ -13,12 +13,20 @@ const routes: Routes = [
 
   // MAIN PAGES
   {path: '', redirectTo: '', canActivate: [HomeRedirectGuardService], pathMatch: 'full'},
-  {path: 'home', component: LandingComponent},
-  {path: 'candidate-home', component: CandidateHomeComponent},
+  {path: 'home', component: LandingComponent, data: {animation: 'isLeft'}},
+  {path: 'candidate-home', component: CandidateHomeComponent, data: {animation: 'isLeft'}},
 
   // PROFILES
-  {path: 'candidate/:id/:name', loadChildren: './profiles/candidate-profile/candidate-profile.module#CandidateProfileModule'},
-  {path: 'business/:id/:name', loadChildren: './profiles/business-profile/business-profile.module#BusinessProfileModule'},
+  {
+    path: 'candidate/:id/:name',
+    loadChildren: './profiles/candidate-profile/candidate-profile.module#CandidateProfileModule',
+    data: {animation: 'isRight'}
+  },
+  {
+    path: 'business/:id/:name',
+    loadChildren: './profiles/business-profile/business-profile.module#BusinessProfileModule',
+    data: {animation: 'isRight'}
+  },
 
   // OFFERS
   {
@@ -26,15 +34,15 @@ const routes: Routes = [
     loadChildren: './offer/offer-manage/offer-manage.module#OfferManageModule',
     canActivate: [AuthTokenGuard]
   },
-  {path: 'offer/:id/:name', component: OfferDetailComponent},
-  { // TODO: canActivate -> Business & Admin
-    path: 'offer/create',
-    loadChildren: './offer/offer-create/offer-create.module#OfferCreateModule'
-  },
   { // TODO: canActivate -> Offer Owner & Admin
     path: 'offer/:id/edit',
     loadChildren: './offer/offer-create/offer-create.module#OfferCreateModule'
   },
+  { // TODO: canActivate -> Business & Admin
+    path: 'offer/create',
+    loadChildren: './offer/offer-create/offer-create.module#OfferCreateModule'
+  },
+  {path: 'offer/:id/:name', component: OfferDetailComponent},
 
   // DIRECTORIES
   {
@@ -47,9 +55,6 @@ const routes: Routes = [
     loadChildren: './search-users/search-candidates/search-candidates.module#SearchCandidatesModule',
     canActivate: [AuthTokenGuard]
   },
-
-  // TESTING PAGES -> TODO: delete this once not needed
-  {path: 'paypal', loadChildren: './paypal/paypal.module#PaypalModule'},
 
   // AUTH
   {
@@ -69,16 +74,34 @@ const routes: Routes = [
     loadChildren: './admin/admin.module#AdminModule',
     canActivate: [AdminGuard]
   },
-
+  // NOTIFICATIONS
+  {
+    path: 'notifications',
+    loadChildren: './notifications/notifications.module#NotificationsModule',
+    canActivate: [AuthTokenGuard]
+  },
+  // MESSAGES
+  {
+    path: 'messages',
+    loadChildren: './messages/messages.module#MessagesModule',
+    canActivate: [AuthTokenGuard]
+  },
   // KWEE LIVE
   {path: 'kwee-live', loadChildren: './kwee-live/kwee-live.module#KweeLiveModule'},
+
+  // INVOICES
+  {path: 'invoices', loadChildren: './invoices/invoices.module#InvoicesModule'},
+
+  // SETTINGS
+  {path: 'settings', loadChildren: './settings/settings.module#SettingsModule'},
 
   // OTHERS
   {path: 'privacy', component: PrivacyComponent},
   {path: 'email-verified/:token', loadChildren: './email-verified/email-verified.module#EmailVerifiedModule'},
   {path: 'reset-password/:token', loadChildren: './reset-password/reset-password.module#ResetPasswordModule'},
-  {path: 'contact-support', loadChildren: './contact-support/contact-support.module#ContactSupportModule'},
   {path: 'error', loadChildren: './errors/errors.module#ErrorsModule'},
+  {path: 'premium', redirectTo: 'plans'}, // Fallback just in case some link wasn't change
+  {path: 'plans', loadChildren: './premium/premium.module#PremiumModule'},
 
   // If matching path not found show Error 404
   {path: '**', redirectTo: 'error/404'}

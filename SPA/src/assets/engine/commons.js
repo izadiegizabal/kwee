@@ -145,16 +145,16 @@ var mouseMove = function(e) {
 
 
 function changeAngle(degrees) {
-    angle = degrees;
+  angle = degrees;
 }
 
 // Virtual class
 class TEntity {
-    beginDraw() {
-    }
+  beginDraw() {
+  }
 
-    endDraw() {
-    }
+  endDraw() {
+  }
 }
 
 // Static attributes
@@ -171,12 +171,12 @@ TEntity.Aux = [];
 TEntity.stack = null;
 TEntity.buffer = null;
 
-function getEntity(){
-    return TEntity;
+function getEntity() {
+  return TEntity;
 }
 
-function setEntity(ent){
-    TEntity = ent;
+function setEntity(ent) {
+  TEntity = ent;
 }
 
 

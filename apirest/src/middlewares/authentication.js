@@ -7,11 +7,11 @@ const db = require('../database/sequelize');
 // ===== Token Verification =====
 // ==============================
 
-let checkToken = async(req, res, next) => {
+let checkToken = async (req, res, next) => {
 
     let token = req.get('token');
 
-    let decoded = await auth.auth.decode(token);
+    let decoded = await auth.auth.decode(token, res);
 
     if (typeof decoded === "number") {
         req.user = decoded;
@@ -26,7 +26,7 @@ let checkToken = async(req, res, next) => {
 // ===== Admin Verification =====
 // ==============================
 
-let checkAdmin = async(req, res, next) => {
+let checkAdmin = async (req, res, next) => {
 
     let token = req.get('token');
 
@@ -36,7 +36,7 @@ let checkAdmin = async(req, res, next) => {
         attributes: [
             'root'
         ],
-        where: { id }
+        where: {id}
     });
 
     if (user.root) {
@@ -51,10 +51,10 @@ let checkAdmin = async(req, res, next) => {
     }
 };
 
-let checkApplicant = async(req, res, next) => {
+let checkApplicant = async (req, res, next) => {
 
     let user = await db.applicants.findOne({
-        where: { userId: req.user }
+        where: {userId: req.user}
     });
 
     if (user) {
@@ -69,10 +69,10 @@ let checkApplicant = async(req, res, next) => {
     }
 };
 
-let checkOfferer = async(req, res, next) => {
+let checkOfferer = async (req, res, next) => {
 
     let user = await db.offerers.findOne({
-        where: { userId: req.user }
+        where: {userId: req.user}
     });
 
     if (user) {
@@ -92,4 +92,4 @@ module.exports = {
     checkAdmin,
     checkApplicant,
     checkOfferer
-}
+};

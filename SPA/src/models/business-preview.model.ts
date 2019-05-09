@@ -1,4 +1,4 @@
-import {BusinessAccountStates, BusinessIndustries, BusinessSize, BusinessAccountSubscriptions} from './Business.model';
+import {BusinessAccountStates, BusinessAccountSubscriptions, BusinessIndustries, BusinessSize} from './Business.model';
 import {getUrlfiedString} from '../app/shared/utils.service';
 
 export class BusinessPreview {
@@ -7,12 +7,13 @@ export class BusinessPreview {
   constructor(
     public id: number,
     public index: number,
+    public avg: any,
     public name: string,
     public bio: string,
     public address: string,
     public year: Date,
-    public workfield: BusinessIndustries,
-    public imgPath: string,
+    public workField: BusinessIndustries,
+    public img: string,
     public email: string,
     public lastAccess: Date,
     public createdAt: Date,

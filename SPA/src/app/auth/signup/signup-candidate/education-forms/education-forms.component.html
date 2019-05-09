@@ -2,21 +2,22 @@
 
   <div fxLayout="column" fxLayoutGap="16px">
     <div *ngIf="this.formEducation.value" fxLayout="column" fxLayoutGap="16px">
-
-      <div *ngFor="let ex of this.formEducation.controls; let s =index;" formArrayName="education"
-           fxLayout="column"
-           fxLayoutGap="16px">
-        <div [formGroupName]="s" fxFlex=80%; fxLayout="column">
-          <mat-accordion>
-            <mat-checkbox #toggle [checked]="true" style="display: none"></mat-checkbox>
+      <mat-accordion fxFlex=80%; fxLayout="column">
+        <div *ngFor="let ex of this.formEducation.controls; let s =index;" formArrayName="education">
+          <div [formGroupName]="s">
+            <mat-checkbox #toggle [checked]="false" style="display: none"></mat-checkbox>
             <mat-expansion-panel [(expanded)]="toggle.checked">
               <mat-expansion-panel-header>
                 <mat-panel-title>
-                  <span *ngIf="title.value; else titled">{{title.value}}</span>
+                  <span *ngIf="educations.get('education').controls[s].controls.title.value;
+                   else titled">
+                    {{title.value}}
+                  </span>
                   <ng-template #titled><span>Title</span></ng-template>
                 </mat-panel-title>
                 <mat-panel-description fxHide fxShow.gt-xs>
-                    <span *ngIf="onCheck(istart,iend,s)
+                    <span *ngIf="educations.get('education').controls[s].controls.start.value &&
+                     (educations.get('education').controls[s].controls.end.value || iend.disabled)
                     ; else date">
                     From: {{istart.value}} to: 
                     <span *ngIf="iend.value && !iend.disabled">
@@ -148,9 +149,9 @@
 
               </div>
             </mat-expansion-panel>
-          </mat-accordion>
+          </div>
         </div>
-      </div>
+      </mat-accordion>
     </div>
     <div class="divBtn" fxLayout="column" fxLayoutAlign="end">
       <button (click)=" addEducation()" mat-button type="button">

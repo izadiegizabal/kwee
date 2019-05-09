@@ -5,6 +5,9 @@ import * as fromOffers from '../offer/store/offers.reducers';
 import * as fromOffer from '../offer/offer-detail/store/offer.reducers';
 import * as fromProfiles from '../profiles/store/profiles.reducers';
 import * as fromOfferManage from '../offer/offer-manage/store/offer-manage.reducers';
+import * as fromInvoices from '../invoices/store/invoice.reducers';
+import * as fromMessages from '../messages/store/message.reducers';
+import * as fromKweeLive from '../kwee-live/store/kwee-live.reducers';
 
 export interface AppState {
   // List different app states like auth etc...
@@ -14,6 +17,9 @@ export interface AppState {
   offer: fromOffer.State;
   profiles: fromProfiles.State;
   offerManage: fromOfferManage.State;
+  invoices: fromInvoices.State;
+  messages: fromMessages.State;
+  kweeLive: fromKweeLive.State;
 }
 
 export const reducers: ActionReducerMap<AppState> = {
@@ -24,4 +30,7 @@ export const reducers: ActionReducerMap<AppState> = {
   offer: fromOffer.offerReducer,
   profiles: fromProfiles.profilesReducer,
   offerManage: fromOfferManage.OfferManageReducer,
+  invoices: fromInvoices.invoiceReducer,
+  messages: fromMessages.messageReducer,
+  kweeLive: fromKweeLive.kweeLiveReducer,
 };

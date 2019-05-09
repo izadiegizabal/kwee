@@ -1,31 +1,35 @@
 export class BusinessModel {
   id: number;
-  kweeIndex: {
-    total: number,
-    salary: number,
-    environment: number,
-    partners: number,
-    services: number,
-    installations: number
+  avg: {
+    environmentAVG: number,
+    installationsAVG: number
+    partnersAVG: number,
+    salaryAVG: number,
+    satisfactionAVG: number,
+    servicesAVG: number,
   };
   name: string;
   img: string;
   cif: string;
   email: string;
-  industry: BusinessIndustries;
+  workField: BusinessIndustries;
   state: BusinessAccountStates;
   premium: BusinessAccountSubscriptions;
+  social_networks: {
+    twitter: string,
+    linkedin: string,
+    github: string,
+    telegram: string
+  };
   lastAccess: Date;
   createdAt: Date;
   address: string;
-  location: {
-    long: number,
-    lat: number
-  };
+  lon: number;
+  lat: number;
   bio: string;
   website: string;
-  size: BusinessSize;
-  foundationDate: Date;
+  companySize: BusinessSize;
+  year: number;
 
   opinions: [{
     opinionId: number,
@@ -56,6 +60,7 @@ export class BusinessModel {
 }
 
 export enum BusinessIndustries {
+  'Any' = -1,
   'Energy Equipment & Services' = 0,
   'Oil, Gas & Consumable Fuels' = 1,
   'Chemicals' = 2,
@@ -144,6 +149,7 @@ export enum BusinessAccountSubscriptions {
 
 export enum BusinessSize {
   // 'Less than 5 people' = 5,
+  'Doesn\'t matter' = 0,
   'Less than 10 people' = 10,
   'Less than 50 people' = 50,
   'Less than 100 people' = 100,

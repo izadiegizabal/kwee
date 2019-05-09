@@ -27,6 +27,23 @@
   }
 }
 
+.gray {
+  color: gray;
+}
+
+.red {
+  color: red;
+}
+
+.num {
+  position: absolute;
+  font-size: 0.9em;
+  top: -6px;
+  color: #000;
+  left: 39px;
+
+}
+
 .welcomeMsg {
   font-family: IBM Plex Sans, sans-serif;
   font-size: 16px;

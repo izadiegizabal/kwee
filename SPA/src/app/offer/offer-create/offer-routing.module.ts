@@ -4,9 +4,8 @@ import {OfferCreateComponent} from './offer-create.component';
 
 
 const OfferRoutes: Routes = [
-  {
-    path: '', component: OfferCreateComponent
-  },
+  {path: '', component: OfferCreateComponent},
+  {path: ':id/edit', component: OfferCreateComponent},
 ];
 
 @NgModule({

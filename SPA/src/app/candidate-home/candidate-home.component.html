@@ -21,9 +21,10 @@
       fxLayoutAlign="center"
       fxLayoutGap="8px">
       <app-searchbar
-        fxFlex="40%" fxFlex.lt-lg="60%" (search)="onSearch($event)">
+        (search)="onSearch($event)" [alreadySearched]="alreadySearched" fxFlex="40%" fxFlex.lt-lg="60%">
       </app-searchbar>
-      <app-orderby-button [orderBy]="order" style="padding-top: 4px" (changeSelectedValue) = "getOrderby($event)"></app-orderby-button>
+      <app-orderby-button (changeSelectedValue)="getOrderby($event)" [orderBy]="order"
+                          style="padding-top: 4px"></app-orderby-button>
       <div style="padding-top: 4px">
         <button color="primary"
                 fxHide.gt-sm
@@ -32,22 +33,35 @@
         </button>
       </div>
     </div>
-      <div *ngIf="!(offersState | async).offers.data && (offersState | async).offers.message === 'No results'" fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">
-        <h4 class="mat-h3">No results found.</h4>
-        <p class="mat-typography">Your search returned no results. Try shortening or rephrasing your search.</p>
-      </div>
-
-      <div *ngIf="(offersState | async).offers.data && (offersState | async).offers.message === 'No results but maybe this is interesting for you'" fxLayoutGap="8px" fxLayoutAlign="center center" fxLayout="column">
-        <h4 class="mat-h3">No results found.</h4>
-        <p class="mat-typography">But maybe this is interesting for you</p>
-      </div>
-
-    <div *ngIf="(offersState | async).offers" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="8px">
-      <app-offer-preview-card *ngFor="let offer of (offersState | async).offers.data;" [offer]="offer">
-      </app-offer-preview-card>
+    <div
+      *ngIf="!(offersState | async).offers || (!(offersState | async).offers.data && (offersState | async).offers.message === 'No results')"
+      fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="8px">
+      <h4 class="mat-h3">No results found.</h4>
+      <p class="mat-typography">Your search returned no results. Try shortening or rephrasing your search.</p>
     </div>
 
-    <div fxLayout="row" fxLayoutAlign="end end" *ngIf="(offersState | async).offers && (offersState | async).offers.data">
+    <div
+      *ngIf="
+      !(offersState | async).offers ||
+      ((offersState | async).offers.data
+      && (offersState | async).offers.message === 'No results but maybe this is interesting for you'
+      )"
+      fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="8px">
+      <h4 class="mat-h3">No results found.</h4>
+      <p class="mat-typography">But maybe this is interesting for you</p>
+    </div>
+
+    <div *ngIf="(offersState | async).offers" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="8px">
+      <app-offer-preview-card
+        *ngFor="let offer of (offersState | async).offers.data;"
+        [offer]="offer"
+        [selection]="false">
+      </app-offer-preview-card>
+
+    </div>
+
+    <div *ngIf="(offersState | async).offers && (offersState | async).offers.data" fxLayout="row"
+         fxLayoutAlign="end end">
       <mat-paginator #paginator
                      (page)="pageEvent = $event; changePage();"
                      [length]="(offersState | async).offers.total"

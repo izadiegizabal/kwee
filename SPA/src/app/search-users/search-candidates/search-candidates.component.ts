@@ -7,7 +7,7 @@ import * as fromApp from '../../store/app.reducers';
 import * as AdminActions from '../../admin/store/admin.actions';
 import {BreakpointObserver} from '@angular/cdk/layout';
 import {ActivatedRoute, Router} from '@angular/router';
-import * as OffersActions from '../../offer/store/offers.actions';
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-search-candidates',
@@ -19,22 +19,15 @@ import * as OffersActions from '../../offer/store/offers.actions';
 })
 export class SearchCandidatesComponent implements OnInit {
 
-  // Filter sidebar
-  @ViewChild('drawer') private drawer: MatSidenav;
   @ViewChild('paginator') paginator: MatPaginator;
-
   query: any;
   adminState: Observable<fromAdmin.State>;
-
   // paging
   pageSize = 5;
-
   pageSizeOptions: number[] = [5, 10, 25, 100];
   // MatPaginator Output
   pageEvent: PageEvent;
-
   orderby = '0';
-
   order: { value: string, viewValue: string }[] =
     [
       {value: '0', viewValue: 'Relevance'},
@@ -42,9 +35,11 @@ export class SearchCandidatesComponent implements OnInit {
       {value: 'name', viewValue: 'Name'},
       {value: 'dateBorn', viewValue: 'Date Born'},
     ];
-
+  // Filter sidebar
+  @ViewChild('drawer') private drawer: MatSidenav;
 
   constructor(
+    private titleService: Title,
     private store$: Store<fromApp.AppState>,
     public media: BreakpointObserver,
     private router: Router,
@@ -52,7 +47,14 @@ export class SearchCandidatesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store$.dispatch(new AdminActions.TryGetCandidates({page: 1, limit: 5, params: this.query, order: this.orderby}));
+    this.titleService.setTitle('Kwee - Search Candidates');
+
+    this.store$.dispatch(new AdminActions.TryGetCandidates({
+      page: 1,
+      limit: 5,
+      params: this.query,
+      order: this.orderby
+    }));
     this.adminState = this.store$.pipe(select(state => state.admin));
 
     this.activatedRoute.queryParams
@@ -69,6 +71,7 @@ export class SearchCandidatesComponent implements OnInit {
       params: this.query,
       order: this.orderby
     }));
+    window.scrollTo(0, 0);
   }
 
   isMobile() {
@@ -84,8 +87,10 @@ export class SearchCandidatesComponent implements OnInit {
     let searchParams = params.toLowerCase().replace(/ /g, '+');
     if (!searchParams) {
       searchParams = null;
+    } else {
+      this.titleService.setTitle('Kwee - ' + searchParams);
     }
-    this.router.navigate(['/search-candidates'], {queryParams: {name: searchParams}, queryParamsHandling: 'merge'});
+    this.router.navigate(['/search-candidates'], {queryParams: {keywords: searchParams}, queryParamsHandling: 'merge'});
   }
 
   getOrderby(order: string) {
@@ -130,7 +135,7 @@ export class SearchCandidatesComponent implements OnInit {
       this.query = {...this.query, dateBorn: paramDate};
     }
 
-    console.log(this.query);
+    // console.log(this.query);
 
     if (this.query.skills) {
       const skills = [];

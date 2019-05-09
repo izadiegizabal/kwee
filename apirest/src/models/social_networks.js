@@ -23,6 +23,12 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true
         },
 
+        github: {
+            type: DataTypes.STRING(50),
+            field: 'github',
+            allowNull: true
+        },
+
         instagram: {
             type: DataTypes.STRING(50),
             field: 'instagram',

@@ -1,22 +1,22 @@
 <div fxFlex="100%" fxLayout="column">
   <div style="margin: 8px 0 32px 16px">
-    <h2 class="mat-h1">Select the candidate{{(offerState | async).offer.maxApplicants > 1 ? 's' : ''}} that
-      suit{{(offerState | async).offer.maxApplicants < 2 ? 's' : ''}} most the job</h2>
+    <h2 class="mat-h1">Selection process for <span>{{offer ? offer.title : ''}}</span></h2>
   </div>
-  <mat-sidenav-container
-    fxLayout="column">
+  <mat-sidenav-container>
 
-    <mat-sidenav-content
-      fxLayout="column"
-      fxLayoutAlign="start center"
-      fxLayoutGap="16px" fxLayoutGap.gt-sm="32px">
+    <mat-sidenav-content fxLayoutAlign="center">
 
-      <div [ngClass]="{'hide': showStepper}" fxLayout="row" fxLayoutAlign="center center" fxFlex="100%">
+      <div [ngClass]="{'hide': showStepper}" fxFlex="100%" fxLayout="row" fxLayoutAlign="center center">
         <mat-spinner></mat-spinner>
       </div>
 
-      <mat-horizontal-stepper linear [ngClass]="{'hide': !showStepper}" #stepper>
-        <mat-step [editable]="!firstStepCompletion" [completed]="firstStepOkay">
+      <mat-horizontal-stepper
+        #stepper
+        *ngIf="(offerState | async).offer"
+        [ngClass]="{'hide': !showStepper}"
+        fxFlex="100%" fxFlex.gt-lg="80%"
+        linear>
+        <mat-step [completed]="firstStepOkay" [editable]="!firstStepCompletion">
           <form [formGroup]="selectFormGroup">
             <ng-template matStepLabel>Select your candidates</ng-template>
             <!--<div-->
@@ -38,13 +38,13 @@
 
             <!-- ALL ENROLLED CANDIDATES -->
             <div fxLayout="column">
-              <div fxLayout="column"
-                   *ngIf="
+              <div *ngIf="
                     (manageOfferState | async).selection &&
                     (manageOfferState | async).selection.all &&
                     (manageOfferState | async).selection.all.length === 0 &&
                     (manageOfferState | async).selection.faved &&
-                    (manageOfferState | async).selection.faved.length === 0; else candidates">
+                    (manageOfferState | async).selection.faved.length === 0; else candidates"
+                   fxLayout="column">
                 <div fxLayout="row">
                   <p *ngIf="!firstStepOkay">No candidates have applied the current offer or all of them have refused the
                     selection. Do you want to close the offer?
@@ -59,162 +59,162 @@
                   <p>The following candidates have applied for the offer. You now have to
                     choose {{(offerState | async).offer.maxApplicants}}
                     candidate{{(offerState | async).offer.maxApplicants > 1 ? 's' : ''}}.
-                    You have selected {{currentSelected}} candidates out of {{(offerState | async).offer.maxApplicants}}
+                    You have selected <strong>{{currentSelected}}</strong> candidates out of
+                    <strong>{{(offerState | async).offer.maxApplicants}}</strong>
                     positions.
                   </p>
                 </div>
-                <div
-                  style="margin-top: 36px"
-                  fxLayoutGap="24px"
-                  fxLayoutAlign="center center"
-                  fxLayout="column">
-                  <h2 class="mat-h2">All Candidates</h2>
+                <div fxLayout="row" fxLayout.lt-lg="column" fxLayoutAlign="center" fxLayoutGap="36px"
+                     style="padding-top: 32px">
                   <div
-                    *ngIf="
-                    (manageOfferState | async).selection &&
-                    (manageOfferState | async).selection.all"
-                    fxLayoutGap="24px"
-                    fxLayout="column">
-                    <div *ngIf="(manageOfferState | async).selection.all.length > 0; else noAll"
-                         fxLayoutGap="24px"
-                         fxFlex="100%"
-                         fxLayout="column">
-                      <app-candidate-preview-card
-                        selectionMode="true"
-                        (changeFaved)='isFaved($event, user)'
-                        (changeSelected)="isSelected($event, user)"
-                        (changeRejected)="isRejected($event, user)"
-                        *ngFor="let user of (manageOfferState | async).selection.all;" [user]="user">
-                      </app-candidate-preview-card>
-                    </div>
-                    <ng-template #noAll>
-                      <p>You have faved all the available candidates.</p>
-                    </ng-template>
-                  </div>
-                </div>
-                <div
-                  style="margin-top: 36px"
-                  fxLayoutGap="24px"
-                  fxLayoutAlign="center center"
-                  fxLayout="column">
-                  <h2 class="mat-h2">Favourites</h2>
-                  <div
-                    *ngIf="
+                    fxFlex="50"
+                    fxFlex.lt-lg="100"
+                    fxFlexOrder="2"
+                    fxFlexOrder.lt-lg="1"
+                    fxLayout="column"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="24px">
+                    <h2 class="mat-h2">Favourites</h2>
+                    <div
+                      *ngIf="
                     (manageOfferState | async).selection &&
                     (manageOfferState | async).selection.faved"
-                    fxLayoutGap="24px"
-                    fxLayout="column">
-                    <div *ngIf="(manageOfferState | async).selection.faved.length > 0; else selectFavs"
-                         fxLayoutGap="24px"
-                         fxLayout="column">
-                      <app-candidate-preview-card
-                        selectionMode="true"
-                        (changeFaved)='isFaved($event, user)'
-                        (changeSelected)="isSelected($event, user)"
-                        (changeRejected)="isRejected($event, user)"
-                        *ngFor="let user of (manageOfferState | async).selection.faved;" [user]="user">
-                      </app-candidate-preview-card>
+                      fxLayout="column"
+                      fxLayoutGap="24px">
+                      <div *ngIf="(manageOfferState | async).selection.faved.length > 0; else selectFavs"
+                           fxLayout="column"
+                           fxLayoutGap="24px">
+                        <app-candidate-preview-card
+                          (changeFaved)='isFaved($event, user)'
+                          (changeRejected)="isRejected($event, user)"
+                          (changeSelected)="isSelected($event, user)"
+                          *ngFor="let user of (manageOfferState | async).selection.faved;"
+                          [user]="user" selectionMode="true">
+                        </app-candidate-preview-card>
+                      </div>
+                      <ng-template #selectFavs>
+                        <p>You can add Favourite applications so that it's easier to go through them.</p>
+                      </ng-template>
                     </div>
-                    <ng-template #selectFavs>
-                      <p>You can add Favourite applications so that it's easier to go through them.</p>
-                    </ng-template>
+                  </div>
+                  <div
+                    fxFlex="50"
+                    fxFlex.lt-lg="100"
+                    fxFlexOrder="1"
+                    fxFlexOrder.lt-lg="2"
+                    fxLayout="column"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="24px">
+                    <h2 class="mat-h2">All Candidates</h2>
+                    <div
+                      *ngIf="
+                    (manageOfferState | async).selection &&
+                    (manageOfferState | async).selection.all"
+                      fxLayout="column"
+                      fxLayoutGap="24px">
+                      <div *ngIf="(manageOfferState | async).selection.all.length > 0; else noAll"
+                           fxFlex="100%"
+                           fxLayout="column"
+                           fxLayoutGap="24px">
+                        <app-candidate-preview-card
+                          (changeFaved)='isFaved($event, user)'
+                          (changeRejected)="isRejected($event, user)"
+                          (changeSelected)="isSelected($event, user)"
+                          *ngFor="let user of (manageOfferState | async).selection.all;"
+                          [user]="user" selectionMode="true">
+                        </app-candidate-preview-card>
+                      </div>
+                      <ng-template #noAll>
+                        <p>You have faved all the available candidates.</p>
+                      </ng-template>
+                    </div>
                   </div>
                 </div>
               </ng-template>
             </div>
-            <div fxLayoutAlign="end end">
-              <button mat-raised-button
-                      color="primary"
-                      (click)="closeSelectionProcess()"
+            <div fxLayoutAlign="end end" style="margin-top: 16px">
+              <button (click)="closeSelectionProcess()"
                       *ngIf="
                     !firstStepOkay &&
                     (manageOfferState | async).selection &&
                     (manageOfferState | async).selection.all &&
                     (manageOfferState | async).selection.all.length === 0 &&
                     (manageOfferState | async).selection.faved &&
-                    (manageOfferState | async).selection.faved.length === 0">
+                    (manageOfferState | async).selection.faved.length === 0"
+                      color="primary"
+                      mat-raised-button>
                 Close Offer
               </button>
-              <button mat-button matStepperNext [disabled]="!firstStepOkay">Next</button>
+              <button [disabled]="!firstStepOkay" color="accent" mat-button matStepperNext>Next</button>
             </div>
           </form>
         </mat-step>
-        <mat-step [editable]="!secondStepCompletion" [completed]="secondStepOkay">
-          <form [formGroup]="waitFormGroup">
+        <mat-step [completed]="secondStepOkay" [editable]="!secondStepCompletion">
+          <form [formGroup]="waitFormGroup" fxLayout="column" fxLayoutGap="16px">
             <ng-template matStepLabel>Wait for their acceptance</ng-template>
-            <p>Here you can see the state of all the selections. If there are spots free, you can go to the previous
-              step to select more.</p>
-            <div
-              style="margin-top: 36px"
-              fxLayoutGap="24px"
-              fxLayoutAlign="center center"
-              fxLayout="column">
+            <div fxFlex="100%" fxLayout="column">
+              <p>Here you can see the state of all the selections. If there are spots free, you can go to the previous
+                step to select more.</p>
               <div
                 *ngIf="
                     (manageOfferState | async).selection &&
                     (manageOfferState | async).selection.selected &&
                     (manageOfferState | async).selection.selected.length > 0"
+                fxLayout="column"
                 fxLayoutGap="24px"
-                fxLayout="column">
+                style="margin-top: 24px; width: 100%">
                 <h2 class="mat-h2">Selected</h2>
                 <app-candidate-preview-card
                   (changeRejected)="isRejected($event, user)"
+                  *ngFor="let user of (manageOfferState | async).selection.selected;"
                   [applicationStatus]="user.applicationStatus"
-                  *ngFor="let user of (manageOfferState | async).selection.selected;" [user]="user">
+                  [user]="user" fxLayoutAlign="center center">
                 </app-candidate-preview-card>
               </div>
-            </div>
-            <div
-              style="margin-top: 36px"
-              fxLayoutGap="24px"
-              fxLayoutAlign="center center"
-              fxLayout="column">
               <div
                 *ngIf="
                     (manageOfferState | async).selection &&
                     (manageOfferState | async).selection.accepted &&
                     (manageOfferState | async).selection.accepted.length > 0"
+                fxLayout="column"
                 fxLayoutGap="24px"
-                fxLayout="column">
+                style="margin-top: 36px">
                 <h2 class="mat-h2">Accepted</h2>
                 <app-candidate-preview-card
+                  *ngFor="let user of (manageOfferState | async).selection.accepted;"
                   [applicationStatus]="user.applicationStatus"
-                  *ngFor="let user of (manageOfferState | async).selection.accepted;" [user]="user">
+                  [user]="user" fxLayoutAlign="center center">
                 </app-candidate-preview-card>
               </div>
-            </div>
-            <div
-              style="margin-top: 36px"
-              fxLayoutGap="24px"
-              fxLayoutAlign="center center"
-              fxLayout="column">
               <div
                 *ngIf="
                     (manageOfferState | async).selection &&
                     (manageOfferState | async).selection.refused &&
                     (manageOfferState | async).selection.refused.length > 0"
+                fxLayout="column"
                 fxLayoutGap="24px"
-                fxLayout="column">
+                style="margin-top: 36px">
                 <h2 class="mat-h2">Refused</h2>
                 <app-candidate-preview-card
+                  *ngFor="let user of (manageOfferState | async).selection.refused;"
                   [applicationStatus]="user.applicationStatus"
-                  *ngFor="let user of (manageOfferState | async).selection.refused;" [user]="user">
+                  [user]="user" fxLayoutAlign="center center">
                 </app-candidate-preview-card>
               </div>
             </div>
-            <div fxLayoutAlign="end end">
-              <button mat-button matStepperPrevious [disabled]="firstStepCompletion">Back</button>
-              <button mat-button matStepperNext [disabled]="!secondStepOkay">Next</button>
+            <div fxFlex="100%" fxLayout="row" fxLayoutAlign="end end">
+              <button [disabled]="firstStepCompletion" mat-button matStepperPrevious>Back</button>
+              <button [disabled]="!secondStepOkay" color="accent" mat-button matStepperNext>Next</button>
             </div>
           </form>
         </mat-step>
-        <mat-step editable="false" [completed]="secondStepCompletion">
+        <mat-step [completed]="secondStepCompletion" editable="false">
           <ng-template matStepLabel>Done!</ng-template>
           <div
-            style="margin-top: 36px"
-            fxLayoutGap="24px"
+            fxLayout="column"
             fxLayoutAlign="center center"
-            fxLayout="column">
+            fxLayoutGap="24px"
+            style="margin-top: 36px">
             <p>
               Congratulations! You've finally reached the end of the selection process!
               You've ended up choosing the following candidate(s)!
@@ -224,19 +224,19 @@
                     (manageOfferState | async).selection &&
                     (manageOfferState | async).selection.accepted &&
                     (manageOfferState | async).selection.accepted.length > 0"
-              fxLayoutGap="24px"
-              fxLayout="column">
+              fxLayout="column"
+              fxLayoutGap="24px">
               <app-candidate-preview-card
-                [applicationStatus]="user.applicationStatus"
-                *ngFor="let user of (manageOfferState | async).selection.accepted;" [user]="user">
+                *ngFor="let user of (manageOfferState | async).selection.accepted;"
+                [applicationStatus]="user.applicationStatus" [user]="user">
               </app-candidate-preview-card>
             </div>
           </div>
           <br>
           <br>
           <div fxLayoutAlign="end end">
-            <button mat-button matStepperPrevious [disabled]="secondStepCompletion">Back</button>
-            <button mat-raised-button color="primary" (click)="closeSelectionProcess()">Close Offer</button>
+            <button [disabled]="secondStepCompletion" mat-button matStepperPrevious>Back</button>
+            <button (click)="closeSelectionProcess()" color="primary" mat-raised-button>Close Offer</button>
           </div>
         </mat-step>
       </mat-horizontal-stepper>

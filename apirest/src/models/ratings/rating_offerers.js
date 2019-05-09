@@ -7,6 +7,12 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             allowNull: false
         },
+        
+        userRated: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            allowNull: false
+        },
 
         salary: {
             type: DataTypes.INTEGER,
@@ -57,6 +63,16 @@ module.exports = (sequelize, DataTypes) => {
                 isInt: true
             }
         },
+
+        satisfaction: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            validate: {
+                max: 5,
+                min: 0,
+                isInt: true
+            }
+        }
 
     }, {
         paranoid: true

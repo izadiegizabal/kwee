@@ -1,5 +1,5 @@
-const { checkToken, checkAdmin } = require('../../middlewares/authentication');
-const { logger } = require('../../shared/functions');
+const {checkAdmin} = require('../../middlewares/authentication');
+const {logger, tokenId} = require('../../shared/functions');
 
 // =======================================
 // ======== CRUD invoices =========
@@ -7,76 +7,124 @@ const { logger } = require('../../shared/functions');
 
 module.exports = (app, db) => {
 
-    // GET all invoices
-    app.get('/invoices', checkToken, async(req, res, next) => {
-        try {
-            await logger.saveLog('GET', 'invoices', null, res);
-
-            return res.status(200).json({
-                ok: true,
-                invoices: await db.invoices.findAll()
-            });
-        } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
-        }
+    // GET all invoices of offerer
+    app.get('/invoices/offerer/:id([0-9]+)', async (req, res, next) => {
+        getUserInvoices('offerers', req, res, next);
     });
-
-    // GET invoices by page limit to 10 invoices/page
-    app.get('/invoices/:page([0-9]+)/:limit([0-9]+)', async(req, res, next) => {
-        let limit = Number(req.params.limit);
-        let page = Number(req.params.page);
-
-        try {
-            await logger.saveLog('GET', `invoices/${ page }`, null, res);
-
-            let count = await db.invoices.findAndCountAll();
-            let pages = Math.ceil(count.count / limit);
-            offset = limit * (page - 1);
-
-            if (page > pages) {
-                return res.status(200).json({
-                    ok: true,
-                    message: `It doesn't exist ${ page } pages`
-                })
-            }
-
-            return res.status(200).json({
-                ok: true,
-                message: `${ limit } invoices of page ${ page } of ${ pages } pages`,
-                data: await db.invoices.findAll({
-                    limit,
-                    offset,
-                    $sort: { id: 1 }
-                }),
-                total: count.count
-            });
-        } catch (err) {
-            next({ type: 'error', error: err });
-        }
+    
+    // GET all invoices of applicant
+    app.get('/invoices/applicant/:id([0-9]+)', async (req, res, next) => {
+        getUserInvoices('applicants', req, res, next);
     });
 
     // GET one invoice by id
-    app.get('/invoice/:id([0-9]+)', checkToken, async(req, res, next) => {
-        const id = req.params.id;
-
-        try {
-            res.status(200).json({
-                ok: true,
-                invoice: await db.invoices.findOne({ where: { id } })
-            });
-
-        } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
-        }
+    app.get('/invoice/:id([0-9]+)', async (req, res, next) => {
+        getInvoiceById(req, res, next);
     });
 
     // POST single invoice
-    app.post('/invoice', [checkToken, checkAdmin], async(req, res, next) => {
+    app.post('/invoice', async (req, res, next) => {
+        postInvoice( req, res, next );
+    });
+
+    // PUT single invoice
+    app.put('/invoice/:id([0-9]+)', checkAdmin, async (req, res, next) => {
+        updateInvoice( req, res, next );
+    });
+
+    // DELETE single invoice
+    app.delete('/invoice/:id([0-9]+)', checkAdmin, async (req, res, next) => {
+        deleteInvoice( req, res, next );
+    });
+    
+    async function getUserInvoices( table, req, res, next ) {
+        const id = req.params.id;
+        let herency = {};
+        
+
+        try {
+            switch ( table ) {
+                case 'offerers': herency = {
+                                        model: db.offerers,
+                                        as: 'offerer'
+                                    }; 
+                                break;
+                case 'applicants': herency = {
+                                        model: db.applicants,
+                                        as: 'applicant'
+                                    };
+                                break;
+
+            }
+
+            await logger.saveLog('GET', 'invoices', null, res);
+            
+            let attr = {
+                include: [{
+                    model: db.invoices,
+                    where: { fk_user: id }
+                }, herency
+                ],
+                attributes: {
+                    exclude: ["password"]
+                }
+            }
+            if ( req.query.limit && req.query.page ) {
+                var limit = Number(req.query.limit);
+                var page = Number(req.query.page)
+                var offset = limit * (page - 1)
+                attr.limit = limit;
+                attr.offset = offset;
+            }
+
+            let invoices = await db.users.findAll(attr);
+
+            if ( invoices.length > 0 ) {
+                return res.status(200).json({
+                    ok: true,
+                    message: 'Listing all invoices',
+                    data: invoices
+                });
+            } else {
+                return res.status(200).json({
+                    ok: true,
+                    message: 'No invoices'
+                });
+            }
+        } catch (err) {
+            next({type: 'error', error: err.message});
+        }
+    }
+
+    async function getInvoiceById( req, res, next ) {
+        const id = req.params.id;
+
+        try {
+            let invoice = await db.invoices.findOne({ where: { id }});
+
+            return res.status(200).json({
+                ok: true,
+                message: 'Showing invoice',
+                date: invoice
+            });
+
+        } catch (err) {
+            return next({type: 'error', error: 'Error getting data'});
+        }
+    }
+
+    async function postInvoice( req, res, next ) {
         const body = req.body;
 
         try {
+            let id = tokenId.getTokenId(req.get('token'), res);
+            let user = await db.users.findOne({where: {id}});
+
             let invoice = await db.invoices.create({
-                fk_application: body.fk_application,
+                fk_user: id,
+                userName: user.name,
+                product: body.product,
+                price: body.price
             });
 
             if (invoice) {
@@ -87,49 +135,40 @@ module.exports = (app, db) => {
             }
 
         } catch (err) {
-            next({ type: 'error', error: err.message });
-        };
+            next({type: 'error', error: err.message});
+        }
+    }
 
-    });
-
-    // PUT single invoice
-    app.put('/invoice/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
+    async function updateInvoice( req, res, next ) {
         const id = req.params.id;
         const updates = req.body;
 
         try {
-            res.status(200).json({
-                ok: true,
-                invoice: await db.invoices.update(updates, {
-                    where: { id }
-                })
+            await db.invoices.update(updates, {
+                where: {id}
             });
-            // json
-            // invoice: [1] -> Updated
-            // invoice: [0] -> Not updated
-            // empty body will change 'updateAt'
+            return res.status(200).json({
+                ok: true,
+                message: 'updated'
+            });
         } catch (err) {
-            next({ type: 'error', error: err.errors[0].message });
+            return next({type: 'error', error: err.errors[0].message});
         }
+    }
 
-    });
-
-    // DELETE single invoice
-    app.delete('/invoice/:id([0-9]+)', [checkToken, checkAdmin], async(req, res, next) => {
+    async function deleteInvoice( req, res, next ) {
         const id = req.params.id;
 
         try {
-            res.json({
+            return res.json({
                 ok: true,
                 invoice: await db.invoices.destroy({
-                    where: { id: id }
+                    where: {id: id}
                 })
             });
-            // Respuestas en json
-            // invoice: 1 -> Deleted
-            // invoice: 0 -> User don't exists
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            next({type: 'error', error: 'Error getting data'});
         }
-    });
-}
+    }
+};
+

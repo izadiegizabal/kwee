@@ -63,10 +63,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false
-
         },
-
-        /////////////////
 
         img: {
             type: DataTypes.STRING,
@@ -79,7 +76,6 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: "Here you have a place to define yourself"
         },
-
 
         // Last access not saved by query (¿¿auto updated??)
         lastAccess: {
@@ -98,7 +94,7 @@ module.exports = (sequelize, DataTypes) => {
         index: {
             type: DataTypes.INTEGER,
             allowNull: true,
-            defaultValue: 50,
+            defaultValue: 15,
             validate: {
                 isInt: {
                     args: true,
@@ -119,34 +115,22 @@ module.exports = (sequelize, DataTypes) => {
             }
         },
 
-        twitter: {
-            type: DataTypes.STRING,
-            allowNull: true,
-            defaultValue: null,
-        },
-
-        telegram: {
-            type: DataTypes.STRING,
-            allowNull: true,
-            defaultValue: null,
-        },
-
         lat: {
-            type: DataTypes.DECIMAL(9,6),
+            type: DataTypes.DECIMAL(9, 6),
             allowNull: true,
             defaultValue: null,
         },
 
         lon: {
-            type: DataTypes.DECIMAL(9,6),
+            type: DataTypes.DECIMAL(9, 6),
             allowNull: true,
             defaultValue: null,
-        }
-
+        },
         
-
-
-
+        lastPayment: {
+            type: DataTypes.DATE,
+            defaultValue: null
+        }
 
     }, {
         paranoid: true

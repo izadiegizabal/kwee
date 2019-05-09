@@ -1,8 +1,8 @@
-const { tokenId, logger, pagination, prepareOffersToShow, saveLogES } = require('../../shared/functions');
-const { checkToken } = require('../../middlewares/authentication');
+const {tokenId, logger, pagination, buildOffersToShow, prepareOffersToShow, saveLogES, createNotification} = require('../../shared/functions');
+const {checkAdmin} = require('../../middlewares/authentication');
 const elastic = require('../../database/elasticsearch');
-const env =     require('../../tools/constants');
-const axios =   require('axios')
+const env = require('../../tools/constants');
+const axios = require('axios');
 
 
 // ============================
@@ -11,96 +11,83 @@ const axios =   require('axios')
 
 module.exports = (app, db) => {
 
-    app.get('/offers/search', async(req, res, next) => {
+    app.post('/offers/search', async (req, res, next) => {
 
         try {
-            saveLogES('GET', 'offers/search');
+            saveLogES('POST', 'offers/search', 'Visitor');
             // if req.query.keywords search OR (search)
             // rest of req.query.params search AND (filter)
             let query = req.query;
             let page = Number(query.page);
             let limit = Number(query.limit);
-            let keywords = query.keywords;
-            let salaryAmount_gte = query.salaryAmount_gte;
-            let salaryAmount_gt = query.salaryAmount_gt;
-            let salaryAmount_lte = query.salaryAmount_lte;
-            let salaryAmount_lt = query.salaryAmount_lt;
-            let dateStart_gte = query.dateStart_gte;
-            let dateStart_gt = query.dateStart_gt;
-            let dateStart_lte = query.dateStart_lte;
-            let dateStart_lt = query.dateStart_lt;
-            let dateEnd_gte = query.dateEnd_gte;
-            let dateEnd_gt = query.dateEnd_gt;
-            let dateEnd_lte = query.dateEnd_lte;
-            let dateEnd_lt = query.dateEnd_lt;
-            let datePublished_gte = query.datePublished_gte;
-            let datePublished_gt = query.datePublished_gt;
-            let datePublished_lte = query.datePublished_lte;
-            let datePublished_lt = query.datePublished_lt;
+            let body = req.body;
+            let must = [];
             let sort = 'offererIndex';
+            let from;
             if (query.sort) sort = query.sort;
-            delete query.page;
-            delete query.limit;
-            delete query.keywords;
-            
-            if (Object.keys(query).length === 0 && query.constructor === Object && !keywords){
-                res.status(200).json({
+            if (page > 0 && limit > 0) from = (page - 1) * limit;
+
+            // If salaryAmount, dateStart, dateEnd or datePublished in query, add range to must filter
+            buildSalaryRange(must, body.salaryAmount);
+            buildDateStartRange(must, body.dateStart);
+            buildDateEndRange(must, body.dateEnd);
+            buildDatePublishedRange(must, body.datePublished);
+            buildOffererIndexRange(must, body.offererIndex);
+
+            if (body.title) must.push({multi_match: {query: body.title, type: "phrase_prefix", fields: ["title"]}});
+            if (body.status) must.push({multi_match: {query: body.status, fields: ["status"]}});
+            if (body.location) must.push({
+                multi_match: {
+                    query: body.location,
+                    type: "phrase_prefix",
+                    fields: ["location"]
+                }
+            });
+            if (body.skills) must.push({multi_match: {query: body.skills, type: "phrase_prefix", fields: ["skills"]}});
+            if (body.offererName) must.push({
+                multi_match: {
+                    query: body.offererName,
+                    type: "phrase_prefix",
+                    fields: ["offererName"]
+                }
+            });
+            if (body.workLocation) must.push({multi_match: {query: body.workLocation, fields: ["workLocation"]}});
+            if (body.seniority) must.push({multi_match: {query: body.seniority, fields: ["seniority"]}});
+            if (body.contractType) must.push({multi_match: {query: body.contractType, fields: ["contractType"]}});
+            if (body.description) must.push({multi_match: {query: body.description, fields: ["description"]}});
+            if (body.keywords) must.push({
+                multi_match: {
+                    query: body.keywords,
+                    type: "phrase_prefix",
+                    fields:
+                        [
+                            "title",
+                            "location",
+                            "offererName",
+                            "seniority",
+                            "contractType",
+                            "salaryCurrency",
+                            "description",
+                            "skills",
+                            "workLocation",
+                        ]
+                }
+            });
+
+            if (must.length == 0) {
+                return res.status(200).json({
                     ok: true,
                     message: 'You must search something'
                 })
             } else {
-                prepareQuery(query);
-
-                let must = [];
-                let should = [];
-                let filter = [];
-
-                // Getting all filters in query
-                for(var prop in query) {
-                    if(query.hasOwnProperty(prop)){
-                        filter.push(
-                            { terms: {[prop]: query[prop]} }
-                        );
-                    }
-                }
-
-                // Casting string to array, necessary to work
-                for (let i = 0; i < filter.length; i++) {
-                    for(var val in filter[i].terms) {
-                        if(filter[i].terms.hasOwnProperty(val)){
-                            if ( typeof(filter[i].terms[val]) != 'object' ) {
-                                filter[i].terms[val] = Array(filter[i].terms[val]);
-                            }
-                        }
-                    }
-                }
-
-                // Must filter only with content when is filtered some value not as keyword
-                if ( filter.length > 0 ) {
-                    must.push(filter);
-                }
-
-                // should filter only with content when is searched some value as keyword
-                if ( keywords ){
-                    should.push({query_string: {query: keywords}});
-                }
-
-                // If salaryAmount, dateStart, dateEnd or datePublished in query, add range to must filter
-                buildSalaryRange(must, salaryAmount_gte, salaryAmount_gt, salaryAmount_lte, salaryAmount_lt);
-                buildDateStartRange(must, dateStart_gte, dateStart_gt, dateStart_lte, dateStart_lt);
-                buildDateEndRange(must, dateEnd_gte, dateEnd_gt, dateEnd_lte, dateEnd_lt);
-                buildDatePublishedRange(must, datePublished_gte, datePublished_gt, datePublished_lte, datePublished_lt);
-
-
-                var searchParams = {
-                    index: 'offers',
-                    from: (page - 1) * limit,
-                    size: limit,
+                let searchParams = {
+                    index: "offers",
+                    from: from ? from : null,
+                    size: limit ? limit : null,
                     body: {
                         query: {
                             bool: {
-                                must,
-                                should
+                                must
                             }
                         },
                         sort
@@ -110,14 +97,20 @@ module.exports = (app, db) => {
                 await elastic.search(searchParams, async function (err, response) {
                     if (err) throw err;
 
-                    let users = await db.users.findAll();
+                    let users = await db.users.findAll({
+                        include: [{
+                            model: db.offerers,
+                            as: 'offerer'
+                            
+                        }]
+                    });
                     let offersToShow = [];
 
-                    if ( response.hits.total != 0 ) {
-                        
+                    if (response.hits.total != 0) {
+
 
                         let offers = response.hits.hits;
-                        
+
                         buildOffersToShow(users, offersToShow, offers);
 
                         return res.json({
@@ -138,7 +131,7 @@ module.exports = (app, db) => {
                                 throw error;
                             }
 
-                            if ( response2.hits.total > 0 ) {
+                            if (response2.hits.total > 0) {
                                 let offers = response2.hits.hits;
                                 buildOffersToShow(users, offersToShow, offers);
                                 return res.json({
@@ -161,15 +154,15 @@ module.exports = (app, db) => {
                 });
             }
         } catch (error) {
-            return next({ type: 'error', error });
+            return next({type: 'error', error});
         }
     });
 
     // GET all offers
-    app.get('/offers', async(req, res, next) => {
+    app.get('/offers', async (req, res, next) => {
         try {
             await logger.saveLog('GET', 'offers', null, res);
-            saveLogES('GET', 'offers');
+            saveLogES('GET', 'offers', 'Visitor');
 
             var offers;
 
@@ -183,19 +176,25 @@ module.exports = (app, db) => {
                 next
             );
 
-            if ( output.data ) {
+            if (output.data) {
                 offers = output.data;
-                users = await db.users.findAll();
-                
+                users = await db.users.findAll({
+                    include: [{
+                        model: db.offerers,
+                        as: 'offerer'
+                        
+                    }]
+                });
+
                 var offersShow = [];
-                
-                for (var offer in offers) {
+
+                for (let offer in offers) {
                     let offersAux = [],
-                    offersToShowAux = [];
+                        offersToShowAux = [];
                     offersAux.push(offers[offer]);
                     offersShow.push(prepareOffersToShow(offersAux, offersToShowAux, users.find(element => offers[offer]['fk_offerer'] == element.id))[0]);
                 }
-                
+
                 return res.status(200).json({
                     ok: true,
                     message: output.message,
@@ -205,332 +204,533 @@ module.exports = (app, db) => {
                     pages: Math.ceil(output.count / req.query.limit)
                 });
             }
-   
+
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            next({type: 'error', error: 'Error getting data'});
         }
     });
 
     // GET one offer by id
-    app.get('/offer/:id([0-9]+)', async(req, res, next) => {
+    app.get('/offer/:id([0-9]+)', async (req, res, next) => {
         const id = req.params.id;
 
         try {
-            saveLogES('GET', 'offer/id');
+            saveLogES('GET', 'offer/id', 'Visitor');
             offer = await db.offers.findOne({
-                where: { id }
+                where: {id}
             });
 
-            user = await db.users.findOne({
-                where: { id: offer['fk_offerer'] }
-            });
+            if (offer) {
+                let users = await db.users.findAll({
+                    include: [{
+                        model: db.offerers,
+                        as: 'offerer'
+                        
+                    }]
+                });
+                let user = users.find(usu => usu.id === offer.fk_offerer);
 
-            let offers = [],
-                offersShow = [];
+                let offers = [],
+                    offersShow = [];
 
-            offers.push(offer);
-            
-            prepareOffersToShow(offers, offersShow, user);
+                offers.push(offer);
 
-            return res.status(200).json({
-                ok: true,
-                data: offersShow[0]
-            });
+                prepareOffersToShow(offers, offersShow, user);
+
+                let applicants = await offer.getApplicants();
+                if (applicants.length > 0) {
+                    let applications = await db.applications.findAll({where: {fk_offer: id}});
+                    applicants.forEach(applicant => {
+                        let application = applications.find(apli => apli.fk_applicant == applicant.userId);
+                        let applicantUser = users.find(usu => usu.id === applicant.userId);
+                        let applicantShow = {};
+                        applicantShow.applicationId = application.id;
+                        applicantShow.applicationStatus = application.status;
+                        applicantShow.aHasRated = application.aHasRated;
+                        applicantShow.aHasRatedDate = application.aHasRatedDate;
+                        applicantShow.applicantId = applicantUser.id;
+                        applicantShow.applicantName = applicantUser.name;
+                        applicantShow.applicantStatus = applicantUser.status;
+
+                        offersShow[0].applications.push(applicantShow);
+
+                    });
+                } else {
+                    offersShow[0].applications = null;
+                }
+
+                return res.status(200).json({
+                    ok: true,
+                    message: 'Listing..',
+                    data: offersShow[0]
+                });
+            } else {
+                return res.status(400).json({
+                    ok: false,
+                    message: `Offer does not exists`
+                });
+            }
 
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            return next({type: 'error', error: 'Error getting data'});
         }
     });
-    
-    // POST single offer
-    app.post('/offer', async(req, res, next) => {
 
-        let body = req.body
+    app.get('/offer/:id([0-9]+)/applications', async (req, res, next) => {
+        const id = req.params.id;
+        let status = req.query.status;
+        let page = Number(req.query.page);
+        let limit = Number(req.query.limit);
+        let pages = 0;
+        try {
+            saveLogES('GET', `offer/${id}/applications`, 'Visitor');
+            let applications = await db.applications.findAll({where: {fk_offer: id}});
+
+            if (applications.length > 0) {
+                let users = await db.users.findAll();
+                let offers = await db.offers.findAll();
+                let applicants = await db.applicants.findAll();
+                var applicantsToShow = [];
+
+                if (status) applications = applications.filter(element => element.status == status);
+
+                applications.forEach(application => {
+                    applicants.forEach(applicant => {
+                        if (application.fk_applicant === applicant.userId) {
+                            let user = users.find(usu => applicant.userId == usu.id);
+                            let offer = offers.find(offer => application.fk_offer == offer.id);
+                            let app = {
+                                applicantId: user.id,
+                                applicationId: application.id,
+                                offerId: offer.id,
+                                applicantStatus: user.status,
+                                applicationStatus: application.status,
+                                offerStatus: offer.status,
+                                index: user.index,
+                                name: user.name,
+                                email: user.email,
+                                city: applicant.city,
+                                dateBorn: applicant.dateBorn,
+                                premium: applicant.premium,
+                                rol: applicant.rol,
+                                lastAccess: user.lastAccess,
+                                createdAt: user.createdAt,
+                                img: user.img,
+                                bio: user.bio,
+                            };
+                            applicantsToShow.push(app);
+                        }
+                    });
+                });
+
+                if (applicantsToShow.length > 0) {
+                    let total = applicantsToShow.length;
+                    let msg = 'Listing applicants applicating to this offer';
+                    if (page && limit) {
+                        pages = Math.ceil(applicantsToShow.length / limit);
+                        offset = Number(limit * (page - 1));
+                        if (page > pages) {
+                            return res.status(200).json({
+                                ok: true,
+                                message: `It doesn't exist ${page} pages`
+                            })
+                        }
+                        let applicantsAux = [];
+                        let until;
+                        let j = 0;
+                        page < pages ? until = limit + offset : until = applicantsToShow.length;
+                        for (let i = offset; i < until; i++) {
+                            applicantsAux[j] = applicantsToShow[i];
+                            j++;
+                        }
+                        applicantsToShow = applicantsAux;
+                        if (applicantsToShow.length < limit) limit = applicantsToShow.length;
+                        msg = `Listing ${limit} applicants applicating to this offer. Page ${page} of ${pages}.`
+                    }
+                    return res.json({
+                        ok: true,
+                        message: msg,
+                        data: applicantsToShow,
+                        total
+                    });
+                } else {
+                    return res.json({
+                        ok: true,
+                        message: 'There are no applications to this offer with this status'
+                    });
+                }
+            } else {
+                return res.json({
+                    ok: true,
+                    message: 'There are no applications to this offer'
+                });
+            }
+
+        } catch (err) {
+            return next({type: 'error', error: err.message});
+        }
+    });
+
+    // POST single offer
+    app.post('/offer', async (req, res, next) => {
+
+        let body = req.body;
 
         try {
-            saveLogES('POST', 'offer');
             let id = tokenId.getTokenId(req.get('token'));
             body.fk_offerer = id;
 
-            await db.offers.create(body)
-            .then(async result => {
-                if ( result ) {
-
-                    let offerer = await db.users.findOne({ where: { id }});
-
-                    body.offererIndex = offerer.index;
-                    body.offererName = offerer.name;
-
-                    elastic.index({
-                        index: 'offers',
-                        id: result.id,
-                        type: 'offer',
-                        body
-                    }, function (err, resp, status) {
-                        if ( err ) {
-                            console.log('ERROR:', err.message);
-                        }
-
-                        return res.status(201).json({
-                            ok: true,
-                            message: 'Offer created',
-                            data: {
-                                id: result.id,
-                                fk_offerer: id,
-                                offererIndex: body.offererIndex,
-                                offererName: body.offererName,
-                                status: result.status,
-                                title: result.title,
-                                description: result.description,
-                                datePublished: result.datePublished,
-                                dateStart: result.dateStart,
-                                dateEnd: result.dateEnd,
-                                location: result.location,
-                                salaryAmount: result.salaryAmount,
-                                salaryFrequency: result.salaryFrequency,
-                                salaryCurrency: result.salaryCurrency,
-                                workLocation: result.workLocation,
-                                seniority: result.seniority,
-                                responsabilities: result.responsabilities,
-                                requeriments: result.requeriments,
-                                skills: body.skills,
-                                maxApplicants: body.maxApplicants,
-                                currentApplications: body.currentApplications,
-                                duration: body.duration,
-                                durationUnit: body.durationUnit,
-                                contractType: body.contractType,
-                                isIndefinite: body.isIndefinite
-                            }
-                        });
-                    });
+            let user = await db.users.findOne({where: { id }});
+            let offerer = await db.offerers.findOne({where: { userId: id }});
+            let offers = await offerer.getOffers();
+            
+            if ( offerer ) {
+                if ( offerer.premium == 0 ) {
+                    if ( ( offers && offers.length < 3 ) || !offers ) {
+                        createOffer( user, body, res, next );
+                    } else {
+                        createInvoice( user );
+                        createOffer( user, body, res, next );
+                    }
                 } else {
-                    return res.status(400).json({
-                        ok: false,
-                        message: `No created`,
-                    });
+                    createOffer( user, body, res, next );
                 }
-            });
-
+                
+            } else {
+                return next({type: 'error', error: 'Only offerers may create offers'});
+            }
         } catch (err) {
-            return next({ type: 'error', error: err.message });
+            return next({type: 'error', error: err.message});
         }
 
     });
 
-    // PUT single offer
-    app.put('/offer/:id([0-9]+)', async(req, res, next) => {
+    // PUT single offer by offerer creator
+    app.put('/offer/:id([0-9]+)', async (req, res, next) => {
+        updateOffer(req, res, next);
+    });
+
+    // PUT single offer by admin
+    app.put('/offer/admin/:id([0-9]+)', checkAdmin, async (req, res, next) => {
+        updateOffer(req, res, next);
+    });
+
+    // DELETE single offer by themself
+    app.delete('/offer/:id([0-9]+)', async (req, res, next) => {
+        deleteOffer(req, res, next);
+    });
+    
+    // DELETE single offer by admin
+    app.delete('/offer/admin/:id([0-9]+)', checkAdmin, async (req, res, next) => {
+        deleteOffer(req, res, next);
+    });
+
+    async function updateOffer(req, res, next) {
         const id = req.params.id;
         const updates = req.body;
 
         try {
-            let fk_offerer = tokenId.getTokenId(req.get('token'));
-            saveLogES('PUT', 'offer/id');
+            let fk_offerer = tokenId.getTokenId(req.get('token'), res);
 
             let offerToUpdate = await db.offers.findOne({
-                where: {id}
+                where: { id }
             });
-            
-            if ( offerToUpdate ) {
-                await db.offers.update(updates, {
-                        where: { id, fk_offerer }
-                    }).then(result => {
-                        if ( result ) {
-                            axios.post(`http://${ env.ES_URL }/offers/offer/${ id }/_update?pretty=true`, {
-                                doc: updates
-                            }).then((resp) => {
-                                // updated from elasticsearch database too
-                            }).catch((error) => {
-                                console.log(error.message);
-                            });
-                            return res.status(200).json({
-                                ok: true,
-                                message: `Offer ${ id } updated`,
-                            });
+            let user = await db.users.findOne({
+                where: { id: fk_offerer }
+            });
+            saveLogES('PUT', 'offer/id', user.name);
+
+            if (offerToUpdate) {
+                if ( offerToUpdate.fk_offerer == fk_offerer || user.root == 1 ) {
+                    // Checking status to update, if is the same, not necessary to update
+                    // if not and it is status = 1, sending notification that offer is closed
+                    // to applicants that applicated to this offer.
+                    if (updates.status) {
+                        if (offerToUpdate.status == updates.status) {
+                            delete updates.status;
                         } else {
-                            return res.status(400).json({
-                                ok: false,
-                                message: `No updates`,
-                            });
+                            if ( updates.status == 1 ) {
+                                // send mail to all applicants that applicated to this offer
+                                // to advise that the offer is closed
+                                let users = await db.users.findAll();
+                                let applications = await db.applications.findAll({where: {fk_offer: id}});
+                                let applicants = await offerToUpdate.getApplicants();
+                                // applicants.forEach(applicant => { // sólo a las applications con status 5
+                                //     user = users.find(usu => applicant.userId == usu.id);
+                                //     createNotification(db, user.id, fk_offerer, 'offers', id, 'closed', true);
+                                //     sendEmailOfferClosed(user, res, offerToUpdate);
+                                // });
+                                applications.forEach(async application => {
+                                    if (application.status == 0 || application.status == 1 || application.status == 2) {
+                                        await db.applications.update({status: 5}, {
+                                            where: {id: application.id}
+                                        });
+                                        createNotification(db, application.fk_applicant, fk_offerer, 'offers', id, 'closed', true);
+                                    }
+                                });
+                            }
                         }
+                    }
+                    // because Object.keys(new Date()).length === 0;
+                    // we have to do some additional check
+                    if (!(Object.keys(updates).length === 0 && updates.constructor === Object)) {
+                        await db.offers.update(updates, {
+                            where: { id }
+                        }).then(result => {
+                            if (result == 1) {
+                                axios.post(`http://${env.ES_URL}/offers/offer/${id}/_update?pretty=true`, {
+                                    doc: updates
+                                }).then((resp) => {
+                                    // updated from elasticsearch database too
+                                }).catch((error) => {
+                                    console.log(error.message);
+                                });
 
-                    });
+                                return res.status(200).json({
+                                    ok: true,
+                                    message: `Offer ${id} updated`,
+                                });
+                            } else {
+                                return next({type: 'error', error: 'No updates'});
+                            }
+                        });
+                    } else {
+                        return next({type: 'error', error: 'Nothing to update here'});
+                    }
                 } else {
-                    return res.status(200).json({
-                        ok: true,
-                        message: `No offers with this id`,
-                    });
+                    return next({type: 'error', error: 'This offer is not yours'});
                 }
+            } else {
+                return res.status(200).json({
+                    ok: true,
+                    message: `No offers with this id`,
+                });
+            }
         } catch (err) {
-            return next({ type: 'error', error: err.message });
+            return next({type: 'error', error: err.message});
         }
-    });
+    }
 
-    // DELETE single offer
-    app.delete('/offer/:id([0-9]+)', checkToken, async(req, res, next) => {
+    async function deleteOffer( req, res, next ) {
         const id = req.params.id;
 
         try {
             let fk_offerer = tokenId.getTokenId(req.get('token'));
-            saveLogES('DELETE', 'offer/id');
-
-            axios.delete(`http://${ env.ES_URL }/offers/offers/${ id }`)
-                .then((res) => {
-                    // deleted from elasticsearch database too
-            }).catch((error) => {
-                console.error(error)
+            let offerToDelete = await db.offers.findOne({
+                where: { id }
             });
-
-            await db.offers.destroy({
-                where: { id, fk_offerer }
+            let user = await db.users.findOne({
+                where: {id: fk_offerer}
             });
+            saveLogES('DELETE', 'offer/id', user.name);
 
-            return res.json({
-                ok: true,
-                message: 'Offer deleted' 
-            });
+            if ( offerToDelete ) {
+                if ( offerToDelete.fk_offerer == fk_offerer || user.root == 1 ) {
+
+                    axios.delete(`http://${env.ES_URL}/offers/offer/${ id }`)
+                        .then((res) => {
+                            // deleted from elasticsearch database too
+                        }).catch((error) => {
+                        console.error(error)
+                    });
+
+                    await db.offers.destroy({
+                        where: { id }
+                    });
+
+                    return res.json({
+                        ok: true,
+                        message: 'Offer deleted'
+                    });
+
+                } else {
+                    return next({type: 'error', error: 'This offer is not yours'});
+                }
+            } else {
+                return res.status(200).json({
+                    ok: true,
+                    message: `No offers with this id`,
+                });
+            }
+
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            next({type: 'error', error: 'Error getting data'});
         }
-    });
+    }
 
-    function buildSalaryRange (must, salaryAmount_gte, salaryAmount_gt, salaryAmount_lte, salaryAmount_lt) {
-        if ( salaryAmount_gte || salaryAmount_gt || salaryAmount_lte || salaryAmount_lt ) {
+    function buildSalaryRange(must, salaryAmount) {
+        if (salaryAmount) {
+            let range =
+                {
+                    range: {
+                        salaryAmount: {}
+                    }
+                };
 
-            let salaryAmount = {};
+            salaryAmount.gte ? range.range.salaryAmount.gte = salaryAmount.gte : null;
+            salaryAmount.gt ? range.range.salaryAmount.gt = salaryAmount.gt : null;
+            salaryAmount.lte ? range.range.salaryAmount.lte = salaryAmount.lte : null;
+            salaryAmount.lt ? range.range.salaryAmount.lt = salaryAmount.lt : null;
 
-            salaryAmount_gte ? salaryAmount.gte = salaryAmount_gte : null;
-            salaryAmount_gt ? salaryAmount.gt = salaryAmount_gt : null;
-            salaryAmount_lte ? salaryAmount.lte = salaryAmount_lte : null;
-            salaryAmount_lt ? salaryAmount.lt = salaryAmount_lt : null;
-            
-            must.push({
-                range: {
-                    salaryAmount
-                }
-            });
+            must.push(range);
         }
 
         return must;
     }
 
-    function buildDateStartRange (must, dateStart_gte, dateStart_gt, dateStart_lte, dateStart_lt) {
-            
-        if ( dateStart_gte || dateStart_gt || dateStart_lte || dateStart_lt ) {
+    function buildOffererIndexRange(must, offererIndex) {
+        if (offererIndex) {
+            console.log("offererIndex: ", offererIndex);
+            let range =
+                {
+                    range: {
+                        offererIndex: {}
+                    }
+                };
 
-            let dateStart = {};
+            offererIndex.gte ? range.range.offererIndex.gte = offererIndex.gte : null;
+            offererIndex.gt ? range.range.offererIndex.gt = offererIndex.gt : null;
+            offererIndex.lte ? range.range.offererIndex.lte = offererIndex.lte : null;
+            offererIndex.lt ? range.range.offererIndex.lt = offererIndex.lt : null;
 
-            dateStart_gte ? dateStart.gte = dateStart_gte : null;
-            dateStart_gt ? dateStart.gt = dateStart_gt : null;
-            dateStart_lte ? dateStart.lte = dateStart_lte : null;
-            dateStart_lt ? dateStart.lt = dateStart_lt : null;
-
-            must.push({
-                range: {
-                    dateStart
-                }
-            });
+            must.push(range);
         }
-        return must;
-    }
-    
-    function buildDateEndRange (must, dateEnd_gte, dateEnd_gt, dateEnd_lte, dateEnd_lt) {
-            
-        if ( dateEnd_gte || dateEnd_gt || dateEnd_lte || dateEnd_lt ) {
 
-            let dateEnd = {};
-        
-            dateEnd_gte ? dateEnd.gte = dateEnd_gte : null;
-            dateEnd_gt ? dateEnd.gt = dateEnd_gt : null;
-            dateEnd_lte ? dateEnd.lte = dateEnd_lte : null;
-            dateEnd_lt ? dateEnd.lt = dateEnd_lt : null;
-
-            must.push({
-                range: {
-                    dateEnd
-                }
-            });
-        }
-        return must;
-    }
-    
-    function buildDatePublishedRange (must, datePublished_gte, datePublished_gt, datePublished_lte, datePublished_lt) {
-            
-        if ( datePublished_gte || datePublished_gt || datePublished_lte || datePublished_lt ) {
-
-            let datePublished = {};
-        
-            datePublished_gte ? datePublished.gte = datePublished_gte : null;
-            datePublished_gt ? datePublished.gt = datePublished_gt : null;
-            datePublished_lte ? datePublished.lte = datePublished_lte : null;
-            datePublished_lt ? datePublished.lt = datePublished_lt : null;
-            must.push({
-                range: {
-                    datePublished
-                }
-            });
-        }
         return must;
     }
 
-    function prepareQuery(query) {
-        delete query.salaryAmount_gte;
-        delete query.salaryAmount_gt;
-        delete query.salaryAmount_lte;
-        delete query.salaryAmount_lt;
-        delete query.dateStart_gte;
-        delete query.dateStart_gt;
-        delete query.dateStart_lte;
-        delete query.dateStart_lt;
-        delete query.dateEnd_gte;
-        delete query.dateEnd_gt;
-        delete query.dateEnd_lte;
-        delete query.dateEnd_lt;
-        delete query.datePublished_gte;
-        delete query.datePublished_gt;
-        delete query.datePublished_lte;
-        delete query.datePublished_lt;
+    function buildDateStartRange(must, dateStart) {
 
-        return query;
-    }
+        if (dateStart) {
+            let range =
+                {
+                    range: {
+                        dateStart: {}
+                    }
+                };
 
-    function buildOffersToShow(users, offersToShow, offers) {
-        for (let i = 0; i < offers.length; i++) {
-            let user = users.find(element => offers[i]._source.fk_offerer == element.id);
-            let offer = {};
+            dateStart.gte ? range.range.dateStart.gte = dateStart.gte : null;
+            dateStart.gt ? range.range.dateStart.gt = dateStart.gt : null;
+            dateStart.lte ? range.range.dateStart.lte = dateStart.lte : null;
+            dateStart.lt ? range.range.dateStart.lt = dateStart.lt : null;
 
-            offer.id = offers[i]._id;
-            offer.fk_offerer = offers[i]._source.fk_offerer;
-            offer.offererName = user.name;
-            offer.offererIndex = user.index;
-            offers[i]._source.img ? offer.img = offers[i]._source.img : offer.img = user.img;
-            offer.title = offers[i]._source.title;
-            offer.description = offers[i]._source.description;
-            offer.dateStart = offers[i]._source.dateStart;
-            offer.dateEnd = offers[i]._source.dateEnd;
-            offer.datePublished = offers[i]._source.datePublished;
-            offer.location = offers[i]._source.location;
-            offer.status = offers[i]._source.status;
-            offer.salaryAmount = offers[i]._source.salaryAmount;
-            offer.salaryFrequency = offers[i]._source.salaryFrequency;
-            offer.salaryCurrency = offers[i]._source.salaryCurrency;
-            offer.workLocation = offers[i]._source.workLocation;
-            offer.seniority = offers[i]._source.seniority;
-            offer.maxApplicants = offers[i]._source.maxApplicants;
-            offer.currentApplications = offers[i]._source.currentApplications;
-            offer.duration = offers[i]._source.duration;
-            offer.durationUnit = offers[i]._source.durationUnit;
-            offer.isIndefinite = offers[i]._source.isIndefinite;
-            offer.contractType = offers[i]._source.contractType;
-            offer.responsabilities = offers[i].responsabilities;
-            offer.requeriments = offers[i].requeriments;
-            offer.skills = offers[i].skills;
-            offer.lat = offers[i]._source.lat;
-            offer.lon = offers[i]._source.lon;
-            offer.createdAt = offers[i]._source.createdAt;
-            offer.updatedAt = offers[i]._source.updatedAt;
-            offer.deletedAt = offers[i]._source.deletedAt;
-            
-            offersToShow.push(offer);
+            must.push(range);
         }
+
+        return must;
     }
-}
+
+    function buildDateEndRange(must, dateEnd) {
+
+        if (dateEnd) {
+            let range =
+                {
+                    range: {
+                        dateEnd: {}
+                    }
+                };
+
+            dateEnd.gte ? range.range.dateEnd.gte = dateEnd.gte : null;
+            dateEnd.gt ? range.range.dateEnd.gt = dateEnd.gt : null;
+            dateEnd.lte ? range.range.dateEnd.lte = dateEnd.lte : null;
+            dateEnd.lt ? range.range.dateEnd.lt = dateEnd.lt : null;
+
+            must.push(range);
+        }
+
+        return must;
+    }
+
+    function buildDatePublishedRange(must, datePublished) {
+
+        if (datePublished) {
+            let range =
+                {
+                    range: {
+                        datePublished: {}
+                    }
+                };
+
+            datePublished.gte ? range.range.datePublished.gte = datePublished.gte : null;
+            datePublished.gt ? range.range.datePublished.gt = datePublished.gt : null;
+            datePublished.lte ? range.range.datePublished.lte = datePublished.lte : null;
+            datePublished.lt ? range.range.datePublished.lt = datePublished.lt : null;
+
+            must.push(range);
+        }
+
+        return must;
+    }
+
+    async function createOffer( user, body, res, next ) {
+        await db.offers.create( body )
+                .then(async result => {
+                    if (result) {
+                        saveLogES('POST', 'offer', user.name);
+                        
+                        body.offererIndex = user.index;
+                        body.offererName = user.name;
+                        body.createdAt = new Date();
+                        
+                        elastic.index({
+                            index: 'offers',
+                            id: result.id,
+                            type: 'offer',
+                            body
+                        }, function (err, resp, status) {
+                            if (err) {
+                                console.log('ERROR:', err.message);
+                            }
+                            
+                            return res.status(201).json({
+                                ok: true,
+                                message: 'Offer created',
+                                data: {
+                                    id: result.id,
+                                    fk_offerer: user.id,
+                                    offererIndex: body.offererIndex,
+                                    offererName: body.offererName,
+                                    status: result.status,
+                                    title: result.title,
+                                    description: result.description,
+                                    datePublished: result.datePublished,
+                                    dateStart: result.dateStart,
+                                    dateEnd: result.dateEnd,
+                                    location: result.location,
+                                    salaryAmount: result.salaryAmount,
+                                    salaryFrequency: result.salaryFrequency,
+                                    salaryCurrency: result.salaryCurrency,
+                                    workLocation: result.workLocation,
+                                    seniority: result.seniority,
+                                    responsabilities: result.responsabilities,
+                                    requeriments: result.requeriments,
+                                    skills: body.skills,
+                                    maxApplicants: body.maxApplicants,
+                                    currentApplications: body.currentApplications,
+                                    duration: body.duration,
+                                    durationUnit: body.durationUnit,
+                                    contractType: body.contractType,
+                                    isIndefinite: body.isIndefinite
+                                }
+                            });
+                        });
+                    } else {
+                        return res.status(400).json({
+                            ok: false,
+                            message: `No created`
+                        });
+                    }
+                });
+    }
+
+    async function createInvoice( user ) {
+
+        await db.invoices.create({
+            fk_user: user.id,
+            userName: user.name,
+            product: 'Single offer',
+            price: '2€'
+        })
+
+    }
+};

@@ -56,7 +56,7 @@ export class SetApplication implements Action {
 export class TryDeleteApplication implements Action {
   readonly type = TRY_DELETE_APPLICATION;
 
-  constructor(public payload: {fk_application: Number}) {
+  constructor(public payload: { fk_application: Number }) {
   }
 }
 

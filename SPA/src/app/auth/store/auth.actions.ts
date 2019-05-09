@@ -14,6 +14,7 @@ export const LOGOUT = 'LOGOUT';
 export const AUTH_ERROR = 'AUTH_ERROR';
 export const SET_TOKEN = 'SET_TOKEN';
 export const SET_USER = 'SET_USER';
+export const TRY_SN_CANDIDATE = 'TRY_SN_CANDIDATE';
 
 export class TrySignupCandidate implements Action {
   readonly type = TRY_SIGNUP_CANDIDATE;
@@ -33,7 +34,7 @@ export class TrySignupCandidate implements Action {
 export class TrySignupBusiness implements Action {
   readonly type = TRY_SIGNUP_BUSINESS;
 
-  constructor(public payload: { email: string, password: string }) {
+  constructor(public payload: { email: string, password: string, token: string }) {
   }
 }
 
@@ -56,7 +57,7 @@ export class TrySignupTwitter implements Action {
 export class TrySignin implements Action {
   readonly type = TRY_SIGNIN;
 
-  constructor(public payload: { email: string, password: string }) {
+  constructor(public payload: { email: string, password: string, token: any }) {
   }
 }
 
@@ -86,7 +87,8 @@ export class SetUser implements Action {
     email: string,
     id: number,
     name: string,
-    type: string
+    type: string,
+    notifications: number
   }) {
   }
 }
@@ -98,4 +100,14 @@ export class AuthError implements Action {
   }
 }
 
-export type AuthActions = TrySignupCandidate | TrySignupBusiness | Signup | TrySignin | Signin | Logout | SetToken | SetUser | AuthError;
+
+export class TrySNCandidate implements Action {
+  readonly type = TRY_SN_CANDIDATE;
+
+  constructor(public payload: { email: string, token: any, user: any }) {
+  }
+}
+
+export type AuthActions = TrySignupCandidate | TrySignupBusiness
+  | Signup | TrySignin | Signin | Logout | SetToken | SetUser | AuthError | TrySNCandidate;
+

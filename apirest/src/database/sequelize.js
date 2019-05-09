@@ -1,4 +1,4 @@
-const { Sequelize  } = require('./op');
+const {Sequelize} = require('./op');
 const env = require('../tools/constants');
 
 const sequelize = new Sequelize(env.DATABASE_NAME, env.DATABASE_USERNAME, env.DATABASE_PASSWORD, {
@@ -42,6 +42,7 @@ db.rating_applicants = require('../models/ratings/rating_applicants')(sequelize,
 db.rating_offerers = require('../models/ratings/rating_offerers')(sequelize, Sequelize);
 db.comments = require('../models/comments')(sequelize, Sequelize);
 db.applications = require('../models/applications')(sequelize, Sequelize);
+db.notifications = require('../models/notifications')(sequelize, Sequelize);
 
 /* Relations */
 // Heredity
@@ -50,42 +51,44 @@ db.applicants.removeAttribute('id');
 db.rating_applicants.removeAttribute('id');
 db.rating_offerers.removeAttribute('id');
 
-db.users.hasOne(db.offerers, { as: 'user' });
-db.users.hasOne(db.applicants);
-db.ratings.hasOne(db.rating_applicants, { as: 'rating' });
-db.ratings.hasOne(db.rating_offerers);
+db.users.hasOne( db.offerers );
+db.users.hasOne( db.applicants );
+db.ratings.hasOne( db.rating_applicants );
+db.ratings.hasOne( db.rating_offerers );
 
 // 1:N
-db.offerers.hasMany(db.offers, { foreignKey: 'fk_offerer' });
+db.offerers.hasMany( db.offers, {foreignKey: 'fk_offerer'} );
 
-db.applicants.hasMany(db.experiences, { foreignKey: 'fk_applicant' });
+db.applicants.hasMany( db.experiences, {foreignKey: 'fk_applicant'} );
 
-db.rating_applicants.hasMany(db.comments, { foreignKey: 'fk_rating_applicant' });
-db.rating_offerers.hasMany(db.comments, { foreignKey: 'fk_rating_offerer' });
+db.rating_applicants.hasMany( db.comments, {foreignKey: 'fk_rating_applicant'} );
+db.rating_offerers.hasMany( db.comments, {foreignKey: 'fk_rating_offerer'} );
 
-db.users.hasMany(db.comments, { foreignKey: 'fk_user' });
+db.users.hasMany( db.notifications, { as: 'to', foreignKey: 'to' } );
+db.users.hasMany( db.notifications, { as: 'from', foreignKey: 'from' } );
+
+db.users.hasMany( db.comments, {foreignKey: 'fk_user'} );
 
 // N:M
-db.offers.belongsToMany(db.applicants, { through: 'applications', foreignKey: 'fk_offer' });
-db.applicants.belongsToMany(db.offers, { through: 'applications', foreignKey: 'fk_applicant' });
+db.offers.belongsToMany( db.applicants, {through: 'applications', foreignKey: 'fk_offer'} );
+db.applicants.belongsToMany( db.offers, {through: 'applications', foreignKey: 'fk_applicant'} );
 
-db.users.belongsToMany(db.users, { through: 'messages', as: 'sender', foreignKey: 'fk_sender' });
-db.users.belongsToMany(db.users, { through: 'messages', as: 'receiver', foreignKey: 'fk_receiver' });
+db.users.belongsToMany( db.users, { through: 'messages', as: 'sender', foreignKey: 'fk_sender', unique: false } );
+db.users.belongsToMany( db.users, { through: 'messages', as: 'receiver', foreignKey: 'fk_receiver', unique: false } );
 
-db.applicants.belongsToMany(db.educations, { through: 'applicant_educations', foreignKey: 'fk_applicant' });
-db.educations.belongsToMany(db.applicants, { through: 'applicant_educations', foreignKey: 'fk_education' });
-db.applicants.belongsToMany(db.skills, { through: 'applicant_skills', foreignKey: 'fk_applicant' });
-db.skills.belongsToMany(db.applicants, { through: 'applicant_skills', foreignKey: 'fk_skill' });
-db.applicants.belongsToMany(db.languages, { through: 'applicant_languages', foreignKey: 'fk_applicant' });
-db.languages.belongsToMany(db.applicants, { through: 'applicant_languages', foreignKey: 'fk_language' });
+db.applicants.belongsToMany( db.educations, { through: 'applicant_educations', foreignKey: 'fk_applicant' } );
+db.educations.belongsToMany( db.applicants, { through: 'applicant_educations', foreignKey: 'fk_education' } );
+db.applicants.belongsToMany( db.skills, { through: 'applicant_skills', foreignKey: 'fk_applicant' } );
+db.skills.belongsToMany( db.applicants, { through: 'applicant_skills', foreignKey: 'fk_skill' } );
+db.applicants.belongsToMany( db.languages, { through: 'applicant_languages', foreignKey: 'fk_applicant' } );
+db.languages.belongsToMany( db.applicants, { through: 'applicant_languages', foreignKey: 'fk_language' } );
 
 
 // 1:1
-db.social_networks.belongsTo(db.users);
+db.social_networks.belongsTo( db.users );
 
-db.applications.hasOne(db.invoices, { foreignKey: 'fk_application' });
+db.users.hasOne( db.invoices, {foreignKey: 'fk_user'} );
 
-db.applications.hasOne(db.ratings, { foreignKey: 'fk_application' });
-
+db.applications.hasOne( db.ratings, {foreignKey: 'fk_application'} );
 
 module.exports = db;

@@ -1,0 +1,12 @@
+<div *ngIf="logs && logs.lenght > 0; else no_logs">
+  <div *ngFor="let log of logs">
+    <span>Action: {{log.action}}</span>
+    <span>Action to Route: {{log.actionToRoute}}</span>
+    <span>Date: {{log.date}}</span>
+  </div>
+</div>
+<ng-template #no_logs>
+    <div>
+        <p>There are no logs to show</p>
+    </div>
+</ng-template>

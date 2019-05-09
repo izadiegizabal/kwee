@@ -4,7 +4,10 @@ import {CandidateProfileComponent} from './candidate-profile.component';
 
 const candidateProfileRoutes: Routes = [
   {
-    path: '', component: CandidateProfileComponent,
+    path: '', redirectTo: 'more-info', pathMatch: 'full',
+  },
+  {
+    path: ':tabPosition', component: CandidateProfileComponent,
   }
 ];
 

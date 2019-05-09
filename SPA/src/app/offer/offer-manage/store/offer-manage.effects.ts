@@ -10,6 +10,7 @@ import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
 import {CandidatePreview} from '../../../../models/candidate-preview.model';
 
+
 function reformatCandidates(apiApplicationCandidates: any[]): CandidatePreview[] {
   // if no applications found return empty array
   if (!apiApplicationCandidates) {
@@ -140,6 +141,7 @@ export class OfferManageEffects {
     }),
     withLatestFrom(this.store$.pipe(select(state => state.auth))),
     switchMap(([payload, authState]) => {
+        console.log(payload);
         const apiEndpointUrl = environment.apiUrl + 'offer/' + payload.offerId;
         const token = authState.token;
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
@@ -152,7 +154,7 @@ export class OfferManageEffects {
               console.log(res);
               return {
                 type: OfferManageActions.SET_CHANGE_OFFER_STATUS,
-                payload: { offerId: payload.offerId, newStatus: payload.newStatus },
+                payload: {offerId: payload.offerId, newStatus: payload.newStatus},
               };
             } else {
               return [
@@ -237,6 +239,60 @@ export class OfferManageEffects {
     share()
   );
 
+
+
+  @Effect()
+  GetApplicationsAccepted = this.actions$.pipe(
+    ofType(OfferManageActions.TRY_GET_APPLICATIONS_ACCEPTED),
+    map((action: OfferManageActions.TryGetApplicationsAccepted) => {
+      return action.payload;
+    }),
+    withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    switchMap(([payload, authState]) => {
+      const token = authState.token;
+      const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+      const apiEndpointUrl = environment.apiUrl + 'application/' + payload.id +
+          '?page=' + payload.page + '&limit=' + payload.limit + '&status=' + payload.status;
+
+        return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
+          map((res: {
+            ok: boolean,
+            message: any,
+            data: any[],
+            total: number,
+          }) => {
+            console.log(res);
+            if (res.ok) {
+              return {
+                type: OfferManageActions.SET_APPLICATIONS_ACCEPTED,
+                payload: res,
+              };
+            } else {
+              return [
+                {
+                  type: OfferManageActions.OPERATION_ERROR,
+                  payload: 'Error from API'
+                }
+              ];
+            }
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('getApplicationsAccepted', err));
+            const error = err ? err : '';
+            return [
+              {
+                type: OfferManageActions.OPERATION_ERROR,
+                payload: error
+              }
+            ];
+          })
+        );
+      }
+    ),
+    share()
+  );
+
+
   @Effect()
   ChangeApplicationStatus = this.actions$.pipe(
     ofType(OfferManageActions.TRY_CHANGE_APPLICATION_STATUS),
@@ -257,19 +313,19 @@ export class OfferManageEffects {
               // If change okay get all the candidates
               if (payload.refresh) {
                 this.refreshCandidates();
-
-                return {
-                  type: OfferManageActions.SET_CHANGE_APPLICATION_STATUS,
-                  payload: {status: payload.status, candidateId: payload.candidateId},
-                };
               } else {
-                return [
-                  {
-                    type: OfferManageActions.SET_CHANGE_APPLICATION_STATUS,
-                    payload: {status: payload.status, candidateId: payload.candidateId},
-                  }
-                ];
+                this.store$.dispatch(new OfferManageActions.TryGetOffersApplicant({
+                    id: payload.candidateId,
+                    page: 1,
+                    limit: 10,
+                    status: payload.refreshStatus
+                  }));
               }
+              return {
+                type: OfferManageActions.SET_CHANGE_APPLICATION_STATUS,
+                payload: {status: payload.status, candidateId: payload.candidateId},
+              };
+
             } else {
               return [
                 {
@@ -342,6 +398,9 @@ export class OfferManageEffects {
     share()
   );
 
+  constructor(private actions$: Actions, private store$: Store<fromApp.AppState>, private router: Router, private httpClient: HttpClient) {
+  }
+
   private refreshCandidates() {
     // pending
     this.store$.dispatch(new OfferManageActions.TryGetOfferCandidates({
@@ -382,9 +441,6 @@ export class OfferManageEffects {
       limit: this.limit,
       status: 4
     }));
-  }
-
-  constructor(private actions$: Actions, private store$: Store<fromApp.AppState>, private router: Router, private httpClient: HttpClient) {
   }
 
   private handleError<T>(operation = 'operation', result?: T) {

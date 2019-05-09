@@ -8,7 +8,7 @@ passport.use(
             consumerSecret: env.TWITTER_SECRET,
             callbackURL: env.TWITTER_URL
         },
-        function(token, tokenSecret, profile, cb) {
+        function (token, tokenSecret, profile, cb) {
             // User.findOrCreate({ twitterId: profile.id }, function (err, user) {
             //   return cb(err, user);
             // });

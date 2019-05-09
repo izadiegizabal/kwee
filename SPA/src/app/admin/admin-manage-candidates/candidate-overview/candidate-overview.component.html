@@ -1,14 +1,17 @@
-<div fxLayout="row">
+<div fxLayout="row" *ngIf="(adminState | async).candidates && (adminState | async).candidates.data" style="padding-bottom: 8px">
   <mat-accordion fxFlex="99%">
     <mat-expansion-panel
       (closed)="isPanelOpen = !isPanelOpen; isInEditMode = false; userForm.reset()"
-      (opened)="isPanelOpen = !isPanelOpen; isInEditMode = false"
+      (opened)="isPanelOpen = !isPanelOpen;"
       *ngFor="let user of (adminState | async).candidates.data;" [formGroup]="userForm">
       <mat-expansion-panel-header>
         <mat-panel-title fxFlex="75%"
                          fxFlex.gt-lg="30%" fxFlex.gt-md="35%" fxFlex.gt-sm="40%" fxLayoutAlign="start center">
-          <app-offerer-name-overview [index]="user.index? user.index: 88"
-                                     [name]="user.name"></app-offerer-name-overview>
+          <app-offerer-name-overview
+            [index]="user.index? user.index: 88"
+            [candidateIndexBreakdown]="user.avg"
+            [name]="user.name">
+          </app-offerer-name-overview>
         </mat-panel-title>
         <mat-panel-description
           fxFlex="25%"
@@ -28,10 +31,10 @@
             <mat-icon class="svg" color="primary" svgIcon="access-time"></mat-icon>
             <span>{{user.lastAccess| date:'d/M/y, HH:mm'}}</span>
           </div>
-          <mat-chip-list fxHide fxShow.gt-sm>
-            <mat-chip color="primary" selected
-                      style="pointer-events: none">{{states[user.status].viewValue  | titlecase }}</mat-chip>
-          </mat-chip-list>
+          <div fxLayout="row">
+            <button (click)="edit(user)" color="accent" mat-button>Edit</button>
+            <button (click)="callAlertDialogDelete(user.id)" color="warn" mat-button>Delete</button>
+          </div>
         </mat-panel-description>
       </mat-expansion-panel-header>
 
@@ -122,7 +125,7 @@
               </mat-form-field>
             </div>
           </div>
-          <div>
+          <div *ngIf="subscriptions && user && user.premium && subscriptions[user.premium]">
             <span class="mat-small">{{'Subscription' | uppercase}}</span>
             <br>
             <div *ngIf="!isInEditMode || !isPanelOpen">
@@ -161,7 +164,7 @@
            fxLayoutAlign="end" fxLayoutGap="0"
            fxLayoutGap.gt-sm="8px">
         <button color="primary" mat-button>More Info</button>
-        <button color="primary" mat-button>View Log</button>
+        <button (click)="openLogModal(user.id)" color="primary" mat-button>View Log</button>
         <div *ngIf="!isInEditMode || !isPanelOpen">
           <button (click)="edit(user)" color="accent" mat-button>Edit</button>
         </div>
@@ -180,4 +183,3 @@
                (page)="pageEvent = $event; changepage();">
 </mat-paginator>
 
-<!--deleteApplicant(user.id)-->

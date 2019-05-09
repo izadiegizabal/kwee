@@ -1,13 +1,9 @@
 @import "../../../common-utils";
 @import '../../../../node_modules/@angular/material/theming';
 
-mat-card {
-  max-width: 600px;
-}
-
 mat-card-title {
   margin-top: -4px;
-  font-size: 1.6rem !important;
+  font-size: 1.5rem !important;
 }
 
 ::ng-deep app-offer-preview-card .mat-card-header-text {
@@ -20,28 +16,27 @@ app-icon-with-text {
 }
 
 img {
-  max-width: 25%;
-  height: 100px;
   border-radius: 5px;
   margin-right: 16px;
-  object-fit: contain;
+  object-fit: cover;
   float: left;
 }
 
-mat-card-content {
-  min-height: 95px;
+::ng-deep app-offer-preview-card mat-card-content {
+  min-height: 72px;
 
-  p {
+  span p {
+    margin-top: 0;
+    font-size: 0.9rem;
+  }
+
+  span {
     margin-top: 0;
     font-size: 0.9rem;
   }
 }
 
 @media all and (max-width: ($phone - 1px)) {
-  img {
-    max-width: 100%;
-  }
-
   .quickInfo {
     margin-left: 8px;
     margin-top: -4px;
@@ -51,12 +46,17 @@ mat-card-content {
   .example-card {
     max-width: 88%;
   }
+
+
+  ::ng-deep app-offer-preview-card mat-card-content {
+    min-height: 80px;
+  }
 }
 
-mat-card-actions p{
+mat-card-actions p {
   margin: 0;
 }
 
-mat-card-actions:nth-child(1){
+mat-card-actions:nth-child(1) {
   padding-top: 0;
 }

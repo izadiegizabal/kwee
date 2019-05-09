@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { AlertDialogComponent } from './alert-dialog.component';
+import {AlertDialogComponent} from './alert-dialog.component';
 
 describe('AlertDialogComponent', () => {
   let component: AlertDialogComponent;
@@ -8,9 +8,9 @@ describe('AlertDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AlertDialogComponent ]
+      declarations: [AlertDialogComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

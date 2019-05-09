@@ -38,24 +38,44 @@ module.exports = (sequelize, DataTypes) => {
         },
 
         status: {
-            type: DataTypes.ENUM,
+            type: DataTypes.INTEGER,
             field: 'status',
-            values: ['0', '1', '2'],
-            defaultValue: '1',
+            defaultValue: 0,
             allowNull: false,
             validate: {
-                notEmpty: {
-                    "args": true,
-                    "msg": "status shouldn't be empty."
-                },
                 isIn: {
-                    args: [['0', '1', '2']],
-                    msg: "status value should be a valid one: 0 (accepted), 1 (pending) or 2 (deleted)."
+                    args: [[0, 1, 2, 3, 4, 5]],
+                    msg: "status value should be a valid one: 0 (pending), 1 (fav), 2 (selected), 3 (accepted), 4 (refused), or 5 (closed)."
                 }
             }
-        }
-    }, {
-        paranoid: true
+        },
+
+        aHasRated: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
+        },
+
+        oHasRated: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
+        },
+        
+        aHasRatedDate: {
+            type: DataTypes.DATE,
+            defaultValue: null
+        },
+
+        oHasRatedDate: {
+            type: DataTypes.DATE,
+            defaultValue: null
+        },
+        
+        acceptedAt: {
+            type: DataTypes.DATE,
+            defaultValue: null
+        },
     });
     return Application;
 };

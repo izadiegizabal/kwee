@@ -21,13 +21,18 @@ import {CookieService} from 'ngx-cookie-service';
 import {NgcCookieConsentConfig, NgcCookieConsentModule} from 'ngx-cookieconsent';
 import {PrivacyComponent} from './privacy/privacy.component';
 import {OfferCreateModule} from './offer/offer-create/offer-create.module';
-import {LandingComponent} from './landing/landing.component';
 import {RatingModule} from './rating/rating.module';
 import {LandingModule} from './landing/landing.module';
+// Sockets
+import {SocketIoConfig, SocketIoModule} from 'ngx-socket-io';
+
+const config: SocketIoConfig = {
+  url: environment.apiUrl.split('\/api')[0], options: {}
+};
 
 export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {
   return localStorageSync({
-    keys: ['auth', 'admin', 'offers', 'offer', 'profiles', 'offerManage'],
+    keys: ['auth', 'admin', 'offers', 'offer', 'profiles', 'offerManage', 'invoices', 'kweeLive'],
     rehydrate: true
   })(reducer);
 }
@@ -85,7 +90,8 @@ const cookieConfig: NgcCookieConsentConfig = {
     StoreModule.forRoot(reducers, {metaReducers}),
     EffectsModule.forRoot([]),
     NgcCookieConsentModule.forRoot(cookieConfig),
-    !environment.production ? StoreDevtoolsModule.instrument() : []
+    !environment.production ? StoreDevtoolsModule.instrument() : [],
+    SocketIoModule.forRoot(config)
   ],
   providers: [CookieService],
   bootstrap: [AppComponent]

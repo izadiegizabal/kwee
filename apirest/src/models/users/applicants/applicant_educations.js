@@ -3,7 +3,7 @@ module.exports = (sequelize, DateTypes) => {
     const Applicant_Education = sequelize.define('applicant_educations', {
 
         description: {
-            type: DateTypes.STRING(140),
+            type: DateTypes.TEXT,
             allowNull: false,
             field: 'description',
             validate: {
@@ -28,14 +28,13 @@ module.exports = (sequelize, DateTypes) => {
                 },
                 startDateAfterEndDate() {
                     const today = new Date();
-                    if (this.dateStart >= this.dateEnd ) {
+                    if (this.dateStart >= this.dateEnd) {
                         throw new Error('Start date must be before the end date.');
-                    }
-                    else if( this.dateStart >= today) {
+                    } else if (this.dateStart >= today) {
                         throw new Error('Start date must be before today\'s date.');
                     }
                 }
-                
+
             }
         },
 
@@ -51,7 +50,7 @@ module.exports = (sequelize, DateTypes) => {
                     "args": true,
                     "msg": "Starting date should be a date."
                 }
-                
+
             }
         },
 

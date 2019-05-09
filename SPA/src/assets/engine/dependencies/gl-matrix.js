@@ -1,4 +1,3 @@
-
 /*!
 @fileoverview gl-matrix - High performance matrix and vector operations
 @author Brandon Jones
@@ -28,18 +27,20 @@ THE SOFTWARE.
 */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-  typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (factory((global.glMatrix = {})));
-}(this, (function (exports) { 'use strict';
+    typeof define === 'function' && define.amd ? define(['exports'], factory) :
+      (factory((global.glMatrix = {})));
+}(this, (function (exports) {
+  'use strict';
 
   /**
    * Common utilities
    * @module glMatrix
    */
-  // Configuration Constants
+    // Configuration Constants
   var EPSILON = 0.000001;
   var ARRAY_TYPE = typeof Float32Array !== 'undefined' ? Float32Array : Array;
   var RANDOM = Math.random;
+
   /**
    * Sets the type of array used when creating new vectors and matrices
    *
@@ -49,7 +50,9 @@ THE SOFTWARE.
   function setMatrixArrayType(type) {
     ARRAY_TYPE = type;
   }
+
   var degree = Math.PI / 180;
+
   /**
    * Convert Degree To Radian
    *
@@ -59,6 +62,7 @@ THE SOFTWARE.
   function toRadian(a) {
     return a * degree;
   }
+
   /**
    * Tests whether or not the arguments have approximately the same value, within an absolute
    * or relative tolerance of glMatrix.EPSILON (an absolute tolerance is used for values less
@@ -75,7 +79,9 @@ THE SOFTWARE.
 
   var common = /*#__PURE__*/Object.freeze({
     EPSILON: EPSILON,
-    get ARRAY_TYPE () { return ARRAY_TYPE; },
+    get ARRAY_TYPE() {
+      return ARRAY_TYPE;
+    },
     RANDOM: RANDOM,
     setMatrixArrayType: setMatrixArrayType,
     toRadian: toRadian,
@@ -105,6 +111,7 @@ THE SOFTWARE.
     out[3] = 1;
     return out;
   }
+
   /**
    * Creates a new mat2 initialized with values from an existing matrix
    *
@@ -120,6 +127,7 @@ THE SOFTWARE.
     out[3] = a[3];
     return out;
   }
+
   /**
    * Copy the values from one mat2 to another
    *
@@ -135,6 +143,7 @@ THE SOFTWARE.
     out[3] = a[3];
     return out;
   }
+
   /**
    * Set a mat2 to the identity matrix
    *
@@ -149,6 +158,7 @@ THE SOFTWARE.
     out[3] = 1;
     return out;
   }
+
   /**
    * Create a new mat2 with the given values
    *
@@ -167,6 +177,7 @@ THE SOFTWARE.
     out[3] = m11;
     return out;
   }
+
   /**
    * Set the components of a mat2 to the given values
    *
@@ -185,6 +196,7 @@ THE SOFTWARE.
     out[3] = m11;
     return out;
   }
+
   /**
    * Transpose the values of a mat2
    *
@@ -209,6 +221,7 @@ THE SOFTWARE.
 
     return out;
   }
+
   /**
    * Inverts a mat2
    *
@@ -219,9 +232,9 @@ THE SOFTWARE.
 
   function invert(out, a) {
     var a0 = a[0],
-        a1 = a[1],
-        a2 = a[2],
-        a3 = a[3]; // Calculate the determinant
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3]; // Calculate the determinant
 
     var det = a0 * a3 - a2 * a1;
 
@@ -236,6 +249,7 @@ THE SOFTWARE.
     out[3] = a0 * det;
     return out;
   }
+
   /**
    * Calculates the adjugate of a mat2
    *
@@ -253,6 +267,7 @@ THE SOFTWARE.
     out[3] = a0;
     return out;
   }
+
   /**
    * Calculates the determinant of a mat2
    *
@@ -263,6 +278,7 @@ THE SOFTWARE.
   function determinant(a) {
     return a[0] * a[3] - a[2] * a[1];
   }
+
   /**
    * Multiplies two mat2's
    *
@@ -274,19 +290,20 @@ THE SOFTWARE.
 
   function multiply(out, a, b) {
     var a0 = a[0],
-        a1 = a[1],
-        a2 = a[2],
-        a3 = a[3];
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3];
     var b0 = b[0],
-        b1 = b[1],
-        b2 = b[2],
-        b3 = b[3];
+      b1 = b[1],
+      b2 = b[2],
+      b3 = b[3];
     out[0] = a0 * b0 + a2 * b1;
     out[1] = a1 * b0 + a3 * b1;
     out[2] = a0 * b2 + a2 * b3;
     out[3] = a1 * b2 + a3 * b3;
     return out;
   }
+
   /**
    * Rotates a mat2 by the given angle
    *
@@ -298,9 +315,9 @@ THE SOFTWARE.
 
   function rotate(out, a, rad) {
     var a0 = a[0],
-        a1 = a[1],
-        a2 = a[2],
-        a3 = a[3];
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3];
     var s = Math.sin(rad);
     var c = Math.cos(rad);
     out[0] = a0 * c + a2 * s;
@@ -309,6 +326,7 @@ THE SOFTWARE.
     out[3] = a1 * -s + a3 * c;
     return out;
   }
+
   /**
    * Scales the mat2 by the dimensions in the given vec2
    *
@@ -320,17 +338,18 @@ THE SOFTWARE.
 
   function scale(out, a, v) {
     var a0 = a[0],
-        a1 = a[1],
-        a2 = a[2],
-        a3 = a[3];
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3];
     var v0 = v[0],
-        v1 = v[1];
+      v1 = v[1];
     out[0] = a0 * v0;
     out[1] = a1 * v0;
     out[2] = a2 * v1;
     out[3] = a3 * v1;
     return out;
   }
+
   /**
    * Creates a matrix from a given angle
    * This is equivalent to (but much faster than):
@@ -352,6 +371,7 @@ THE SOFTWARE.
     out[3] = c;
     return out;
   }
+
   /**
    * Creates a matrix from a vector scaling
    * This is equivalent to (but much faster than):
@@ -371,6 +391,7 @@ THE SOFTWARE.
     out[3] = v[1];
     return out;
   }
+
   /**
    * Returns a string representation of a mat2
    *
@@ -381,6 +402,7 @@ THE SOFTWARE.
   function str(a) {
     return 'mat2(' + a[0] + ', ' + a[1] + ', ' + a[2] + ', ' + a[3] + ')';
   }
+
   /**
    * Returns Frobenius norm of a mat2
    *
@@ -391,6 +413,7 @@ THE SOFTWARE.
   function frob(a) {
     return Math.sqrt(Math.pow(a[0], 2) + Math.pow(a[1], 2) + Math.pow(a[2], 2) + Math.pow(a[3], 2));
   }
+
   /**
    * Returns L, D and U matrices (Lower triangular, Diagonal and Upper triangular) by factorizing the input matrix
    * @param {mat2} L the lower triangular matrix
@@ -406,6 +429,7 @@ THE SOFTWARE.
     U[3] = a[3] - L[2] * U[1];
     return [L, D, U];
   }
+
   /**
    * Adds two mat2's
    *
@@ -422,6 +446,7 @@ THE SOFTWARE.
     out[3] = a[3] + b[3];
     return out;
   }
+
   /**
    * Subtracts matrix b from matrix a
    *
@@ -438,6 +463,7 @@ THE SOFTWARE.
     out[3] = a[3] - b[3];
     return out;
   }
+
   /**
    * Returns whether or not the matrices have exactly the same elements in the same position (when compared with ===)
    *
@@ -449,6 +475,7 @@ THE SOFTWARE.
   function exactEquals(a, b) {
     return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3];
   }
+
   /**
    * Returns whether or not the matrices have approximately the same elements in the same position.
    *
@@ -459,15 +486,16 @@ THE SOFTWARE.
 
   function equals$1(a, b) {
     var a0 = a[0],
-        a1 = a[1],
-        a2 = a[2],
-        a3 = a[3];
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3];
     var b0 = b[0],
-        b1 = b[1],
-        b2 = b[2],
-        b3 = b[3];
+      b1 = b[1],
+      b2 = b[2],
+      b3 = b[3];
     return Math.abs(a0 - b0) <= EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3));
   }
+
   /**
    * Multiply each element of the matrix by a scalar.
    *
@@ -484,6 +512,7 @@ THE SOFTWARE.
     out[3] = a[3] * b;
     return out;
   }
+
   /**
    * Adds two mat2's after multiplying each element of the second operand by a scalar value.
    *
@@ -501,6 +530,7 @@ THE SOFTWARE.
     out[3] = a[3] + b[3] * scale;
     return out;
   }
+
   /**
    * Alias for {@link mat2.multiply}
    * @function
@@ -582,6 +612,7 @@ THE SOFTWARE.
     out[3] = 1;
     return out;
   }
+
   /**
    * Creates a new mat2d initialized with values from an existing matrix
    *
@@ -599,6 +630,7 @@ THE SOFTWARE.
     out[5] = a[5];
     return out;
   }
+
   /**
    * Copy the values from one mat2d to another
    *
@@ -616,6 +648,7 @@ THE SOFTWARE.
     out[5] = a[5];
     return out;
   }
+
   /**
    * Set a mat2d to the identity matrix
    *
@@ -632,6 +665,7 @@ THE SOFTWARE.
     out[5] = 0;
     return out;
   }
+
   /**
    * Create a new mat2d with the given values
    *
@@ -654,6 +688,7 @@ THE SOFTWARE.
     out[5] = ty;
     return out;
   }
+
   /**
    * Set the components of a mat2d to the given values
    *
@@ -676,6 +711,7 @@ THE SOFTWARE.
     out[5] = ty;
     return out;
   }
+
   /**
    * Inverts a mat2d
    *
@@ -686,11 +722,11 @@ THE SOFTWARE.
 
   function invert$1(out, a) {
     var aa = a[0],
-        ab = a[1],
-        ac = a[2],
-        ad = a[3];
+      ab = a[1],
+      ac = a[2],
+      ad = a[3];
     var atx = a[4],
-        aty = a[5];
+      aty = a[5];
     var det = aa * ad - ab * ac;
 
     if (!det) {
@@ -706,6 +742,7 @@ THE SOFTWARE.
     out[5] = (ab * atx - aa * aty) * det;
     return out;
   }
+
   /**
    * Calculates the determinant of a mat2d
    *
@@ -716,6 +753,7 @@ THE SOFTWARE.
   function determinant$1(a) {
     return a[0] * a[3] - a[1] * a[2];
   }
+
   /**
    * Multiplies two mat2d's
    *
@@ -727,17 +765,17 @@ THE SOFTWARE.
 
   function multiply$1(out, a, b) {
     var a0 = a[0],
-        a1 = a[1],
-        a2 = a[2],
-        a3 = a[3],
-        a4 = a[4],
-        a5 = a[5];
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3],
+      a4 = a[4],
+      a5 = a[5];
     var b0 = b[0],
-        b1 = b[1],
-        b2 = b[2],
-        b3 = b[3],
-        b4 = b[4],
-        b5 = b[5];
+      b1 = b[1],
+      b2 = b[2],
+      b3 = b[3],
+      b4 = b[4],
+      b5 = b[5];
     out[0] = a0 * b0 + a2 * b1;
     out[1] = a1 * b0 + a3 * b1;
     out[2] = a0 * b2 + a2 * b3;
@@ -746,6 +784,7 @@ THE SOFTWARE.
     out[5] = a1 * b4 + a3 * b5 + a5;
     return out;
   }
+
   /**
    * Rotates a mat2d by the given angle
    *
@@ -757,11 +796,11 @@ THE SOFTWARE.
 
   function rotate$1(out, a, rad) {
     var a0 = a[0],
-        a1 = a[1],
-        a2 = a[2],
-        a3 = a[3],
-        a4 = a[4],
-        a5 = a[5];
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3],
+      a4 = a[4],
+      a5 = a[5];
     var s = Math.sin(rad);
     var c = Math.cos(rad);
     out[0] = a0 * c + a2 * s;
@@ -772,6 +811,7 @@ THE SOFTWARE.
     out[5] = a5;
     return out;
   }
+
   /**
    * Scales the mat2d by the dimensions in the given vec2
    *
@@ -783,13 +823,13 @@ THE SOFTWARE.
 
   function scale$1(out, a, v) {
     var a0 = a[0],
-        a1 = a[1],
-        a2 = a[2],
-        a3 = a[3],
-        a4 = a[4],
-        a5 = a[5];
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3],
+      a4 = a[4],
+      a5 = a[5];
     var v0 = v[0],
-        v1 = v[1];
+      v1 = v[1];
     out[0] = a0 * v0;
     out[1] = a1 * v0;
     out[2] = a2 * v1;
@@ -798,6 +838,7 @@ THE SOFTWARE.
     out[5] = a5;
     return out;
   }
+
   /**
    * Translates the mat2d by the dimensions in the given vec2
    *
@@ -809,13 +850,13 @@ THE SOFTWARE.
 
   function translate(out, a, v) {
     var a0 = a[0],
-        a1 = a[1],
-        a2 = a[2],
-        a3 = a[3],
-        a4 = a[4],
-        a5 = a[5];
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3],
+      a4 = a[4],
+      a5 = a[5];
     var v0 = v[0],
-        v1 = v[1];
+      v1 = v[1];
     out[0] = a0;
     out[1] = a1;
     out[2] = a2;
@@ -824,6 +865,7 @@ THE SOFTWARE.
     out[5] = a1 * v0 + a3 * v1 + a5;
     return out;
   }
+
   /**
    * Creates a matrix from a given angle
    * This is equivalent to (but much faster than):
@@ -838,7 +880,7 @@ THE SOFTWARE.
 
   function fromRotation$1(out, rad) {
     var s = Math.sin(rad),
-        c = Math.cos(rad);
+      c = Math.cos(rad);
     out[0] = c;
     out[1] = s;
     out[2] = -s;
@@ -847,6 +889,7 @@ THE SOFTWARE.
     out[5] = 0;
     return out;
   }
+
   /**
    * Creates a matrix from a vector scaling
    * This is equivalent to (but much faster than):
@@ -868,6 +911,7 @@ THE SOFTWARE.
     out[5] = 0;
     return out;
   }
+
   /**
    * Creates a matrix from a vector translation
    * This is equivalent to (but much faster than):
@@ -889,6 +933,7 @@ THE SOFTWARE.
     out[5] = v[1];
     return out;
   }
+
   /**
    * Returns a string representation of a mat2d
    *
@@ -899,6 +944,7 @@ THE SOFTWARE.
   function str$1(a) {
     return 'mat2d(' + a[0] + ', ' + a[1] + ', ' + a[2] + ', ' + a[3] + ', ' + a[4] + ', ' + a[5] + ')';
   }
+
   /**
    * Returns Frobenius norm of a mat2d
    *
@@ -909,6 +955,7 @@ THE SOFTWARE.
   function frob$1(a) {
     return Math.sqrt(Math.pow(a[0], 2) + Math.pow(a[1], 2) + Math.pow(a[2], 2) + Math.pow(a[3], 2) + Math.pow(a[4], 2) + Math.pow(a[5], 2) + 1);
   }
+
   /**
    * Adds two mat2d's
    *
@@ -927,6 +974,7 @@ THE SOFTWARE.
     out[5] = a[5] + b[5];
     return out;
   }
+
   /**
    * Subtracts matrix b from matrix a
    *
@@ -945,6 +993,7 @@ THE SOFTWARE.
     out[5] = a[5] - b[5];
     return out;
   }
+
   /**
    * Multiply each element of the matrix by a scalar.
    *
@@ -963,6 +1012,7 @@ THE SOFTWARE.
     out[5] = a[5] * b;
     return out;
   }
+
   /**
    * Adds two mat2d's after multiplying each element of the second operand by a scalar value.
    *
@@ -982,6 +1032,7 @@ THE SOFTWARE.
     out[5] = a[5] + b[5] * scale;
     return out;
   }
+
   /**
    * Returns whether or not the matrices have exactly the same elements in the same position (when compared with ===)
    *
@@ -993,6 +1044,7 @@ THE SOFTWARE.
   function exactEquals$1(a, b) {
     return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3] && a[4] === b[4] && a[5] === b[5];
   }
+
   /**
    * Returns whether or not the matrices have approximately the same elements in the same position.
    *
@@ -1003,19 +1055,20 @@ THE SOFTWARE.
 
   function equals$2(a, b) {
     var a0 = a[0],
-        a1 = a[1],
-        a2 = a[2],
-        a3 = a[3],
-        a4 = a[4],
-        a5 = a[5];
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3],
+      a4 = a[4],
+      a5 = a[5];
     var b0 = b[0],
-        b1 = b[1],
-        b2 = b[2],
-        b3 = b[3],
-        b4 = b[4],
-        b5 = b[5];
+      b1 = b[1],
+      b2 = b[2],
+      b3 = b[3],
+      b4 = b[4],
+      b5 = b[5];
     return Math.abs(a0 - b0) <= EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3)) && Math.abs(a4 - b4) <= EPSILON * Math.max(1.0, Math.abs(a4), Math.abs(b4)) && Math.abs(a5 - b5) <= EPSILON * Math.max(1.0, Math.abs(a5), Math.abs(b5));
   }
+
   /**
    * Alias for {@link mat2d.multiply}
    * @function
@@ -1085,6 +1138,7 @@ THE SOFTWARE.
     out[8] = 1;
     return out;
   }
+
   /**
    * Copies the upper-left 3x3 values into the given mat3.
    *
@@ -1105,6 +1159,7 @@ THE SOFTWARE.
     out[8] = a[10];
     return out;
   }
+
   /**
    * Creates a new mat3 initialized with values from an existing matrix
    *
@@ -1125,6 +1180,7 @@ THE SOFTWARE.
     out[8] = a[8];
     return out;
   }
+
   /**
    * Copy the values from one mat3 to another
    *
@@ -1145,6 +1201,7 @@ THE SOFTWARE.
     out[8] = a[8];
     return out;
   }
+
   /**
    * Create a new mat3 with the given values
    *
@@ -1173,6 +1230,7 @@ THE SOFTWARE.
     out[8] = m22;
     return out;
   }
+
   /**
    * Set the components of a mat3 to the given values
    *
@@ -1201,6 +1259,7 @@ THE SOFTWARE.
     out[8] = m22;
     return out;
   }
+
   /**
    * Set a mat3 to the identity matrix
    *
@@ -1220,6 +1279,7 @@ THE SOFTWARE.
     out[8] = 1;
     return out;
   }
+
   /**
    * Transpose the values of a mat3
    *
@@ -1232,8 +1292,8 @@ THE SOFTWARE.
     // If we are transposing ourselves we can skip a few steps but have to cache some values
     if (out === a) {
       var a01 = a[1],
-          a02 = a[2],
-          a12 = a[5];
+        a02 = a[2],
+        a12 = a[5];
       out[1] = a[3];
       out[2] = a[6];
       out[3] = a01;
@@ -1254,6 +1314,7 @@ THE SOFTWARE.
 
     return out;
   }
+
   /**
    * Inverts a mat3
    *
@@ -1264,14 +1325,14 @@ THE SOFTWARE.
 
   function invert$2(out, a) {
     var a00 = a[0],
-        a01 = a[1],
-        a02 = a[2];
+      a01 = a[1],
+      a02 = a[2];
     var a10 = a[3],
-        a11 = a[4],
-        a12 = a[5];
+      a11 = a[4],
+      a12 = a[5];
     var a20 = a[6],
-        a21 = a[7],
-        a22 = a[8];
+      a21 = a[7],
+      a22 = a[8];
     var b01 = a22 * a11 - a12 * a21;
     var b11 = -a22 * a10 + a12 * a20;
     var b21 = a21 * a10 - a11 * a20; // Calculate the determinant
@@ -1294,6 +1355,7 @@ THE SOFTWARE.
     out[8] = (a11 * a00 - a01 * a10) * det;
     return out;
   }
+
   /**
    * Calculates the adjugate of a mat3
    *
@@ -1304,14 +1366,14 @@ THE SOFTWARE.
 
   function adjoint$1(out, a) {
     var a00 = a[0],
-        a01 = a[1],
-        a02 = a[2];
+      a01 = a[1],
+      a02 = a[2];
     var a10 = a[3],
-        a11 = a[4],
-        a12 = a[5];
+      a11 = a[4],
+      a12 = a[5];
     var a20 = a[6],
-        a21 = a[7],
-        a22 = a[8];
+      a21 = a[7],
+      a22 = a[8];
     out[0] = a11 * a22 - a12 * a21;
     out[1] = a02 * a21 - a01 * a22;
     out[2] = a01 * a12 - a02 * a11;
@@ -1323,6 +1385,7 @@ THE SOFTWARE.
     out[8] = a00 * a11 - a01 * a10;
     return out;
   }
+
   /**
    * Calculates the determinant of a mat3
    *
@@ -1332,16 +1395,17 @@ THE SOFTWARE.
 
   function determinant$2(a) {
     var a00 = a[0],
-        a01 = a[1],
-        a02 = a[2];
+      a01 = a[1],
+      a02 = a[2];
     var a10 = a[3],
-        a11 = a[4],
-        a12 = a[5];
+      a11 = a[4],
+      a12 = a[5];
     var a20 = a[6],
-        a21 = a[7],
-        a22 = a[8];
+      a21 = a[7],
+      a22 = a[8];
     return a00 * (a22 * a11 - a12 * a21) + a01 * (-a22 * a10 + a12 * a20) + a02 * (a21 * a10 - a11 * a20);
   }
+
   /**
    * Multiplies two mat3's
    *
@@ -1353,23 +1417,23 @@ THE SOFTWARE.
 
   function multiply$2(out, a, b) {
     var a00 = a[0],
-        a01 = a[1],
-        a02 = a[2];
+      a01 = a[1],
+      a02 = a[2];
     var a10 = a[3],
-        a11 = a[4],
-        a12 = a[5];
+      a11 = a[4],
+      a12 = a[5];
     var a20 = a[6],
-        a21 = a[7],
-        a22 = a[8];
+      a21 = a[7],
+      a22 = a[8];
     var b00 = b[0],
-        b01 = b[1],
-        b02 = b[2];
+      b01 = b[1],
+      b02 = b[2];
     var b10 = b[3],
-        b11 = b[4],
-        b12 = b[5];
+      b11 = b[4],
+      b12 = b[5];
     var b20 = b[6],
-        b21 = b[7],
-        b22 = b[8];
+      b21 = b[7],
+      b22 = b[8];
     out[0] = b00 * a00 + b01 * a10 + b02 * a20;
     out[1] = b00 * a01 + b01 * a11 + b02 * a21;
     out[2] = b00 * a02 + b01 * a12 + b02 * a22;
@@ -1381,6 +1445,7 @@ THE SOFTWARE.
     out[8] = b20 * a02 + b21 * a12 + b22 * a22;
     return out;
   }
+
   /**
    * Translate a mat3 by the given vector
    *
@@ -1392,16 +1457,16 @@ THE SOFTWARE.
 
   function translate$1(out, a, v) {
     var a00 = a[0],
-        a01 = a[1],
-        a02 = a[2],
-        a10 = a[3],
-        a11 = a[4],
-        a12 = a[5],
-        a20 = a[6],
-        a21 = a[7],
-        a22 = a[8],
-        x = v[0],
-        y = v[1];
+      a01 = a[1],
+      a02 = a[2],
+      a10 = a[3],
+      a11 = a[4],
+      a12 = a[5],
+      a20 = a[6],
+      a21 = a[7],
+      a22 = a[8],
+      x = v[0],
+      y = v[1];
     out[0] = a00;
     out[1] = a01;
     out[2] = a02;
@@ -1413,6 +1478,7 @@ THE SOFTWARE.
     out[8] = x * a02 + y * a12 + a22;
     return out;
   }
+
   /**
    * Rotates a mat3 by the given angle
    *
@@ -1424,16 +1490,16 @@ THE SOFTWARE.
 
   function rotate$2(out, a, rad) {
     var a00 = a[0],
-        a01 = a[1],
-        a02 = a[2],
-        a10 = a[3],
-        a11 = a[4],
-        a12 = a[5],
-        a20 = a[6],
-        a21 = a[7],
-        a22 = a[8],
-        s = Math.sin(rad),
-        c = Math.cos(rad);
+      a01 = a[1],
+      a02 = a[2],
+      a10 = a[3],
+      a11 = a[4],
+      a12 = a[5],
+      a20 = a[6],
+      a21 = a[7],
+      a22 = a[8],
+      s = Math.sin(rad),
+      c = Math.cos(rad);
     out[0] = c * a00 + s * a10;
     out[1] = c * a01 + s * a11;
     out[2] = c * a02 + s * a12;
@@ -1445,6 +1511,7 @@ THE SOFTWARE.
     out[8] = a22;
     return out;
   }
+
   /**
    * Scales the mat3 by the dimensions in the given vec2
    *
@@ -1456,7 +1523,7 @@ THE SOFTWARE.
 
   function scale$2(out, a, v) {
     var x = v[0],
-        y = v[1];
+      y = v[1];
     out[0] = x * a[0];
     out[1] = x * a[1];
     out[2] = x * a[2];
@@ -1468,6 +1535,7 @@ THE SOFTWARE.
     out[8] = a[8];
     return out;
   }
+
   /**
    * Creates a matrix from a vector translation
    * This is equivalent to (but much faster than):
@@ -1492,6 +1560,7 @@ THE SOFTWARE.
     out[8] = 1;
     return out;
   }
+
   /**
    * Creates a matrix from a given angle
    * This is equivalent to (but much faster than):
@@ -1506,7 +1575,7 @@ THE SOFTWARE.
 
   function fromRotation$2(out, rad) {
     var s = Math.sin(rad),
-        c = Math.cos(rad);
+      c = Math.cos(rad);
     out[0] = c;
     out[1] = s;
     out[2] = 0;
@@ -1518,6 +1587,7 @@ THE SOFTWARE.
     out[8] = 1;
     return out;
   }
+
   /**
    * Creates a matrix from a vector scaling
    * This is equivalent to (but much faster than):
@@ -1542,6 +1612,7 @@ THE SOFTWARE.
     out[8] = 1;
     return out;
   }
+
   /**
    * Copies the values from a mat2d into a mat3
    *
@@ -1562,20 +1633,21 @@ THE SOFTWARE.
     out[8] = 1;
     return out;
   }
+
   /**
-  * Calculates a 3x3 matrix from the given quaternion
-  *
-  * @param {mat3} out mat3 receiving operation result
-  * @param {quat} q Quaternion to create matrix from
-  *
-  * @returns {mat3} out
-  */
+   * Calculates a 3x3 matrix from the given quaternion
+   *
+   * @param {mat3} out mat3 receiving operation result
+   * @param {quat} q Quaternion to create matrix from
+   *
+   * @returns {mat3} out
+   */
 
   function fromQuat(out, q) {
     var x = q[0],
-        y = q[1],
-        z = q[2],
-        w = q[3];
+      y = q[1],
+      z = q[2],
+      w = q[3];
     var x2 = x + x;
     var y2 = y + y;
     var z2 = z + z;
@@ -1599,32 +1671,33 @@ THE SOFTWARE.
     out[8] = 1 - xx - yy;
     return out;
   }
+
   /**
-  * Calculates a 3x3 normal matrix (transpose inverse) from the 4x4 matrix
-  *
-  * @param {mat3} out mat3 receiving operation result
-  * @param {mat4} a Mat4 to derive the normal matrix from
-  *
-  * @returns {mat3} out
-  */
+   * Calculates a 3x3 normal matrix (transpose inverse) from the 4x4 matrix
+   *
+   * @param {mat3} out mat3 receiving operation result
+   * @param {mat4} a Mat4 to derive the normal matrix from
+   *
+   * @returns {mat3} out
+   */
 
   function normalFromMat4(out, a) {
     var a00 = a[0],
-        a01 = a[1],
-        a02 = a[2],
-        a03 = a[3];
+      a01 = a[1],
+      a02 = a[2],
+      a03 = a[3];
     var a10 = a[4],
-        a11 = a[5],
-        a12 = a[6],
-        a13 = a[7];
+      a11 = a[5],
+      a12 = a[6],
+      a13 = a[7];
     var a20 = a[8],
-        a21 = a[9],
-        a22 = a[10],
-        a23 = a[11];
+      a21 = a[9],
+      a22 = a[10],
+      a23 = a[11];
     var a30 = a[12],
-        a31 = a[13],
-        a32 = a[14],
-        a33 = a[15];
+      a31 = a[13],
+      a32 = a[14],
+      a33 = a[15];
     var b00 = a00 * a11 - a01 * a10;
     var b01 = a00 * a12 - a02 * a10;
     var b02 = a00 * a13 - a03 * a10;
@@ -1656,6 +1729,7 @@ THE SOFTWARE.
     out[8] = (a30 * b04 - a31 * b02 + a33 * b00) * det;
     return out;
   }
+
   /**
    * Generates a 2D projection matrix with the given bounds
    *
@@ -1677,6 +1751,7 @@ THE SOFTWARE.
     out[8] = 1;
     return out;
   }
+
   /**
    * Returns a string representation of a mat3
    *
@@ -1687,6 +1762,7 @@ THE SOFTWARE.
   function str$2(a) {
     return 'mat3(' + a[0] + ', ' + a[1] + ', ' + a[2] + ', ' + a[3] + ', ' + a[4] + ', ' + a[5] + ', ' + a[6] + ', ' + a[7] + ', ' + a[8] + ')';
   }
+
   /**
    * Returns Frobenius norm of a mat3
    *
@@ -1697,6 +1773,7 @@ THE SOFTWARE.
   function frob$2(a) {
     return Math.sqrt(Math.pow(a[0], 2) + Math.pow(a[1], 2) + Math.pow(a[2], 2) + Math.pow(a[3], 2) + Math.pow(a[4], 2) + Math.pow(a[5], 2) + Math.pow(a[6], 2) + Math.pow(a[7], 2) + Math.pow(a[8], 2));
   }
+
   /**
    * Adds two mat3's
    *
@@ -1718,6 +1795,7 @@ THE SOFTWARE.
     out[8] = a[8] + b[8];
     return out;
   }
+
   /**
    * Subtracts matrix b from matrix a
    *
@@ -1739,6 +1817,7 @@ THE SOFTWARE.
     out[8] = a[8] - b[8];
     return out;
   }
+
   /**
    * Multiply each element of the matrix by a scalar.
    *
@@ -1760,6 +1839,7 @@ THE SOFTWARE.
     out[8] = a[8] * b;
     return out;
   }
+
   /**
    * Adds two mat3's after multiplying each element of the second operand by a scalar value.
    *
@@ -1782,6 +1862,7 @@ THE SOFTWARE.
     out[8] = a[8] + b[8] * scale;
     return out;
   }
+
   /**
    * Returns whether or not the matrices have exactly the same elements in the same position (when compared with ===)
    *
@@ -1793,6 +1874,7 @@ THE SOFTWARE.
   function exactEquals$2(a, b) {
     return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3] && a[4] === b[4] && a[5] === b[5] && a[6] === b[6] && a[7] === b[7] && a[8] === b[8];
   }
+
   /**
    * Returns whether or not the matrices have approximately the same elements in the same position.
    *
@@ -1803,25 +1885,26 @@ THE SOFTWARE.
 
   function equals$3(a, b) {
     var a0 = a[0],
-        a1 = a[1],
-        a2 = a[2],
-        a3 = a[3],
-        a4 = a[4],
-        a5 = a[5],
-        a6 = a[6],
-        a7 = a[7],
-        a8 = a[8];
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3],
+      a4 = a[4],
+      a5 = a[5],
+      a6 = a[6],
+      a7 = a[7],
+      a8 = a[8];
     var b0 = b[0],
-        b1 = b[1],
-        b2 = b[2],
-        b3 = b[3],
-        b4 = b[4],
-        b5 = b[5],
-        b6 = b[6],
-        b7 = b[7],
-        b8 = b[8];
+      b1 = b[1],
+      b2 = b[2],
+      b3 = b[3],
+      b4 = b[4],
+      b5 = b[5],
+      b6 = b[6],
+      b7 = b[7],
+      b8 = b[8];
     return Math.abs(a0 - b0) <= EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3)) && Math.abs(a4 - b4) <= EPSILON * Math.max(1.0, Math.abs(a4), Math.abs(b4)) && Math.abs(a5 - b5) <= EPSILON * Math.max(1.0, Math.abs(a5), Math.abs(b5)) && Math.abs(a6 - b6) <= EPSILON * Math.max(1.0, Math.abs(a6), Math.abs(b6)) && Math.abs(a7 - b7) <= EPSILON * Math.max(1.0, Math.abs(a7), Math.abs(b7)) && Math.abs(a8 - b8) <= EPSILON * Math.max(1.0, Math.abs(a8), Math.abs(b8));
   }
+
   /**
    * Alias for {@link mat3.multiply}
    * @function
@@ -1905,6 +1988,7 @@ THE SOFTWARE.
     out[15] = 1;
     return out;
   }
+
   /**
    * Creates a new mat4 initialized with values from an existing matrix
    *
@@ -1932,6 +2016,7 @@ THE SOFTWARE.
     out[15] = a[15];
     return out;
   }
+
   /**
    * Copy the values from one mat4 to another
    *
@@ -1959,6 +2044,7 @@ THE SOFTWARE.
     out[15] = a[15];
     return out;
   }
+
   /**
    * Create a new mat4 with the given values
    *
@@ -2001,6 +2087,7 @@ THE SOFTWARE.
     out[15] = m33;
     return out;
   }
+
   /**
    * Set the components of a mat4 to the given values
    *
@@ -2043,6 +2130,7 @@ THE SOFTWARE.
     out[15] = m33;
     return out;
   }
+
   /**
    * Set a mat4 to the identity matrix
    *
@@ -2069,6 +2157,7 @@ THE SOFTWARE.
     out[15] = 1;
     return out;
   }
+
   /**
    * Transpose the values of a mat4
    *
@@ -2081,10 +2170,10 @@ THE SOFTWARE.
     // If we are transposing ourselves we can skip a few steps but have to cache some values
     if (out === a) {
       var a01 = a[1],
-          a02 = a[2],
-          a03 = a[3];
+        a02 = a[2],
+        a03 = a[3];
       var a12 = a[6],
-          a13 = a[7];
+        a13 = a[7];
       var a23 = a[11];
       out[1] = a[4];
       out[2] = a[8];
@@ -2119,6 +2208,7 @@ THE SOFTWARE.
 
     return out;
   }
+
   /**
    * Inverts a mat4
    *
@@ -2129,21 +2219,21 @@ THE SOFTWARE.
 
   function invert$3(out, a) {
     var a00 = a[0],
-        a01 = a[1],
-        a02 = a[2],
-        a03 = a[3];
+      a01 = a[1],
+      a02 = a[2],
+      a03 = a[3];
     var a10 = a[4],
-        a11 = a[5],
-        a12 = a[6],
-        a13 = a[7];
+      a11 = a[5],
+      a12 = a[6],
+      a13 = a[7];
     var a20 = a[8],
-        a21 = a[9],
-        a22 = a[10],
-        a23 = a[11];
+      a21 = a[9],
+      a22 = a[10],
+      a23 = a[11];
     var a30 = a[12],
-        a31 = a[13],
-        a32 = a[14],
-        a33 = a[15];
+      a31 = a[13],
+      a32 = a[14],
+      a33 = a[15];
     var b00 = a00 * a11 - a01 * a10;
     var b01 = a00 * a12 - a02 * a10;
     var b02 = a00 * a13 - a03 * a10;
@@ -2182,6 +2272,7 @@ THE SOFTWARE.
     out[15] = (a20 * b03 - a21 * b01 + a22 * b00) * det;
     return out;
   }
+
   /**
    * Calculates the adjugate of a mat4
    *
@@ -2192,21 +2283,21 @@ THE SOFTWARE.
 
   function adjoint$2(out, a) {
     var a00 = a[0],
-        a01 = a[1],
-        a02 = a[2],
-        a03 = a[3];
+      a01 = a[1],
+      a02 = a[2],
+      a03 = a[3];
     var a10 = a[4],
-        a11 = a[5],
-        a12 = a[6],
-        a13 = a[7];
+      a11 = a[5],
+      a12 = a[6],
+      a13 = a[7];
     var a20 = a[8],
-        a21 = a[9],
-        a22 = a[10],
-        a23 = a[11];
+      a21 = a[9],
+      a22 = a[10],
+      a23 = a[11];
     var a30 = a[12],
-        a31 = a[13],
-        a32 = a[14],
-        a33 = a[15];
+      a31 = a[13],
+      a32 = a[14],
+      a33 = a[15];
     out[0] = a11 * (a22 * a33 - a23 * a32) - a21 * (a12 * a33 - a13 * a32) + a31 * (a12 * a23 - a13 * a22);
     out[1] = -(a01 * (a22 * a33 - a23 * a32) - a21 * (a02 * a33 - a03 * a32) + a31 * (a02 * a23 - a03 * a22));
     out[2] = a01 * (a12 * a33 - a13 * a32) - a11 * (a02 * a33 - a03 * a32) + a31 * (a02 * a13 - a03 * a12);
@@ -2225,6 +2316,7 @@ THE SOFTWARE.
     out[15] = a00 * (a11 * a22 - a12 * a21) - a10 * (a01 * a22 - a02 * a21) + a20 * (a01 * a12 - a02 * a11);
     return out;
   }
+
   /**
    * Calculates the determinant of a mat4
    *
@@ -2234,21 +2326,21 @@ THE SOFTWARE.
 
   function determinant$3(a) {
     var a00 = a[0],
-        a01 = a[1],
-        a02 = a[2],
-        a03 = a[3];
+      a01 = a[1],
+      a02 = a[2],
+      a03 = a[3];
     var a10 = a[4],
-        a11 = a[5],
-        a12 = a[6],
-        a13 = a[7];
+      a11 = a[5],
+      a12 = a[6],
+      a13 = a[7];
     var a20 = a[8],
-        a21 = a[9],
-        a22 = a[10],
-        a23 = a[11];
+      a21 = a[9],
+      a22 = a[10],
+      a23 = a[11];
     var a30 = a[12],
-        a31 = a[13],
-        a32 = a[14],
-        a33 = a[15];
+      a31 = a[13],
+      a32 = a[14],
+      a33 = a[15];
     var b00 = a00 * a11 - a01 * a10;
     var b01 = a00 * a12 - a02 * a10;
     var b02 = a00 * a13 - a03 * a10;
@@ -2264,6 +2356,7 @@ THE SOFTWARE.
 
     return b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
   }
+
   /**
    * Multiplies two mat4s
    *
@@ -2275,26 +2368,26 @@ THE SOFTWARE.
 
   function multiply$3(out, a, b) {
     var a00 = a[0],
-        a01 = a[1],
-        a02 = a[2],
-        a03 = a[3];
+      a01 = a[1],
+      a02 = a[2],
+      a03 = a[3];
     var a10 = a[4],
-        a11 = a[5],
-        a12 = a[6],
-        a13 = a[7];
+      a11 = a[5],
+      a12 = a[6],
+      a13 = a[7];
     var a20 = a[8],
-        a21 = a[9],
-        a22 = a[10],
-        a23 = a[11];
+      a21 = a[9],
+      a22 = a[10],
+      a23 = a[11];
     var a30 = a[12],
-        a31 = a[13],
-        a32 = a[14],
-        a33 = a[15]; // Cache only the current line of the second matrix
+      a31 = a[13],
+      a32 = a[14],
+      a33 = a[15]; // Cache only the current line of the second matrix
 
     var b0 = b[0],
-        b1 = b[1],
-        b2 = b[2],
-        b3 = b[3];
+      b1 = b[1],
+      b2 = b[2],
+      b3 = b[3];
     out[0] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
     out[1] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
     out[2] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
@@ -2325,6 +2418,7 @@ THE SOFTWARE.
     out[15] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
     return out;
   }
+
   /**
    * Translate a mat4 by the given vector
    *
@@ -2336,8 +2430,8 @@ THE SOFTWARE.
 
   function translate$2(out, a, v) {
     var x = v[0],
-        y = v[1],
-        z = v[2];
+      y = v[1],
+      z = v[2];
     var a00, a01, a02, a03;
     var a10, a11, a12, a13;
     var a20, a21, a22, a23;
@@ -2380,6 +2474,7 @@ THE SOFTWARE.
 
     return out;
   }
+
   /**
    * Scales the mat4 by the dimensions in the given vec3 not using vectorization
    *
@@ -2391,8 +2486,8 @@ THE SOFTWARE.
 
   function scale$3(out, a, v) {
     var x = v[0],
-        y = v[1],
-        z = v[2];
+      y = v[1],
+      z = v[2];
     out[0] = a[0] * x;
     out[1] = a[1] * x;
     out[2] = a[2] * x;
@@ -2411,6 +2506,7 @@ THE SOFTWARE.
     out[15] = a[15];
     return out;
   }
+
   /**
    * Rotates a mat4 by the given angle around the given axis
    *
@@ -2423,8 +2519,8 @@ THE SOFTWARE.
 
   function rotate$3(out, a, rad, axis) {
     var x = axis[0],
-        y = axis[1],
-        z = axis[2];
+      y = axis[1],
+      z = axis[2];
     var len = Math.sqrt(x * x + y * y + z * z);
     var s, c, t;
     var a00, a01, a02, a03;
@@ -2491,6 +2587,7 @@ THE SOFTWARE.
 
     return out;
   }
+
   /**
    * Rotates a matrix by the given angle around the X axis
    *
@@ -2535,6 +2632,7 @@ THE SOFTWARE.
     out[11] = a23 * c - a13 * s;
     return out;
   }
+
   /**
    * Rotates a matrix by the given angle around the Y axis
    *
@@ -2579,6 +2677,7 @@ THE SOFTWARE.
     out[11] = a03 * s + a23 * c;
     return out;
   }
+
   /**
    * Rotates a matrix by the given angle around the Z axis
    *
@@ -2623,6 +2722,7 @@ THE SOFTWARE.
     out[7] = a13 * c - a03 * s;
     return out;
   }
+
   /**
    * Creates a matrix from a vector translation
    * This is equivalent to (but much faster than):
@@ -2654,6 +2754,7 @@ THE SOFTWARE.
     out[15] = 1;
     return out;
   }
+
   /**
    * Creates a matrix from a vector scaling
    * This is equivalent to (but much faster than):
@@ -2685,6 +2786,7 @@ THE SOFTWARE.
     out[15] = 1;
     return out;
   }
+
   /**
    * Creates a matrix from a given angle around a given axis
    * This is equivalent to (but much faster than):
@@ -2700,8 +2802,8 @@ THE SOFTWARE.
 
   function fromRotation$3(out, rad, axis) {
     var x = axis[0],
-        y = axis[1],
-        z = axis[2];
+      y = axis[1],
+      z = axis[2];
     var len = Math.sqrt(x * x + y * y + z * z);
     var s, c, t;
 
@@ -2735,6 +2837,7 @@ THE SOFTWARE.
     out[15] = 1;
     return out;
   }
+
   /**
    * Creates a matrix from the given angle around the X axis
    * This is equivalent to (but much faster than):
@@ -2769,6 +2872,7 @@ THE SOFTWARE.
     out[15] = 1;
     return out;
   }
+
   /**
    * Creates a matrix from the given angle around the Y axis
    * This is equivalent to (but much faster than):
@@ -2803,6 +2907,7 @@ THE SOFTWARE.
     out[15] = 1;
     return out;
   }
+
   /**
    * Creates a matrix from the given angle around the Z axis
    * This is equivalent to (but much faster than):
@@ -2837,6 +2942,7 @@ THE SOFTWARE.
     out[15] = 1;
     return out;
   }
+
   /**
    * Creates a matrix from a quaternion rotation and vector translation
    * This is equivalent to (but much faster than):
@@ -2856,9 +2962,9 @@ THE SOFTWARE.
   function fromRotationTranslation(out, q, v) {
     // Quaternion math
     var x = q[0],
-        y = q[1],
-        z = q[2],
-        w = q[3];
+      y = q[1],
+      z = q[2],
+      w = q[3];
     var x2 = x + x;
     var y2 = y + y;
     var z2 = z + z;
@@ -2889,6 +2995,7 @@ THE SOFTWARE.
     out[15] = 1;
     return out;
   }
+
   /**
    * Creates a new mat4 from a dual quat.
    *
@@ -2900,13 +3007,13 @@ THE SOFTWARE.
   function fromQuat2(out, a) {
     var translation = new ARRAY_TYPE(3);
     var bx = -a[0],
-        by = -a[1],
-        bz = -a[2],
-        bw = a[3],
-        ax = a[4],
-        ay = a[5],
-        az = a[6],
-        aw = a[7];
+      by = -a[1],
+      bz = -a[2],
+      bw = a[3],
+      ax = a[4],
+      ay = a[5],
+      az = a[6],
+      aw = a[7];
     var magnitude = bx * bx + by * by + bz * bz + bw * bw; //Only scale if it makes sense
 
     if (magnitude > 0) {
@@ -2922,6 +3029,7 @@ THE SOFTWARE.
     fromRotationTranslation(out, a, translation);
     return out;
   }
+
   /**
    * Returns the translation vector component of a transformation
    *  matrix. If a matrix is built with fromRotationTranslation,
@@ -2938,6 +3046,7 @@ THE SOFTWARE.
     out[2] = mat[14];
     return out;
   }
+
   /**
    * Returns the scaling factor component of a transformation
    *  matrix. If a matrix is built with fromRotationTranslationScale
@@ -2964,6 +3073,7 @@ THE SOFTWARE.
     out[2] = Math.sqrt(m31 * m31 + m32 * m32 + m33 * m33);
     return out;
   }
+
   /**
    * Returns a quaternion representing the rotational component
    *  of a transformation matrix. If a matrix is built with
@@ -3007,6 +3117,7 @@ THE SOFTWARE.
 
     return out;
   }
+
   /**
    * Creates a matrix from a quaternion rotation, vector translation and vector scale
    * This is equivalent to (but much faster than):
@@ -3028,9 +3139,9 @@ THE SOFTWARE.
   function fromRotationTranslationScale(out, q, v, s) {
     // Quaternion math
     var x = q[0],
-        y = q[1],
-        z = q[2],
-        w = q[3];
+      y = q[1],
+      z = q[2],
+      w = q[3];
     var x2 = x + x;
     var y2 = y + y;
     var z2 = z + z;
@@ -3064,6 +3175,7 @@ THE SOFTWARE.
     out[15] = 1;
     return out;
   }
+
   /**
    * Creates a matrix from a quaternion rotation, vector translation and vector scale, rotating and scaling around the given origin
    * This is equivalent to (but much faster than):
@@ -3088,9 +3200,9 @@ THE SOFTWARE.
   function fromRotationTranslationScaleOrigin(out, q, v, s, o) {
     // Quaternion math
     var x = q[0],
-        y = q[1],
-        z = q[2],
-        w = q[3];
+      y = q[1],
+      z = q[2],
+      w = q[3];
     var x2 = x + x;
     var y2 = y + y;
     var z2 = z + z;
@@ -3136,6 +3248,7 @@ THE SOFTWARE.
     out[15] = 1;
     return out;
   }
+
   /**
    * Calculates a 4x4 matrix from the given quaternion
    *
@@ -3147,9 +3260,9 @@ THE SOFTWARE.
 
   function fromQuat$1(out, q) {
     var x = q[0],
-        y = q[1],
-        z = q[2],
-        w = q[3];
+      y = q[1],
+      z = q[2],
+      w = q[3];
     var x2 = x + x;
     var y2 = y + y;
     var z2 = z + z;
@@ -3180,6 +3293,7 @@ THE SOFTWARE.
     out[15] = 1;
     return out;
   }
+
   /**
    * Generates a frustum matrix with the given bounds
    *
@@ -3215,6 +3329,7 @@ THE SOFTWARE.
     out[15] = 0;
     return out;
   }
+
   /**
    * Generates a perspective projection matrix with the given bounds.
    * Passing null/undefined/no value for far will generate infinite projection matrix.
@@ -3229,7 +3344,7 @@ THE SOFTWARE.
 
   function perspective(out, fovy, aspect, near, far) {
     var f = 1.0 / Math.tan(fovy / 2),
-        nf;
+      nf;
     out[0] = f / aspect;
     out[1] = 0;
     out[2] = 0;
@@ -3256,6 +3371,7 @@ THE SOFTWARE.
 
     return out;
   }
+
   /**
    * Generates a perspective projection matrix with the given field of view.
    * This is primarily useful for generating projection matrices to be used
@@ -3293,6 +3409,7 @@ THE SOFTWARE.
     out[15] = 0.0;
     return out;
   }
+
   /**
    * Generates a orthogonal projection matrix with the given bounds
    *
@@ -3328,6 +3445,7 @@ THE SOFTWARE.
     out[15] = 1;
     return out;
   }
+
   /**
    * Generates a look-at matrix with the given eye position, focal point, and up axis.
    * If you want a matrix that actually makes an object look at another object, you should use targetTo instead.
@@ -3412,6 +3530,7 @@ THE SOFTWARE.
     out[15] = 1;
     return out;
   }
+
   /**
    * Generates a matrix that makes something look at something else.
    *
@@ -3424,14 +3543,14 @@ THE SOFTWARE.
 
   function targetTo(out, eye, target, up) {
     var eyex = eye[0],
-        eyey = eye[1],
-        eyez = eye[2],
-        upx = up[0],
-        upy = up[1],
-        upz = up[2];
+      eyey = eye[1],
+      eyez = eye[2],
+      upx = up[0],
+      upy = up[1],
+      upz = up[2];
     var z0 = eyex - target[0],
-        z1 = eyey - target[1],
-        z2 = eyez - target[2];
+      z1 = eyey - target[1],
+      z2 = eyez - target[2];
     var len = z0 * z0 + z1 * z1 + z2 * z2;
 
     if (len > 0) {
@@ -3442,8 +3561,8 @@ THE SOFTWARE.
     }
 
     var x0 = upy * z2 - upz * z1,
-        x1 = upz * z0 - upx * z2,
-        x2 = upx * z1 - upy * z0;
+      x1 = upz * z0 - upx * z2,
+      x2 = upx * z1 - upy * z0;
     len = x0 * x0 + x1 * x1 + x2 * x2;
 
     if (len > 0) {
@@ -3471,6 +3590,7 @@ THE SOFTWARE.
     out[15] = 1;
     return out;
   }
+
   /**
    * Returns a string representation of a mat4
    *
@@ -3481,6 +3601,7 @@ THE SOFTWARE.
   function str$3(a) {
     return 'mat4(' + a[0] + ', ' + a[1] + ', ' + a[2] + ', ' + a[3] + ', ' + a[4] + ', ' + a[5] + ', ' + a[6] + ', ' + a[7] + ', ' + a[8] + ', ' + a[9] + ', ' + a[10] + ', ' + a[11] + ', ' + a[12] + ', ' + a[13] + ', ' + a[14] + ', ' + a[15] + ')';
   }
+
   /**
    * Returns Frobenius norm of a mat4
    *
@@ -3491,6 +3612,7 @@ THE SOFTWARE.
   function frob$3(a) {
     return Math.sqrt(Math.pow(a[0], 2) + Math.pow(a[1], 2) + Math.pow(a[2], 2) + Math.pow(a[3], 2) + Math.pow(a[4], 2) + Math.pow(a[5], 2) + Math.pow(a[6], 2) + Math.pow(a[7], 2) + Math.pow(a[8], 2) + Math.pow(a[9], 2) + Math.pow(a[10], 2) + Math.pow(a[11], 2) + Math.pow(a[12], 2) + Math.pow(a[13], 2) + Math.pow(a[14], 2) + Math.pow(a[15], 2));
   }
+
   /**
    * Adds two mat4's
    *
@@ -3519,6 +3641,7 @@ THE SOFTWARE.
     out[15] = a[15] + b[15];
     return out;
   }
+
   /**
    * Subtracts matrix b from matrix a
    *
@@ -3547,6 +3670,7 @@ THE SOFTWARE.
     out[15] = a[15] - b[15];
     return out;
   }
+
   /**
    * Multiply each element of the matrix by a scalar.
    *
@@ -3575,6 +3699,7 @@ THE SOFTWARE.
     out[15] = a[15] * b;
     return out;
   }
+
   /**
    * Adds two mat4's after multiplying each element of the second operand by a scalar value.
    *
@@ -3604,6 +3729,7 @@ THE SOFTWARE.
     out[15] = a[15] + b[15] * scale;
     return out;
   }
+
   /**
    * Returns whether or not the matrices have exactly the same elements in the same position (when compared with ===)
    *
@@ -3615,6 +3741,7 @@ THE SOFTWARE.
   function exactEquals$3(a, b) {
     return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3] && a[4] === b[4] && a[5] === b[5] && a[6] === b[6] && a[7] === b[7] && a[8] === b[8] && a[9] === b[9] && a[10] === b[10] && a[11] === b[11] && a[12] === b[12] && a[13] === b[13] && a[14] === b[14] && a[15] === b[15];
   }
+
   /**
    * Returns whether or not the matrices have approximately the same elements in the same position.
    *
@@ -3625,39 +3752,40 @@ THE SOFTWARE.
 
   function equals$4(a, b) {
     var a0 = a[0],
-        a1 = a[1],
-        a2 = a[2],
-        a3 = a[3];
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3];
     var a4 = a[4],
-        a5 = a[5],
-        a6 = a[6],
-        a7 = a[7];
+      a5 = a[5],
+      a6 = a[6],
+      a7 = a[7];
     var a8 = a[8],
-        a9 = a[9],
-        a10 = a[10],
-        a11 = a[11];
+      a9 = a[9],
+      a10 = a[10],
+      a11 = a[11];
     var a12 = a[12],
-        a13 = a[13],
-        a14 = a[14],
-        a15 = a[15];
+      a13 = a[13],
+      a14 = a[14],
+      a15 = a[15];
     var b0 = b[0],
-        b1 = b[1],
-        b2 = b[2],
-        b3 = b[3];
+      b1 = b[1],
+      b2 = b[2],
+      b3 = b[3];
     var b4 = b[4],
-        b5 = b[5],
-        b6 = b[6],
-        b7 = b[7];
+      b5 = b[5],
+      b6 = b[6],
+      b7 = b[7];
     var b8 = b[8],
-        b9 = b[9],
-        b10 = b[10],
-        b11 = b[11];
+      b9 = b[9],
+      b10 = b[10],
+      b11 = b[11];
     var b12 = b[12],
-        b13 = b[13],
-        b14 = b[14],
-        b15 = b[15];
+      b13 = b[13],
+      b14 = b[14],
+      b15 = b[15];
     return Math.abs(a0 - b0) <= EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3)) && Math.abs(a4 - b4) <= EPSILON * Math.max(1.0, Math.abs(a4), Math.abs(b4)) && Math.abs(a5 - b5) <= EPSILON * Math.max(1.0, Math.abs(a5), Math.abs(b5)) && Math.abs(a6 - b6) <= EPSILON * Math.max(1.0, Math.abs(a6), Math.abs(b6)) && Math.abs(a7 - b7) <= EPSILON * Math.max(1.0, Math.abs(a7), Math.abs(b7)) && Math.abs(a8 - b8) <= EPSILON * Math.max(1.0, Math.abs(a8), Math.abs(b8)) && Math.abs(a9 - b9) <= EPSILON * Math.max(1.0, Math.abs(a9), Math.abs(b9)) && Math.abs(a10 - b10) <= EPSILON * Math.max(1.0, Math.abs(a10), Math.abs(b10)) && Math.abs(a11 - b11) <= EPSILON * Math.max(1.0, Math.abs(a11), Math.abs(b11)) && Math.abs(a12 - b12) <= EPSILON * Math.max(1.0, Math.abs(a12), Math.abs(b12)) && Math.abs(a13 - b13) <= EPSILON * Math.max(1.0, Math.abs(a13), Math.abs(b13)) && Math.abs(a14 - b14) <= EPSILON * Math.max(1.0, Math.abs(a14), Math.abs(b14)) && Math.abs(a15 - b15) <= EPSILON * Math.max(1.0, Math.abs(a15), Math.abs(b15));
   }
+
   /**
    * Alias for {@link mat4.multiply}
    * @function
@@ -3743,6 +3871,7 @@ THE SOFTWARE.
 
     return out;
   }
+
   /**
    * Creates a new vec3 initialized with values from an existing vector
    *
@@ -3757,6 +3886,7 @@ THE SOFTWARE.
     out[2] = a[2];
     return out;
   }
+
   /**
    * Calculates the length of a vec3
    *
@@ -3770,6 +3900,7 @@ THE SOFTWARE.
     var z = a[2];
     return Math.sqrt(x * x + y * y + z * z);
   }
+
   /**
    * Creates a new vec3 initialized with the given values
    *
@@ -3786,6 +3917,7 @@ THE SOFTWARE.
     out[2] = z;
     return out;
   }
+
   /**
    * Copy the values from one vec3 to another
    *
@@ -3800,6 +3932,7 @@ THE SOFTWARE.
     out[2] = a[2];
     return out;
   }
+
   /**
    * Set the components of a vec3 to the given values
    *
@@ -3816,6 +3949,7 @@ THE SOFTWARE.
     out[2] = z;
     return out;
   }
+
   /**
    * Adds two vec3's
    *
@@ -3831,6 +3965,7 @@ THE SOFTWARE.
     out[2] = a[2] + b[2];
     return out;
   }
+
   /**
    * Subtracts vector b from vector a
    *
@@ -3846,6 +3981,7 @@ THE SOFTWARE.
     out[2] = a[2] - b[2];
     return out;
   }
+
   /**
    * Multiplies two vec3's
    *
@@ -3861,6 +3997,7 @@ THE SOFTWARE.
     out[2] = a[2] * b[2];
     return out;
   }
+
   /**
    * Divides two vec3's
    *
@@ -3876,6 +4013,7 @@ THE SOFTWARE.
     out[2] = a[2] / b[2];
     return out;
   }
+
   /**
    * Math.ceil the components of a vec3
    *
@@ -3890,6 +4028,7 @@ THE SOFTWARE.
     out[2] = Math.ceil(a[2]);
     return out;
   }
+
   /**
    * Math.floor the components of a vec3
    *
@@ -3904,6 +4043,7 @@ THE SOFTWARE.
     out[2] = Math.floor(a[2]);
     return out;
   }
+
   /**
    * Returns the minimum of two vec3's
    *
@@ -3919,6 +4059,7 @@ THE SOFTWARE.
     out[2] = Math.min(a[2], b[2]);
     return out;
   }
+
   /**
    * Returns the maximum of two vec3's
    *
@@ -3934,6 +4075,7 @@ THE SOFTWARE.
     out[2] = Math.max(a[2], b[2]);
     return out;
   }
+
   /**
    * Math.round the components of a vec3
    *
@@ -3948,6 +4090,7 @@ THE SOFTWARE.
     out[2] = Math.round(a[2]);
     return out;
   }
+
   /**
    * Scales a vec3 by a scalar number
    *
@@ -3963,6 +4106,7 @@ THE SOFTWARE.
     out[2] = a[2] * b;
     return out;
   }
+
   /**
    * Adds two vec3's after scaling the second operand by a scalar value
    *
@@ -3979,6 +4123,7 @@ THE SOFTWARE.
     out[2] = a[2] + b[2] * scale;
     return out;
   }
+
   /**
    * Calculates the euclidian distance between two vec3's
    *
@@ -3993,6 +4138,7 @@ THE SOFTWARE.
     var z = b[2] - a[2];
     return Math.sqrt(x * x + y * y + z * z);
   }
+
   /**
    * Calculates the squared euclidian distance between two vec3's
    *
@@ -4007,6 +4153,7 @@ THE SOFTWARE.
     var z = b[2] - a[2];
     return x * x + y * y + z * z;
   }
+
   /**
    * Calculates the squared length of a vec3
    *
@@ -4020,6 +4167,7 @@ THE SOFTWARE.
     var z = a[2];
     return x * x + y * y + z * z;
   }
+
   /**
    * Negates the components of a vec3
    *
@@ -4034,6 +4182,7 @@ THE SOFTWARE.
     out[2] = -a[2];
     return out;
   }
+
   /**
    * Returns the inverse of the components of a vec3
    *
@@ -4048,6 +4197,7 @@ THE SOFTWARE.
     out[2] = 1.0 / a[2];
     return out;
   }
+
   /**
    * Normalize a vec3
    *
@@ -4072,6 +4222,7 @@ THE SOFTWARE.
     out[2] = a[2] * len;
     return out;
   }
+
   /**
    * Calculates the dot product of two vec3's
    *
@@ -4083,6 +4234,7 @@ THE SOFTWARE.
   function dot(a, b) {
     return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
   }
+
   /**
    * Computes the cross product of two vec3's
    *
@@ -4094,16 +4246,17 @@ THE SOFTWARE.
 
   function cross(out, a, b) {
     var ax = a[0],
-        ay = a[1],
-        az = a[2];
+      ay = a[1],
+      az = a[2];
     var bx = b[0],
-        by = b[1],
-        bz = b[2];
+      by = b[1],
+      bz = b[2];
     out[0] = ay * bz - az * by;
     out[1] = az * bx - ax * bz;
     out[2] = ax * by - ay * bx;
     return out;
   }
+
   /**
    * Performs a linear interpolation between two vec3's
    *
@@ -4123,6 +4276,7 @@ THE SOFTWARE.
     out[2] = az + t * (b[2] - az);
     return out;
   }
+
   /**
    * Performs a hermite interpolation with two control points
    *
@@ -4146,6 +4300,7 @@ THE SOFTWARE.
     out[2] = a[2] * factor1 + b[2] * factor2 + c[2] * factor3 + d[2] * factor4;
     return out;
   }
+
   /**
    * Performs a bezier interpolation with two control points
    *
@@ -4171,6 +4326,7 @@ THE SOFTWARE.
     out[2] = a[2] * factor1 + b[2] * factor2 + c[2] * factor3 + d[2] * factor4;
     return out;
   }
+
   /**
    * Generates a random vector with the given scale
    *
@@ -4189,6 +4345,7 @@ THE SOFTWARE.
     out[2] = z * scale;
     return out;
   }
+
   /**
    * Transforms the vec3 with a mat4.
    * 4th vector component is implicitly '1'
@@ -4201,8 +4358,8 @@ THE SOFTWARE.
 
   function transformMat4(out, a, m) {
     var x = a[0],
-        y = a[1],
-        z = a[2];
+      y = a[1],
+      z = a[2];
     var w = m[3] * x + m[7] * y + m[11] * z + m[15];
     w = w || 1.0;
     out[0] = (m[0] * x + m[4] * y + m[8] * z + m[12]) / w;
@@ -4210,6 +4367,7 @@ THE SOFTWARE.
     out[2] = (m[2] * x + m[6] * y + m[10] * z + m[14]) / w;
     return out;
   }
+
   /**
    * Transforms the vec3 with a mat3.
    *
@@ -4221,13 +4379,14 @@ THE SOFTWARE.
 
   function transformMat3(out, a, m) {
     var x = a[0],
-        y = a[1],
-        z = a[2];
+      y = a[1],
+      z = a[2];
     out[0] = x * m[0] + y * m[3] + z * m[6];
     out[1] = x * m[1] + y * m[4] + z * m[7];
     out[2] = x * m[2] + y * m[5] + z * m[8];
     return out;
   }
+
   /**
    * Transforms the vec3 with a quat
    * Can also be used for dual quaternions. (Multiply it with the real part)
@@ -4241,21 +4400,21 @@ THE SOFTWARE.
   function transformQuat(out, a, q) {
     // benchmarks: https://jsperf.com/quaternion-transform-vec3-implementations-fixed
     var qx = q[0],
-        qy = q[1],
-        qz = q[2],
-        qw = q[3];
+      qy = q[1],
+      qz = q[2],
+      qw = q[3];
     var x = a[0],
-        y = a[1],
-        z = a[2]; // var qvec = [qx, qy, qz];
+      y = a[1],
+      z = a[2]; // var qvec = [qx, qy, qz];
     // var uv = vec3.cross([], qvec, a);
 
     var uvx = qy * z - qz * y,
-        uvy = qz * x - qx * z,
-        uvz = qx * y - qy * x; // var uuv = vec3.cross([], qvec, uv);
+      uvy = qz * x - qx * z,
+      uvz = qx * y - qy * x; // var uuv = vec3.cross([], qvec, uv);
 
     var uuvx = qy * uvz - qz * uvy,
-        uuvy = qz * uvx - qx * uvz,
-        uuvz = qx * uvy - qy * uvx; // vec3.scale(uv, uv, 2 * w);
+      uuvy = qz * uvx - qx * uvz,
+      uuvz = qx * uvy - qy * uvx; // vec3.scale(uv, uv, 2 * w);
 
     var w2 = qw * 2;
     uvx *= w2;
@@ -4271,6 +4430,7 @@ THE SOFTWARE.
     out[2] = z + uvz + uuvz;
     return out;
   }
+
   /**
    * Rotate a 3D vector around the x-axis
    * @param {vec3} out The receiving vec3
@@ -4282,7 +4442,7 @@ THE SOFTWARE.
 
   function rotateX$1(out, a, b, c) {
     var p = [],
-        r = []; //Translate point to the origin
+      r = []; //Translate point to the origin
 
     p[0] = a[0] - b[0];
     p[1] = a[1] - b[1];
@@ -4297,6 +4457,7 @@ THE SOFTWARE.
     out[2] = r[2] + b[2];
     return out;
   }
+
   /**
    * Rotate a 3D vector around the y-axis
    * @param {vec3} out The receiving vec3
@@ -4308,7 +4469,7 @@ THE SOFTWARE.
 
   function rotateY$1(out, a, b, c) {
     var p = [],
-        r = []; //Translate point to the origin
+      r = []; //Translate point to the origin
 
     p[0] = a[0] - b[0];
     p[1] = a[1] - b[1];
@@ -4323,6 +4484,7 @@ THE SOFTWARE.
     out[2] = r[2] + b[2];
     return out;
   }
+
   /**
    * Rotate a 3D vector around the z-axis
    * @param {vec3} out The receiving vec3
@@ -4334,7 +4496,7 @@ THE SOFTWARE.
 
   function rotateZ$1(out, a, b, c) {
     var p = [],
-        r = []; //Translate point to the origin
+      r = []; //Translate point to the origin
 
     p[0] = a[0] - b[0];
     p[1] = a[1] - b[1];
@@ -4349,6 +4511,7 @@ THE SOFTWARE.
     out[2] = r[2] + b[2];
     return out;
   }
+
   /**
    * Get the angle between two 3D vectors
    * @param {vec3} a The first operand
@@ -4371,6 +4534,7 @@ THE SOFTWARE.
       return Math.acos(cosine);
     }
   }
+
   /**
    * Set the components of a vec3 to zero
    *
@@ -4384,6 +4548,7 @@ THE SOFTWARE.
     out[2] = 0.0;
     return out;
   }
+
   /**
    * Returns a string representation of a vector
    *
@@ -4394,6 +4559,7 @@ THE SOFTWARE.
   function str$4(a) {
     return 'vec3(' + a[0] + ', ' + a[1] + ', ' + a[2] + ')';
   }
+
   /**
    * Returns whether or not the vectors have exactly the same elements in the same position (when compared with ===)
    *
@@ -4405,6 +4571,7 @@ THE SOFTWARE.
   function exactEquals$4(a, b) {
     return a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
   }
+
   /**
    * Returns whether or not the vectors have approximately the same elements in the same position.
    *
@@ -4415,13 +4582,14 @@ THE SOFTWARE.
 
   function equals$5(a, b) {
     var a0 = a[0],
-        a1 = a[1],
-        a2 = a[2];
+      a1 = a[1],
+      a2 = a[2];
     var b0 = b[0],
-        b1 = b[1],
-        b2 = b[2];
+      b1 = b[1],
+      b2 = b[2];
     return Math.abs(a0 - b0) <= EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2));
   }
+
   /**
    * Alias for {@link vec3.subtract}
    * @function
@@ -4584,6 +4752,7 @@ THE SOFTWARE.
 
     return out;
   }
+
   /**
    * Creates a new vec4 initialized with values from an existing vector
    *
@@ -4599,6 +4768,7 @@ THE SOFTWARE.
     out[3] = a[3];
     return out;
   }
+
   /**
    * Creates a new vec4 initialized with the given values
    *
@@ -4617,6 +4787,7 @@ THE SOFTWARE.
     out[3] = w;
     return out;
   }
+
   /**
    * Copy the values from one vec4 to another
    *
@@ -4632,6 +4803,7 @@ THE SOFTWARE.
     out[3] = a[3];
     return out;
   }
+
   /**
    * Set the components of a vec4 to the given values
    *
@@ -4650,6 +4822,7 @@ THE SOFTWARE.
     out[3] = w;
     return out;
   }
+
   /**
    * Adds two vec4's
    *
@@ -4666,6 +4839,7 @@ THE SOFTWARE.
     out[3] = a[3] + b[3];
     return out;
   }
+
   /**
    * Subtracts vector b from vector a
    *
@@ -4682,6 +4856,7 @@ THE SOFTWARE.
     out[3] = a[3] - b[3];
     return out;
   }
+
   /**
    * Multiplies two vec4's
    *
@@ -4698,6 +4873,7 @@ THE SOFTWARE.
     out[3] = a[3] * b[3];
     return out;
   }
+
   /**
    * Divides two vec4's
    *
@@ -4714,6 +4890,7 @@ THE SOFTWARE.
     out[3] = a[3] / b[3];
     return out;
   }
+
   /**
    * Math.ceil the components of a vec4
    *
@@ -4729,6 +4906,7 @@ THE SOFTWARE.
     out[3] = Math.ceil(a[3]);
     return out;
   }
+
   /**
    * Math.floor the components of a vec4
    *
@@ -4744,6 +4922,7 @@ THE SOFTWARE.
     out[3] = Math.floor(a[3]);
     return out;
   }
+
   /**
    * Returns the minimum of two vec4's
    *
@@ -4760,6 +4939,7 @@ THE SOFTWARE.
     out[3] = Math.min(a[3], b[3]);
     return out;
   }
+
   /**
    * Returns the maximum of two vec4's
    *
@@ -4776,6 +4956,7 @@ THE SOFTWARE.
     out[3] = Math.max(a[3], b[3]);
     return out;
   }
+
   /**
    * Math.round the components of a vec4
    *
@@ -4791,6 +4972,7 @@ THE SOFTWARE.
     out[3] = Math.round(a[3]);
     return out;
   }
+
   /**
    * Scales a vec4 by a scalar number
    *
@@ -4807,6 +4989,7 @@ THE SOFTWARE.
     out[3] = a[3] * b;
     return out;
   }
+
   /**
    * Adds two vec4's after scaling the second operand by a scalar value
    *
@@ -4824,6 +5007,7 @@ THE SOFTWARE.
     out[3] = a[3] + b[3] * scale;
     return out;
   }
+
   /**
    * Calculates the euclidian distance between two vec4's
    *
@@ -4839,6 +5023,7 @@ THE SOFTWARE.
     var w = b[3] - a[3];
     return Math.sqrt(x * x + y * y + z * z + w * w);
   }
+
   /**
    * Calculates the squared euclidian distance between two vec4's
    *
@@ -4854,6 +5039,7 @@ THE SOFTWARE.
     var w = b[3] - a[3];
     return x * x + y * y + z * z + w * w;
   }
+
   /**
    * Calculates the length of a vec4
    *
@@ -4868,6 +5054,7 @@ THE SOFTWARE.
     var w = a[3];
     return Math.sqrt(x * x + y * y + z * z + w * w);
   }
+
   /**
    * Calculates the squared length of a vec4
    *
@@ -4882,6 +5069,7 @@ THE SOFTWARE.
     var w = a[3];
     return x * x + y * y + z * z + w * w;
   }
+
   /**
    * Negates the components of a vec4
    *
@@ -4897,6 +5085,7 @@ THE SOFTWARE.
     out[3] = -a[3];
     return out;
   }
+
   /**
    * Returns the inverse of the components of a vec4
    *
@@ -4912,6 +5101,7 @@ THE SOFTWARE.
     out[3] = 1.0 / a[3];
     return out;
   }
+
   /**
    * Normalize a vec4
    *
@@ -4937,6 +5127,7 @@ THE SOFTWARE.
     out[3] = w * len;
     return out;
   }
+
   /**
    * Calculates the dot product of two vec4's
    *
@@ -4948,6 +5139,7 @@ THE SOFTWARE.
   function dot$1(a, b) {
     return a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3];
   }
+
   /**
    * Returns the cross-product of three vectors in a 4-dimensional space
    *
@@ -4960,11 +5152,11 @@ THE SOFTWARE.
 
   function cross$1(out, u, v, w) {
     var A = v[0] * w[1] - v[1] * w[0],
-        B = v[0] * w[2] - v[2] * w[0],
-        C = v[0] * w[3] - v[3] * w[0],
-        D = v[1] * w[2] - v[2] * w[1],
-        E = v[1] * w[3] - v[3] * w[1],
-        F = v[2] * w[3] - v[3] * w[2];
+      B = v[0] * w[2] - v[2] * w[0],
+      C = v[0] * w[3] - v[3] * w[0],
+      D = v[1] * w[2] - v[2] * w[1],
+      E = v[1] * w[3] - v[3] * w[1],
+      F = v[2] * w[3] - v[3] * w[2];
     var G = u[0];
     var H = u[1];
     var I = u[2];
@@ -4975,6 +5167,7 @@ THE SOFTWARE.
     out[3] = -(G * D) + H * B - I * A;
     return out;
   }
+
   /**
    * Performs a linear interpolation between two vec4's
    *
@@ -4996,6 +5189,7 @@ THE SOFTWARE.
     out[3] = aw + t * (b[3] - aw);
     return out;
   }
+
   /**
    * Generates a random vector with the given scale
    *
@@ -5031,6 +5225,7 @@ THE SOFTWARE.
     out[3] = scale * v4 * d;
     return out;
   }
+
   /**
    * Transforms the vec4 with a mat4.
    *
@@ -5042,15 +5237,16 @@ THE SOFTWARE.
 
   function transformMat4$1(out, a, m) {
     var x = a[0],
-        y = a[1],
-        z = a[2],
-        w = a[3];
+      y = a[1],
+      z = a[2],
+      w = a[3];
     out[0] = m[0] * x + m[4] * y + m[8] * z + m[12] * w;
     out[1] = m[1] * x + m[5] * y + m[9] * z + m[13] * w;
     out[2] = m[2] * x + m[6] * y + m[10] * z + m[14] * w;
     out[3] = m[3] * x + m[7] * y + m[11] * z + m[15] * w;
     return out;
   }
+
   /**
    * Transforms the vec4 with a quat
    *
@@ -5062,12 +5258,12 @@ THE SOFTWARE.
 
   function transformQuat$1(out, a, q) {
     var x = a[0],
-        y = a[1],
-        z = a[2];
+      y = a[1],
+      z = a[2];
     var qx = q[0],
-        qy = q[1],
-        qz = q[2],
-        qw = q[3]; // calculate quat * vec
+      qy = q[1],
+      qz = q[2],
+      qw = q[3]; // calculate quat * vec
 
     var ix = qw * x + qy * z - qz * y;
     var iy = qw * y + qz * x - qx * z;
@@ -5080,6 +5276,7 @@ THE SOFTWARE.
     out[3] = a[3];
     return out;
   }
+
   /**
    * Set the components of a vec4 to zero
    *
@@ -5094,6 +5291,7 @@ THE SOFTWARE.
     out[3] = 0.0;
     return out;
   }
+
   /**
    * Returns a string representation of a vector
    *
@@ -5104,6 +5302,7 @@ THE SOFTWARE.
   function str$5(a) {
     return 'vec4(' + a[0] + ', ' + a[1] + ', ' + a[2] + ', ' + a[3] + ')';
   }
+
   /**
    * Returns whether or not the vectors have exactly the same elements in the same position (when compared with ===)
    *
@@ -5115,6 +5314,7 @@ THE SOFTWARE.
   function exactEquals$5(a, b) {
     return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3];
   }
+
   /**
    * Returns whether or not the vectors have approximately the same elements in the same position.
    *
@@ -5125,15 +5325,16 @@ THE SOFTWARE.
 
   function equals$6(a, b) {
     var a0 = a[0],
-        a1 = a[1],
-        a2 = a[2],
-        a3 = a[3];
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3];
     var b0 = b[0],
-        b1 = b[1],
-        b2 = b[2],
-        b3 = b[3];
+      b1 = b[1],
+      b2 = b[2],
+      b3 = b[3];
     return Math.abs(a0 - b0) <= EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3));
   }
+
   /**
    * Alias for {@link vec4.subtract}
    * @function
@@ -5291,6 +5492,7 @@ THE SOFTWARE.
     out[3] = 1;
     return out;
   }
+
   /**
    * Set a quat to the identity quaternion
    *
@@ -5305,6 +5507,7 @@ THE SOFTWARE.
     out[3] = 1;
     return out;
   }
+
   /**
    * Sets a quat from the given angle and rotation axis,
    * then returns it.
@@ -5324,6 +5527,7 @@ THE SOFTWARE.
     out[3] = Math.cos(rad);
     return out;
   }
+
   /**
    * Gets the rotation axis and angle for a given
    *  quaternion. If a quaternion is created with
@@ -5355,6 +5559,7 @@ THE SOFTWARE.
 
     return rad;
   }
+
   /**
    * Multiplies two quat's
    *
@@ -5366,19 +5571,20 @@ THE SOFTWARE.
 
   function multiply$6(out, a, b) {
     var ax = a[0],
-        ay = a[1],
-        az = a[2],
-        aw = a[3];
+      ay = a[1],
+      az = a[2],
+      aw = a[3];
     var bx = b[0],
-        by = b[1],
-        bz = b[2],
-        bw = b[3];
+      by = b[1],
+      bz = b[2],
+      bw = b[3];
     out[0] = ax * bw + aw * bx + ay * bz - az * by;
     out[1] = ay * bw + aw * by + az * bx - ax * bz;
     out[2] = az * bw + aw * bz + ax * by - ay * bx;
     out[3] = aw * bw - ax * bx - ay * by - az * bz;
     return out;
   }
+
   /**
    * Rotates a quaternion by the given angle about the X axis
    *
@@ -5391,17 +5597,18 @@ THE SOFTWARE.
   function rotateX$2(out, a, rad) {
     rad *= 0.5;
     var ax = a[0],
-        ay = a[1],
-        az = a[2],
-        aw = a[3];
+      ay = a[1],
+      az = a[2],
+      aw = a[3];
     var bx = Math.sin(rad),
-        bw = Math.cos(rad);
+      bw = Math.cos(rad);
     out[0] = ax * bw + aw * bx;
     out[1] = ay * bw + az * bx;
     out[2] = az * bw - ay * bx;
     out[3] = aw * bw - ax * bx;
     return out;
   }
+
   /**
    * Rotates a quaternion by the given angle about the Y axis
    *
@@ -5414,17 +5621,18 @@ THE SOFTWARE.
   function rotateY$2(out, a, rad) {
     rad *= 0.5;
     var ax = a[0],
-        ay = a[1],
-        az = a[2],
-        aw = a[3];
+      ay = a[1],
+      az = a[2],
+      aw = a[3];
     var by = Math.sin(rad),
-        bw = Math.cos(rad);
+      bw = Math.cos(rad);
     out[0] = ax * bw - az * by;
     out[1] = ay * bw + aw * by;
     out[2] = az * bw + ax * by;
     out[3] = aw * bw - ay * by;
     return out;
   }
+
   /**
    * Rotates a quaternion by the given angle about the Z axis
    *
@@ -5437,17 +5645,18 @@ THE SOFTWARE.
   function rotateZ$2(out, a, rad) {
     rad *= 0.5;
     var ax = a[0],
-        ay = a[1],
-        az = a[2],
-        aw = a[3];
+      ay = a[1],
+      az = a[2],
+      aw = a[3];
     var bz = Math.sin(rad),
-        bw = Math.cos(rad);
+      bw = Math.cos(rad);
     out[0] = ax * bw + ay * bz;
     out[1] = ay * bw - ax * bz;
     out[2] = az * bw + aw * bz;
     out[3] = aw * bw - az * bz;
     return out;
   }
+
   /**
    * Calculates the W component of a quat from the X, Y, and Z components.
    * Assumes that quaternion is 1 unit in length.
@@ -5460,14 +5669,15 @@ THE SOFTWARE.
 
   function calculateW(out, a) {
     var x = a[0],
-        y = a[1],
-        z = a[2];
+      y = a[1],
+      z = a[2];
     out[0] = x;
     out[1] = y;
     out[2] = z;
     out[3] = Math.sqrt(Math.abs(1.0 - x * x - y * y - z * z));
     return out;
   }
+
   /**
    * Performs a spherical linear interpolation between two quat
    *
@@ -5482,13 +5692,13 @@ THE SOFTWARE.
     // benchmarks:
     //    http://jsperf.com/quaternion-slerp-implementations
     var ax = a[0],
-        ay = a[1],
-        az = a[2],
-        aw = a[3];
+      ay = a[1],
+      az = a[2],
+      aw = a[3];
     var bx = b[0],
-        by = b[1],
-        bz = b[2],
-        bw = b[3];
+      by = b[1],
+      bz = b[2],
+      bw = b[3];
     var omega, cosom, sinom, scale0, scale1; // calc cosine
 
     cosom = ax * bx + ay * by + az * bz + aw * bw; // adjust signs (if necessary)
@@ -5522,6 +5732,7 @@ THE SOFTWARE.
     out[3] = scale0 * aw + scale1 * bw;
     return out;
   }
+
   /**
    * Generates a random quaternion
    *
@@ -5543,6 +5754,7 @@ THE SOFTWARE.
     out[3] = sqrtU1 * Math.cos(2.0 * Math.PI * u3);
     return out;
   }
+
   /**
    * Calculates the inverse of a quat
    *
@@ -5553,9 +5765,9 @@ THE SOFTWARE.
 
   function invert$4(out, a) {
     var a0 = a[0],
-        a1 = a[1],
-        a2 = a[2],
-        a3 = a[3];
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3];
     var dot$$1 = a0 * a0 + a1 * a1 + a2 * a2 + a3 * a3;
     var invDot = dot$$1 ? 1.0 / dot$$1 : 0; // TODO: Would be faster to return [0,0,0,0] immediately if dot == 0
 
@@ -5565,6 +5777,7 @@ THE SOFTWARE.
     out[3] = a3 * invDot;
     return out;
   }
+
   /**
    * Calculates the conjugate of a quat
    * If the quaternion is normalized, this function is faster than quat.inverse and produces the same result.
@@ -5581,6 +5794,7 @@ THE SOFTWARE.
     out[3] = a[3];
     return out;
   }
+
   /**
    * Creates a quaternion from the given 3x3 rotation matrix.
    *
@@ -5626,6 +5840,7 @@ THE SOFTWARE.
 
     return out;
   }
+
   /**
    * Creates a quaternion from the given euler angle x, y, z.
    *
@@ -5654,6 +5869,7 @@ THE SOFTWARE.
     out[3] = cx * cy * cz + sx * sy * sz;
     return out;
   }
+
   /**
    * Returns a string representation of a quatenion
    *
@@ -5664,6 +5880,7 @@ THE SOFTWARE.
   function str$6(a) {
     return 'quat(' + a[0] + ', ' + a[1] + ', ' + a[2] + ', ' + a[3] + ')';
   }
+
   /**
    * Creates a new quat initialized with values from an existing quaternion
    *
@@ -5973,6 +6190,7 @@ THE SOFTWARE.
     dq[3] = 1;
     return dq;
   }
+
   /**
    * Creates a new quat initialized with values from an existing quaternion
    *
@@ -5993,6 +6211,7 @@ THE SOFTWARE.
     dq[7] = a[7];
     return dq;
   }
+
   /**
    * Creates a new dual quat initialized with the given values
    *
@@ -6020,6 +6239,7 @@ THE SOFTWARE.
     dq[7] = w2;
     return dq;
   }
+
   /**
    * Creates a new dual quat from the given values (quat and translation)
    *
@@ -6041,14 +6261,15 @@ THE SOFTWARE.
     dq[2] = z1;
     dq[3] = w1;
     var ax = x2 * 0.5,
-        ay = y2 * 0.5,
-        az = z2 * 0.5;
+      ay = y2 * 0.5,
+      az = z2 * 0.5;
     dq[4] = ax * w1 + ay * z1 - az * y1;
     dq[5] = ay * w1 + az * x1 - ax * z1;
     dq[6] = az * w1 + ax * y1 - ay * x1;
     dq[7] = -ax * x1 - ay * y1 - az * z1;
     return dq;
   }
+
   /**
    * Creates a dual quat from a quaternion and a translation
    *
@@ -6061,12 +6282,12 @@ THE SOFTWARE.
 
   function fromRotationTranslation$1(out, q, t) {
     var ax = t[0] * 0.5,
-        ay = t[1] * 0.5,
-        az = t[2] * 0.5,
-        bx = q[0],
-        by = q[1],
-        bz = q[2],
-        bw = q[3];
+      ay = t[1] * 0.5,
+      az = t[2] * 0.5,
+      bx = q[0],
+      by = q[1],
+      bz = q[2],
+      bw = q[3];
     out[0] = bx;
     out[1] = by;
     out[2] = bz;
@@ -6077,6 +6298,7 @@ THE SOFTWARE.
     out[7] = -ax * bx - ay * by - az * bz;
     return out;
   }
+
   /**
    * Creates a dual quat from a translation
    *
@@ -6097,6 +6319,7 @@ THE SOFTWARE.
     out[7] = 0;
     return out;
   }
+
   /**
    * Creates a dual quat from a quaternion
    *
@@ -6117,6 +6340,7 @@ THE SOFTWARE.
     out[7] = 0;
     return out;
   }
+
   /**
    * Creates a new dual quat from a matrix (4x4)
    *
@@ -6135,6 +6359,7 @@ THE SOFTWARE.
     fromRotationTranslation$1(out, outer, t);
     return out;
   }
+
   /**
    * Copy the values from one dual quat to another
    *
@@ -6155,6 +6380,7 @@ THE SOFTWARE.
     out[7] = a[7];
     return out;
   }
+
   /**
    * Set a dual quat to the identity dual quaternion
    *
@@ -6173,6 +6399,7 @@ THE SOFTWARE.
     out[7] = 0;
     return out;
   }
+
   /**
    * Set the components of a dual quat to the given values
    *
@@ -6200,6 +6427,7 @@ THE SOFTWARE.
     out[7] = w2;
     return out;
   }
+
   /**
    * Gets the real part of a dual quat
    * @param  {quat} out real part
@@ -6208,6 +6436,7 @@ THE SOFTWARE.
    */
 
   var getReal = copy$6;
+
   /**
    * Gets the dual part of a dual quat
    * @param  {quat} out dual part
@@ -6222,6 +6451,7 @@ THE SOFTWARE.
     out[3] = a[7];
     return out;
   }
+
   /**
    * Set the real component of a dual quat to the given quaternion
    *
@@ -6232,6 +6462,7 @@ THE SOFTWARE.
    */
 
   var setReal = copy$6;
+
   /**
    * Set the dual component of a dual quat to the given quaternion
    *
@@ -6248,6 +6479,7 @@ THE SOFTWARE.
     out[7] = q[3];
     return out;
   }
+
   /**
    * Gets the translation of a normalized dual quat
    * @param  {vec3} out translation
@@ -6257,18 +6489,19 @@ THE SOFTWARE.
 
   function getTranslation$1(out, a) {
     var ax = a[4],
-        ay = a[5],
-        az = a[6],
-        aw = a[7],
-        bx = -a[0],
-        by = -a[1],
-        bz = -a[2],
-        bw = a[3];
+      ay = a[5],
+      az = a[6],
+      aw = a[7],
+      bx = -a[0],
+      by = -a[1],
+      bz = -a[2],
+      bw = a[3];
     out[0] = (ax * bw + aw * bx + ay * bz - az * by) * 2;
     out[1] = (ay * bw + aw * by + az * bx - ax * bz) * 2;
     out[2] = (az * bw + aw * bz + ax * by - ay * bx) * 2;
     return out;
   }
+
   /**
    * Translates a dual quat by the given vector
    *
@@ -6280,16 +6513,16 @@ THE SOFTWARE.
 
   function translate$3(out, a, v) {
     var ax1 = a[0],
-        ay1 = a[1],
-        az1 = a[2],
-        aw1 = a[3],
-        bx1 = v[0] * 0.5,
-        by1 = v[1] * 0.5,
-        bz1 = v[2] * 0.5,
-        ax2 = a[4],
-        ay2 = a[5],
-        az2 = a[6],
-        aw2 = a[7];
+      ay1 = a[1],
+      az1 = a[2],
+      aw1 = a[3],
+      bx1 = v[0] * 0.5,
+      by1 = v[1] * 0.5,
+      bz1 = v[2] * 0.5,
+      ax2 = a[4],
+      ay2 = a[5],
+      az2 = a[6],
+      aw2 = a[7];
     out[0] = ax1;
     out[1] = ay1;
     out[2] = az1;
@@ -6300,6 +6533,7 @@ THE SOFTWARE.
     out[7] = -ax1 * bx1 - ay1 * by1 - az1 * bz1 + aw2;
     return out;
   }
+
   /**
    * Rotates a dual quat around the X axis
    *
@@ -6311,17 +6545,17 @@ THE SOFTWARE.
 
   function rotateX$3(out, a, rad) {
     var bx = -a[0],
-        by = -a[1],
-        bz = -a[2],
-        bw = a[3],
-        ax = a[4],
-        ay = a[5],
-        az = a[6],
-        aw = a[7],
-        ax1 = ax * bw + aw * bx + ay * bz - az * by,
-        ay1 = ay * bw + aw * by + az * bx - ax * bz,
-        az1 = az * bw + aw * bz + ax * by - ay * bx,
-        aw1 = aw * bw - ax * bx - ay * by - az * bz;
+      by = -a[1],
+      bz = -a[2],
+      bw = a[3],
+      ax = a[4],
+      ay = a[5],
+      az = a[6],
+      aw = a[7],
+      ax1 = ax * bw + aw * bx + ay * bz - az * by,
+      ay1 = ay * bw + aw * by + az * bx - ax * bz,
+      az1 = az * bw + aw * bz + ax * by - ay * bx,
+      aw1 = aw * bw - ax * bx - ay * by - az * bz;
     rotateX$2(out, a, rad);
     bx = out[0];
     by = out[1];
@@ -6333,6 +6567,7 @@ THE SOFTWARE.
     out[7] = aw1 * bw - ax1 * bx - ay1 * by - az1 * bz;
     return out;
   }
+
   /**
    * Rotates a dual quat around the Y axis
    *
@@ -6344,17 +6579,17 @@ THE SOFTWARE.
 
   function rotateY$3(out, a, rad) {
     var bx = -a[0],
-        by = -a[1],
-        bz = -a[2],
-        bw = a[3],
-        ax = a[4],
-        ay = a[5],
-        az = a[6],
-        aw = a[7],
-        ax1 = ax * bw + aw * bx + ay * bz - az * by,
-        ay1 = ay * bw + aw * by + az * bx - ax * bz,
-        az1 = az * bw + aw * bz + ax * by - ay * bx,
-        aw1 = aw * bw - ax * bx - ay * by - az * bz;
+      by = -a[1],
+      bz = -a[2],
+      bw = a[3],
+      ax = a[4],
+      ay = a[5],
+      az = a[6],
+      aw = a[7],
+      ax1 = ax * bw + aw * bx + ay * bz - az * by,
+      ay1 = ay * bw + aw * by + az * bx - ax * bz,
+      az1 = az * bw + aw * bz + ax * by - ay * bx,
+      aw1 = aw * bw - ax * bx - ay * by - az * bz;
     rotateY$2(out, a, rad);
     bx = out[0];
     by = out[1];
@@ -6366,6 +6601,7 @@ THE SOFTWARE.
     out[7] = aw1 * bw - ax1 * bx - ay1 * by - az1 * bz;
     return out;
   }
+
   /**
    * Rotates a dual quat around the Z axis
    *
@@ -6377,17 +6613,17 @@ THE SOFTWARE.
 
   function rotateZ$3(out, a, rad) {
     var bx = -a[0],
-        by = -a[1],
-        bz = -a[2],
-        bw = a[3],
-        ax = a[4],
-        ay = a[5],
-        az = a[6],
-        aw = a[7],
-        ax1 = ax * bw + aw * bx + ay * bz - az * by,
-        ay1 = ay * bw + aw * by + az * bx - ax * bz,
-        az1 = az * bw + aw * bz + ax * by - ay * bx,
-        aw1 = aw * bw - ax * bx - ay * by - az * bz;
+      by = -a[1],
+      bz = -a[2],
+      bw = a[3],
+      ax = a[4],
+      ay = a[5],
+      az = a[6],
+      aw = a[7],
+      ax1 = ax * bw + aw * bx + ay * bz - az * by,
+      ay1 = ay * bw + aw * by + az * bx - ax * bz,
+      az1 = az * bw + aw * bz + ax * by - ay * bx,
+      aw1 = aw * bw - ax * bx - ay * by - az * bz;
     rotateZ$2(out, a, rad);
     bx = out[0];
     by = out[1];
@@ -6399,6 +6635,7 @@ THE SOFTWARE.
     out[7] = aw1 * bw - ax1 * bx - ay1 * by - az1 * bz;
     return out;
   }
+
   /**
    * Rotates a dual quat by a given quaternion (a * q)
    *
@@ -6410,13 +6647,13 @@ THE SOFTWARE.
 
   function rotateByQuatAppend(out, a, q) {
     var qx = q[0],
-        qy = q[1],
-        qz = q[2],
-        qw = q[3],
-        ax = a[0],
-        ay = a[1],
-        az = a[2],
-        aw = a[3];
+      qy = q[1],
+      qz = q[2],
+      qw = q[3],
+      ax = a[0],
+      ay = a[1],
+      az = a[2],
+      aw = a[3];
     out[0] = ax * qw + aw * qx + ay * qz - az * qy;
     out[1] = ay * qw + aw * qy + az * qx - ax * qz;
     out[2] = az * qw + aw * qz + ax * qy - ay * qx;
@@ -6431,6 +6668,7 @@ THE SOFTWARE.
     out[7] = aw * qw - ax * qx - ay * qy - az * qz;
     return out;
   }
+
   /**
    * Rotates a dual quat by a given quaternion (q * a)
    *
@@ -6442,13 +6680,13 @@ THE SOFTWARE.
 
   function rotateByQuatPrepend(out, q, a) {
     var qx = q[0],
-        qy = q[1],
-        qz = q[2],
-        qw = q[3],
-        bx = a[0],
-        by = a[1],
-        bz = a[2],
-        bw = a[3];
+      qy = q[1],
+      qz = q[2],
+      qw = q[3],
+      bx = a[0],
+      by = a[1],
+      bz = a[2],
+      bw = a[3];
     out[0] = qx * bw + qw * bx + qy * bz - qz * by;
     out[1] = qy * bw + qw * by + qz * bx - qx * bz;
     out[2] = qz * bw + qw * bz + qx * by - qy * bx;
@@ -6463,6 +6701,7 @@ THE SOFTWARE.
     out[7] = qw * bw - qx * bx - qy * by - qz * bz;
     return out;
   }
+
   /**
    * Rotates a dual quat around a given axis. Does the normalisation automatically
    *
@@ -6487,23 +6726,24 @@ THE SOFTWARE.
     var bz = s * axis[2] / axisLength;
     var bw = Math.cos(rad);
     var ax1 = a[0],
-        ay1 = a[1],
-        az1 = a[2],
-        aw1 = a[3];
+      ay1 = a[1],
+      az1 = a[2],
+      aw1 = a[3];
     out[0] = ax1 * bw + aw1 * bx + ay1 * bz - az1 * by;
     out[1] = ay1 * bw + aw1 * by + az1 * bx - ax1 * bz;
     out[2] = az1 * bw + aw1 * bz + ax1 * by - ay1 * bx;
     out[3] = aw1 * bw - ax1 * bx - ay1 * by - az1 * bz;
     var ax = a[4],
-        ay = a[5],
-        az = a[6],
-        aw = a[7];
+      ay = a[5],
+      az = a[6],
+      aw = a[7];
     out[4] = ax * bw + aw * bx + ay * bz - az * by;
     out[5] = ay * bw + aw * by + az * bx - ax * bz;
     out[6] = az * bw + aw * bz + ax * by - ay * bx;
     out[7] = aw * bw - ax * bx - ay * by - az * bz;
     return out;
   }
+
   /**
    * Adds two dual quat's
    *
@@ -6525,6 +6765,7 @@ THE SOFTWARE.
     out[7] = a[7] + b[7];
     return out;
   }
+
   /**
    * Multiplies two dual quat's
    *
@@ -6536,21 +6777,21 @@ THE SOFTWARE.
 
   function multiply$7(out, a, b) {
     var ax0 = a[0],
-        ay0 = a[1],
-        az0 = a[2],
-        aw0 = a[3],
-        bx1 = b[4],
-        by1 = b[5],
-        bz1 = b[6],
-        bw1 = b[7],
-        ax1 = a[4],
-        ay1 = a[5],
-        az1 = a[6],
-        aw1 = a[7],
-        bx0 = b[0],
-        by0 = b[1],
-        bz0 = b[2],
-        bw0 = b[3];
+      ay0 = a[1],
+      az0 = a[2],
+      aw0 = a[3],
+      bx1 = b[4],
+      by1 = b[5],
+      bz1 = b[6],
+      bw1 = b[7],
+      ax1 = a[4],
+      ay1 = a[5],
+      az1 = a[6],
+      aw1 = a[7],
+      bx0 = b[0],
+      by0 = b[1],
+      bz0 = b[2],
+      bw0 = b[3];
     out[0] = ax0 * bw0 + aw0 * bx0 + ay0 * bz0 - az0 * by0;
     out[1] = ay0 * bw0 + aw0 * by0 + az0 * bx0 - ax0 * bz0;
     out[2] = az0 * bw0 + aw0 * bz0 + ax0 * by0 - ay0 * bx0;
@@ -6561,12 +6802,14 @@ THE SOFTWARE.
     out[7] = aw0 * bw1 - ax0 * bx1 - ay0 * by1 - az0 * bz1 + aw1 * bw0 - ax1 * bx0 - ay1 * by0 - az1 * bz0;
     return out;
   }
+
   /**
    * Alias for {@link quat2.multiply}
    * @function
    */
 
   var mul$7 = multiply$7;
+
   /**
    * Scales a dual quat by a scalar number
    *
@@ -6588,6 +6831,7 @@ THE SOFTWARE.
     out[7] = a[7] * b;
     return out;
   }
+
   /**
    * Calculates the dot product of two dual quat's (The dot product of the real parts)
    *
@@ -6598,6 +6842,7 @@ THE SOFTWARE.
    */
 
   var dot$3 = dot$2;
+
   /**
    * Performs a linear interpolation between two dual quats's
    * NOTE: The resulting dual quaternions won't always be normalized (The error is most noticeable when t = 0.5)
@@ -6622,6 +6867,7 @@ THE SOFTWARE.
     out[7] = a[7] * mt + b[7] * t;
     return out;
   }
+
   /**
    * Calculates the inverse of a dual quat. If they are normalized, conjugate is cheaper
    *
@@ -6642,6 +6888,7 @@ THE SOFTWARE.
     out[7] = a[7] / sqlen;
     return out;
   }
+
   /**
    * Calculates the conjugate of a dual quat
    * If the dual quaternion is normalized, this function is faster than quat2.inverse and produces the same result.
@@ -6662,6 +6909,7 @@ THE SOFTWARE.
     out[7] = a[7];
     return out;
   }
+
   /**
    * Calculates the length of a dual quat
    *
@@ -6692,6 +6940,7 @@ THE SOFTWARE.
    */
 
   var sqrLen$3 = squaredLength$3;
+
   /**
    * Normalize a dual quat
    *
@@ -6727,6 +6976,7 @@ THE SOFTWARE.
 
     return out;
   }
+
   /**
    * Returns a string representation of a dual quatenion
    *
@@ -6737,6 +6987,7 @@ THE SOFTWARE.
   function str$7(a) {
     return 'quat2(' + a[0] + ', ' + a[1] + ', ' + a[2] + ', ' + a[3] + ', ' + a[4] + ', ' + a[5] + ', ' + a[6] + ', ' + a[7] + ')';
   }
+
   /**
    * Returns whether or not the dual quaternions have exactly the same elements in the same position (when compared with ===)
    *
@@ -6748,6 +6999,7 @@ THE SOFTWARE.
   function exactEquals$7(a, b) {
     return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3] && a[4] === b[4] && a[5] === b[5] && a[6] === b[6] && a[7] === b[7];
   }
+
   /**
    * Returns whether or not the dual quaternions have approximately the same elements in the same position.
    *
@@ -6758,21 +7010,21 @@ THE SOFTWARE.
 
   function equals$8(a, b) {
     var a0 = a[0],
-        a1 = a[1],
-        a2 = a[2],
-        a3 = a[3],
-        a4 = a[4],
-        a5 = a[5],
-        a6 = a[6],
-        a7 = a[7];
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3],
+      a4 = a[4],
+      a5 = a[5],
+      a6 = a[6],
+      a7 = a[7];
     var b0 = b[0],
-        b1 = b[1],
-        b2 = b[2],
-        b3 = b[3],
-        b4 = b[4],
-        b5 = b[5],
-        b6 = b[6],
-        b7 = b[7];
+      b1 = b[1],
+      b2 = b[2],
+      b3 = b[3],
+      b4 = b[4],
+      b5 = b[5],
+      b6 = b[6],
+      b7 = b[7];
     return Math.abs(a0 - b0) <= EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3)) && Math.abs(a4 - b4) <= EPSILON * Math.max(1.0, Math.abs(a4), Math.abs(b4)) && Math.abs(a5 - b5) <= EPSILON * Math.max(1.0, Math.abs(a5), Math.abs(b5)) && Math.abs(a6 - b6) <= EPSILON * Math.max(1.0, Math.abs(a6), Math.abs(b6)) && Math.abs(a7 - b7) <= EPSILON * Math.max(1.0, Math.abs(a7), Math.abs(b7));
   }
 
@@ -6839,6 +7091,7 @@ THE SOFTWARE.
 
     return out;
   }
+
   /**
    * Creates a new vec2 initialized with values from an existing vector
    *
@@ -6852,6 +7105,7 @@ THE SOFTWARE.
     out[1] = a[1];
     return out;
   }
+
   /**
    * Creates a new vec2 initialized with the given values
    *
@@ -6866,6 +7120,7 @@ THE SOFTWARE.
     out[1] = y;
     return out;
   }
+
   /**
    * Copy the values from one vec2 to another
    *
@@ -6879,6 +7134,7 @@ THE SOFTWARE.
     out[1] = a[1];
     return out;
   }
+
   /**
    * Set the components of a vec2 to the given values
    *
@@ -6893,6 +7149,7 @@ THE SOFTWARE.
     out[1] = y;
     return out;
   }
+
   /**
    * Adds two vec2's
    *
@@ -6907,6 +7164,7 @@ THE SOFTWARE.
     out[1] = a[1] + b[1];
     return out;
   }
+
   /**
    * Subtracts vector b from vector a
    *
@@ -6921,6 +7179,7 @@ THE SOFTWARE.
     out[1] = a[1] - b[1];
     return out;
   }
+
   /**
    * Multiplies two vec2's
    *
@@ -6935,6 +7194,7 @@ THE SOFTWARE.
     out[1] = a[1] * b[1];
     return out;
   }
+
   /**
    * Divides two vec2's
    *
@@ -6949,6 +7209,7 @@ THE SOFTWARE.
     out[1] = a[1] / b[1];
     return out;
   }
+
   /**
    * Math.ceil the components of a vec2
    *
@@ -6962,6 +7223,7 @@ THE SOFTWARE.
     out[1] = Math.ceil(a[1]);
     return out;
   }
+
   /**
    * Math.floor the components of a vec2
    *
@@ -6975,6 +7237,7 @@ THE SOFTWARE.
     out[1] = Math.floor(a[1]);
     return out;
   }
+
   /**
    * Returns the minimum of two vec2's
    *
@@ -6989,6 +7252,7 @@ THE SOFTWARE.
     out[1] = Math.min(a[1], b[1]);
     return out;
   }
+
   /**
    * Returns the maximum of two vec2's
    *
@@ -7003,6 +7267,7 @@ THE SOFTWARE.
     out[1] = Math.max(a[1], b[1]);
     return out;
   }
+
   /**
    * Math.round the components of a vec2
    *
@@ -7016,6 +7281,7 @@ THE SOFTWARE.
     out[1] = Math.round(a[1]);
     return out;
   }
+
   /**
    * Scales a vec2 by a scalar number
    *
@@ -7030,6 +7296,7 @@ THE SOFTWARE.
     out[1] = a[1] * b;
     return out;
   }
+
   /**
    * Adds two vec2's after scaling the second operand by a scalar value
    *
@@ -7045,6 +7312,7 @@ THE SOFTWARE.
     out[1] = a[1] + b[1] * scale;
     return out;
   }
+
   /**
    * Calculates the euclidian distance between two vec2's
    *
@@ -7055,9 +7323,10 @@ THE SOFTWARE.
 
   function distance$2(a, b) {
     var x = b[0] - a[0],
-        y = b[1] - a[1];
+      y = b[1] - a[1];
     return Math.sqrt(x * x + y * y);
   }
+
   /**
    * Calculates the squared euclidian distance between two vec2's
    *
@@ -7068,9 +7337,10 @@ THE SOFTWARE.
 
   function squaredDistance$2(a, b) {
     var x = b[0] - a[0],
-        y = b[1] - a[1];
+      y = b[1] - a[1];
     return x * x + y * y;
   }
+
   /**
    * Calculates the length of a vec2
    *
@@ -7080,9 +7350,10 @@ THE SOFTWARE.
 
   function length$4(a) {
     var x = a[0],
-        y = a[1];
+      y = a[1];
     return Math.sqrt(x * x + y * y);
   }
+
   /**
    * Calculates the squared length of a vec2
    *
@@ -7092,9 +7363,10 @@ THE SOFTWARE.
 
   function squaredLength$4(a) {
     var x = a[0],
-        y = a[1];
+      y = a[1];
     return x * x + y * y;
   }
+
   /**
    * Negates the components of a vec2
    *
@@ -7108,6 +7380,7 @@ THE SOFTWARE.
     out[1] = -a[1];
     return out;
   }
+
   /**
    * Returns the inverse of the components of a vec2
    *
@@ -7121,6 +7394,7 @@ THE SOFTWARE.
     out[1] = 1.0 / a[1];
     return out;
   }
+
   /**
    * Normalize a vec2
    *
@@ -7131,7 +7405,7 @@ THE SOFTWARE.
 
   function normalize$4(out, a) {
     var x = a[0],
-        y = a[1];
+      y = a[1];
     var len = x * x + y * y;
 
     if (len > 0) {
@@ -7143,6 +7417,7 @@ THE SOFTWARE.
     out[1] = a[1] * len;
     return out;
   }
+
   /**
    * Calculates the dot product of two vec2's
    *
@@ -7154,6 +7429,7 @@ THE SOFTWARE.
   function dot$4(a, b) {
     return a[0] * b[0] + a[1] * b[1];
   }
+
   /**
    * Computes the cross product of two vec2's
    * Note that the cross product must by definition produce a 3D vector
@@ -7170,6 +7446,7 @@ THE SOFTWARE.
     out[2] = z;
     return out;
   }
+
   /**
    * Performs a linear interpolation between two vec2's
    *
@@ -7182,11 +7459,12 @@ THE SOFTWARE.
 
   function lerp$4(out, a, b, t) {
     var ax = a[0],
-        ay = a[1];
+      ay = a[1];
     out[0] = ax + t * (b[0] - ax);
     out[1] = ay + t * (b[1] - ay);
     return out;
   }
+
   /**
    * Generates a random vector with the given scale
    *
@@ -7202,6 +7480,7 @@ THE SOFTWARE.
     out[1] = Math.sin(r) * scale;
     return out;
   }
+
   /**
    * Transforms the vec2 with a mat2
    *
@@ -7213,11 +7492,12 @@ THE SOFTWARE.
 
   function transformMat2(out, a, m) {
     var x = a[0],
-        y = a[1];
+      y = a[1];
     out[0] = m[0] * x + m[2] * y;
     out[1] = m[1] * x + m[3] * y;
     return out;
   }
+
   /**
    * Transforms the vec2 with a mat2d
    *
@@ -7229,11 +7509,12 @@ THE SOFTWARE.
 
   function transformMat2d(out, a, m) {
     var x = a[0],
-        y = a[1];
+      y = a[1];
     out[0] = m[0] * x + m[2] * y + m[4];
     out[1] = m[1] * x + m[3] * y + m[5];
     return out;
   }
+
   /**
    * Transforms the vec2 with a mat3
    * 3rd vector component is implicitly '1'
@@ -7246,11 +7527,12 @@ THE SOFTWARE.
 
   function transformMat3$1(out, a, m) {
     var x = a[0],
-        y = a[1];
+      y = a[1];
     out[0] = m[0] * x + m[3] * y + m[6];
     out[1] = m[1] * x + m[4] * y + m[7];
     return out;
   }
+
   /**
    * Transforms the vec2 with a mat4
    * 3rd vector component is implicitly '0'
@@ -7269,6 +7551,7 @@ THE SOFTWARE.
     out[1] = m[1] * x + m[5] * y + m[13];
     return out;
   }
+
   /**
    * Rotate a 2D vector
    * @param {vec2} out The receiving vec2
@@ -7281,14 +7564,15 @@ THE SOFTWARE.
   function rotate$4(out, a, b, c) {
     //Translate point to the origin
     var p0 = a[0] - b[0],
-        p1 = a[1] - b[1],
-        sinC = Math.sin(c),
-        cosC = Math.cos(c); //perform rotation and translate to correct position
+      p1 = a[1] - b[1],
+      sinC = Math.sin(c),
+      cosC = Math.cos(c); //perform rotation and translate to correct position
 
     out[0] = p0 * cosC - p1 * sinC + b[0];
     out[1] = p0 * sinC + p1 * cosC + b[1];
     return out;
   }
+
   /**
    * Get the angle between two 2D vectors
    * @param {vec2} a The first operand
@@ -7298,9 +7582,9 @@ THE SOFTWARE.
 
   function angle$1(a, b) {
     var x1 = a[0],
-        y1 = a[1],
-        x2 = b[0],
-        y2 = b[1];
+      y1 = a[1],
+      x2 = b[0],
+      y2 = b[1];
     var len1 = x1 * x1 + y1 * y1;
 
     if (len1 > 0) {
@@ -7325,6 +7609,7 @@ THE SOFTWARE.
       return Math.acos(cosine);
     }
   }
+
   /**
    * Set the components of a vec2 to zero
    *
@@ -7337,6 +7622,7 @@ THE SOFTWARE.
     out[1] = 0.0;
     return out;
   }
+
   /**
    * Returns a string representation of a vector
    *
@@ -7347,6 +7633,7 @@ THE SOFTWARE.
   function str$8(a) {
     return 'vec2(' + a[0] + ', ' + a[1] + ')';
   }
+
   /**
    * Returns whether or not the vectors exactly have the same elements in the same position (when compared with ===)
    *
@@ -7358,6 +7645,7 @@ THE SOFTWARE.
   function exactEquals$8(a, b) {
     return a[0] === b[0] && a[1] === b[1];
   }
+
   /**
    * Returns whether or not the vectors have approximately the same elements in the same position.
    *
@@ -7368,11 +7656,12 @@ THE SOFTWARE.
 
   function equals$9(a, b) {
     var a0 = a[0],
-        a1 = a[1];
+      a1 = a[1];
     var b0 = b[0],
-        b1 = b[1];
+      b1 = b[1];
     return Math.abs(a0 - b0) <= EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1));
   }
+
   /**
    * Alias for {@link vec2.length}
    * @function
@@ -7518,6 +7807,6 @@ THE SOFTWARE.
   exports.vec3 = vec3;
   exports.vec4 = vec4;
 
-  Object.defineProperty(exports, '__esModule', { value: true });
+  Object.defineProperty(exports, '__esModule', {value: true});
 
 })));

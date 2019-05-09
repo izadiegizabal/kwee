@@ -1,0 +1,52 @@
+<div class="container"
+     fxLayout="column"
+     fxLayoutAlign="center"
+     fxLayoutGap="10px"
+     fxLayoutGap.xs="0">
+  <div class="line1" fxFlex="80%" fxFlex.lt-md="100%" fxLayout="row" fxLayoutAlign="start center"><h2 class="mat-h1">My
+    Invoices</h2></div>
+  <mat-accordion fxLayout="column">
+    <div *ngIf="noInvoices">
+      <h2 class="mat-h2 no-margin">You don't have any invoices yet.</h2>
+    </div>
+    <div *ngFor="let invoice of  invoices; let i =index;" fxLayout="row">
+      <mat-checkbox #toggle style="display: none"></mat-checkbox>
+      <mat-expansion-panel [(expanded)]="toggle.checked" class="line1" fxFlex="80%" fxFlex.lt-md="100%">
+        <mat-expansion-panel-header>
+          <mat-panel-title
+            fxLayout="row"
+            fxLayoutGap="10px">
+            <span>Invoice #{{invoice.id}}</span>
+            <span fxHide fxShow.gt-xs>Product: {{invoice.product | titlecase}}</span>
+          </mat-panel-title>
+          <mat-panel-description fxHide fxShow.gt-xs>
+            <span>Total: {{invoice.total}}</span>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <h2 class="mat-h2 no-margin">Invoice #{{invoice.id}}</h2>
+        <h3 class="mat-h3 no-margin">{{invoice.product | titlecase}}</h3>
+        <h4 class="mat-h4 no-margin">{{invoice.date}}</h4>
+
+
+        <p class="mat-h3" fxLayoutAlign="end">Total:&nbsp;<b class="mat-h2">{{invoice.total}}</b>
+        </p>
+
+        <div fxLayout="row"
+             fxLayoutAlign="end" fxLayoutGap="0"
+             fxLayoutGap.gt-sm="8px">
+          <div>
+            <button (click)="toggle.checked=false" color="primary" mat-button type="button">Close</button>
+          </div>
+          <div>
+            <button
+              color="primary"
+              (click)="downloadPDF(i)"
+              mat-raised-button type="button">Download
+            </button>
+          </div>
+
+        </div>
+      </mat-expansion-panel>
+    </div>
+  </mat-accordion>
+</div>

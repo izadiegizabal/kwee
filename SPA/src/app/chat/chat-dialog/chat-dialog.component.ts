@@ -12,16 +12,12 @@ import {MatDialog} from '@angular/material';
 })
 export class ChatDialogComponent implements OnInit, OnDestroy {
 
-  @ViewChild('content') private myScrollContainer: ElementRef;
-
   public opened = false;
-
   clicked = false;
   messages: Observable<Message[]>;
   formValue: string;
   subscription: Subscription;
-
-  sdfasd = 0;
+  @ViewChild('content') private myScrollContainer: ElementRef;
 
   constructor(public chat: ChatService,
               public dialog: MatDialog) {
@@ -45,14 +41,8 @@ export class ChatDialogComponent implements OnInit, OnDestroy {
     this.messages = this.chat.conversation.asObservable()
       .pipe(scan((acc, val) => acc.concat(val)));
     this.messages.subscribe((holi) => {
-      this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
-      this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
+      window.document.getElementById('content').scrollIntoView({behavior: 'smooth', block: 'end', inline: 'nearest'});
       document.getElementById('nameField').focus();
-      // this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
-    });
-    this.subscription = this.chat.conversation.subscribe(data => {
-      // this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
-      // window.scrollTo(0, window.document.getElementById('content').scrollHeight);
     });
   }
 

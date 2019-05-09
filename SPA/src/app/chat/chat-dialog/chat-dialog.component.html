@@ -1,6 +1,6 @@
 <div (clickOutside)="onClickedOutside($event)" id="container">
   <mat-card class="floating-chat" id="chat">
-    <div #content id="content">
+    <div #content [scrollTop]="content.scrollHeight" id="content">
       <div *ngFor="let message of messages | async">
         <mat-card *ngIf="message.type==0" [ngClass]="{ 'from': message.sentBy === 'bot',
                                             'to':   message.sentBy === 'user' }" class="message">
@@ -42,4 +42,6 @@
   <!--<button id="close" mat-fab color="warn" type="button"><mat-icon color="primary" svgIcon="close"></mat-icon></button>-->
 </div>
 
-<button color="accent" mat-fab (click)="openDialog()" class="float" *ngIf="!opened">Iwi</button>
+<button color="accent" mat-fab (click)="openDialog()" class="float iwi-button" *ngIf="!opened"><img alt="Iwi"
+                                                                                                    src="../../../assets/branding/iwi.svg"/>
+</button>

@@ -1,5 +1,6 @@
-const { checkToken } = require('../../../../middlewares/authentication');
-const { tokenId, logger } = require('../../../../shared/functions');
+const {checkToken} = require('../../../../middlewares/authentication');
+const {tokenId, logger} = require('../../../../shared/functions');
+const {algorithm} = require('../../../../shared/algorithm');
 
 // ============================
 // ===== CRUD applicant_skill ======
@@ -7,7 +8,7 @@ const { tokenId, logger } = require('../../../../shared/functions');
 
 module.exports = (app, db) => {
     // GET all applicant_skills
-    app.get("/applicant_skills", checkToken, async(req, res, next) => {
+    app.get("/applicant_skills", checkToken, async (req, res, next) => {
         try {
             await logger.saveLog('GET', 'applicant_skills', null, res);
 
@@ -16,37 +17,37 @@ module.exports = (app, db) => {
                 applicant_skills: await db.applicant_skills.findAll()
             });
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            next({type: 'error', error: 'Error getting data'});
         }
     });
 
     // GET one applicant_skill by two id's
-    app.get("/applicant_skill/:fk_applicant([0-9]+)/:fk_skill([0-9]+)", checkToken, async(req, res, next) => {
+    app.get("/applicant_skill/:fk_applicant([0-9]+)/:fk_skill([0-9]+)", checkToken, async (req, res, next) => {
         const params = req.params;
 
         try {
             res.status(200).json({
                 ok: true,
                 applicant_skill: await db.applicant_skills.findOne({
-                    where: { fk_applicant: params.fk_applicant, fk_skill: params.fk_skill }
+                    where: {fk_applicant: params.fk_applicant, fk_skill: params.fk_skill}
                 })
             });
 
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            next({type: 'error', error: 'Error getting data'});
         }
     });
 
     // GET one applicant_skill by one id
-    app.get("/applicant_skill/:fk_applicant([0-9]+)", checkToken, async(req, res, next) => {
+    app.get("/applicant_skill/:fk_applicant([0-9]+)", checkToken, async (req, res, next) => {
         const params = req.params;
 
         try {
             let applicant_skill = await db.applicant_skills.findAll({
-                where: { fk_applicant: params.fk_applicant }
+                where: {fk_applicant: params.fk_applicant}
             });
 
-            if ( applicant_skill ) {
+            if (applicant_skill) {
                 return res.status(200).json({
                     ok: true,
                     message: 'Listing skills of this user',
@@ -60,20 +61,20 @@ module.exports = (app, db) => {
             }
 
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            next({type: 'error', error: 'Error getting data'});
         }
     });
 
     // POST single applicant_skill
-    app.post("/applicant_skill", checkToken, async(req, res, next) => {
+    app.post("/applicant_skill", checkToken, async (req, res, next) => {
         const body = req.body;
         let fk_skill = body.fk_skill;
 
-        let id = tokenId.getTokenId(req.get('token'));
+        let id = tokenId.getTokenId(req.get('token'), res);
 
         try {
             let applicant = await db.applicants.findOne({
-                where: { userId: id }
+                where: {userId: id}
             });
 
             if (applicant) {
@@ -94,13 +95,14 @@ module.exports = (app, db) => {
 
                 // And add the array of id's to applicant_skills
                 await applicant.addSkill(fk_skill, {
-                        through: {
-                            description: body.description,
-                            level: body.level
-                        }
-                    })
-                    .then(created => {
+                    through: {
+                        description: body.description,
+                        level: body.level
+                    }
+                })
+                    .then(async created => {
                         if (created) {
+                            await algorithm.indexUpdate(id);
                             return res.status(201).json({
                                 ok: true,
                                 message: "Added skill to applicant"
@@ -120,26 +122,26 @@ module.exports = (app, db) => {
                 });
             }
         } catch (err) {
-            next({ type: 'error', error: err.message });
+            next({type: 'error', error: err.message});
         }
 
     });
 
     // PUT single applicant_skill
-    app.put("/applicant_skill", checkToken, async(req, res, next) => {
+    app.put("/applicant_skill", checkToken, async (req, res, next) => {
         const body = req.body;
 
-        let id = tokenId.getTokenId(req.get('token'));
+        let id = tokenId.getTokenId(req.get('token'), res);
 
         try {
             let applicant = await db.applicants.findOne({
-                where: { userId: id }
+                where: {userId: id}
             }).then(async _applicant => {
                 if (_applicant) {
                     _applicant.hasSkill(body.fk_skill)
                         .then(exists => {
                             if (exists) {
-                                _applicant.getSkills({ where: { id: body.fk_skill } })
+                                _applicant.getSkills({where: {id: body.fk_skill}})
                                     .then(skills => {
                                         let skill = skills[0];
 
@@ -147,13 +149,15 @@ module.exports = (app, db) => {
                                         if (body.description) skill.applicant_skills.description = body.description;
 
                                         skill.applicant_skills.save()
-                                            .then(rest => {
+                                            .then(async rest => {
                                                 if (rest.isReject) {
                                                     return res.status(400).json({
                                                         ok: false,
                                                         msg: "Skill not updated."
                                                     });
                                                 } else {
+                                                    await algorithm.indexUpdate(id);
+
                                                     return res.status(200).json({
                                                         ok: false,
                                                         msg: "Skill updated with level " + body.level
@@ -162,35 +166,37 @@ module.exports = (app, db) => {
                                             })
                                     })
                             } else {
-                                next({ type: 'error', error: "Skill not found for applicant " + body.fk_applicant });
+                                next({type: 'error', error: "Skill not found for applicant " + body.fk_applicant});
                             }
                         })
                 } else {
-                    next({ type: 'error', error: "Applicant not found (¿fk_applicant wrong?)" });
+                    next({type: 'error', error: "Applicant not found (¿fk_applicant wrong?)"});
                 }
             })
         } catch (err) {
-            next({ type: 'error', error: err.message });
+            next({type: 'error', error: err.message});
         }
     });
 
     // DELETE single applicant_skill
-    app.delete("/applicant_skill", checkToken, async(req, res, next) => {
+    app.delete("/applicant_skill", checkToken, async (req, res, next) => {
         const body = req.body;
 
-        let id = tokenId.getTokenId(req.get('token'));
+        let id = tokenId.getTokenId(req.get('token'), res);
 
         try {
             let applicant = await db.applicants.findOne({
-                    where: { userId: id }
-                })
+                where: {userId: id}
+            })
                 .then(u => {
                     if (u) {
                         u.hasSkill(body.fk_skill)
                             .then(success => {
                                 if (success) {
                                     u.removeSkills(body.fk_skill)
-                                        .then(ok => {
+                                        .then(async ok => {
+                                            await algorithm.indexUpdate(id);
+
                                             return res.status(201).json({
                                                 ok: true,
                                                 message: "Deleted"
@@ -219,7 +225,7 @@ module.exports = (app, db) => {
                 })
 
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            next({type: 'error', error: 'Error getting data'});
         }
 
     });

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
@@ -21,6 +21,9 @@ import {
   SeniorityLevel,
   WorkLocationType
 } from '../../../models/Offer.model';
+import {Title} from '@angular/platform-browser';
+import {OkDialogComponent} from '../../shared/ok-dialog/ok-dialog.component';
+import {DialogErrorComponent} from '../../auth/signup/dialog-error/dialog-error.component';
 
 
 interface City {
@@ -38,12 +41,16 @@ interface City {
 })
 export class OfferCreateComponent implements OnInit {
 
-
   public Editor = ClassicEditor;
   public Config = {
-    toolbar: ['heading', '|', 'bold', 'italic', 'link',
+    toolbar: ['heading', '|', 'bold', 'italic',
       'bulletedList', 'numberedList', 'blockQuote',
-      'insertTable', 'undo', 'redo']
+      'undo', 'redo']
+  };
+
+  public ConfigLimited = {
+    toolbar: ['heading', '|', 'bold', 'italic',
+      'undo', 'redo']
   };
   public DataDesc = '<p>Your text...</p>';
   public DataReq = '<p>Your text...</p>';
@@ -82,13 +89,15 @@ export class OfferCreateComponent implements OnInit {
 
   private dialogShown = false;
 
-  constructor(private _formBuilder: FormBuilder,
-              private http: HttpClient,
-              public dialog: MatDialog,
-              private store$: Store<fromApp.AppState>,
-              private router: Router,
-              private offerEffects$: OfferEffects,
-              private activatedRoute: ActivatedRoute) {
+  constructor(
+    private titleService: Title,
+    private _formBuilder: FormBuilder,
+    private http: HttpClient,
+    public dialog: MatDialog,
+    private store$: Store<fromApp.AppState>,
+    private router: Router,
+    private offerEffects$: OfferEffects,
+    private activatedRoute: ActivatedRoute) {
 
     this.iskill = 0;
     this.durationReq = true;
@@ -122,6 +131,7 @@ export class OfferCreateComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Kwee - Create Offer');
     this.authState = this.store$.pipe(select('auth'));
     this.authState.pipe(
       select((s: { token: string }) => s.token)
@@ -194,7 +204,9 @@ export class OfferCreateComponent implements OnInit {
       this.DataDesc = this.offer.description;
       this.DataReq = this.offer.requeriments;
       this.DataRes = this.offer.responsabilities;
+      this.titleService.setTitle('Kwee - Edit Offer "' + this.offer.title + '"');
     }
+
 
     this.form = this._formBuilder.group({
       'title': new FormControl(this.offer ? this.offer.title : null, Validators.required),
@@ -202,25 +214,25 @@ export class OfferCreateComponent implements OnInit {
       // ---------------------------------------------------------------------
       'datePublished': new FormControl(null),
       // ---------------------------------------------------------------------
-      'dateStart': new FormControl(this.offer ? this.offer.dateStart : null, Validators.required),
-      'dateEnd': new FormControl(this.offer ? this.offer.dateEnd : null, Validators.required),
+      'dateStart': new FormControl(this.offer ? new Date(this.offer.dateStart) : null, Validators.required),
+      'dateEnd': new FormControl(this.offer ? new Date(this.offer.dateEnd) : null, Validators.required),
       'location': new FormControl(loc, Validators.required),
       'salary': new FormControl(this.offer ? this.offer.salaryAmount : null, Validators.required),
-      'salaryFrequency': new FormControl(this.offer ? this.offer.salaryFrecuency : null, Validators.required),
+      'salaryFrequency': new FormControl(this.offer ? this.offer.salaryFrequency : null, Validators.required),
       'salaryCurrency': new FormControl(this.offer ? this.offer.salaryCurrency : null, Validators.required),
       'seniority': new FormControl(this.offer ? this.offer.seniority : null, Validators.required),
       'maxApplicants': new FormControl(this.offer ? this.offer.maxApplicants : null, Validators.required),
-      'duration': new FormControl(this.offer ? this.offer.duration : null),
-      'durationUnit': new FormControl(this.offer ? this.offer.durationUnit : null),
+      'duration': new FormControl(this.offer && !this.offer.isIndefinite ? this.offer.duration : null),
+      'durationUnit': new FormControl(this.offer && !this.offer.isIndefinite ? this.offer.durationUnit : null),
       'contractType': new FormControl(this.offer ? this.offer.contractType : null, Validators.required),
-      'isIndefinite': new FormControl(this.offer ? !this.offer.isIndefinite : null),
+      'isIndefinite': new FormControl(this.offer ? this.offer.isIndefinite : null),
       'workLocation': new FormControl(this.offer ? this.offer.workLocation : null, Validators.required),
       'skills': new FormArray(this.getSkills(this.offer ? this.offer.skills : null)),
       'requirements': new FormControl(this.offer ? this.offer.requeriments : null),
       'responsabilities': new FormControl(this.offer ? this.offer.responsabilities : null)
     });
 
-    if (this.offer && !this.offer.isIndefinite) {
+    if (this.offer && this.offer.isIndefinite) {
       this.disableDuration();
     }
 
@@ -248,7 +260,7 @@ export class OfferCreateComponent implements OnInit {
     }
   }
 
-  onSave(create: boolean) {
+  onSave(create: boolean, draft: boolean) {
     this.dialogShown = false;
     if (this.form.status === 'VALID') {
 
@@ -268,10 +280,10 @@ export class OfferCreateComponent implements OnInit {
       console.log(options);
 
       const obj = {
-        'status': '0',
+        'status': draft ? '2' : '0',
         'title': this.form.controls['title'].value,
         'description': this.form.controls['description'].value,
-        'datePublished': (new Date()).toDateString(),
+        'datePublished': new Date(),
         'dateStart': this.form.controls['dateStart'].value,
         'dateEnd': this.form.controls['dateEnd'].value,
         'location': (this.form.controls['location'].value as City).name
@@ -286,7 +298,7 @@ export class OfferCreateComponent implements OnInit {
         'duration': this.form.controls['duration'].value ? this.form.controls['duration'].value : '0',
         'durationUnit': this.form.controls['durationUnit'].value ? this.form.controls['durationUnit'].value : '0',
         'contractType': this.form.controls['contractType'].value,
-        'isIndefinite': this.form.controls['isIndefinite'].value ? '0' : '1',
+        'isIndefinite': this.form.controls['isIndefinite'].value ? 'true' : 'false',
         'currentApplications': '0',
         'responsabilities': this.form.controls['responsabilities'].value,
         'requeriments': this.form.controls['requirements'].value,
@@ -298,18 +310,27 @@ export class OfferCreateComponent implements OnInit {
           obj
           , options)
           .subscribe((data: any) => {
-            console.log(data);
-            this.router.navigate(['/']);
+            if (!this.dialogShown) {
+              const dialog = this.dialog.open(OkDialogComponent, {
+                data: {
+                  message: 'Your offer has been successfully created',
+                }
+              });
+              dialog.afterClosed().subscribe(result => {
+                this.router.navigate(['/']);
+              });
+              this.dialogShown = true;
+            }
           }, (error: any) => {
-            console.log(error);
-            /*if (!this.dialogShown) {
+            if (!this.dialogShown) {
               this.dialog.open(DialogErrorComponent, {
                 data: {
-                  error: 'We had some issue creating your offer. Please try again later',
+                  header: 'We had some issue creating your offer.',
+                  error: 'Please try again later',
                 }
               });
               this.dialogShown = true;
-            }*/
+            }
           });
       } else {
         this.http.put(environment.apiUrl + 'offer/' + this.editOffer,
@@ -356,8 +377,8 @@ export class OfferCreateComponent implements OnInit {
   }
 
   disableDuration() {
-    document.getElementById(`dnum`).setAttribute('disabled', 'true');
-    document.getElementById(`dtime`).setAttribute('disabled', 'true');
+    // document.getElementById(`dnum`).setAttribute('disabled', 'true');
+    // document.getElementById(`dtime`).setAttribute('disabled', 'true');
     this.form.get('duration').setValue(null);
     this.form.get('durationUnit').setValue(null);
     this.form.get('durationUnit').disable();
@@ -375,6 +396,26 @@ export class OfferCreateComponent implements OnInit {
       this.form.get('duration').enable();
       this.durationReq = true;
     }
+  }
+
+  onDraft() {
+    this.onSave(true, true);
+  }
+
+  updateDraft(publish: boolean) {
+    if (publish) {
+      this.onSave(false, false);
+    } else {
+      this.onSave(false, true);
+    }
+  }
+
+  onPublish() {
+    this.onSave(true, false);
+  }
+
+  onUpdate() {
+    this.onSave(false, false);
   }
 
   capitalizeFirstLetter(string: string) {
@@ -423,5 +464,22 @@ export class OfferCreateComponent implements OnInit {
       }
     }
   }
+
+  @HostListener('window:beforeunload', ['$event'])
+  unloadNotification($event: any) {
+
+    $event.preventDefault();
+    $event.returnValue = '';
+  }
+
+  // @HostListener('window:popstate', ['$event'])
+  // unloadNotification2($event: any) {
+  //   console.log($event);
+  //   if (confirm('You have unsaved changes! If you leave, your changes will be lost.')) {
+  //     $event.preventDefault();
+  //     history.go(1);
+  //     // $event.returnValue = '';
+  //   }
+  // }
 
 }

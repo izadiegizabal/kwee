@@ -1,5 +1,7 @@
-const { checkToken } = require('../../../../middlewares/authentication');
-const { tokenId, logger } = require('../../../../shared/functions');
+const {checkToken} = require('../../../../middlewares/authentication');
+const {tokenId, logger} = require('../../../../shared/functions');
+const {algorithm} = require('../../../../shared/algorithm');
+
 
 // ============================
 // ===== CRUD applicant_language ======
@@ -7,7 +9,7 @@ const { tokenId, logger } = require('../../../../shared/functions');
 
 module.exports = (app, db) => {
     // GET all applicant_languages
-    app.get("/applicant_languages", checkToken, async(req, res, next) => {
+    app.get("/applicant_languages", checkToken, async (req, res, next) => {
         try {
             await logger.saveLog('GET', 'applicant_languages', null, res);
 
@@ -16,12 +18,12 @@ module.exports = (app, db) => {
                 applicant_languages: await db.applicant_languages.findAll()
             });
         } catch (err) {
-            next({ type: 'error', error: err.message });
+            next({type: 'error', error: err.message});
         }
     });
 
     // GET one applicant_language by two id's
-    app.get("/applicant_language/:fk_applicant([0-9]+)/:fk_language([0-9]+)", checkToken, async(req, res, next) => {
+    app.get("/applicant_language/:fk_applicant([0-9]+)/:fk_language([0-9]+)", checkToken, async (req, res, next) => {
         const params = req.params;
 
         try {
@@ -32,25 +34,25 @@ module.exports = (app, db) => {
                     //     model: db.languages,
                     //     where: { fk_language: params.fk_language }
                     // }],
-                    where: { fk_applicant: params.fk_applicant, fk_language: params.fk_language }
+                    where: {fk_applicant: params.fk_applicant, fk_language: params.fk_language}
                 })
             });
 
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            next({type: 'error', error: 'Error getting data'});
         }
     });
 
     // GET one applicant_language by one id
-    app.get("/applicant_language/:fk_applicant([0-9]+)", checkToken, async(req, res, next) => {
+    app.get("/applicant_language/:fk_applicant([0-9]+)", checkToken, async (req, res, next) => {
         const fk_applicant = req.params.fk_applicant;
 
         try {
             let applicant_languages = await db.applicant_languages.findAll({
-                where: { fk_applicant }
+                where: {fk_applicant}
             });
 
-            if ( applicant_languages ) {
+            if (applicant_languages) {
                 return res.status(200).json({
                     ok: true,
                     message: 'Listing all languages of this user',
@@ -65,20 +67,20 @@ module.exports = (app, db) => {
 
 
         } catch (err) {
-            next({ type: 'error', error: err.message });
+            next({type: 'error', error: err.message});
         }
     });
 
     // POST single applicant_language
-    app.post("/applicant_language", async(req, res, next) => {
+    app.post("/applicant_language", async (req, res, next) => {
         const body = req.body;
         let fk_language = body.fk_language;
 
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
 
             let applicant = await db.applicants.findOne({
-                where: { userId: id }
+                where: {userId: id}
             });
 
             if (applicant) {
@@ -101,8 +103,10 @@ module.exports = (app, db) => {
                     through: {
                         level: body.level
                     }
-                }).then(created => {
+                }).then(async created => {
                     if (created) {
+                        await algorithm.indexUpdate(id);
+
                         return res.status(201).json({
                             ok: true,
                             message: "Added language to applicant"
@@ -122,33 +126,33 @@ module.exports = (app, db) => {
                 });
             }
         } catch (err) {
-            next({ type: 'error', error: err[0].message });
+            next({type: 'error', error: err[0].message});
         }
     });
 
     // PUT single applicant_language
-    app.put("/applicant_language", checkToken, async(req, res, next) => {
+    app.put("/applicant_language", checkToken, async (req, res, next) => {
         const body = req.body;
 
         try {
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
 
             let applicant = await db.applicants.findOne({
-                    where: { userId: id }
-                })
+                where: {userId: id}
+            })
                 .then(async applicant => {
                     if (applicant) {
                         applicant.hasLanguage(body.fk_language)
                             .then(success => {
                                 if (success) {
-                                    applicant.getLanguages({ where: { id: body.fk_language } })
+                                    applicant.getLanguages({where: {id: body.fk_language}})
                                         .then(languages => {
                                             let language = languages[0];
 
                                             language.applicant_languages.level = body.level;
 
                                             language.applicant_languages.save()
-                                                .then(rest => {
+                                                .then(async rest => {
                                                     if (rest.isRejected) {
                                                         // Problems
                                                         return res.status(400).json({
@@ -156,6 +160,8 @@ module.exports = (app, db) => {
                                                             msg: "Language not updated."
                                                         });
                                                     } else {
+                                                        await algorithm.indexUpdate(id);
+
                                                         // Everything ok
                                                         return res.status(201).json({
                                                             ok: true,
@@ -179,24 +185,26 @@ module.exports = (app, db) => {
 
 
         } catch (err) {
-            next({ type: 'error', error: err.errors[0].message });
+            next({type: 'error', error: err.errors[0].message});
         }
     });
 
     // DELETE single applicant_language
-    app.delete("/applicant_language", checkToken, async(req, res, next) => {
+    app.delete("/applicant_language", checkToken, async (req, res, next) => {
         const body = req.body;
 
         try {
 
-            let id = tokenId.getTokenId(req.get('token'));
+            let id = tokenId.getTokenId(req.get('token'), res);
 
             let applicant = await db.applicants.findOne({
-                where: { userId: id }
+                where: {userId: id}
             });
 
             if (applicant) {
                 await applicant.removeLanguages(body.fk_language);
+
+                await algorithm.indexUpdate(id);
 
                 res.status(201).json({
                     ok: true,
@@ -209,7 +217,7 @@ module.exports = (app, db) => {
                 });
             }
         } catch (err) {
-            next({ type: 'error', error: 'Error getting data' });
+            next({type: 'error', error: 'Error getting data'});
         }
 
     });

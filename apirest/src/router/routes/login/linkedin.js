@@ -4,14 +4,14 @@ module.exports = (app, db) => {
 
     app.get('/auth/linkedin',
         passport.authenticate('linkedin'),
-        function(req, res) {
+        function (req, res) {
             // The request will be redirected to LinkedIn for authentication, so this
             // function will not be called.
         });
 
     app.get('/auth/linkedin/callback',
-        passport.authenticate('linkedin', { failureRedirect: '/login' }),
-        async(req, res, next) => {
+        passport.authenticate('linkedin', {failureRedirect: '/login'}),
+        async (req, res, next) => {
             let email = req.user.emails[0].value;
             let user;
             // Authentication with LinkedIn successful
@@ -19,7 +19,7 @@ module.exports = (app, db) => {
             try {
 
                 for (let i = 0; i < req.user.emails.length; i++) {
-                    user = await db.users.findOne({ where: { email: req.user.emails[i].value } });
+                    user = await db.users.findOne({where: {email: req.user.emails[i].value}});
                     if (user) {
                         // User in database
                         res.redirect('/');
@@ -52,8 +52,8 @@ module.exports = (app, db) => {
                 }
 
             } catch (err) {
-                next({ type: 'error', error: 'Error getting data' });
+                next({type: 'error', error: 'Error getting data'});
             }
         });
 
-}
+};

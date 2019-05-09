@@ -2,20 +2,23 @@ const passport = require('../../../middlewares/passport');
 const querystring = require('querystring');
 const auth = require('../../../middlewares/auth/auth');
 const env = require('../../../tools/constants');
+const moment = require('moment');
+const {logger} = require('../../../shared/functions');
 
 module.exports = (app, db) => {
 
     app.get('/auth/github',
-        passport.authenticate('github', { scope: ['user:email'] }));
+        passport.authenticate('github', {scope: ['user:email']})
+    );
 
     app.get('/auth/github/callback',
-        passport.authenticate('github', { failureRedirect: '/login' }),
+        passport.authenticate('github', {failureRedirect: '/login'}),
 
-        async(req, res, next) => {
-            // Authentication with Instagram successful
+        async (req, res, next) => {
+            // Authentication with Github successful
             try {
 
-                let user = await db.users.findOne({ where: { email: req.user._json.email } });
+                let user = await db.users.findOne({ where: { email: req.user._json.email }});
 
                 if (!user) {
                     // New user
@@ -32,22 +35,83 @@ module.exports = (app, db) => {
                         github: user.email
                     });
 
-                    // const query = querystring.stringify({
-                    //         user: user.id,
-                    //         name: user.name,
-                    //         email: user.email
-                    // });
-                    let token = 'token=' + auth.auth.encode(user);
-                    res.redirect(env.SIGNUP + token);
+                    let token = auth.auth.encode(user);
+                    const query = `token=${token}&id=${user.id}&name=${user.name}&email=${user.email}`;
+
+                    res.redirect(env.SIGNUP + query);
 
                 } else {
                     // Existent user
+                    let logId = await logger.saveLog('POST', 'login', null, res, user.email);
                     console.log("Este email ya existe en la BBDD");
-                    res.redirect('/');
+                    console.log('Haciendo login en el sistema');
+                    console.log('id: ', user.id);
+                    
+
+                    let type;
+                    let id = user.id;
+                    let dateNow = moment().format();
+
+                    await db.users.update({ lastAccess: dateNow }, {
+                        where: { id }
+                    });
+
+                    let userUpdated = await db.users.findOne({ where: { id }});
+
+                    delete userUpdated.dataValues.password;
+
+                    let notifications = await db.notifications.findAll({ where: { to: id, read: false }});
+
+                    notifications ? notifications = notifications.length : notifications = 0;
+
+                    let token = auth.auth.encode(userUpdated);
+                    logger.updateLog(logId, true, id);
+
+                    if ( user.root ) {
+                        type = 'admin';
+                    } else {
+                        var avg = {};
+                        let offerer = await db.offerers.findOne({
+                            where: { userId: id }
+                        });
+                        if (offerer) {
+                            avg = getOffererAVG(offerer);
+                            type = 'offerer';
+                        } else {
+                            let applicant = await db.applicants.findOne({
+                                where: { userId: id }
+                            });
+                            if ( applicant ) {
+                                avg = getApplicantAVG(applicant);
+                                type = 'applicant';
+                            } else {
+                                return next({type: 'error', error: 'This user is not applicant, offerer neither admin'});
+                            }
+                        }
+                    }
+
+                    return res.json({
+                        ok: true,
+                        message: 'Login successful',
+                        data: {
+                            id: userUpdated.id,
+                            name: userUpdated.name,
+                            email: userUpdated.email,
+                            img: userUpdated.img,
+                            bio: userUpdated.bio,
+                            lastAccess: userUpdated.lastAccess,
+                            index: userUpdated.index,
+                            avg,
+                            status: userUpdated.status,
+                            notifications,
+                            type
+                        },
+                        token
+                    });
                 }
             } catch (err) {
-                next({ type: 'error', error: 'Error getting data' });
+                return next({type: 'error', error: err.message});
             }
         });
 
-}
+};

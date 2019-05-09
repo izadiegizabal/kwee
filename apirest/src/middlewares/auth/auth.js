@@ -1,20 +1,24 @@
 const jwt = require('jsonwebtoken');
-const env = require('../../tools/constants')
+const env = require('../../tools/constants');
 
 // const { HttpException, HttpStatus } = require('@nestjs/common');
 
 class Auth {
     encode(user, expires) {
-        return jwt.sign({ id: user.id }, env.JSONWEBTOKEN_SECRET, { expiresIn: expires ? expires : env.JSONWEBTOKEN_EXPIRES, issuer: env.JSONWEBTOKEN_ISSUER });
+        return jwt.sign({id: user.id}, env.JSONWEBTOKEN_SECRET,
+            {expiresIn: expires ? expires : env.JSONWEBTOKEN_EXPIRES, issuer: env.JSONWEBTOKEN_ISSUER});
     }
 
-    decode(token) {
+    decode(token, res) {
         try {
             // token = token.replace('Bearer ', '');
-            return (jwt.verify(token, env.JSONWEBTOKEN_SECRET, { issuer: env.JSONWEBTOKEN_ISSUER })).id;
+            return (jwt.verify(token, env.JSONWEBTOKEN_SECRET, {issuer: env.JSONWEBTOKEN_ISSUER})).id;
         } catch (e) {
             // throw new HttpException('Su token ha expirado', HttpStatus.UNAUTHORIZED);
-            throw new Error('Invalid token');
+            res.status(400).json({
+                ok: false,
+                message: 'Invalid token'
+            })
         }
     }
 }
@@ -26,4 +30,4 @@ const auth = new Auth();
 
 module.exports = {
     auth
-}
+};

@@ -1,10 +1,37 @@
-<div *ngIf="(offerManageState | async).offers" fxLayoutGap="16px" style="padding: 8px" fxLayout="column">
-  <app-offer-preview-card *ngFor="let offer of  (offerManageState | async).offers.data;" [offer]="offer">
-  </app-offer-preview-card>
+<div *ngIf="(offerManageState | async).offers"
+     fxFlex="100%"
+     fxLayout="column"
+     fxLayoutGap="16px"
+     style="padding: 8px">
 
-  <mat-paginator (page)="pageEvent = $event; changePage();"
-                 [length]="totalOffers((offerManageState | async).offers.count)"
-                 [pageSizeOptions]="pageSizeOptions"
-                 [pageSize]="pageSize">
-  </mat-paginator>
+  <div
+    *ngIf="(offerManageState | async).offers && (offerManageState | async).offers.length > 0"
+    fxLayout="column"
+    fxLayoutGap="16px"
+    style="min-height: 368px; padding-top: 8px">
+    <app-offer-preview-card
+      *ngFor="let offer of (offerManageState | async).offers;"
+      [offer]="offer"
+      [selection]="true"
+      fxLayout="row">
+    </app-offer-preview-card>
+  </div>
+  <div
+    *ngIf="!(offerManageState | async).offers || (offerManageState | async).offers.length === 0"
+    fxLayout="column"
+    fxLayoutAlign="center center"
+    style="padding-top: 144px">
+    <img alt="Iwi Mascot" src="../../../../assets/branding/iwi.svg" width="128px"/>
+    <p>Sorry, there aren't any offers for this category.</p>
+  </div>
+
+  <div>
+    <mat-paginator
+      (page)="pageEvent = $event; changePage();"
+      *ngIf="(offerManageState | async).offers && (offerManageState | async).offers.length > 0"
+      [length]="totalOffers((offerManageState | async).count ,(offerManageState | async).total)"
+      [pageSizeOptions]="pageSizeOptions"
+      [pageSize]="pageSize">
+    </mat-paginator>
+  </div>
 </div>

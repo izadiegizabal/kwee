@@ -5,6 +5,11 @@ img {
   object-fit: cover;
 }
 
+.twitter-wrapper {
+  max-height: 50vh;
+  overflow: auto;
+}
+
 mat-list-item p::before {
   content: "\16EB  ";
 }

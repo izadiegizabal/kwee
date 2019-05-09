@@ -2,7 +2,7 @@ const Log = require('../../models/logs');
 
 module.exports = (app, db) => {
     // GET all logs
-    app.get("/logs", async(req, res, next) => {
+    app.get("/logs", async (req, res, next) => {
 
         let from = req.query.from || 0;
         from = Number(from);
@@ -21,7 +21,7 @@ module.exports = (app, db) => {
                     });
                 }
 
-                Log.count({}, (err, count) => {
+                Log.countDocuments({}, (err, count) => {
                     res.json({
                         ok: true,
                         logs,
@@ -32,7 +32,11 @@ module.exports = (app, db) => {
             });
     });
 
-    app.delete('/log/:id', async(req, res, next) => {
+    app.get("/logs/:id", (req, res, next) => {
+        showUserLog( req, res, next );
+    });
+
+    app.delete('/log/:id', async (req, res, next) => {
 
         let id = req.params.id;
 
@@ -49,7 +53,7 @@ module.exports = (app, db) => {
                 return res.status(200).json({
                     ok: true,
                     message: 'Log not found'
-                    
+
                 });
             }
 
@@ -62,4 +66,36 @@ module.exports = (app, db) => {
         });
 
     });
-}
+
+    async function showUserLog( req, res, next ) {
+        let from = req.query.from || 0;
+        let to = req.query.to || 10;
+        
+        from = Number(from);
+        to = Number(to);
+
+        let userId = req.params.id;
+
+        Log.find({ userId })
+            .skip(from)
+            .limit(to)
+            .exec(( err, logs ) => {
+                if (err) {
+                    return res.status(400).json({
+                        ok: false,
+                        message: err
+                    });
+                }
+
+                Log.countDocuments({ userId }, (err, count) => {
+                    res.json({
+                        ok: true,
+                        logs,
+                        total: count
+                    });
+                });
+
+            });
+    }
+
+};

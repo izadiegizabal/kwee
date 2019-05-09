@@ -1,5 +1,5 @@
 const passport = require('passport'),
-    app = require('../database/express');
+    {app} = require('../database/express');
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -13,8 +13,8 @@ passport.deserializeUser((user, done) => {
 
 module.exports = passport;
 
-require('./auth/instagram');
+// require('./auth/instagram');
 require('./auth/linkedin');
-require('./auth/telegram');
+// require('./auth/telegram');
 require('./auth/twitter');
 require('./auth/github');

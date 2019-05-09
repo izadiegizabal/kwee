@@ -8,6 +8,7 @@ import {MatPaginator, MatSidenav, PageEvent} from '@angular/material';
 import {BreakpointObserver} from '@angular/cdk/layout';
 import {HttpClient} from '@angular/common/http';
 import {ActivatedRoute, Router} from '@angular/router';
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-candidate-home',
@@ -20,28 +21,34 @@ export class CandidateHomeComponent implements OnInit {
   offersState: Observable<fromOffers.State>;
   // MatPaginator
   pageSize = 5;
+  nPage = 1;
   pageSizeOptions: number[] = [5, 10, 25, 100];
   pageEvent: PageEvent;
   orderby = '0';
+  changeP = false;
+
   @ViewChild('paginator') paginator: MatPaginator;
 
   // Filter sidebar
   @ViewChild('drawer') drawer: MatSidenav;
 
-  order: { value: string , viewValue: string }[] =
+  order: { value: string, viewValue: string }[] =
     [
-      { value: '0', viewValue: 'Relevance' },
-      { value: 'index', viewValue: 'Kwee Index' },
-      { value: 'title', viewValue: 'Title' },
-      { value: 'salaryAmount', viewValue: 'Salary' },
-      { value: 'dateStart', viewValue: 'Start Date' },
-      { value: 'datePublished', viewValue: 'Published Date' },
-      { value: 'dateEnd', viewValue: 'Selection Date' },
-      { value: 'seniority', viewValue: 'Seniority' },
+      {value: '0', viewValue: 'Relevance'},
+      {value: 'index', viewValue: 'Kwee Index'},
+      {value: 'title', viewValue: 'Title'},
+      {value: 'salaryAmount', viewValue: 'Salary'},
+      {value: 'dateStart', viewValue: 'Start Date'},
+      {value: 'datePublished', viewValue: 'Published Date'},
+      {value: 'dateEnd', viewValue: 'Selection Date'},
+      {value: 'seniority', viewValue: 'Seniority'},
     ];
+
+  alreadySearched = '';
 
 
   constructor(
+    private titleService: Title,
     private store$: Store<fromApp.AppState>,
     public media: BreakpointObserver,
     private http: HttpClient,
@@ -50,24 +57,46 @@ export class CandidateHomeComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Kwee - Candidate Home');
+
     this.query = {...this.query, status: '0'};
-    this.store$.dispatch(new OffersActions.TryGetOffers({page: 1, limit: 5, params: this.query, order: this.orderby}));
+    this.store$.dispatch(new OffersActions.TryGetOffers({page: this.nPage, limit: this.pageSize, params: this.query, order: this.orderby}));
     this.offersState = this.store$.pipe(select(state => state.offers));
 
     this.activatedRoute.queryParams
       .subscribe(params => {
         this.query = params;
-        this.searchCallApi();
+        if (params['page']) {
+          this.nPage = params['page'];
+        }
+        if (params['limit']) {
+          this.pageSize = params['limit'];
+        }
+
+        if (!this.changeP) {
+          this.searchCallApi();
+        } else {
+          this.changeP = false;
+        }
       });
   }
 
   changePage() {
+    this.changeP = true;
     this.store$.dispatch(new OffersActions.TryGetOffers({
       page: this.pageEvent.pageIndex + 1,
       limit: this.pageEvent.pageSize,
       params: this.query,
       order: this.orderby
     }));
+    window.scrollTo(0, 0);
+    this.nPage = this.pageEvent.pageIndex + 1;
+    if (this.pageSize !== this.pageEvent.pageSize) {
+      this.pageSize = this.pageEvent.pageSize;
+    }
+    this.router.navigate(['/candidate-home'],
+      {queryParams: {page: this.nPage, limit: this.pageSize}, queryParamsHandling: 'merge'});
+
   }
 
   isMobile() {
@@ -77,10 +106,13 @@ export class CandidateHomeComponent implements OnInit {
 
   onSearch(params: string) {
     let searchParams = params.toLowerCase().replace(/ /g, '+');
+
     if (!searchParams) {
       searchParams = null;
+    } else {
+      this.titleService.setTitle('Kwee - ' + searchParams);
     }
-    this.router.navigate(['/candidate-home'], {queryParams: {title: searchParams}, queryParamsHandling: 'merge'});
+    this.router.navigate(['/candidate-home'], {queryParams: {keywords: searchParams}, queryParamsHandling: 'merge'});
   }
 
   getOrderby(order: string) {
@@ -88,7 +120,7 @@ export class CandidateHomeComponent implements OnInit {
     this.orderby = order;
 
     this.store$.dispatch(new OffersActions.TryGetOffers({
-      page: 1,
+      page: this.nPage,
       limit: this.pageSize,
       params: this.query,
       order: this.orderby
@@ -97,6 +129,8 @@ export class CandidateHomeComponent implements OnInit {
 
 
   searchCallApi() {
+    console.log('searchAPI');
+
     this.query = {...this.query, status: '0'};
     if (this.query.salaryAmount) {
       this.query = {...this.query, salaryAmount: {'gte': this.query.salaryAmount}};
@@ -110,15 +144,24 @@ export class CandidateHomeComponent implements OnInit {
       this.query = {...this.query, datePublished: {'gte': this.query.datePublished}};
     }
 
-    this.store$.dispatch(new OffersActions.TryGetOffers({
-      page: 1,
-      limit: this.pageSize,
-      params: this.query,
-      order: this.orderby
-    }));
+    if (this.query.keywords) {
+      this.titleService.setTitle('Kwee - ' + this.query.keywords);
+      this.alreadySearched = this.query.keywords;
+    } else {
+      this.titleService.setTitle('Kwee - Candidate Home');
+      this.alreadySearched = '';
+    }
 
     if (this.paginator) {
       this.paginator.firstPage();
+    } else {
+      this.store$.dispatch(new OffersActions.TryGetOffers({
+        page: this.nPage,
+        limit: this.pageSize,
+        params: this.query,
+        order: this.orderby
+      }));
+
     }
   }
 }

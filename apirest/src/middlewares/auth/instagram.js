@@ -15,7 +15,7 @@ passport.use(
         user.homePage = profile._json.data.website;
         user.image = profile._json.data.profile_picture;
         user.bio = profile._json.data.bio;
-        user.media = `https://api.instagram.com/v1/users/${profile.id}/media/recent/?access_token=${accessToken}&count=8`
+        user.media = `https://api.instagram.com/v1/users/${profile.id}/media/recent/?access_token=${accessToken}&count=8`;
 
         done(null, profile)
     }));

@@ -14,9 +14,9 @@
 
 */
 
-import { MTLFile } from './dependencies/MTLFile.js';
-import { global, TEntity, angle } from './commons';
-import { constants } from './tools/constants.js';
+import {MTLFile} from './dependencies/MTLFile.js';
+import {angle, global, TEntity} from './commons';
+import {constants} from './tools/constants.js';
 
 var vec3 = glMatrix.vec3;
 
@@ -26,117 +26,116 @@ var texCoordVertexBufferObject = null;
 var normalBufferObject = null;
 
 class TResourceManager {
-    // map --> store resources
-    constructor() {
-        this.map = new Map();
-        meshPosVertexBufferObject = global.gl.createBuffer();
-        meshIndexBufferObject = global.gl.createBuffer();
-        texCoordVertexBufferObject = global.gl.createBuffer();
-        normalBufferObject = global.gl.createBuffer();
-    }
-    
-    // getResource --> The resource filename must be the same as "name"
-    async getResource(name) {
-        // console.log("== getResource " + name + " ==");
-        let resource = this.map.has(name);
+  // map --> store resources
+  constructor() {
+    this.map = new Map();
+    meshPosVertexBufferObject = global.gl.createBuffer();
+    meshIndexBufferObject = global.gl.createBuffer();
+    texCoordVertexBufferObject = global.gl.createBuffer();
+    normalBufferObject = global.gl.createBuffer();
+  }
 
-        let type = name.split('.');
+  // getResource --> The resource filename must be the same as "name"
+  async getResource(name) {
+    // console.log("== getResource " + name + " ==");
+    let resource = this.map.has(name);
 
-        if( resource == false ){
-            // console.log(name + " DOESN'T EXISTS. Creating...");
-            // create resource
-            switch(type[1]){
-                case 'json': {
-                    // Mesh
-                    // console.log("-> Creating TResourceMesh " + name + "...");
-                    resource = new TResourceMesh(name);
-                    break;
-                }
-                case 'jpg':
-                case 'png': {
-                    // console.log("-> Creating TResourceTexture " + name + "...");
-                    resource = new TResourceTexture(name);
-                    break;
-                }
-                case 'mtl': {
-                    // material
-                    // console.log("-> Creating TResourceMaterial " + name + "...");
-                    resource = new TResourceMaterial(name);
-                    break;
-                }
-                case 'vs': 
-                case 'fs': {
-                    // shader
-                    // console.log("-> Creating TResourceShader " + name + "...");
-                    resource = new TResourceShader(name);
-                    break;
-                }
-            }
-            // load resource
-            var file = await resource.loadFile(name);
-            
-            resource = this.map.set(name, file);
+    let type = name.split('.');
 
-            return this.getResource(name);
+    if (resource == false) {
+      // console.log(name + " DOESN'T EXISTS. Creating...");
+      // create resource
+      switch (type[1]) {
+        case 'json': {
+          // Mesh
+          // console.log("-> Creating TResourceMesh " + name + "...");
+          resource = new TResourceMesh(name);
+          break;
         }
-        else{
-            // return resource
-            // console.log(name + " EXISTS. Returning...");
-            
-            switch(type[1]){
-                case 'json': {
-                    let value = await this.map.get(name); 
-                    resource = value;
-
-                    break;
-                }
-                case 'jpg':
-                case 'png': {
-                    let value = await this.map.get(name); 
-                    resource = value;
-                    
-                    break;
-                }
-                case 'mtl': {
-                    let value = await this.map.get(name); 
-                    resource = value.mtl;
-                    
-                    break;
-                }
-                case 'vs': 
-                case 'fs': {
-                    let value = await this.map.get(name); 
-                    resource = value.shader;
-
-                    break;
-                }
-            }
-            
-            return resource;
+        case 'jpg':
+        case 'png': {
+          // console.log("-> Creating TResourceTexture " + name + "...");
+          resource = new TResourceTexture(name);
+          break;
         }
+        case 'mtl': {
+          // material
+          // console.log("-> Creating TResourceMaterial " + name + "...");
+          resource = new TResourceMaterial(name);
+          break;
+        }
+        case 'vs':
+        case 'fs': {
+          // shader
+          // console.log("-> Creating TResourceShader " + name + "...");
+          resource = new TResourceShader(name);
+          break;
+        }
+      }
+      // load resource
+      var file = await resource.loadFile(name);
 
+      resource = this.map.set(name, file);
+
+      return this.getResource(name);
+    } else {
+      // return resource
+      // console.log(name + " EXISTS. Returning...");
+
+      switch (type[1]) {
+        case 'json': {
+          let value = await this.map.get(name);
+          resource = value;
+
+          break;
+        }
+        case 'jpg':
+        case 'png': {
+          let value = await this.map.get(name);
+          resource = value;
+
+          break;
+        }
+        case 'mtl': {
+          let value = await this.map.get(name);
+          resource = value.mtl;
+
+          break;
+        }
+        case 'vs':
+        case 'fs': {
+          let value = await this.map.get(name);
+          resource = value.shader;
+
+          break;
+        }
+      }
+
+      return resource;
     }
+
+  }
 }
 
 class TResource {
-    constructor(name){
-        this.name = name;
-        //this.file = resource;
+  constructor(name) {
+    this.name = name;
+    //this.file = resource;
 
-        return this;
-    }
+    return this;
+  }
 
-    getName(){
-        return this.name;
-    }
+  getName() {
+    return this.name;
+  }
 
-    setName(name){
-        this.name = name;
-    }
+  setName(name) {
+    this.name = name;
+  }
 
-    loadFile(){
+  loadFile() {
 
-    }
+  }
 }
 
 class TResourceMeshArray {
@@ -168,27 +167,27 @@ class TResourceMeshArray {
 
 class TResourceMesh extends TResource{
 
-    constructor(name){
-        super(name);
+  constructor(name) {
+    super(name);
 
-        // vertices positions
-        this.vertices = [];
-        // vertices indices
-        this.triVertices = [];
+    // vertices positions
+    this.vertices = [];
+    // vertices indices
+    this.triVertices = [];
 
-        // normals
-        this.normals = [];
-        // ¿¿??
-        this.triNormals;
+    // normals
+    this.normals = [];
+    // ¿¿??
+    this.triNormals;
 
-        // texture coords
-        this.textures = [];
-        // ¿¿??
-        this.triTextures;
+    // texture coords
+    this.textures = [];
+    // ¿¿??
+    this.triTextures;
 
-        this.nTris;
-        this.nVertices;
-        this.alias;
+    this.nTris;
+    this.nVertices;
+    this.alias;
 
         this.cbo;
         this.nbo;
@@ -205,35 +204,35 @@ class TResourceMesh extends TResource{
 
     async loadFile(file){
 
-        console.log("== loadFile TResourceMesh(" + file + ") ==");
+    console.log("== loadFile TResourceMesh(" + file + ") ==");
 
-        // mesh file code
-        const jsonMesh = await loadJSON(file);
+    // mesh file code
+    const jsonMesh = await loadJSON(file);
 
-      ///////////////////////////////////////////////////////////////////////////////// GET INFO FROM FILE
+    ///////////////////////////////////////////////////////////////////////////////// GET INFO FROM FILE
 
-        this.alias = jsonMesh.alias;
+    this.alias = jsonMesh.alias;
 
-        if( file == "earth_fbx.json" ||
-          file == "earthfbx.json" ||
-          file == "earthobj.json" ||
-          file == "mesh_continentsObj.json"
-        ){
+    if (file == "earth_fbx.json" ||
+      file == "earthfbx.json" ||
+      file == "earthobj.json" ||
+      file == "mesh_continentsObj.json"
+    ) {
 
-            this.vertices = jsonMesh.meshes[0].vertices;
-            this.triVertices = [].concat.apply([], jsonMesh.meshes[0].faces);
-            this.textures = jsonMesh.meshes[0].texturecoords[0];
-            this.normals = jsonMesh.meshes[0].normals;
+      this.vertices = jsonMesh.meshes[0].vertices;
+      this.triVertices = [].concat.apply([], jsonMesh.meshes[0].faces);
+      this.textures = jsonMesh.meshes[0].texturecoords[0];
+      this.normals = jsonMesh.meshes[0].normals;
 
             console.log("== greentoken.de loader ==");
 
         } else if (file == "test.json") {
             this.alias = file;
 
-            this.vertices = jsonMesh.model.vertices[0].position.data;
-            this.triVertices = jsonMesh.model.meshes[0].indices;
-            this.textures = jsonMesh.model.vertices[0].texCoord0.data;
-            this.normals = jsonMesh.model.vertices[0].normal.data;
+      this.vertices = jsonMesh.model.vertices[0].position.data;
+      this.triVertices = jsonMesh.model.meshes[0].indices;
+      this.textures = jsonMesh.model.vertices[0].texCoord0.data;
+      this.normals = jsonMesh.model.vertices[0].normal.data;
 
             console.log("== Playcanvas loader ==");
 
@@ -279,39 +278,36 @@ class TResourceMesh extends TResource{
             console.log("== python loader ==");
         }
 
-        this.nTris = this.triVertices.length;
-        this.nVertices = this.vertices.length;
+    this.nTris = this.triVertices.length;
+    this.nVertices = this.vertices.length;
 
-      ///////////////////////////////////////////////////////////////////////////////// CREATE BUFFERS
-      if(global.gl && global.program) {
-        let vertexBufferObject = global.gl.createBuffer();
-        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, vertexBufferObject);
-        global.gl.bufferData(global.gl.ARRAY_BUFFER, new Float32Array(this.vertices), global.gl.STATIC_DRAW);
+    ///////////////////////////////////////////////////////////////////////////////// CREATE BUFFERS
+    if (global.gl && global.program) {
+      let vertexBufferObject = global.gl.createBuffer();
+      global.gl.bindBuffer(global.gl.ARRAY_BUFFER, vertexBufferObject);
+      global.gl.bufferData(global.gl.ARRAY_BUFFER, new Float32Array(this.vertices), global.gl.STATIC_DRAW);
 
-        let normalBufferObject = global.gl.createBuffer();
-        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, normalBufferObject);
-        global.gl.bufferData(global.gl.ARRAY_BUFFER, new Float32Array(this.normals), global.gl.STATIC_DRAW);
+      let normalBufferObject = global.gl.createBuffer();
+      global.gl.bindBuffer(global.gl.ARRAY_BUFFER, normalBufferObject);
+      global.gl.bufferData(global.gl.ARRAY_BUFFER, new Float32Array(this.normals), global.gl.STATIC_DRAW);
 
-        let indexBufferObject = global.gl.createBuffer();
-        global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, indexBufferObject);
-        global.gl.bufferData(global.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triVertices), global.gl.STATIC_DRAW);
+      let indexBufferObject = global.gl.createBuffer();
+      global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, indexBufferObject);
+      global.gl.bufferData(global.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triVertices), global.gl.STATIC_DRAW);
 
-        this.vbo = vertexBufferObject;
-        this.ibo = indexBufferObject;
-        this.nbo = normalBufferObject;
+      this.vbo = vertexBufferObject;
+      this.ibo = indexBufferObject;
+      this.nbo = normalBufferObject;
 
-        if (this.textures) {
-          let colorBufferObject = global.gl.createBuffer();
-          global.gl.bindBuffer(global.gl.ARRAY_BUFFER, colorBufferObject);
-          global.gl.bufferData(global.gl.ARRAY_BUFFER, new Float32Array(this.textures), global.gl.STATIC_DRAW);
-          this.cbo = colorBufferObject;
-        }
-
-        global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, null);
-        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
+      if (this.textures) {
+        let colorBufferObject = global.gl.createBuffer();
+        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, colorBufferObject);
+        global.gl.bufferData(global.gl.ARRAY_BUFFER, new Float32Array(this.textures), global.gl.STATIC_DRAW);
+        this.cbo = colorBufferObject;
       }
 
-        return this;
+      global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, null);
+      global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
     }
 
     draw(){
@@ -364,11 +360,17 @@ class TResourceMesh extends TResource{
         global.gl.vertexAttribPointer(global.programAttributes.aVertexPosition, 3, global.gl.FLOAT, global.gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
         global.gl.enableVertexAttribArray(global.programAttributes.aVertexPosition);
 
+    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.vbo);
+    global.gl.vertexAttribPointer(positionAttribLocation, 3, global.gl.FLOAT, global.gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
+    global.gl.enableVertexAttribArray(positionAttribLocation);
 
         global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.nbo);
         global.gl.vertexAttribPointer(global.programAttributes.aVertexNormal, 3, global.gl.FLOAT, global.gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
         global.gl.enableVertexAttribArray(global.programAttributes.aVertexNormal);
 
+    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.nbo);
+    global.gl.vertexAttribPointer(normalAttribLocation, 3, global.gl.FLOAT, global.gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
+    global.gl.enableVertexAttribArray(normalAttribLocation);
 
         // if (this.tex && this.tex.tex) {
         //   let texCoordAttribLocation = global.gl.getAttribLocation(global.program, 'aVertexTextureCoords');
@@ -378,6 +380,13 @@ class TResourceMesh extends TResource{
         //   global.gl.enableVertexAttribArray(texCoordAttribLocation);
         // }
 
+    if (this.tex && this.tex.tex) {
+      let texCoordAttribLocation = global.gl.getAttribLocation(global.program, 'aVertexTextureCoords');
+      global.gl.enableVertexAttribArray(texCoordAttribLocation);
+      global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.cbo);
+      global.gl.vertexAttribPointer(texCoordAttribLocation, 2, global.gl.FLOAT, global.gl.FALSE, 2 * Float32Array.BYTES_PER_ELEMENT, 0);
+      global.gl.enableVertexAttribArray(texCoordAttribLocation);
+    }
 
         ///////////////////////////////////////////////////////////////////////////////// POSITION & ROTATION STUFF
         //var rotation = glMatrix.mat4.create();
@@ -406,97 +415,97 @@ class TResourceMesh extends TResource{
     // }
 }
 
-class TResourceMaterial extends TResource{
-    constructor(name){
-        super(name);
+class TResourceMaterial extends TResource {
+  constructor(name) {
+    super(name);
 
-        this.name = undefined;
-        this.Ka = [] // ambient color
-        this.Kd = [] // diffuse reflectance
-        this.Ks = [] // specular reflectance
-        this.Ke = []
-        this.Ni = 0 // 
-        this.Ns = 0 // specular exponent
-        this.d = 0  // dissolves
-        this.illum = 0 // illumination model
-        this.map_Kd = null// @todo map_Kd
+    this.name = undefined;
+    this.Ka = []; // ambient color
+    this.Kd = []; // diffuse reflectance
+    this.Ks = []; // specular reflectance
+    this.Ke = [];
+    this.Ni = 0; //
+    this.Ns = 0; // specular exponent
+    this.d = 0;  // dissolves
+    this.illum = 0; // illumination model
+    this.map_Kd = null;// @todo map_Kd
 
-        return this;
-    }
+    return this;
+  }
 
-    async loadFile(file){
-        
-        // const mtl = await loadJSON(file);
-        console.log("== loadFile TResourceMaterial(" + file + ") ==");
-        const mtl_file = loadMTL(file);
-        const mtl = new MTLFile(mtl_file);
-        // console.log(mtl);
+  async loadFile(file) {
 
-        // material
-        this.name = mtl.name;
-        this.Ka = mtl.Ka;  // ambient color
-        this.Kd = mtl.Kd;  // diffuse reflectance
-        this.Ks = mtl.Ks;  // specular reflectance
-        this.Ke = mtl.Ke; 
-        this.Ni = mtl.Ni; // 
-        this.Ns = mtl.Ns; // specular exponent
-        this.d = mtl.d;  // dissolves
-        this.illum = mtl.illum; // illumination model
-        // @todo map_Kd
-    
-        return this;
-    }
+    // const mtl = await loadJSON(file);
+    console.log("== loadFile TResourceMaterial(" + file + ") ==");
+    const mtl_file = loadMTL(file);
+    const mtl = new MTLFile(mtl_file);
+    // console.log(mtl);
 
-    async loadValues(material) {
-        
-        // material
-        this.name = material.newmtl;
-        this.Ka = material.Ka;  // ambient color
-        this.Kd = material.Kd;  // diffuse reflectance
-        this.Ks = material.Ks;  // specular reflectance
-        this.Ke = material.Ke; 
-        this.Ni = material.Ni; // 
-        this.Ns = material.Ns; // specular exponent
-        this.d = material.d;  // dissolves
-        this.illum = material.illum; // illumination model
-        // @todo map_Kd
+    // material
+    this.name = mtl.name;
+    this.Ka = mtl.Ka;  // ambient color
+    this.Kd = mtl.Kd;  // diffuse reflectance
+    this.Ks = mtl.Ks;  // specular reflectance
+    this.Ke = mtl.Ke;
+    this.Ni = mtl.Ni; //
+    this.Ns = mtl.Ns; // specular exponent
+    this.d = mtl.d;  // dissolves
+    this.illum = mtl.illum; // illumination model
+    // @todo map_Kd
 
-        return this;
-    }
+    return this;
+  }
+
+  async loadValues(material) {
+
+    // material
+    this.name = material.newmtl;
+    this.Ka = material.Ka;  // ambient color
+    this.Kd = material.Kd;  // diffuse reflectance
+    this.Ks = material.Ks;  // specular reflectance
+    this.Ke = material.Ke;
+    this.Ni = material.Ni; //
+    this.Ns = material.Ns; // specular exponent
+    this.d = material.d;  // dissolves
+    this.illum = material.illum; // illumination model
+    // @todo map_Kd
+
+    return this;
+  }
 }
 
-class TResourceTexture extends TResource{
-    constructor(name){
-        super(name);
-        this.tex = global.gl.createTexture();
-        this.image = new Image();
-    }
+class TResourceTexture extends TResource {
+  constructor(name) {
+    super(name);
+    this.tex = global.gl.createTexture();
+    this.image = new Image();
+  }
 
-    async bindTexture() {
-      return new Promise(async resolve => {
-        console.log('== loading TResourceTexture(' + this.name + ') ==');
-        // console.info('loading image '+this.image.src);
-        global.gl.bindTexture(global.gl.TEXTURE_2D, this.tex);
-        global.gl.pixelStorei(global.gl.UNPACK_FLIP_Y_WEBGL, 1);
-        global.gl.texImage2D(global.gl.TEXTURE_2D, 0, global.gl.RGBA, global.gl.RGBA, global.gl.UNSIGNED_BYTE, this.image);
-        global.gl.texParameteri(global.gl.TEXTURE_2D, global.gl.TEXTURE_MIN_FILTER, global.gl.LINEAR);
-        global.gl.bindTexture(global.gl.TEXTURE_2D, null);
-        resolve(true);
-      });
-    }
-    
-    async loadFile(name) {
-      return new Promise(async resolve => {
-        let url = constants.URL + '/assets/assets/textures/' + name;
-        let self = this;
-        this.image.onload = async function () {
-          await self.bindTexture();
-          resolve(self);
-        }
-        this.image.src = url;
+  async bindTexture() {
+    return new Promise(async resolve => {
+      console.log('== loading TResourceTexture(' + this.name + ') ==');
+      // console.info('loading image '+this.image.src);
+      global.gl.bindTexture(global.gl.TEXTURE_2D, this.tex);
+      global.gl.pixelStorei(global.gl.UNPACK_FLIP_Y_WEBGL, 1);
+      global.gl.texImage2D(global.gl.TEXTURE_2D, 0, global.gl.RGBA, global.gl.RGBA, global.gl.UNSIGNED_BYTE, this.image);
+      global.gl.texParameteri(global.gl.TEXTURE_2D, global.gl.TEXTURE_MIN_FILTER, global.gl.LINEAR);
+      global.gl.bindTexture(global.gl.TEXTURE_2D, null);
+      resolve(true);
+    });
+  }
 
-      });
-    }
+  async loadFile(name) {
+    return new Promise(async resolve => {
+      let url = constants.URL + '/assets/assets/textures/' + name;
+      let self = this;
+      this.image.onload = async function () {
+        await self.bindTexture();
+        resolve(self);
+      };
+      this.image.src = url;
+
+    });
+  }
 
 }
 
@@ -517,67 +526,69 @@ class TResourceShader extends TResource {
 }
 
 
-async function loadJSON(filename){
+async function loadJSON(filename) {
 
-    //let host = "http://localhost:4200";
-    let host = constants.URL;
-    let path = '/assets/assets/JSON/';
-    let url = `${host + path + filename}`;
-    
-    // console.log(`Fetching JSON resource from url: ${ url }`);
-    
-    let json;
-    await fetch( url )
-        .then( function(response) { return response.json(); } )
-        .then( responseJSON => {
-            // console.log("== fetch JSON ok ==");
-            // console.log(responseJSON);
-            json = responseJSON;
-        });
+  //let host = "http://localhost:4200";
+  let host = constants.URL;
+  let path = '/assets/assets/JSON/';
+  let url = `${host + path + filename}`;
 
-    return json;
+  // console.log(`Fetching JSON resource from url: ${ url }`);
+
+  let json;
+  await fetch(url)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(responseJSON => {
+      // console.log("== fetch JSON ok ==");
+      // console.log(responseJSON);
+      json = responseJSON;
+    });
+
+  return json;
 }
 
-async function load(filename){
+async function load(filename) {
 
-    // let host = "http://localhost:4200";
-    let host = constants.URL;    
-    let path = '/assets/engine/shaders/';
-    let url = `${host + path + filename}`;
-    
-    // console.log(`Fetching ${filename} resource from url: ${ url }`);
-    
-    let file;
-    await fetch( url )
-        .then( response => response.text() )
-        .then( res => {
-            // console.log("== fetch file ok ==");
-            // console.log(res);
-            file = Promise.resolve(res);
-        });
+  // let host = "http://localhost:4200";
+  let host = constants.URL;
+  let path = '/assets/engine/shaders/';
+  let url = `${host + path + filename}`;
 
-    return file;
+  // console.log(`Fetching ${filename} resource from url: ${ url }`);
+
+  let file;
+  await fetch(url)
+    .then(response => response.text())
+    .then(res => {
+      // console.log("== fetch file ok ==");
+      // console.log(res);
+      file = Promise.resolve(res);
+    });
+
+  return file;
 }
 
-async function loadMTL(filename){
+async function loadMTL(filename) {
 
-    // let host = "http://localhost:4200";
-    let host = constants.URL;    
-    let path = '/assets/assets/JSON/';
-    let url = `${host + path + filename}`;
-    
-    // console.log(`Fetching ${filename} resource from url: ${ url }`);
-    
-    let file;
-    await fetch( url )
-        .then( response => response.text() )
-        .then( res => {
-            // console.log("== fetch file ok ==");
-            // console.log(res);
-            file = Promise.resolve(res);
-        });
+  // let host = "http://localhost:4200";
+  let host = constants.URL;
+  let path = '/assets/assets/JSON/';
+  let url = `${host + path + filename}`;
 
-    return file;
+  // console.log(`Fetching ${filename} resource from url: ${ url }`);
+
+  let file;
+  await fetch(url)
+    .then(response => response.text())
+    .then(res => {
+      // console.log("== fetch file ok ==");
+      // console.log(res);
+      file = Promise.resolve(res);
+    });
+
+  return file;
 }
 
 function calculateNormals(vs, ind){

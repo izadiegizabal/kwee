@@ -5,8 +5,8 @@
   fxLayoutGap="32px">
   <div fxFlex="50%" fxLayout="column" style="padding-bottom: 32px">
     <h2>Experience</h2>
-    <mat-accordion style="margin-bottom: 16px">
-      <mat-expansion-panel *ngFor="let experience of candidate.experience">
+    <mat-accordion *ngIf="candidate.experiences.length > 0; else infoNA" style="margin-bottom: 16px">
+      <mat-expansion-panel *ngFor="let experience of candidate.experiences">
         <mat-expansion-panel-header>
           <mat-panel-title>
             <h4>
@@ -14,9 +14,9 @@
             </h4>
           </mat-panel-title>
           <mat-panel-description style="margin-top: 20px">
-            {{experience.company +
-          " - " +
-          (experience.start | date:'y') + "/" + (experience.end | date:'y')}}
+            <!--{{experience.company +-->
+            <!--" - " +-->
+            {{(experience.dateStart | date:'y') + " / " + (experience.dateEnd | date:'y')}}
           </mat-panel-description>
         </mat-expansion-panel-header>
 
@@ -24,11 +24,14 @@
           {{experience.description}}
         </p>
       </mat-expansion-panel>
-    </mat-accordion>
 
-    <h2>Education</h2>
-    <mat-accordion style="margin-bottom: 16px">
-      <mat-expansion-panel *ngFor="let education of candidate.education">
+    </mat-accordion>
+    <ng-template #infoNA><p>{{infoNAMess}}</p></ng-template>
+
+
+    <h2 style="margin-bottom: 0">Education</h2>
+    <mat-accordion *ngIf="candidate.educations.length > 0; else infoNA2" style="margin: 16px 0">
+      <mat-expansion-panel *ngFor="let education of candidate.educations">
         <mat-expansion-panel-header>
           <mat-panel-title>
             <h4>
@@ -36,32 +39,38 @@
             </h4>
           </mat-panel-title>
           <mat-panel-description style="margin-top: 20px">
-            {{education.institution +
+            {{education.applicant_educations.institution +
           " - " +
-          (education.start | date:'y') + "/" + (education.end | date:'y')}}
+          (education.applicant_educations.dateStart | date:'y') + "/" + (education.applicant_educations.dateEnd | date:'y')}}
           </mat-panel-description>
         </mat-expansion-panel-header>
 
         <p>
-          {{education.description}}
+          {{education.applicant_educations.description}}
         </p>
       </mat-expansion-panel>
     </mat-accordion>
+    <ng-template #infoNA2><p>{{infoNAMess}}</p></ng-template>
+
+
+    <p></p>
 
     <h2 style="margin-bottom: 0">Languages</h2>
-    <mat-list style="margin-bottom: 16px">
+    <mat-list *ngIf="candidate.languages.length > 0; else infoNA3" style="margin-bottom: 16px">
       <div
-        *ngFor="let language of candidate.languages"
+        *ngFor="let language of  candidate.languages"
         style="margin-left: -20px">
         <mat-list-item>
           <mat-icon color="primary">chevron_right</mat-icon>
-          {{' ' + language.name + ' - ' + language.level}}</mat-list-item>
+          {{' ' + language.language + ' - ' + getProf(language.applicant_languages.level)}}</mat-list-item>
       </div>
     </mat-list>
+    <ng-template #infoNA3><p>{{infoNAMess}}</p></ng-template>
+
 
     <h2>Skills</h2>
     <div
-      fxLayout="row">
+      *ngIf="candidate.skills.length > 0; else infoNA4" fxLayout="row">
       <mat-list
         fxFlex="50%"
         style="padding-top: 0">
@@ -69,9 +78,9 @@
           *ngFor="let skill of candidate.skills; let i = index"
           style="margin-left: -20px">
           <mat-list-item
-            *ngIf="i % 2 === 0">
+            *ngIf="i % 2 === 0" (click)="searchSkill(skill)" >
             <mat-icon color="primary">chevron_right</mat-icon>
-            {{' ' + skill}}</mat-list-item>
+            {{' ' + skill.name}}</mat-list-item>
         </div>
       </mat-list>
       <mat-list
@@ -80,12 +89,14 @@
         <div
           *ngFor="let skill of candidate.skills; let i = index"
           style="margin-left: -20px">
-          <mat-list-item *ngIf="i % 2 !== 0">
+          <mat-list-item *ngIf="i % 2 !== 0" (click)="searchSkill(skill.name)" >
             <mat-icon color="primary">chevron_right</mat-icon>
-            {{' ' + skill}}</mat-list-item>
+            {{' ' + skill.name}}</mat-list-item>
         </div>
       </mat-list>
     </div>
+    <ng-template #infoNA4><p>{{infoNAMess}}</p></ng-template>
+
   </div>
 
   <div
@@ -94,30 +105,74 @@
     fxLayoutAlign.lt-sm="end end"
     style="padding-bottom: 64px">
     <div fxLayout="column">
-      <h2 fxLayout="row">
-        <mat-chip-list>
-          <mat-chip
-            color="accent" selected
-            style="color: white;">
-            Premium
-          </mat-chip>
-        </mat-chip-list>
-        &nbsp; Documents
-      </h2>
-      <p style="margin-top: 0; font-style: italic;">
-        With the premium membership you'll be able to upload files like your CV, recommendation letters or even your
-        certifications!
-      </p>
-      <mat-list style="margin-bottom: 16px; opacity: 0.5; font-style: italic">
-        <mat-list-item>
-          <mat-icon color="primary" mat-list-icon svgIcon="insert-drive-file"></mat-icon>
-          <h4 mat-line>Curriculum Vitae</h4>
-        </mat-list-item>
-        <mat-list-item>
-          <mat-icon color="primary" mat-list-icon svgIcon="insert-drive-file"></mat-icon>
-          <h4 mat-line>Recommendation Letter</h4>
-        </mat-list-item>
-      </mat-list>
+      <div>
+        <div fxLayout="column">
+          <div
+            *ngIf="candidate.social_networks.twitter || candidate.social_networks.linkedin || candidate.social_networks.github || candidate.social_networks.telegram">
+            <h2>Social Networks</h2>
+            <div fxLayout="row">
+              <div *ngIf="candidate.social_networks.twitter">
+                <button mat-icon-button>
+                  <a href="https://twitter.com/{{candidate.social_networks.twitter}}">
+                    <mat-icon fontIcon="fa-twitter" fontSet="fab"></mat-icon>
+                  </a>
+                </button>
+              </div>
+
+              <div *ngIf="candidate.social_networks.linkedin">
+                <button mat-icon-button>
+                  <a href="https://linkedin.com/in/{{candidate.social_networks.linkedin}}">
+                    <mat-icon fontIcon="fa-linkedin" fontSet="fab"></mat-icon>
+                  </a>
+                </button>
+              </div>
+
+              <div *ngIf="candidate.social_networks.github">
+                <button mat-icon-button>
+                  <a href="https://github.com/{{candidate.social_networks.github}}">
+                    <mat-icon fontIcon="fa-github" fontSet="fab"></mat-icon>
+                  </a>
+                </button>
+              </div>
+
+              <div *ngIf="candidate.social_networks.telegram">
+                <button mat-icon-button>
+                  <a href="https://telegram.me/{{candidate.social_networks.telegram}}">
+                    <mat-icon fontIcon="fa-telegram" fontSet="fab"></mat-icon>
+                  </a>
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="!isPremium">
+        <h2 fxLayout="row">
+          <mat-chip-list>
+            <mat-chip
+              color="accent" selected
+              style="color: white;">
+              Premium
+            </mat-chip>
+          </mat-chip-list>
+          &nbsp; Documents
+        </h2>
+        <p style="margin-top: 0; font-style: italic;">
+          With the premium membership you'll be able to upload files like your CV, recommendation letters or even your
+          certifications!
+        </p>
+        <mat-list style="margin-bottom: 16px; opacity: 0.5; font-style: italic">
+          <mat-list-item>
+            <mat-icon color="primary" mat-list-icon svgIcon="insert-drive-file"></mat-icon>
+            <h4 mat-line>Curriculum Vitae</h4>
+          </mat-list-item>
+          <mat-list-item>
+            <mat-icon color="primary" mat-list-icon svgIcon="insert-drive-file"></mat-icon>
+            <h4 mat-line>Recommendation Letter</h4>
+          </mat-list-item>
+        </mat-list>
+      </div>
     </div>
   </div>
 </div>

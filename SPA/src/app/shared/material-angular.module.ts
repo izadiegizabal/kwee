@@ -18,6 +18,7 @@ import {
   MatMenuModule,
   MatNativeDateModule,
   MatPaginatorModule,
+  MatProgressBarModule,
   MatProgressSpinnerModule,
   MatRadioModule,
   MatSelectModule,
@@ -61,6 +62,7 @@ import {CommonModule} from '@angular/common';
     MatPaginatorModule,
     MatMenuModule,
     MatSliderModule,
+    MatProgressBarModule,
     MatProgressSpinnerModule
   ],
 })
@@ -113,10 +115,17 @@ export class MaterialAngularModule {
     matIconRegistry.addSvgIcon('send', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-send.svg'));
     matIconRegistry.addSvgIcon('star', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-star_rate.svg'));
     matIconRegistry.addSvgIcon('back', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-arrow_back_ios.svg'));
+    matIconRegistry.addSvgIcon('mailbox', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-mailbox.svg'));
+    matIconRegistry.addSvgIcon('arrow-down', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-arrow_downward.svg'));
+    matIconRegistry.addSvgIcon('cloud-download', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-cloud_download.svg'));
+    matIconRegistry.addSvgIcon('accepted', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-how_to_reg.svg'));
     // Branding icons
     matIconRegistry.addSvgIcon('kwee-logo', domSanitizer.bypassSecurityTrustResourceUrl('assets/branding/logo-kwee-light.svg'));
     matIconRegistry.addSvgIcon('kwee-logo-dark', domSanitizer.bypassSecurityTrustResourceUrl('assets/branding/logo-kwee-dark.svg'));
     matIconRegistry.addSvgIcon('kwee-icon', domSanitizer.bypassSecurityTrustResourceUrl('assets/branding/icon.svg'));
     matIconRegistry.addSvgIcon('kwee-icon-dark', domSanitizer.bypassSecurityTrustResourceUrl('assets/branding/iconBnw.svg'));
+
+    // Others
+    matIconRegistry.addSvgIcon('handshake', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/handshake.svg'));
   }
 }

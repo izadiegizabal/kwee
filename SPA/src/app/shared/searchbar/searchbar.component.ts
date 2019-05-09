@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
@@ -11,13 +11,19 @@ import {MatSidenav} from '@angular/material';
 })
 export class SearchbarComponent implements OnInit {
   @ViewChild('drawer') drawer: MatSidenav;
-  @Output() search = new EventEmitter < string >();
-
+  @Output() search = new EventEmitter<string>();
   myControl = new FormControl();
   options: string[] = [/*'SEO Specialist', 'Android Developer', 'JavaScript Expert'*/];
   filteredOptions: Observable<string[]>;
 
   constructor() {
+  }
+
+  private _alreadySearched;
+
+  @Input() set alreadySearched(value: string) {
+    this._alreadySearched = value;
+    this.myControl.setValue(this._alreadySearched);
   }
 
   ngOnInit() {

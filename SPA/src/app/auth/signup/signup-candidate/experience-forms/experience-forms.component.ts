@@ -40,13 +40,9 @@ export class ExperienceFormsComponent implements OnInit {
 
   @Output() formReady = new EventEmitter<FormArray>();
   experiences: FormGroup;
-  iskilex = 0;
 
   constructor(private _formBuilder: FormBuilder,
               public dialog: MatDialog) {
-
-    this.iskilex = 0;
-
   }
 
   get formExperience() {
@@ -83,7 +79,7 @@ export class ExperienceFormsComponent implements OnInit {
   addExperienceGroup(): FormGroup {
     return this._formBuilder.group({
       'title': new FormControl(null, Validators.required),
-      'company': new FormControl(null),
+      // 'company': new FormControl(null),
       'start': new FormControl(null, [ExperienceFormsComponent.maxMinDate, ExperienceFormsComponent.maxDate]),
       'end': new FormControl(null, [ExperienceFormsComponent.maxMinDate, ExperienceFormsComponent.maxDate]),
       'description': new FormControl(null)
@@ -101,20 +97,17 @@ export class ExperienceFormsComponent implements OnInit {
 
   addExperience() {
     (<FormArray>this.experiences.controls['experience']).push(this.addExperienceGroup());
-    this.iskilex++;
-    console.log(this.formExperience.value);
   }
 
   deleteExperience(i) {
     (<FormArray>this.experiences.controls['experience']).removeAt(i);
-    this.iskilex--;
   }
 
   onChange(e, s, dsds) {
     if (e.checked) {
       document.getElementById(`toExp${s}`).setAttribute('disabled', 'true');
       (<FormGroup>(<FormArray>this.experiences.get('experience')).controls[s]).controls.end.setValue(null);
-      console.log((<FormGroup>(<FormArray>this.experiences.get('experience')).controls[s]).controls.start);
+      // console.log((<FormGroup>(<FormArray>this.experiences.get('experience')).controls[s]).controls.start);
 
     } else {
       document.getElementById(`toExp${s}`).removeAttribute('disabled');

@@ -80,11 +80,11 @@ export enum CandidateAccountStatus {
 }
 
 export enum LanguageLevels {
-  'Elementary proficiency' = 0,
-  'Limited working proficiency' = 1,
-  'Professional working proficiency' = 2,
-  'Full professional proficiency' = 3,
-  'Native or bilingual proficiency' = 4,
+  'Elementary' = 'A1',
+  'Limited working' = 'A2',
+  'Professional working' = 'B2',
+  'Full professional' = 'C1',
+  'Native or bilingual' = 'C2',
 }
 
 export enum WorkFields {
@@ -103,7 +103,7 @@ export enum WorkFields {
   'Project Management' = 12,
   'Product Management' = 13,
   'Software Testing' = 14,
-  'Software/Application Developement' = 15,
+  'Software Developement' = 15,
   'Web Developement' = 16,
   'Marketing' = 17,
   'Technical Sales' = 18,
