@@ -2,7 +2,7 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormArray, FormControl, FormGroup} from '@angular/forms';
 import {WorkFields} from '../../../../models/Candidate.model';
 import {Distances, isStringNotANumber} from '../../../../models/Offer.model';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {MatSidenav} from '@angular/material';
 import {BreakpointObserver} from '@angular/cdk/layout';
 
@@ -28,7 +28,7 @@ export class FiltersCandidateComponent implements OnInit {
     .map(key => ({value: Distances[key], viewValue: key}));
 
 
-  constructor(private router: Router, public media: BreakpointObserver) {
+  constructor(private router: Router, public media: BreakpointObserver, private activatedRoute: ActivatedRoute) {
   }
 
   get formSkills() {
@@ -73,6 +73,13 @@ export class FiltersCandidateComponent implements OnInit {
         'languages': new FormArray([new FormControl(null)]),
       }
     );
+
+    this.activatedRoute.queryParams.subscribe(params => {
+      const skill = params['skill'];
+      if (skill) {
+        this.addSkillurl(skill);
+      }
+    });
 
     this.filters.controls['location'].valueChanges.subscribe(() => {
       if (!this.filters.controls['location'].value) {
@@ -202,6 +209,12 @@ export class FiltersCandidateComponent implements OnInit {
       document.getElementById(`skill${this.isSkill}`).focus();
     }, 1);
     this.addSkillSearch();
+  }
+
+  addSkillurl(skill) {
+    this.formSkills.controls[0].setValue(skill);
+    (<FormArray>this.filters.controls['skills']).push(new FormControl(null));
+    this.isSkill++;
   }
 
   deleteSkill(i) {

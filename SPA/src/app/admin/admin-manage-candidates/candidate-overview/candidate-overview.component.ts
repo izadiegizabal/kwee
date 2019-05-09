@@ -11,6 +11,7 @@ import {MatDialog, PageEvent} from '@angular/material';
 import {isStringNotANumber} from '../../../../models/Offer.model';
 import {CandidateAccountStatus} from '../../../../models/Candidate.model';
 import {AlertDialogComponent} from '../../../shared/alert-dialog/alert-dialog.component';
+import {UserLogComponent} from '../../user-log/user-log.component';
 
 @Component({
   selector: 'app-candidate-overview',
@@ -163,6 +164,12 @@ export class CandidateOverviewComponent implements OnInit {
   changepage() {
     this.store$.dispatch(new AdminActions.TryGetCandidates(
       {page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize, params: this.query, order: this.orderby}));
+  }
+
+  openLogModal() {
+    this.dialog.open(UserLogComponent, {
+
+    });
   }
 
 }

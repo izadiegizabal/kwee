@@ -8,6 +8,7 @@ import {AdminVerifyComponent} from './admin-verify/admin-verify.component';
 import {AdminReportsComponent} from './admin-reports/admin-reports.component';
 import {AdminMessagesComponent} from './admin-messages/admin-messages.component';
 import {AdminManageOffersComponent} from './admin-manage-offers/admin-manage-offers.component';
+import {UserLogComponent} from './user-log/user-log.component';
 
 const adminRoutes: Routes = [
   {
@@ -20,6 +21,7 @@ const adminRoutes: Routes = [
       {path: 'reports', component: AdminReportsComponent},
       {path: 'messages', component: AdminMessagesComponent},
       {path: 'statistics', component: AdminStatisticsComponent},
+      {path: 'user-log', component: UserLogComponent},
       {path: '**', redirectTo: 'manage-candidates'}
     ]
   },

@@ -27,7 +27,7 @@ import {LandingModule} from './landing/landing.module';
 import {SocketIoConfig, SocketIoModule} from 'ngx-socket-io';
 
 const config: SocketIoConfig = {
-  url: environment.apiUrl, options: {}
+  url: environment.apiUrl.split('\/api')[0], options: {}
 };
 
 export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {

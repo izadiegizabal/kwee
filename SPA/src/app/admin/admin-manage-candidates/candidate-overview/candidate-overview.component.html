@@ -1,4 +1,4 @@
-<div fxLayout="row" *ngIf="(adminState | async).candidates && (adminState | async).candidates.data">
+<div fxLayout="row" *ngIf="(adminState | async).candidates && (adminState | async).candidates.data" style="padding-bottom: 8px">
   <mat-accordion fxFlex="99%">
     <mat-expansion-panel
       (closed)="isPanelOpen = !isPanelOpen; isInEditMode = false; userForm.reset()"
@@ -125,7 +125,7 @@
               </mat-form-field>
             </div>
           </div>
-          <div>
+          <div *ngIf="subscriptions && user && user.premium && subscriptions[user.premium]">
             <span class="mat-small">{{'Subscription' | uppercase}}</span>
             <br>
             <div *ngIf="!isInEditMode || !isPanelOpen">
@@ -164,7 +164,7 @@
            fxLayoutAlign="end" fxLayoutGap="0"
            fxLayoutGap.gt-sm="8px">
         <button color="primary" mat-button>More Info</button>
-        <button color="primary" mat-button>View Log</button>
+        <button (click)="openLogModal()" color="primary" mat-button>View Log</button>
         <div *ngIf="!isInEditMode || !isPanelOpen">
           <button (click)="edit(user)" color="accent" mat-button>Edit</button>
         </div>

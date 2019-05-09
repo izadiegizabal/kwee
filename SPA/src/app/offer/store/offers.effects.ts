@@ -8,8 +8,6 @@ import * as OffersActions from './offers.actions';
 import {environment} from '../../../environments/environment';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
-import * as AdminActions from '../../admin/store/admin.actions';
-import {TRY_UPDATE_OFFER} from './offers.actions';
 
 @Injectable()
 export class OffersEffects {
@@ -27,9 +25,6 @@ export class OffersEffects {
         if (payload.order !== '0') {
           apiEndpointUrl += '&sort=' + payload.order;
         }
-
-        // console.log(apiEndpointUrl);
-        // console.log(body);
 
         return this.httpClient.post(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res: {
@@ -72,9 +67,6 @@ export class OffersEffects {
         const token = authState.token;
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
         const body = JSON.stringify(payload.updateoffer);
-
-        // console.log(body);
-        // console.log(apiEndpointUrl);
 
         return this.httpClient.put(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res) => {

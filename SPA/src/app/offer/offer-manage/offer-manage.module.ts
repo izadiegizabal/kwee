@@ -17,6 +17,7 @@ import {CandidatePreviewCardModule} from '../../search-users/search-candidates/c
 import {SearchbarModule} from '../../shared/searchbar/searchbar.module';
 import {AlertDialogModule} from '../../shared/alert-dialog/alert-dialog.module';
 import {AlertDialogComponent} from '../../shared/alert-dialog/alert-dialog.component';
+import {FiltersCandidateModule} from '../../shared/filters/filters-candidates/filters-candidate.module';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import {AlertDialogComponent} from '../../shared/alert-dialog/alert-dialog.compo
     OfferManageRoutingModule,
     OfferPreviewCardModule,
     AlertDialogModule,
+    FiltersCandidateModule,
     StoreModule.forFeature('offerManage', OfferManageReducer),
     EffectsModule.forFeature([OfferManageEffects])
   ],

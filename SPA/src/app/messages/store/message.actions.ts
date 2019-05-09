@@ -4,6 +4,8 @@ export const TRY_POST_MESSAGE = 'TRY_POST_MESSAGE';
 export const POST_MESSAGE = 'POST_MESSAGE';
 export const TRY_GET_MESSAGES = 'TRY_GET_MESSAGES';
 export const GET_MESSAGES = 'GET_MESSAGES';
+export const TRY_GET_NOTIFICATIONS = 'TRY_GET_NOTIFICATIONS';
+export const SET_NOTIFICATIONS = 'SET_NOTIFICATIONS';
 export const TRY_GET_CONVERSATION = 'TRY_GET_CONVERSATION';
 export const GET_CONVERSATION = 'GET_CONVERSATION';
 export const OPERATION_ERROR = 'OPERATION_ERROR';
@@ -44,6 +46,20 @@ export class GetMessages implements Action {
   }
 }
 
+export class TryGetNotifications implements Action {
+  readonly type = TRY_GET_NOTIFICATIONS;
+
+  constructor(public payload: { page: number, limit: number }) {
+  }
+}
+
+export class SetNotifications implements Action {
+  readonly type = SET_NOTIFICATIONS;
+
+  constructor(public payload: any) {
+  }
+}
+
 export class TryGetConversation implements Action {
   readonly type = TRY_GET_CONVERSATION;
 
@@ -66,7 +82,8 @@ export class OperationError implements Action {
 }
 
 export type MessageActions =
+  TryGetNotifications | SetNotifications |
   TryPostMessage | PostMessage |
-  OperationError | TryGetMessages |
-  GetMessages | TryGetConversation |
-  GetConversation | Clear;
+  TryGetMessages | GetMessages |
+  TryGetConversation | GetConversation |
+  OperationError | Clear;

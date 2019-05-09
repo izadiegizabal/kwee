@@ -1,5 +1,4 @@
 import {Action} from '@ngrx/store';
-import {DELETE_CANDIDATE, TRY_DELETE_BUSINESS, TRY_UPDATE_CANDIDATE, UPDATE_CANDIDATE} from '../../admin/store/admin.actions';
 
 export const TRY_GET_OFFERS = 'TRY_GET_OFFERS';
 export const SET_OFFERS = 'SET_OFFERS';

@@ -13,12 +13,20 @@ const routes: Routes = [
 
   // MAIN PAGES
   {path: '', redirectTo: '', canActivate: [HomeRedirectGuardService], pathMatch: 'full'},
-  {path: 'home', component: LandingComponent},
-  {path: 'candidate-home', component: CandidateHomeComponent},
+  {path: 'home', component: LandingComponent, data: {animation: 'isLeft'}},
+  {path: 'candidate-home', component: CandidateHomeComponent, data: {animation: 'isLeft'}},
 
   // PROFILES
-  {path: 'candidate/:id/:name', loadChildren: './profiles/candidate-profile/candidate-profile.module#CandidateProfileModule'},
-  {path: 'business/:id/:name', loadChildren: './profiles/business-profile/business-profile.module#BusinessProfileModule'},
+  {
+    path: 'candidate/:id/:name',
+    loadChildren: './profiles/candidate-profile/candidate-profile.module#CandidateProfileModule',
+    data: {animation: 'isRight'}
+  },
+  {
+    path: 'business/:id/:name',
+    loadChildren: './profiles/business-profile/business-profile.module#BusinessProfileModule',
+    data: {animation: 'isRight'}
+  },
 
   // OFFERS
   {
@@ -47,9 +55,6 @@ const routes: Routes = [
     loadChildren: './search-users/search-candidates/search-candidates.module#SearchCandidatesModule',
     canActivate: [AuthTokenGuard]
   },
-
-  // TESTING PAGES -> TODO: delete this once not needed
-  {path: 'paypal', loadChildren: './paypal/paypal.module#PaypalModule'},
 
   // AUTH
   {
@@ -94,9 +99,9 @@ const routes: Routes = [
   {path: 'privacy', component: PrivacyComponent},
   {path: 'email-verified/:token', loadChildren: './email-verified/email-verified.module#EmailVerifiedModule'},
   {path: 'reset-password/:token', loadChildren: './reset-password/reset-password.module#ResetPasswordModule'},
-  {path: 'contact-support', loadChildren: './contact-support/contact-support.module#ContactSupportModule'},
   {path: 'error', loadChildren: './errors/errors.module#ErrorsModule'},
-  {path: 'premium', loadChildren: './premium/premium.module#PremiumModule'},
+  {path: 'premium', redirectTo: 'plans'}, // Fallback just in case some link wasn't change
+  {path: 'plans', loadChildren: './premium/premium.module#PremiumModule'},
 
   // If matching path not found show Error 404
   {path: '**', redirectTo: 'error/404'}

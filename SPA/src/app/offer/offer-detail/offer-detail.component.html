@@ -122,8 +122,8 @@
                   style="color: white" type="button">{{'Edit Offer' | uppercase }}</button>
                 <ng-template #apply>
                   <button (click)="postApplication()"
-                          *ngIf="(offerState | async).applications===null && id"
-                          [disabled]="(authState | async).user.type === 'business'"
+                          *ngIf="((offerState | async).applications===null && id) || ((offerState | async).applications && (offerState | async).offer.status !== 0)"
+                          [disabled]="(authState | async).user.type === 'business' || (offerState | async).offer.status !== 0"
                           color="accent"
                           mat-raised-button style="color: white">{{'Apply Now!' | uppercase }}</button>
 

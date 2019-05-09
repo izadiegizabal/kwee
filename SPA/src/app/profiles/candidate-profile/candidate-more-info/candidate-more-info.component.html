@@ -78,7 +78,7 @@
           *ngFor="let skill of candidate.skills; let i = index"
           style="margin-left: -20px">
           <mat-list-item
-            *ngIf="i % 2 === 0">
+            *ngIf="i % 2 === 0" (click)="searchSkill(skill)" >
             <mat-icon color="primary">chevron_right</mat-icon>
             {{' ' + skill.name}}</mat-list-item>
         </div>
@@ -89,7 +89,7 @@
         <div
           *ngFor="let skill of candidate.skills; let i = index"
           style="margin-left: -20px">
-          <mat-list-item *ngIf="i % 2 !== 0">
+          <mat-list-item *ngIf="i % 2 !== 0" (click)="searchSkill(skill.name)" >
             <mat-icon color="primary">chevron_right</mat-icon>
             {{' ' + skill.name}}</mat-list-item>
         </div>

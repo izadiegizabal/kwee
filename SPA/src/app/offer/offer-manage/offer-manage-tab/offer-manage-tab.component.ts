@@ -55,7 +55,7 @@ export class OfferManageTabComponent implements OnInit {
           status: this.status
         }));
       } else {
-        console.log('aceptadas');
+        // console.log('aceptadas');
         this.store$.dispatch(new OfferManageActions.TryGetApplicationsAccepted({
           id: this.id,
           page: 1,
