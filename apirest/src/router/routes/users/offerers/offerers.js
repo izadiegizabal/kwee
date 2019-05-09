@@ -934,7 +934,7 @@ module.exports = (app, db) => {
             offerer.website = userOfferer.website;
             offerer.companySize = Number(offerers[i]._source.companySize);
             if (userOfferer.year) offerer.year = userOfferer.year;
-            if (userOfferer.premium) offerer.premium = Number(userOfferer.premium);
+            userOfferer.premium ? offerer.premium = Number(userOfferer.premium) : offerer.premium = 0;
             offerer.createdAt = user.createdAt;
             offerer.lastAccess = user.lastAccess;
             offerer.status = Number(offerers[i]._source.status);
