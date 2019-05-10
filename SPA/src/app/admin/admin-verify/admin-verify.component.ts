@@ -27,6 +27,7 @@ export class AdminVerifyComponent implements OnInit {
 
   isPanelOpen = false;
   orderby = '0';
+  query: any;
 
 
   workFields = Object
@@ -49,8 +50,11 @@ export class AdminVerifyComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    this.query = {...this.query, status: '1'};
+
     this.titleService.setTitle('Kwee - ' + 'Verify Businesses');
-    this.store$.dispatch(new AdminActions.TryGetBusinesses({page: 1, limit: this.pageSize, params: '', order: this.orderby}));
+    this.store$.dispatch(new AdminActions.TryGetBusinesses({page: 1, limit: this.pageSize, params: this.query, order: this.orderby}));
     this.adminState = this.store$.pipe(select(s => s.admin));
   }
 
