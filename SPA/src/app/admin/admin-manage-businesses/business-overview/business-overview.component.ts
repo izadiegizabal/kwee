@@ -20,8 +20,8 @@ import {AlertDialogComponent} from '../../../shared/alert-dialog/alert-dialog.co
 export class BusinessOverviewComponent implements OnInit {
 
   // paging
-  pageSize = 5;
-  pageSizeOptions: number[] = [2, 5, 10, 25, 100];
+  pageSize = 10;
+  pageSizeOptions: number[] = [5, 10, 25, 50, 100];
 
   // MatPaginator Output
   pageEvent: PageEvent;
