@@ -15,7 +15,7 @@ export class AuthService implements OnInit {
   authState: Observable<fromAuth.State>;
   auth = false;
   isAuthed = false;
-  token: undefined;
+  token: string;
 
   constructor(
     private store$: Store<fromApp.AppState>,
@@ -24,6 +24,7 @@ export class AuthService implements OnInit {
     this.helper = new JwtHelperService();
     this.store$.pipe(select(state => state.auth)).subscribe((state) => {
         this.isAuthed = state.authenticated;
+        this.token = state.token;
       }
     );
   }
