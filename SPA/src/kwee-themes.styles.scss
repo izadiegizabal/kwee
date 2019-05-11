@@ -14,8 +14,8 @@ $custom-typography: mat-typography-config(
 @include mat-core($custom-typography);
 
 // Define the default theme (same as the example above).
-$primary: mat-palette($mat-blue-gray, 700, 500, 900);
-$accent: mat-palette($mat-teal, A400, A200, A700);
+$primary: mat-palette($mat-gray, 900, 500, 900);
+$accent: mat-palette($mat-teal, A700, A200, A400);
 $white-app-theme: mat-light-theme($primary, $accent);
 
 // Include the default theme styles.
