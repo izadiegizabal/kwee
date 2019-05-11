@@ -13,18 +13,18 @@
           <mat-icon color="primary" matListIcon svgIcon="domain"></mat-icon>
           Modify Profile
         </button>
-<!--        <button (click)="closeDrawerIfMobile()"-->
-<!--                mat-list-item routerLink="/settings/others">-->
-<!--          <mat-icon color="primary" matListIcon svgIcon="work"></mat-icon>-->
-<!--          Others-->
-<!--        </button>-->
+        <!--        <button (click)="closeDrawerIfMobile()"-->
+        <!--                mat-list-item routerLink="/settings/others">-->
+        <!--          <mat-icon color="primary" matListIcon svgIcon="work"></mat-icon>-->
+        <!--          Others-->
+        <!--        </button>-->
       </mat-action-list>
     </mat-sidenav>
 
-    <mat-sidenav-content fxFlex="100%"
+    <mat-sidenav-content class="mat-typography"
+                         fxFlex="100%"
                          fxFlex.gt-md="80%"
-                         fxLayout="column"
-                         class="mat-typography">
+                         fxLayout="column">
       <button *ngIf="isMobile()" mat-icon-button>
         <mat-icon (click)="drawer.toggle()" aria-label="Open menu button">menu</mat-icon>
       </button>

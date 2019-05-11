@@ -19,7 +19,7 @@ export class AdminGuard implements CanActivate {
         if (user && user === 'admin') {
           isAdmin = true;
         } else {
-          this.router.navigate(['error/403']);
+          this.router.navigate(['/error/403']);
           isAdmin = false;
         }
       }

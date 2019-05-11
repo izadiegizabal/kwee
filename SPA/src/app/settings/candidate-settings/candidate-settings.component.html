@@ -21,10 +21,10 @@
       </mat-action-list>
     </mat-sidenav>
 
-    <mat-sidenav-content fxFlex="100%"
+    <mat-sidenav-content class="mat-typography"
+                         fxFlex="100%"
                          fxFlex.gt-md="60%"
-                         fxLayout="column"
-                         class="mat-typography">
+                         fxLayout="column">
       <button *ngIf="isMobile()" mat-icon-button>
         <mat-icon (click)="drawer.toggle()" aria-label="Open menu button">menu</mat-icon>
       </button>

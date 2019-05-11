@@ -1,4 +1,4 @@
-import {Component, OnInit, Inject} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
@@ -18,7 +18,8 @@ export class UserLogComponent implements OnInit {
 
   constructor(@Inject(MAT_DIALOG_DATA)
               public data: DialogData,
-              private httpClient: HttpClient) { }
+              private httpClient: HttpClient) {
+  }
 
   ngOnInit() {
     const headers = new HttpHeaders().set('Content-Type', 'application/json');

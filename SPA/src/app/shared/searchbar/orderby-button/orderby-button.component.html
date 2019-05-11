@@ -5,9 +5,9 @@
 
 
 <mat-menu #orderByMenu="matMenu">
-  <button mat-menu-item
+  <button (click)="onChange(order)"
           *ngFor="let order of orderBy"
-          (click)="onChange(order)">
+          mat-menu-item>
     {{order.viewValue}}
   </button>
 </mat-menu>

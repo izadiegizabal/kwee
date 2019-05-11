@@ -32,7 +32,6 @@ const routes: Routes = [
   {
     path: 'my-offers',
     loadChildren: './offer/offer-manage/offer-manage.module#OfferManageModule',
-    canActivate: [AuthTokenGuard]
   },
   { // TODO: canActivate -> Offer Owner & Admin
     path: 'offer/:id/edit',
@@ -104,7 +103,7 @@ const routes: Routes = [
   {path: 'plans', loadChildren: './premium/premium.module#PremiumModule'},
 
   // If matching path not found show Error 404
-  // {path: '**', redirectTo: 'error/404'}
+  {path: '**', redirectTo: 'error/404'}
 ];
 
 @NgModule({

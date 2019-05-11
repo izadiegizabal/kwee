@@ -40,8 +40,6 @@ export class CaAccountSettingsComponent implements OnInit {
 
   // Control variables
   hide = false;
-  private dialogShown = false;
-
   // Form
   secondFormGroup: FormGroup;
   candidate: any;
@@ -50,6 +48,7 @@ export class CaAccountSettingsComponent implements OnInit {
     .keys(WorkFields)
     .filter(isStringNotANumber)
     .map(key => ({value: WorkFields[key], viewValue: key}));
+  private dialogShown = false;
 
   constructor(private _formBuilder: FormBuilder,
               public dialog: MatDialog,

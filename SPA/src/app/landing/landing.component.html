@@ -28,13 +28,14 @@
         id="kweelive"
         width="1400px"></canvas>
     </div>
-    <div fxLayout="column" class="classicOnePage">
+    <div class="classicOnePage" fxLayout="column">
       <div class="skew"></div>
-      <div [ngStyle.gt-xs]="{'padding-left.%': 10, 'padding-right.%': 10}" [ngStyle.gt-lg]="{'padding-left.%': 20, 'padding-right.%': 20}"
-           fxLayout="column"
-           fxFlex="80%" fxFlex.gt-lg="60%" fxFlex.lt-sm="95%"
+      <div [ngStyle.gt-lg]="{'padding-left.%': 20, 'padding-right.%': 20}"
+           [ngStyle.gt-xs]="{'padding-left.%': 10, 'padding-right.%': 10}"
+           fxFlex="80%"
+           fxFlex.gt-lg="60%" fxFlex.lt-sm="95%" fxLayout="column"
            style="margin-top: -64px">
-        <h2 class="mat-display-3" style="margin-top: -128px" #thisIsKwee><a (click)="scrollTo(thisIsKwee)">This is
+        <h2 #thisIsKwee class="mat-display-3" style="margin-top: -128px"><a (click)="scrollTo(thisIsKwee)">This is
           Kwee</a></h2>
         <div fxLayout="row" fxLayout.lt-sm="column"
              fxLayoutAlign="space-between center"
@@ -49,31 +50,32 @@
             of users; on the one hand, the professionals and students that are looking for a job, and on the other, the
             businesses that are offering them.
           </p>
-          <div fxFlex="25" fxLayoutAlign="center center" class="move-up">
-            <img src="../../assets/branding/icon.svg" alt="kwee icon" width="256px" height="256px">
+          <div class="move-up" fxFlex="25" fxLayoutAlign="center center">
+            <img alt="kwee icon" height="256px" src="../../assets/branding/icon.svg" width="256px">
           </div>
         </div>
       </div>
       <div [ngStyle.gt-xs]="{'padding-left.%': 10}"
-           fxLayout="column"
-           fxFlex="60%" fxFlex.lt-sm="95%"
            class="quote quote-1"
+           fxFlex="60%" fxFlex.lt-sm="95%"
+           fxLayout="column"
            fxLayoutAlign="center start">
         <div class="quotation mat-display-2">
           "I just got this amazing position and I'm just living my dream. Thank you Kwee!"
           <p class="mat-h3">- Matt Smith</p>
         </div>
       </div>
-      <div [ngStyle.gt-xs]="{'padding-left.%': 10, 'padding-right.%': 10}" [ngStyle.gt-lg]="{'padding-left.%': 20, 'padding-right.%': 20}"
-           fxLayout="column"
-           fxFlex="80%" fxFlex.gt-lg="60%" fxFlex.lt-sm="95%">
-        <h2 class="mat-display-3" #kweeIndex style="padding: 32px 0 16px 0"><a (click)="scrollTo(kweeIndex)">Kwee
+      <div [ngStyle.gt-lg]="{'padding-left.%': 20, 'padding-right.%': 20}"
+           [ngStyle.gt-xs]="{'padding-left.%': 10, 'padding-right.%': 10}"
+           fxFlex="80%"
+           fxFlex.gt-lg="60%" fxFlex.lt-sm="95%" fxLayout="column">
+        <h2 #kweeIndex class="mat-display-3" style="padding: 32px 0 16px 0"><a (click)="scrollTo(kweeIndex)">Kwee
           Index</a></h2>
         <div fxLayout="row" fxLayout.lt-sm="column"
              fxLayoutAlign="center center"
              fxLayoutGap="64px" fxLayoutGap.lt-sm="16px">
-          <div fxFlex="25" fxLayoutAlign="center center" class="space-up-down">
-            <img src="../../assets/landing/score.svg" alt="kwee index icon" width="256px" height="256px">
+          <div class="space-up-down" fxFlex="25" fxLayoutAlign="center center">
+            <img alt="kwee index icon" height="256px" src="../../assets/landing/score.svg" width="256px">
           </div>
           <p class="mat-body" fxFlex="75">The most important feature that set's us apart from the competition is our
             very own Kwee Index. This score goes from <strong>0 to 100</strong> and represents how trustworthy the user
@@ -87,34 +89,37 @@
         </div>
       </div>
       <div [ngStyle.gt-xs]="{'padding-right.%': 10}"
-           fxLayout="column"
-           fxFlex="60%" fxFlex.lt-sm="95%"
            class="quote quote-2"
+           fxFlex="60%" fxFlex.lt-sm="95%"
+           fxLayout="column"
            fxLayoutAlign="center end">
         <div class="quotation mat-display-2">
           "We've found our very best engineers and designers thanks to Kwee. We are very grateful."
           <p class="mat-h3">- Lemonade Inc.</p>
         </div>
       </div>
-      <div [ngStyle.gt-xs]="{'padding-left.%': 10, 'padding-right.%': 10}" [ngStyle.gt-lg]="{'padding-left.%': 20, 'padding-right.%': 20}"
-           fxLayout="column"
-           fxFlex="80%" fxFlex.gt-lg="60%" fxFlex.lt-sm="95%">
-        <h2 class="mat-display-3" #withLove style="padding: 32px 0 16px 0">
+      <div [ngStyle.gt-lg]="{'padding-left.%': 20, 'padding-right.%': 20}"
+           [ngStyle.gt-xs]="{'padding-left.%': 10, 'padding-right.%': 10}"
+           fxFlex="80%"
+           fxFlex.gt-lg="60%" fxFlex.lt-sm="95%" fxLayout="column">
+        <h2 #withLove class="mat-display-3" style="padding: 32px 0 16px 0">
           <a (click)="scrollTo(withLove)">
             Made with
 
-            <svg style="margin: 0 0 -20px 4px" width="75" height="75" viewBox="0 0 200 200"
-                 aria-label="love animated svg">
+            <svg aria-label="love animated svg" height="75" style="margin: 0 0 -20px 4px" viewBox="0 0 200 200"
+                 width="75">
               <g transform="translate(100 100)">
-                <path transform="translate(-50 -50)" fill="tomato"
-                      d="M92.71,7.27L92.71,7.27c-9.71-9.69-25.46-9.69-35.18,0L50,14.79l-7.54-7.52C32.75-2.42,17-2.42,7.29,7.27v0 c-9.71,9.69-9.71,25.41,0,35.1L50,85l42.71-42.63C102.43,32.68,102.43,16.96,92.71,7.27z"></path>
+                <path
+                  d="M92.71,7.27L92.71,7.27c-9.71-9.69-25.46-9.69-35.18,0L50,14.79l-7.54-7.52C32.75-2.42,17-2.42,7.29,7.27v0 c-9.71,9.69-9.71,25.41,0,35.1L50,85l42.71-42.63C102.43,32.68,102.43,16.96,92.71,7.27z"
+                  fill="tomato"
+                  transform="translate(-50 -50)"></path>
                 <animateTransform
+                  additive="sum"
                   attributeName="transform"
-                  type="scale"
-                  values="1; 1.5; 1.25; 1.5; 1.5; 1;"
                   dur="1s"
                   repeatCount="indefinite"
-                  additive="sum">
+                  type="scale"
+                  values="1; 1.5; 1.25; 1.5; 1.5; 1;">
                 </animateTransform>
               </g>
             </svg>
@@ -130,10 +135,10 @@
         <div fxLayout="column"
              fxLayoutAlign="space-between center"
              fxLayoutGap="64px" fxLayoutGap.lt-sm="16px">
-          <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="16px" fxLayoutAlign="space-between center">
+          <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutAlign="space-between center" fxLayoutGap="16px">
             <mat-card fxFlex="33">
-              <img mat-card-image src="../../assets/landing/webCorp.png"
-                   alt="Photo of the Watermelon Corp. Logo">
+              <img alt="Photo of the Watermelon Corp. Logo" mat-card-image
+                   src="../../assets/landing/webCorp.png">
               <mat-card-content>
                 <p class="mat-h2">Corporate Site</p>
                 <p>
@@ -149,8 +154,8 @@
               </mat-card-actions>
             </mat-card>
             <mat-card fxFlex="33">
-              <img mat-card-image src="../../assets/landing/updates.png"
-                   alt="Photo of the Kwee logo">
+              <img alt="Photo of the Kwee logo" mat-card-image
+                   src="../../assets/landing/updates.png">
               <mat-card-content>
                 <p class="mat-h2">Updates</p>
                 <p>
@@ -166,9 +171,9 @@
               </mat-card-actions>
             </mat-card>
             <mat-card fxFlex="33">
-              <img mat-card-image
-                   src="https://kwee.ovh/corp/wp-content/uploads/2019/01/IMG_20190111_120732-1024x768.jpg"
-                   alt="Photo of the Watermelon Corp. Team">
+              <img alt="Photo of the Watermelon Corp. Team"
+                   mat-card-image
+                   src="https://kwee.ovh/corp/wp-content/uploads/2019/01/IMG_20190111_120732-1024x768.jpg">
               <mat-card-content>
                 <p class="mat-h2">Meet the team</p>
                 <p>
@@ -187,17 +192,17 @@
         </div>
       </div>
       <div [ngStyle.gt-xs]="{'padding-left.%': 10, 'padding-right.%': 10}"
-           fxLayout="column"
-           fxFlex="60%" fxFlex.lt-sm="95%"
            class="quote quote-3"
+           fxFlex="60%" fxFlex.lt-sm="95%"
+           fxLayout="column"
            fxLayoutAlign="center center">
         <div class="mat-display-4" style="margin-top: 64px">
           Just try it, it's free!
         </div>
         <div fxLayout="row" fxLayoutGap="16px" style="margin-bottom: 64px">
-          <button (click)="goToSignUp('candidate')" mat-raised-button color="accent">Start as Candidate
+          <button (click)="goToSignUp('candidate')" color="accent" mat-raised-button>Start as Candidate
           </button>
-          <button (click)="goToSignUp('business')" mat-raised-button color="primary">Start as Business</button>
+          <button (click)="goToSignUp('business')" color="primary" mat-raised-button>Start as Business</button>
         </div>
       </div>
     </div>

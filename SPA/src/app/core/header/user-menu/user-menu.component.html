@@ -65,8 +65,8 @@
     <mat-icon svgIcon="public"></mat-icon>
     <span>Kwee Live</span>
   </button>
-  <button mat-menu-item
-          [routerLink]="'/settings/' + userType">
+  <button [routerLink]="'/settings/' + userType"
+          mat-menu-item>
     <mat-icon svgIcon="settings"></mat-icon>
     <span>Settings</span>
   </button>
@@ -75,12 +75,12 @@
 </mat-menu>
 
 
-<button mat-icon-button
-        color="primary"
-        [ngClass]="{
+<button [ngClass]="{
           'profileLogo': true,
           'business': isLanding || userType === 'business' || userType === 'admin'
-        }">
+        }"
+        color="primary"
+        mat-icon-button>
   <a [matMenuTriggerFor]="menu">
     <mat-icon svgIcon="account-circle"></mat-icon>
     <br>

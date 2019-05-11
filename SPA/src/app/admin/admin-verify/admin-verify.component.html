@@ -10,8 +10,8 @@
                          fxFlex.gt-lg="30%" fxFlex.gt-md="35%" fxFlex.gt-sm="40%" fxLayoutAlign="start center"
                          fxLayoutGap="8px">
           <app-offerer-name-overview
-            [index]="user.index"
             [businessIndexBreakdown]="user.avg"
+            [index]="user.index"
             [name]="user.name">
           </app-offerer-name-overview>
         </mat-panel-title>
@@ -128,7 +128,7 @@
                 [length]="(adminState | async).businesses.total"
                [pageSize]="pageSize"
                [pageSizeOptions]="pageSizeOptions"
-               (page)="pageEvent = $event; changepage();">
+               [pageSize]="pageSize">
 </mat-paginator>
 
 <!-- [hidePageSize]="true" -->

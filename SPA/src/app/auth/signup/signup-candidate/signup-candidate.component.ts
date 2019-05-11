@@ -318,7 +318,7 @@ export class SignupCandidateComponent implements OnInit {
 
         // console.log(updateuser);
 
-         // this.snToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NDMxLCJpYXQiOjE1NTUzNjMwNzMsImV4cCI6MTU1NTM2N
+        // this.snToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NDMxLCJpYXQiOjE1NTUzNjMwNzMsImV4cCI6MTU1NTM2N
         // jY3MywiaXNzIjoiV21lbG9uQ29ycF9Ld2VlX2lzc3VlciJ9.I34bsbU1q3odn7g3TilUC-lGTZTaYCdmFRCTwWo8e14';
         this.store$.dispatch(new AuthActions.TrySNCandidate({
           'email': this.secondFormGroup.controls['email'].value,
