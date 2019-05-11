@@ -1,4 +1,4 @@
-<div fxLayout="row" fxFlex="100%">
+<div fxFlex="100%" fxLayout="row">
   <form [formGroup]="thirdFormGroup"
         fxFlex="85%"
         fxFlex.lt-lg="90%"
@@ -15,22 +15,22 @@
       <div class="mat-h1" style="padding-top: 16px">My Profile</div>
       <p class="mat-h3">Complete your profile to increase your visibility and help you find the job you want!</p>
 
-      <div fxLayout="row" fxFlex="100%">
-        <div fxLayout="row" fxLayout.lt-md="column" fxFlex="100%">
-          <div fxLayout="column" style="padding-bottom: 16px" fxFlex.lt-md="100%" fxFlex="192px">
+      <div fxFlex="100%" fxLayout="row">
+        <div fxFlex="100%" fxLayout="row" fxLayout.lt-md="column">
+          <div fxFlex="192px" fxFlex.lt-md="100%" fxLayout="column" style="padding-bottom: 16px">
             <h2>Profile picture</h2>
             <div fxLayout="column" fxLayout.lt-md="row">
               <label for="file_profile">
                 <img
-                  alt="default profile picture"
-                  width="144px"
-                  height="144px"
-                  id="photo_profile"
                   [src]="(profilesState | async).candidate.img ?
                          apiURL + (profilesState | async).candidate.img :
-                         '../../../../assets/img/defaultProfileImg.png'"/>
+                         '../../../../assets/img/defaultProfileImg.png'"
+                  alt="default profile picture"
+                  height="144px"
+                  id="photo_profile"
+                  width="144px"/>
               </label>
-              <div fxLayout="column" fxFlex="128px" style="margin-left: 8px">
+              <div fxFlex="128px" fxLayout="column" style="margin-left: 8px">
                 <label for="file_profile">
                   <button (click)="profile.click()" class="photo-buttons" color="primary" mat-raised-button
                           type="button">Upload photo
@@ -52,7 +52,7 @@
             <div fxLayout="column">
               <h2>Bio</h2>
               <mat-form-field>
-                <textarea rows="5" formControlName="bio" matInput placeholder="Leave a comment"></textarea>
+                <textarea formControlName="bio" matInput placeholder="Leave a comment" rows="5"></textarea>
               </mat-form-field>
             </div>
             <div fxLayout="column">

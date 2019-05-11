@@ -8,10 +8,10 @@
   </div>
   <div fxLayout="row"
        fxLayoutAlign="center center">
-    <mat-card id="id"
-              *ngIf="(offerState | async).offer"
+    <mat-card *ngIf="(offerState | async).offer"
               fxFlex="95%"
-              fxFlex.gt-lg="50%" fxFlex.gt-md="60%" fxFlex.gt-sm="75%" fxLayout="column">
+              fxFlex.gt-lg="50%"
+              fxFlex.gt-md="60%" fxFlex.gt-sm="75%" fxLayout="column" id="id">
       <mat-card-header fxLayoutAlign="space-between">
         <mat-card-title fxLayout="row" fxLayoutGap="16px">
           <span>{{(offerState | async).offer.title }}</span>
@@ -25,8 +25,8 @@
           [routerLink]="urlOfferer((offerState | async).offer.fk_offerer, (offerState | async).offer.offererName)"
           style="cursor: pointer">
           <app-offerer-name-overview
-            [index]="(offerState | async).offer.offererIndex"
             [businessIndexBreakdown]="(offerState | async).offer.avg"
+            [index]="(offerState | async).offer.offererIndex"
             [name]="(offerState | async).offer.offererName">
           </app-offerer-name-overview>
         </span>
@@ -77,8 +77,8 @@
         <div fxLayout="column">
           <h2 class="mat-h2">Details</h2>
           <div
-            fxLayout="row" fxLayout.lt-sm="column"
-            fxFlex="100%"
+            fxFlex="100%" fxLayout="row"
+            fxLayout.lt-sm="column"
             fxLayoutAlign="start start"
             fxLayoutGap="8px">
             <div fxFlex="66%" fxFlex.lt-sm="100%" style="width: 100%; padding-bottom: 16px">
@@ -177,8 +177,8 @@
           <div
             [innerHTML]="(offerState | async).offer.requeriments"
             fxLayout="column"
-            style="white-space: pre-wrap; margin-bottom: 16px"
-            id="requeriments">
+            id="requeriments"
+            style="white-space: pre-wrap; margin-bottom: 16px">
           </div>
         </div>
 
@@ -193,7 +193,7 @@
                 *ngFor="let skill of getSkills((offerState | async).offer.skills); let i = index"
                 style="margin-left: -20px">
                 <mat-list-item
-                  *ngIf="i % 2 === 0" (click)="searchSkill(skill)" style="cursor: pointer">
+                  (click)="searchSkill(skill)" *ngIf="i % 2 === 0" style="cursor: pointer">
                   <mat-icon color="primary">chevron_right</mat-icon>
                   {{' ' + skill}}</mat-list-item>
               </div>
@@ -204,7 +204,7 @@
               <div
                 *ngFor="let skill of getSkills((offerState | async).offer.skills); let i = index"
                 style="margin-left: -20px">
-                <mat-list-item *ngIf="i % 2 !== 0" (click)="searchSkill(skill)" style="cursor: pointer">
+                <mat-list-item (click)="searchSkill(skill)" *ngIf="i % 2 !== 0" style="cursor: pointer">
                   <mat-icon color="primary">chevron_right</mat-icon>
                   {{' ' + skill}}</mat-list-item>
               </div>

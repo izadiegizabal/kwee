@@ -13,7 +13,8 @@
       fxFlex.gt-sm="80%">
       <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap.lt-sm="16px">
         <!-- Basic info -->
-        <mat-card fxFlex="100" [fxFlex.lt-md]="(mine || twitterAccount !== '') ? 70 : 100" fxLayout="column" fxLayoutAlign="space-between">
+        <mat-card [fxFlex.lt-md]="(mine || twitterAccount !== '') ? 70 : 100" fxFlex="100" fxLayout="column"
+                  fxLayoutAlign="space-between">
           <mat-card-title>
             <app-offerer-name-overview
               [candidateIndexBreakdown]="(profilesState | async).candidate.avg"
@@ -42,9 +43,9 @@
           <mat-card-actions fxLayoutAlign="end end">
             <button
               *ngIf="mine"
-              routerLink="/settings"
               color="accent"
-              mat-button>
+              mat-button
+              routerLink="/settings">
               Edit
             </button>
             <button
@@ -110,7 +111,8 @@
             </mat-tab>
             <mat-tab label="Past Positions">
               <ng-template matTabContent>
-                <app-past-positions [applications]="(profilesState | async).candidate.applications"></app-past-positions>
+                <app-past-positions
+                  [applications]="(profilesState | async).candidate.applications"></app-past-positions>
               </ng-template>
             </mat-tab>
           </mat-tab-group>

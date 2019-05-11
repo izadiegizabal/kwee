@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { PastPositionCardComponent } from './past-position-card.component';
+import {PastPositionCardComponent} from './past-position-card.component';
 
 describe('PastPositionCardComponent', () => {
   let component: PastPositionCardComponent;
@@ -8,9 +8,9 @@ describe('PastPositionCardComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PastPositionCardComponent ]
+      declarations: [PastPositionCardComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

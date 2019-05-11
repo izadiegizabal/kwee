@@ -150,7 +150,7 @@ export class AdminEffects {
         const token = authState.token;
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
         const body = JSON.stringify(payload.updatedBusiness);
-       // console.log(body);
+        // console.log(body);
         return this.httpClient.put(apiEndpointUrl, body, {headers: headers}).pipe(
           map(() => {
             return {

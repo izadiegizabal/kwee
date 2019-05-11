@@ -32,7 +32,6 @@ const routes: Routes = [
   {
     path: 'my-offers',
     loadChildren: './offer/offer-manage/offer-manage.module#OfferManageModule',
-    canActivate: [AuthTokenGuard]
   },
   { // TODO: canActivate -> Offer Owner & Admin
     path: 'offer/:id/edit',

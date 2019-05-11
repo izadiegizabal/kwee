@@ -1,10 +1,6 @@
 import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-
-import {TAnimation, TCamera, TEntity, TLight, TMesh, TTransform} from '../../assets/engine/TEntity';
-import {TNode} from '../../assets/engine/TNode';
-import {TResourceManager, TResourceMaterial, TResourceMesh, TResourceShader, TResourceTexture} from '../../assets/engine/resourceManager';
 import {shared} from '../../assets/engine/commons.js';
-import {allowActions, main, mainInit, mainR, mainTest, pls, resetCanvas} from '../../assets/engine/main.js';
+import {allowActions, mainInit, mainR, resetCanvas} from '../../assets/engine/main.js';
 import {Title} from '@angular/platform-browser';
 import * as KweeLiveActions from './store/kwee-live.actions';
 import * as fromApp from '../store/app.reducers';
@@ -37,7 +33,7 @@ export class KweeLiveComponent implements OnInit, OnDestroy {
 
   @ViewChild('rendererContainer') rendererContainer: ElementRef;
 
-  constructor(private titleService: Title, private http: HttpClient, private store$: Store<fromApp.AppState> ) {
+  constructor(private titleService: Title, private http: HttpClient, private store$: Store<fromApp.AppState>) {
     this.disabled = true;
   }
 

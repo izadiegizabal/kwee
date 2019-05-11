@@ -6,9 +6,9 @@
     fxLayout.lt-sm="column"
     fxLayoutAlign="space-between">
     <mat-card-title
+      [routerLink]="'/offer/' + offer.id + '/' + offer.title"
       fxFlex="100%"
       fxLayout="row"
-      [routerLink]="'/offer/' + offer.id + '/' + offer.title"
       style="cursor: pointer">
       {{offer.title}}
     </mat-card-title>
@@ -23,11 +23,11 @@
   </mat-card-header>
 
   <mat-card-content *ngIf="(store$ | async).profiles && (store$ | async).profiles.candidate" style="margin-bottom: 8px">
-    <div fxLayout="column" fxFlex="100%" style="margin-top: 16px">
-      <div fxLayout="row"
+    <div fxFlex="100%" fxLayout="column" style="margin-top: 16px">
+      <div fxFlex="100%"
+           fxLayout="row"
            fxLayoutAlign="center center"
-           fxFlex="100%"
-           fxLayoutGap="8px" fxLayoutGap.gt-xs="64px" fxLayoutGap.gt-sm="112px">
+           fxLayoutGap="8px" fxLayoutGap.gt-sm="112px" fxLayoutGap.gt-xs="64px">
         <div fxLayout="column">
           <div fxFlex="100%" fxLayoutAlign="center center">
             <img
@@ -37,8 +37,8 @@
               width="88px">
           </div>
           <app-offerer-name-overview
-            [index]="offer.offererIndex"
             [businessIndexBreakdown]="offer.avg"
+            [index]="offer.offererIndex"
             [name]="offer.offererName"
             [routerLink]="'/business/' + offer.fk_offerer + '/' + offer.offererName"
             style="cursor: pointer">
@@ -53,12 +53,12 @@
               : '../../../../../assets/img/defaultProfileImg.png'"
               alt="Profile Picture"
               height="88px"
-              width="88px"
-              style="object-fit: cover">
+              style="object-fit: cover"
+              width="88px">
           </div>
           <app-offerer-name-overview
-            [index]="(store$ | async).profiles.candidate.index"
             [candidateIndexBreakdown]="(store$ | async).profiles.candidate.avg"
+            [index]="(store$ | async).profiles.candidate.index"
             [name]="(store$ | async).profiles.candidate.name">
           </app-offerer-name-overview>
         </div>

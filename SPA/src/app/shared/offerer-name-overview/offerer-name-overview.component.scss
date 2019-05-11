@@ -38,10 +38,7 @@ p {
 .breakdown {
   min-width: 220px;
   position: absolute;
-  filter:
-    drop-shadow(0 2px 1px rgba(0, 0, 0, 0.1))
-    drop-shadow(0 1px 1px rgba(0, 0, 0, 0.07))
-    drop-shadow(0 1px 3px rgba(0, 0, 0, 0.06));
+  filter: drop-shadow(0 2px 1px rgba(0, 0, 0, 0.1)) drop-shadow(0 1px 1px rgba(0, 0, 0, 0.07)) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.06));
   background: #fff;
   border-radius: .4em;
   padding: 8px 8px 8px 16px;

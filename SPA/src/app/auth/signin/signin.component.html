@@ -14,21 +14,21 @@
         </mat-panel-description>
       </mat-expansion-panel-header>
       <form>
-        <div fxLayout="column"
-             fxLayoutGap="8px"
-             [formGroup]="user">
+        <div [formGroup]="user"
+             fxLayout="column"
+             fxLayoutGap="8px">
           <mat-form-field>
-            <input matInput formControlName="email" placeholder="Email" required>
-            <mat-icon svgIcon="email" color="primary" matPrefix></mat-icon>
+            <input formControlName="email" matInput placeholder="Email" required>
+            <mat-icon color="primary" matPrefix svgIcon="email"></mat-icon>
             <mat-error *ngIf="user.get('email').invalid && !user.get('password').invalid">Please input a valid mail.
             </mat-error>
           </mat-form-field>
 
           <mat-form-field>
-            <mat-icon svgIcon="lock" color="primary" matPrefix></mat-icon>
-            <input matInput
+            <mat-icon color="primary" matPrefix svgIcon="lock"></mat-icon>
+            <input [type]="hide ? 'text' : 'password'"
                    formControlName="password"
-                   placeholder="Password" [type]="hide ? 'text' : 'password'"
+                   matInput placeholder="Password"
                    required>
             <mat-error *ngIf="user.get('password').invalid">The email and password you entered did not match our
               records. Please double-check and try again.
@@ -42,33 +42,33 @@
             I forgot my password.
           </p>
           <div fxLayout="row" fxLayoutAlign="end">
-            <button mat-button type="submit" color="accent" (click)="signIn()">Sign In</button>
+            <button (click)="signIn()" color="accent" mat-button type="submit">Sign In</button>
           </div>
         </div>
       </form>
     </mat-expansion-panel>
   </mat-accordion>
   <div class="signupButton">
-    <button mat-raised-button color="primary">
-      <mat-icon fontSet="fab" fontIcon="fa-github"></mat-icon>
+    <button color="primary" mat-raised-button>
+      <mat-icon fontIcon="fa-github" fontSet="fab"></mat-icon>
       <span>Continue with GitHub</span>
     </button>
   </div>
   <div class="signupButton">
-    <button mat-raised-button color="primary" id="linkedinBtn">
-      <mat-icon fontSet="fab" fontIcon="fa-linkedin-in"></mat-icon>
+    <button color="primary" id="linkedinBtn" mat-raised-button>
+      <mat-icon fontIcon="fa-linkedin-in" fontSet="fab"></mat-icon>
       <span>Continue with LinkedIn</span>
     </button>
   </div>
   <div class="signupButton">
-    <button mat-raised-button color="primary" id="googleBtn">
-      <mat-icon fontSet="fab" fontIcon="fa-google"></mat-icon>
+    <button color="primary" id="googleBtn" mat-raised-button>
+      <mat-icon fontIcon="fa-google" fontSet="fab"></mat-icon>
       <span>Continue with Google</span>
     </button>
   </div>
   <div class="signupButton">
-    <button mat-raised-button color="primary" id="twitterBtn">
-      <mat-icon fontSet="fab" fontIcon="fa-twitter"></mat-icon>
+    <button color="primary" id="twitterBtn" mat-raised-button>
+      <mat-icon fontIcon="fa-twitter" fontSet="fab"></mat-icon>
       <span>Continue with Twitter</span>
     </button>
   </div>

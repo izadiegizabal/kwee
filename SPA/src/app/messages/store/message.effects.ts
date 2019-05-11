@@ -19,7 +19,7 @@ export class MessageEffects {
     }),
     withLatestFrom(this.store$.pipe(select(state => state.auth))),
     switchMap(([payload, authState]) => {
-        const apiEndpointUrl = environment.apiUrl + 'message' ;
+        const apiEndpointUrl = environment.apiUrl + 'message';
         const token = authState.token;
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
         const body = JSON.stringify(payload);
@@ -58,28 +58,28 @@ export class MessageEffects {
     }),
     withLatestFrom(this.store$.pipe(select(state => state.auth))),
     switchMap(([payload, authState]) => {
-      const apiEndpointUrl = environment.apiUrl + 'messages';
-      const token = authState.token;
-      const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+        const apiEndpointUrl = environment.apiUrl + 'messages';
+        const token = authState.token;
+        const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
 
-      return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
-        map((res: any) => {
-          return {
-            type: MessageActions.GET_MESSAGES,
-            payload: res
-          };
-        }),
-        catchError((err: HttpErrorResponse) => {
-          throwError(this.handleError('getMessage', err));
-          const error = err.error.message ? err.error.message : err;
-          return [
-            {
-              type: MessageActions.OPERATION_ERROR,
-              payload: error
-            }
-          ];
-        })
-      );
+        return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
+          map((res: any) => {
+            return {
+              type: MessageActions.GET_MESSAGES,
+              payload: res
+            };
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('getMessage', err));
+            const error = err.error.message ? err.error.message : err;
+            return [
+              {
+                type: MessageActions.OPERATION_ERROR,
+                payload: error
+              }
+            ];
+          })
+        );
       }
     ),
     share()
@@ -93,28 +93,28 @@ export class MessageEffects {
     }),
     withLatestFrom(this.store$.pipe(select(state => state.auth))),
     switchMap(([payload, authState]) => {
-      const apiEndpointUrl = environment.apiUrl + 'messages/' + payload.id;
-      const token = authState.token;
-      const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+        const apiEndpointUrl = environment.apiUrl + 'messages/' + payload.id;
+        const token = authState.token;
+        const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
 
-      return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
-        map((res: any) => {
-          return {
-            type: MessageActions.GET_CONVERSATION,
-            payload: res
-          };
-        }),
-        catchError((err: HttpErrorResponse) => {
-          throwError(this.handleError('getConversation', err));
-          const error = err.error.message ? err.error.message : err;
-          return [
-            {
-              type: MessageActions.OPERATION_ERROR,
-              payload: error
-            }
-          ];
-        })
-      );
+        return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
+          map((res: any) => {
+            return {
+              type: MessageActions.GET_CONVERSATION,
+              payload: res
+            };
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('getConversation', err));
+            const error = err.error.message ? err.error.message : err;
+            return [
+              {
+                type: MessageActions.OPERATION_ERROR,
+                payload: error
+              }
+            ];
+          })
+        );
       }
     ),
     share()

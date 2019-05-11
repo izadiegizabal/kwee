@@ -1,4 +1,5 @@
-<div fxLayout="row" *ngIf="(offersState | async).offers && (offersState | async).offers.data" style="padding-bottom: 8px">
+<div *ngIf="(offersState | async).offers && (offersState | async).offers.data" fxLayout="row"
+     style="padding-bottom: 8px">
   <mat-accordion fxFlex="99%">
     <mat-expansion-panel
       (closed)="isPanelOpen = !isPanelOpen; isInEditMode = false; offerForm.reset()"
@@ -8,8 +9,8 @@
         <mat-panel-title fxFlex="75%"
                          fxFlex.gt-lg="30%" fxFlex.gt-md="35%" fxFlex.gt-sm="40%" fxLayoutAlign="start center">
           <app-offerer-name-overview
-            [index]="offer.offererIndex"
             [businessIndexBreakdown]="offer.avg"
+            [index]="offer.offererIndex"
             [name]="offer.title">
           </app-offerer-name-overview>
         </mat-panel-title>

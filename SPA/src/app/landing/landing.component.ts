@@ -52,7 +52,7 @@ export class LandingComponent implements OnInit, OnDestroy {
   }
 
   scrollTo(element: HTMLElement) {
-    element.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'start' });
+    element.scrollIntoView({behavior: 'smooth', block: 'start', inline: 'start'});
   }
 
   goToSignUp(userType: string) {

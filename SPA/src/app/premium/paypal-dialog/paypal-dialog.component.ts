@@ -96,10 +96,10 @@ export class PaypalDialogComponent implements OnInit {
 
           if (this.profileType === 'candidate') {
             console.log(updateuser);
-            this.store$.dispatch(new ProfilesActions.UserTryUpdateCandidate({ updatedCandidate: updateuser}));
+            this.store$.dispatch(new ProfilesActions.UserTryUpdateCandidate({updatedCandidate: updateuser}));
             console.log('candidate ');
           } else if (this.profileType === 'business') {
-            this.store$.dispatch(new ProfilesActions.UserTryUpdateBusiness({ updatedBusiness: updateuser}));
+            this.store$.dispatch(new ProfilesActions.UserTryUpdateBusiness({updatedBusiness: updateuser}));
           }
         },
         onCancel: (data, actions) => {

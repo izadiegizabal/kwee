@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {Actions, Effect, ofType} from '@ngrx/effects';
 import * as KweeLiveActions from './kwee-live.actions';
-import {catchError, map, share, switchMap, withLatestFrom} from 'rxjs/operators';
-import {select, Store} from '@ngrx/store';
+import {catchError, map, share, switchMap} from 'rxjs/operators';
+import {Store} from '@ngrx/store';
 import {environment} from '../../../environments/environment';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {Observable, of, throwError} from 'rxjs';
