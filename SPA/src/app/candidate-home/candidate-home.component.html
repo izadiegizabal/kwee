@@ -1,4 +1,5 @@
 <mat-sidenav-container
+  style="min-height: 856px"
   fxLayout="column">
 
   <mat-sidenav #drawer
@@ -12,7 +13,6 @@
 
 
   <mat-sidenav-content
-    style="min-height: 856px"
     fxFlex="96%" fxFlex.gt-sm="75%"
     fxLayout="column"
     fxLayoutAlign="start stretch"
@@ -23,6 +23,7 @@
       fxLayoutAlign="center"
       fxLayoutGap="8px">
       <app-searchbar
+        searchHint="Android Developer..."
         (search)="onSearch($event)" [alreadySearched]="alreadySearched" fxFlex="40%" fxFlex.lt-lg="60%">
       </app-searchbar>
       <app-orderby-button (changeSelectedValue)="getOrderby($event)" [orderBy]="order"
