@@ -104,7 +104,7 @@ const routes: Routes = [
   {path: 'plans', loadChildren: './premium/premium.module#PremiumModule'},
 
   // If matching path not found show Error 404
-  {path: '**', redirectTo: 'error/404'}
+  // {path: '**', redirectTo: 'error/404'}
 ];
 
 @NgModule({
