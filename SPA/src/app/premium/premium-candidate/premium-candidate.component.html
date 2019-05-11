@@ -20,10 +20,18 @@
 
     </mat-card-content>
     <mat-card-actions fxLayoutAlign="center end">
-      <button color="primary"
+      <button *ngIf="premium === 0"
+              color="primary"
               mat-raised-button
               style="color: white; margin-bottom: 16px"
               type="button" disabled="">Current plan
+      </button>
+
+      <button *ngIf="premium === 1"
+              color="warn"
+              mat-raised-button
+              style="color: white; margin-bottom: 16px">
+        Downgrade
       </button>
     </mat-card-actions>
   </mat-card>
@@ -52,12 +60,20 @@
 
     </mat-card-content>
     <mat-card-actions fxLayoutAlign="center center" class="ft">
-      <button
-        color="accent"
-        mat-raised-button
-        style="color: white; margin-bottom: 16px"
-        (click)="callPaypalDialog(1, 'Subscribe to premium', '5.99€')">
+      <button *ngIf="premium === 0"
+              color="accent"
+              mat-raised-button
+              style="color: white; margin-bottom: 16px"
+              (click)="callPaypalDialog(1, 'Subscribe to premium', '5.99€')">
         Upgrade
+      </button>
+
+      <button *ngIf="premium === 1"
+              color="accent"
+              mat-raised-button
+              style="color: white; margin-bottom: 16px"
+              disabled="">
+        Current plan
       </button>
     </mat-card-actions>
 

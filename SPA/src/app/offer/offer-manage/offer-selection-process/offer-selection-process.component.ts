@@ -99,8 +99,6 @@ export class OfferSelectionProcessComponent implements OnInit {
       secondCtrl: ['', Validators.required]
     });
 
-    // TODO: check if offer is in selection process and that the owner of the offer is the one logged in
-
     // Empty previous states
     this.store$.dispatch(new OfferManageActions.EmptyState());
 
