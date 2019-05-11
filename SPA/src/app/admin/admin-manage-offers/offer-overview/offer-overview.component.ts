@@ -19,8 +19,8 @@ import {AlertDialogComponent} from '../../../shared/alert-dialog/alert-dialog.co
 export class OfferOverviewComponent implements OnInit {
 
   // paging
-  pageSize = 5;
-  pageSizeOptions: number[] = [5, 10, 25, 100];
+  pageSize = 10;
+  pageSizeOptions: number[] = [5, 10, 25, 50, 100];
 
   // MatPaginator Output
   pageEvent: PageEvent;
@@ -55,7 +55,7 @@ export class OfferOverviewComponent implements OnInit {
   ngOnInit() {
 
     this.query = {...this.query, salaryAmount: {'gte': '0'}};
-    this.store$.dispatch(new OffersActions.TryGetOffers({page: 1, limit: 5, params: this.query, order: this.orderby}));
+    this.store$.dispatch(new OffersActions.TryGetOffers({page: 1, limit: this.pageSize, params: this.query, order: this.orderby}));
     this.offersState = this.store$.pipe(select(state => state.offers));
 
     // this.activatedRoute.queryParams

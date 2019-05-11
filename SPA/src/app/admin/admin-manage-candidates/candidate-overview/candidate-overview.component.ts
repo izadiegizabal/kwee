@@ -21,8 +21,8 @@ import {UserLogComponent} from '../../user-log/user-log.component';
 export class CandidateOverviewComponent implements OnInit {
 
   // paging
-  pageSize = 5;
-  pageSizeOptions: number[] = [5, 10, 25, 100];
+  pageSize = 10;
+  pageSizeOptions: number[] = [5, 10, 25, 50, 100];
 
   // MatPaginator Output
   pageEvent: PageEvent;

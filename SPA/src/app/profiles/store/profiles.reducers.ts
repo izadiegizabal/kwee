@@ -47,8 +47,11 @@ export interface State {
 
   opinions: {
     data: {
+      userName: string,
+      title: string,
+      overall: number,
       opinion: string,
-      ratingId: number,
+      id: number,
       userRated: number,
       efficiency: number,
       skills: number,
@@ -57,8 +60,6 @@ export interface State {
       teamwork: number,
       satisfaction: number,
       createdAt: Date,
-      updatedAt: Date,
-      deletedAt: Date,
     }[],
     total: number,
   };
