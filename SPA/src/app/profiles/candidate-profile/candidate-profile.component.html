@@ -61,11 +61,35 @@
 
         <!-- Premium info -->
         <mat-card
-          *ngIf="mine"
+          *ngIf="mine && premium === 0"
           fxFlex="30%" fxFlex.lt-sm="100%" fxFlexOffset.gt-xs="32px">
           <mat-card-subtitle style="text-align: center">Active account type:</mat-card-subtitle>
           <mat-card-title style="text-align: center">
             Basic
+          </mat-card-title>
+          <hr>
+          <mat-card-content>
+            <mat-list>
+              <mat-list-item><p>Only 5 concurrent applications.</p></mat-list-item>
+              <mat-list-item><p>Cannot upload files to complete your profile.</p></mat-list-item>
+              <mat-list-item><p>Limit access to highlighted profiles section.</p></mat-list-item>
+            </mat-list>
+          </mat-card-content>
+          <mat-card-actions fxLayoutAlign="center">
+            <button
+              color="accent"
+              mat-raised-button
+              routerLink="/plans"
+              style="color: white; margin-bottom: 16px">
+              Upgrade to Premium
+            </button>
+          </mat-card-actions>
+        </mat-card>
+        <mat-card *ngIf="premium === 1 && mine"
+                  fxFlex="30%" fxFlex.lt-sm="100%" fxFlexOffset.gt-xs="32px">
+          <mat-card-subtitle style="text-align: center">Active account type:</mat-card-subtitle>
+          <mat-card-title style="text-align: center">
+            Premium
           </mat-card-title>
           <hr>
           <mat-card-content>
@@ -82,10 +106,11 @@
               mat-raised-button
               routerLink="/plans"
               style="color: white; margin-bottom: 16px">
-              Upgrade to Premium
+              View plans
             </button>
           </mat-card-actions>
         </mat-card>
+
         <mat-card *ngIf="!mine && twitterAccount !== ''"
                   class="twitter-wrapper"
                   fxFlex="30"

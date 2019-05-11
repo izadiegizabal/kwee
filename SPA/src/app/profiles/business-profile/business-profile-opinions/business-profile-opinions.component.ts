@@ -3,10 +3,12 @@ import {getTimePassed} from '../../../shared/utils.service';
 import {Observable} from 'rxjs';
 import * as fromProfiles from '../../store/profiles.reducers';
 import {MatPaginator, PageEvent} from '@angular/material';
-import {select, Store} from '@ngrx/store';
+import {Action, select, Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
 import {ActivatedRoute} from '@angular/router';
 import * as ProfilesActions from '../../store/profiles.actions';
+import {filter} from 'rxjs/operators';
+import {ProfilesEffects} from '../../store/profiles.effects';
 
 @Component({
   selector: 'app-business-profile-opinions',
@@ -83,17 +85,25 @@ export class BusinessProfileOpinionsComponent implements OnInit {
   pageSize = 5;
   pageSizeOptions: number[] = [2, 5, 10, 25, 100];
   pageEvent: PageEvent;
+  errorOpinion = false;
 
   @ViewChild('paginator') paginator: MatPaginator;
 
   constructor(private store$: Store<fromApp.AppState>,
-              private activatedRoute: ActivatedRoute) {
+              private activatedRoute: ActivatedRoute, private profilesEffects$: ProfilesEffects) {
   }
 
   ngOnInit() {
     const params = this.activatedRoute.snapshot.params;
     this.store$.dispatch(new ProfilesActions.TryGetOpinionsUser({id: params.id, limit: 5, page: 1}));
     this.profilesState = this.store$.pipe(select(state => state.profiles));
+
+    this.profilesEffects$.profileGetOpinions.pipe(
+      filter((action: Action) => action.type === ProfilesActions.OPERATION_ERROR)
+    ).subscribe((error: { payload: any, type: string }) => {
+      // console.log(error.payload);
+      this.errorOpinion = true;
+    });
   }
 
   getPublishedDate(date: string) {

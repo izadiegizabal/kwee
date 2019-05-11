@@ -58,8 +58,7 @@
         </mat-card>
 
         <!-- Premium info -->
-        <mat-card
-          *ngIf="mine"
+        <mat-card *ngIf="mine && premium === 0"
           fxFlex="30%" fxFlex.lt-sm="100%" fxFlexOffset.gt-xs="32px">
           <mat-card-subtitle style="text-align: center">Active account type:</mat-card-subtitle>
           <mat-card-title style="text-align: center">
@@ -68,10 +67,9 @@
           <hr>
           <mat-card-content>
             <mat-list>
-              <mat-list-item><p>Publish more offers.</p></mat-list-item>
-              <mat-list-item><p>More advanced offers.</p></mat-list-item>
-              <mat-list-item><p>Direct customer support.</p></mat-list-item>
-              <mat-list-item><p>Help us maintain the platform.</p></mat-list-item>
+              <mat-list-item><p>Publish only 3 offers.</p></mat-list-item>
+              <mat-list-item><p>Cannot upload files to complete your profile.</p></mat-list-item>
+              <mat-list-item><p>Limit access to highlighted profiles section.</p></mat-list-item>
             </mat-list>
           </mat-card-content>
           <mat-card-actions fxLayoutAlign="center">
@@ -84,6 +82,63 @@
             </button>
           </mat-card-actions>
         </mat-card>
+
+        <!-- Premium info -->
+        <mat-card *ngIf="premium === 1 && mine"
+                  fxFlex="30%" fxFlex.lt-sm="100%" fxFlexOffset.gt-xs="32px">
+          <mat-card-subtitle style="text-align: center">Active account type:</mat-card-subtitle>
+          <mat-card-title style="text-align: center">
+            Premium
+          </mat-card-title>
+          <hr>
+          <mat-card-content>
+            <mat-list>
+              <mat-list-item><p>Publish unlimit offers.</p></mat-list-item>
+              <mat-list-item><p>More advanced offers.</p></mat-list-item>
+              <mat-list-item><p>Direct customer support.</p></mat-list-item>
+              <mat-list-item><p>Help us maintain the platform.</p></mat-list-item>
+            </mat-list>
+          </mat-card-content>
+          <mat-card-actions fxLayoutAlign="center">
+            <button
+              color="accent"
+              mat-raised-button
+              routerLink="/plans"
+              style="color: white; margin-bottom: 16px">
+              View plans
+            </button>
+          </mat-card-actions>
+        </mat-card>
+
+        <mat-card *ngIf="premium === 2 && mine"
+                  fxFlex="30%" fxFlex.lt-sm="100%" fxFlexOffset.gt-xs="32px">
+          <mat-card-subtitle style="text-align: center">Active account type:</mat-card-subtitle>
+          <mat-card-title style="text-align: center">
+            Pay as you go
+          </mat-card-title>
+          <hr>
+          <mat-card-content>
+            <mat-list>
+              <mat-list-item><p>Publish the offers you want.</p></mat-list-item>
+              <mat-list-item><p>More advanced offers.</p></mat-list-item>
+              <mat-list-item><p>Direct customer support.</p></mat-list-item>
+              <mat-list-item><p>Help us maintain the platform.</p></mat-list-item>
+            </mat-list>
+          </mat-card-content>
+          <mat-card-actions fxLayoutAlign="center">
+            <button
+              color="accent"
+              mat-raised-button
+              routerLink="/plans"
+              style="color: white; margin-bottom: 16px">
+              View plans
+            </button>
+          </mat-card-actions>
+        </mat-card>
+
+
+
+
         <mat-card *ngIf="!mine && twitterAccount !== ''"
                   class="twitter-wrapper"
                   fxFlex="30"
