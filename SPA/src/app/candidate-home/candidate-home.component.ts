@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../store/app.reducers';
 import * as OffersActions from '../offer/store/offers.actions';
@@ -15,7 +15,7 @@ import {Title} from '@angular/platform-browser';
   templateUrl: './candidate-home.component.html',
   styleUrls: ['./candidate-home.component.scss']
 })
-export class CandidateHomeComponent implements OnInit {
+export class CandidateHomeComponent implements OnInit, AfterViewInit {
 
   query: any;
   offersState: Observable<fromOffers.State>;
@@ -81,6 +81,12 @@ export class CandidateHomeComponent implements OnInit {
       });
   }
 
+  ngAfterViewInit() {
+    const index = this.nPage;
+    this.paginator.pageIndex = index - 1;
+  }
+
+
   changePage() {
     this.changeP = true;
     this.store$.dispatch(new OffersActions.TryGetOffers({
@@ -96,7 +102,6 @@ export class CandidateHomeComponent implements OnInit {
     }
     this.router.navigate(['/candidate-home'],
       {queryParams: {page: this.nPage, limit: this.pageSize}, queryParamsHandling: 'merge'});
-
   }
 
   isMobile() {
@@ -129,8 +134,6 @@ export class CandidateHomeComponent implements OnInit {
 
 
   searchCallApi() {
-    console.log('searchAPI');
-
     this.query = {...this.query, status: '0'};
     if (this.query.salaryAmount) {
       this.query = {...this.query, salaryAmount: {'gte': this.query.salaryAmount}};
@@ -164,4 +167,5 @@ export class CandidateHomeComponent implements OnInit {
 
     }
   }
+
 }
