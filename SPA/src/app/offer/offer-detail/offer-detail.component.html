@@ -1,7 +1,7 @@
 <div fxLayout="column" fxLayoutGap="16px" style="padding-bottom: 32px">
-  <div fxLayout="row">
+  <div fxLayout="row" style="padding-top: 16px">
     <button (click)="backClicked()"
-            fxFlexOffset="0"
+            fxFlexOffset="2.5%"
             fxFlexOffset.gt-lg="25%" fxFlexOffset.gt-md="20%" fxFlexOffset.gt-sm="12.5%" mat-icon-button>
       <mat-icon class="svg" color="primary" svgIcon="back"></mat-icon>
     </button>
@@ -62,13 +62,14 @@
       <mat-card-content fxLayout="column" fxLayoutGap="24px" style="margin: 0 16px">
         <div
           fxLayout="row"
+          fxFlex.lt-sm="100%"
+          fxLayoutAlign.lt-sm="center center"
           fxLayout.lt-sm="column" fxLayoutGap="16px">
           <img [src]="(offerState | async).offer.img ? environment.apiUrl + (offerState | async).offer.img :
             'https://cdn.vox-cdn.com/thumbor/Pkmq1nm3skO0-j693JTMd7RL0Zk=/0x0:2012x1341/1200x800/filters:focal(0x0:2012x1341)/' +
             'cdn.vox-cdn.com/uploads/chorus_image/image/47070706/google2.0.0.jpg'"
                alt="Business Logo"
                class="offerImg"
-               fxFlex.lt-sm="100%"
                fxLayoutAlign="center center">
           <span [innerHTML]="(offerState | async).offer.description" fxFlex="column">
           </span>
