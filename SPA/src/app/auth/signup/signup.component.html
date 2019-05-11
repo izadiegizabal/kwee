@@ -5,7 +5,7 @@
      fxLayoutGap="10px"
      fxLayoutGap.xs="0">
   <div class="item item-1" fxFlex="80%" fxFlex.xl="50%">
-    <mat-tab-group mat-align-tabs="center">
+    <mat-tab-group mat-align-tabs="center" [selectedIndex]="selectedIndex" (selectedIndexChange)="changeTab($event)">
       <mat-tab>
         <ng-template mat-tab-label>
           <mat-icon class="tab-icon" svgIcon="person"></mat-icon>
