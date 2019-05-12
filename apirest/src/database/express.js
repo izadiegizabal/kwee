@@ -4,12 +4,14 @@ const express = require('express'),
     session = require('express-session'),
     env = require('../tools/constants'),
     moment = require('moment'),
+    useragent = require('express-useragent'),
     logger = require('../middlewares/logger');
 cors = require('cors');
 
 const app = express();
 let server = require('http').Server(app);
 
+app.use(useragent.express());
 app.use(logger);
 // Configure the app to use bodyParser()
 // This will let us get the data from post

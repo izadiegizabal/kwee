@@ -20,8 +20,9 @@ module.exports = (app, db) => {
     });
     // GET all applications
     app.get("/applications", checkToken, async (req, res, next) => {
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         try {
-            await logger.saveLog('GET', 'applications', null, res);
+            await logger.saveLog('GET', 'applications', null, res, req.useragent, ip);
 
             return res.status(200).json({
                 ok: true,
@@ -37,9 +38,10 @@ module.exports = (app, db) => {
     app.get('/applications/:page([0-9]+)/:limit([0-9]+)', checkToken, async (req, res, next) => {
         let limit = Number(req.params.limit);
         let page = Number(req.params.page);
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
         try {
-            await logger.saveLog('GET', `applications/${page}`, null, res);
+            await logger.saveLog('GET', `applications/${page}`, null, res, req.useragent, ip);
             let count = await db.applications.findAndCountAll();
             let pages = Math.ceil(count.count / limit);
             offset = limit * (page - 1);
@@ -437,7 +439,8 @@ module.exports = (app, db) => {
 
     async function applicationsForKweeLive( req, res, next ) {
         try {
-            await logger.saveLog('GET', 'applications/kweelive', null, res);
+            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            await logger.saveLog('GET', 'applications/kweelive', null, res, req.useragent, ip);
             var applications;
             var output = await pagination(
                 db.applications,

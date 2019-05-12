@@ -9,18 +9,19 @@ module.exports = (app, db) => {
         let user;
         let logId;
         let body = req.body;
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         
         try {
             
             if ( body.email ) {
-                logId = await logger.saveLog('POST', 'login', null, res, body.email);
+                logId = await logger.saveLog('POST', 'login', null, res, req.useragent, ip, body.email);
                 user = await db.users.findOne({ where: { email: body.email }});
             } else if ( body.token ) {
                 var idToken = tokenId.getTokenId(body.token, res);
 
                 user = await db.users.findOne({where: { id: idToken }});
                 if ( user ){
-                    logId = await logger.saveLog('POST', 'login', null, res, user.email);
+                    logId = await logger.saveLog('POST', 'login', null, res, req.useragent, ip, user.email);
                 } else {
                     return null;
                 }

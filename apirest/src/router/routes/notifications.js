@@ -107,7 +107,9 @@ module.exports = (app, db) => {
     async function getNotificationsOfTokenUser( req, res, next ) {
         try {
             let id = tokenId.getTokenId(req.get('token'), res);
-            await logger.saveLog('GET', 'notifications', null, res);
+            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+            await logger.saveLog('GET', 'notifications', null, res, req.useragent, ip);
 
             let notificationsToShow = [];
             let attr = {};

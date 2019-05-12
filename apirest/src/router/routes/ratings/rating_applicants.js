@@ -14,7 +14,8 @@ module.exports = (app, db) => {
     app.get('/rating_applicants', async (req, res, next) => {
 
         try {
-            await logger.saveLog('GET', 'rating_applicants', null, res);
+            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            await logger.saveLog('GET', 'rating_applicants', null, res, req.useragent, ip);
 
             let ratings = await db.ratings.findAll();
             let rating_applicants = await db.rating_applicants.findAll();
@@ -53,9 +54,10 @@ module.exports = (app, db) => {
     app.get('/rating_applicants/:page([0-9]+)/:limit([0-9]+)', async (req, res, next) => {
         let limit = Number(req.params.limit);
         let page = Number(req.params.page);
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
         try {
-            await logger.saveLog('GET', `rating_applicants/${page}`, null, res);
+            await logger.saveLog('GET', `rating_applicants/${page}`, null, res, req.useragent, ip);
 
             let count = await db.rating_applicants.findAndCountAll();
             let pages = Math.ceil(count.count / limit);

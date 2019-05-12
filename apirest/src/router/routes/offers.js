@@ -161,7 +161,8 @@ module.exports = (app, db) => {
     // GET all offers
     app.get('/offers', async (req, res, next) => {
         try {
-            await logger.saveLog('GET', 'offers', null, res);
+            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            await logger.saveLog('GET', 'offers', null, res, req.useragent, ip);
             saveLogES('GET', 'offers', 'Visitor');
 
             var offers;

@@ -7,6 +7,8 @@ let logSchema = new Schema({
     action: {type: String, /*required: [true, 'Action is required']*/},
     actionToRoute: {type: String},
     actionToId: {type: Number},
+    ip: {type: String},
+    useragent: {type: Object},
     date: {type: String},
     hour: {type: String},
     email: {type: String},
