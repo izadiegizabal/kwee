@@ -470,7 +470,7 @@ function animation(now) {
         if(arrVal === arr.length){
           arrVal = 0;
         }
-        Motor.rotateCamToWithYOffset( ...arr[arrVal]);
+        // Motor.rotateCamToWithYOffset( ...arr[arrVal]);
         arrVal++;
       }
       break;
@@ -483,7 +483,7 @@ function animation(now) {
       break;
     case 2:
       if(now - last >= 5000) {
-        allowActions.card = false;
+        // allowActions.card = false;
         document.body.click();
         //Motor.rotateCamToWithYOffset( 40.415363, -3.707398);
         // Motor.animateMesh(MeshArray, 3, 1, 5);

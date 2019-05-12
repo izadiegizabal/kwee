@@ -7,6 +7,7 @@ import * as fromApp from '../store/app.reducers';
 import {HttpClient} from '@angular/common/http';
 import {Store} from '@ngrx/store';
 import { trigger, state, style, animate, transition } from '@angular/animations';
+import {canvas} from "../../assets/engine/commons";
 
 
 // import {TMotorTAG} from '../../assets/engine/TMotorTAG.js';
@@ -44,6 +45,8 @@ export class KweeLiveComponent implements OnInit, OnDestroy {
   disabled: boolean;
   particles: boolean;
   showCard: boolean;
+  auxCanvas = null;
+  context2d = null;
 
   @ViewChild('rendererContainer') rendererContainer: ElementRef;
 
@@ -58,6 +61,25 @@ export class KweeLiveComponent implements OnInit, OnDestroy {
     await mainInit();
 
     this.store$.dispatch(new KweeLiveActions.TryGetApplications({page: 1, limit: 5}));
+
+    /*this.auxCanvas = document.getElementById('auxkweelive');
+    this.context2d = this.auxCanvas.getContext("2d");
+
+    // the triangle
+    this.context2d.beginPath();
+    this.context2d.moveTo(100, 100);
+    this.context2d.lineTo(100, 300);
+    this.context2d.lineTo(300, 300);
+    this.context2d.closePath();
+
+    // the outline
+    this.context2d.lineWidth = 10;
+    this.context2d.strokeStyle = '#FFF111';
+    this.context2d.stroke();
+
+    // the fill color
+    this.context2d.fillStyle = "#FFF";
+    this.context2d.fill();*/
   }
 
   getAllow() {

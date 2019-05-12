@@ -30,18 +30,20 @@ mat-icon{
   position: absolute;
   width: 30%;
   min-width: 270px;
+  max-width: 270px;
   height: 10%;
   min-height: 80px;
+  max-height: 80px;
   left: 0;
   right: 0;
   top: -55%;
   bottom: 0;
   margin: auto;
-  border-radius: 5px;
+  border-radius: 3px;
   cursor: pointer;
 }
 
-#offerBubble:after {
+/*#offerBubble:after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -53,7 +55,7 @@ mat-icon{
   border-bottom: 0;
   margin-left: -20px;
   margin-bottom: -20px;
-}
+}*/
 
 #companyLogo{
   object-fit: cover;
