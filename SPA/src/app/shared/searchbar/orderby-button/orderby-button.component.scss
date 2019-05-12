@@ -1,0 +1,9 @@
+@import "~src/common-utils";
+
+mat-icon {
+  @include md-icon-size(18px)
+}
+
+button {
+  height: 40px;
+}

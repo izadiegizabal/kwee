@@ -1,0 +1,61 @@
+<div fxLayout="column">
+  <h2 class="mat-h1">Manage Offers</h2>
+  <div  fxLayoutAlign="end center">
+    <button
+      class="newoffer"
+      color="accent"
+      mat-raised-button
+      routerLink="/offer/create"
+      type="button">{{'New Offer' | uppercase }}</button>
+  </div>
+
+  <mat-card fxFlex="100" style="padding: 0 !important;">
+    <mat-tab-group [selectedIndex]="1">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon" color="primary" svgIcon="move-to-inbox"></mat-icon>
+          Drafts
+        </ng-template>
+        <ng-template matTabContent>
+          <app-offer-manage-tab [status]="2" [type]="0"></app-offer-manage-tab>
+        </ng-template>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon" color="primary" svgIcon="inbox"></mat-icon>
+          All
+        </ng-template>
+        <ng-template matTabContent>
+          <app-offer-manage-tab [status]="-1" [type]="0"></app-offer-manage-tab>
+        </ng-template>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon" color="primary" svgIcon="drafts"></mat-icon>
+          Open
+        </ng-template>
+        <ng-template matTabContent>
+          <app-offer-manage-tab [status]="0" [type]="0"></app-offer-manage-tab>
+        </ng-template>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon" color="primary" svgIcon="access-time"></mat-icon>
+          Selection
+        </ng-template>
+        <ng-template matTabContent>
+          <app-offer-manage-tab [status]="3" [type]="0"></app-offer-manage-tab>
+        </ng-template>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon" color="primary" svgIcon="archive"></mat-icon>
+          Closed
+        </ng-template>
+        <ng-template matTabContent>
+          <app-offer-manage-tab [status]="1" [type]="0"></app-offer-manage-tab>
+        </ng-template>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-card>
+</div>

@@ -1,0 +1,27 @@
+@import '../../../../common-utils';
+
+h4 a, h4 span {
+  margin-left: 8px;
+  font-size: 1rem;
+  font-weight: normal;
+}
+
+h4 {
+  margin: 8px 0;
+}
+
+h4 + p, h4 + a {
+  margin-top: 0;
+}
+
+mgl-map {
+  height: 250px;
+}
+
+::ng-deep mgl-map mat-icon {
+  @include md-icon-size(36px);
+  height: 36px !important;
+  width: 36px !important;
+  margin: 0;
+  padding: 0;
+}

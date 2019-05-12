@@ -1,0 +1,83 @@
+  <div class="container, filters">
+    <h2>Filters</h2>
+    <form [formGroup]="filters" fxLayout="column">
+
+      <h3>Minimum Business' Index</h3>
+      <section fxLayout="column">
+        <mat-slider formControlName="minBusinessIndex" max="100" min="0" thumbLabel></mat-slider>
+      </section>
+
+      <mat-form-field>
+        <input formControlName="location" matInput placeholder="Location" type="text">
+        <button (click)="filters.controls['location'].reset('')" *ngIf="filters.controls['location'].value"
+                aria-label="Clear" mat-button
+                mat-icon-button
+                matSuffix>
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <!--<mat-form-field>-->
+        <!--<mat-select formControlName="distance" placeholder="Distance">-->
+          <!--<mat-option *ngFor="let distance of distances" [value]="distance.value">-->
+            <!--{{distance.viewValue}}-->
+          <!--</mat-option>-->
+        <!--</mat-select>-->
+      <!--</mat-form-field>-->
+
+      <h3>Work Location</h3>
+      <section fxLayout="column" *ngFor="let location of workLocations; index as i" >
+        <mat-checkbox formControlName="workLocation{{i}}">
+          {{location.viewValue}}
+        </mat-checkbox>
+      </section>
+
+      <h3 style="margin-top: 16px">Job Type</h3>
+      <section fxLayout="column" *ngFor="let type of jobTypes; index as i">
+        <mat-checkbox formControlName="jobType{{i}}">
+          {{type.viewValue}}
+        </mat-checkbox>
+      </section>
+
+      <div fxLayout="row" style="margin-top: 16px">
+        <mat-form-field fxFlex="37%">
+          <input formControlName="salary" matInput placeholder="Min. Salary" type="number">
+        </mat-form-field>
+        <!--<mat-form-field floatLabel="never" fxFlex="25%">-->
+          <!--<mat-select formControlName="currency" placeholder="Currency">-->
+            <!--<mat-option *ngFor="let currency of auxCurrencies" [value]="currency.value">-->
+              <!--{{currency.value + ' (' + currency.symbol + ')'}}-->
+            <!--</mat-option>-->
+          <!--</mat-select>-->
+        <!--</mat-form-field>-->
+        <!--<mat-form-field floatLabel="never" fxFlex="38%">-->
+          <!--<mat-select formControlName="frequency" placeholder="Frequency">-->
+            <!--<mat-option *ngFor="let frequency of frequencies" [value]="frequency.value">-->
+              <!--{{frequency.viewValue}}-->
+            <!--</mat-option>-->
+          <!--</mat-select>-->
+        <!--</mat-form-field>-->
+      </div>
+
+      <h3>Experience Level</h3>
+      <section fxLayout="column" *ngFor="let level of experienceLevels; index as i">
+        <mat-checkbox formControlName="seniority{{i}}">
+          {{level.viewValue}}
+        </mat-checkbox>
+      </section>
+
+      <mat-form-field style="margin-top: 16px">
+        <mat-select formControlName="publishDate" placeholder="Publish Date">
+          <mat-option *ngFor="let time of publishTimes" [value]="time.value">
+            {{time.viewValue}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+
+    </form>
+
+    <div fxHide.gt-sm fxLayout="row" fxLayoutAlign="end end" style="margin-top: 16px">
+      <button (click)="applyFilters()" color="primary" mat-raised-button>Apply Filters</button>
+    </div>
+  </div>

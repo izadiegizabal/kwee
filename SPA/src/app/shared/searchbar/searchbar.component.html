@@ -1,0 +1,19 @@
+<mat-card fxFlex="100%" fxFlexOffset="16dp" fxLayout="row">
+  <form fxFlex="100%" (ngSubmit)="onSubmit()">
+    <mat-form-field fxFlex="100%">
+      <input
+        [formControl]="myControl"
+        [matAutocomplete]="auto"
+        aria-label="Number"
+        matInput
+        type="text">
+      <mat-autocomplete #auto="matAutocomplete">
+        <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+          {{option}}
+        </mat-option>
+      </mat-autocomplete>
+      <mat-icon matSuffix svgIcon="search" (click)="onSubmit()"></mat-icon>
+    </mat-form-field>
+  </form>
+</mat-card>
+

@@ -1,0 +1,438 @@
+{
+  "0": {
+    "value": "AFN",
+    "symbol": "؋"
+  },
+  "1": {
+    "value": "ALL",
+    "symbol": "Lek"
+  },
+  "2": {
+    "value": "ANG",
+    "symbol": "ƒ"
+  },
+  "3": {
+    "value": "ARS",
+    "symbol": "$"
+  },
+  "4": {
+    "value": "AUD",
+    "symbol": "$"
+  },
+  "5": {
+    "value": "AWG",
+    "symbol": "ƒ"
+  },
+  "6": {
+    "value": "AZN",
+    "symbol": "₼"
+  },
+  "7": {
+    "value": "BAM",
+    "symbol": "KM"
+  },
+  "8": {
+    "value": "BBD",
+    "symbol": "$"
+  },
+  "9": {
+    "value": "BGN",
+    "symbol": "лв"
+  },
+  "10": {
+    "value": "BMD",
+    "symbol": "$"
+  },
+  "11": {
+    "value": "BND",
+    "symbol": "$"
+  },
+  "12": {
+    "value": "BOB",
+    "symbol": "$b"
+  },
+  "13": {
+    "value": "BRL",
+    "symbol": "R$"
+  },
+  "14": {
+    "value": "BSD",
+    "symbol": "$"
+  },
+  "15": {
+    "value": "BWP",
+    "symbol": "P"
+  },
+  "16": {
+    "value": "BYN",
+    "symbol": "Br"
+  },
+  "17": {
+    "value": "BZD",
+    "symbol": "BZ$"
+  },
+  "18": {
+    "value": "CAD",
+    "symbol": "$"
+  },
+  "19": {
+    "value": "CHF",
+    "symbol": "CHF"
+  },
+  "20": {
+    "value": "CLP",
+    "symbol": "$"
+  },
+  "21": {
+    "value": "CNY",
+    "symbol": "¥"
+  },
+  "22": {
+    "value": "COP",
+    "symbol": "$"
+  },
+  "23": {
+    "value": "CRC",
+    "symbol": "₡"
+  },
+  "24": {
+    "value": "CUP",
+    "symbol": "₱"
+  },
+  "25": {
+    "value": "CZK",
+    "symbol": "Kč"
+  },
+  "26": {
+    "value": "DKK",
+    "symbol": "kr"
+  },
+  "27": {
+    "value": "DOP",
+    "symbol": "RD$"
+  },
+  "28": {
+    "value": "EGP",
+    "symbol": "£"
+  },
+  "29": {
+    "value": "EUR",
+    "symbol": "€"
+  },
+  "30": {
+    "value": "FJD",
+    "symbol": "$"
+  },
+  "31": {
+    "value": "FKP",
+    "symbol": "£"
+  },
+  "32": {
+    "value": "GBP",
+    "symbol": "£"
+  },
+  "33": {
+    "value": "GGP",
+    "symbol": "£"
+  },
+  "34": {
+    "value": "GHS",
+    "symbol": "¢"
+  },
+  "35": {
+    "value": "GIP",
+    "symbol": "£"
+  },
+  "36": {
+    "value": "GTQ",
+    "symbol": "Q"
+  },
+  "37": {
+    "value": "GYD",
+    "symbol": "$"
+  },
+  "38": {
+    "value": "HKD",
+    "symbol": "$"
+  },
+  "39": {
+    "value": "HNL",
+    "symbol": "L"
+  },
+  "40": {
+    "value": "HRK",
+    "symbol": "kn"
+  },
+  "41": {
+    "value": "HUF",
+    "symbol": "Ft"
+  },
+  "42": {
+    "value": "IDR",
+    "symbol": "Rp"
+  },
+  "43": {
+    "value": "ILS",
+    "symbol": "₪"
+  },
+  "44": {
+    "value": "IMP",
+    "symbol": "£"
+  },
+  "45": {
+    "value": "INR",
+    "symbol": "INR"
+  },
+  "46": {
+    "value": "IRR",
+    "symbol": "﷼"
+  },
+  "47": {
+    "value": "ISK",
+    "symbol": "kr"
+  },
+  "48": {
+    "value": "JEP",
+    "symbol": "£"
+  },
+  "49": {
+    "value": "JMD",
+    "symbol": "J$"
+  },
+  "50": {
+    "value": "JPY",
+    "symbol": "¥"
+  },
+  "51": {
+    "value": "KGS",
+    "symbol": "лв"
+  },
+  "52": {
+    "value": "KHR",
+    "symbol": "៛"
+  },
+  "53": {
+    "value": "KPW",
+    "symbol": "₩"
+  },
+  "54": {
+    "value": "KRW",
+    "symbol": "₩"
+  },
+  "55": {
+    "value": "KYD",
+    "symbol": "$"
+  },
+  "56": {
+    "value": "KZT",
+    "symbol": "лв"
+  },
+  "57": {
+    "value": "LAK",
+    "symbol": "₭"
+  },
+  "58": {
+    "value": "LBP",
+    "symbol": "£"
+  },
+  "59": {
+    "value": "LKR",
+    "symbol": "₨"
+  },
+  "60": {
+    "value": "LRD",
+    "symbol": "$"
+  },
+  "61": {
+    "value": "MKD",
+    "symbol": "ден"
+  },
+  "62": {
+    "value": "MNT",
+    "symbol": "₮"
+  },
+  "63": {
+    "value": "MUR",
+    "symbol": "₨"
+  },
+  "64": {
+    "value": "MXN",
+    "symbol": "$"
+  },
+  "65": {
+    "value": "MYR",
+    "symbol": "RM"
+  },
+  "66": {
+    "value": "MZN",
+    "symbol": "MT"
+  },
+  "67": {
+    "value": "NAD",
+    "symbol": "$"
+  },
+  "68": {
+    "value": "NGN",
+    "symbol": "₦"
+  },
+  "69": {
+    "value": "NIO",
+    "symbol": "C$"
+  },
+  "70": {
+    "value": "NOK",
+    "symbol": "kr"
+  },
+  "71": {
+    "value": "NPR",
+    "symbol": "₨"
+  },
+  "72": {
+    "value": "NZD",
+    "symbol": "$"
+  },
+  "73": {
+    "value": "OMR",
+    "symbol": "﷼"
+  },
+  "74": {
+    "value": "PAB",
+    "symbol": "B/."
+  },
+  "75": {
+    "value": "PEN",
+    "symbol": "S/."
+  },
+  "76": {
+    "value": "PHP",
+    "symbol": "₱"
+  },
+  "77": {
+    "value": "PKR",
+    "symbol": "₨"
+  },
+  "78": {
+    "value": "PLN",
+    "symbol": "zł"
+  },
+  "79": {
+    "value": "PYG",
+    "symbol": "Gs"
+  },
+  "80": {
+    "value": "QAR",
+    "symbol": "﷼"
+  },
+  "81": {
+    "value": "RON",
+    "symbol": "lei"
+  },
+  "82": {
+    "value": "RSD",
+    "symbol": "Дин"
+  },
+  "83": {
+    "value": "RUB",
+    "symbol": "₽"
+  },
+  "84": {
+    "value": "SAR",
+    "symbol": "﷼"
+  },
+  "85": {
+    "value": "SBD",
+    "symbol": "$"
+  },
+  "86": {
+    "value": "SCR",
+    "symbol": "₨"
+  },
+  "87": {
+    "value": "SEK",
+    "symbol": "kr"
+  },
+  "88": {
+    "value": "SGD",
+    "symbol": "$"
+  },
+  "89": {
+    "value": "SHP",
+    "symbol": "£"
+  },
+  "90": {
+    "value": "SOS",
+    "symbol": "S"
+  },
+  "91": {
+    "value": "SRD",
+    "symbol": "$"
+  },
+  "92": {
+    "value": "SVC",
+    "symbol": "$"
+  },
+  "93": {
+    "value": "SYP",
+    "symbol": "£"
+  },
+  "94": {
+    "value": "THB",
+    "symbol": "฿"
+  },
+  "95": {
+    "value": "TRY",
+    "symbol": "TRY"
+  },
+  "96": {
+    "value": "TTD",
+    "symbol": "TT$"
+  },
+  "97": {
+    "value": "TVD",
+    "symbol": "$"
+  },
+  "98": {
+    "value": "TWD",
+    "symbol": "NT$"
+  },
+  "99": {
+    "value": "UAH",
+    "symbol": "₴"
+  },
+  "100": {
+    "value": "USD",
+    "symbol": "$"
+  },
+  "101": {
+    "value": "UYU",
+    "symbol": "$U"
+  },
+  "102": {
+    "value": "UZS",
+    "symbol": "лв"
+  },
+  "103": {
+    "value": "VEF",
+    "symbol": "Bs"
+  },
+  "104": {
+    "value": "VND",
+    "symbol": "₫"
+  },
+  "105": {
+    "value": "XCD",
+    "symbol": "$"
+  },
+  "106": {
+    "value": "YER",
+    "symbol": "﷼"
+  },
+  "107": {
+    "value": "ZAR",
+    "symbol": "R"
+  },
+  "108": {
+    "value": "ZWD",
+    "symbol": "Z$"
+  }
+}

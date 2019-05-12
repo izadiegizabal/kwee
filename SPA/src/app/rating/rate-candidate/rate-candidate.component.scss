@@ -1,0 +1,40 @@
+* {
+  font-family: IBM Plex Sans, sans-serif;
+}
+*:focus {
+  outline: none;
+  border-color: inherit;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+h1{
+  margin-top: 0;
+}
+
+h2:nth-child(3){
+  margin-top: 8px;
+}
+
+p:nth-child(4){
+  margin-bottom: 8px;
+}
+
+.example-form {
+  min-width: 150px;
+  max-width: 500px;
+  width: 100%;
+}
+
+.example-full-width {
+  width: 100%;
+}
+
+.noUnderline ::ng-deep .mat-form-field-underline {
+  display: none;
+}
+
+.noUnderline ::ng-deep .mat-form-field-infix{
+  padding: 0 !important;
+  border-top: 0;
+}

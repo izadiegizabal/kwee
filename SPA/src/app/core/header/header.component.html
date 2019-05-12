@@ -1,0 +1,21 @@
+<mat-toolbar [ngClass]="{'isLanding': isLanding, 'dark': auth && profileType !== 'candidate', 'white': !auth || profileType === 'candidate'}"
+             fxLayout="row">
+  <div [ngClass]="{'logo': true, 'businessLogo': profileType !== 'candidate'}">
+    <a *ngIf="!isLanding && (!auth || profileType === 'candidate'); else business" routerLink="/">
+      <mat-icon fxHide.gt-xs svgIcon="kwee-icon"></mat-icon>
+      <mat-icon fxHide.lt-sm svgIcon="kwee-logo"></mat-icon>
+    </a>
+    <ng-template #business>
+      <a class="businessLogo" routerLink="/">
+        <img alt="dark Kwee logo" class="bLogoDesktop" fxHide.lt-sm src="../../../assets/branding/logo-kwee-dark.svg"/>
+        <img alt="dark Kwee icon" class="bLogoMobile" fxHide.gt-xs src="../../../assets/branding/iconBnw.svg"/>
+      </a>
+    </ng-template>
+  </div>
+  <div fxFlex="grow"></div>
+  <div class="user-section">
+    <app-user-menu [isLanding]="isLanding" *ngIf="auth"></app-user-menu>
+    <app-signupin-section [isLanding]="isLanding" *ngIf="!auth"></app-signupin-section>
+  </div>
+
+</mat-toolbar>

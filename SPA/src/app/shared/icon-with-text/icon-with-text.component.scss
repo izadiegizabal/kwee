@@ -1,0 +1,21 @@
+@import "~src/common-utils";
+
+p {
+  margin: 2px 0 0 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+mat-icon {
+  @include md-icon-size(24px)
+}
+
+@media all and (max-width: $phone) {
+  p {
+    font-size: 0.85rem;
+  }
+
+  mat-icon {
+    @include md-icon-size(20px)
+  }
+}

@@ -1,0 +1,10 @@
+<div *ngIf="(offerManageState | async).offers" fxLayoutGap="16px" style="padding: 8px" fxLayout="column">
+  <app-offer-preview-card *ngFor="let offer of  (offerManageState | async).offers.data;" [offer]="offer">
+  </app-offer-preview-card>
+
+  <mat-paginator (page)="pageEvent = $event; changePage();"
+                 [length]="totalOffers((offerManageState | async).offers.count)"
+                 [pageSizeOptions]="pageSizeOptions"
+                 [pageSize]="pageSize">
+  </mat-paginator>
+</div>
