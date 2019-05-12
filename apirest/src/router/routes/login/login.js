@@ -69,12 +69,14 @@ module.exports = (app, db) => {
             if (user.root) {
                 type = 'admin';
             } else {
+                var premium;
                 var avg = {};
                 let offerer = await db.offerers.findOne({
                     where: {userId: id}
                 });
                 if (offerer) {
                     avg = getOffererAVG(offerer);
+                    premium = offerer.premium;
                     type = 'offerer';
                 } else {
                     let applicant = await db.applicants.findOne({
@@ -82,6 +84,7 @@ module.exports = (app, db) => {
                     });
                     if ( applicant ) {
                         avg = getApplicantAVG(applicant);
+                        premium = applicant.premium;
                         type = 'applicant';
                     } else {
                         return next({type: 'error', error: 'User not found'});
@@ -101,6 +104,7 @@ module.exports = (app, db) => {
                     lastAccess: userUpdated.lastAccess,
                     index: userUpdated.index,
                     avg,
+                    premium,
                     status: userUpdated.status,
                     notifications,
                     type
