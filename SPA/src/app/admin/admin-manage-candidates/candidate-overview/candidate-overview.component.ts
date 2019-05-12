@@ -11,6 +11,7 @@ import {MatDialog, PageEvent} from '@angular/material';
 import {isStringNotANumber} from '../../../../models/Offer.model';
 import {CandidateAccountStatus} from '../../../../models/Candidate.model';
 import {AlertDialogComponent} from '../../../shared/alert-dialog/alert-dialog.component';
+import {UserLogComponent} from '../../user-log/user-log.component';
 
 @Component({
   selector: 'app-candidate-overview',
@@ -20,8 +21,8 @@ import {AlertDialogComponent} from '../../../shared/alert-dialog/alert-dialog.co
 export class CandidateOverviewComponent implements OnInit {
 
   // paging
-  pageSize = 2;
-  pageSizeOptions: number[] = [2, 5, 10, 25, 100];
+  pageSize = 10;
+  pageSizeOptions: number[] = [5, 10, 25, 50, 100];
 
   // MatPaginator Output
   pageEvent: PageEvent;
@@ -55,7 +56,7 @@ export class CandidateOverviewComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store$.dispatch(new AdminActions.TryGetCandidates({page: 1, limit: 2, params: this.query, order: this.orderby}));
+    this.store$.dispatch(new AdminActions.TryGetCandidates({page: 1, limit: this.pageSize, params: this.query, order: this.orderby}));
     this.adminState = this.store$.pipe(select(state => state.admin));
 
     this.userForm = this._formBuilder.group({
@@ -163,6 +164,14 @@ export class CandidateOverviewComponent implements OnInit {
   changepage() {
     this.store$.dispatch(new AdminActions.TryGetCandidates(
       {page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize, params: this.query, order: this.orderby}));
+  }
+
+  openLogModal(id) {
+    this.dialog.open(UserLogComponent, {
+      data: {
+        id
+      }
+    });
   }
 
 }

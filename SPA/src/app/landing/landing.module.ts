@@ -4,7 +4,7 @@ import {LandingComponent} from './landing.component';
 import {LandingRoutingModule} from './landing.routing.module';
 import {SearchbarModule} from '../shared/searchbar/searchbar.module';
 import {CoreModule} from '../core/core.module';
-import {MiniOfferModule} from '../kwee-live/mini-offer/mini-offer.module';
+import {MiniOfferModule} from "../kwee-live/mini-offer/mini-offer.module";
 
 @NgModule({
   declarations: [
@@ -13,8 +13,8 @@ import {MiniOfferModule} from '../kwee-live/mini-offer/mini-offer.module';
   imports: [
     SharedModule,
     SearchbarModule,
-    CoreModule,
     MiniOfferModule,
+    CoreModule,
     LandingRoutingModule
   ],
   exports: [

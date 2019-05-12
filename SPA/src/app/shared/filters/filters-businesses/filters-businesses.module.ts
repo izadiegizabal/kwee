@@ -4,7 +4,6 @@ import {SharedModule} from '../../shared.module';
 import {ReactiveFormsModule} from '@angular/forms';
 
 
-
 @NgModule({
   declarations: [
     FiltersBusinessesComponent
@@ -17,5 +16,5 @@ import {ReactiveFormsModule} from '@angular/forms';
     FiltersBusinessesComponent
   ]
 })
-export class FiltersBusinessesModule{
+export class FiltersBusinessesModule {
 }

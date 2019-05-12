@@ -19,9 +19,15 @@ export class AuthEffects {
       return action.payload;
     }),
     switchMap(
-      (authData: { email: string, password: string }) => {
-        const body = JSON.stringify({email: authData.email, password: authData.password});
+      (authData) => {
+
         const headers = new HttpHeaders().set('Content-Type', 'application/json');
+        let body = JSON.stringify({email: authData.email, password: authData.password});
+
+        if (authData.token) {
+          body = JSON.stringify({token: authData.token, password: authData.password});
+        }
+
         return this.httpClient.post(environment.apiUrl + 'login', body, {headers: headers}).pipe(
           mergeMap((res: {
             token: string,
@@ -31,6 +37,8 @@ export class AuthEffects {
               name: string
               type: string
               lastAccess: Date
+              notifications: number,
+              premium: number,
             }
           }) => {
             switch (res.data.type) {
@@ -56,7 +64,9 @@ export class AuthEffects {
                   email: res.data.email,
                   id: res.data.id,
                   name: res.data.name,
-                  type: res.data.type
+                  type: res.data.type,
+                  notifications: res.data.notifications,
+                  premium: res.data.premium,
                 }
               }
             ];
@@ -201,6 +211,43 @@ export class AuthEffects {
           catchError((err: HttpErrorResponse) => {
             throwError(this.handleError('signUp', err));
             console.log('ERRRROOOORRRR: ', err);
+            const error = err.error.message ? err.error.message : err;
+            return [
+              {
+                type: AuthActions.AUTH_ERROR,
+                payload: error
+              }
+            ];
+          }),
+        );
+      }
+    ),
+    share()
+  );
+
+
+  @Effect()
+  authSNCandidate = this.actions$.pipe(
+    ofType(AuthActions.TRY_SN_CANDIDATE),
+    map((action: AuthActions.TrySNCandidate) => {
+      return action.payload;
+    }),
+    switchMap(
+      (payload) => {
+        const body = JSON.stringify(payload.user);
+        const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', payload.token);
+        return this.httpClient.put(environment.apiUrl + 'applicant', body, {headers: headers}).pipe(
+          mergeMap((res) => {
+            // console.log(res);
+            return [
+              {
+                type: AuthActions.TRY_SIGNIN,
+                payload: {email: payload.email, token: payload.token}
+              }
+            ];
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('signUp', err));
             const error = err.error.message ? err.error.message : err;
             return [
               {

@@ -1,4 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
+import {BusinessIndustries, BusinessModel} from '../../../../models/Business.model';
 
 @Component({
   selector: 'app-business-more-info',
@@ -7,7 +8,31 @@ import {Component, Input, OnInit} from '@angular/core';
 })
 export class BusinessMoreInfoComponent implements OnInit {
 
-  @Input() business: any;
+  @Input() business: BusinessModel;
+
+  mockBusiness = {
+    name: 'Facebook',
+    kweeIndex: 56,
+    bio: 'Facebook, Inc. is an American online social media and social networking service company. It is based in Menlo Park, ' +
+      'California. Its was founded by Mark Zuckerberg, along with fellow Harvard College students and roommates Eduardo Saverin, Andrew' +
+      ' McCollum, Dustin Moskovitz and Chris Hughes. It is considered one of the Big Four (actually five) technology companies along with' +
+      ' Amazon, Aapple, Google and Microsoft.',
+    img: 'https://cdn.worldvectorlogo.com/logos/facebook-1.svg',
+    website: 'https://facebook.com',
+    size: '1000',
+    industry: 'Online Service Company',
+    year: '2004',
+    location: {
+      lon: -74.20,
+      lat: 40.51,
+    },
+    address: '770 Broadway, New York, NY 10003, USA',
+    twitter: 'Facebook',
+    linkedin: 'Facebook',
+    telegram: 'Facebook',
+    github: 'Facebook'
+  };
+  infoNAMess = 'Information not available.';
 
   constructor() {
   }
@@ -17,7 +42,7 @@ export class BusinessMoreInfoComponent implements OnInit {
 
   getSize() {
     let size = 'Information not available.';
-    switch (Number(this.business.size)) {
+    switch (Number(this.business.companySize)) {
       case 10:
         size = 'Less than 10 people.';
         break;
@@ -33,5 +58,9 @@ export class BusinessMoreInfoComponent implements OnInit {
     }
 
     return size.substring(0, size.length - 1);
+  }
+
+  getIndustry() {
+    return BusinessIndustries[this.business.workField];
   }
 }

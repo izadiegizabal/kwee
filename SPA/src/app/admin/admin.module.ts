@@ -17,6 +17,10 @@ import {adminReducer} from './store/admin.reducers';
 import {EffectsModule} from '@ngrx/effects';
 import {AdminEffects} from './store/admin.effects';
 import {AlertDialogComponent} from '../shared/alert-dialog/alert-dialog.component';
+import {AlertDialogModule} from '../shared/alert-dialog/alert-dialog.module';
+import {AdminManageOffersComponent} from './admin-manage-offers/admin-manage-offers.component';
+import {OfferOverviewComponent} from './admin-manage-offers/offer-overview/offer-overview.component';
+import {UserLogComponent} from './user-log/user-log.component';
 
 @NgModule({
   declarations: [
@@ -29,12 +33,15 @@ import {AlertDialogComponent} from '../shared/alert-dialog/alert-dialog.componen
     AdminMessagesComponent,
     CandidateOverviewComponent,
     BusinessOverviewComponent,
-    AlertDialogComponent,
+    AdminManageOffersComponent,
+    OfferOverviewComponent,
+    UserLogComponent,
   ],
   imports: [
     AdminRoutingModule,
     ReactiveFormsModule,
     SharedModule,
+    AlertDialogModule,
     OffererNameOverviewModule,
     StoreModule.forFeature('admin', adminReducer),
     EffectsModule.forFeature([AdminEffects])

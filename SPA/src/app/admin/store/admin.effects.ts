@@ -26,7 +26,6 @@ export class AdminEffects {
         if (payload.order !== '0') {
           apiEndpointUrl += '&sort=' + payload.order;
         }
-
         return this.httpClient.post(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res: {
             ok: boolean,
@@ -81,7 +80,7 @@ export class AdminEffects {
             total: number,
             message: string,
           }) => {
-            console.log(res);
+            // console.log(res);
             return {
               type: AdminActions.SET_BUSINESSES,
               payload: res,
@@ -151,6 +150,7 @@ export class AdminEffects {
         const token = authState.token;
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
         const body = JSON.stringify(payload.updatedBusiness);
+        // console.log(body);
         return this.httpClient.put(apiEndpointUrl, body, {headers: headers}).pipe(
           map(() => {
             return {

@@ -1,30 +1,77 @@
 <div
+  *ngIf="business"
   fxFlex="92%"
   fxFlexOffset="4%"
   fxLayout="column"
   fxLayout.gt-lg="row"
   style="padding: 16px 0 32px 0">
-  <div fxFlex.gt-lg="50" fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap.gt-xs="32px">
+  <div fxFlex.gt-lg="50" fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap.gt-xs="32px" fxLayoutGap.lt-sm="32px">
     <div fxFlex="50" fxLayout="column">
       <h4>Website</h4>
-      <a [href]="business.website" style="margin-bottom: 16px">{{business.website}}</a>
+      <a *ngIf="business.website; else infoNA" [href]="business.website"
+         style="margin-bottom: 16px">{{business.website}}</a>
+      <ng-template #infoNA><p>{{infoNAMess}}</p></ng-template>
       <h4>Company Size</h4>
       <p>{{getSize()}}</p>
+      <h4>Foundation</h4>
+      <p>{{business.year ? business.year : infoNAMess}}</p>
     </div>
     <div fxFlex="50" fxLayout="column">
       <h4>Industry</h4>
-      <p>{{business.industry}}</p>
-      <h4>Foundation</h4>
-      <p>{{business.year | date:'longDate'}}</p>
+      <p>{{business.workField ? getIndustry() : infoNAMess}}</p>
+      <h4 *ngIf="business.social_networks &&
+       (business.social_networks.twitter ||
+       business.social_networks.linkedin ||
+       business.social_networks.telegram ||
+       business.social_networks.github)">Social Networks</h4>
+      <div *ngIf="business.social_networks &&
+       (business.social_networks.twitter ||
+       business.social_networks.linkedin ||
+       business.social_networks.telegram ||
+       business.social_networks.github)" fxLayout="row">
+        <div *ngIf="business.social_networks.twitter">
+          <button mat-icon-button>
+            <a href="https://twitter.com/{{business.social_networks.twitter}}">
+              <mat-icon fontIcon="fa-twitter" fontSet="fab"></mat-icon>
+            </a>
+          </button>
+        </div>
+
+        <div *ngIf="business.social_networks.linkedin">
+          <button mat-icon-button>
+            <a href="https://linkedin.com/in/{{business.social_networks.linkedin}}">
+              <mat-icon fontIcon="fa-linkedin" fontSet="fab"></mat-icon>
+            </a>
+          </button>
+        </div>
+
+        <div *ngIf="business.social_networks.github">
+          <button mat-icon-button>
+            <a href="https://github.com/{{business.social_networks.github}}">
+              <mat-icon fontIcon="fa-github" fontSet="fab"></mat-icon>
+            </a>
+          </button>
+        </div>
+
+        <div *ngIf="business.social_networks.telegram">
+          <button mat-icon-button>
+            <a href="https://telegram.me/{{business.social_networks.telegram}}">
+              <mat-icon fontIcon="fa-telegram" fontSet="fab"></mat-icon>
+            </a>
+          </button>
+        </div>
+
+      </div>
+
+
     </div>
   </div>
   <div fxFlex.gt-lg="50" fxLayout="column">
     <h4>Location</h4>
     <p
-      style="margin: 0"
-    >{{business.address}}</p>
+      style="margin: 0">{{business.address ? business.address : mockBusiness.address}}</p>
     <mgl-map
-      [center]="[business.location.lat, business.location.long]"
+      [center]="[business.lon ? business.lon : mockBusiness.location.lon, business.lat ? business.lat : mockBusiness.location.lat]"
       [style]="'mapbox://styles/mapbox/streets-v9'"
       [zoom]="[8]"
       fxFlex.lt-sm="100%"
@@ -32,7 +79,7 @@
       style="margin-top: 16px"
     >
       <mgl-marker
-        [lngLat]="[business.location.lat, business.location.long]">
+        [lngLat]="[business.lon ? business.lon : mockBusiness.location.lon, business.lat ? business.lat : mockBusiness.location.lat]">
         <mat-icon color="primary" svgIcon="place"></mat-icon>
       </mgl-marker>
     </mgl-map>

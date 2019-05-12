@@ -3,7 +3,10 @@ import {SharedModule} from '../shared/shared.module';
 import {KweeLiveComponent} from './kwee-live.component';
 import {KweeLiveRoutingModule} from './kwee-live-routing.module';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import {OffererNameOverviewModule} from '../shared/offerer-name-overview/offerer-name-overview.module';
+import {StoreModule} from '@ngrx/store';
+import {EffectsModule} from '@ngrx/effects';
+import {kweeLiveReducer} from './store/kwee-live.reducers';
+import {KweeLiveEffects} from './store/kwee-live.effects';
 import {MiniOfferModule} from './mini-offer/mini-offer.module';
 
 
@@ -13,10 +16,11 @@ import {MiniOfferModule} from './mini-offer/mini-offer.module';
   ],
   imports: [
     SharedModule,
-    OffererNameOverviewModule,
-    MiniOfferModule,
     KweeLiveRoutingModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MiniOfferModule,
+    StoreModule.forFeature('kweeLive', kweeLiveReducer),
+    EffectsModule.forFeature([KweeLiveEffects])
   ],
   exports: [
     KweeLiveComponent

@@ -1,7 +1,8 @@
 <div fxLayout="column">
-  <h2 class="mat-h1">Manage Offers</h2>
-  <div  fxLayoutAlign="end center">
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+    <h2 class="mat-h1">Manage Offers</h2>
     <button
+      style="height: 36px"
       class="newoffer"
       color="accent"
       mat-raised-button
@@ -10,7 +11,7 @@
   </div>
 
   <mat-card fxFlex="100" style="padding: 0 !important;">
-    <mat-tab-group [selectedIndex]="1">
+    <mat-tab-group (selectedIndexChange)="changeTab($event)" [selectedIndex]="selectedIndex">
       <mat-tab>
         <ng-template mat-tab-label>
           <mat-icon class="tab-icon" color="primary" svgIcon="move-to-inbox"></mat-icon>

@@ -15,7 +15,9 @@ import {OfferSelectionProcessComponent} from './offer-selection-process/offer-se
 import {ReactiveFormsModule} from '@angular/forms';
 import {CandidatePreviewCardModule} from '../../search-users/search-candidates/candidate-preview-card/candidate-preview-card.module';
 import {SearchbarModule} from '../../shared/searchbar/searchbar.module';
-import {PreselectedCandidateCardComponent} from './offer-selection-process/preselected-candidate-card/preselected-candidate-card.component';
+import {AlertDialogModule} from '../../shared/alert-dialog/alert-dialog.module';
+import {AlertDialogComponent} from '../../shared/alert-dialog/alert-dialog.component';
+import {FiltersCandidateModule} from '../../shared/filters/filters-candidates/filters-candidate.module';
 
 @NgModule({
   declarations: [
@@ -24,7 +26,6 @@ import {PreselectedCandidateCardComponent} from './offer-selection-process/prese
     OfferManageBusinessComponent,
     OfferManageTabComponent,
     OfferSelectionProcessComponent,
-    PreselectedCandidateCardComponent
   ],
   imports: [
     SharedModule,
@@ -33,9 +34,14 @@ import {PreselectedCandidateCardComponent} from './offer-selection-process/prese
     SearchbarModule,
     OfferManageRoutingModule,
     OfferPreviewCardModule,
+    AlertDialogModule,
+    FiltersCandidateModule,
     StoreModule.forFeature('offerManage', OfferManageReducer),
     EffectsModule.forFeature([OfferManageEffects])
-  ]
+  ],
+  entryComponents: [
+    AlertDialogComponent,
+  ],
 })
 export class OfferManageModule {
 

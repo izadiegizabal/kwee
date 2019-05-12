@@ -26,6 +26,7 @@ export interface State {
       offererName: string,
       img: string,
       offererIndex: number,
+      avg: any
     }[],
     total: number,
     message: string;
@@ -42,6 +43,35 @@ export function offersReducer(state = initialState, action: OffersActions.Offers
       return {
         ...state,
         offers: action.payload
+      };
+    case OffersActions.UPDATE_OFFER:
+      const updatedOffers = [...state.offers.data];
+      const totalOffers = state.offers.total;
+      for (const i in updatedOffers) {
+        if (updatedOffers[i].id === action.payload.id) {
+          updatedOffers[i] = {
+            ...updatedOffers[i],
+            ...action.payload.updateoffer
+          };
+          break;
+        }
+      }
+      const dataOffers = {data: updatedOffers, total: totalOffers};
+      return {
+        ...state,
+        offers: dataOffers
+      };
+    case OffersActions.DELETE_OFFER:
+      const OfferDel = [...state.offers.data];
+      for (const i in OfferDel) {
+        if (OfferDel[i].id === action.payload) {
+          OfferDel.splice(+i, 1);
+          break;
+        }
+      }
+      return {
+        ...state,
+        offers: OfferDel
       };
     default:
       return state;

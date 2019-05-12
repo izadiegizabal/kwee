@@ -7,6 +7,7 @@ import {Observable} from 'rxjs';
 import * as fromAdmin from '../store/admin.reducers';
 import {BusinessAccountStates, BusinessAccountSubscriptions, BusinessIndustries} from '../../../models/Business.model';
 import {isStringNotANumber} from '../../../models/Offer.model';
+import {Title} from '@angular/platform-browser';
 
 
 @Component({
@@ -17,8 +18,8 @@ import {isStringNotANumber} from '../../../models/Offer.model';
 export class AdminVerifyComponent implements OnInit {
 
   // paging
-  pageSize = 2;
-  pageSizeOptions: number[] = [2, 5, 10, 25, 100];
+  pageSize = 10;
+  pageSizeOptions: number[] = [5, 10, 25, 50, 100];
 
   // MatPaginator Output
   pageEvent: PageEvent;
@@ -26,6 +27,7 @@ export class AdminVerifyComponent implements OnInit {
 
   isPanelOpen = false;
   orderby = '0';
+  query: any;
 
 
   workFields = Object
@@ -44,11 +46,15 @@ export class AdminVerifyComponent implements OnInit {
   adminState: Observable<fromAdmin.State>;
 
 
-  constructor(private store$: Store<fromApp.AppState>) {
+  constructor(private store$: Store<fromApp.AppState>, private titleService: Title) {
   }
 
   ngOnInit() {
-    this.store$.dispatch(new AdminActions.TryGetBusinesses({page: 1, limit: 2, params: '', order: this.orderby}));
+
+    this.query = {...this.query, status: '1'};
+
+    this.titleService.setTitle('Kwee - ' + 'Verify Businesses');
+    this.store$.dispatch(new AdminActions.TryGetBusinesses({page: 1, limit: this.pageSize, params: this.query, order: this.orderby}));
     this.adminState = this.store$.pipe(select(s => s.admin));
   }
 

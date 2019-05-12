@@ -5,19 +5,29 @@
     <a [routerLink]="'/' + userType + '/' + userId + '/' + urlfyUser()">View Profile</a>
   </div>
   <mat-divider></mat-divider>
-  <button mat-menu-item>
-    <mat-icon svgIcon="notifications"></mat-icon>
+  <button mat-menu-item
+          routerLink="/notifications">
+    <mat-icon [matBadgeColor]="getNotificationNum() > 0 ? 'warn' : 'primary'" color="primary"
+              matBadge="{{numNotifications}}" svgIcon="notifications"></mat-icon>
     <span>Notifications</span>
   </button>
-  <button mat-menu-item>
-    <mat-icon svgIcon="chat"></mat-icon>
+  <button mat-menu-item
+          routerLink="/messages">
+    <mat-icon [matBadgeColor]="numMessages > 0 ? 'warn' : 'primary'" color="primary"
+              matBadge="{{numMessages}}" svgIcon="chat"></mat-icon>
     <span>Messages</span>
   </button>
   <button *ngIf="userType==='admin'"
           mat-menu-item
           routerLink="/admin/manage-candidates">
     <mat-icon svgIcon="people"></mat-icon>
-    <span>Manage Users</span>
+    <span>Manage Candidates</span>
+  </button>
+  <button *ngIf="userType==='admin'"
+          mat-menu-item
+          routerLink="/admin/manage-businesses">
+    <mat-icon svgIcon="domain"></mat-icon>
+    <span>Manage Businesses</span>
   </button>
   <button *ngIf="userType==='admin'"
           mat-menu-item
@@ -55,7 +65,8 @@
     <mat-icon svgIcon="public"></mat-icon>
     <span>Kwee Live</span>
   </button>
-  <button mat-menu-item>
+  <button [routerLink]="'/settings/' + userType"
+          mat-menu-item>
     <mat-icon svgIcon="settings"></mat-icon>
     <span>Settings</span>
   </button>
@@ -64,12 +75,12 @@
 </mat-menu>
 
 
-<button mat-icon-button
-        color="primary"
-        [ngClass]="{
+<button [ngClass]="{
           'profileLogo': true,
           'business': isLanding || userType === 'business' || userType === 'admin'
-        }">
+        }"
+        color="primary"
+        mat-icon-button>
   <a [matMenuTriggerFor]="menu">
     <mat-icon svgIcon="account-circle"></mat-icon>
     <br>

@@ -1,4 +1,5 @@
-<div fxLayout="row">
+<div *ngIf="(adminState | async).businesses && (adminState | async).businesses.data" fxLayout="row"
+     style="padding-bottom: 8px;">
   <mat-accordion fxFlex="99%">
     <mat-expansion-panel
       (closed)="isPanelOpen = !isPanelOpen; isInEditMode = false; userForm.reset()"
@@ -8,7 +9,11 @@
         <mat-panel-title fxFlex="75%"
                          fxFlex.gt-lg="30%" fxFlex.gt-md="35%" fxFlex.gt-sm="40%" fxLayoutAlign="start center"
                          fxLayoutGap="8px">
-          <app-offerer-name-overview [index]="user.index" [name]="user.name"></app-offerer-name-overview>
+          <app-offerer-name-overview
+            [businessIndexBreakdown]="user.avg"
+            [index]="user.index"
+            [name]="user.name">
+          </app-offerer-name-overview>
         </mat-panel-title>
         <mat-panel-description
           fxFlex="25%"
@@ -28,10 +33,10 @@
             <mat-icon class="svg" color="primary" svgIcon="access-time"></mat-icon>
             <span>{{user.lastAccess | date:'d/M/y, HH:mm'}}</span>
           </div>
-          <mat-chip-list fxHide fxShow.gt-sm>
-            <mat-chip color="primary" selected
-                      style="pointer-events: none">{{states[user.status].viewValue  | titlecase }}</mat-chip>
-          </mat-chip-list>
+          <div *ngIf="!isInEditMode" fxLayout="row">
+            <button (click)="edit(user)" color="accent" mat-button>Edit</button>
+            <button (click)="callAlertDialogDelete(user.id)" color="warn" mat-button>Delete</button>
+          </div>
         </mat-panel-description>
       </mat-expansion-panel-header>
 
@@ -166,7 +171,7 @@
           <div>
             <span class="mat-small">{{'Subscription' | uppercase}}</span>
             <br>
-            <div *ngIf="!isInEditMode || !isPanelOpen">
+            <div *ngIf="user.premium &&  subscriptions[user.premium] && (!isInEditMode || !isPanelOpen)">
               {{subscriptions[user.premium].viewValue  | titlecase }}
             </div>
             <div *ngIf="isInEditMode && isPanelOpen">
@@ -219,9 +224,11 @@
   </mat-accordion>
 </div>
 
-<mat-paginator [length]="(adminState | async).businesses.total"
-               [pageSize]="pageSize"
-               [pageSizeOptions]="pageSizeOptions"
-               (page)="pageEvent = $event; changepage();">
-</mat-paginator>
+<div *ngIf="(adminState | async).businesses" fxFlex="row">
+  <mat-paginator (page)="pageEvent = $event; changepage();"
+                 [length]="(adminState | async).businesses.total"
+                 [pageSizeOptions]="pageSizeOptions"
+                 [pageSize]="pageSize">
+  </mat-paginator>
+</div>
 

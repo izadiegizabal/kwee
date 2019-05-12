@@ -1,16 +1,8 @@
-@import "~src/common-utils";
-@import '../../../node_modules/@angular/material/theming';
-
-* {
-  font-family: IBM Plex Sans, sans-serif;
-}
-
-canvas{
+canvas {
   position: relative;
 }
 
-mat-spinner{
+mat-spinner {
   z-index: 10;
   position: absolute;
 }
-

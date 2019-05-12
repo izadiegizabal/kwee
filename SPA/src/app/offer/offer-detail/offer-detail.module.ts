@@ -9,15 +9,17 @@ import {StoreModule} from '@ngrx/store';
 import {EffectsModule} from '@ngrx/effects';
 import {offerReducer} from './store/offer.reducers';
 import {OfferEffects} from './store/offer.effects';
+import {NgxPrintModule} from 'ngx-print';
 
 @NgModule({
   declarations: [
-    OfferDetailComponent,
+    OfferDetailComponent
   ],
   imports: [
     SharedModule,
     RouterModule,
     OffererNameOverviewModule,
+    NgxPrintModule,
     IconWithTextModule,
     SnsShareModule,
     StoreModule.forFeature('offer', offerReducer),

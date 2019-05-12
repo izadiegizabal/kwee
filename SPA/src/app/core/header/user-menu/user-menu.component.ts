@@ -5,6 +5,8 @@ import {select, Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
 import * as fromAuth from '../../../auth/store/auth.reducers';
 import {getUrlfiedString} from '../../../shared/utils.service';
+import {MessagesService} from '../../../services/messages.service';
+import * as fromMessages from '../../../messages/store/message.reducers';
 
 @Component({
   selector: 'app-user-menu',
@@ -15,11 +17,17 @@ export class UserMenuComponent implements OnInit {
   @Input() isLanding = false;
 
   authState: Observable<fromAuth.State>;
+  notiState: Observable<fromMessages.State>;
   username = '';
   userId = '';
   userType = '';
 
-  constructor(private store$: Store<fromApp.AppState>) {
+  numNotifications = 0;
+  numMessages = 0;
+  message = false;
+
+  constructor(private store$: Store<fromApp.AppState>,
+              public messageService: MessagesService) {
   }
 
   ngOnInit() {
@@ -33,8 +41,27 @@ export class UserMenuComponent implements OnInit {
           this.username = user.name;
           this.userId = '' + user.id;
           this.userType = user.type;
+          if (user.notifications > 0) {
+            this.numNotifications = user.notifications;
+          }
         }
       });
+
+    // Listen to notification changes
+    this.notiState = this.store$.pipe(select('messages'));
+    this.notiState.subscribe(state => {
+      if (state && state.notifications) {
+        if (this.numNotifications !== state.notifications.unread) {
+          this.numNotifications = state.notifications.unread;
+
+          // TODO: Show notification overlay
+        }
+      }
+    });
+
+    this.messageService.getSelected().subscribe(msg => {
+      this.numMessages++;
+    });
   }
 
   logOut() {
@@ -43,5 +70,9 @@ export class UserMenuComponent implements OnInit {
 
   urlfyUser() {
     return getUrlfiedString(this.username);
+  }
+
+  getNotificationNum() {
+    return this.numNotifications;
   }
 }

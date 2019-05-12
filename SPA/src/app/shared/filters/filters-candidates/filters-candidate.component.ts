@@ -2,7 +2,7 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormArray, FormControl, FormGroup} from '@angular/forms';
 import {WorkFields} from '../../../../models/Candidate.model';
 import {Distances, isStringNotANumber} from '../../../../models/Offer.model';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {MatSidenav} from '@angular/material';
 import {BreakpointObserver} from '@angular/cdk/layout';
 
@@ -28,7 +28,15 @@ export class FiltersCandidateComponent implements OnInit {
     .map(key => ({value: Distances[key], viewValue: key}));
 
 
-  constructor(private router: Router, public media: BreakpointObserver) {
+  constructor(private router: Router, public media: BreakpointObserver, private activatedRoute: ActivatedRoute) {
+  }
+
+  get formSkills() {
+    return <FormArray>this.filters.get('skills');
+  }
+
+  get formLanguages() {
+    return <FormArray>this.filters.get('languages');
   }
 
   ngOnInit() {
@@ -66,6 +74,13 @@ export class FiltersCandidateComponent implements OnInit {
       }
     );
 
+    this.activatedRoute.queryParams.subscribe(params => {
+      const skill = params['skill'];
+      if (skill) {
+        this.addSkillurl(skill);
+      }
+    });
+
     this.filters.controls['location'].valueChanges.subscribe(() => {
       if (!this.filters.controls['location'].value) {
         this.router.navigate(['/search-candidates'],
@@ -77,10 +92,17 @@ export class FiltersCandidateComponent implements OnInit {
     });
 
     this.filters.controls['minIndex'].valueChanges.subscribe(() => {
-      this.router.navigate(['/search-candidates'],
-        {
-          queryParams: {index: this.filters.controls['minIndex'].value}, queryParamsHandling: 'merge'
-        });
+      if (this.filters.controls['minIndex'].value > 0) {
+        this.router.navigate(['/search-candidates'],
+          {
+            queryParams: {index: this.filters.controls['minIndex'].value}, queryParamsHandling: 'merge'
+          });
+      } else {
+        this.router.navigate(['/search-candidates'],
+          {
+            queryParams: {index: null}, queryParamsHandling: 'merge'
+          });
+      }
     });
 
     this.filters.controls['workfield0'].valueChanges.subscribe(() => {
@@ -179,14 +201,6 @@ export class FiltersCandidateComponent implements OnInit {
       {queryParams: {languages: lang}, queryParamsHandling: 'merge'});
   }
 
-  get formSkills() {
-    return <FormArray>this.filters.get('skills');
-  }
-
-  get formLanguages() {
-    return <FormArray>this.filters.get('languages');
-  }
-
   addSkill() {
     (<FormArray>this.filters.controls['skills']).push(new FormControl(null));
     this.isSkill++;
@@ -195,6 +209,12 @@ export class FiltersCandidateComponent implements OnInit {
       document.getElementById(`skill${this.isSkill}`).focus();
     }, 1);
     this.addSkillSearch();
+  }
+
+  addSkillurl(skill) {
+    this.formSkills.controls[0].setValue(skill);
+    (<FormArray>this.filters.controls['skills']).push(new FormControl(null));
+    this.isSkill++;
   }
 
   deleteSkill(i) {
@@ -284,9 +304,13 @@ export class FiltersCandidateComponent implements OnInit {
     if (this.filters.controls['workfield20'].value) {
       queryWorkF += '20 ';
     }
-
-    this.router.navigate(['/search-candidates'],
-      {queryParams: {workfield: queryWorkF}, queryParamsHandling: 'merge'});
+    if (queryWorkF === '') {
+      this.router.navigate(['/search-candidates'],
+        {queryParams: {rol: null}, queryParamsHandling: 'merge'});
+    } else {
+      this.router.navigate(['/search-candidates'],
+        {queryParams: {rol: queryWorkF}, queryParamsHandling: 'merge'});
+    }
   }
 
   minDateSearch() {

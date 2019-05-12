@@ -1,5 +1,4 @@
 import * as AuthActions from './auth.actions';
-import * as OfferManageActions from '../../offer/offer-manage/store/offer-manage.actions';
 
 export interface State {
   token: string;
@@ -8,7 +7,9 @@ export interface State {
     email: string,
     id: number,
     name: string,
-    type: string
+    type: string,
+    notifications: number,
+    premium: number,
   };
 }
 

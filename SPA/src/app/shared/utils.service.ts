@@ -36,16 +36,28 @@ export function getColourFromIndex(index: number): string {
   let colour = '';
 
   if (index < 10) {
-    colour = '#ef5350'; // red
+    colour = '#00e676';
   } else if (index < 30) {
-    colour = '#ffa726'; // orange
+    colour = '#1de9b6';
   } else if (index < 60) {
-    colour = '#ffee58'; // yellow
+    colour = '#00e5ff';
   } else if (index < 80) {
-    colour = '#66bb6a'; // red
+    colour = '#00b0ff';
   } else {
-    colour = '#26c6da'; // blue
+    colour = '#2979ff';
   }
 
   return colour;
+}
+
+export function getDateYYYYMMDD(date: Date) {
+  let day = '' + date.getDate();
+  if (date.getDate() < 10) {
+    day = '0' + date.getDate();
+  }
+  let month = '' + (date.getMonth() + 1);
+  if (date.getMonth() + 1 < 10) {
+    month = '0' + (date.getMonth() + 1);
+  }
+  return (date.getUTCFullYear() + '-' + month + '-' + day);
 }

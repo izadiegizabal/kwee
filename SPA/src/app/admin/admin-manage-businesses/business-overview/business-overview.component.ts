@@ -20,8 +20,8 @@ import {AlertDialogComponent} from '../../../shared/alert-dialog/alert-dialog.co
 export class BusinessOverviewComponent implements OnInit {
 
   // paging
-  pageSize = 2;
-  pageSizeOptions: number[] = [2, 5, 10, 25, 100];
+  pageSize = 10;
+  pageSizeOptions: number[] = [5, 10, 25, 50, 100];
 
   // MatPaginator Output
   pageEvent: PageEvent;
@@ -57,7 +57,7 @@ export class BusinessOverviewComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store$.dispatch(new AdminActions.TryGetBusinesses({page: 1, limit: 2, params: this.query, order: this.orderby}));
+    this.store$.dispatch(new AdminActions.TryGetBusinesses({page: 1, limit: this.pageSize, params: this.query, order: this.orderby}));
     this.adminState = this.store$.pipe(select(s => s.admin));
 
     this.userForm = this._formBuilder.group({

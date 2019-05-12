@@ -7,18 +7,22 @@ import {AdminManageBusinessesComponent} from './admin-manage-businesses/admin-ma
 import {AdminVerifyComponent} from './admin-verify/admin-verify.component';
 import {AdminReportsComponent} from './admin-reports/admin-reports.component';
 import {AdminMessagesComponent} from './admin-messages/admin-messages.component';
+import {AdminManageOffersComponent} from './admin-manage-offers/admin-manage-offers.component';
+import {UserLogComponent} from './user-log/user-log.component';
 
 const adminRoutes: Routes = [
   {
     path: '', component: AdminComponent, children: [
-      {path: '', redirectTo: 'statistics', pathMatch: 'full'},
-      {path: 'statistics', component: AdminStatisticsComponent},
+      {path: '', redirectTo: 'manage-candidates', pathMatch: 'full'},
       {path: 'manage-candidates', component: AdminManageCandidatesComponent},
       {path: 'manage-businesses', component: AdminManageBusinessesComponent},
+      {path: 'manage-offers', component: AdminManageOffersComponent},
       {path: 'verify', component: AdminVerifyComponent},
       {path: 'reports', component: AdminReportsComponent},
       {path: 'messages', component: AdminMessagesComponent},
-      {path: '**', redirectTo: 'statistics'}
+      {path: 'statistics', component: AdminStatisticsComponent},
+      {path: 'user-log', component: UserLogComponent},
+      {path: '**', redirectTo: 'manage-candidates'}
     ]
   },
 ];

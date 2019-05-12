@@ -1,4 +1,5 @@
 <div
+  *ngIf="((profilesState | async).opinions && errorOpinion==false); else noOpinions"
   fxFlex="92%"
   fxFlex.gt-sm="60%"
   fxFlexOffset="4%"
@@ -9,17 +10,16 @@
   </h2>
   <p>Here you'll be able to find what other users have to say about his/her way of working, and other professional
     abilities. </p>
-  <mat-card *ngFor="let opinion of opinions"
+  <mat-card *ngFor="let opinion of (profilesState | async).opinions.data"
             [ngClass]="{
               'mat-elevation-z0' : !opinion.panelOpenState
             }"
-            style="margin-bottom: 8px"
-  >
+            style="margin-bottom: 8px">
     <div fxLayout="row" fxLayoutGap="32px">
       <div fxLayout="column">
-        <div class="rating" fxLayout="row"><span>{{opinion.ratingScore}}</span></div>
+        <div class="rating" fxLayout="row"><span>{{opinion.overall | number:'1.0-1'}}</span></div>
         <div class="usefulness" fxLayout="row">
-          <span>{{opinion.opinionScore}}</span>
+          <span>{{opinion.opinionScore ? opinion.opinionScore : opinionsNA.opinionScore}}</span>
           <button color="accent" mat-icon-button>
             <mat-icon color="primary" svgIcon="thumb-up"></mat-icon>
           </button>
@@ -32,10 +32,10 @@
       </div>
       <div fxLayout="column">
         <mat-card-title>
-          {{opinion.offerTitle}}
+          {{opinion.title ? opinion.title : opinionsNA.offerTitle}}
         </mat-card-title>
         <mat-card-subtitle>
-          {{opinion.userName + " - " + getPublishedDate(opinion.publishedAt)}}
+          {{opinion.userName + " - " + getPublishedDate(opinion.createdAt)}}
         </mat-card-subtitle>
         <p>{{opinion.opinion}}</p>
       </div>
@@ -44,8 +44,7 @@
       <mat-expansion-panel
         (closed)="opinion.panelOpenState = false"
         (opened)="opinion.panelOpenState = true"
-        class="mat-elevation-z0 opinionDetails"
-      >
+        class="mat-elevation-z0 opinionDetails">
         <mat-expansion-panel-header>
           <mat-panel-title fxLayoutAlign="end">
             <p class="mat-button">More Details</p>
@@ -57,15 +56,15 @@
           <div fxFlex="50%" fxLayout="column">
             <mat-list>
               <mat-list-item>
-                <span>{{opinion.details.efficiency}}</span>
+                <span>{{opinion.efficiency}}</span>
                 Efficiency
               </mat-list-item>
               <mat-list-item>
-                <span>{{opinion.details.skills}}</span>
+                <span>{{opinion.skills}}</span>
                 Skills
               </mat-list-item>
               <mat-list-item>
-                <span>{{opinion.details.punctuality}}</span>
+                <span>{{opinion.punctuality}}</span>
                 Punctuality
               </mat-list-item>
             </mat-list>
@@ -73,12 +72,16 @@
           <div fxFlex="50%" fxLayout="column">
             <mat-list>
               <mat-list-item>
-                <span>{{opinion.details.hygiene}}</span>
+                <span>{{opinion.hygiene}}</span>
                 Hygiene
               </mat-list-item>
               <mat-list-item>
-                <span>{{opinion.details.teamwork}}</span>
+                <span>{{opinion.teamwork}}</span>
                 Teamwork
+              </mat-list-item>
+              <mat-list-item>
+                <span>{{opinion.satisfaction}}</span>
+                Satisfaction
               </mat-list-item>
             </mat-list>
           </div>
@@ -86,5 +89,23 @@
 
       </mat-expansion-panel>
     </mat-card-content>
+
   </mat-card>
+  <div *ngIf="(profilesState | async).opinions" fxLayout="row"
+       fxLayoutAlign="end end">
+    <mat-paginator #paginator
+                   (page)="pageEvent = $event; changePage();"
+                   [length]="(profilesState | async).opinions.total"
+                   [pageSizeOptions]="pageSizeOptions"
+                   [pageSize]="pageSize">
+    </mat-paginator>
+  </div>
+
 </div>
+
+<ng-template #noOpinions>
+  <div fxLayout="column" fxLayoutAlign="center center" style="margin: 16px; min-height: 384px">
+    <img alt="Iwi Mascot" src="../../../../assets/branding/iwi.svg" width="128px"/>
+    <p>Sorry, there aren't any opinions yet.</p>
+  </div>
+</ng-template>

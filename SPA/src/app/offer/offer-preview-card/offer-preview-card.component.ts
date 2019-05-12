@@ -10,8 +10,8 @@ import * as fromApp from '../../store/app.reducers';
 import {AlertDialogComponent} from '../../shared/alert-dialog/alert-dialog.component';
 import {OfferManageEffects} from '../offer-manage/store/offer-manage.effects';
 import * as OfferManageActions from '../offer-manage/store/offer-manage.actions';
-import {filter} from 'rxjs/operators';
 import {Router} from '@angular/router';
+import {HttpClient} from '@angular/common/http';
 
 
 @Component({
@@ -23,52 +23,69 @@ export class OfferPreviewCardComponent implements OnInit {
 
   offerUrl: string;
   authState: any;
-  offerManageState: any;
   candidate: boolean;
   nameToRate: string;
   userId: number;
+  allRated = false;
+  business: boolean;
+
 
   @Input() offer: any;
+  @Input() selection: boolean;
+
+  currencies;
 
 
   constructor(public dialog: MatDialog,
               private store$: Store<fromApp.AppState>,
               private router: Router,
+              private http: HttpClient,
               private manageOfferEffects: OfferManageEffects) {
   }
 
   ngOnInit() {
+
+    this.http.get('../../../assets/CurrenciesISO.json').subscribe(currencies => {
+        this.currencies = currencies;
+      }
+    );
+
     // console.log(this.offer);
 
-    this.offerUrl = this.urlfyPosition();
+    this.offerUrl = this.urlfyPosition(null);
 
     this.authState = this.store$.pipe(select('auth'));
     this.authState.pipe(
-      select((s: { user: any}) => s.user)
+      select((s: { user: any }) => s.user)
     ).subscribe(
       (user) => {
         // console.log(user);
         if (user) {
+          this.offerUrl = this.urlfyPosition(user);
+
           this.candidate = user.type === 'candidate';
+          this.business = user.type === 'business';
           if (this.candidate) {
             this.nameToRate = this.offer.offererName;
             this.userId = user.id;
           }
         }
       });
-
-    this.manageOfferEffects.ChangeOfferStatus.pipe(
-      filter((action: any) => action.type === OfferManageActions.SET_CHANGE_OFFER_STATUS)
-    ).subscribe((next: { payload: any, type: string }) => {
-        this.router.navigate(['/my-offers/' + this.offer.id + '/selection']);
-      }
-    );
   }
 
-  urlfyPosition() {
+  urlfyPosition(user) {
+    let url = '/offer/' + this.offer.id + '/' + getUrlfiedString(this.offer.title);
+
+    if (this.offer.status === 3 && user && (this.offer.fk_offerer === user.id) && this.selection === true) {
+      url = '/my-offers/' + this.offer.id + '/selection';
+    }
+
+    return url;
+  }
+
+  urlfyDetail() {
     return '/offer/' + this.offer.id + '/' + getUrlfiedString(this.offer.title);
   }
-
 
   getPublishedDate() {
     if (this.offer && this.offer.datePublished) {
@@ -79,7 +96,7 @@ export class OfferPreviewCardComponent implements OnInit {
   openShareDialog() {
     this.dialog.open(SnsShareDialogComponent, {
       data: {
-        offer: {title: this.offer.title, url: location.hostname + this.urlfyPosition()}
+        offer: {title: this.offer.title, url: location.hostname + this.urlfyPosition(null)}
       }
     });
   }
@@ -92,8 +109,8 @@ export class OfferPreviewCardComponent implements OnInit {
       salaryNum = this.offer.salaryAmount;
     }
 
-    return salaryNum + ' ' +
-      this.offer.salaryCurrency + ' ' +
+    return salaryNum +
+      this.getCurrency(this.offer.salaryCurrency) + ' ' +
       SalaryFrequency[this.offer.salaryFrequency];
   }
 
@@ -131,24 +148,58 @@ export class OfferPreviewCardComponent implements OnInit {
   }
 
   getImg() {
-    return this.offer.img ? environment.apiUrl + 'image/offerers/' + this.offer.img :
+    return this.offer.img ? environment.apiUrl + this.offer.img :
       'https://cdn.vox-cdn.com/thumbor/Pkmq1nm3skO0-j693JTMd7RL0Zk=/0x0:2012x1341/1200x800/filters:focal(0x0:2012x1341)/' +
       'cdn.vox-cdn.com/uploads/chorus_image/image/47070706/google2.0.0.jpg';
   }
 
-  rateCandidate() {
-    const dialogRef = this.dialog.open(RateCandidateComponent, {
-      width: '95%',
-      maxHeight: '90%',
-      data: {candidate: !this.candidate, to: this.offer.fk_application, list: [{name: this.nameToRate}]}
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-      if (result) {
-        console.log(result);
+  rate() {
+    if (this.offer.status === 1) {
+      const applications: any[] = [];
+      if (!this.candidate) {
+        this.offer.applications.forEach((e) => {
+          if (e.applicationStatus === 3) {
+            applications.push({
+              to: e.applicationId,
+              name: e.applicantName,
+              index: e.applicantStatus,
+              haveIRated: e.oHasRated
+            });
+          }
+        });
+      } else {
+        applications.push({to: this.offer.fk_application, name: this.nameToRate, haveIRated: this.offer.aHasRated});
       }
-    });
+      const dialogRef = this.dialog.open(RateCandidateComponent, {
+        width: '95%',
+        maxHeight: '90%',
+        data: {candidate: !this.candidate, applications: applications}
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        console.log('The dialog was closed');
+        if (result) {
+          console.log(result);
+        }
+        if (this.candidate) {
+          console.log('update my offers as candidate');
+          this.store$.dispatch(new OfferManageActions.TryGetOffersApplicant({
+            id: this.userId,
+            page: 1,
+            limit: 10,
+            status: -1
+          }));
+          this.store$.dispatch(new OfferManageActions.TryGetOffersApplicant({
+            id: this.userId,
+            page: 1,
+            limit: 10,
+            status: this.offer.status
+          }));
+        } else {
+          this.allRated = result;
+        }
+      });
+    }
   }
 
   reject() {
@@ -161,7 +212,7 @@ export class OfferPreviewCardComponent implements OnInit {
 
     dialog.afterClosed().subscribe(result => {
       if (result) {
-        this.changeAplicationStatus(4);
+        this.changeApplicationStatus(4);
       }
     });
   }
@@ -176,12 +227,12 @@ export class OfferPreviewCardComponent implements OnInit {
 
     dialog.afterClosed().subscribe(result => {
       if (result) {
-        this.changeAplicationStatus(3);
+        this.changeApplicationStatus(3);
       }
     });
   }
 
-  changeAplicationStatus(status: number) {
+  changeApplicationStatus(status: number) {
     this.store$.dispatch(new OfferManageActions
       .TryChangeApplicationStatus({
         candidateId: this.userId,
@@ -195,5 +246,26 @@ export class OfferPreviewCardComponent implements OnInit {
 
   startSelectionProcess() {
     this.store$.dispatch(new OfferManageActions.TryChangeOfferStatus({offerId: this.offer.id, newStatus: 3}));
+    this.router.navigate(['/my-offers/' + this.offer.id + '/selection']);
+  }
+
+  getDescription() {
+    if (this.offer.description && this.offer.description.length > 300) {
+      return this.offer.description.substring(0, 300) + '...';
+    } else {
+      return this.offer.description;
+    }
+  }
+
+  private getCurrency(salaryCurrency) {
+    let currency = '';
+    if (this.currencies) {
+      Object.keys(this.currencies).map(key => {
+        if (this.currencies[key].value && this.currencies[key].value === salaryCurrency) {
+          currency = this.currencies[key].symbol;
+        }
+      });
+    }
+    return currency;
   }
 }

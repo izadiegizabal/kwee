@@ -1,6 +1,6 @@
 <div class="container, filters">
-  <h2>Filters</h2>
-  <form [formGroup]="filters" fxLayout="column">
+  <form [formGroup]="filters" fxFlex="100%" fxLayout="column">
+    <h2>Filters</h2>
 
     <h3>Minimum Index</h3>
     <section fxLayout="column">
@@ -9,11 +9,11 @@
 
     <!--<h3>Minimum Amount of Ratings</h3>-->
     <!--<section fxLayout="column">-->
-      <!--<mat-slider formControlName="minRatings" max="100" min="0" thumbLabel></mat-slider>-->
+    <!--<mat-slider formControlName="minRatings" max="100" min="0" thumbLabel></mat-slider>-->
     <!--</section>-->
 
     <h3>Required Skills</h3>
-    <div fxLayout="row" class="multipleInputDiv">
+    <div class="multipleInputDiv" fxLayout="row">
       <div formArrayName="skills" fxFlex="80%" fxLayout="column" fxLayoutGap="-16px">
         <mat-form-field *ngFor="let skill of formSkills.controls; let i =index;">
           <input (keyup.enter)='addSkill()'
@@ -23,16 +23,17 @@
                  matInput type="text">
 
 
-          <button type="button" (click)="deleteSkill(i)"
-                  *ngIf="this.formSkills.controls[i].value && this.formSkills.length-1!=i"
+          <button (click)="deleteSkill(i)" *ngIf="this.formSkills.controls[i].value && this.formSkills.length-1!=i"
                   aria-label="Clear"
-                  mat-button mat-icon-button matSuffix type="button">
+                  mat-button
+                  mat-icon-button matSuffix type="button" type="button">
             <mat-icon>close</mat-icon>
           </button>
 
-          <button type="button" (click)="deleteSkill(i); addSkill()"
-                  *ngIf="this.formSkills.controls[i].value && this.formSkills.length-1==i" aria-label="Clear"
-                  mat-button mat-icon-button matSuffix type="button">
+          <button (click)="deleteSkill(i); addSkill()"
+                  *ngIf="this.formSkills.controls[i].value && this.formSkills.length-1==i"
+                  aria-label="Clear" mat-button
+                  mat-icon-button matSuffix type="button" type="button">
             <mat-icon>close</mat-icon>
           </button>
         </mat-form-field>
@@ -45,7 +46,7 @@
     </div>
 
     <h3>Required Languages</h3>
-    <div fxLayout="row" class="multipleInputDiv">
+    <div class="multipleInputDiv" fxLayout="row">
       <div formArrayName="languages" fxFlex="80%" fxLayout="column" fxLayoutGap="-16px">
         <mat-form-field *ngFor="let language of formLanguages.controls; let i =index;">
           <input (keyup.enter)="addLang(i)"
@@ -55,17 +56,18 @@
                  matInput type="text">
 
 
-          <button type="button" (click)="delLang(i)"
-                  *ngIf="this.formLanguages.controls[i].value && this.formLanguages.length-1!=i"
+          <button (click)="delLang(i)" *ngIf="this.formLanguages.controls[i].value && this.formLanguages.length-1!=i"
                   aria-label="Clear"
-                  mat-button mat-icon-button matSuffix type="button">
+                  mat-button
+                  mat-icon-button matSuffix type="button" type="button">
             <mat-icon>close</mat-icon>
           </button>
 
-          <button type="button" (click)="delLang(i); addLang()"
+          <button (click)="delLang(i); addLang()"
                   *ngIf="this.formLanguages.controls[i].value && this.formLanguages.length-1==i"
                   aria-label="Clear"
-                  mat-button mat-icon-button matSuffix type="button">
+                  mat-button
+                  mat-icon-button matSuffix type="button" type="button">
             <mat-icon>close</mat-icon>
           </button>
         </mat-form-field>
@@ -78,7 +80,7 @@
     </div>
 
     <h3 style="margin-top: 16px">Work Fields</h3>
-    <section fxLayout="column" *ngFor="let workfield of workfields; index as i">
+    <section *ngFor="let workfield of workfields; index as i" class="smallFontFilter" fxLayout="column">
       <mat-checkbox formControlName="workfield{{i}}">
         {{workfield.viewValue}}
       </mat-checkbox>
@@ -104,39 +106,40 @@
     <!--</section>-->
 
     <h3 style="margin-top: 16px">Age of the Candidate</h3>
-    <div fxLayout="row" fxFlex="100%" class="ageInputs" fxLayoutGap="4px">
+    <div class="ageInputs smallFontFilter" fxFlex="100%" fxLayout="row" fxLayoutGap="4px">
       <p>Between </p>
-      <mat-form-field fxFlex="40px">
-        <input matInput type="number" formControlName="minAge">
+      <mat-form-field fxFlex="35px">
+        <input formControlName="minAge" matInput type="number">
       </mat-form-field>
       <p> and </p>
-      <mat-form-field fxFlex="40px">
-        <input matInput type="number" formControlName="maxAge">
+      <mat-form-field fxFlex="35px">
+        <input formControlName="maxAge" matInput type="number">
       </mat-form-field>
       <p>years old.</p>
     </div>
 
     <mat-form-field>
       <input formControlName="location" matInput placeholder="Location" type="text">
-      <button type="button" (click)="filters.controls['location'].reset('')" *ngIf="filters.controls['location'].value"
-              aria-label="Clear" mat-button
-              mat-icon-button
-              matSuffix>
+      <button (click)="filters.controls['location'].reset('')" *ngIf="filters.controls['location'].value"
+              aria-label="Clear"
+              mat-button mat-icon-button
+              matSuffix
+              type="button">
         <mat-icon>close</mat-icon>
       </button>
     </mat-form-field>
 
     <!--<mat-form-field>-->
-      <!--<mat-select formControlName="distance" placeholder="Distance">-->
-        <!--<mat-option *ngFor="let distance of distances" [value]="distance.value">-->
-          <!--{{distance.viewValue}}-->
-        <!--</mat-option>-->
-      <!--</mat-select>-->
+    <!--<mat-select formControlName="distance" placeholder="Distance">-->
+    <!--<mat-option *ngFor="let distance of distances" [value]="distance.value">-->
+    <!--{{distance.viewValue}}-->
+    <!--</mat-option>-->
+    <!--</mat-select>-->
     <!--</mat-form-field>-->
 
   </form>
 
-  <div fxLayout="row" fxLayoutAlign="end end" style="margin-top: 16px" fxHide.gt-sm>
-    <button type="button" mat-raised-button color="primary" (click)="applyFilters()">Apply Filters</button>
+  <div fxHide.gt-sm fxLayout="row" fxLayoutAlign="end end" style="margin-top: 16px">
+    <button (click)="applyFilters()" color="primary" mat-raised-button type="button">Apply Filters</button>
   </div>
 </div>
