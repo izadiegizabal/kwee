@@ -203,7 +203,6 @@ export class OfferPreviewCardComponent implements OnInit {
   }
 
   reject() {
-
     const dialog = this.dialog.open(AlertDialogComponent, {
       data: {
         header: 'Are you sure you want to reject this offer?',
@@ -218,7 +217,6 @@ export class OfferPreviewCardComponent implements OnInit {
   }
 
   accept() {
-
     const dialog = this.dialog.open(AlertDialogComponent, {
       data: {
         header: 'Are you sure you want to accept this offer?',
