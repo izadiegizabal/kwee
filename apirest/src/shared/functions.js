@@ -680,19 +680,20 @@ function saveLogES(action, actionToRoute, user) {
     });
 }
 
+function getSocketUserId(email) {
+    let socketUsers = usersConnected.getList();
+    socketUsers = socketUsers.find(element => element.email === email);
+    return socketUsers ? socketUsers.id : null;
+}
+
 function sendNotification(route, id, object, bool) {
+    // object is the table in database
     let payload = {
         selected: bool,
         applicationId: object.id,
         offerId: object.fk_offer
     };
     io.in(id).emit(route, payload);
-}
-
-function getSocketUserId(email) {
-    let socketUsers = usersConnected.getList();
-    socketUsers = socketUsers.find(element => element.email === email);
-    return socketUsers ? socketUsers.id : null;
 }
 
 async function createNotification(db, to, from, type, idTable, notification, status) {
