@@ -1,0 +1,135 @@
+<h2 class="mat-h1">Verify Profiles</h2>
+<div fxLayout="row" *ngIf="((adminState | async).businesses && (adminState | async).businesses.data); else noProfiles">
+  <mat-accordion fxFlex="99%">
+    <mat-expansion-panel
+      (closed)="isPanelOpen = !isPanelOpen;"
+      (opened)="isPanelOpen = !isPanelOpen;"
+      *ngFor="let user of (adminState | async).businesses.data;">
+      <mat-expansion-panel-header>
+        <mat-panel-title fxFlex="55%"
+                         fxFlex.gt-lg="30%" fxFlex.gt-md="35%" fxFlex.gt-sm="40%" fxLayoutAlign="start center"
+                         fxLayoutGap="8px">
+          <app-offerer-name-overview
+            [businessIndexBreakdown]="user.avg"
+            [index]="user.index"
+            [name]="user.name">
+          </app-offerer-name-overview>
+        </mat-panel-title>
+        <mat-panel-description
+          fxFlex="25%"
+          fxFlex.gt-sm="75%" fxLayout="row"
+          fxLayoutAlign="space-between center">
+          <div fxFlex="60%"
+               fxFlex.md="75%"
+               fxHide fxLayout="row"
+               fxLayoutAlign="start center" fxShow.gt-sm>
+            <mat-icon class="svg" color="primary" svgIcon="email"></mat-icon>
+            <span>{{user.email}}</span>
+          </div>
+          <div fxFlex="40%"
+               fxHide
+               fxLayout="row"
+               fxLayoutAlign="start center" fxShow.gt-lg>
+            <mat-icon class="svg" color="primary" svgIcon="access-time"></mat-icon>
+            <span>{{user.lastAccess | date:'d/M/y, HH:mm'}}</span>
+          </div>
+          <button (click)="accept(user)" color="accent" mat-button>Accept</button>
+          <button (click)="deny(user)" color="warn" mat-button>Deny</button>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <!-- NAME / EMAIL-->
+      <div fxLayout="column" fxLayout.gt-sm="row"
+           fxLayoutGap="0" fxLayoutGap.gt-sm="24px">
+        <div class="mat-body" fxFlex="50%">
+          <span class="mat-small">{{'Name' | uppercase}}</span>
+          <br>
+          {{user.name}}
+        </div>
+        <div class="mat-body" fxFlex="50%">
+          <span class="mat-small">{{'Email' | uppercase}}</span>
+          <br>
+          {{user.email}}
+        </div>
+      </div>
+
+      <!--VAT / WORK FIELD / STATE / SUBSCRIPTION -->
+      <div fxLayout="column" fxLayout.gt-sm="row"
+           fxLayoutGap="0" fxLayoutGap.gt-sm="24px">
+        <div fxFlex="100%" fxFlex.gt-sm="50%"
+             fxLayout="column" fxLayout.gt-md="row"
+             fxLayoutGap="0" fxLayoutGap.gt-sm="16px">
+          <div class="mat-body">
+            <span class="mat-small">{{'VAT / CIF' | uppercase}}</span>
+            <br>
+            {{user.cif}}
+          </div>
+          <div class="mat-body">
+            <span class="mat-small">{{'Work Field' | uppercase}}</span>
+            <br>
+            {{ getWorkField(user.workField) | titlecase }}
+          </div>
+        </div>
+
+        <div [fxLayout]="isPanelOpen ? 'column': 'row'"
+             class="mat-body" fxFlex="100%"
+             fxFlex.gt-sm="50%"
+             fxLayout.gt-sm="row" fxLayoutGap="24px">
+          <div>
+            <span class="mat-small">{{'Account State' | uppercase}}</span>
+            <br>
+            {{states[user.status].viewValue  | titlecase }}
+          </div>
+          <div *ngIf="subscriptions[user.premium]">
+            <span class="mat-small">{{'Subscription' | uppercase}}</span>
+            <br>
+            {{subscriptions[user.premium].viewValue  | titlecase }}
+          </div>
+        </div>
+      </div>
+      <!-- TIMES -->
+      <div fxLayout="row">
+        <div class="mat-body"
+             fxFlex="100%"
+             fxFlex.gt-sm="50%"
+             fxLayout="row" fxLayoutGap="24px">
+          <p>
+            <span class="mat-small">{{'Last Access Time' | uppercase}}</span>
+            <br>
+            {{user.lastAccess | date:'d/M/y, HH:mm' | titlecase}}
+          </p>
+          <p>
+            <span class="mat-small">{{'Sign Up time' | uppercase}}</span>
+            <br>
+            {{user.createdAt | date:'d/M/y, HH:mm' | titlecase}}
+          </p>
+        </div>
+      </div>
+      <!-- ACTIONS -->
+      <br>
+      <div fxLayout="row"
+           fxLayoutAlign="end" fxLayoutGap="0"
+           fxLayoutGap.gt-sm="8px">
+        <button color="primary" mat-button>More Info</button>
+        <button color="primary" mat-button>View Log</button>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>
+
+<ng-template #noProfiles>
+  <div fxLayoutAlign="center center" fxLayout="column" style="margin: 16px; min-height: 384px">
+    <img alt="Iwi Mascot" src="../../../../assets/branding/iwi.svg" width="128px"/>
+    <p>There aren't any businesses to verify</p>
+  </div>
+</ng-template>
+
+<mat-paginator *ngIf="(adminState | async).businesses.total"
+                [length]="(adminState | async).businesses.total"
+               [pageSize]="pageSize"
+               [pageSizeOptions]="pageSizeOptions"
+               [pageSize]="pageSize">
+</mat-paginator>
+
+<!-- [hidePageSize]="true" -->
+

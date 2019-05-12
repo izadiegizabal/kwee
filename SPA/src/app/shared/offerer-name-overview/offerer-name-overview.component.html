@@ -1,0 +1,34 @@
+<div
+  [ngClass]="{
+  big: size === 'title',
+  'mat-card-title': size === 'title'
+}"
+  fxLayout="row">
+  <div
+    (click)="showBreakdown(true)"
+    (clickOutside)="showBreakdown(false)"
+    (mouseenter)="showBreakdown(true)"
+    (mouseleave)="showBreakdown(false)"
+    [style.background-color]="getBGColour()"
+    class="index">
+    <span>{{index}}</span>
+  </div>
+  <div *ngIf="renderBreakdown"
+       [ngClass]="{'show': shownBreakdown, 'hide': !shownBreakdown}"
+       class="breakdown mat-typography">
+    <h3>Index Breakdown</h3>
+    <h6>{{candidateIndexBreakdown ? 'Efficiency' : 'Salary'}}</h6>
+    <mat-progress-bar [value]="pb1Value" color="accent" mode="determinate"></mat-progress-bar>
+    <h6>{{candidateIndexBreakdown ? 'Skills' : 'Environment'}}</h6>
+    <mat-progress-bar [value]="pb2Value" color="accent" mode="determinate"></mat-progress-bar>
+    <h6>{{candidateIndexBreakdown ? 'Punctuality' : 'Partners'}}</h6>
+    <mat-progress-bar [value]="pb3Value" color="accent" mode="determinate"></mat-progress-bar>
+    <h6>{{candidateIndexBreakdown ? 'Hygiene' : 'Services'}}</h6>
+    <mat-progress-bar [value]="pb4Value" color="accent" mode="determinate"></mat-progress-bar>
+    <h6>{{candidateIndexBreakdown ? 'Teamwork' : 'Installations'}}</h6>
+    <mat-progress-bar [value]="pb4Value" color="accent" mode="determinate"></mat-progress-bar>
+    <h6>Satisfaction</h6>
+    <mat-progress-bar [value]="pb5Value" color="accent" mode="determinate"></mat-progress-bar>
+  </div>
+  <p>{{name}}</p>
+</div>

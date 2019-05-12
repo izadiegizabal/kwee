@@ -1,0 +1,173 @@
+<div *ngIf="(profilesState | async).business" fxLayout="column" fxLayoutGap="16px" style="padding-bottom: 32px">
+  <div fxLayout="row">
+    <button (click)="backClicked()"
+            fxFlexOffset="0"
+            fxFlexOffset.gt-md="10%" fxFlexOffset.gt-sm="9.5%" mat-icon-button>
+      <mat-icon class="svg" color="primary" svgIcon="back"></mat-icon>
+    </button>
+  </div>
+  <div fxLayout="row" fxLayoutAlign="center start">
+    <div
+      fxFlex="95%"
+      fxFlex.gt-md="=70%"
+      fxFlex.gt-sm="80%">
+      <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap.lt-sm="16px">
+        <!-- Basic info -->
+        <mat-card [fxFlex.lt-md]="(mine || twitterAccount !== '')? 70 : 100" fxFlex="100">
+          <mat-card-title>
+            <app-offerer-name-overview
+              [businessIndexBreakdown]="(profilesState | async).business.avg"
+              [index]="(profilesState | async).business.index"
+              [name]="(profilesState | async).business.name"
+              size="title">
+            </app-offerer-name-overview>
+          </mat-card-title>
+          <mat-card-content
+            fxLayout="row"
+            fxLayout.lt-sm="column"
+            fxLayoutAlign="start stretch" fxLayoutAlign.lt-sm="center center"
+            style="margin-top: 16px">
+            <img
+              alt="{{(profilesState | async).business.name + ' profile picture'}}'"
+              fxFlex="200px"
+              fxlayout="column" height="200px"
+              src="{{getImg((profilesState | async).business.img)}}"
+              width="200px"/>
+            <span
+              fxLayout="column"
+              fxLayoutAlign="center center">
+              {{(profilesState | async).business.bio ? (profilesState | async).business.bio : business.bio}}
+            </span>
+          </mat-card-content>
+          <mat-card-actions fxLayoutAlign="end end">
+            <button
+              *ngIf="mine"
+              color="accent"
+              mat-button>
+              Edit
+            </button>
+            <button
+              (click)="contactUser()"
+              *ngIf="!mine"
+              color="primary"
+              mat-raised-button>
+              <mat-icon style="margin-right: 8px" svgIcon="chat"></mat-icon>
+              Contact
+            </button>
+          </mat-card-actions>
+        </mat-card>
+
+        <!-- Premium info -->
+        <mat-card *ngIf="mine && premium === 0"
+          fxFlex="30%" fxFlex.lt-sm="100%" fxFlexOffset.gt-xs="32px">
+          <mat-card-subtitle style="text-align: center">Active account type:</mat-card-subtitle>
+          <mat-card-title style="text-align: center">
+            Basic
+          </mat-card-title>
+          <hr>
+          <mat-card-content>
+            <mat-list>
+              <mat-list-item><p>Publish only 3 offers.</p></mat-list-item>
+              <mat-list-item><p>Cannot upload files to complete your profile.</p></mat-list-item>
+              <mat-list-item><p>Limit access to highlighted profiles section.</p></mat-list-item>
+            </mat-list>
+          </mat-card-content>
+          <mat-card-actions fxLayoutAlign="center">
+            <button
+              color="accent"
+              mat-raised-button
+              routerLink="/plans"
+              style="color: white; margin-bottom: 16px">
+              Upgrade to Premium
+            </button>
+          </mat-card-actions>
+        </mat-card>
+
+        <!-- Premium info -->
+        <mat-card *ngIf="premium === 1 && mine"
+                  fxFlex="30%" fxFlex.lt-sm="100%" fxFlexOffset.gt-xs="32px">
+          <mat-card-subtitle style="text-align: center">Active account type:</mat-card-subtitle>
+          <mat-card-title style="text-align: center">
+            Premium
+          </mat-card-title>
+          <hr>
+          <mat-card-content>
+            <mat-list>
+              <mat-list-item><p>Publish unlimit offers.</p></mat-list-item>
+              <mat-list-item><p>More advanced offers.</p></mat-list-item>
+              <mat-list-item><p>Direct customer support.</p></mat-list-item>
+              <mat-list-item><p>Help us maintain the platform.</p></mat-list-item>
+            </mat-list>
+          </mat-card-content>
+          <mat-card-actions fxLayoutAlign="center">
+            <button
+              color="accent"
+              mat-raised-button
+              routerLink="/plans"
+              style="color: white; margin-bottom: 16px">
+              View plans
+            </button>
+          </mat-card-actions>
+        </mat-card>
+
+        <mat-card *ngIf="premium === 2 && mine"
+                  fxFlex="30%" fxFlex.lt-sm="100%" fxFlexOffset.gt-xs="32px">
+          <mat-card-subtitle style="text-align: center">Active account type:</mat-card-subtitle>
+          <mat-card-title style="text-align: center">
+            Pay as you go
+          </mat-card-title>
+          <hr>
+          <mat-card-content>
+            <mat-list>
+              <mat-list-item><p>Publish the offers you want.</p></mat-list-item>
+              <mat-list-item><p>More advanced offers.</p></mat-list-item>
+              <mat-list-item><p>Direct customer support.</p></mat-list-item>
+              <mat-list-item><p>Help us maintain the platform.</p></mat-list-item>
+            </mat-list>
+          </mat-card-content>
+          <mat-card-actions fxLayoutAlign="center">
+            <button
+              color="accent"
+              mat-raised-button
+              routerLink="/plans"
+              style="color: white; margin-bottom: 16px">
+              View plans
+            </button>
+          </mat-card-actions>
+        </mat-card>
+
+
+
+
+        <mat-card *ngIf="!mine && twitterAccount !== ''"
+                  class="twitter-wrapper"
+                  fxFlex="30"
+                  fxFlexOffset.gt-xs="32px" fxHide.lt-lg>
+          <a [href]="'https://twitter.com/' + twitterAccount" class="twitter-timeline">Tweets by @{{twitterAccount}}</a>
+        </mat-card>
+      </div>
+      <div fxLayout="row" style="margin-top: 16px">
+        <mat-card fxFlex="100" style="padding: 0 !important;">
+          <mat-tab-group (selectedIndexChange)="changeTab($event)" [selectedIndex]="selectedIndex">
+            <mat-tab label="More Info">
+              <ng-template matTabContent>
+                <app-business-more-info [business]="(profilesState | async).business"></app-business-more-info>
+              </ng-template>
+            </mat-tab>
+            <mat-tab label="Opinions">
+              <ng-template matTabContent>
+                <app-business-profile-opinions></app-business-profile-opinions>
+              </ng-template>
+            </mat-tab>
+            <mat-tab label="Jobs">
+              <ng-template matTabContent>
+                <app-business-past-offers [businessID]="(profilesState | async).business.id"></app-business-past-offers>
+              </ng-template>
+            </mat-tab>
+          </mat-tab-group>
+        </mat-card>
+      </div>
+
+    </div>
+  </div>
+</div>

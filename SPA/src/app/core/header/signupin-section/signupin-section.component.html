@@ -1,0 +1,4 @@
+<a [ngClass]="{'isLanding': isLanding}" mat-button routerLink="/signin">Sign In</a>
+<button *ngIf="!isLanding" color="primary" mat-raised-button routerLink="/signup">Sign Up</button>
+<button *ngIf="isLanding" color="accent" mat-raised-button routerLink="/signup">Sign Up</button>
+<!--<a mat-button routerLink="/signup" class="isLanding" *ngIf="isLanding">Sign Up</a>-->
