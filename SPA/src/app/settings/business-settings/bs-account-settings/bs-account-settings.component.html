@@ -1,4 +1,4 @@
-<div fxLayout="row" fxFlex="100%">
+<div fxFlex="100%" fxLayout="row">
   <form [formGroup]="accountFormGroup"
         fxFlex="75%"
         fxFlex.lt-lg="90%"
@@ -14,21 +14,21 @@
 
       <div class="mat-h1" style="padding-top: 16px">My Account</div>
 
-      <div fxLayout="row" fxFlex="100%">
-        <div fxLayout="row" fxLayout.lt-md="column" fxFlex="100%">
-          <div fxLayout="column" style="padding-bottom: 16px" fxFlex.lt-md="100%" fxFlex="192px">
+      <div fxFlex="100%" fxLayout="row">
+        <div fxFlex="100%" fxLayout="row" fxLayout.lt-md="column">
+          <div fxFlex="192px" fxFlex.lt-md="100%" fxLayout="column" style="padding-bottom: 16px">
             <h2>Profile picture</h2>
             <div fxLayout="column" fxLayout.lt-md="row">
               <label for="file_profile">
                 <img
+                  [src]="(profilesState | async).business.img ? apiURL + (profilesState | async).business.img : '../../../../assets/img/defaultProfileImg.png'"
                   alt="default profile picture"
-                  width="144px"
                   height="144px"
                   id="photo_profile"
-                  [src]="(profilesState | async).business.img ? apiURL + (profilesState | async).business.img : '../../../../assets/img/defaultProfileImg.png'"
+                  width="144px"
                 />
               </label>
-              <div fxLayout="column" fxFlex="128px" style="margin-left: 8px">
+              <div fxFlex="128px" fxLayout="column" style="margin-left: 8px">
                 <label for="file_profile">
                   <button (click)="profile.click()" class="photo-buttons" color="primary" mat-raised-button
                           type="button">Upload photo
@@ -93,8 +93,8 @@
               <mat-form-field>
                 <mat-icon color="primary" matPrefix svgIcon="lock"></mat-icon>
                 <input [type]="hide ? 'text' : 'password'"
-                       formControlName="password"
                        autocomplete="new-password"
+                       formControlName="password"
                        matInput
                        placeholder="Password">
                 <mat-error *ngIf="!accountFormGroup.get('password').valid">
@@ -103,10 +103,10 @@
               </mat-form-field>
               <mat-form-field>
                 <input [type]="hide ? 'text' : 'password'"
+                       autocomplete="new-password"
                        formControlName="password2"
                        matInput
-                       placeholder="Confirm Password"
-                       autocomplete="new-password">
+                       placeholder="Confirm Password">
                 <mat-icon (click)="hide = !hide" [svgIcon]="hide ? 'visibility' : 'visibility-off'"
                           color="primary"
                           matSuffix></mat-icon>
@@ -133,10 +133,10 @@
           </div>
         </div>
       </div>
-      <div fxLayout="row" fxFlex="100%">
-        <div fxLayout="column" fxFlex="100%">
+      <div fxFlex="100%" fxLayout="row">
+        <div fxFlex="100%" fxLayout="column">
           <h2 style="margin-bottom: 0 !important; padding-top: 32px">Address</h2>
-          <div [ngClass]="{'line1':true}" [ngClass.xs]="{'line1':false}" fxLayout="column" fxLayoutGap="16px"
+          <div [ngClass.xs]="{'line1':false}" [ngClass]="{'line1':true}" fxLayout="column" fxLayoutGap="16px"
                fxLayoutGap.xs="0">
             <mat-form-field>
               <mat-icon color="primary" matPrefix svgIcon="place"></mat-icon>
@@ -160,7 +160,7 @@
               <mat-icon color="primary" matPrefix svgIcon="domain"></mat-icon>
               <input (keyup)="searchCity($event)" [matAutocomplete]="cityAuto" formControlName="city" matInput
                      placeholder="City">
-              <mat-autocomplete [displayWith]="displayFn" id="city" #cityAuto="matAutocomplete">
+              <mat-autocomplete #cityAuto="matAutocomplete" [displayWith]="displayFn" id="city">
                 <mat-option *ngFor="let city of cities" [value]="city">
                   {{city.name}}
                 </mat-option>

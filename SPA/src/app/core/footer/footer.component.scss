@@ -4,13 +4,8 @@
 
 mat-toolbar {
   padding-top: 40px;
-  font-family: IBM Plex Sans, sans-serif;
-  font-size: 1rem;
-  font-weight: 500;
-  // margin-top: 40px;
   height: auto;
   white-space: normal !important;
-
 }
 
 
@@ -19,6 +14,7 @@ mat-toolbar {
   padding-top: 20px;
   margin-bottom: 0 !important;
   flex: 1 1 auto;
+  color: white;
 
 
   img {

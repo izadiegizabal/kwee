@@ -9,15 +9,16 @@ import {ActivatedRoute, Router} from '@angular/router';
 export class OfferManageBusinessComponent implements OnInit {
   selectedIndex = 1;
 
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute) {
+  constructor(private router: Router,
+              private route: ActivatedRoute) {
   }
 
   ngOnInit() {
     this.route.params.subscribe(params => {
       if (params['id']) {
         this.changeTab(params['id']);
+      } else {
+        this.changeTab(1);
       }
     });
   }

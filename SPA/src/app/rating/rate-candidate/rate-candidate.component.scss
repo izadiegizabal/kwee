@@ -1,7 +1,5 @@
-@import '../../../../node_modules/@angular/material/theming';
-
 div.index {
-  background: mat-color($mat-teal, A400);
+  background: #00BFA5;
   color: white;
   border-radius: 3px;
   height: 22px;
@@ -40,26 +38,26 @@ h2:nth-child(3) {
   margin-top: 8px;
 }
 
-.narrowMarginTop{
+.narrowMarginTop {
   margin-top: 8px;
 }
 
-.narrowMarginBottom{
+.narrowMarginBottom {
   margin-bottom: 8px;
 }
 
-.h4narrowMargins h4{
+.h4narrowMargins h4 {
   margin-top: 8px;
   margin-bottom: 8px;
 }
 
-.noOverflow h4{
+.noOverflow h4 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.maxWidth{
+.maxWidth {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -99,13 +97,13 @@ p:nth-child(4) {
 }
 
 @media only screen and (max-width: 500px) {
-  .maxWidth{
+  .maxWidth {
     max-width: 100px;
   }
 }
 
 @media only screen and (max-width: 370px) {
-  .maxWidth{
+  .maxWidth {
     max-width: 60px;
   }
 }

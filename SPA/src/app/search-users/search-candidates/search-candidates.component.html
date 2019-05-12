@@ -3,6 +3,7 @@
     <h2 class="mat-h1">Search Candidates</h2>
   </div>
   <mat-sidenav-container
+    style="min-height: 1128px"
     fxLayout="column">
 
     <mat-sidenav #drawer
@@ -25,6 +26,7 @@
         fxLayoutAlign="center"
         fxLayoutGap="8px">
         <app-searchbar
+          searchHint="Designer..."
           (search)="onSearch($event)" fxFlex="40%" fxFlex.lt-lg="60%">
         </app-searchbar>
         <app-orderby-button (changeSelectedValue)="getOrderby($event)" [orderBy]="order"

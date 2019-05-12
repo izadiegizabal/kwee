@@ -78,7 +78,7 @@
           *ngFor="let skill of candidate.skills; let i = index"
           style="margin-left: -20px">
           <mat-list-item
-            *ngIf="i % 2 === 0" (click)="searchSkill(skill)" >
+            (click)="searchSkill(skill)" *ngIf="i % 2 === 0">
             <mat-icon color="primary">chevron_right</mat-icon>
             {{' ' + skill.name}}</mat-list-item>
         </div>
@@ -89,7 +89,7 @@
         <div
           *ngFor="let skill of candidate.skills; let i = index"
           style="margin-left: -20px">
-          <mat-list-item *ngIf="i % 2 !== 0" (click)="searchSkill(skill.name)" >
+          <mat-list-item (click)="searchSkill(skill.name)" *ngIf="i % 2 !== 0">
             <mat-icon color="primary">chevron_right</mat-icon>
             {{' ' + skill.name}}</mat-list-item>
         </div>
@@ -162,6 +162,15 @@
           With the premium membership you'll be able to upload files like your CV, recommendation letters or even your
           certifications!
         </p>
+
+        <button
+          color="accent"
+          mat-raised-button
+          routerLink="/plans"
+          style="color: white; margin-bottom: 16px">
+          Upgrade to Premium
+        </button>
+
         <mat-list style="margin-bottom: 16px; opacity: 0.5; font-style: italic">
           <mat-list-item>
             <mat-icon color="primary" mat-list-icon svgIcon="insert-drive-file"></mat-icon>

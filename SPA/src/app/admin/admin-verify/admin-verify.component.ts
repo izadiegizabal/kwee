@@ -18,8 +18,8 @@ import {Title} from '@angular/platform-browser';
 export class AdminVerifyComponent implements OnInit {
 
   // paging
-  pageSize = 5;
-  pageSizeOptions: number[] = [2, 5, 10, 25, 100];
+  pageSize = 10;
+  pageSizeOptions: number[] = [5, 10, 25, 50, 100];
 
   // MatPaginator Output
   pageEvent: PageEvent;
@@ -27,6 +27,7 @@ export class AdminVerifyComponent implements OnInit {
 
   isPanelOpen = false;
   orderby = '0';
+  query: any;
 
 
   workFields = Object
@@ -49,8 +50,11 @@ export class AdminVerifyComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    this.query = {...this.query, status: '1'};
+
     this.titleService.setTitle('Kwee - ' + 'Verify Businesses');
-    this.store$.dispatch(new AdminActions.TryGetBusinesses({page: 1, limit: this.pageSize, params: '', order: this.orderby}));
+    this.store$.dispatch(new AdminActions.TryGetBusinesses({page: 1, limit: this.pageSize, params: this.query, order: this.orderby}));
     this.adminState = this.store$.pipe(select(s => s.admin));
   }
 

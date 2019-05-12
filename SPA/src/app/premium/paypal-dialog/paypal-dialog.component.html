@@ -11,7 +11,7 @@
     </mat-chip-list>
   </p>
 
-  <div class="item item-1" fxFlex="100%" fxFlex.xl="50%" *ngIf="pay!==1" fxLayoutAlign="center">
+  <div *ngIf="pay!==1" class="item item-1" fxFlex="100%" fxFlex.xl="50%" fxLayoutAlign="center">
     <ngx-paypal [config]="payPalConfig"></ngx-paypal>
   </div>
 
@@ -19,7 +19,7 @@
     <mat-chip-list>
       <mat-chip color="accent" selected>Success!</mat-chip>
     </mat-chip-list>
-      Now you have a premium account!
+    Now you have a premium account!
   </p>
 
 </mat-dialog-content>

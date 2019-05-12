@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { BsAccountSettingsComponent } from './bs-account-settings.component';
+import {BsAccountSettingsComponent} from './bs-account-settings.component';
 
 describe('BsAccountSettingsComponent', () => {
   let component: BsAccountSettingsComponent;
@@ -8,9 +8,9 @@ describe('BsAccountSettingsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ BsAccountSettingsComponent ]
+      declarations: [BsAccountSettingsComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

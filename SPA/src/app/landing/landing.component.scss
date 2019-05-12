@@ -1,6 +1,103 @@
+@import "~src/common-utils";
+
 app-searchbar {
   max-width: 700px;
 }
+
+
+// One Page Layout
+
+@mixin background-tint($image_url) {
+  background-image: linear-gradient(rgba(0, 0, 0, .5), rgba(0, 0, 0, .5)),
+  url($image_url)
+}
+
+.classicOnePage {
+  z-index: 10;
+  background-color: white;
+  width: 100%;
+  //margin-top: -832px;
+  margin-top: -48vw;
+
+  h2 {
+    a:link, h2 a:visited {
+      text-decoration: none;
+      color: black;
+    }
+
+    cursor: pointer;
+  }
+
+  .mat-display-3 {
+    margin-bottom: 0;
+  }
+
+  > div {
+    background-color: white;
+    z-index: 15;
+    padding: 32px;
+  }
+
+  > div:nth-child(odd) {
+    background-color: #333;
+  }
+
+  .skew {
+    z-index: 9;
+    background-color: white !important;
+    min-height: 192px;
+    margin-top: -192px;
+    transform: skewY(4deg);
+    transform-origin: top left;
+  }
+}
+
+.quote {
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  color: white;
+  min-height: 448px;
+}
+
+.quotation {
+  max-width: 800px;
+  font-style: italic;
+  margin-bottom: 0;
+
+  p {
+    margin-top: 32px;
+  }
+}
+
+.space-up-down {
+  margin: 32px 0;
+}
+
+.move-up {
+  margin-top: -64px;
+  margin-bottom: 32px;
+}
+
+
+.quote-1 {
+  @include background-tint('../../assets/landing/bg1.jpg');
+}
+
+.quote-2 {
+  text-align: right;
+  @include background-tint('../../assets/landing/bg3.jpg');
+}
+
+.quote-3 {
+  padding-top: 64px !important;
+  padding-bottom: 96px !important;
+  @include background-tint('../../assets/landing/bg2.jpg');
+}
+
+
+// World stuff
 
 .worldContainer {
   margin-top: -144px;
@@ -10,7 +107,7 @@ app-searchbar {
   margin-top: -64px;
 }
 
-
+////////////////////////////////////////////////////////
 // Parallex stars by Saransh Sinha
 
 // n is number of stars required

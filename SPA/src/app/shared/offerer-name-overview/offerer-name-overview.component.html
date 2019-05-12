@@ -5,30 +5,30 @@
 }"
   fxLayout="row">
   <div
-    [style.background-color]="getBGColour()"
-    class="index"
+    (click)="showBreakdown(true)"
+    (clickOutside)="showBreakdown(false)"
     (mouseenter)="showBreakdown(true)"
     (mouseleave)="showBreakdown(false)"
-    (click)="showBreakdown(true)"
-    (clickOutside)="showBreakdown(false)">
+    [style.background-color]="getBGColour()"
+    class="index">
     <span>{{index}}</span>
   </div>
   <div *ngIf="renderBreakdown"
-       class="breakdown mat-typography"
-       [ngClass]="{'show': shownBreakdown, 'hide': !shownBreakdown}">
+       [ngClass]="{'show': shownBreakdown, 'hide': !shownBreakdown}"
+       class="breakdown mat-typography">
     <h3>Index Breakdown</h3>
     <h6>{{candidateIndexBreakdown ? 'Efficiency' : 'Salary'}}</h6>
-    <mat-progress-bar mode="determinate" color="accent" [value]="pb1Value"></mat-progress-bar>
+    <mat-progress-bar [value]="pb1Value" color="accent" mode="determinate"></mat-progress-bar>
     <h6>{{candidateIndexBreakdown ? 'Skills' : 'Environment'}}</h6>
-    <mat-progress-bar mode="determinate" color="accent" [value]="pb2Value"></mat-progress-bar>
+    <mat-progress-bar [value]="pb2Value" color="accent" mode="determinate"></mat-progress-bar>
     <h6>{{candidateIndexBreakdown ? 'Punctuality' : 'Partners'}}</h6>
-    <mat-progress-bar mode="determinate" color="accent" [value]="pb3Value"></mat-progress-bar>
+    <mat-progress-bar [value]="pb3Value" color="accent" mode="determinate"></mat-progress-bar>
     <h6>{{candidateIndexBreakdown ? 'Hygiene' : 'Services'}}</h6>
-    <mat-progress-bar mode="determinate" color="accent" [value]="pb4Value"></mat-progress-bar>
+    <mat-progress-bar [value]="pb4Value" color="accent" mode="determinate"></mat-progress-bar>
     <h6>{{candidateIndexBreakdown ? 'Teamwork' : 'Installations'}}</h6>
-    <mat-progress-bar mode="determinate" color="accent" [value]="pb4Value"></mat-progress-bar>
+    <mat-progress-bar [value]="pb4Value" color="accent" mode="determinate"></mat-progress-bar>
     <h6>Satisfaction</h6>
-    <mat-progress-bar mode="determinate" color="accent" [value]="pb5Value"></mat-progress-bar>
+    <mat-progress-bar [value]="pb5Value" color="accent" mode="determinate"></mat-progress-bar>
   </div>
   <p>{{name}}</p>
 </div>

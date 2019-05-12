@@ -44,15 +44,12 @@ export class OfferManageEffects {
           + '/offers?page=' + payload.page + '&limit=' + payload.limit
           + '&summary=0';
 
-        console.log(apiEndpointUrl);
-
         if (payload.status !== -1) {
           apiEndpointUrl = apiEndpointUrl + '&status=' + payload.status;
         }
 
         // const token = authState.token;
         // const headers = new HttpHeaders().set('token', token);
-        // console.log(apiEndpointUrl);
         return this.httpClient.get(apiEndpointUrl).pipe(
           map((res: {
             ok: boolean,
@@ -100,7 +97,6 @@ export class OfferManageEffects {
 
         const token = authState.token;
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
-        // console.log(apiEndpointUrl);
 
         return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
           map((res: {
@@ -112,7 +108,6 @@ export class OfferManageEffects {
             },
             count: number,
           }) => {
-            // console.log(res);
             return {
               type: OfferManageActions.SET_OFFERS_APPLICANT,
               payload: res,
@@ -141,7 +136,6 @@ export class OfferManageEffects {
     }),
     withLatestFrom(this.store$.pipe(select(state => state.auth))),
     switchMap(([payload, authState]) => {
-        console.log(payload);
         const apiEndpointUrl = environment.apiUrl + 'offer/' + payload.offerId;
         const token = authState.token;
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
@@ -151,7 +145,6 @@ export class OfferManageEffects {
             ok: boolean,
           }) => {
             if (res.ok) {
-              console.log(res);
               return {
                 type: OfferManageActions.SET_CHANGE_OFFER_STATUS,
                 payload: {offerId: payload.offerId, newStatus: payload.newStatus},
@@ -167,7 +160,6 @@ export class OfferManageEffects {
           }),
           catchError((err: HttpErrorResponse) => {
             throwError(this.handleError('getOffersOfferer', err));
-            console.log(err);
             return [
               {
                 type: OfferManageActions.OPERATION_ERROR,
@@ -240,7 +232,6 @@ export class OfferManageEffects {
   );
 
 
-
   @Effect()
   GetApplicationsAccepted = this.actions$.pipe(
     ofType(OfferManageActions.TRY_GET_APPLICATIONS_ACCEPTED),
@@ -249,9 +240,9 @@ export class OfferManageEffects {
     }),
     withLatestFrom(this.store$.pipe(select(state => state.auth))),
     switchMap(([payload, authState]) => {
-      const token = authState.token;
-      const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
-      const apiEndpointUrl = environment.apiUrl + 'application/' + payload.id +
+        const token = authState.token;
+        const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+        const apiEndpointUrl = environment.apiUrl + 'application/' + payload.id +
           '?page=' + payload.page + '&limit=' + payload.limit + '&status=' + payload.status;
 
         return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
@@ -261,7 +252,6 @@ export class OfferManageEffects {
             data: any[],
             total: number,
           }) => {
-            console.log(res);
             if (res.ok) {
               return {
                 type: OfferManageActions.SET_APPLICATIONS_ACCEPTED,
@@ -315,11 +305,11 @@ export class OfferManageEffects {
                 this.refreshCandidates();
               } else {
                 this.store$.dispatch(new OfferManageActions.TryGetOffersApplicant({
-                    id: payload.candidateId,
-                    page: 1,
-                    limit: 10,
-                    status: payload.refreshStatus
-                  }));
+                  id: payload.candidateId,
+                  page: 1,
+                  limit: 10,
+                  status: payload.refreshStatus
+                }));
               }
               return {
                 type: OfferManageActions.SET_CHANGE_APPLICATION_STATUS,
@@ -337,7 +327,6 @@ export class OfferManageEffects {
           }),
           catchError((err: HttpErrorResponse) => {
             throwError(this.handleError('getOffersOfferer', err));
-            console.log(err);
             return [
               {
                 type: OfferManageActions.OPERATION_ERROR,
@@ -384,7 +373,6 @@ export class OfferManageEffects {
           }),
           catchError((err: HttpErrorResponse) => {
             throwError(this.handleError('getOffersOfferer', err));
-            console.log(err);
             return [
               {
                 type: OfferManageActions.OPERATION_ERROR,

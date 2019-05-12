@@ -1,4 +1,5 @@
-<div fxLayout="row" *ngIf="(adminState | async).candidates && (adminState | async).candidates.data" style="padding-bottom: 8px">
+<div fxLayout="row" *ngIf="(adminState | async).candidates && (adminState | async).candidates.data"
+     style="padding-bottom: 8px">
   <mat-accordion fxFlex="99%">
     <mat-expansion-panel
       (closed)="isPanelOpen = !isPanelOpen; isInEditMode = false; userForm.reset()"
@@ -8,8 +9,8 @@
         <mat-panel-title fxFlex="75%"
                          fxFlex.gt-lg="30%" fxFlex.gt-md="35%" fxFlex.gt-sm="40%" fxLayoutAlign="start center">
           <app-offerer-name-overview
-            [index]="user.index? user.index: 88"
             [candidateIndexBreakdown]="user.avg"
+            [index]="user.index? user.index: 88"
             [name]="user.name">
           </app-offerer-name-overview>
         </mat-panel-title>
@@ -177,9 +178,10 @@
   </mat-accordion>
 </div>
 
-<mat-paginator [length]="(adminState | async).candidates.total"
+<mat-paginator *ngIf="(adminState | async).candidates.total"
+               [length]="(adminState | async).candidates.total"
                [pageSize]="pageSize"
                [pageSizeOptions]="pageSizeOptions"
-               (page)="pageEvent = $event; changepage();">
+               [pageSize]="pageSize">
 </mat-paginator>
 

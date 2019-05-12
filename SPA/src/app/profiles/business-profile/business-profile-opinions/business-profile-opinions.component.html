@@ -1,5 +1,5 @@
 <div
-  *ngIf="(profilesState | async).opinions; else noOpinions"
+  *ngIf="((profilesState | async).opinions && errorOpinion==false); else noOpinions"
   fxFlex="92%"
   fxFlex.gt-sm="60%"
   fxFlexOffset="4%"
@@ -105,7 +105,7 @@
 </div>
 
 <ng-template #noOpinions>
-  <div fxLayoutAlign="center center" fxLayout="column" style="margin: 16px; min-height: 384px">
+  <div fxLayout="column" fxLayoutAlign="center center" style="margin: 16px; min-height: 384px">
     <img alt="Iwi Mascot" src="../../../../assets/branding/iwi.svg" width="128px"/>
     <p>Sorry, there aren't any opinions yet.</p>
   </div>
