@@ -174,7 +174,7 @@ module.exports = (app, db) => {
                     ok: true,
                     message: `Listing all notifications of user id: ${id}`,
                     data: notificationsToShow,
-                    unreaded: numOfUnread.count,
+                    unread: numOfUnread.count,
                     total: count.count,
                     page,
                     limit,
