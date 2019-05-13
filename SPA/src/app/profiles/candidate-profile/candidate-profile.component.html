@@ -1,15 +1,15 @@
 <div *ngIf="(profilesState | async).candidate" fxLayout="column" fxLayoutGap="16px" style="padding-bottom: 32px">
-  <div fxLayout="row">
+  <div fxLayout="row" style="padding-top: 16px">
     <button (click)="backClicked()"
-            fxFlexOffset="0"
-            fxFlexOffset.gt-md="10%" fxFlexOffset.gt-sm="9.5%" mat-icon-button>
+            fxFlexOffset="2.5%" fxFlexOffset.gt-md="15%" fxFlexOffset.gt-sm="9.5%"
+            mat-icon-button>
       <mat-icon class="svg" color="primary" svgIcon="back"></mat-icon>
     </button>
   </div>
   <div fxLayout="row" fxLayoutAlign="center start">
     <div
       fxFlex="95%"
-      fxFlex.gt-md="=70%"
+      fxFlex.gt-md="70%"
       fxFlex.gt-sm="80%">
       <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap.lt-sm="16px">
         <!-- Basic info -->

@@ -16,6 +16,8 @@ import {Title} from '@angular/platform-browser';
 import {HttpClient} from '@angular/common/http';
 
 import * as jspdf from 'jspdf';
+import {MatDialog} from '@angular/material';
+import {MaxApplicationsDialogComponent} from './max-applications-dialog/max-applications-dialog.component';
 
 @Component({
   selector: 'app-offer-detail',
@@ -44,7 +46,8 @@ export class OfferDetailComponent implements OnInit {
     private offerEffects$: OfferEffects,
     private router: Router,
     private http: HttpClient,
-    private location: Location) {
+    private location: Location,
+    public dialog: MatDialog) {
   }
 
   static getDate(dt: Date) {
@@ -184,6 +187,19 @@ export class OfferDetailComponent implements OnInit {
   postApplication() {
     const params = this.activatedRoute.snapshot.params;
     this.store$.dispatch(new OfferActions.TryPostApplication({fk_offer: params.id}));
+
+    this.offerEffects$.offerPostApplication.pipe(
+      filter((action: Action) => action.type === OfferActions.OPERATION_ERROR)
+    ).subscribe((error: { payload: any, type: string }) => {
+      if (error.payload === 'Sorry, the maximum applications to basic users are 5') {
+        this.dialog.open(MaxApplicationsDialogComponent, {
+          data: {
+            header: 'You have already applied for 5 offers, ' +
+              'if you want to apply for more join to our Premium plan and sign up for as many as you want!'
+          }
+        });
+      }
+    });
   }
 
   deleteApplication() {
