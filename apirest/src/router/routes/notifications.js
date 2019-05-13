@@ -122,6 +122,7 @@ module.exports = (app, db) => {
                 var offset = req.query.limit * (req.query.page - 1)
                 attr.limit = limit;
                 attr.offset = offset;
+                attr.order = [['id', 'DESC']];
             }
 
             let count = await db.notifications.findAndCountAll({ where });
@@ -142,6 +143,7 @@ module.exports = (app, db) => {
                 });
                 let offers = await db.offers.findAll();
                 let ratings = await db.ratings.findAll();
+                let numOfUnread = await db.notifications.findAndCountAll({ where: { to: id, read: 0 }});
 
                 notifications.forEach( notification => {
                     let object = {};
@@ -172,9 +174,10 @@ module.exports = (app, db) => {
                     ok: true,
                     message: `Listing all notifications of user id: ${id}`,
                     data: notificationsToShow,
+                    unreaded: numOfUnread.count,
                     total: count.count,
                     page,
-                    limit
+                    limit,
                 });
             } else {
                 next({type: 'error', error: 'You do not have notifications'});
