@@ -13,7 +13,8 @@ module.exports = (app, db) => {
         checkToken,
         async (req, res, next) => {
             try {
-                await logger.saveLog('GET', 'applicant_educations', null, res);
+                var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+                await logger.saveLog('GET', 'applicant_educations', null, res, req.useragent, ip);
 
                 return res.status(200).json({
                     ok: true,

@@ -12,7 +12,8 @@ module.exports = (app, db) => {
     // GET all social_networks
     app.get('/social_networks', checkToken, async (req, res, next) => {
         try {
-            await logger.saveLog('GET', 'social_networks', null, res);
+            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            await logger.saveLog('GET', 'social_networks', null, res, req.useragent, ip);
 
             return res.status(200).json({
                 ok: true,
@@ -40,11 +41,12 @@ module.exports = (app, db) => {
 
     // GET social_networks by page limit to 10 social_networks/page
     app.get('/social_networks/:page([0-9]+)/:limit([0-9]+)', async (req, res, next) => {
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         let limit = Number(req.params.limit);
         let page = Number(req.params.page);
 
         try {
-            await logger.saveLog('GET', `social_networks/${page}`, null, res);
+            await logger.saveLog('GET', `social_networks/${page}`, null, res, req.useragent, ip);
 
             let count = await db.social_networks.findAndCountAll();
             let pages = Math.ceil(count.count / limit);

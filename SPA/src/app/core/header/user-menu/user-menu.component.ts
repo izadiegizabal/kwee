@@ -6,7 +6,6 @@ import {Observable} from 'rxjs';
 import * as fromAuth from '../../../auth/store/auth.reducers';
 import {getUrlfiedString} from '../../../shared/utils.service';
 import {MessagesService} from '../../../services/messages.service';
-import {NotificationsService} from '../../../services/notifications.service';
 import * as fromMessages from '../../../messages/store/message.reducers';
 
 @Component({

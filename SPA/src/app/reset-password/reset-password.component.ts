@@ -23,8 +23,8 @@ export class ResetPasswordComponent implements OnInit {
   token: String;
 
   isOkay = 0;
-  private errorMsg: string;
   authState: Observable<fromAuth.State>;
+  private errorMsg: string;
 
 
   // 0 = nothing done, 1 = changed correctly, 2 = error while changing password
@@ -105,6 +105,12 @@ export class ResetPasswordComponent implements OnInit {
 
   }
 
+  signIn() {
+    this.authState = this.store$.pipe(select('auth'));
+    this.store$.dispatch(new AuthActions.TrySignin(
+      {email: null, password: this.onlyFormGroup.controls['password'].value, token: this.token}));
+  }
+
   private showResult(ok: boolean, message: string) {
     if (!ok) {
       this.isOkay = 2;
@@ -113,11 +119,5 @@ export class ResetPasswordComponent implements OnInit {
       this.isOkay = 1;
     }
 
-  }
-
-  signIn() {
-    this.authState = this.store$.pipe(select('auth'));
-    this.store$.dispatch(new AuthActions.TrySignin(
-      {email: null, password: this.onlyFormGroup.controls['password'].value, token: this.token}));
   }
 }

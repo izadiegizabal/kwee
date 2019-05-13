@@ -1,6 +1,8 @@
 <div fxLayout="column">
   <h2 class="mat-h1" style="margin-left: 16px">Search Businesses</h2>
-  <mat-sidenav-container fxLayout="column" style="margin-top: 16px">
+  <mat-sidenav-container
+    fxLayout="column"
+    style="margin-top: 16px; min-height: 440px">
 
     <mat-sidenav #drawer
                  [autoFocus]="false"
@@ -23,6 +25,7 @@
         fxLayoutAlign="center"
         fxLayoutGap="8px">
         <app-searchbar
+          searchHint="Facebook..."
           (search)="onSearch($event)" fxFlex="40%" fxFlex.lt-lg="60%">
         </app-searchbar>
         <app-orderby-button (changeSelectedValue)="getOrderby($event)" [orderBy]="order"

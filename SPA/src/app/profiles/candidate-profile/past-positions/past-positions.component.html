@@ -8,12 +8,12 @@
     Past Positions
   </h2>
   <p>Here you can see the past positions where this candidate has worked in Kwee.</p>
-<app-past-position-card [offer]="offer" *ngFor="let offer of applications"></app-past-position-card>
+  <app-past-position-card *ngFor="let offer of applications" [offer]="offer"></app-past-position-card>
 </div>
 <ng-template #noOffers>
   <div
-    fxLayoutAlign="center center"
     fxLayout="column"
+    fxLayoutAlign="center center"
     style="margin: 16px; min-height: 384px">
     <img alt="Iwi Mascot" src="../../../../assets/branding/iwi.svg" width="128px"/>
     <p>Sorry, there aren't any past positions of this applicant in Kwee yet.</p>

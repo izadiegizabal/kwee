@@ -1,5 +1,5 @@
 <div class="container filters" fxFlex="100%" fxLayout="column">
-  <h2>Filters</h2>
+  <h2 style="margin-top: 16px">Filters</h2>
   <form [formGroup]="filters">
 
     <h3>Min Business' Index</h3>
@@ -9,7 +9,8 @@
 
     <mat-form-field>
       <input formControlName="location" matInput placeholder="Location" type="text">
-      <button (click)="filters.controls['location'].reset('')" *ngIf="filters.controls['location'].value" aria-label="Clear"
+      <button (click)="filters.controls['location'].reset('')" *ngIf="filters.controls['location'].value"
+              aria-label="Clear"
               mat-button mat-icon-button
               matSuffix
               type="button">

@@ -1,5 +1,5 @@
 <h2 class="mat-h1">Verify Profiles</h2>
-<div fxLayout="row" *ngIf="(adminState | async).businesses && (adminState | async).businesses.data">
+<div fxLayout="row" *ngIf="((adminState | async).businesses && (adminState | async).businesses.data); else noProfiles">
   <mat-accordion fxFlex="99%">
     <mat-expansion-panel
       (closed)="isPanelOpen = !isPanelOpen;"
@@ -10,8 +10,8 @@
                          fxFlex.gt-lg="30%" fxFlex.gt-md="35%" fxFlex.gt-sm="40%" fxLayoutAlign="start center"
                          fxLayoutGap="8px">
           <app-offerer-name-overview
-            [index]="user.index"
             [businessIndexBreakdown]="user.avg"
+            [index]="user.index"
             [name]="user.name">
           </app-offerer-name-overview>
         </mat-panel-title>
@@ -117,10 +117,18 @@
   </mat-accordion>
 </div>
 
-<mat-paginator [length]="(adminState | async).businesses.total"
+<ng-template #noProfiles>
+  <div fxLayoutAlign="center center" fxLayout="column" style="margin: 16px; min-height: 384px">
+    <img alt="Iwi Mascot" src="../../../../assets/branding/iwi.svg" width="128px"/>
+    <p>There aren't any businesses to verify</p>
+  </div>
+</ng-template>
+
+<mat-paginator *ngIf="(adminState | async).businesses.total"
+                [length]="(adminState | async).businesses.total"
                [pageSize]="pageSize"
                [pageSizeOptions]="pageSizeOptions"
-               (page)="pageEvent = $event; changepage();">
+               [pageSize]="pageSize">
 </mat-paginator>
 
 <!-- [hidePageSize]="true" -->

@@ -6,7 +6,7 @@
 
   <app-chat-dialog></app-chat-dialog>
 
-  <div class="content" [@routeAnimations]="prepareRoute(outlet)">
+  <div [@routeAnimations]="prepareRoute(outlet)" class="content">
     <router-outlet #outlet="outlet" (activate)="onActivate($event)" (deactivate)="onDeactivate($event)"></router-outlet>
   </div>
 

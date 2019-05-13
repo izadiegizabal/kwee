@@ -1,5 +1,4 @@
 @import "../../../../common-utils";
-@import '../../../../../node_modules/@angular/material/theming';
 
 
 mat-card {
@@ -24,7 +23,7 @@ mat-card-title {
 
 app-icon-with-text {
   font-size: 0.85rem;
-  color: mat-color($mat-blue-gray, 700);
+  color: #212121;
 }
 
 img {

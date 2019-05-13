@@ -82,7 +82,8 @@
         <div *ngIf="!isSocialNetwork" fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
           <mat-form-field>
             <mat-icon color="primary" matPrefix svgIcon="lock"></mat-icon>
-            <input [type]="hide ? 'text' : 'password'" autocomplete="new-password" formControlName="password" matInput placeholder="Password"
+            <input [type]="hide ? 'text' : 'password'" autocomplete="new-password" formControlName="password" matInput
+                   placeholder="Password"
                    required>
             <mat-error *ngIf="!secondFormGroup.get('password').valid ">
               Password must be 6 characters or more
@@ -381,5 +382,3 @@
     </form>
   </mat-step>
 </mat-horizontal-stepper>
-
-<!--matStepperNext-->

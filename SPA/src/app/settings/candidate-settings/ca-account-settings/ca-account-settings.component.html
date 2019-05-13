@@ -1,4 +1,4 @@
-<div fxLayout="row" fxFlex="100%">
+<div fxFlex="100%" fxLayout="row">
   <form [formGroup]="secondFormGroup"
         fxFlex="75%"
         fxFlex.lt-lg="90%"
@@ -47,19 +47,19 @@
           <mat-form-field>
             <mat-icon color="primary" matPrefix svgIcon="lock"></mat-icon>
             <input [type]="hide ? 'text' : 'password'"
+                   autocomplete="new-password"
                    formControlName="password"
                    matInput
-                   placeholder="Password"
-                   autocomplete="new-password">
+                   placeholder="Password">
             <mat-error *ngIf="!secondFormGroup.get('password').valid ">
               Password must be 6 characters or more
             </mat-error>
           </mat-form-field>
           <mat-form-field>
             <input [type]="hide ? 'text' : 'password'"
+                   autocomplete="new-password"
                    formControlName="password2"
                    matInput
-                   autocomplete="new-password"
                    placeholder="Confirm Password">
             <mat-icon (click)="hide = !hide" [svgIcon]="hide ? 'visibility' : 'visibility-off'" color="primary"
                       matSuffix></mat-icon>

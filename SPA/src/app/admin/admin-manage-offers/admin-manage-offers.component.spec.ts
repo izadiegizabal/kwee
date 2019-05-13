@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { AdminManageOffersComponent } from './admin-manage-offers.component';
+import {AdminManageOffersComponent} from './admin-manage-offers.component';
 
 describe('AdminManageOffersComponent', () => {
   let component: AdminManageOffersComponent;
@@ -8,9 +8,9 @@ describe('AdminManageOffersComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AdminManageOffersComponent ]
+      declarations: [AdminManageOffersComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

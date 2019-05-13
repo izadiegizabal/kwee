@@ -24,16 +24,6 @@ import * as jspdf from 'jspdf';
 })
 export class OfferDetailComponent implements OnInit {
 
-  constructor(
-    private titleService: Title,
-    private store$: Store<fromApp.AppState>,
-    private activatedRoute: ActivatedRoute,
-    private offerEffects$: OfferEffects,
-    private router: Router,
-    private http: HttpClient,
-    private location: Location) {
-  }
-
   offerSkills: [' '];
   offerState: Observable<fromOffer.State>;
   authState: any;
@@ -46,6 +36,16 @@ export class OfferDetailComponent implements OnInit {
   image: any;
   offer: any;
   JSONData: any;
+
+  constructor(
+    private titleService: Title,
+    private store$: Store<fromApp.AppState>,
+    private activatedRoute: ActivatedRoute,
+    private offerEffects$: OfferEffects,
+    private router: Router,
+    private http: HttpClient,
+    private location: Location) {
+  }
 
   static getDate(dt: Date) {
     const date = new Date(dt);
@@ -218,7 +218,7 @@ export class OfferDetailComponent implements OnInit {
   }
 
   searchSkill(skill) {
-   // console.log(skill);
+    // console.log(skill);
     this.router.navigate(['/candidate-home'], {queryParams: {keywords: skill}});
 
   }

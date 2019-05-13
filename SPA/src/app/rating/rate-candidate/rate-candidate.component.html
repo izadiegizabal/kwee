@@ -9,15 +9,15 @@
       <h2 class="narrowMarginTop">Details</h2>
       <p class="narrowMarginBottom">All the detail star ratings are required.</p>
       <div
+        [ngClass.gt-sm]="{'noOverflow': false}"
+        [ngClass.lt-md]="{'noOverflow': true}"
         class="stars"
-        fxLayout="row"
-        fxLayout.lt-sm="column"
-        fxLayoutGap.gt-xs="16px" class="h4narrowMargins"
-        [ngClass.lt-md]="{'noOverflow': true}" [ngClass.gt-sm]="{'noOverflow': false}">
+        class="h4narrowMargins" fxLayout="row"
+        fxLayout.lt-sm="column" fxLayoutGap.gt-xs="16px">
         <div
           fxFlex="30%"
           fxFlex.lt-sm="100%"
-          fxLayout="column" >
+          fxLayout="column">
           <h4 *ngIf="data.candidate">Efficiency</h4>
           <h4 *ngIf="!data.candidate">Facilities</h4>
           <mat-form-field class="noUnderline">
@@ -105,14 +105,16 @@
             <mat-expansion-panel [(expanded)]="toggle.checked">
               <mat-expansion-panel-header>
                 <mat-panel-title>
-                  <div class="index" [style.background-color]="getBGColour()"><span>{{getIndex(i)}}</span></div>
-                  <p [ngClass.xs]="{'maxWidth': true}" [ngClass.gt-xs]="{'maxWidth': false}" >{{getName(i)}}</p>
+                  <div [style.background-color]="getBGColour()" class="index"><span>{{getIndex(i)}}</span></div>
+                  <p [ngClass.gt-xs]="{'maxWidth': false}" [ngClass.xs]="{'maxWidth': true}">{{getName(i)}}</p>
                 </mat-panel-title>
                 <mat-panel-description fxLayoutAlign="end">
-                  <div *ngIf="!getRated(i) " fxLayout="row" fxAlign="center" fxLayoutGap="8px"><span fxHide.xs>Unrated</span>
+                  <div *ngIf="!getRated(i) " fxAlign="center" fxLayout="row" fxLayoutGap="8px"><span
+                    fxHide.xs>Unrated</span>
                     <mat-icon color="warn" svgIcon="error"></mat-icon>
                   </div>
-                  <div *ngIf="getRated(i) " fxLayout="row" fxAlign="center" fxLayoutGap="8px"><span fxHide.xs>Rated</span>
+                  <div *ngIf="getRated(i) " fxAlign="center" fxLayout="row" fxLayoutGap="8px"><span
+                    fxHide.xs>Rated</span>
                     <mat-icon color="accent" svgIcon="check-circle"></mat-icon>
                   </div>
                 </mat-panel-description>
@@ -120,24 +122,24 @@
               <h2>Rate {{getName(i)}}</h2>
               <h3>Opinion</h3>
               <mat-form-field class="example-full-width">
-                <textarea matInput placeholder="Opinion" formControlName="opinion"></textarea>
+                <textarea formControlName="opinion" matInput placeholder="Opinion"></textarea>
               </mat-form-field>
               <h3>Details</h3>
               <p>All the detail star ratings are required.</p>
               <div
+                [ngClass.gt-sm]="{'noOverflow': false}"
+                [ngClass.lt-md]="{'noOverflow': true}"
                 class="stars"
                 fxLayout="row"
-                fxLayout.lt-sm="column"
-                fxLayoutGap.gt-xs="16px"
-                [ngClass.lt-md]="{'noOverflow': true}" [ngClass.gt-sm]="{'noOverflow': false}">
+                fxLayout.lt-sm="column" fxLayoutGap.gt-xs="16px">
                 <div
-                  fxLayout="column"
                   fxFlex="30%"
-                  fxFlex.lt-sm="100%">
+                  fxFlex.lt-sm="100%"
+                  fxLayout="column">
                   <h4 *ngIf="data.candidate">Efficiency</h4>
                   <h4 *ngIf="!data.candidate">Facilities</h4>
                   <mat-form-field class="noUnderline">
-                    <star-rating-control [starType]="'svg'" [hoverEnabled]="true"
+                    <star-rating-control [hoverEnabled]="true" [starType]="'svg'"
                                          formControlName="one"></star-rating-control>
                     <input [hidden]="true" formControlName="one_aux" matInput required>
                     <mat-error *ngIf="!form.get('array').controls[i].controls.one_aux.valid">
@@ -148,7 +150,7 @@
                   <h4 *ngIf="data.candidate">Punctuality</h4>
                   <h4 *ngIf="!data.candidate">Working Environment</h4>
                   <mat-form-field class="noUnderline">
-                    <star-rating-control [starType]="'svg'" [hoverEnabled]="true"
+                    <star-rating-control [hoverEnabled]="true" [starType]="'svg'"
                                          formControlName="two"></star-rating-control>
                     <input [hidden]="true" formControlName="two_aux" matInput required>
                     <mat-error *ngIf="!form.get('array').controls[i].controls.two_aux.valid">
@@ -157,13 +159,13 @@
                   </mat-form-field>
                 </div>
                 <div
-                  fxLayout="column"
                   fxFlex="30%"
-                  fxFlex.lt-sm="100%">
+                  fxFlex.lt-sm="100%"
+                  fxLayout="column">
                   <h4 *ngIf="data.candidate">Skills</h4>
                   <h4 *ngIf="!data.candidate">Salary</h4>
                   <mat-form-field class="noUnderline">
-                    <star-rating-control [starType]="'svg'" [hoverEnabled]="true"
+                    <star-rating-control [hoverEnabled]="true" [starType]="'svg'"
                                          formControlName="three"></star-rating-control>
                     <input [hidden]="true" formControlName="three_aux" matInput required>
                     <mat-error *ngIf="!form.get('array').controls[i].controls.three_aux.valid">
@@ -173,7 +175,7 @@
                   <h4 *ngIf="data.candidate">Hygiene</h4>
                   <h4 *ngIf="!data.candidate">Coworkers</h4>
                   <mat-form-field class="noUnderline">
-                    <star-rating-control [starType]="'svg'" [hoverEnabled]="true"
+                    <star-rating-control [hoverEnabled]="true" [starType]="'svg'"
                                          formControlName="four"></star-rating-control>
                     <input [hidden]="true" formControlName="four_aux" matInput required>
                     <mat-error *ngIf="!form.get('array').controls[i].controls.four_aux.valid">
@@ -182,13 +184,13 @@
                   </mat-form-field>
                 </div>
                 <div
-                  fxLayout="column"
                   fxFlex="30%"
-                  fxFlex.lt-sm="100%">
+                  fxFlex.lt-sm="100%"
+                  fxLayout="column">
                   <h4 *ngIf="data.candidate">Teamwork</h4>
                   <h4 *ngIf="!data.candidate">Services</h4>
                   <mat-form-field class="noUnderline">
-                    <star-rating-control [starType]="'svg'" [hoverEnabled]="true"
+                    <star-rating-control [hoverEnabled]="true" [starType]="'svg'"
                                          formControlName="five"></star-rating-control>
                     <input [hidden]="true" formControlName="five_aux" matInput required>
                     <mat-error *ngIf="!form.get('array').controls[i].controls.five_aux.valid">
@@ -197,7 +199,7 @@
                   </mat-form-field>
                   <h4>Overall Satisfaction</h4>
                   <mat-form-field class="noUnderline">
-                    <star-rating-control [starType]="'svg'" [hoverEnabled]="true"
+                    <star-rating-control [hoverEnabled]="true" [starType]="'svg'"
                                          formControlName="six"></star-rating-control>
                     <input [hidden]="true" formControlName="six_aux" matInput required>
                     <mat-error *ngIf="!form.get('array').controls[i].controls.six_aux.valid">
@@ -211,13 +213,13 @@
                    fxLayoutAlign="end" fxLayoutGap="0"
                    fxLayoutGap.gt-sm="8px">
                 <div>
-                  <button id="{{ 'close' + i }}" mat-button color="primary" type="button"
-                          (click)="toggle.checked = false">Close
+                  <button (click)="toggle.checked = false" color="primary" id="{{ 'close' + i }}" mat-button
+                          type="button">Close
                   </button>
                 </div>
                 <div>
-                  <button *ngIf="!getRated(i)" mat-raised-button color="primary" type="button"
-                          (click)="toggle.checked = rate(i)">Rate
+                  <button (click)="toggle.checked = rate(i)" *ngIf="!getRated(i)" color="primary" mat-raised-button
+                          type="button">Rate
                   </button>
                 </div>
               </div>

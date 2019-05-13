@@ -38,11 +38,7 @@ export class CaProfileSettingsComponent implements OnInit {
   authState: Observable<fromAuth.State>;
   profilesState: Observable<fromProfiles.State>;
   apiURL = environment.apiUrl;
-
-  // Control variables
-  private dialogShown = false;
   iskill = 0;
-
   // Form
   thirdFormGroup: FormGroup;
   fileEvent = null;
@@ -51,6 +47,8 @@ export class CaProfileSettingsComponent implements OnInit {
     .keys(LanguageLevels)
     .filter(isStringNotANumber)
     .map(key => ({value: LanguageLevels[key], viewValue: key}));
+  // Control variables
+  private dialogShown = false;
 
   constructor(private _formBuilder: FormBuilder,
               public dialog: MatDialog,
@@ -59,6 +57,20 @@ export class CaProfileSettingsComponent implements OnInit {
               private httpClient: HttpClient) {
     this.iskill = -1;
   }
+
+  /// Skills ////
+  get formSkills() {
+    return <FormArray>this.thirdFormGroup.get('skills');
+  }
+
+  /// Languages ///
+  get formLanguages() {
+    return <FormArray>this.thirdFormGroup.get('languages');
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Helper methods ////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   ngOnInit() {
     // Get profile
@@ -169,91 +181,6 @@ export class CaProfileSettingsComponent implements OnInit {
     this.submitUpdate(update);
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  // Helper methods ////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////
-
-  // Prefill form with stored data
-  private prefillSNS(candidate: any) {
-    if (candidate.social_networks.twitter) {
-      this.thirdFormGroup.controls['twitter'].setValue(candidate.social_networks.twitter);
-    } else {
-      this.thirdFormGroup.controls['twitter'].setValue('');
-    }
-
-    if (candidate.social_networks.linkedin) {
-      this.thirdFormGroup.controls['linkedIn'].setValue(candidate.social_networks.linkedin);
-    } else {
-      this.thirdFormGroup.controls['linkedIn'].setValue('');
-    }
-
-    if (candidate.social_networks.github) {
-      this.thirdFormGroup.controls['github'].setValue(candidate.social_networks.github);
-    } else {
-      this.thirdFormGroup.controls['github'].setValue('');
-    }
-
-    if (candidate.social_networks.telegram) {
-      this.thirdFormGroup.controls['telegram'].setValue(candidate.social_networks.telegram);
-    } else {
-      this.thirdFormGroup.controls['telegram'].setValue('');
-    }
-  }
-
-  private prefillLanguages(languages: { language: string, applicant_languages: { level: string } }[]) {
-    if ((<FormArray>this.thirdFormGroup.controls['languages'].value).length === 0) {
-      for (const language of languages) {
-        (<FormArray>this.thirdFormGroup.controls['languages']).push(
-          this._formBuilder.group({
-            'language': new FormControl(language.language, Validators.required),
-            'level': new FormControl(language.applicant_languages.level, Validators.required)
-          }));
-      }
-    }
-  }
-
-  private prefillExperiences(experiences: any[]) {
-    if ((<FormArray>this.thirdFormGroup.controls['experience'].value).length === 0) {
-      for (const experience of experiences) {
-        (<FormArray>this.thirdFormGroup.controls['experience']).push(
-          this._formBuilder.group({
-            'title': new FormControl(experience.title, Validators.required),
-            'start': new FormControl(moment(experience.dateStart), [ExperienceFormsComponent.maxMinDate, ExperienceFormsComponent.maxDate]),
-            'end': new FormControl(moment(experience.dateEnd), [ExperienceFormsComponent.maxMinDate, ExperienceFormsComponent.maxDate]),
-            'description': new FormControl(experience.description)
-          }));
-      }
-    }
-  }
-
-  private prefillEducation(educations: any[]) {
-    if ((<FormArray>this.thirdFormGroup.controls['education'].value).length === 0) {
-      for (const education of educations) {
-        (<FormArray>this.thirdFormGroup.controls['education']).push(
-          this._formBuilder.group({
-            'title': new FormControl(education.title, Validators.required),
-            'institution': new FormControl(education.applicant_educations.institution),
-            'start': new FormControl(moment(education.applicant_educations.dateStart), EducationFormsComponent.maxMinDate),
-            'end': new FormControl(moment(education.applicant_educations.dateEnd), EducationFormsComponent.maxMinDate),
-            'description': new FormControl(education.applicant_educations.description)
-          }));
-      }
-    }
-  }
-
-  private prefillSkills(skills: any[]) {
-    if ((<FormArray>this.thirdFormGroup.controls['skills'].value).length === 0) {
-      for (const skill of skills) {
-        (<FormArray>this.thirdFormGroup.controls['skills']).push(new FormControl(skill.name));
-        this.iskill++;
-      }
-      if ((<FormArray>this.thirdFormGroup.controls['skills'].value).length === 0) {
-        (<FormArray>this.thirdFormGroup.controls['skills']).push(new FormControl(null));
-        this.iskill++;
-      }
-    }
-  }
-
   // Submit modified candidate
   submitUpdate(update: any) {
     const options = {
@@ -347,16 +274,9 @@ export class CaProfileSettingsComponent implements OnInit {
     return educations;
   }
 
-  ///////////////////////////////
   // Form
   formInitialized(name: string, form: FormGroup) {
     this.thirdFormGroup.setControl(name, form);
-  }
-
-
-  /// Skills ////
-  get formSkills() {
-    return <FormArray>this.thirdFormGroup.get('skills');
   }
 
   add_skill() {
@@ -373,10 +293,7 @@ export class CaProfileSettingsComponent implements OnInit {
     this.iskill--;
   }
 
-  /// Languages ///
-  get formLanguages() {
-    return <FormArray>this.thirdFormGroup.get('languages');
-  }
+  ///////////////////////////////
 
   addLanguage() {
     (<FormArray>this.thirdFormGroup.controls['languages']).push(this.addLanguageGroup());
@@ -412,7 +329,6 @@ export class CaProfileSettingsComponent implements OnInit {
     return false;
   }
 
-  ////////////////////////
   // Image Cropper
   previewFile(event: any) {
 
@@ -461,5 +377,88 @@ export class CaProfileSettingsComponent implements OnInit {
   deletePhoto() {
     (document.getElementById('photo_profile') as HTMLInputElement).src = '../../../../assets/img/defaultProfileImg.png';
     this.thirdFormGroup.controls['profile'].setValue(null);
+  }
+
+  // Prefill form with stored data
+  private prefillSNS(candidate: any) {
+    if (candidate.social_networks.twitter) {
+      this.thirdFormGroup.controls['twitter'].setValue(candidate.social_networks.twitter);
+    } else {
+      this.thirdFormGroup.controls['twitter'].setValue('');
+    }
+
+    if (candidate.social_networks.linkedin) {
+      this.thirdFormGroup.controls['linkedIn'].setValue(candidate.social_networks.linkedin);
+    } else {
+      this.thirdFormGroup.controls['linkedIn'].setValue('');
+    }
+
+    if (candidate.social_networks.github) {
+      this.thirdFormGroup.controls['github'].setValue(candidate.social_networks.github);
+    } else {
+      this.thirdFormGroup.controls['github'].setValue('');
+    }
+
+    if (candidate.social_networks.telegram) {
+      this.thirdFormGroup.controls['telegram'].setValue(candidate.social_networks.telegram);
+    } else {
+      this.thirdFormGroup.controls['telegram'].setValue('');
+    }
+  }
+
+  private prefillLanguages(languages: { language: string, applicant_languages: { level: string } }[]) {
+    if ((<FormArray>this.thirdFormGroup.controls['languages'].value).length === 0) {
+      for (const language of languages) {
+        (<FormArray>this.thirdFormGroup.controls['languages']).push(
+          this._formBuilder.group({
+            'language': new FormControl(language.language, Validators.required),
+            'level': new FormControl(language.applicant_languages.level, Validators.required)
+          }));
+      }
+    }
+  }
+
+  private prefillExperiences(experiences: any[]) {
+    if ((<FormArray>this.thirdFormGroup.controls['experience'].value).length === 0) {
+      for (const experience of experiences) {
+        (<FormArray>this.thirdFormGroup.controls['experience']).push(
+          this._formBuilder.group({
+            'title': new FormControl(experience.title, Validators.required),
+            'start': new FormControl(moment(experience.dateStart), [ExperienceFormsComponent.maxMinDate, ExperienceFormsComponent.maxDate]),
+            'end': new FormControl(moment(experience.dateEnd), [ExperienceFormsComponent.maxMinDate, ExperienceFormsComponent.maxDate]),
+            'description': new FormControl(experience.description)
+          }));
+      }
+    }
+  }
+
+  ////////////////////////
+
+  private prefillEducation(educations: any[]) {
+    if ((<FormArray>this.thirdFormGroup.controls['education'].value).length === 0) {
+      for (const education of educations) {
+        (<FormArray>this.thirdFormGroup.controls['education']).push(
+          this._formBuilder.group({
+            'title': new FormControl(education.title, Validators.required),
+            'institution': new FormControl(education.applicant_educations.institution),
+            'start': new FormControl(moment(education.applicant_educations.dateStart), EducationFormsComponent.maxMinDate),
+            'end': new FormControl(moment(education.applicant_educations.dateEnd), EducationFormsComponent.maxMinDate),
+            'description': new FormControl(education.applicant_educations.description)
+          }));
+      }
+    }
+  }
+
+  private prefillSkills(skills: any[]) {
+    if ((<FormArray>this.thirdFormGroup.controls['skills'].value).length === 0) {
+      for (const skill of skills) {
+        (<FormArray>this.thirdFormGroup.controls['skills']).push(new FormControl(skill.name));
+        this.iskill++;
+      }
+      if ((<FormArray>this.thirdFormGroup.controls['skills'].value).length === 0) {
+        (<FormArray>this.thirdFormGroup.controls['skills']).push(new FormControl(null));
+        this.iskill++;
+      }
+    }
   }
 }

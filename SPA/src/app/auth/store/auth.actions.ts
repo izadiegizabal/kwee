@@ -88,7 +88,8 @@ export class SetUser implements Action {
     id: number,
     name: string,
     type: string,
-    notifications: number
+    notifications: number,
+    premium: number,
   }) {
   }
 }

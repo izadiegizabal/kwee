@@ -15,6 +15,7 @@ module.exports = (app, db) => {
         passport.authenticate('github', {failureRedirect: '/login'}),
 
         async (req, res, next) => {
+            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
             // Authentication with Github successful
             try {
 
@@ -42,7 +43,7 @@ module.exports = (app, db) => {
 
                 } else {
                     // Existent user
-                    let logId = await logger.saveLog('POST', 'login', null, res, user.email);
+                    let logId = await logger.saveLog('POST', 'login', null, res, req.useragent, ip, user.email);
                     console.log("Este email ya existe en la BBDD");
                     console.log('Haciendo login en el sistema');
                     console.log('id: ', user.id);

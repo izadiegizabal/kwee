@@ -16,16 +16,16 @@ export class HomeRedirectGuardService implements CanActivate {
       (type) => {
         switch (type) {
           case '':
-            this.router.navigate(['home']);
+            this.router.navigate(['/home']);
             break;
           case 'admin':
-            this.router.navigate(['admin']);
+            this.router.navigate(['/admin']);
             break;
           case 'candidate':
-            this.router.navigate(['candidate-home']);
+            this.router.navigate(['/candidate-home']);
             break;
           case 'business':
-            this.router.navigate(['my-offers']);
+            this.router.navigate(['/my-offers']);
             break;
         }
       }

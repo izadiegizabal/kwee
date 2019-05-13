@@ -30,7 +30,8 @@
             <mat-icon>close</mat-icon>
           </button>
 
-          <button (click)="deleteSkill(i); addSkill()" *ngIf="this.formSkills.controls[i].value && this.formSkills.length-1==i"
+          <button (click)="deleteSkill(i); addSkill()"
+                  *ngIf="this.formSkills.controls[i].value && this.formSkills.length-1==i"
                   aria-label="Clear" mat-button
                   mat-icon-button matSuffix type="button" type="button">
             <mat-icon>close</mat-icon>
@@ -62,7 +63,8 @@
             <mat-icon>close</mat-icon>
           </button>
 
-          <button (click)="delLang(i); addLang()" *ngIf="this.formLanguages.controls[i].value && this.formLanguages.length-1==i"
+          <button (click)="delLang(i); addLang()"
+                  *ngIf="this.formLanguages.controls[i].value && this.formLanguages.length-1==i"
                   aria-label="Clear"
                   mat-button
                   mat-icon-button matSuffix type="button" type="button">
@@ -118,7 +120,8 @@
 
     <mat-form-field>
       <input formControlName="location" matInput placeholder="Location" type="text">
-      <button (click)="filters.controls['location'].reset('')" *ngIf="filters.controls['location'].value" aria-label="Clear"
+      <button (click)="filters.controls['location'].reset('')" *ngIf="filters.controls['location'].value"
+              aria-label="Clear"
               mat-button mat-icon-button
               matSuffix
               type="button">

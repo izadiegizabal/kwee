@@ -4,7 +4,7 @@ import {Action, select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
 import {AuthEffects} from '../store/auth.effects';
 import * as AuthActions from '../store/auth.actions';
-import {filter} from 'rxjs/operators';
+import {filter, take} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import * as fromAuth from '../store/auth.reducers';
@@ -29,7 +29,7 @@ export class SigninComponent implements OnInit {
     private _formBuilder: FormBuilder,
     public dialog: MatDialog,
     private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects,
-    private router: Router,
+    public router: Router,
   ) {
   }
 
@@ -42,11 +42,6 @@ export class SigninComponent implements OnInit {
 
     this.authState = this.store$.pipe(select('auth'));
     this.authEffects$.authSignin.pipe(
-      filter((action: Action) => action.type === AuthActions.SET_USER)
-    ).subscribe((error: { payload: any, type: string }) => {
-      this.router.navigate(['/']);
-    });
-    this.authEffects$.authSignin.pipe(
       filter((action: Action) => action.type === AuthActions.AUTH_ERROR)
     ).subscribe((error: { payload: any, type: string }) => {
       console.log(error.payload);
@@ -54,7 +49,8 @@ export class SigninComponent implements OnInit {
       this.user.controls['password'].setErrors({'incorrect': true});
     });
     this.authEffects$.authSignin.pipe(
-      filter((action: Action) => action.type === AuthActions.SET_USER)
+      filter((action: Action) => action.type === AuthActions.SET_USER),
+      take(1)
     ).subscribe((res: {
         payload: {
           root: boolean,

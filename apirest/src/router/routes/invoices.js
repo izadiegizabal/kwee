@@ -40,6 +40,7 @@ module.exports = (app, db) => {
     async function getUserInvoices( table, req, res, next ) {
         const id = req.params.id;
         let herency = {};
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         
 
         try {
@@ -57,7 +58,7 @@ module.exports = (app, db) => {
 
             }
 
-            await logger.saveLog('GET', 'invoices', null, res);
+            await logger.saveLog('GET', 'invoices', null, res, req.useragent, ip);
             
             let attr = {
                 include: [{

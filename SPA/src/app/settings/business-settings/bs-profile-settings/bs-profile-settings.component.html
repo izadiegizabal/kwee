@@ -1,4 +1,4 @@
-<div fxLayout="row" fxFlex="100%">
+<div fxFlex="100%" fxLayout="row">
   <form [formGroup]="profileFormGroup"
         fxFlex="100%"
         fxFlexOffset="25%"
@@ -11,15 +11,15 @@
 
       <div class="mat-h1" style="padding-top: 16px">My Profile</div>
 
-      <div fxLayout="column" fxFlex="100%">
+      <div fxFlex="100%" fxLayout="column">
         <h2>About us</h2>
         <mat-form-field fxFlex="100%">
-          <textarea rows="4" formControlName="about" matInput placeholder="Tell us more about you"></textarea>
+          <textarea formControlName="about" matInput placeholder="Tell us more about you" rows="4"></textarea>
         </mat-form-field>
       </div>
 
-      <div fxLayout.lt-md="column" fxLayout="row" fxLayoutGap="32px" fxFlex="100%">
-        <div fxLayout="column" fxFlex="50" fxFlex.lt-md="100">
+      <div fxFlex="100%" fxLayout="row" fxLayout.lt-md="column" fxLayoutGap="32px">
+        <div fxFlex="50" fxFlex.lt-md="100" fxLayout="column">
           <h2>Company Details</h2>
           <p class="mat-h3">Complete your profile with more information about your business.</p>
           <mat-form-field>
@@ -42,7 +42,7 @@
             <mat-icon color="primary" matPrefix svgIcon="cake"></mat-icon>
           </mat-form-field>
         </div>
-        <div fxLayout="column" fxFlex="500" fxFlex.lt-md="100">
+        <div fxFlex="500" fxFlex.lt-md="100" fxLayout="column">
           <h2>Social Media</h2>
           <p class="mat-h3">Type your username to add your social media accounts to your profile.</p>
           <mat-form-field>
@@ -64,7 +64,7 @@
         </div>
       </div>
       <br>
-      <div fxLayout="row" fxLayoutAlign="end" fxFlex="100%">
+      <div fxFlex="100%" fxLayout="row" fxLayoutAlign="end">
         <button (click)="onUpdate()" color="accent" mat-raised-button type="button">Done</button>
       </div>
     </div>

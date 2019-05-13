@@ -1,7 +1,4 @@
 import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {TAnimation, TCamera, TEntity, TLight, TMesh, TTransform} from '../../assets/engine/TEntity';
-import {TNode} from '../../assets/engine/TNode';
-import {TResourceManager, TResourceMaterial, TResourceMesh, TResourceShader, TResourceTexture} from '../../assets/engine/resourceManager';
 
 import {shared} from '../../assets/engine/commons';
 import {allowActions, mainInit, mainR, resetCanvas} from '../../assets/engine/main';
@@ -19,6 +16,7 @@ export class LandingComponent implements OnInit, OnDestroy {
   particles: boolean;
 
   @ViewChild('rendererContainer') rendererContainer: ElementRef;
+  @ViewChild('thisIsKwee') thisIsKweeHeader: ElementRef;
 
   constructor(private router: Router, private titleService: Title) {
     this.disabled = true;
@@ -51,5 +49,13 @@ export class LandingComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     resetCanvas();
+  }
+
+  scrollTo(element: HTMLElement) {
+    element.scrollIntoView({behavior: 'smooth', block: 'start', inline: 'start'});
+  }
+
+  goToSignUp(userType: string) {
+    this.router.navigate(['/signup'], {queryParams: {type: userType}});
   }
 }

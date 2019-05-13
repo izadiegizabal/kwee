@@ -167,12 +167,15 @@
           <h4>Address</h4>
         </div>
 
-        <div [ngClass]="{'line1':true}" [ngClass.xs]="{'line1':false}" fxLayout="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
+        <div [ngClass.xs]="{'line1':false}" [ngClass]="{'line1':true}" fxLayout="column" fxLayoutGap="16px"
+             fxLayoutGap.xs="0">
           <mat-form-field>
             <mat-icon color="primary" matPrefix svgIcon="place"></mat-icon>
-            <input (keyup)="searchAddress($event)" [matAutocomplete]="addressAuto" formControlName="address1" matInput placeholder="Address"
+            <input (keyup)="searchAddress($event)" [matAutocomplete]="addressAuto" formControlName="address1" matInput
+                   placeholder="Address"
                    required>
-            <mat-autocomplete #addressAuto="matAutocomplete" (optionSelected)="logAddress()" [displayWith]="displayFnAddress">
+            <mat-autocomplete #addressAuto="matAutocomplete" (optionSelected)="logAddress()"
+                              [displayWith]="displayFnAddress">
               <mat-option *ngFor="let option of options" [value]="option">
                 <span>{{option.name}}</span>&nbsp;
                 <small class="gray">{{option.city.name}}, {{option.admin}}, {{option.country}}</small>
@@ -187,9 +190,10 @@
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
           <mat-form-field>
             <mat-icon color="primary" matPrefix svgIcon="domain"></mat-icon>
-            <input (keyup)="searchCity($event)" [matAutocomplete]="cityAuto" formControlName="city" matInput placeholder="City"
+            <input (keyup)="searchCity($event)" [matAutocomplete]="cityAuto" formControlName="city" matInput
+                   placeholder="City"
                    required>
-            <mat-autocomplete (optionSelected)="log()" [displayWith]="displayFn" id="city" #cityAuto="matAutocomplete">
+            <mat-autocomplete #cityAuto="matAutocomplete" (optionSelected)="log()" [displayWith]="displayFn" id="city">
               <mat-option *ngFor="let city of cities" [value]="city">
                 {{city.name}}
               </mat-option>
@@ -211,7 +215,8 @@
         <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
           <mat-form-field>
             <mat-icon color="primary" matPrefix svgIcon="place"></mat-icon>
-            <input (keyup)="searchCountry($event)" [matAutocomplete]="countryAuto" formControlName="country" matInput placeholder="Country"
+            <input (keyup)="searchCountry($event)" [matAutocomplete]="countryAuto" formControlName="country" matInput
+                   placeholder="Country"
                    required>
             <mat-autocomplete #countryAuto="matAutocomplete">
               <mat-option *ngFor="let country of countries" [value]="country">
