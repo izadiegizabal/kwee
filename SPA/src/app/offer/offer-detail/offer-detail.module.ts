@@ -10,6 +10,8 @@ import {EffectsModule} from '@ngrx/effects';
 import {offerReducer} from './store/offer.reducers';
 import {OfferEffects} from './store/offer.effects';
 import {NgxPrintModule} from 'ngx-print';
+import {MaxApplicationsDialogModule} from './max-applications-dialog/max-applications-dialog.module';
+import {MaxApplicationsDialogComponent} from './max-applications-dialog/max-applications-dialog.component';
 
 @NgModule({
   declarations: [
@@ -22,8 +24,12 @@ import {NgxPrintModule} from 'ngx-print';
     NgxPrintModule,
     IconWithTextModule,
     SnsShareModule,
+    MaxApplicationsDialogModule,
     StoreModule.forFeature('offer', offerReducer),
     EffectsModule.forFeature([OfferEffects])
+  ],
+  entryComponents: [
+    MaxApplicationsDialogComponent
   ],
   exports: [
     OfferDetailComponent

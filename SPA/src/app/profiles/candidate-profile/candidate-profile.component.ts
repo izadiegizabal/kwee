@@ -16,6 +16,7 @@ import {Location} from '@angular/common';
 })
 export class CandidateProfileComponent implements OnInit, AfterViewInit {
   imgPath = '../../../../assets/img/defaultProfileImg.png';
+  premium = 0;
 
   candidate = {
     name: 'Shiba Inu Kawaii',
@@ -52,6 +53,9 @@ export class CandidateProfileComponent implements OnInit, AfterViewInit {
     this.store$.pipe(select(state => state.auth)).subscribe(
       s => {
         if (s.user) {
+          if (s.user.premium) {
+            this.premium = s.user.premium;
+          }
           this.mine = Number(this.params.id) === s.user.id;
         }
       }

@@ -1,5 +1,5 @@
 <div
-  *ngIf="(profilesState | async).opinions; else noOpinions"
+  *ngIf="((profilesState | async).opinions && errorOpinion==false); else noOpinions"
   fxFlex="92%"
   fxFlex.gt-sm="60%"
   fxFlexOffset="4%"

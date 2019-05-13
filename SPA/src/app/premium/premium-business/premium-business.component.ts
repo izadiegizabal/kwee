@@ -13,7 +13,7 @@ import * as fromAuth from '../../auth/store/auth.reducers';
 })
 export class PremiumBusinessComponent implements OnInit {
   authState: Observable<fromAuth.State>;
-  premium = 2;
+  premium = 0;
 
 
   constructor(public dialog: MatDialog,
