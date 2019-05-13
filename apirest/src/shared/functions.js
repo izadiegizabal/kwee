@@ -688,13 +688,41 @@ function getSocketUserId(email) {
     return socketUsers ? socketUsers.id : null;
 }
 
-function sendNotification(route, id, object, bool) {
+async function sendNotification(route, id, object, bool) {
     // object is the table in database
-    let payload = {
-        selected: bool,
-        applicationId: object.id,
-        offerId: object.fk_offer
+    // let payload = {
+    //     selected: bool,
+    //     applicationId: object.id,
+    //     offerId: object.fk_offer
+    // };
+
+    let noti = await db.notifications.findOne({ where: { id: object.id }});
+    let from = await db.offers.findOne({ where: { id: object.from }})
+    let offer;
+    switch ( object.idTable ) {
+        case 'offers': offer = await db.offers.findOne({ where: { id: object.idTable }}); break;
+        case 'applications': let application = await db.applications.findOne({ where: { id: object.idTable }}); break;
+    }
+
+    let notification = {
+        id : noti.id,
+        read: noti.read,
+        status: noti.status,
+        notification: noti.notification,
+        from,
+        offer
     };
+
+    let payload = {
+        ok: true,
+        message: 'New notification',
+        data: notification,
+        unread: 1,
+        total: 1,
+        page: 1,
+        limit: 1
+    }
+
     io.in(id).emit(route, payload);
 }
 
