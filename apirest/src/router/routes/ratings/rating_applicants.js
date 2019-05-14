@@ -14,7 +14,8 @@ module.exports = (app, db) => {
     app.get('/rating_applicants', async (req, res, next) => {
 
         try {
-            await logger.saveLog('GET', 'rating_applicants', null, res);
+            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            await logger.saveLog('GET', 'rating_applicants', null, res, req.useragent, ip, null);
 
             let ratings = await db.ratings.findAll();
             let rating_applicants = await db.rating_applicants.findAll();
@@ -53,9 +54,10 @@ module.exports = (app, db) => {
     app.get('/rating_applicants/:page([0-9]+)/:limit([0-9]+)', async (req, res, next) => {
         let limit = Number(req.params.limit);
         let page = Number(req.params.page);
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
         try {
-            await logger.saveLog('GET', `rating_applicants/${page}`, null, res);
+            await logger.saveLog('GET', `rating_applicants/${page}`, null, res, req.useragent, ip, null);
 
             let count = await db.rating_applicants.findAndCountAll();
             let pages = Math.ceil(count.count / limit);
@@ -132,6 +134,7 @@ module.exports = (app, db) => {
 
     // POST single rating_applicant
     app.post('/rating_applicant', async (req, res, next) => {
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         let transaction;
         let rating;
 
@@ -139,6 +142,7 @@ module.exports = (app, db) => {
             const body = req.body;
             let id = tokenId.getTokenId(req.get('token'), res);
             let fk_application = body.fk_application;
+            logId = await logger.saveLog('POST', 'rating_offerer', fk_application, res, req.useragent, ip, id);
             let overall;
             let opinion;
             if (body.opinion) opinion = body.opinion;

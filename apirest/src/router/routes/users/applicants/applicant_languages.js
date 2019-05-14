@@ -11,7 +11,8 @@ module.exports = (app, db) => {
     // GET all applicant_languages
     app.get("/applicant_languages", checkToken, async (req, res, next) => {
         try {
-            await logger.saveLog('GET', 'applicant_languages', null, res);
+            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            await logger.saveLog('GET', 'applicant_languages', null, res, req.useragent, ip, null);
 
             return res.status(200).json({
                 ok: true,

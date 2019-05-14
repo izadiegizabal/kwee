@@ -144,8 +144,9 @@ module.exports = (app, db) => {
     // GET all users offerers
     app.get('/offerers', async (req, res, next) => {
         try {
+            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
             saveLogES('GET', 'offerers', 'Visitor');
-            await logger.saveLog('GET', 'offerers', null, res);
+            await logger.saveLog('GET', 'offerers', null, res, req.useragent, ip, null);
 
             var attributes = {
                 exclude: ['password', 'root']
@@ -236,7 +237,8 @@ module.exports = (app, db) => {
         }
 
         try {
-            await logger.saveLog('GET', 'offerer', id, res);
+            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            await logger.saveLog('GET', 'offerer', id, res, req.useragent, ip, null);
             saveLogES('GET', 'offerer/id/offers', 'Visitor');
 
             let message = ``;
@@ -373,9 +375,10 @@ module.exports = (app, db) => {
 
     // GET one offerer by id
     app.get('/offerer/:id([0-9]+)', async (req, res, next) => {
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         const id = req.params.id;
         try {
-            await logger.saveLog('GET', 'offerer', id, res);
+            await logger.saveLog('GET', 'offerer', id, res, req.useragent, ip, null);
             saveLogES('GET', 'offerer/id', 'Visitor');
 
             let user = await db.users.findOne({
@@ -444,7 +447,8 @@ module.exports = (app, db) => {
     app.post('/offerer', /*createAccountLimiter,*/ async (req, res, next) => {
 
         try {
-            await logger.saveLog('POST', 'offerer', null, res);
+            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            await logger.saveLog('POST', 'offerer', null, res, req.useragent, ip, null);
 
             const body = req.body;
             delete body.root;
@@ -520,9 +524,10 @@ module.exports = (app, db) => {
     app.put('/offerer', async (req, res, next) => {
 
         try {
-            let logId = await logger.saveLog('PUT', 'offerer', null, res);
-
+            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
             let id = tokenId.getTokenId(req.get('token'), res);
+            let logId = await logger.saveLog('PUT', 'offerer', null, res, req.useragent, ip, id);
+            
             let user = await db.users.findOne({
                 where: {id}
             });
@@ -536,10 +541,11 @@ module.exports = (app, db) => {
 
     // Update offerer by admin
     app.put('/offerer/:id([0-9]+)', [checkToken, checkAdmin], async (req, res, next) => {
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         const id = req.params.id;
 
         try {
-            await logger.saveLog('PUT', 'offerer', id, res);
+            await logger.saveLog('PUT', 'offerer', id, res, req.useragent, ip, null);
             updateOfferer(id, req, res, next);
         } catch (err) {
             return next({type: 'error', error: err.message});
@@ -589,9 +595,10 @@ module.exports = (app, db) => {
     // DELETE by themself
     app.delete('/offerer', async (req, res, next) => {
         try {
+            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
             let id = tokenId.getTokenId(req.get('token'), res);
 
-            await logger.saveLog('DELETE', 'offerer', id, res);
+            await logger.saveLog('DELETE', 'offerer', id, res, req.useragent, ip, id);
 
             let offerer = await db.offerers.findOne({
                 where: {userId: id}
@@ -634,10 +641,11 @@ module.exports = (app, db) => {
 
     // DELETE by admin
     app.delete('/offerer/:id([0-9]+)', [checkToken, checkAdmin], async (req, res, next) => {
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         const id = req.params.id;
 
         try {
-            await logger.saveLog('DELETE', 'offerer', id, res);
+            await logger.saveLog('DELETE', 'offerer', id, res, req.useragent, ip, null);
             saveLogES('DELETE', 'offerer/id', 'Admin');
 
             let offerer = await db.offerers.findOne({

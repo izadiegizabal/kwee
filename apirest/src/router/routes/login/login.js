@@ -9,18 +9,19 @@ module.exports = (app, db) => {
         let user;
         let logId;
         let body = req.body;
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         
         try {
             
             if ( body.email ) {
-                logId = await logger.saveLog('POST', 'login', null, res, body.email);
+                // logId = await logger.saveLog('POST', 'login', null, res, req.useragent, ip, body.email);
                 user = await db.users.findOne({ where: { email: body.email }});
             } else if ( body.token ) {
                 var idToken = tokenId.getTokenId(body.token, res);
 
                 user = await db.users.findOne({where: { id: idToken }});
                 if ( user ){
-                    logId = await logger.saveLog('POST', 'login', null, res, user.email);
+                    // logId = await logger.saveLog('POST', 'login', null, res, req.useragent, ip, user.email);
                 } else {
                     return null;
                 }
@@ -30,7 +31,7 @@ module.exports = (app, db) => {
 
 
             if ( !user ) {
-                logger.updateLog(logId, false);
+                // logger.updateLog(logId, false);
                 return res.status(400).json({
                     ok: false,
                     message: 'User or password incorrect'
@@ -51,6 +52,8 @@ module.exports = (app, db) => {
             let id = user.id;
             let dateNow = moment().format();
 
+            logId = await logger.saveLog('POST', 'login', null, res, req.useragent, ip, id, user.email);
+
             await db.users.update({ lastAccess: dateNow }, {
                 where: { id }
             });
@@ -69,12 +72,14 @@ module.exports = (app, db) => {
             if (user.root) {
                 type = 'admin';
             } else {
+                var premium;
                 var avg = {};
                 let offerer = await db.offerers.findOne({
                     where: {userId: id}
                 });
                 if (offerer) {
                     avg = getOffererAVG(offerer);
+                    premium = offerer.premium;
                     type = 'offerer';
                 } else {
                     let applicant = await db.applicants.findOne({
@@ -82,6 +87,7 @@ module.exports = (app, db) => {
                     });
                     if ( applicant ) {
                         avg = getApplicantAVG(applicant);
+                        premium = applicant.premium;
                         type = 'applicant';
                     } else {
                         return next({type: 'error', error: 'User not found'});
@@ -101,6 +107,7 @@ module.exports = (app, db) => {
                     lastAccess: userUpdated.lastAccess,
                     index: userUpdated.index,
                     avg,
+                    premium,
                     status: userUpdated.status,
                     notifications,
                     type

@@ -161,7 +161,8 @@ module.exports = (app, db) => {
     // GET all offers
     app.get('/offers', async (req, res, next) => {
         try {
-            await logger.saveLog('GET', 'offers', null, res);
+            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            await logger.saveLog('GET', 'offers', null, res, req.useragent, ip, null);
             saveLogES('GET', 'offers', 'Visitor');
 
             var offers;
@@ -377,7 +378,9 @@ module.exports = (app, db) => {
         let body = req.body;
 
         try {
+            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
             let id = tokenId.getTokenId(req.get('token'));
+            await logger.saveLog('POST', `offer`, null, res, req.useragent, ip, id);
             body.fk_offerer = id;
 
             let user = await db.users.findOne({where: { id }});
@@ -431,6 +434,8 @@ module.exports = (app, db) => {
 
         try {
             let fk_offerer = tokenId.getTokenId(req.get('token'), res);
+            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            await logger.saveLog('PUT', `offer`, id, res, req.useragent, ip, fk_offerer);
 
             let offerToUpdate = await db.offers.findOne({
                 where: { id }
@@ -516,6 +521,9 @@ module.exports = (app, db) => {
 
         try {
             let fk_offerer = tokenId.getTokenId(req.get('token'));
+            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            await logger.saveLog('DELETE', `offer`, id, res, req.useragent, ip, fk_offerer);
+
             let offerToDelete = await db.offers.findOne({
                 where: { id }
             });

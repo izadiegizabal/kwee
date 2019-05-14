@@ -107,7 +107,9 @@ module.exports = (app, db) => {
     async function getNotificationsOfTokenUser( req, res, next ) {
         try {
             let id = tokenId.getTokenId(req.get('token'), res);
-            await logger.saveLog('GET', 'notifications', null, res);
+            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+            await logger.saveLog('GET', 'notifications', null, res, req.useragent, ip, id);
 
             let notificationsToShow = [];
             let attr = {};
@@ -120,6 +122,7 @@ module.exports = (app, db) => {
                 var offset = req.query.limit * (req.query.page - 1)
                 attr.limit = limit;
                 attr.offset = offset;
+                attr.order = [['id', 'DESC']];
             }
 
             let count = await db.notifications.findAndCountAll({ where });
@@ -140,14 +143,18 @@ module.exports = (app, db) => {
                 });
                 let offers = await db.offers.findAll();
                 let ratings = await db.ratings.findAll();
+                let numOfUnread = await db.notifications.findAndCountAll({ where: { to: id, read: 0 }});
 
                 notifications.forEach( notification => {
                     let object = {};
-                    let to = users.find( to => to.id === notification.to );
+                    // let to = users.find( to => to.id === notification.to );
                     let from = users.find( from => from.id === notification.from );
                     let offer, rating;
                     object.id = notification.id;
-                    object.to = to;
+                    object.read = notification.read;
+                    object.status = notification.status;
+                    object.notification = notification.notification;
+                    // object.to = to;
                     object.from = from;
                     switch ( notification.type ) {
                         case 'offers': 
@@ -167,9 +174,10 @@ module.exports = (app, db) => {
                     ok: true,
                     message: `Listing all notifications of user id: ${id}`,
                     data: notificationsToShow,
+                    unread: numOfUnread.count,
                     total: count.count,
                     page,
-                    limit
+                    limit,
                 });
             } else {
                 next({type: 'error', error: 'You do not have notifications'});

@@ -10,7 +10,8 @@ module.exports = (app, db) => {
     // GET all skills
     app.get('/skills', checkToken, async (req, res, next) => {
         try {
-            await logger.saveLog('GET', 'skills', null, res);
+            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            await logger.saveLog('GET', 'skills', null, res, req.useragent, ip, null);
 
             return res.status(200).json({
                 ok: true,
@@ -24,11 +25,12 @@ module.exports = (app, db) => {
 
     // GET skills by page limit to 10 skills/page
     app.get('/skills/:page([0-9]+)/:limit([0-9]+)', async (req, res, next) => {
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         let limit = Number(req.params.limit);
         let page = Number(req.params.page);
 
         try {
-            await logger.saveLog('GET', `skills/${page}`, null, res);
+            await logger.saveLog('GET', `skills/${page}`, null, res, req.useragent, ip, null);
 
             let count = await db.skills.findAndCountAll();
             let pages = Math.ceil(count.count / limit);

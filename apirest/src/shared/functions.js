@@ -18,10 +18,13 @@ class TokenId {
 }
 
 class Logger {
-    async saveLog(action, actionToRoute, actionToId, res, email) {
+    async saveLog(action, actionToRoute, actionToId, res, useragent, ip, userId, email) {
         let toLog = {
             action,
             actionToRoute,
+            ip,
+            useragent,
+            userId,
             date: moment().format('YYYY/MM/DD'),
             hour: moment().format('HH:mm:ss')
         };
@@ -680,19 +683,48 @@ function saveLogES(action, actionToRoute, user) {
     });
 }
 
-function sendNotification(route, id, object, bool) {
-    let payload = {
-        selected: bool,
-        applicationId: object.id,
-        offerId: object.fk_offer
-    };
-    io.in(id).emit(route, payload);
-}
-
 function getSocketUserId(email) {
     let socketUsers = usersConnected.getList();
     socketUsers = socketUsers.find(element => element.email === email);
     return socketUsers ? socketUsers.id : null;
+}
+
+async function sendNotification(route, id, object, bool) {
+    // object is the table in database
+    // let payload = {
+    //     selected: bool,
+    //     applicationId: object.id,
+    //     offerId: object.fk_offer
+    // };
+
+    let noti = await db.notifications.findOne({ where: { id: object.id }});
+    let from = await db.offers.findOne({ where: { id: object.from }})
+    let offer;
+    switch ( object.idTable ) {
+        case 'offers': offer = await db.offers.findOne({ where: { id: object.idTable }}); break;
+        case 'applications': let application = await db.applications.findOne({ where: { id: object.idTable }}); break;
+    }
+
+    let notification = {
+        id : noti.id,
+        read: noti.read,
+        status: noti.status,
+        notification: noti.notification,
+        from,
+        offer
+    };
+
+    let payload = {
+        ok: true,
+        message: 'New notification',
+        data: notification,
+        unread: 1,
+        total: 1,
+        page: 1,
+        limit: 1
+    }
+
+    io.in(id).emit(route, payload);
 }
 
 async function createNotification(db, to, from, type, idTable, notification, status) {

@@ -9,8 +9,9 @@ module.exports = (app, db) => {
 
     // GET all languages
     app.get('/languages', checkToken, async (req, res, next) => {
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         try {
-            await logger.saveLog('GET', 'languages', null, res);
+            await logger.saveLog('GET', 'languages', null, res, req.useragent, ip, null);
 
             let languages = await db.languages.findAll();
 
@@ -28,9 +29,10 @@ module.exports = (app, db) => {
     app.get('/languages/:page([0-9]+)/:limit([0-9]+)', async (req, res, next) => {
         let limit = Number(req.params.limit);
         let page = Number(req.params.page);
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
         try {
-            await logger.saveLog('GET', `languages/${page}`, null, res);
+            await logger.saveLog('GET', `languages/${page}`, null, res, req.useragent, ip, null);
 
             let count = await db.languages.findAndCountAll();
             let pages = Math.ceil(count.count / limit);

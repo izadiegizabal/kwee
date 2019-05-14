@@ -13,7 +13,8 @@ module.exports = (app, db) => {
     app.get('/rating_offerers', async (req, res, next) => {
 
         try {
-            await logger.saveLog('GET', 'rating_offerers', null, res);
+            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            await logger.saveLog('GET', 'rating_offerers', null, res, req.useragent, ip, null);
 
             let ratings = await db.ratings.findAll();
             let rating_offerers = await db.rating_offerers.findAll();
@@ -50,11 +51,12 @@ module.exports = (app, db) => {
 
     // GET rating_offerers by page limit to 10 rating_offerers/page
     app.get('/rating_offerers/:page([0-9]+)/:limit([0-9]+)', async (req, res, next) => {
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         let limit = Number(req.params.limit);
         let page = Number(req.params.page);
 
         try {
-            await logger.saveLog('GET', `rating_offerers/${page}`, null, res);
+            await logger.saveLog('GET', `rating_offerers/${page}`, null, res, req.useragent, ip, null);
             let count = await db.rating_offerers.findAndCountAll();
             let pages = Math.ceil(count.count / limit);
             offset = limit * (page - 1);
@@ -133,6 +135,7 @@ module.exports = (app, db) => {
 
     // POST single rating_offerer
     app.post('/rating_offerer', async (req, res, next) => {
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         let transaction;
         let rating;
 
@@ -140,6 +143,7 @@ module.exports = (app, db) => {
             const body = req.body;
             let id = tokenId.getTokenId(req.get('token'), res);
             let fk_application = body.fk_application;
+            logId = await logger.saveLog('POST', 'rating_offerer', fk_application, res, req.useragent, ip, id);
             let overall;
             let opinion;
             if (body.opinion) opinion = body.opinion;

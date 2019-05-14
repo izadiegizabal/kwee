@@ -44,10 +44,11 @@ module.exports = (app, db) => {
 
     // GET one user by id
     app.get('/user/:id([0-9]+)', async (req, res, next) => {
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         const id = req.params.id;
 
         try {
-            await logger.saveLog('GET', 'user', id, res);
+            await logger.saveLog('GET', 'user', id, res, req.useragent, ip, null);
 
             let user = await db.users.findOne({
                 attributes: {
@@ -78,7 +79,8 @@ module.exports = (app, db) => {
     // POST new user
     app.post('/user', async (req, res, next) => {
         try {
-            await logger.saveLog('POST', 'user', null, res);
+            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            await logger.saveLog('POST', 'user', null, res, req.useragent, ip, null);
 
             const body = req.body;
             body.password ? body.password = bcrypt.hashSync(body.password, 10) : null;
@@ -121,9 +123,10 @@ module.exports = (app, db) => {
     // Update user by themself
     app.put('/user', async (req, res, next) => {
         try {
-            let logId = await logger.saveLog('PUT', 'user', null, res);
-
+            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
             let id = tokenId.getTokenId(req.get('token'), res);
+            let logId = await logger.saveLog('PUT', 'user', null, res, req.useragent, ip, id);
+
 
             logger.updateLog(logId, id);
 
@@ -136,9 +139,9 @@ module.exports = (app, db) => {
 
     // Update user by admin
     app.put('/user/:id([0-9]+)', [checkToken, checkAdmin], async (req, res, next) => {
-
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         try {
-            await logger.saveLog('PUT', 'user', req.params.id, res);
+            await logger.saveLog('PUT', 'user', req.params.id, res, req.useragent, ip, null);
 
             const id = req.params.id;
             updateUser(id, req, res, next);
@@ -152,10 +155,11 @@ module.exports = (app, db) => {
     // This route will put 'deleteAt' to current timestamp,
     // never will delete it from database
     app.delete('/user/:id([0-9]+)', [checkToken, checkAdmin], async (req, res, next) => {
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         const id = req.params.id;
 
         try {
-            await logger.saveLog('DELETE', 'user', id, res);
+            await logger.saveLog('DELETE', 'user', id, res, req.useragent, ip, null);
 
             let result = await db.users.destroy({
                 where: {id: id}
