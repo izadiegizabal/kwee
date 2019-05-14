@@ -30,6 +30,13 @@ export function clamp(num, min, max) {
   return num <= min ? min : (num >= max ? max : num);
 }
 
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+
 function getBezierPoints(startLat, startLon, endLat, endLon, quality){
   const start = convertLatLonToVec3(startLat,startLon,true);
   const end = convertLatLonToVec3(endLat,endLon,true);
@@ -99,6 +106,76 @@ function convertLatLonToVec3offsetY ( lat, lon, offsetY) {
   glMatrix.vec3.transformMat4(point, point, rot);
 
   return point;
+}
+
+function convertLatLonToVec3RandomOffset(lat, lon, scene) {
+  lon -= 0.8;
+  lat += 0.8;
+  let latRad = lat * (Math.PI / 180);
+  let lonRad = -lon * (Math.PI / 180);
+  let r = 0.62;
+  let point = glMatrix.vec3.fromValues(Math.cos(latRad) * Math.cos(lonRad) * r , Math.sin(latRad) * r , Math.cos(latRad) * Math.sin(lonRad) * r);
+  let init = glMatrix.vec3.fromValues(...point);
+  let randomRotate = 0;
+  switch (scene) {
+    case  1:
+      randomRotate = getRandomInt(0, 1);
+      break;
+    case  2:
+      randomRotate = getRandomInt(2, 4);
+      break;
+    case  3:
+      randomRotate = getRandomInt(5, 8);
+      break;
+  }
+
+  // console.log(randomRotate);
+
+  let offsetY = 0;
+  let offsetX = 0;
+
+  switch (randomRotate) {
+    case  0:
+      offsetX = -10;
+      break;
+    case  1:
+      offsetX = -30;
+      break;
+    case  2:
+      offsetX = -30;
+      offsetY = 35;
+      break;
+    case  3:
+      offsetX = -10;
+      break;
+    case  4:
+      offsetX = -30;
+      offsetY = -35;
+      break;
+    case  5:
+      offsetX = -30;
+      offsetY = 35;
+      break;
+    case  6:
+      offsetX = -30;
+      break;
+    case  7:
+      offsetX = -30;
+      offsetY = -35;
+      break;
+    case  8:
+      offsetX = -10;
+      break;
+  }
+
+  let vec3Cross = glMatrix.vec3.create();
+  vec3Cross = glMatrix.vec3.cross(vec3Cross, point, [0,1,0]);
+  let rot = glMatrix.mat4.create();
+  glMatrix.mat4.rotate(rot, rot, offsetX * radians, vec3Cross);
+  glMatrix.mat4.rotateY(rot, rot, offsetY * radians);
+  glMatrix.vec3.transformMat4(point, point, rot);
+
+  return {coord: point, random: randomRotate, coordWithoutRotation: init};
 }
 
 function convertLatLonToVec3Rotated ( lat, lon, rotationMat) {
@@ -296,6 +373,7 @@ export {
   convertLatLonToVec3,
   convertLatLonToVec3offsetY,
   convertLatLonToVec3Rotated,
+  convertLatLonToVec3RandomOffset,
   geoInterpolate,
   quatFromVectors,
   getEuler,

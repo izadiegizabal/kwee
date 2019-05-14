@@ -2,7 +2,7 @@
 import {TNode} from './TNode.js';
 import {TTransform, TCamera, TLight, TAnimation, TMesh, TArc, TFocus, TRotationAnimation, TArcAndMeshAnimation} from './TEntity.js';
 import {TResourceManager, TResourceMesh, TResourceMaterial, TResourceTexture, TResourceShader, TResourceMeshArray} from './resourceManager.js';
-import {convertLatLonToVec3offsetY} from './tools/utils';
+import {convertLatLonToVec3offsetY, convertLatLonToVec3RandomOffset} from './tools/utils';
 import { global } from './commons.js';
 
 class TMotorTAG{
@@ -327,6 +327,14 @@ class TMotorTAG{
     rotateCamToWithYOffset(endLat, endLon, timeAnim = 1, offsetY = - 20){
       let endPos = convertLatLonToVec3offsetY(endLat, endLon, offsetY);
       this.animateCam(this.activeCamera, timeAnim, null, null, null, null, global.viewPos, endPos);
+    }
+
+    rotateCamToRandomXYOffset(endLat, endLon, timeAnim = 1, widthScene){
+      let endPos = convertLatLonToVec3RandomOffset(endLat, endLon, widthScene);
+      this.animateCam(this.activeCamera, timeAnim, null, null, null, null, global.viewPos, endPos.coord);
+      global.targetPoint = endPos.coordWithoutRotation;
+      // console.log(endPos);
+      return endPos.random;
     }
 
     async loadMeshOnly(file){

@@ -14,7 +14,11 @@ let rotateMeshBool = false;
 let manager = null;
 let allowActions = {
   value: false,
-  card: false
+  card: false,
+  p: null,
+  v: null,
+  point: 0,
+  random: 0
 };
 let arr = [[-41.28664, 174.77557], [10.500000, -66.916664], [41.89193, 12.51133], [-33.865143, 151.209900], [35.6895, 139.69171], [40.415363, -3.707398]];
 let Motor = null;
@@ -24,7 +28,13 @@ let Sphere = null;
 let MeshArray = null;
 let Cam = null;
 
+let SceneWidth = 0;
+
 let lastFrameTime = 0.0;
+
+function  setSceneWidth(value){
+  SceneWidth = value;
+}
 
 async function mainInit() {
   return new Promise(async resolve => {
@@ -299,18 +309,22 @@ async function mainR(texture, particles, line) {
     let camPos = [];
 
     let point = convertLatLonToVec3(40.415363, -3.707398);
+    global.targetPoint =  convertLatLonToVec3(40.415363, -3.707398);
+    allowActions.p = global.targetPoint;
 
     let vec3Cross = glMatrix.vec3.create();
     vec3Cross = glMatrix.vec3.cross(vec3Cross, point, [0,1,0]);
 
     let rot = glMatrix.mat4.create();
     glMatrix.mat4.rotate(rot, rot, -20 * (Math.PI / 180), vec3Cross);
+    // glMatrix.mat4.rotateY(rot, rot, 30 * (Math.PI / 180));
 
     glMatrix.vec3.transformMat4(point, point, rot);
     // Array.prototype.push.apply(vegetables, moreVegs);
     camPos.push(point[0] * radius);
     camPos.push(point[1] * radius);
     camPos.push(point[2] * radius);
+
     /*
     motor.cameraLookAt( cam, [
       radius * Math.sin(0*Math.PI/180),
@@ -409,8 +423,9 @@ async function mainR(texture, particles, line) {
         //   radius,
         //   radius * Math.cos(number*Math.PI/180)
         // );
-        requestAnimationFrame(loop);
         motor.calculateViews();
+        requestAnimationFrame(loop);
+
         global.gl.uniform3f(global.programUniforms.uLightDirection,
             ...global.viewPos
           );
@@ -462,7 +477,9 @@ function animation(now) {
 
   switch (fase) {
     case 0:
-      if(now - last >= 1000) {
+      if(now - last >= 5000) {
+        console.log(0);
+        console.log(global.auxViewMatrix);
         // console.log(MeshArray.entity);
         // auxArc = Motor.createAndAnimateArc(Scene, 10.500000, -66.916664,40.415363, -3.707398, 24, 1.5);
         last = now;
@@ -471,20 +488,47 @@ function animation(now) {
           arrVal = 0;
         }
         // Motor.rotateCamToWithYOffset( ...arr[arrVal]);
-        arrVal++;
+        //arrVal++;
       }
       break;
     case 1:
       if(now - last >= 1000) {
+        last = now;
+        console.log(1);
         fase = 2;
-        allowActions.card = true;
+
+
+        /*let pereza = glMatrix.mat4.create();
+        let perezaMax = glMatrix.vec4.create();
+        let one = glMatrix.mat4.mul(pereza, global.projectionMatrix, global.viewMatrix);
+        allowActions.point = glMatrix.vec4.transformMat4(perezaMax, [...global.targetPoint, 1], pereza);*/
+        //allowActions.p = global.projectionMatrix;
+        //allowActions.p = global.projectionMatrix;
+        //allowActions.card = true;
+
+        allowActions.card = false;
+        // console.log(allowActions.point);
+        allowActions.random = Motor.rotateCamToRandomXYOffset(arr[arrVal][0],arr[arrVal][1], 1, SceneWidth);
         document.body.click();
+
+        //Motor.rotateCamTo(arr[arrVal][0],arr[arrVal][0]);
       }
       break;
     case 2:
-      if(now - last >= 5000) {
-        // allowActions.card = false;
+      if(now - last >= 1500) {
+        console.log(2);
+        console.log(global.auxViewMatrix);
+        let pvMat4 = glMatrix.mat4.create();
+        let uselessMat4 = glMatrix.vec4.create();
+        pvMat4 = glMatrix.mat4.mul(pvMat4, global.projectionMatrix, global.auxViewMatrix);
+        allowActions.point = glMatrix.vec4.transformMat4(uselessMat4, [...global.targetPoint, 1], pvMat4);
+        allowActions.card = true;
+        // console.log(allowActions.point);
         document.body.click();
+
+
+
+
         //Motor.rotateCamToWithYOffset( 40.415363, -3.707398);
         // Motor.animateMesh(MeshArray, 3, 1, 5);
         //Motor.deleteArc(auxArc);
@@ -494,9 +538,11 @@ function animation(now) {
         // const animeSphere = Motor.animate(Sphere, 32, 1,10.500000, -66.916664,  Sphere.father.father.entity.matrix);
         last = now;
         fase = 0;
+        arrVal++;
       }
       break;
     default:
+      console.log(-1);
         fase = 0;
       break;
   }
@@ -536,6 +582,8 @@ function animation(now) {
         [0,0,0],
         [0,1,0]);
     } else {
+      Motor.calculateViews();
+      global.auxViewMatrix = glMatrix.mat4.fromValues(...global.viewMatrix);
       Motor.allCamAnimations.splice(i, 1);
     }
   });
@@ -824,6 +872,7 @@ export {
   resetCanvas,
   allowActions,
   rotateMesh,
-  interactiveMain
+  interactiveMain,
+  setSceneWidth
 }
 //

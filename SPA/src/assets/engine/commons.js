@@ -13,6 +13,8 @@ var global = {
   stack : null,           // stack of models Matrix
   auxMatrix: null,
   time: null,
+  targetPoint: null,
+  auxViewMatrix: null,
   lastFrameTime: null,
   programAttributes: {
     aVertexPosition: null,
