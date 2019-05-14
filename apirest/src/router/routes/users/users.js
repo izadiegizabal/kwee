@@ -1,5 +1,6 @@
 const {tokenId, logger, sendVerificationEmail, sendEmailResetPassword, pagination} = require('../../../shared/functions');
 const {checkToken, checkAdmin} = require('../../../middlewares/authentication');
+const {createOfferer} = require('../../../functions/offerer');
 const elastic = require('../../../database/elasticsearch');
 const bcrypt = require('bcryptjs');
 
@@ -114,6 +115,28 @@ module.exports = (app, db) => {
             } else {
                 return next({type: 'error', error: 'Error creating user'});
             }
+
+        } catch (err) {
+            return next({type: 'error', error: (err.errors ? err.errors[0].message : err.message)});
+        }
+    });
+
+    // Update user by themself
+    app.put('/user/social', async (req, res, next) => {
+        try {
+            let id = tokenId.getTokenId(req.get('token'), res);
+            let type = req.params.type;
+            
+            switch ( type ) {
+                case "candidate": 
+                    createApplicant(req, res, next, false);
+                        break;
+                case "business": 
+                    createOfferer(req, res, next, false);
+                        break;
+            }
+
+            updateUser(id, req, res, next);
 
         } catch (err) {
             return next({type: 'error', error: (err.errors ? err.errors[0].message : err.message)});

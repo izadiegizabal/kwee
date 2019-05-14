@@ -1,10 +1,10 @@
-const {tokenId, logger, sendVerificationEmail, getOffererAVG, getApplicantAVG, pagination, uploadImg, checkImg, deleteFile, prepareOffersToShow, isEmpty, saveLogES} = require('../../../../shared/functions');
+const {tokenId, logger, getOffererAVG, getApplicantAVG, pagination, uploadImg, checkImg, deleteFile, prepareOffersToShow, isEmpty, saveLogES} = require('../../../../shared/functions');
+const {createOfferer} = require('../../../../functions/offerer');
 const {checkToken, checkAdmin} = require('../../../../middlewares/authentication');
 const { createAccountLimiter } = require('../../../../middlewares/rateLimiter');
 const elastic = require('../../../../database/elasticsearch');
 const env = require('../../../../tools/constants');
 const bcrypt = require('bcryptjs');
-const moment = require('moment');
 const axios = require('axios');
 
 const {algorithm} = require('../../../../shared/algorithm');
@@ -445,79 +445,7 @@ module.exports = (app, db) => {
 
     // POST single offerer
     app.post('/offerer', /*createAccountLimiter,*/ async (req, res, next) => {
-
-        try {
-            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-            await logger.saveLog('POST', 'offerer', null, res, req.useragent, ip, null);
-
-            const body = req.body;
-            delete body.root;
-            let user = {};
-            body.password ? user.password = bcrypt.hashSync(body.password, 10) : null;
-            body.name ? user.name = body.name : null;
-            body.bio ? user.bio = body.bio : null;
-            body.email ? user.email = body.email : null;
-            body.lat ? user.lat = body.lat : null;
-            body.lon ? user.lon = body.lon : null;
-            var uservar;
-            saveLogES('POST', 'offerer', body.name);
-
-            if (body.img && checkImg(body.img)) {
-
-                return db.sequelize.transaction(transaction => {
-                    var imgName = uploadImg(req, res, next, 'offerers');
-                    user.img = imgName;
-                    return db.users.create(user, {transaction})
-                        .then(async _user => {
-                            uservar = _user;
-                            return createOfferer(body, _user, next, transaction);
-                        })
-                        .then(async ending => {
-                            await sendVerificationEmail(body, uservar);
-                            delete body.password;
-                            delete body.img;
-                            delete body.cif;
-                            delete lon;
-                            delete lat;
-                            body.index = 15;
-                            body.companySize = 0;
-                            body.year = null;
-                            body.dateVerification = null;
-                            body.status = 0;
-
-                            elastic.index({
-                                index: 'offerers',
-                                type: 'offerer',
-                                id: uservar.id,
-                                body
-                            }, function (err, resp, status) {
-                                if (err) {
-                                    console.log(err.message);
-                                }
-                            });
-
-
-                            return res.status(201).json({
-                                ok: true,
-                                message: `Offerer with id ${ending.userId} has been created.`
-                            });
-                        })
-                })
-                    .catch(err => {
-                        deleteFile('uploads/offerers/' + user.img);
-                        return next({type: 'error', error: err.message});
-                    })
-            } else {
-                return res.status(400).json({
-                    ok: false,
-                    message: 'Bussines picture is required'
-                });
-            }
-
-        } catch (err) {
-            //await transaction.rollback();
-            return next({type: 'error', error: err.message});
-        }
+        await createOfferer( req, res, next, db, true );
     });
 
     // Update offerer by themself
@@ -818,30 +746,6 @@ module.exports = (app, db) => {
             throw new Error(error);
         }
 
-    }
-
-    async function createOfferer(body, user, next, transaction) {
-        try {
-            let offerer = {
-                userId: user.id,
-                address: body.address,
-                workField: body.workField,
-                cif: body.cif,
-                website: body.website ? body.website : null,
-                companySize: body.companySize ? body.companySize : null,
-                year: body.year ? body.year : null,
-            };
-
-            return db.offerers.create(offerer, {transaction: transaction})
-                .catch(err => {
-                    return next({type: 'error', error: err.message});
-                });
-
-
-        } catch (err) {
-            await transaction.rollback();
-            next({type: 'error', error: err.message});
-        }
     }
 
     function buildIndex(must, index) {

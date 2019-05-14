@@ -4,12 +4,15 @@ const auth = require('../../../middlewares/auth/auth');
 const env = require('../../../tools/constants');
 const moment = require('moment');
 const {logger} = require('../../../shared/functions');
+var type;
 
 module.exports = (app, db) => {
 
     app.get('/auth/github',
         passport.authenticate('github', {scope: ['user:email']})
-    );
+    ), (req, res) => {
+        type = req.params.type;
+    };
 
     app.get('/auth/github/callback',
         passport.authenticate('github', {failureRedirect: '/login'}),
