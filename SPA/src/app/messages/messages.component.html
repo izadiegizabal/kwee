@@ -12,7 +12,7 @@
       <p>No users</p>
     </div>
   </ng-template>
-  <div *ngIf="userSelected;else no_user_selected" class="container grid-element div2" id="chat-messages">
+  <div *ngIf="userSelected;else no_user_selected" class="container grid-element div2" #chat id="chat-messages">
     <div *ngFor="let message of bdMessages" class="container darker">
       <!-- <img src="/w3images/avatar_g2.jpg" alt="Avatar" class="righImg"> -->
       <span *ngIf="message.senderId == authUser.id;else receiver">
