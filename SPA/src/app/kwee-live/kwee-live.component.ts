@@ -62,8 +62,8 @@ export class KweeLiveComponent implements OnInit, OnDestroy {
 
     this.store$.dispatch(new KweeLiveActions.TryGetApplications({page: 1, limit: 5}));
 
-    this.auxCanvas = document.getElementById('auxkweelive');
-    this.context2d = this.auxCanvas.getContext("2d");
+    // this.auxCanvas = document.getElementById('auxkweelive');
+    // this.context2d = this.auxCanvas.getContext("2d");
     // this.context2d.translate(0.5,0.5);
   }
 
@@ -75,7 +75,7 @@ export class KweeLiveComponent implements OnInit, OnDestroy {
     // return true;
     if(allowActions.card){
       // console.log([(1 + allowActions.point[0]/allowActions.point[3])*this.auxCanvas.width/2, (1 - allowActions.point[1]/allowActions.point[3])*this.auxCanvas.height/2]);
-      this.drawTriangle([(1 + allowActions.point[0]/allowActions.point[3])*this.auxCanvas.width/2, (1 - allowActions.point[1]/allowActions.point[3])*this.auxCanvas.height/2]);
+      // this.drawTriangle([(1 + allowActions.point[0]/allowActions.point[3])*this.auxCanvas.width/2, (1 - allowActions.point[1]/allowActions.point[3])*this.auxCanvas.height/2]);
     }
     return allowActions.card;
   }

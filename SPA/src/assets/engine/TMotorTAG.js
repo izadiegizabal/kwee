@@ -248,16 +248,113 @@ class TMotorTAG{
         return NLight;
     }
 
-    createFocus(father, size, position, target = undefined){
-      
-      let focus = new TFocus(size, position);
-      
-      let NFocus = this.createBranch(father, focus);
+  createFocus(father, size, type, position, target = undefined, life = 3){
+    let velocity = null;
+    let extra = null;
 
-      this.allFocuses.push(NFocus);
+    // Rotation for last matrix operations
+    let rotation = null;
 
-      return NFocus;
+    // Vectors to calc rotation angles (if dispersed)
+    let vecA = null;
+    let vecB = null;
+
+    // target calcs
+    switch(target){
+      case 'y':
+      case 'undefined':{
+        target = [position[0], position[1]+0.01, position[2]];
+        break;
+      }
+      case 'normal':{
+        // Set the normal for the calculated vector (a point on the same vector-director (line))
+        target = [position[0]*2, position[1]*2, position[2]*2];
+        break;
+      }
+      default: {
+        // Particles looking to
+        target = target;
+        break;
+      }
     }
+    // type calcs
+    switch(type){
+      case 'dispersion':{
+        // Opcion 1:
+        // velocity = [ 0.75, 0.75, 0.75 ];
+        // extra    = [  1,1,1  ];
+
+        // // Opcion 2:
+        // velocity = [ 0.25, 0.25, 0.25 ];
+        // extra    = [ 0,0,0 ];
+
+        // vec Y:
+        // vecA = glMatrix.vec3.fromValues( 1,1,1 );
+        // // vecA = glMatrix.vec3.fromValues( position[0], 5, position[2] );
+        // //vecA = glMatrix.vec3.fromValues( 0,5,0 );
+        // vecB = glMatrix.vec3.fromValues( target[0] - position[0], target[1] - position[1], target[2] - position[2]);
+
+        // console.log(vecB);
+        // rotation = axisAnglesBetweenVecs(vecA, vecB);
+        velocity = [ 0.6, 0.6, 0.6 ];
+        extra    = [ -0.2, -0.2, -0.2];
+        life = 1;
+
+        break;
+      }
+      case 'straight':{
+        // velocity = [ -0.2, -0.2, -0.2 ];
+        velocity = [ -1, -1, -1 ];
+        extra = [0,0,0];
+        life = 1;
+
+        let out = [];
+        glMatrix.mat4.targetTo(out, position, target, [0,0,0]);
+
+        position = [out[12], out[13], out[14]];
+        rotation = [
+          out[0], out[1], out[2],
+          out[4], out[5], out[6],
+          out[8], out[9], out[10] ];
+
+        break;
+      }
+      case 'fireworks':{
+        velocity = [ 0.9, 0.9, 0.9 ];
+        extra    = [ -0.3, -0.3, -0.3];
+        life = 1.8;
+      }
+    }
+
+
+    let focus = new TFocus(size, type, position, target, velocity, extra, life);
+
+    let NFocus = this.createBranch(father, focus);
+
+    this.allFocuses.push(NFocus);
+
+    if(type == 'straight' && target != undefined){
+      // Rotate Focus entity once created to match targetTo target
+      NFocus.father.father.entity.setRotation(rotation);
+
+    }
+    else if( type == 'dispersion' && target != undefined){
+      // Opcion 1:
+      // this.rotate(NFocus, -45, 'x');
+      // rotation[2] ? this.rotate(NFocus, rotation[2], 'z') : 0;
+
+      // testing
+      // this.rotate(NFocus, -45, 'x');
+      // // Rotate Focus entity to disperse and match vector direction
+      // //rotation[0] ? this.rotate(NFocus, rotation[0], 'x') : 0;
+      // rotation[1] ? this.rotate(NFocus, rotation[1], 'y') : 0;
+      // rotation[2] ? this.rotate(NFocus, rotation[2], 'z') : 0;
+
+    }
+    NFocus.father.father.father.entity.setTranslation(position);
+
+    return NFocus;
+  }
 
     // updateParticles(time){
     //   for(let i=0;i<this.allFocuses.length;i++){
@@ -343,7 +440,110 @@ class TMotorTAG{
       return new TMesh(meshResource);
     }
 
-    async loadMeshArray(father, files){
+
+  // for 2 meshes (lazy load content)
+  async dynamicMeshArrayLazyLoading(father, files, color, tiers){
+    let count = 0;
+    let meshArray = [];
+    let manager = this.resourceManager;
+
+    if(files.length-1 != tiers.length){
+      console.log("Tiers don't match mesh array length");
+      return null;
+    }
+
+    // tiers: lowpo < medpo < highpo
+
+    let meshes = new TResourceMeshArray(meshArray, tiers);
+    meshes.setColor(color)
+
+    for(let i = 0; i<files.length; i++){
+      if(i == 0){
+        // First load low poly model
+        await manager.getResource(files[i])
+          .then(completed => {
+            meshes.addMesh(completed);
+            meshes.setCount(i);
+            console.log(files[i]);
+            console.log(" loaded");
+          })
+      }
+      else{
+        //setTimeout(() => {
+        // Then load high poly model
+        manager.getResource(files[i])
+          .then( completed => {
+            meshes.addMesh(completed);
+            meshes.setCount(i);
+            console.log(files[i]);
+            console.log(" loaded");
+            global.status = 1;
+          })
+
+        // }, 4000);
+
+        // todo -> everything loaded: scroll -> change models LOD
+
+      }
+    }
+
+    let branch = await this.createBranch(father, meshes);
+
+    return branch
+  }
+
+  // for >3 meshes
+  async dynamicMeshArray(father, files, color, tiers){
+    let count = 0;
+    let meshArray = [];
+    let manager = this.resourceManager;
+
+    if(files.length-1 != tiers.length){
+      console.log("Tiers don't match mesh array length");
+      return null;
+    }
+
+    // tiers: lowpo < medpo < highpo
+
+    let meshes = new TResourceMeshArray(meshArray, tiers);
+    meshes.setColor(color)
+
+    for(let i = 0; i<files.length; i++){
+      if(i == 0){
+        // First load low poly model
+        await manager.getResource(files[i])
+          .then(completed => {
+            meshes.addMesh(completed);
+            meshes.setCount(0);
+          })
+      }
+      else{
+        //setTimeout(() => {
+        // Then load high poly model
+        manager.getResource(files[i])
+          .then( completed => {
+
+            meshes.addMesh(completed);
+            if(i == (files.length-1)){
+              //global.status = 1;
+              meshes.setCount(1);
+            }
+          })
+
+        // }, 4000);
+
+        // todo -> everything loaded: scroll -> change models LOD
+
+      }
+    }
+
+    let branch = await this.createBranch(father, meshes);
+
+    return branch
+  }
+
+
+  async loadMeshArrayAnimation(father, files){
 
       let meshesArray = [];
 
@@ -355,6 +555,30 @@ class TMotorTAG{
 
       return this.createBranch(father, meshes);
     }
+
+  async loadMeshArray(father, files, colors, tiers){
+
+    let meshesArray = [];
+
+    await this.asyncForEach(files, async (e) => {
+      meshesArray.push( await this.resourceManager.getResource(e));
+    });
+
+    let meshes = new TResourceMeshArray(meshesArray, tiers);
+
+    meshes.setColor(colors);
+
+    meshes.setCount(2);
+
+    let branch = this.createBranch(father, meshes);
+
+    global.status = 1;
+
+    return branch;
+  }
+
+
+
 
     async asyncForEach(array, callback) {
       for (let index = 0; index < array.length; index++) {
@@ -375,19 +599,44 @@ class TMotorTAG{
         return NMesh;
     }
 
-    init(){
-      // Clear
-      global.gl.useProgram(global.program);
-      global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
-      global.gl.enable(global.gl.DEPTH_TEST);
-      global.gl.enable(global.gl.CULL_FACE);
-      //global.gl.frontFace(global.gl.CCW);
-      global.gl.cullFace(global.gl.BACK);
+  enableBoundingBox( meshResource ) {
+    meshResource.entity.mesh.enableBB(true);
+  }
 
-      // Projection Matrix
-      global.gl.uniformMatrix4fv(global.programUniforms.uPMatrix, false, global.projectionMatrix);
+  init(){
+    // Clear
+    global.gl.useProgram(global.program);
+    global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
+    global.gl.enable(global.gl.DEPTH_TEST);
+    global.gl.enable(global.gl.CULL_FACE);
+    //global.gl.frontFace(global.gl.CCW);
+    global.gl.cullFace(global.gl.BACK);
 
-    }
+    this.initProgram();
+
+    this.initParticles();
+
+  }
+
+  initProgram(){
+    global.gl.useProgram(global.program);
+
+    // Projection Matrix
+    global.gl.uniformMatrix4fv(global.programUniforms.uPMatrix, false, global.projectionMatrix);
+
+  }
+
+  initParticles(){
+    global.gl.useProgram(global.particlesProgram);
+
+    // Projection Matrix
+    global.gl.uniformMatrix4fv(global.particlesUniforms.uPMatrix, false, global.projectionMatrix);    //Maps the Perspective matrix to the uniform prg.uPMatrix
+
+    // uPointSize = size of each particle
+    global.gl.uniform1f(global.particlesUniforms.uPointSize, 23.0);
+
+    global.gl.useProgram(global.program);
+  }
 
     draw(){
       // Clear

@@ -139,7 +139,7 @@ class TResource {
     }
 }
 
-class TResourceMeshArray {
+class TResourceMeshArrayAnimation {
 
   constructor(meshesArray){
     this.meshes = meshesArray;
@@ -166,244 +166,394 @@ class TResourceMeshArray {
 
 }
 
-class TResourceMesh extends TResource{
+class TResourceMeshArray {
 
-    constructor(name){
-        super(name);
+  constructor(meshesArray, tiers){
+    this.meshes = meshesArray;
+    this.index = 0;
+    this.color = null;
+    this.tiers = tiers;
+  }
 
-        // vertices positions
-        this.vertices = [];
-        // vertices indices
-        this.triVertices = [];
+  beginDraw() {
+    this.draw();
+  }
 
-        // normals
-        this.normals = [];
-        // ¿¿??
-        this.triNormals;
+  endDraw() {
+  }
 
-        // texture coords
-        this.textures = [];
-        // ¿¿??
-        this.triTextures;
+  draw(){
+    if(this.meshes != null && this.meshes.length != 0){
+      if(this.index > this.meshes.length -1){
+        this.index = this.meshes.length -1;
+      }
 
-        this.nTris;
-        this.nVertices;
-        this.alias;
-
-        this.cbo;
-        this.nbo;
-        this.ibo;
-        this.vbo;
-
-        this.color = null;
-    }
-
-
-    setColor( value ){
-        this.color = value;
-    }
-
-    async loadFile(file){
-
-        console.log("== loadFile TResourceMesh(" + file + ") ==");
-
-        // mesh file code
-        const jsonMesh = await loadJSON(file);
-
-      ///////////////////////////////////////////////////////////////////////////////// GET INFO FROM FILE
-
-        this.alias = jsonMesh.alias;
-
-        if( file == "earth_fbx.json" ||
-          file == "earthfbx.json" ||
-          file == "earthobj.json" ||
-          file == "mesh_continentsObj.json"
-        ){
-
-            this.vertices = jsonMesh.meshes[0].vertices;
-            this.triVertices = [].concat.apply([], jsonMesh.meshes[0].faces);
-            this.textures = jsonMesh.meshes[0].texturecoords[0];
-            this.normals = jsonMesh.meshes[0].normals;
-
-            console.log("== greentoken.de loader ==");
-
-        } else if (file == "test.json") {
-            this.alias = file;
-
-            this.vertices = jsonMesh.model.vertices[0].position.data;
-            this.triVertices = jsonMesh.model.meshes[0].indices;
-            this.textures = jsonMesh.model.vertices[0].texCoord0.data;
-            this.normals = jsonMesh.model.vertices[0].normal.data;
-
-            console.log("== Playcanvas loader ==");
-
+      if(global.status == 1){
+        // Update LOD while checking zoom
+        if(global.zoom < this.tiers[0]){
+          // draw little one
+          this.setCount(2);
         }
-        else if (file == "test1.json" ||
-          file == "test2.json" ||
-          file == "ballNormals.json" ||
-          file == "ballNoNormals.json" ||
-          file == "textured_earth.json" ||
-          file == "sea.json" ||
-          file == "marker.json" ||
-          file == "card.json" ||
-          file == "mesh_continents.json" ||
-          file == "earth.json" ||
-          file == "earth_fixed.json" ||
-          file == "earthOriginal_simple.json") {
-          // Blender JSON Mesh exporter
-          this.alias = file;
+        else if(global.zoom < this.tiers[1]){
 
-          this.vertices = jsonMesh.positions;
-          this.triVertices = jsonMesh.indices;
-          this.textures = jsonMesh.texcoords ? jsonMesh.texcoords.UVMap : null;
-          //this.normals = jsonMesh.normals;
-          this.normals = calculateNormals(this.vertices, this.triVertices); 
-          console.log("== json mesh exporter ==");
-
-        }
-        else if(jsonMesh.indices!=undefined && jsonMesh.verts != undefined){
-          this.vertices = jsonMesh.verts;
-          this.triVertices = jsonMesh.indices;
-          //this.normals = jsonMesh.normals;
-          this.normals = calculateNormals(this.vertices, this.triVertices);
-
-          console.log("== kurilo.su loader ==");
+          this.setCount(1);
         }
         else{
-          // python OBJ -> json
-            this.vertices = jsonMesh.vertices;
-            this.triVertices = jsonMesh.indices;
-            this.textures = jsonMesh.uvs;
-            this.normals = jsonMesh.normals;
-
-            console.log("== python loader ==");
+          this.setCount(0);
         }
-
-        this.nTris = this.triVertices.length;
-        this.nVertices = this.vertices.length;
-
-      ///////////////////////////////////////////////////////////////////////////////// CREATE BUFFERS
-      if(global.gl && global.program) {
-        let vertexBufferObject = global.gl.createBuffer();
-        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, vertexBufferObject);
-        global.gl.bufferData(global.gl.ARRAY_BUFFER, new Float32Array(this.vertices), global.gl.STATIC_DRAW);
-
-        let normalBufferObject = global.gl.createBuffer();
-        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, normalBufferObject);
-        global.gl.bufferData(global.gl.ARRAY_BUFFER, new Float32Array(this.normals), global.gl.STATIC_DRAW);
-
-        let indexBufferObject = global.gl.createBuffer();
-        global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, indexBufferObject);
-        global.gl.bufferData(global.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triVertices), global.gl.STATIC_DRAW);
-
-        this.vbo = vertexBufferObject;
-        this.ibo = indexBufferObject;
-        this.nbo = normalBufferObject;
-
-        if (this.textures) {
-          let colorBufferObject = global.gl.createBuffer();
-          global.gl.bindBuffer(global.gl.ARRAY_BUFFER, colorBufferObject);
-          global.gl.bufferData(global.gl.ARRAY_BUFFER, new Float32Array(this.textures), global.gl.STATIC_DRAW);
-          this.cbo = colorBufferObject;
-        }
-
-        global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, null);
-        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
       }
+      this.meshes[this.index].draw();
+    }
+  }
 
-        return this;
+  setColor(color){
+    this.color = color;
+    if(this.meshes!=null){
+      for(let i = 0; i<this.meshes.length; i++){
+        this.meshes[i].setColor(color);
+      }
+    }
+  }
+  setCount(index){
+    this.index = index;
+  }
+
+  addMesh(mesh){
+    mesh.setColor(this.color);
+    this.meshes.push(mesh);
+  }
+
+}
+
+class TResourceMesh extends TResource{
+
+  constructor(name){
+    super(name);
+
+    // vertices positions
+    this.vertices = [];
+    // vertices indices
+    this.triVertices = [];
+
+    // normals
+    this.normals = [];
+    // ¿¿??
+    this.triNormals;
+
+    // texture coords
+    this.textures = [];
+    // ¿¿??
+    this.triTextures;
+
+    this.nTris;
+    this.nVertices;
+    this.alias;
+
+    this.cbo;
+    this.nbo;
+    this.ibo;
+    this.vbo;
+
+    this.color = null;
+
+    this.boundingBox = null;
+    this.enableBBox = false
+  }
+
+  enableBB(value) {
+    this.enableBBox = value;
+    this.boundingBox = {
+      vertices: [],
+      vertsToCalc: this.vertices.slice(0),
+      vMin: [],
+      vMax: [],
+      indices: [
+        0,1, 1,2, 2,3, 3,0,   // floor
+        4,5, 5,6, 6,7, 7,4,   // cap
+        0,4, 1,5, 2,6, 3,7 ], // vertical vertices
+      vbo: global.gl.createBuffer(),
+      ibo: global.gl.createBuffer()
     }
 
-    draw(){
+    let xMin = this.boundingBox.vertsToCalc[1];;
+    let xMax = this.boundingBox.vertsToCalc[1];
+    let yMin = this.boundingBox.vertsToCalc[2];
+    let yMax = this.boundingBox.vertsToCalc[2];
+    let zMin = this.boundingBox.vertsToCalc[3];
+    let zMax = this.boundingBox.vertsToCalc[3];
+    let count = this.boundingBox.vertsToCalc.length;
 
-      global.gl.useProgram(global.program);
+    for(let i=0; i<count; i=i+3){
+      // X
+      if( this.boundingBox.vertsToCalc[i] < xMin ) xMin = this.boundingBox.vertsToCalc[i];
+      if( this.boundingBox.vertsToCalc[i] > xMax ) xMax = this.boundingBox.vertsToCalc[i];
+      // Y
+      if( this.boundingBox.vertsToCalc[i+1] < yMin ) yMin = this.boundingBox.vertsToCalc[i+1];
+      if( this.boundingBox.vertsToCalc[i+1] > yMax ) yMax = this.boundingBox.vertsToCalc[i+1];
+      // Z
+      if( this.boundingBox.vertsToCalc[i+2] < zMin ) zMin = this.boundingBox.vertsToCalc[i+2];
+      if( this.boundingBox.vertsToCalc[i+2] > zMax ) zMax = this.boundingBox.vertsToCalc[i+2];
+    }
 
+    this.boundingBox.vMin = [xMin, yMin, zMin];
+    this.boundingBox.vMax = [xMax, yMax, zMax];
 
-      // if(global.gl && global.program) {
-        ///////////////////////////////////////////////////////////////////////////////////////////// ""MATERIALS"" (NOPE)
-        // let uMaterialDiffuse = global.gl.getUniformLocation(global.program, 'uMaterialDiffuse');
-        // let uMaterialAmbient = global.gl.getUniformLocation(global.program, 'uMaterialAmbient');
-        // let uUseTextures = global.gl.getUniformLocation(global.program, 'uUseTextures');
-        /// CHAPUZA CHANGE COLORS
-        // if (this.name === 'sea.json') {
-        //   global.gl.uniform4fv(uMaterialDiffuse, [0.313, 0.678, 0.949, 1.0]);
-        //   global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
-        //   global.gl.uniform1i(uUseTextures, 0);
-        // } else if (this.name === 'marker.json') {
-        //   global.gl.uniform4fv(uMaterialDiffuse, [1, 0.039, 0.231, 1.0]);
-        //   global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
-        //   global.gl.uniform1i(uUseTextures, 0);
-        // } else if (this.name === 'card.json') {
-        //   global.gl.uniform4fv(uMaterialDiffuse, [0.313, 0.678, 0.949, 1.0]);
-        //   global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
-        //   global.gl.uniform1i(uUseTextures, 0);
-        // } else {
-        //   if (this.tex && this.tex.tex) {
-        //     global.gl.uniform4fv(uMaterialDiffuse, [1.0, 1.0, 1.0, 1.0]);
-        //     global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
-        //     global.gl.activeTexture(global.gl.TEXTURE0);
-        //     global.gl.bindTexture(global.gl.TEXTURE_2D, this.tex.tex);
-        //     global.gl.uniform1i(global.program.sampler, 0);
-        //     global.gl.uniform1i(uUseTextures, 1);
-        //   } else {
-        //     global.gl.uniform4fv(uMaterialDiffuse, [0.258, 0.960, 0.6, 1.0]);
-        //     global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
-        //     global.gl.uniform1i(uUseTextures, 0);
-        //   }
-        // }
-        ///////////////////////////////////////////////////////////////////////////////////////////// BIND BUFFERS
-        
-        // global.gl.enableVertexAttribArray(global.programAttributes.aVertexPosition);
-        // global.gl.enableVertexAttribArray(global.programAttributes.aVertexNormal);
-       
-        this.color ? global.gl.uniform4fv(global.programUniforms.uMaterialDiffuse, this.color) : global.gl.uniform4fv(global.programUniforms.uMaterialDiffuse, [1,0,0,1]); 
-         
-       
+    this.boundingBox.vertices = [
+      this.boundingBox.vMin[0], this.boundingBox.vMin[1], this.boundingBox.vMin[2],
+      this.boundingBox.vMax[0], this.boundingBox.vMin[1], this.boundingBox.vMin[2],
+      this.boundingBox.vMax[0], this.boundingBox.vMin[1], this.boundingBox.vMax[2],
+      this.boundingBox.vMin[0], this.boundingBox.vMin[1], this.boundingBox.vMax[2],
+      this.boundingBox.vMin[0], this.boundingBox.vMax[1], this.boundingBox.vMin[2],
+      this.boundingBox.vMax[0], this.boundingBox.vMax[1], this.boundingBox.vMin[2],
+      this.boundingBox.vMax[0], this.boundingBox.vMax[1], this.boundingBox.vMax[2],
+      this.boundingBox.vMin[0], this.boundingBox.vMax[1], this.boundingBox.vMax[2]
+    ];
 
-        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.vbo);
-        global.gl.vertexAttribPointer(global.programAttributes.aVertexPosition, 3, global.gl.FLOAT, global.gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
-        global.gl.enableVertexAttribArray(global.programAttributes.aVertexPosition);
+    global.gl.useProgram(global.program);
 
+    this.boundingBox.vbo = global.gl.createBuffer();
+    this.boundingBox.Ibo = global.gl.createBuffer();
 
-        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.nbo);
-        global.gl.vertexAttribPointer(global.programAttributes.aVertexNormal, 3, global.gl.FLOAT, global.gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
-        global.gl.enableVertexAttribArray(global.programAttributes.aVertexNormal);
+    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.boundingBox.vbo);
+    global.gl.bufferData(global.gl.ARRAY_BUFFER, new Float32Array(this.boundingBox.vertices), global.gl.STATIC_DRAW);
 
+    global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, this.boundingBox.ibo);
+    global.gl.bufferData(global.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.boundingBox.indices), global.gl.STATIC_DRAW);
 
-        // if (this.tex && this.tex.tex) {
-        //   let texCoordAttribLocation = global.gl.getAttribLocation(global.program, 'aVertexTextureCoords');
-        //   global.gl.enableVertexAttribArray(texCoordAttribLocation);
-        //   global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.cbo);
-        //   global.gl.vertexAttribPointer(texCoordAttribLocation, 2, global.gl.FLOAT, global.gl.FALSE, 2 * Float32Array.BYTES_PER_ELEMENT, 0);
-        //   global.gl.enableVertexAttribArray(texCoordAttribLocation);
-        // }
+    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
+    global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, null);
 
+  }
 
-        ///////////////////////////////////////////////////////////////////////////////// POSITION & ROTATION STUFF
-        //var rotation = glMatrix.mat4.create();
-        // //glMatrix.mat4.rotate(rotation, worldMatrix, angle, [0, 1, 0]);
-        
-        // MVMatrix = model * view
-        let viewModel = [];
-        glMatrix.mat4.multiply(viewModel, global.viewMatrix, global.modelMatrix);
-        global.gl.uniformMatrix4fv(global.programUniforms.uMVMatrix, false, viewModel);
+  setColor( value ){
+    this.color = value;
+  }
 
-        // uPMatrix * uMVMatrix (on shader)
+  async loadFile(file){
 
-        // NMatrix
-        let normalMatrix = glMatrix.mat4.create();
-        glMatrix.mat4.invert(normalMatrix, viewModel);
-        glMatrix.mat4.transpose(normalMatrix, normalMatrix);
-        global.gl.uniformMatrix4fv(global.programUniforms.uNMatrix, false, normalMatrix);
-       
-        ///////////////////////////////////////////////////////////////////////////////// DRAW
-        global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, this.ibo);
-        global.gl.drawElements(global.gl.TRIANGLES, this.nTris, global.gl.UNSIGNED_SHORT, 0);
-        ///////////////////////////////////////////////////////////////////////////////// CLEAR ALL BUFFERS
-        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
-        global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, null);
+    // console.log("== loadFile TResourceMesh(" + file + ") ==");
+
+    // mesh file code
+    const jsonMesh = await loadJSON(file);
+
+    ///////////////////////////////////////////////////////////////////////////////// GET INFO FROM FILE
+
+    this.alias = jsonMesh.alias;
+
+    if( file == "earth_fbx.json" ||
+      file == "earthfbx.json" ||
+      file == "earthobj.json" ||
+      file == "mesh_continentsObj.json"
+    ){
+
+      this.vertices = jsonMesh.meshes[0].vertices;
+      this.triVertices = [].concat.apply([], jsonMesh.meshes[0].faces);
+      this.textures = jsonMesh.meshes[0].texturecoords[0];
+      this.normals = jsonMesh.meshes[0].normals;
+
+      // console.log("== greentoken.de loader ==");
+
+    } else if (file == "test.json") {
+      this.alias = file;
+
+      this.vertices = jsonMesh.model.vertices[0].position.data;
+      this.triVertices = jsonMesh.model.meshes[0].indices;
+      this.textures = jsonMesh.model.vertices[0].texCoord0.data;
+      this.normals = jsonMesh.model.vertices[0].normal.data;
+
+      // console.log("== Playcanvas loader ==");
+
+    }
+    else if (file == "test1.json" ||
+      file == "test2.json" ||
+      file == "ballNormals.json" ||
+      file == "ballNoNormals.json" ||
+      file == "textured_earth.json" ||
+      file == "sea.json" ||
+      file == "marker.json" ||
+      file == "card.json" ||
+      file == "mesh_continents.json" ||
+      file == "earth.json" ||
+      file == "earth_fixed.json" ||
+      file == "earthOriginal_simple.json") {
+      // Blender JSON Mesh exporter
+      this.alias = file;
+
+      this.vertices = jsonMesh.positions;
+      this.triVertices = jsonMesh.indices;
+      this.textures = jsonMesh.texcoords ? jsonMesh.texcoords.UVMap : null;
+      //this.normals = jsonMesh.normals;
+      this.normals = calculateNormals(this.vertices, this.triVertices);
+      //console.log("== json mesh exporter ==");
+
+    }
+    else if(jsonMesh.indices!=undefined && jsonMesh.verts != undefined){
+      this.vertices = jsonMesh.verts;
+      this.triVertices = jsonMesh.indices;
+      //this.normals = jsonMesh.normals;
+      this.normals = calculateNormals(this.vertices, this.triVertices);
+
+      //console.log("== kurilo.su loader ==");
+    }
+    else{
+      // python OBJ -> json
+      this.vertices = jsonMesh.vertices;
+      this.triVertices = jsonMesh.indices;
+      this.textures = jsonMesh.uvs;
+      this.normals = jsonMesh.normals;
+
+      //console.log("== python loader ==");
+    }
+
+    this.nTris = this.triVertices.length;
+    this.nVertices = this.vertices.length;
+
+    ///////////////////////////////////////////////////////////////////////////////// CREATE BUFFERS
+    if(global.gl && global.program) {
+      let vertexBufferObject = global.gl.createBuffer();
+      global.gl.bindBuffer(global.gl.ARRAY_BUFFER, vertexBufferObject);
+      global.gl.bufferData(global.gl.ARRAY_BUFFER, new Float32Array(this.vertices), global.gl.STATIC_DRAW);
+
+      let normalBufferObject = global.gl.createBuffer();
+      global.gl.bindBuffer(global.gl.ARRAY_BUFFER, normalBufferObject);
+      global.gl.bufferData(global.gl.ARRAY_BUFFER, new Float32Array(this.normals), global.gl.STATIC_DRAW);
+
+      let indexBufferObject = global.gl.createBuffer();
+      global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, indexBufferObject);
+      global.gl.bufferData(global.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triVertices), global.gl.STATIC_DRAW);
+
+      this.vbo = vertexBufferObject;
+      this.ibo = indexBufferObject;
+      this.nbo = normalBufferObject;
+
+      if (this.textures) {
+        let colorBufferObject = global.gl.createBuffer();
+        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, colorBufferObject);
+        global.gl.bufferData(global.gl.ARRAY_BUFFER, new Float32Array(this.textures), global.gl.STATIC_DRAW);
+        this.cbo = colorBufferObject;
       }
+
+      global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, null);
+      global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
+    }
+
+    return this;
+  }
+
+  draw(){
+
+    global.gl.useProgram(global.program);
+
+
+    // if(global.gl && global.program) {
+    ///////////////////////////////////////////////////////////////////////////////////////////// ""MATERIALS"" (NOPE)
+    // let uMaterialDiffuse = global.gl.getUniformLocation(global.program, 'uMaterialDiffuse');
+    // let uMaterialAmbient = global.gl.getUniformLocation(global.program, 'uMaterialAmbient');
+    // let uUseTextures = global.gl.getUniformLocation(global.program, 'uUseTextures');
+    /// CHAPUZA CHANGE COLORS
+    // if (this.name === 'sea.json') {
+    //   global.gl.uniform4fv(uMaterialDiffuse, [0.313, 0.678, 0.949, 1.0]);
+    //   global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+    //   global.gl.uniform1i(uUseTextures, 0);
+    // } else if (this.name === 'marker.json') {
+    //   global.gl.uniform4fv(uMaterialDiffuse, [1, 0.039, 0.231, 1.0]);
+    //   global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+    //   global.gl.uniform1i(uUseTextures, 0);
+    // } else if (this.name === 'card.json') {
+    //   global.gl.uniform4fv(uMaterialDiffuse, [0.313, 0.678, 0.949, 1.0]);
+    //   global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+    //   global.gl.uniform1i(uUseTextures, 0);
+    // } else {
+    //   if (this.tex && this.tex.tex) {
+    //     global.gl.uniform4fv(uMaterialDiffuse, [1.0, 1.0, 1.0, 1.0]);
+    //     global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+    //     global.gl.activeTexture(global.gl.TEXTURE0);
+    //     global.gl.bindTexture(global.gl.TEXTURE_2D, this.tex.tex);
+    //     global.gl.uniform1i(global.program.sampler, 0);
+    //     global.gl.uniform1i(uUseTextures, 1);
+    //   } else {
+    //     global.gl.uniform4fv(uMaterialDiffuse, [0.258, 0.960, 0.6, 1.0]);
+    //     global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+    //     global.gl.uniform1i(uUseTextures, 0);
+    //   }
     // }
+    ///////////////////////////////////////////////////////////////////////////////////////////// BIND BUFFERS
+
+    // global.gl.enableVertexAttribArray(global.programAttributes.aVertexPosition);
+    // global.gl.enableVertexAttribArray(global.programAttributes.aVertexNormal);
+
+    this.color ? global.gl.uniform4fv(global.programUniforms.uMaterialDiffuse, this.color) : global.gl.uniform4fv(global.programUniforms.uMaterialDiffuse, [1,0,0,1]);
+
+
+
+    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.vbo);
+    global.gl.vertexAttribPointer(global.programAttributes.aVertexPosition, 3, global.gl.FLOAT, global.gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
+    global.gl.enableVertexAttribArray(global.programAttributes.aVertexPosition);
+
+
+    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.nbo);
+    global.gl.vertexAttribPointer(global.programAttributes.aVertexNormal, 3, global.gl.FLOAT, global.gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
+    global.gl.enableVertexAttribArray(global.programAttributes.aVertexNormal);
+
+
+    // if (this.tex && this.tex.tex) {
+    //   let texCoordAttribLocation = global.gl.getAttribLocation(global.program, 'aVertexTextureCoords');
+    //   global.gl.enableVertexAttribArray(texCoordAttribLocation);
+    //   global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.cbo);
+    //   global.gl.vertexAttribPointer(texCoordAttribLocation, 2, global.gl.FLOAT, global.gl.FALSE, 2 * Float32Array.BYTES_PER_ELEMENT, 0);
+    //   global.gl.enableVertexAttribArray(texCoordAttribLocation);
+    // }
+
+
+    ///////////////////////////////////////////////////////////////////////////////// POSITION & ROTATION STUFF
+
+    let aux = global.modelMatrix;
+    // console.log(`
+    //     modelMatrix (mesh):
+    //     ${ aux[0] } ${ aux[1] } ${ aux[2] } ${ aux[3] }
+    //     ${ aux[4] } ${ aux[5] } ${ aux[6] } ${ aux[7] }
+    //     ${ aux[8] } ${ aux[9] } ${ aux[10] } ${ aux[11] }
+    //     ${ aux[12] } ${ aux[13] } ${ aux[14] } ${ aux[15] }
+    // `);
+
+    // MVMatrix = model * view
+    let viewModel = [];
+    glMatrix.mat4.multiply(viewModel, global.viewMatrix, global.modelMatrix);
+    global.gl.uniformMatrix4fv(global.programUniforms.uMVMatrix, false, viewModel);
+
+    // uPMatrix * uMVMatrix (on shader)
+
+    // NMatrix
+    let normalMatrix = glMatrix.mat4.create();
+    glMatrix.mat4.invert(normalMatrix, viewModel);
+    glMatrix.mat4.transpose(normalMatrix, normalMatrix);
+    global.gl.uniformMatrix4fv(global.programUniforms.uNMatrix, false, normalMatrix);
+
+    ///////////////////////////////////////////////////////////////////////////////// DRAW
+    global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, this.ibo);
+    global.gl.drawElements(global.gl.TRIANGLES, this.nTris, global.gl.UNSIGNED_SHORT, 0);
+    ///////////////////////////////////////////////////////////////////////////////// CLEAR ALL BUFFERS
+    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
+    global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, null);
+
+    // bounding box if available
+    if(this.enableBBox){
+
+      // draw
+      global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.boundingBox.vbo);
+      global.gl.vertexAttribPointer(global.programAttributes.aVertexPosition, 3, global.gl.FLOAT, global.gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
+      global.gl.enableVertexAttribArray(global.programAttributes.aVertexPosition);
+      // Set lines to black
+      global.gl.uniform4fv(global.programUniforms.uMaterialDiffuse, [0.0, 0.0, 0.0, 1.0])
+
+      global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, this.boundingBox.ibo);
+
+      global.gl.drawElements(global.gl.LINES, this.boundingBox.indices.length, global.gl.UNSIGNED_SHORT, 0);
+    }
+
+
+  }
+
 }
 
 class TResourceMaterial extends TResource{
@@ -654,5 +804,6 @@ export {
     TResourceMesh,
     TResourceShader,
     TResourceTexture,
-    TResourceMeshArray
+    TResourceMeshArray,
+    TResourceMeshArrayAnimation
 }

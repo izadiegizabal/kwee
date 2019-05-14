@@ -5,7 +5,7 @@ import {TResourceManager} from './resourceManager.js';
 // TMotor
 import {TMotorTAG} from './TMotorTAG.js';
 // Commons
-import {canvas, changeAngle, global, angle, TEntity, loadAttribAndUniformsLocations} from './commons.js';
+import {canvas, changeAngle, global, angle, TEntity, loadAttribAndUniformsLocations, ease} from './commons.js';
 
 import {getBezierPoints, convertLatLonToVec3, quatFromVectors, getEuler, degrees, convertLatLonToVec3Rotated} from './tools/utils.js'
 
@@ -478,8 +478,8 @@ function animation(now) {
   switch (fase) {
     case 0:
       if(now - last >= 5000) {
-        console.log(0);
-        console.log(global.auxViewMatrix);
+        // console.log(0);
+        // console.log(global.auxViewMatrix);
         // console.log(MeshArray.entity);
         // auxArc = Motor.createAndAnimateArc(Scene, 10.500000, -66.916664,40.415363, -3.707398, 24, 1.5);
         last = now;
@@ -494,7 +494,7 @@ function animation(now) {
     case 1:
       if(now - last >= 1000) {
         last = now;
-        console.log(1);
+        //console.log(1);
         fase = 2;
 
 
@@ -516,8 +516,8 @@ function animation(now) {
       break;
     case 2:
       if(now - last >= 1500) {
-        console.log(2);
-        console.log(global.auxViewMatrix);
+        //console.log(2);
+        //console.log(global.auxViewMatrix);
         let pvMat4 = glMatrix.mat4.create();
         let uselessMat4 = glMatrix.vec4.create();
         pvMat4 = glMatrix.mat4.mul(pvMat4, global.projectionMatrix, global.auxViewMatrix);
@@ -542,7 +542,7 @@ function animation(now) {
       }
       break;
     default:
-      console.log(-1);
+      //console.log(-1);
         fase = 0;
       break;
   }
@@ -621,7 +621,7 @@ function generateRandomLat() {
   return (Math.random() * (90 - (-90)) + (-90)).toFixed(3) * 1;
 }
 
-async function interactiveMain(){
+async function demoMain(){
   rotateMeshBool = false;
   if(global.gl && global.program) {
 
@@ -629,13 +629,6 @@ async function interactiveMain(){
     allowActions.value = false;
     let motor = new TMotorTAG(manager);
     let scene = motor.createRootNode();
-    let quats = glMatrix.quat.create();
-    let quatsRot = glMatrix.quat.create();
-    let auxQuat = glMatrix.quat.create();
-    const vec3 = glMatrix.vec3;
-    var quatsArray = [];
-    var quatQ = 1 / 16;
-    var quatBQ = 16;
 
     global.lastFrameTime = await Date.now();
 
@@ -643,73 +636,108 @@ async function interactiveMain(){
     /////////////////////                                         INIT CONFIG
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
     global.gl.useProgram(global.program);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         TREE & RESOURCES
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // EARTH
-    //let land = await motor.loadMesh(scene, 'earth_LP.json');
-    let land = await motor.loadMesh(scene, 'earth_LP_high.json');
-    land.entity.mesh.setColor( [ 0.2, 0.9, 0.2, 1.0] );
-    
-    // SEA
-    let sphere = await motor.loadMesh(scene, 'sea.json');
-    sphere.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 1.0] );
-    
-    
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////                                         Markers
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // // Madrid 40.415363, -3.707398
-    // let point1 = await motor.loadMesh(land, 'marker.json');
-    // motor.scale(point1, [0.01, 0.01, 0.01]);
-    // motor.translate(point1, convertLatLonToVec3(10.500000, -66.916664));
-    // // Caracas 10.500000, -66.916664
-    // let point2 = await motor.loadMesh(land, 'marker.json');
-    // motor.scale(point2, [0.01, 0.01, 0.01]);
-    // motor.translate(point2, convertLatLonToVec3(40.415363, -3.707398));
-    // // Roma 41.89193, 12.51133
-    // let point3 = await motor.loadMesh(land, 'marker.json');
-    // motor.scale(point3, [0.01, 0.01, 0.01]);
-    // motor.translate(point3, convertLatLonToVec3(41.89193, 12.51133));
-    // // Sydney -33.865143, 151.209900
-    // let point4 = await motor.loadMesh(land, 'marker.json');
-    // motor.scale(point4, [0.01, 0.01, 0.01]);
-    // motor.translate(point4, convertLatLonToVec3(-33.865143, 151.209900));
-    // // Wellington -41.28664, 174.77557
-    // let point5 = await motor.loadMesh(land, 'marker.json');
-    // motor.scale(point5, [0.01, 0.01, 0.01]);
-    // motor.translate(point5, convertLatLonToVec3(-41.28664, 174.77557));
-    // // Tokyo 35.6895, 139.69171
-    // let point6 = await motor.loadMesh(land, 'marker.json');
-    // motor.scale(point6, [0.01, 0.01, 0.01]);
-    // motor.translate(point6, convertLatLonToVec3(35.6895, 139.69171));
+    // // EARTH
+    // let land = await motor.loadMesh(scene, 'earth_LP_high.json');
+    // land.entity.mesh.setColor( [ 0.2, 0.9, 0.2, 1.0] );
+    // motor.enableBoundingBox(land);
+
+    // // SEA
+    // let sphere = await motor.loadMesh(scene, 'sea.json');
+    // sphere.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 1.0] );
+    // motor.enableBoundingBox(sphere);
+
+    // // SEA
+    // let earth = await motor.loadMesh(scene, '0_earth.json');
+    // earth.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 1.0] );
+    // motor.enableBoundingBox(earth);
+
+    // // SEA
+    // let sphere = await motor.loadMesh(scene, '0_sea.json');
+    // sphere.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 1.0] );
+    // motor.enableBoundingBox(sphere);
+
+    // low quality ... to ... high quality
+    // sea: http://h203.eps.ua.es/assets/assets/JSON/sea.json
+    // earth: http://h203.eps.ua.es/assets/assets/JSON/earthobj.json
+
+    // Correct ones:
+    // let LOD_earth = motor.dynamicMeshArray(scene, ['0_earth.json','earth_LP_high.json'], [ 0.2, 0.9, 0.2, 1.0]);
+    // let LOD_sea = motor.dynamicMeshArray(scene, ['0_sea.json','sea.json'], [ 0.3, 0.3, 0.8, 1.0]);
+
+    let LOD_earth = motor.loadMeshArray(scene, ['0_earth.json','1_earth.json','2_earth.json'], [ 0.2, 0.9, 0.2, 1.0], [3,6]);
+    let LOD_sea = motor.loadMeshArray(scene, ['0_sea.json','1_sea.json','2_sea.json'], [ 0.3, 0.3, 0.8, 1.0], [3,6]);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         particles
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     let positionTFocus = [-1.0,0.0,0.0];
-    let targetPos = [-2.0, 2.0, 0.0];
+    let targetPos = [1,1,1];
+    let newYorkPos = convertLatLonToVec3(40.730610, -73.935242);
+    let madridPos = convertLatLonToVec3(40.4165, -3.70256);
+    let hongKongPos = convertLatLonToVec3(22.28552, 114.15769);
+    let australiaPos = convertLatLonToVec3(-33.865143, 151.209900);
+    let middleOcean = convertLatLonToVec3(36.482797, -41.634668);
+    let upperPos = convertLatLonToVec3(66.326023, -31.565348);
+    let argentina = convertLatLonToVec3(-51.755200, -70.611091);
 
-   
+    // New York focus
+    let TFocus6 = motor.createFocus(scene, 100, 'straight', newYorkPos, 'normal' );
+    let TFocusA = motor.createFocus(scene, 100, 'dispersion', newYorkPos);
 
-    let TFocus = motor.createFocus(scene, 50, positionTFocus );
+    // // Madrid focus
+    let TFocus5 = motor.createFocus(scene, 100, 'straight', madridPos , 'normal');
 
-    // motor.targetTo( TFocus2,
-    //   [1.0, 0.0, 0.0],
-    //   targetPos);
 
-//    motor.cameraLookAt(TFocus, positionTFocus, targetPos)
-    
-    let origin = await motor.loadMesh(scene, 'marker.json');
-    motor.scale(origin, [0.1, 0.1, 0.1]);
-    motor.translate(origin, positionTFocus);
-    origin.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 0.5] );
+    // // Ocean focus
+    let TFocus99 = motor.createFocus(scene, 100, 'dispersion', middleOcean , 'normal');
+
+    let TFocusAA = motor.createFocus(scene, 100, 'fireworks', hongKongPos , 'normal', 1);
+
+
+
+    // // Madrid mesh
+    // let madrid = await motor.loadMesh(scene, 'marker.json');
+    // motor.scale(madrid, [0.05, 0.05, 0.05]);
+    // motor.translate(madrid, madridPos);
+    // madrid.entity.mesh.setColor( [ 1, 1, 0, 1.0] );
+
+
+    // // Hong Kong focus
+    // let TFocus7 = motor.createFocus(scene, 100, 'dispersion', hongKongPos, 'normal' );
+    // // Hong Kong mesh
+    // let hk = await motor.loadMesh(scene, 'marker.json');
+    // motor.scale(hk, [0.05, 0.05, 0.05]);
+    // motor.translate(hk, hongKongPos);
+    // hk.entity.mesh.setColor( [ 1, 1, 0, 1.0] );
+
+    // // Australia focus
+    // let TFocus8 = motor.createFocus(scene, 100, 'dispersion', australiaPos, 'normal' );
+    // // Australia mesh
+    // let au = await motor.loadMesh(scene, 'marker.json');
+    // motor.scale(au, [0.05, 0.05, 0.05]);
+    // motor.translate(au, australiaPos);
+    // au.entity.mesh.setColor( [ 1, 1, 0, 1.0] );
+
+    // Axis focus
+    // let focusX = motor.createFocus(scene,100, 'straight', [0,0,0], [1,0,0])
+    // let focusY = motor.createFocus(scene,100, 'straight', [0,0,0], [0,1,0])
+    // let focusZ = motor.createFocus(scene,100, 'straight', [0,0,0], [0,0,1])
+
+    // let testing = motor.createFocus(scene, 100, 'dispersion', [0,0,0], positionTFocus);
+
+
+    // let origin = await motor.loadMesh(scene, 'marker.json');
+    // motor.scale(origin, [0.1, 0.1, 0.1]);
+    // motor.translate(origin, positionTFocus);
+    // motor.enableBoundingBox(origin)
+    // origin.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 0.5] );
 
     // let target = await motor.loadMesh(scene, 'marker.json');
     // motor.scale(target, [0.1, 0.1, 0.1]);
@@ -717,27 +745,19 @@ async function interactiveMain(){
     // target.entity.mesh.setColor( [ 1, 0.3, 0.8, 1] );
 
 
+    // let vertical = await motor.loadMesh(scene, 'marker.json');
+    // motor.scale(vertical, [0.1, 0.1, 0.1]);
+    // motor.translate(vertical, [positionTFocus[0], positionTFocus[1]+1.7, positionTFocus[2] ] );
+    // vertical.entity.mesh.setColor( [ 1, 0.3, 0.8, 1] );
+
 
     ///////////
     // cities
     ///////////
 
-    let madrid = await motor.loadMesh(land, 'marker.json');
-    motor.scale(madrid, [0.01, 0.01, 0.01]);
-    motor.translate(madrid, convertLatLonToVec3(40.415363, -3.707398));
-
-    let roma = await motor.loadMesh(land, 'marker.json');
-    motor.scale(roma, [0.01, 0.01, 0.01]);
-    motor.translate(roma, convertLatLonToVec3(41.8905, 12.4942));
-
-    let paris = await motor.loadMesh(land, 'marker.json');
-    motor.scale(paris, [0.01, 0.01, 0.01]);
-    motor.translate(paris, convertLatLonToVec3(48.8667, 2.33333));
-
-
     let particlesTexture = await manager.getResource('spark.png');
 
-    
+
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         CAMERAS
@@ -745,19 +765,16 @@ async function interactiveMain(){
     let cam = motor.createCamera(scene);
     motor.enableCam(cam);
 
-    let radius = 1.7; // normal
-    //let radius = 5; // debug
-    
-    motor.cameraLookAt( cam, [
-      radius * Math.sin(0*Math.PI/180),
-      radius,
-      radius * Math.cos(0*Math.PI/180)
-    ],
-    [0,0,0],
-    [0,1,0]);
+    // motor.cameraLookAt( cam, [
+    //   global.zoom * Math.sin(0*Math.PI/180),
+    //   global.zoom,
+    //   global.zoom * Math.cos(0*Math.PI/180)
+    // ],
+    // [0,0,0],
+    // [0,1,0]);
 
     motor.calculateViews();
-    
+
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         LIGHTNING
@@ -771,18 +788,7 @@ async function interactiveMain(){
     allowActions.value = true;
     // document.getElementById("kweelive").click();
     document.body.click();
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////                                         FAKE TEXTURE
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /*
-      If seems that it doesn't matter if the shader only accesses the texture when uUseTextures is true.
-      What matters is the shader uses a texture at all.
 
-      Instead of using two different pair of shader, we are going to bind a one pixel white texture to avoid the error.
-      It is said to be a good practice.Then, we overwrite it in case we need to use textures.
-
-      link: https://gamedev.stackexchange.com/questions/166886/render-warning-there-is-no-texture-bound-to-the-unit-0-when-not-rendering-tex
-     */
     const whiteTexture = global.gl.createTexture();
     global.gl.bindTexture(global.gl.TEXTURE_2D, whiteTexture);
     global.gl.texImage2D(
@@ -791,73 +797,350 @@ async function interactiveMain(){
     global.gl.useProgram(global.program);
     global.gl.bindTexture(global.gl.TEXTURE_2D, whiteTexture);
 
-    console.log(scene);
 
+
+    console.log(scene);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         LOOP
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   
+
     let number = 0;
     let auxTHETA = 0;
     let auxPHI = 0;
     var loop = async function (now, now2) {
 
-      if (!global.drag) {
+      if (!global.drag && (auxPHI!=global.orbitLimit && auxPHI!=-global.orbitLimit) ) {
         global.dX *= global.AMORTIZATION, global.dY*=global.AMORTIZATION;
         global.THETA+=global.dX, global.PHI+=global.dY;
-     }
-     
+      }
+
       global.gl.useProgram(global.program);
 
       global.time = await Date.now();
-    
+
       ////////////////////////////////////////////////////////////////
 
       auxTHETA = global.orbitSpeed*global.THETA*(Math.PI/180);
-      auxPHI = (global.orbitSpeed*global.PHI)*(Math.PI/180);
-      
-      let camX = radius * Math.sin(auxTHETA) * Math.cos(auxPHI);
-      //let camY = radius * Math.sin((global.orbitSpeed*Math.min(Math.max(parseInt(global.PHI), -global.orbitMaxY), global.orbitMaxY))*(Math.PI/180));
-      // let camY = radius * Math.sin((global.orbitSpeed*global.PHI*(Math.PI/180)));
-      let camY = radius * Math.sin(auxPHI);
-      let camZ = radius * -Math.cos(auxTHETA) * Math.cos(auxPHI);
+      auxPHI = Math.max(Math.min(((global.orbitSpeed*global.PHI)*(Math.PI/180)),global.orbitLimit), -global.orbitLimit);
+
+      let camX = global.zoom * Math.sin(auxTHETA) * Math.cos(auxPHI);
+      let camY = global.zoom * Math.sin(auxPHI);
+      let camZ = global.zoom * -Math.cos(auxTHETA) * Math.cos(auxPHI);
 
       motor.cameraLookAt( cam, [
-        camX,
-        camY,
-        camZ,
-      ],
-      [0,0,0],
-      [0,1,0]);
+          camX,
+          camY,
+          camZ,
+        ],
+        [0,0,0],
+        //positionTFocus,
+        [0,1,0]);
 
-      // Old camera lookAt (rotating X-axis camera)
+      // Old camera lookAt (rotating Y-axis camera)
       // motor.cameraLookAt( cam, [
-      //   radius * Math.sin(number*Math.PI/180),
-      //   radius,
-      //   radius * Math.cos(number*Math.PI/180),
+      //   global.zoom * Math.sin(number*Math.PI/180),
+      //   global.zoom,
+      //   global.zoom * Math.cos(number*Math.PI/180),
       // ],
       // [0,0,0],
       // [0,1,0]);
 
-      
+
       motor.calculateViews();
 
-      global.gl.uniform3f(global.programUniforms.uLightDirection, 
-        radius * Math.sin(number*Math.PI/180),
-        radius,
-        radius * Math.cos(number*Math.PI/180)
+      // global.gl.uniform3f(global.programUniforms.uLightDirection,
+      //   global.zoom * Math.sin(number*Math.PI/180),
+      //   global.zoom,
+      //   global.zoom * Math.cos(number*Math.PI/180)
+      // );
+
+      global.gl.uniform3f(global.programUniforms.uLightDirection,
+        camX, camY, camZ
       );
 
+
       motor.draw();
-      
+
       ////////////////////////////////////////////////////////////////
-    
 
       global.lastFrameTime = global.time;
 
-      
       number = number + 0.3;
-      
+
+      requestAnimationFrame(loop);
+    }
+
+    motor.init();
+    loop();
+  }; //
+}
+
+async function interactiveMain(){
+  if(global.gl && global.program) {
+
+    draw = true;
+    allowActions.value = false;
+    let motor = new TMotorTAG(manager);
+    let scene = motor.createRootNode();
+
+    global.lastFrameTime = await Date.now();
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         INIT CONFIG
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    global.gl.useProgram(global.program);
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         TREE & RESOURCES
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // // EARTH
+    // let land = await motor.loadMesh(scene, 'earth_LP_high.json');
+    // land.entity.mesh.setColor( [ 0.2, 0.9, 0.2, 1.0] );
+    // motor.enableBoundingBox(land);
+
+    // // SEA
+    // let sphere = await motor.loadMesh(scene, 'sea.json');
+    // sphere.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 1.0] );
+    // motor.enableBoundingBox(sphere);
+
+    // // SEA
+    // let earth = await motor.loadMesh(scene, '0_earth.json');
+    // earth.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 1.0] );
+    // motor.enableBoundingBox(earth);
+
+    // // SEA
+    // let sphere = await motor.loadMesh(scene, '0_sea.json');
+    // sphere.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 1.0] );
+    // motor.enableBoundingBox(sphere);
+
+    // low quality ... to ... high quality
+    // sea: http://h203.eps.ua.es/assets/assets/JSON/sea.json
+    // earth: http://h203.eps.ua.es/assets/assets/JSON/earthobj.json
+
+    // Correct ones:
+    // let LOD_earth = motor.dynamicMeshArray(scene, ['0_earth.json','earth_LP_high.json'], [ 0.2, 0.9, 0.2, 1.0]);
+    // let LOD_sea = motor.dynamicMeshArray(scene, ['0_sea.json','sea.json'], [ 0.3, 0.3, 0.8, 1.0]);
+
+    // to do: load 2 MESHES ONLY
+    let LOD_earth = motor.dynamicMeshArray(scene, ['0_earth.json','1_earth.json','2_earth.json'], [ 0.2, 0.9, 0.2, 1.0], [3,6]);
+    let LOD_sea = motor.dynamicMeshArray(scene, ['0_sea.json','1_sea.json','2_sea.json'], [ 0.3, 0.3, 0.8, 1.0], [3,6]);
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         particles
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    let positionTFocus = [-1.0,0.0,0.0];
+    let targetPos = [1,1,1];
+    let newYorkPos = convertLatLonToVec3(40.730610, -73.935242);
+    let madridPos = convertLatLonToVec3(40.4165, -3.70256);
+    let hongKongPos = convertLatLonToVec3(22.28552, 114.15769);
+    let australiaPos = convertLatLonToVec3(-33.865143, 151.209900);
+    let middleOcean = convertLatLonToVec3(36.482797, -41.634668);
+    let upperPos = convertLatLonToVec3(66.326023, -31.565348);
+    let argentina = convertLatLonToVec3(-51.755200, -70.611091);
+
+    // New York focus
+    let TFocus6 = motor.createFocus(scene, 100, 'straight', newYorkPos, 'normal' );
+    let TFocusA = motor.createFocus(scene, 100, 'dispersion', newYorkPos);
+
+    // // Madrid focus
+    let TFocus5 = motor.createFocus(scene, 100, 'straight', madridPos , 'normal');
+
+
+    // // Ocean focus
+    let TFocus99 = motor.createFocus(scene, 100, 'dispersion', middleOcean , 'normal');
+
+    let TFocusAA = motor.createFocus(scene, 100, 'fireworks', hongKongPos , 'normal', 1);
+
+
+
+    // // Madrid mesh
+    // let madrid = await motor.loadMesh(scene, 'marker.json');
+    // motor.scale(madrid, [0.05, 0.05, 0.05]);
+    // motor.translate(madrid, madridPos);
+    // madrid.entity.mesh.setColor( [ 1, 1, 0, 1.0] );
+
+
+    // // Hong Kong focus
+    // let TFocus7 = motor.createFocus(scene, 100, 'dispersion', hongKongPos, 'normal' );
+    // // Hong Kong mesh
+    // let hk = await motor.loadMesh(scene, 'marker.json');
+    // motor.scale(hk, [0.05, 0.05, 0.05]);
+    // motor.translate(hk, hongKongPos);
+    // hk.entity.mesh.setColor( [ 1, 1, 0, 1.0] );
+
+    // // Australia focus
+    // let TFocus8 = motor.createFocus(scene, 100, 'dispersion', australiaPos, 'normal' );
+    // // Australia mesh
+    // let au = await motor.loadMesh(scene, 'marker.json');
+    // motor.scale(au, [0.05, 0.05, 0.05]);
+    // motor.translate(au, australiaPos);
+    // au.entity.mesh.setColor( [ 1, 1, 0, 1.0] );
+
+    // Axis focus
+    // let focusX = motor.createFocus(scene,100, 'straight', [0,0,0], [1,0,0])
+    // let focusY = motor.createFocus(scene,100, 'straight', [0,0,0], [0,1,0])
+    // let focusZ = motor.createFocus(scene,100, 'straight', [0,0,0], [0,0,1])
+
+    // let testing = motor.createFocus(scene, 100, 'dispersion', [0,0,0], positionTFocus);
+
+
+    let origin = await motor.loadMesh(scene, 'marker.json');
+    motor.scale(origin, [0.1, 0.1, 0.1]);
+    motor.translate(origin, positionTFocus);
+    motor.enableBoundingBox(origin)
+    origin.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 0.5] );
+
+    let target = await motor.loadMesh(scene, 'marker.json');
+    motor.scale(target, [0.1, 0.1, 0.1]);
+    motor.translate(target, targetPos);
+    target.entity.mesh.setColor( [ 1, 0.3, 0.8, 1] );
+
+
+    let vertical = await motor.loadMesh(scene, 'marker.json');
+    motor.scale(vertical, [0.1, 0.1, 0.1]);
+    motor.translate(vertical, [positionTFocus[0], positionTFocus[1]+1.7, positionTFocus[2] ] );
+    vertical.entity.mesh.setColor( [ 1, 0.3, 0.8, 1] );
+
+
+    ///////////
+    // cities
+    ///////////
+
+    let particlesTexture = await manager.getResource('spark.png');
+
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         CAMERAS
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    let cam = motor.createCamera(scene);
+    motor.enableCam(cam);
+
+    global.zoom = global.maxZoom;
+
+    ease({
+      startValue: global.zoom,
+      endValue: 1.7,
+      durationMs: 5000,
+      onStep: x => global.zoom = x,
+      onComplete: () => {
+        global.status = 1;
+      }
+    })
+
+    // motor.cameraLookAt( cam, [
+    //   global.zoom * Math.sin(0*Math.PI/180),
+    //   global.zoom,
+    //   global.zoom * Math.cos(0*Math.PI/180)
+    // ],
+    // [0,0,0],
+    // [0,1,0]);
+
+    motor.calculateViews();
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         LIGHTNING
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //                           father  type    ambient      specular       diffuse         direction
+    let light = motor.createLight(scene, 1, [0.2,0.2,0.2,1.0], null, [0.5,0.5,0.5,1.0], [10.0, 10.0, 10.0]);
+
+    motor.calculateLights();
+
+    ///////// CHAPUZA MASTER AYY LMAO
+    allowActions.value = true;
+    // document.getElementById("kweelive").click();
+    document.body.click();
+
+    const whiteTexture = global.gl.createTexture();
+    global.gl.bindTexture(global.gl.TEXTURE_2D, whiteTexture);
+    global.gl.texImage2D(
+      global.gl.TEXTURE_2D, 0, global.gl.RGBA, 1, 1, 0,
+      global.gl.RGBA, global.gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
+    global.gl.useProgram(global.program);
+    global.gl.bindTexture(global.gl.TEXTURE_2D, whiteTexture);
+
+
+
+    console.log(scene);
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         LOOP
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    let number = 0;
+    let auxTHETA = 0;
+    let auxPHI = 0;
+    var loop = async function (now, now2) {
+
+      if (!global.drag && (auxPHI!=global.orbitLimit && auxPHI!=-global.orbitLimit) ) {
+//      if (!global.drag && (auxPHI!=1.2 && auxPHI!=-1.2) ) {
+        global.dX *= global.AMORTIZATION, global.dY*=global.AMORTIZATION;
+        global.THETA+=global.dX, global.PHI+=global.dY;
+
+        // move to particles
+        global.gl.useProgram(global.particlesProgram);
+        // Update particles size while zooming
+        global.gl.uniform1f(global.particlesUniforms.uPointSize, 60 * Math.pow( Math.min(Math.max(global.zoom,global.minZoom),global.maxZoom), -1 ) );
+        global.gl.useProgram(global.program);
+
+      }
+
+      global.gl.useProgram(global.program);
+
+      global.time = await Date.now();
+
+      ////////////////////////////////////////////////////////////////
+
+      auxTHETA = global.orbitSpeed*global.THETA*(Math.PI/180);
+      auxPHI = Math.max(Math.min(((global.orbitSpeed*global.PHI)*(Math.PI/180)),global.orbitLimit), -global.orbitLimit);
+
+      let camX = global.zoom * Math.sin(auxTHETA) * Math.cos(auxPHI);
+      let camY = global.zoom * Math.sin(auxPHI);
+      let camZ = global.zoom * -Math.cos(auxTHETA) * Math.cos(auxPHI);
+
+      motor.cameraLookAt( cam, [
+          camX,
+          camY,
+          camZ,
+        ],
+        [0,0,0],
+        //positionTFocus,
+        [0,1,0]);
+
+      // Old camera lookAt (rotating Y-axis camera)
+      // motor.cameraLookAt( cam, [
+      //   global.zoom * Math.sin(number*Math.PI/180),
+      //   global.zoom,
+      //   global.zoom * Math.cos(number*Math.PI/180),
+      // ],
+      // [0,0,0],
+      // [0,1,0]);
+
+
+      motor.calculateViews();
+
+      // global.gl.uniform3f(global.programUniforms.uLightDirection,
+      //   global.zoom * Math.sin(number*Math.PI/180),
+      //   global.zoom,
+      //   global.zoom * Math.cos(number*Math.PI/180)
+      // );
+
+      global.gl.uniform3f(global.programUniforms.uLightDirection,
+        camX, camY, camZ
+      );
+
+
+      motor.draw();
+
+      ////////////////////////////////////////////////////////////////
+
+      global.lastFrameTime = global.time;
+
+      number = number + 0.3;
+
       requestAnimationFrame(loop);
     }
 

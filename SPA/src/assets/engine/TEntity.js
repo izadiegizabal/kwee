@@ -582,169 +582,174 @@ class TCamera extends TEntity {
 }
 
 class TFocus extends TEntity {
-    // @todo => position to lat&long coords
+  // @todo => position to lat&long coords
 
-    // size     => integer
-    // position => [0,0,0] e.g.
-    constructor(size, position, target = [3.0, 25.0, 3.0]){
-        super();
-        this.size = size;                               // Focus size
-        this.position = position;                       // Focus position
-        this.particleArray = new Float32Array(size*4);  // bind to vertexShader
-        this.particles = [];                            // array of <Particles>
-        this.target = target;                           // "lookAt" particles (default is on Y-axis)
-        for(let i = 0; i<size; i++){
-            let particle = {};
+  // size     => integer
+  // position => [0,0,0] e.g.
+  constructor(size, type, position, target = [3.0, 25.0, 3.0], velocity, extra, life = 3){
+    super();
+    this.size = size;                               // Focus size
+    this.position = position;                       // Focus position
+    this.type = type                                // Dispersion or Straight particles
+    this.target = target;                           // "lookAt" particles
+    this.velocity = velocity;
+    this.extra = extra;                                // helper value for calc velocity values
+    this.life = life
 
-            this.resetParticle(particle);
-            // particleArray = [posX,posY,posZ,vLifeSpan]
-            // aParticle(?)      x     y    z     w  ==>> vertexShader
-            this.particleArray[(i*4)+0] = particle.pos[0];
-            this.particleArray[(i*4)+1] = particle.pos[1];
-            this.particleArray[(i*4)+2] = particle.pos[2];
-            this.particleArray[(i*4)+3] = particle.remainingLife / particle.lifespan;
+    this.particleArray = new Float32Array(size*4);  // bind to vertexShader
+    this.particles = [];                            // array of <Particles>
 
-            particle.id = i;
-            // Store particle object
-            this.particles.push(particle);
-        }
-        global.gl.useProgram(global.gl.particlesProgram);
+    for(let i = 0; i<size; i++){
+      let particle = {};
 
-        this.buffer = global.gl.createBuffer();
-        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.buffer);
-        global.gl.bufferData(global.gl.ARRAY_BUFFER, this.particleArray, global.gl.STATIC_DRAW);
-        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
+      this.resetParticle(particle);
+      // particleArray = [posX,posY,posZ,vLifeSpan]
+      // aParticle(?)      x     y    z     w  ==>> vertexShader
+      this.particleArray[(i*4)+0] = particle.pos[0];
+      this.particleArray[(i*4)+1] = particle.pos[1];
+      this.particleArray[(i*4)+2] = particle.pos[2];
+      this.particleArray[(i*4)+3] = particle.remainingLife / particle.lifespan;
 
-        global.gl.useProgram(global.program);
+      particle.id = i;
+      // Store particle object
+      this.particles.push(particle);
+    }
+    global.gl.useProgram(global.gl.particlesProgram);
+
+    this.buffer = global.gl.createBuffer();
+    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.buffer);
+    global.gl.bufferData(global.gl.ARRAY_BUFFER, this.particleArray, global.gl.DYNAMIC_DRAW);
+    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
+
+    global.gl.useProgram(global.program);
+
+  }
+  beginDraw() {
+    // draw
+    try{
+
+      // update particles
+      this.updateParticle( (global.time - global.lastFrameTime)/ 1000.0 );
+
+      global.gl.useProgram(global.particlesProgram);
+
+      //  mapUniforms
+      let viewModel = [];
+      let aux = global.modelMatrix;
+      glMatrix.mat4.mul(viewModel, global.viewMatrix, global.modelMatrix);
+      global.gl.uniformMatrix4fv(global.particlesUniforms.uMVMatrix, false, viewModel);  //Maps the Model-View matrix to the uniform prg.uMVMatrix
+
+      global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.getBuffer());
+      global.gl.vertexAttribPointer(global.particlesAttributes.aParticle, 4, global.gl.FLOAT, false, 4*Float32Array.BYTES_PER_ELEMENT, 0);
+      global.gl.enableVertexAttribArray(global.particlesAttributes.aParticle);
+
+      // ---- @todo texture variable
+      // global.gl.activeTexture(global.gl.TEXTURE1);
+      // global.gl.bindTexture(global.gl.TEXTURE_2D, particlesTexture.tex);
+      // let uniformSampler = global.gl.getUniformLocation(global.particlesProgram, "uSampler");
+      // global.gl.uniform1i(uniformSampler, 1);
+
+      // Update particles size while zooming
+      global.gl.uniform1f(global.particlesUniforms.uPointSize, 60 * Math.pow( Math.min(Math.max(global.zoom,global.minZoom),global.maxZoom), -1 ) );
+
+      global.gl.drawArrays(global.gl.POINTS, 0, this.getParticles());
+      global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
+
+      global.gl.useProgram(global.program);
 
     }
-    beginDraw() {
+    catch(err){
+      console.error(err);
+    }
+  }
+
+  endDraw() { }
+
+
+  resetParticle(particle){
+    // Initial position
+    particle.pos = [0,0,0];
+
+    // Initial velocity
+    // ---- working with lookAt (no dispersion D:)
+    // particle.vel = [
+    //     this.velocity[0] * ( (Math.random() * 0.8) + this.extra[0] ),
+    //     this.velocity[1] * ( (Math.random() * 0.8) + this.extra[1] ),
+    //     this.velocity[2] * ( (Math.random() * 0.8) + this.extra[2] ),
+    // ];
+    particle.vel = [
+      (Math.random() * this.velocity[0]) + this.extra[0] ,
+      (Math.random() * this.velocity[1]) + this.extra[1] ,
+      (Math.random() * this.velocity[2]) + this.extra[2] ,
+    ];
+
+
+    // 360 degrees particles
+    // particle.vel = [
+    // (Math.random() * 3) -1,
+    // (Math.random() * 3) -1,
+    // (Math.random() * 3) -1,
+    // ];
+
+    // Lifespan
+    if(this.type=="fireworks"){
+      particle.lifespan = this.life; // fireworks
+    }
+    else{
+      particle.lifespan = (Math.random() * this.life);
+    }
+    // particle.lifespan = 3; // fireworks
+
+    // RemainingLife
+    particle.remainingLife = particle.lifespan;
+  }
+
+  updateParticle(elapsedTime){
+
+    for(let i = 0; i<this.particles.length; i++){
+      let particle = this.particles[i];
+
+      particle.remainingLife -= elapsedTime;
+      if(particle.remainingLife<=0){
+        // If particle die, restart
+        this.resetParticle(particle);
+      }
+
+
+      particle.pos[0] += particle.vel[0] * elapsedTime;
+      particle.pos[1] += particle.vel[1] * elapsedTime;
+      particle.pos[2] += particle.vel[2] * elapsedTime;
+
+      // Update particleArray
+      this.particleArray[(i*4)+0] = particle.pos[0];
+      this.particleArray[(i*4)+1] = particle.pos[1];
+      this.particleArray[(i*4)+2] = particle.pos[2];
+      this.particleArray[(i*4)+3] = particle.remainingLife/particle.lifespan;
 
     }
+    // Once we are done looping through all the particles, update the buffer once
 
-    endDraw() {
-        // update particles
-        this.updateParticle( (global.time - global.lastFrameTime)/ 1000.0 );
+    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.buffer);
+    global.gl.bufferData(global.gl.ARRAY_BUFFER, this.particleArray, global.gl.STATIC_DRAW);
+    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
 
-        // draw
-        try{
+  }
 
-            global.gl.useProgram(global.particlesProgram);
-    
-            //  mapUniforms
-            
-            let viewModel = [];
+  getSize(){
+    return this.size;
+  }
 
-            let rotation = glMatrix.mat4.create();
+  getPosition(){
+    return this.position;
+  }
 
-            glMatrix.mat4.mul(viewModel, global.viewMatrix, global.modelMatrix);
-            
-            // glMatrix.mat4.targetTo( rotation, [-1.0, 0.0, 0.0], [-2.0, 2.0, 0.0], [0.0,0.0,0.0] );
+  getBuffer(){
+    return this.buffer;
+  }
 
-            // glMatrix.mat4.mul(viewModel, viewModel, rotation);
-
-            //glMatrix.mat4.rotate(viewModel, viewModel, (45*Math.PI/180) ,[1,0,0]);
-            global.gl.uniformMatrix4fv(global.particlesUniforms.uMVMatrix, false, viewModel);  //Maps the Model-View matrix to the uniform prg.uMVMatrix            
-            global.gl.uniformMatrix4fv(global.particlesUniforms.uPMatrix, false, global.projectionMatrix);    //Maps the Perspective matrix to the uniform prg.uPMatrix
-            
-    
-            // uPointSize = size of each particle
-            global.gl.uniform1f(global.particlesUniforms.uPointSize, 14.0);
-            
-            // let attributeParticle = global.gl.getAttribLocation(global.particlesProgram, "aParticle");
-            global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.getBuffer());
-            global.gl.vertexAttribPointer(global.particlesAttributes.aParticle, 4, global.gl.FLOAT, false, 4*Float32Array.BYTES_PER_ELEMENT, 0);
-            global.gl.enableVertexAttribArray(global.particlesAttributes.aParticle);
-    
-            // ---- @todo texture variable
-            // global.gl.activeTexture(global.gl.TEXTURE1);
-            // global.gl.bindTexture(global.gl.TEXTURE_2D, particlesTexture.tex);
-            // let uniformSampler = global.gl.getUniformLocation(global.particlesProgram, "uSampler");
-            // global.gl.uniform1i(uniformSampler, 1);
-    
-            global.gl.drawArrays(global.gl.POINTS, 0, this.getParticles());
-            global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
-    
-          }
-          catch(err){
-            //alert(err);
-            console.error(err);
-          }
-    }
-
-    getSize(){
-        return this.size;
-    }
-
-    getPosition(){
-        return this.position;
-    }
-
-    getBuffer(){
-        return this.buffer;
-    }
-
-    getParticles(){
-        return this.particles.length;
-    }
-    resetParticle(particle){
-        // Initial position
-        particle.pos = [...this.position];
-
-        // Initial velocity
-        // ---- working with lookAt (no dispersion D:)
-        // particle.vel = [
-        // (Math.random() * 0.0) -1,
-        // (Math.random() * 0.0) -1,
-        // -(Math.random() * 4.0) ,
-        // ];
-  
-        particle.vel = [
-            //(Math.random() * 3.0) -1,
-            0,
-            (Math.random() * 15.0),0
-            //(Math.random() * 3.0) -1,
-            ];
-        // Lifespan
-        particle.lifespan = (Math.random() * 3.0);
-        // RemainingLife
-        particle.remainingLife = particle.lifespan;
-        //console.log("particle reset " + particle.id);
-    }
-
-
-    updateParticle(elapsedTime){
-
-        for(let i = 0; i<this.particles.length; i++){
-        let particle = this.particles[i];
-
-        particle.remainingLife -= elapsedTime;
-        if(particle.remainingLife<=0){
-            // If particle die, restart
-            this.resetParticle(particle);
-        }
-
-
-        particle.pos[0] += particle.vel[0] * elapsedTime;
-        particle.pos[1] += particle.vel[1] * elapsedTime;
-        particle.pos[2] += particle.vel[2] * elapsedTime;
-
-        // Update particleArray
-        this.particleArray[(i*4)+0] = particle.pos[0];
-        this.particleArray[(i*4)+1] = particle.pos[1];
-        this.particleArray[(i*4)+2] = particle.pos[2];
-        this.particleArray[(i*4)+3] = particle.remainingLife/particle.lifespan;
-
-        }
-        global.gl.useProgram(global.particlesProgram);
-        // Once we are done looping through all the particles, update the buffer once
-
-        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.buffer);
-        global.gl.bufferData(global.gl.ARRAY_BUFFER, this.particleArray, global.gl.STATIC_DRAW);
-        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
-
-        global.gl.useProgram(global.program);
-    }
+  getParticles(){
+    return this.particles.length;
+  }
 }
 
 export {
