@@ -11,6 +11,7 @@ import {MatDialog, PageEvent} from '@angular/material';
 import {BusinessAccountStates, BusinessAccountSubscriptions, BusinessIndustries} from '../../../../models/Business.model';
 import {isStringNotANumber} from '../../../../models/Offer.model';
 import {AlertDialogComponent} from '../../../shared/alert-dialog/alert-dialog.component';
+import { UserLogComponent } from '../../user-log/user-log.component';
 
 @Component({
   selector: 'app-business-overview',
@@ -169,5 +170,13 @@ export class BusinessOverviewComponent implements OnInit {
   changepage() {
     this.store$.dispatch(new AdminActions.TryGetBusinesses(
       {page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize, params: this.query, order: this.orderby}));
+  }
+
+  openLogModal(id) {
+    this.dialog.open(UserLogComponent, {
+      data: {
+        id
+      }
+    });
   }
 }

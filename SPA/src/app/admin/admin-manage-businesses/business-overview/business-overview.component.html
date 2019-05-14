@@ -211,7 +211,7 @@
            fxLayoutAlign="end" fxLayoutGap="0"
            fxLayoutGap.gt-sm="8px">
         <button color="primary" mat-button>More Info</button>
-        <button color="primary" mat-button>View Log</button>
+        <button (click)="openLogModal(user.id)" color="primary" mat-button>View Log</button>
         <div *ngIf="!isInEditMode || !isPanelOpen">
           <button (click)="edit(user)" color="accent" mat-button>Edit</button>
         </div>

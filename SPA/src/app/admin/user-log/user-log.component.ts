@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject, OnInit, NgZone} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
@@ -18,16 +18,24 @@ export class UserLogComponent implements OnInit {
 
   constructor(@Inject(MAT_DIALOG_DATA)
               public data: DialogData,
-              private httpClient: HttpClient) {
+              private httpClient: HttpClient,
+              private _ngZone: NgZone) {
   }
 
   ngOnInit() {
+    this._ngZone.runOutsideAngular( () => {
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
     console.log('id: ', this.data.id);
-    this.httpClient.get(environment.apiUrl + 'logs/' + this.data.id, {headers: headers}).subscribe(
-      res => this.logs = res,
-      err => console.log('error')
-    );
+      this.httpClient.get(environment.apiUrl + 'logs/' + this.data.id, {headers: headers}).subscribe(
+        res => {
+          this._ngZone.run(() => {
+            this.logs = res;
+            console.log('logs: ', this.logs);
+          });
+        },
+        err => console.log('error')
+      );
+    });
   }
 
 }
