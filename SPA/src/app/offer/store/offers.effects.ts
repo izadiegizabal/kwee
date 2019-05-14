@@ -26,6 +26,8 @@ export class OffersEffects {
           apiEndpointUrl += '&sort=' + payload.order;
         }
 
+        console.log(body);
+
         return this.httpClient.post(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res: {
             ok: boolean,
