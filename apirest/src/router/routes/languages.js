@@ -11,7 +11,7 @@ module.exports = (app, db) => {
     app.get('/languages', checkToken, async (req, res, next) => {
         var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         try {
-            await logger.saveLog('GET', 'languages', null, res, req.useragent, ip);
+            await logger.saveLog('GET', 'languages', null, res, req.useragent, ip, null);
 
             let languages = await db.languages.findAll();
 
@@ -32,7 +32,7 @@ module.exports = (app, db) => {
         var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
         try {
-            await logger.saveLog('GET', `languages/${page}`, null, res, req.useragent, ip);
+            await logger.saveLog('GET', `languages/${page}`, null, res, req.useragent, ip, null);
 
             let count = await db.languages.findAndCountAll();
             let pages = Math.ceil(count.count / limit);

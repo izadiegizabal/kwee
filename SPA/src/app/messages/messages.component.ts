@@ -1,7 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import {MessagesService} from '../services/messages.service';
 import {WebsocketService} from '../services/websocket.service';
-import {Observable, Subscription} from 'rxjs';
+import {Observable} from 'rxjs';
 import * as MessageActions from './store/message.actions';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../store/app.reducers';
@@ -36,9 +36,9 @@ export class MessagesComponent implements OnInit {
   public messagesState: Observable<fromMessages.State>;
   public messagesState2: Observable<fromMessages.State>;
 
+  sub;
+
   bdMessages: any[] = [];
-  subscription: Subscription;
-  subscription2: Subscription;
   areMessages = false;
   userSelected = false;
   userList: Users[] = [];
@@ -55,6 +55,8 @@ export class MessagesComponent implements OnInit {
   showFiller = false;
 
   public data: any = [];
+
+  @ViewChild('chat') chat;
 
   constructor(
     private titleService: Title,
@@ -79,52 +81,37 @@ export class MessagesComponent implements OnInit {
       console.log('Mensaje recibido');
       console.log(msg);
       this.bdMessages.push(msg);
-      this.element = document.getElementById('chat-messages');
-      if (this.element) {
-        setTimeout(() => {
-          this.element.scrollTop = this.element.scrollHeight;
-        }, 50);
-      }
+
+
     });
 
     this.store$.dispatch(new MessageActions.TryGetMessages({}));
 
-    this.messagesState = this.store$.pipe(select(state => state.messages));
-
-    this.subscription = this.messagesState.pipe().subscribe(
+    this.sub = this.store$.pipe(select(state => state.messages)).subscribe(
       (message) => {
         if (message.messages && message.messages.total > 0) {
+
           this.differentUsers = message.messages.total;
           this.userList = message.messages.data;
           this.areMessages = true;
+
         }
-        // console.log('userList: ', this.userList);
-        // console.log('differentUsers: ', this.differentUsers);
 
       });
 
 
   }
 
+  // lazyLoad angular 7
+  // cdk-virtual-scroll
+
   // tslint:disable-next-line:use-life-cycle-interface
-  ngOnDestroy() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
-
-    if (this.subscription2) {
-      this.subscription2.unsubscribe();
-    }
-  }
-
   selectUser(id) {
-    this.subscription.unsubscribe();
+    this.sub.unsubscribe();
     this.userSelected = true;
     this.store$.dispatch(new MessageActions.TryGetConversation({id}));
 
-    this.messagesState2 = this.store$.pipe(select(state => state.messages));
-
-    this.subscription2 = this.messagesState2.pipe().subscribe(
+    this.store$.pipe(select(state => state.messages)).subscribe(
       (conver) => {
 
         if (conver.messages && conver.messages.total > 0) {
@@ -138,10 +125,13 @@ export class MessagesComponent implements OnInit {
             this.messageToSend.senderId = this.authUser.id;
             this.messageToSend.senderName = this.authUser.name;
           }
-
+          this.initMessage();
+          if (this.chat) {
+            this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;
+          }
         }
       });
-    this.subscription2.unsubscribe();
+
   }
 
   send() {
@@ -153,21 +143,19 @@ export class MessagesComponent implements OnInit {
     this.messageToSend.hour = moment().format('HH:mm:ss');
     this.messageService.sendMessage(this.messageToSend);
 
-    console.log('dbMessages antes push: ', this.bdMessages);
-    console.log('messageToSend: ', this.messageToSend);
     this.bdMessages.push(this.messageToSend);
-    console.log('dbMessages después push: ', this.bdMessages);
 
-    this.element = document.getElementById('chat-messages');
-    setTimeout(() => {
-      this.element.scrollTop = this.element.scrollHeight;
-    }, 50);
+    this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;
 
     const obj: any = this.messageToSend;
 
     this.store$.dispatch(new MessageActions.TryPostMessage(obj));
+    this.initMessage();
     this.text = '';
 
   }
 
+  initMessage() {
+    this.messageToSend = JSON.parse(JSON.stringify(this.messageToSend));
+  }
 }

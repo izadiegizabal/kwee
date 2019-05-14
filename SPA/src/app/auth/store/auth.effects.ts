@@ -131,102 +131,6 @@ export class AuthEffects {
   );
 
   @Effect()
-  authSignupGoogle = this.actions$.pipe(
-    ofType(AuthActions.TRY_SIGNUP_GOOGLE),
-    switchMap(
-      () => {
-        const headers = new HttpHeaders().set('Content-Type', 'application/json');
-        return this.httpClient.get(environment.apiUrl + 'auth/google', {headers: headers}).pipe(
-          mergeMap((res) => {
-            console.log(res);
-            return [
-              {
-                type: AuthActions.TRY_SIGNUP_GOOGLE,
-              }
-            ];
-          }),
-          catchError((err: HttpErrorResponse) => {
-            throwError(this.handleError('signUp', err));
-            console.log('ERRRROOOORRRR: ', err);
-            const error = err.error.message ? err.error.message : err;
-            return [
-              {
-                type: AuthActions.AUTH_ERROR,
-                payload: error
-              }
-            ];
-          }),
-        );
-      }
-    ),
-    share()
-  );
-
-  @Effect()
-  authSignupGitHub = this.actions$.pipe(
-    ofType(AuthActions.TRY_SIGNUP_GITHUB),
-    switchMap(
-      () => {
-        const headers = new HttpHeaders().set('Content-Type', 'application/json');
-        return this.httpClient.get(environment.apiUrl + 'auth/github', {headers: headers}).pipe(
-          mergeMap((res) => {
-            console.log(res);
-            return [
-              {
-                type: AuthActions.TRY_SIGNUP_GITHUB,
-              }
-            ];
-          }),
-          catchError((err: HttpErrorResponse) => {
-            throwError(this.handleError('signUp', err));
-            console.log('ERRRROOOORRRR: ', err);
-            const error = err.error.message ? err.error.message : err;
-            return [
-              {
-                type: AuthActions.AUTH_ERROR,
-                payload: error
-              }
-            ];
-          }),
-        );
-      }
-    ),
-    share()
-  );
-
-  @Effect()
-  authSignupLinkedIn = this.actions$.pipe(
-    ofType(AuthActions.TRY_SIGNUP_LINKEDIN),
-    switchMap(
-      () => {
-        return this.httpClient.get(environment.apiUrl + 'auth/linkedin').pipe(
-          mergeMap((res) => {
-            console.log(res);
-            return [
-              {
-                type: AuthActions.TRY_SIGNUP_LINKEDIN,
-              }
-            ];
-          }),
-          catchError((err: HttpErrorResponse) => {
-            throwError(this.handleError('signUp', err));
-            console.log('ERRRROOOORRRR: ', err);
-            const error = err.error.message ? err.error.message : err;
-            return [
-              {
-                type: AuthActions.AUTH_ERROR,
-                payload: error
-              }
-            ];
-          }),
-        );
-      }
-    ),
-    share()
-  );
-
-
-  @Effect()
   authSNCandidate = this.actions$.pipe(
     ofType(AuthActions.TRY_SN_CANDIDATE),
     map((action: AuthActions.TrySNCandidate) => {
@@ -238,7 +142,7 @@ export class AuthEffects {
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', payload.token);
         return this.httpClient.put(environment.apiUrl + 'applicant', body, {headers: headers}).pipe(
           mergeMap((res) => {
-            // console.log(res);
+            console.log(res);
             return [
               {
                 type: AuthActions.TRY_SIGNIN,

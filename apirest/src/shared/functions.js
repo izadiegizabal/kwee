@@ -18,12 +18,13 @@ class TokenId {
 }
 
 class Logger {
-    async saveLog(action, actionToRoute, actionToId, res, useragent, ip, email) {
+    async saveLog(action, actionToRoute, actionToId, res, useragent, ip, userId, email) {
         let toLog = {
             action,
             actionToRoute,
             ip,
             useragent,
+            userId,
             date: moment().format('YYYY/MM/DD'),
             hour: moment().format('HH:mm:ss')
         };

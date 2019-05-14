@@ -13,7 +13,7 @@ module.exports = (app, db) => {
     app.get('/experiences', checkToken, async (req, res, next) => {
         try {
             var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-            await logger.saveLog('GET', 'experiences', null, res, req.useragent, ip);
+            await logger.saveLog('GET', 'experiences', null, res, req.useragent, ip, null);
 
             return res.status(200).json({
                 ok: true,
@@ -31,7 +31,7 @@ module.exports = (app, db) => {
         var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
         try {
-            await logger.saveLog('GET', `experiences/${page}`, null, res, req.useragent, ip);
+            await logger.saveLog('GET', `experiences/${page}`, null, res, req.useragent, ip, null);
 
             let count = await db.experiences.findAndCountAll();
             let pages = Math.ceil(count.count / limit);

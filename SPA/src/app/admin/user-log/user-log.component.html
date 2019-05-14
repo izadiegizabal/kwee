@@ -1,8 +1,13 @@
-<div *ngIf="logs && logs.lenght > 0; else no_logs">
-  <div *ngFor="let log of logs">
-    <span>Action: {{log.action}}</span>
-    <span>Action to Route: {{log.actionToRoute}}</span>
-    <span>Date: {{log.date}}</span>
+<div *ngIf="logs && logs.logs && logs.logs.length > 0; else no_logs">
+  <h2>Logs of user</h2>
+  <div *ngFor="let log of logs.logs">
+    <mat-list id="list"> <h3>{{log.date}} {{log.hour}}</h3>
+      <mat-list-item><strong>Action: </strong> {{log.action}}</mat-list-item>
+      <mat-list-item><strong>Action to Route: </strong> {{log.actionToRoute}}</mat-list-item>
+      <mat-list-item><strong>IP: </strong> {{log.ip}}</mat-list-item>
+      <mat-list-item><strong>OS: </strong> {{log.useragent.os}}</mat-list-item>
+      <mat-list-item><strong>Browser: </strong> {{log.useragent.browser}} <small>{{log.useragent.version}}</small> </mat-list-item>
+    </mat-list>
   </div>
 </div>
 <ng-template #no_logs>

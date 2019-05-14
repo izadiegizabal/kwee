@@ -109,7 +109,7 @@ module.exports = (app, db) => {
             let id = tokenId.getTokenId(req.get('token'), res);
             var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
-            await logger.saveLog('GET', 'notifications', null, res, req.useragent, ip);
+            await logger.saveLog('GET', 'notifications', null, res, req.useragent, ip, id);
 
             let notificationsToShow = [];
             let attr = {};

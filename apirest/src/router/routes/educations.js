@@ -11,7 +11,7 @@ module.exports = (app, db) => {
     app.get('/educations', checkToken, async (req, res, next) => {
         try {
             var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-            await logger.saveLog('GET', 'educations', null, res, req.useragent, ip);
+            await logger.saveLog('GET', 'educations', null, res, req.useragent, ip, null);
 
             return res.status(200).json({
                 ok: true,
@@ -29,7 +29,7 @@ module.exports = (app, db) => {
         var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
         try {
-            await logger.saveLog('GET', `educations/${page}`, null, res, req.useragent, ip);
+            await logger.saveLog('GET', `educations/${page}`, null, res, req.useragent, ip, null);
 
             let count = await db.educations.findAndCountAll();
             let pages = Math.ceil(count.count / limit);

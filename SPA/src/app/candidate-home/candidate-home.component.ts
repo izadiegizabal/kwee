@@ -57,6 +57,7 @@ export class CandidateHomeComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+
     this.titleService.setTitle('Kwee - Candidate Home');
 
     this.query = {...this.query, status: '0'};
@@ -66,6 +67,7 @@ export class CandidateHomeComponent implements OnInit, AfterViewInit {
     this.activatedRoute.queryParams
       .subscribe(params => {
         this.query = params;
+        this.query = {...this.query, status: '0'};
         if (params['page']) {
           this.nPage = params['page'];
         }
@@ -155,16 +157,15 @@ export class CandidateHomeComponent implements OnInit, AfterViewInit {
       this.alreadySearched = '';
     }
 
+    this.store$.dispatch(new OffersActions.TryGetOffers({
+      page: this.nPage,
+      limit: this.pageSize,
+      params: this.query,
+      order: this.orderby
+    }));
+
     if (this.paginator) {
       this.paginator.firstPage();
-    } else {
-      this.store$.dispatch(new OffersActions.TryGetOffers({
-        page: this.nPage,
-        limit: this.pageSize,
-        params: this.query,
-        order: this.orderby
-      }));
-
     }
   }
 

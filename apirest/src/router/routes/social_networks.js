@@ -13,7 +13,7 @@ module.exports = (app, db) => {
     app.get('/social_networks', checkToken, async (req, res, next) => {
         try {
             var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-            await logger.saveLog('GET', 'social_networks', null, res, req.useragent, ip);
+            await logger.saveLog('GET', 'social_networks', null, res, req.useragent, ip, null);
 
             return res.status(200).json({
                 ok: true,
@@ -46,7 +46,7 @@ module.exports = (app, db) => {
         let page = Number(req.params.page);
 
         try {
-            await logger.saveLog('GET', `social_networks/${page}`, null, res, req.useragent, ip);
+            await logger.saveLog('GET', `social_networks/${page}`, null, res, req.useragent, ip, null);
 
             let count = await db.social_networks.findAndCountAll();
             let pages = Math.ceil(count.count / limit);
