@@ -505,7 +505,6 @@ export class SignupCandidateComponent implements OnInit {
 
   linkedInSignUp(stepper: MatStepper) {
     console.log('linkedIn Sign Up');
-    this.store$.dispatch(new AuthActions.TrySignupLinkedIn());
     window.location.href = environment.apiUrl + 'auth/linkedin';
     // stepper.next();
   }
