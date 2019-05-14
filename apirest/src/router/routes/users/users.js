@@ -48,7 +48,7 @@ module.exports = (app, db) => {
         const id = req.params.id;
 
         try {
-            await logger.saveLog('GET', 'user', id, res, req.useragent, ip);
+            await logger.saveLog('GET', 'user', id, res, req.useragent, ip, null);
 
             let user = await db.users.findOne({
                 attributes: {
@@ -80,7 +80,7 @@ module.exports = (app, db) => {
     app.post('/user', async (req, res, next) => {
         try {
             var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-            await logger.saveLog('POST', 'user', null, res, req.useragent, ip);
+            await logger.saveLog('POST', 'user', null, res, req.useragent, ip, null);
 
             const body = req.body;
             body.password ? body.password = bcrypt.hashSync(body.password, 10) : null;
@@ -124,9 +124,9 @@ module.exports = (app, db) => {
     app.put('/user', async (req, res, next) => {
         try {
             var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-            let logId = await logger.saveLog('PUT', 'user', null, res, req.useragent, ip);
-
             let id = tokenId.getTokenId(req.get('token'), res);
+            let logId = await logger.saveLog('PUT', 'user', null, res, req.useragent, ip, id);
+
 
             logger.updateLog(logId, id);
 
@@ -141,7 +141,7 @@ module.exports = (app, db) => {
     app.put('/user/:id([0-9]+)', [checkToken, checkAdmin], async (req, res, next) => {
         var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         try {
-            await logger.saveLog('PUT', 'user', req.params.id, res, req.useragent, ip);
+            await logger.saveLog('PUT', 'user', req.params.id, res, req.useragent, ip, null);
 
             const id = req.params.id;
             updateUser(id, req, res, next);
@@ -159,7 +159,7 @@ module.exports = (app, db) => {
         const id = req.params.id;
 
         try {
-            await logger.saveLog('DELETE', 'user', id, res, req.useragent, ip);
+            await logger.saveLog('DELETE', 'user', id, res, req.useragent, ip, null);
 
             let result = await db.users.destroy({
                 where: {id: id}

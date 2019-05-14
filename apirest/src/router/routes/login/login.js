@@ -14,14 +14,14 @@ module.exports = (app, db) => {
         try {
             
             if ( body.email ) {
-                logId = await logger.saveLog('POST', 'login', null, res, req.useragent, ip, body.email);
+                // logId = await logger.saveLog('POST', 'login', null, res, req.useragent, ip, body.email);
                 user = await db.users.findOne({ where: { email: body.email }});
             } else if ( body.token ) {
                 var idToken = tokenId.getTokenId(body.token, res);
 
                 user = await db.users.findOne({where: { id: idToken }});
                 if ( user ){
-                    logId = await logger.saveLog('POST', 'login', null, res, req.useragent, ip, user.email);
+                    // logId = await logger.saveLog('POST', 'login', null, res, req.useragent, ip, user.email);
                 } else {
                     return null;
                 }
@@ -31,7 +31,7 @@ module.exports = (app, db) => {
 
 
             if ( !user ) {
-                logger.updateLog(logId, false);
+                // logger.updateLog(logId, false);
                 return res.status(400).json({
                     ok: false,
                     message: 'User or password incorrect'
@@ -51,6 +51,8 @@ module.exports = (app, db) => {
             let type;
             let id = user.id;
             let dateNow = moment().format();
+
+            logId = await logger.saveLog('POST', 'login', null, res, req.useragent, ip, id, user.email);
 
             await db.users.update({ lastAccess: dateNow }, {
                 where: { id }

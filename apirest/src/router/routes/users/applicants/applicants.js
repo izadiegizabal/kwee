@@ -138,7 +138,7 @@ module.exports = (app, db) => {
     app.get('/applicants', async (req, res, next) => {
         try {
             var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-            await logger.saveLog('GET', 'applicant', null, res, req.useragent, ip);
+            await logger.saveLog('GET', 'applicant', null, res, req.useragent, ip, null);
             saveLogES('GET', 'applicants', 'Visitor');
 
             var attributes = {
@@ -227,7 +227,7 @@ module.exports = (app, db) => {
         }
 
         try {
-            await logger.saveLog('GET', 'applicant', id, res, req.useragent, ip);
+            await logger.saveLog('GET', 'applicant', id, res, req.useragent, ip, null);
             saveLogES('GET', 'applicant/id/applications', 'Visitor');
 
             let message = ``;
@@ -404,7 +404,7 @@ module.exports = (app, db) => {
         const id = req.params.id;
 
         try {
-            await logger.saveLog('GET', 'applicant/id', id, res, req.useragent, ip);
+            await logger.saveLog('GET', 'applicant/id', id, res, req.useragent, ip, null);
 
             let user = await db.users.findOne({
                 where: {id}
@@ -468,7 +468,7 @@ module.exports = (app, db) => {
     app.post('/applicant', async (req, res, next) => {
         var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         try {
-            await logger.saveLog('POST', 'applicant', null, res, req.useragent, ip);
+            await logger.saveLog('POST', 'applicant', null, res, req.useragent, ip, null);
 
             const body = req.body;
             delete body.root;
@@ -528,6 +528,7 @@ module.exports = (app, db) => {
 
         try {
             let id = tokenId.getTokenId(req.get('token'), res);
+            await logger.saveLog('GET', 'applicant/info', null, res, req.useragent, ip, id);
             let applicant = await db.applicants.findOne({
                 where: {userId: id}
             });
@@ -612,8 +613,8 @@ module.exports = (app, db) => {
     app.put('/applicant', async (req, res, next) => {
         try {
             var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-            let logId = await logger.saveLog('PUT', 'applicant', null, res, req.useragent, ip);
             let id = tokenId.getTokenId(req.get('token'), res);
+            let logId = await logger.saveLog('PUT', 'applicant', null, res, req.useragent, ip, id);
             let user = await db.users.findOne({
                 where: {id}
             });
@@ -631,7 +632,7 @@ module.exports = (app, db) => {
         const id = req.params.id;
 
         try {
-            await logger.saveLog('PUT', 'applicant', id, res, req.useragent, ip);
+            await logger.saveLog('PUT', 'applicant', id, res, req.useragent, ip, null);
             saveLogES('PUT', 'applicant/id', 'Admin');
             updateApplicant(id, req, res, next);
         } catch (err) {
@@ -675,7 +676,7 @@ module.exports = (app, db) => {
             var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
             let id = tokenId.getTokenId(req.get('token'), res);
 
-            await logger.saveLog('DELETE', 'applicant', id, res, req.useragent, ip);
+            await logger.saveLog('DELETE', 'applicant', id, res, req.useragent, ip, id);
 
             let applicant = await db.applicants.findOne({
                 where: {userId: id}
@@ -721,7 +722,7 @@ module.exports = (app, db) => {
         const id = req.params.id;
 
         try {
-            await logger.saveLog('DELETE', 'applicant', id, res, req.useragent, ip);
+            await logger.saveLog('DELETE', 'applicant', id, res, req.useragent, ip, null);
             saveLogES('DELETE', 'applicant/id', 'Admin');
 
             let applicant = await db.applicants.findOne({

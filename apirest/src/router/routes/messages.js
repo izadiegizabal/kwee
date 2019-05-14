@@ -33,7 +33,7 @@ module.exports = (app, db) => {
         var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
         try {
-            await logger.saveLog('GET', `messages/${page}`, null, res, req.useragent, ip);
+            await logger.saveLog('GET', `messages/${page}`, null, res, req.useragent, ip, null);
 
             let count = await db.messages.findAndCountAll();
             let pages = Math.ceil(count.count / limit);

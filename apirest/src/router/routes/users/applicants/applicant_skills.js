@@ -11,7 +11,7 @@ module.exports = (app, db) => {
     app.get("/applicant_skills", checkToken, async (req, res, next) => {
         try {
             var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-            await logger.saveLog('GET', 'applicant_skills', null, res, req.useragent, ip);
+            await logger.saveLog('GET', 'applicant_skills', null, res, req.useragent, ip, null);
 
             return res.status(200).json({
                 ok: true,

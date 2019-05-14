@@ -79,6 +79,7 @@ module.exports = (app, db) => {
         Log.find({ userId })
             .skip(from)
             .limit(to)
+            .sort({date: 'desc', hour: 'desc'})
             .exec(( err, logs ) => {
                 if (err) {
                     return res.status(400).json({

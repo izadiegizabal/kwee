@@ -58,7 +58,7 @@ module.exports = (app, db) => {
 
             }
 
-            await logger.saveLog('GET', 'invoices', null, res, req.useragent, ip);
+            await logger.saveLog('GET', 'invoices', null, res, req.useragent, ip, null);
             
             let attr = {
                 include: [{
