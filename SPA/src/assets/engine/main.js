@@ -10,7 +10,7 @@ import {canvas, changeAngle, global, angle, TEntity, loadAttribAndUniformsLocati
 import {getBezierPoints, convertLatLonToVec3, quatFromVectors, getEuler, degrees, convertLatLonToVec3Rotated} from './tools/utils.js'
 
 let draw = true;
-let rotateMeshBool = false;
+
 let manager = null;
 let allowActions = {
   value: false,
@@ -129,9 +129,6 @@ async function mainInit() {
   });
 }
 
-function rotateMesh() {
-  rotateMeshBool = true;
-}
 
 async function resetCanvas() {
   draw = false;
@@ -140,7 +137,6 @@ async function resetCanvas() {
 
 
 async function mainR(texture, particles, line) {
-  rotateMeshBool = false;
   if(global.gl && global.program) {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         INIT CONFIG
@@ -621,8 +617,8 @@ function generateRandomLat() {
   return (Math.random() * (90 - (-90)) + (-90)).toFixed(3) * 1;
 }
 
-async function demoMain(){
-  rotateMeshBool = false;
+async function demoMain(target, boundingBox = false){
+  
   if(global.gl && global.program) {
 
     draw = true;
@@ -643,33 +639,39 @@ async function demoMain(){
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // // EARTH
-    // let land = await motor.loadMesh(scene, 'earth_LP_high.json');
-    // land.entity.mesh.setColor( [ 0.2, 0.9, 0.2, 1.0] );
-    // motor.enableBoundingBox(land);
+    let earth0 = await motor.loadMesh(scene, '0_earth.json');
+    earth0.entity.mesh.setColor( [ 0.2, 0.9, 0.2, 1.0] );
+    motor.translate(earth0, [2,0,0])
+    boundingBox ? motor.enableBoundingBox(earth0) : 0;
 
-    // // SEA
-    // let sphere = await motor.loadMesh(scene, 'sea.json');
-    // sphere.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 1.0] );
-    // motor.enableBoundingBox(sphere);
+    let earth1 = await motor.loadMesh(scene, '1_earth.json');
+    earth1.entity.mesh.setColor( [ 0.2, 0.9, 0.2, 1.0] );
+    motor.translate(earth1, [4,0,0])
+    boundingBox ? motor.enableBoundingBox(earth1) : 0;
 
-    // // SEA
-    // let earth = await motor.loadMesh(scene, '0_earth.json');
-    // earth.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 1.0] );
-    // motor.enableBoundingBox(earth);
+    let earth2 = await motor.loadMesh(scene, '2_earth.json');
+    earth2.entity.mesh.setColor( [ 0.2, 0.9, 0.2, 1.0] );
+    motor.translate(earth2, [6,0,0])
+    boundingBox ? motor.enableBoundingBox(earth2) : 0;
 
-    // // SEA
-    // let sphere = await motor.loadMesh(scene, '0_sea.json');
-    // sphere.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 1.0] );
-    // motor.enableBoundingBox(sphere);
 
-    // low quality ... to ... high quality
-    // sea: http://h203.eps.ua.es/assets/assets/JSON/sea.json
-    // earth: http://h203.eps.ua.es/assets/assets/JSON/earthobj.json
+    // SEA
+    let sea0 = await motor.loadMesh(scene, '0_sea.json');
+    motor.translate(sea0, [2,0,-2]);
+    sea0.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 1.0] );
+    boundingBox ? motor.enableBoundingBox(sea0) : 0;
 
-    // Correct ones:
-    // let LOD_earth = motor.dynamicMeshArray(scene, ['0_earth.json','earth_LP_high.json'], [ 0.2, 0.9, 0.2, 1.0]);
-    // let LOD_sea = motor.dynamicMeshArray(scene, ['0_sea.json','sea.json'], [ 0.3, 0.3, 0.8, 1.0]);
+    let sea1 = await motor.loadMesh(scene, '1_sea.json');
+    motor.translate(sea1, [4,0,-2]);
+    sea1.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 1.0] );
+    boundingBox ? motor.enableBoundingBox(sea1) : 0;
 
+    let sea2 = await motor.loadMesh(scene, '2_sea.json');
+    motor.translate(sea2, [6,0,-2]);
+    sea2.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 1.0] );
+    boundingBox ? motor.enableBoundingBox(sea2) : 0;
+
+    // LOD earth and sea
     let LOD_earth = motor.loadMeshArray(scene, ['0_earth.json','1_earth.json','2_earth.json'], [ 0.2, 0.9, 0.2, 1.0], [3,6]);
     let LOD_sea = motor.loadMeshArray(scene, ['0_sea.json','1_sea.json','2_sea.json'], [ 0.3, 0.3, 0.8, 1.0], [3,6]);
 
@@ -694,70 +696,22 @@ async function demoMain(){
     // // Madrid focus
     let TFocus5 = motor.createFocus(scene, 100, 'straight', madridPos , 'normal');
 
-
     // // Ocean focus
     let TFocus99 = motor.createFocus(scene, 100, 'dispersion', middleOcean , 'normal');
 
     let TFocusAA = motor.createFocus(scene, 100, 'fireworks', hongKongPos , 'normal', 1);
 
 
+    let focus1 = motor.createFocus(scene, 100, 'straight', [-2,0,0] , 'y');
+    let focus11 = motor.createFocus(scene, 100, 'straight', [-2,0,-2] , [-2,-2,-2]);
+    let focus11_mesh = await motor.loadMesh(scene, 'marker.json');
+    motor.scale(focus11_mesh, [0.2, 0.2, 0.2]);
+    motor.translate(focus11_mesh, [-2,-2,-2]);
+    boundingBox ? motor.enableBoundingBox(focus11_mesh) : 0;
 
-    // // Madrid mesh
-    // let madrid = await motor.loadMesh(scene, 'marker.json');
-    // motor.scale(madrid, [0.05, 0.05, 0.05]);
-    // motor.translate(madrid, madridPos);
-    // madrid.entity.mesh.setColor( [ 1, 1, 0, 1.0] );
+    let focus2 = motor.createFocus(scene, 100, 'dispersion', [-4,0,0]);
 
-
-    // // Hong Kong focus
-    // let TFocus7 = motor.createFocus(scene, 100, 'dispersion', hongKongPos, 'normal' );
-    // // Hong Kong mesh
-    // let hk = await motor.loadMesh(scene, 'marker.json');
-    // motor.scale(hk, [0.05, 0.05, 0.05]);
-    // motor.translate(hk, hongKongPos);
-    // hk.entity.mesh.setColor( [ 1, 1, 0, 1.0] );
-
-    // // Australia focus
-    // let TFocus8 = motor.createFocus(scene, 100, 'dispersion', australiaPos, 'normal' );
-    // // Australia mesh
-    // let au = await motor.loadMesh(scene, 'marker.json');
-    // motor.scale(au, [0.05, 0.05, 0.05]);
-    // motor.translate(au, australiaPos);
-    // au.entity.mesh.setColor( [ 1, 1, 0, 1.0] );
-
-    // Axis focus
-    // let focusX = motor.createFocus(scene,100, 'straight', [0,0,0], [1,0,0])
-    // let focusY = motor.createFocus(scene,100, 'straight', [0,0,0], [0,1,0])
-    // let focusZ = motor.createFocus(scene,100, 'straight', [0,0,0], [0,0,1])
-
-    // let testing = motor.createFocus(scene, 100, 'dispersion', [0,0,0], positionTFocus);
-
-
-    // let origin = await motor.loadMesh(scene, 'marker.json');
-    // motor.scale(origin, [0.1, 0.1, 0.1]);
-    // motor.translate(origin, positionTFocus);
-    // motor.enableBoundingBox(origin)
-    // origin.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 0.5] );
-
-    // let target = await motor.loadMesh(scene, 'marker.json');
-    // motor.scale(target, [0.1, 0.1, 0.1]);
-    // motor.translate(target, targetPos);
-    // target.entity.mesh.setColor( [ 1, 0.3, 0.8, 1] );
-
-
-    // let vertical = await motor.loadMesh(scene, 'marker.json');
-    // motor.scale(vertical, [0.1, 0.1, 0.1]);
-    // motor.translate(vertical, [positionTFocus[0], positionTFocus[1]+1.7, positionTFocus[2] ] );
-    // vertical.entity.mesh.setColor( [ 1, 0.3, 0.8, 1] );
-
-
-    ///////////
-    // cities
-    ///////////
-
-    let particlesTexture = await manager.getResource('spark.png');
-
-
+    let fireworks = motor.createFocus(scene, 100, 'fireworks', [-6,0,0]);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         CAMERAS
@@ -798,8 +752,6 @@ async function demoMain(){
     global.gl.bindTexture(global.gl.TEXTURE_2D, whiteTexture);
 
 
-
-    console.log(scene);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         LOOP
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -808,66 +760,69 @@ async function demoMain(){
     let auxTHETA = 0;
     let auxPHI = 0;
     var loop = async function (now, now2) {
+      if(draw){
 
-      if (!global.drag && (auxPHI!=global.orbitLimit && auxPHI!=-global.orbitLimit) ) {
-        global.dX *= global.AMORTIZATION, global.dY*=global.AMORTIZATION;
-        global.THETA+=global.dX, global.PHI+=global.dY;
+        if (!global.drag && (auxPHI!=global.orbitLimit && auxPHI!=-global.orbitLimit) ) {
+          global.dX *= global.AMORTIZATION, global.dY*=global.AMORTIZATION;
+          global.THETA+=global.dX, global.PHI+=global.dY;
+        }
+
+        global.gl.useProgram(global.program);
+
+        global.time = await Date.now();
+
+        ////////////////////////////////////////////////////////////////
+
+        auxTHETA = global.orbitSpeed*global.THETA*(Math.PI/180);
+        auxPHI = Math.max(Math.min(((global.orbitSpeed*global.PHI)*(Math.PI/180)),global.orbitLimit), -global.orbitLimit);
+
+        let camX = global.zoom * Math.sin(auxTHETA) * Math.cos(auxPHI);
+        let camY = global.zoom * Math.sin(auxPHI);
+        let camZ = global.zoom * -Math.cos(auxTHETA) * Math.cos(auxPHI);
+
+        motor.cameraLookAt( cam, [
+            camX,
+            camY,
+            camZ,
+          ],
+          target,
+          //[0,0,0], // target
+          //positionTFocus,
+          [0,1,0]);
+
+        // Old camera lookAt (rotating Y-axis camera)
+        // motor.cameraLookAt( cam, [
+        //   global.zoom * Math.sin(number*Math.PI/180),
+        //   global.zoom,
+        //   global.zoom * Math.cos(number*Math.PI/180),
+        // ],
+        // [0,0,0],
+        // [0,1,0]);
+
+
+        motor.calculateViews();
+
+        // global.gl.uniform3f(global.programUniforms.uLightDirection,
+        //   global.zoom * Math.sin(number*Math.PI/180),
+        //   global.zoom,
+        //   global.zoom * Math.cos(number*Math.PI/180)
+        // );
+
+        global.gl.uniform3f(global.programUniforms.uLightDirection,
+          camX, camY, camZ
+        );
+
+
+        motor.draw();
+
+        ////////////////////////////////////////////////////////////////
+
+        global.lastFrameTime = global.time;
+
+        number = number + 0.3;
+
+        requestAnimationFrame(loop);
       }
-
-      global.gl.useProgram(global.program);
-
-      global.time = await Date.now();
-
-      ////////////////////////////////////////////////////////////////
-
-      auxTHETA = global.orbitSpeed*global.THETA*(Math.PI/180);
-      auxPHI = Math.max(Math.min(((global.orbitSpeed*global.PHI)*(Math.PI/180)),global.orbitLimit), -global.orbitLimit);
-
-      let camX = global.zoom * Math.sin(auxTHETA) * Math.cos(auxPHI);
-      let camY = global.zoom * Math.sin(auxPHI);
-      let camZ = global.zoom * -Math.cos(auxTHETA) * Math.cos(auxPHI);
-
-      motor.cameraLookAt( cam, [
-          camX,
-          camY,
-          camZ,
-        ],
-        [0,0,0],
-        //positionTFocus,
-        [0,1,0]);
-
-      // Old camera lookAt (rotating Y-axis camera)
-      // motor.cameraLookAt( cam, [
-      //   global.zoom * Math.sin(number*Math.PI/180),
-      //   global.zoom,
-      //   global.zoom * Math.cos(number*Math.PI/180),
-      // ],
-      // [0,0,0],
-      // [0,1,0]);
-
-
-      motor.calculateViews();
-
-      // global.gl.uniform3f(global.programUniforms.uLightDirection,
-      //   global.zoom * Math.sin(number*Math.PI/180),
-      //   global.zoom,
-      //   global.zoom * Math.cos(number*Math.PI/180)
-      // );
-
-      global.gl.uniform3f(global.programUniforms.uLightDirection,
-        camX, camY, camZ
-      );
-
-
-      motor.draw();
-
-      ////////////////////////////////////////////////////////////////
-
-      global.lastFrameTime = global.time;
-
-      number = number + 0.3;
-
-      requestAnimationFrame(loop);
     }
 
     motor.init();
@@ -1154,8 +1109,8 @@ export {
   mainR,
   resetCanvas,
   allowActions,
-  rotateMesh,
   interactiveMain,
-  setSceneWidth
+  setSceneWidth,
+  demoMain
 }
 //

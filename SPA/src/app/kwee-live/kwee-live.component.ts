@@ -1,13 +1,13 @@
 import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {shared} from '../../assets/engine/commons.js';
-import {allowActions, mainInit, mainR, resetCanvas, interactiveMain, rotateMesh} from '../../assets/engine/main.js';
+import {allowActions, mainInit, mainR, resetCanvas, interactiveMain, demoMain} from '../../assets/engine/main.js';
 import {Title} from '@angular/platform-browser';
 import * as KweeLiveActions from './store/kwee-live.actions';
 import * as fromApp from '../store/app.reducers';
 import {HttpClient} from '@angular/common/http';
 import {Store} from '@ngrx/store';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-import {canvas} from "../../assets/engine/commons";
+import {canvas} from '../../assets/engine/commons';
 
 
 // import {TMotorTAG} from '../../assets/engine/TMotorTAG.js';
@@ -45,6 +45,7 @@ export class KweeLiveComponent implements OnInit, OnDestroy {
   disabled: boolean;
   particles: boolean;
   showCard: boolean;
+  boundingbox: boolean;
   auxCanvas = null;
   context2d = null;
 
@@ -52,6 +53,7 @@ export class KweeLiveComponent implements OnInit, OnDestroy {
 
   constructor(private titleService: Title, private http: HttpClient, private store$: Store<fromApp.AppState>) {
     this.disabled = true;
+    this.boundingbox = false;
   }
 
   async ngOnInit() {
@@ -59,6 +61,7 @@ export class KweeLiveComponent implements OnInit, OnDestroy {
     this.disabled = false;
     await shared();
     await mainInit();
+    demoMain( [0, 0, 0], this.boundingbox);
 
     this.store$.dispatch(new KweeLiveActions.TryGetApplications({page: 1, limit: 5}));
 
@@ -67,25 +70,37 @@ export class KweeLiveComponent implements OnInit, OnDestroy {
     // this.context2d.translate(0.5,0.5);
   }
 
+  bbox() {
+    // toggle bounding box
+    console.log(this.boundingbox);
+    this.boundingbox = !this.boundingbox;
+    this.interactive([0, 0, 0]);
+  }
+
+  async interactive(target) {
+    await resetCanvas();
+    demoMain(target, this.boundingbox);
+  }
+
   getAllow() {
     return !allowActions.value;
   }
 
   getShowCard() {
     // return true;
-    if(allowActions.card){
+    if (allowActions.card) {
       // console.log([(1 + allowActions.point[0]/allowActions.point[3])*this.auxCanvas.width/2, (1 - allowActions.point[1]/allowActions.point[3])*this.auxCanvas.height/2]);
       // this.drawTriangle([(1 + allowActions.point[0]/allowActions.point[3])*this.auxCanvas.width/2, (1 - allowActions.point[1]/allowActions.point[3])*this.auxCanvas.height/2]);
     }
     return allowActions.card;
   }
 
-  drawTriangle(array){
-    let point = [];
+  drawTriangle(array) {
+    const point = [];
     let aux = 0;
     array.forEach( (e) => {
-      aux = Math.round(e);//this.decimalAdjust('round', e,1);
-      if (aux % 2 !== 0){
+      aux = Math.round(e); // this.decimalAdjust('round', e,1);
+      if (aux % 2 !== 0) {
         point.push(aux + 1);
       } else { point.push(aux); }
     });
@@ -103,7 +118,7 @@ export class KweeLiveComponent implements OnInit, OnDestroy {
     this.context2d.lineWidth = 2;
     this.context2d.stroke();
 
-    this.context2d.fillStyle = "#FFF";
+    this.context2d.fillStyle = '#FFF';
     this.context2d.fill();
 
   }
@@ -127,15 +142,6 @@ export class KweeLiveComponent implements OnInit, OnDestroy {
     this.particles = !this.particles;
     resetCanvas();
     mainR(false, this.particles);
-  }
-
-  interactive() {
-    resetCanvas();
-    interactiveMain();
-  }
-
-  rotate() {
-    rotateMesh();
   }
 
   async reset() {

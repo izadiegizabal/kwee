@@ -10,6 +10,28 @@
          fxLayoutAlign="center center">
       <h2 class="mat-h1">Kwee Live</h2>
     </div>
+    <div fxLayout="column"
+    fxLayoutAlign="center center"
+    fxLayoutGap="16px">
+      <div fxLayout="row"
+        fxLayoutAlign="start start"
+        fxLayoutGap="16px">
+        <button mat-raised-button (click)="interactive([0,0,0])" color="primary" [disabled]="getAllow()">Earth</button>
+        <button mat-raised-button (click)="interactive([-2,0,0])" color="primary" [disabled]="getAllow()">Focus 1</button>
+        <button mat-raised-button (click)="interactive([-4,0,0])" color="primary" [disabled]="getAllow()">Focus 2</button>
+        <button mat-raised-button (click)="interactive([-6,0,0])" color="primary" [disabled]="getAllow()">Fireworks</button>
+      </div>
+      <div fxLayout="row"
+        fxLayoutAlign="start start"
+        fxLayoutGap="16px">
+        <button mat-raised-button (click)="bbox()" color="primary" [disabled]="getAllow()">BBox</button>
+        <button mat-raised-button (click)="interactive([2,0,0])" color="primary" [disabled]="getAllow()">LOD 1</button>
+        <button mat-raised-button (click)="interactive([4,0,0])" color="primary" [disabled]="getAllow()">LOD 2</button>
+        <button mat-raised-button (click)="interactive([6,0,0])" color="primary" [disabled]="getAllow()">LOD 3</button>
+        <button mat-raised-button (click)="reset()" color="danger" [disabled]="getAllow()">clear</button>
+      </div>
+    </div>
+   
     <div
       fxLayout="row"
       fxLayout.lt-sm="column"
@@ -43,20 +65,6 @@
           [work]="'Full-Time'"
           [image]="'image'"
           [url]="'akjbdsabksadb'"></app-mini-offer>
-      </div>
-      <div
-        fxLayout="column"
-        fxLayout.lt-sm="row"
-        fxLayoutAlign="start start"
-        fxLayoutGap="16px">
-        <button mat-raised-button (click)="drawHollow()" color="primary" [disabled]="getAllow()">Draw Solid</button>
-        <button mat-raised-button (click)="draw()" color="primary" [disabled]="getAllow()">Draw Texture</button>
-        <button mat-raised-button (click)="drawLine()" color="primary" [disabled]="getAllow()">Draw Arc</button>
-        <button mat-raised-button (click)="drawParticles()" color="primary" [disabled]="getAllow()">Draw Particles</button>
-        <button mat-raised-button (click)="rotate()" color="primary" [disabled]="getAllow()">Rotate to Madrid</button>
-        <button mat-raised-button (click)="interactive()" color="primary" [disabled]="getAllow()">Interactive world</button>
-        <button mat-raised-button (click)="changeShowCard()" color="primary" [disabled]="getAllow()">Toggle card</button>
-        <button mat-raised-button (click)="reset()" color="warn" [disabled]="getAllow()">Reset</button>
       </div>
     </div>
   </div>
