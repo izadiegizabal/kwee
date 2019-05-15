@@ -25,8 +25,13 @@ export class AuthEffects {
         let body = JSON.stringify({email: authData.email, password: authData.password});
 
         if (authData.token) {
-          body = JSON.stringify({token: authData.token, password: authData.password});
+          if (authData.password) {
+            body = JSON.stringify({token: authData.token, password: authData.password});
+          } else {
+            body = JSON.stringify({token: authData.token});
+          }
         }
+
 
         return this.httpClient.post(environment.apiUrl + 'login', body, {headers: headers}).pipe(
           mergeMap((res: {
@@ -138,15 +143,19 @@ export class AuthEffects {
     }),
     switchMap(
       (payload) => {
+        const apiEndpointUrl = environment.apiUrl + 'user/social?type=' + payload.type;
         const body = JSON.stringify(payload.user);
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', payload.token);
-        return this.httpClient.put(environment.apiUrl + 'applicant', body, {headers: headers}).pipe(
+
+        console.log(apiEndpointUrl);
+        console.log(body);
+        return this.httpClient.put(apiEndpointUrl, body, {headers: headers}).pipe(
           mergeMap((res) => {
             console.log(res);
             return [
               {
                 type: AuthActions.TRY_SIGNIN,
-                payload: {email: payload.email, token: payload.token}
+                payload: {token: payload.token}
               }
             ];
           }),

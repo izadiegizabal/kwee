@@ -318,10 +318,8 @@ export class SignupCandidateComponent implements OnInit {
 
         // console.log(updateuser);
 
-        // this.snToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NDMxLCJpYXQiOjE1NTUzNjMwNzMsImV4cCI6MTU1NTM2N
-        // jY3MywiaXNzIjoiV21lbG9uQ29ycF9Ld2VlX2lzc3VlciJ9.I34bsbU1q3odn7g3TilUC-lGTZTaYCdmFRCTwWo8e14';
         this.store$.dispatch(new AuthActions.TrySNCandidate({
-          'email': this.secondFormGroup.controls['email'].value,
+          'type': 'candidate',
           'token': this.snToken,
           'user': updateuser
         }));
@@ -479,7 +477,7 @@ export class SignupCandidateComponent implements OnInit {
     }
   }
 
-  googleSignUp(stepper: MatStepper) {
+  googleSignUp() {
     console.log('google Sign Up');
     // this.authEffects$.authSignupGoogle.pipe(
     //   filter((action: Action) => action.type === AuthActions.AUTH_ERROR)
@@ -499,17 +497,17 @@ export class SignupCandidateComponent implements OnInit {
   }
 
   gitHubSignUp() {
-    window.location.href = 'http://h203.eps.ua.es/api/auth/github';
+    window.location.href = environment.apiUrl + 'auth/github';
   }
 
 
-  linkedInSignUp(stepper: MatStepper) {
+  linkedInSignUp() {
     console.log('linkedIn Sign Up');
     window.location.href = environment.apiUrl + 'auth/linkedin';
     // stepper.next();
   }
 
-  twitterSignUp(stepper: MatStepper) {
+  twitterSignUp() {
     console.log('twitter Sign Up');
     window.location.href = environment.apiUrl + 'auth/twitter';
     // stepper.next();

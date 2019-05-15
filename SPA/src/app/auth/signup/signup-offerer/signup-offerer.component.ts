@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {DialogErrorComponent} from '../dialog-error/dialog-error.component';
 import {MatDialog, MatStepper} from '@angular/material';
@@ -10,7 +10,7 @@ import {AuthEffects} from '../../store/auth.effects';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {DialogImageCropComponent} from '../dialog-image-crop/dialog-image-crop.component';
 import {environment} from '../../../../environments/environment';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {BusinessIndustries, BusinessSize} from '../../../../models/Business.model';
 import {isStringNotANumber} from '../../../../models/Offer.model';
 
@@ -36,12 +36,17 @@ export interface Address {
 })
 export class SignupOffererComponent implements OnInit {
 
+  @ViewChild('stepper') stepper: MatStepper;
+
   options = [];
   address: Address;
   fileEvent = null;
   file: any;
   cities = [];
   countries = [];
+
+  isSocialNetwork = false;
+  snToken;
 
 
   firstFormGroup: FormGroup;
@@ -70,6 +75,7 @@ export class SignupOffererComponent implements OnInit {
               public dialog: MatDialog,
               private store$: Store<fromApp.AppState>, private authEffects$: AuthEffects,
               private httpClient: HttpClient,
+              private activatedRoute: ActivatedRoute,
               private router: Router) {
     this.address = {ad1: null, ad2: null};
   }
@@ -229,6 +235,20 @@ export class SignupOffererComponent implements OnInit {
       }
     });
 
+    this.activatedRoute.queryParams.subscribe(params => {
+      const token = params['token'];
+      this.snToken = token;
+      if (token) {
+        this.stepper.selectedIndex = 1;
+        this.secondFormGroup.controls['businessName'].setValue(params['name']);
+        this.secondFormGroup.controls['email'].setValue(params['email']);
+        this.secondFormGroup.controls['confEmail'].setValue(params['email']);
+        this.secondFormGroup.controls['password'].setValue('123456');
+        this.secondFormGroup.controls['password2'].setValue('123456');
+        this.isSocialNetwork = true;
+      }
+    });
+
   }
 
 
@@ -297,27 +317,35 @@ export class SignupOffererComponent implements OnInit {
       };
       // console.log(this.offerer);
 
-      // POST new offerer
-      this.store$.dispatch(new AuthActions.TrySignupBusiness(this.offerer));
-      this.authEffects$.authSignin.pipe(
-        filter((action: Action) => action.type === AuthActions.SIGNIN)
-      ).subscribe(() => {
-        stepper.next();
-      });
-      this.authEffects$.authSignupBusiness.pipe(
-        filter((action: Action) => action.type === AuthActions.AUTH_ERROR)
-      ).subscribe((error: { payload: any, type: string }) => {
-        if (!this.dialogShown) {
-          console.log(error.payload);
-          this.dialog.open(DialogErrorComponent, {
-            data: {
-              header: 'The Sing Up has failed. Please go back and try again.',
-              error: 'Error: ' + error.payload,
-            }
-          });
-          this.dialogShown = true;
-        }
-      });
+      if (!this.isSocialNetwork) {
+        // POST new offerer
+        this.store$.dispatch(new AuthActions.TrySignupBusiness(this.offerer));
+        this.authEffects$.authSignin.pipe(
+          filter((action: Action) => action.type === AuthActions.SIGNIN)
+        ).subscribe(() => {
+          stepper.next();
+        });
+        this.authEffects$.authSignupBusiness.pipe(
+          filter((action: Action) => action.type === AuthActions.AUTH_ERROR)
+        ).subscribe((error: { payload: any, type: string }) => {
+          if (!this.dialogShown) {
+            console.log(error.payload);
+            this.dialog.open(DialogErrorComponent, {
+              data: {
+                header: 'The Sing Up has failed. Please go back and try again.',
+                error: 'Error: ' + error.payload,
+              }
+            });
+            this.dialogShown = true;
+          }
+        });
+      } else {
+        this.store$.dispatch(new AuthActions.TrySNCandidate({
+          'type': 'business',
+          'token': this.snToken,
+          'user': this.offerer
+        }));
+      }
     }
   }
 
@@ -555,5 +583,25 @@ export class SignupOffererComponent implements OnInit {
     } else {
       this.deletePhoto();
     }
+  }
+
+  googleSignUp() {
+    console.log('google Sign Up');
+    window.location.href = environment.apiUrl + 'google';
+  }
+
+  gitHubSignUp() {
+    window.location.href = environment.apiUrl + 'auth/github';
+  }
+
+
+  linkedInSignUp() {
+    console.log('linkedIn Sign Up');
+    window.location.href = environment.apiUrl + 'auth/linkedin';
+  }
+
+  twitterSignUp() {
+    console.log('twitter Sign Up');
+    window.location.href = environment.apiUrl + 'auth/twitter';
   }
 }
