@@ -589,7 +589,7 @@ class TFocus extends TEntity {
 
   // size     => integer
   // position => [0,0,0] e.g.
-  constructor(size, type, position, target = [3.0, 25.0, 3.0], velocity, extra, life = 3){
+  constructor(size, type, position, target = [3.0, 25.0, 3.0], velocity, extra, life = 3, color){
     super();
     this.size = size;                               // Focus size
     this.position = position;                       // Focus position
@@ -598,6 +598,7 @@ class TFocus extends TEntity {
     this.velocity = velocity;
     this.extra = extra;                                // helper value for calc velocity values
     this.life = life
+    this.color = color;
 
     this.particleArray = new Float32Array(size*4);  // bind to vertexShader
     this.particles = [];                            // array of <Particles>
@@ -651,6 +652,11 @@ class TFocus extends TEntity {
       // global.gl.bindTexture(global.gl.TEXTURE_2D, particlesTexture.tex);
       // let uniformSampler = global.gl.getUniformLocation(global.particlesProgram, "uSampler");
       // global.gl.uniform1i(uniformSampler, 1);
+      this.color
+        ? global.gl.uniform4fv(global.particlesUniforms.uColor, this.color)
+        : global.gl.uniform4fv(global.particlesUniforms.uColor, [1.0, 0.0, 0.0, 1.0]);
+
+
 
       // Update particles size while zooming
       global.gl.uniform1f(global.particlesUniforms.uPointSize, 60 * Math.pow( Math.min(Math.max(global.zoom,global.minZoom),global.maxZoom), -1 ) );

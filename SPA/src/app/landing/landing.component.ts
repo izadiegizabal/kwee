@@ -100,7 +100,9 @@ export class LandingComponent implements OnInit, OnDestroy {
         this.cardArrowType = 'down';
         break;
     }
-
+    if(!this.canvas){
+      this.canvas = document.getElementById('kweelive');
+    }
     let cs     = getComputedStyle(this.canvas);
     let width  = window.innerWidth;
     this.changed = width;
@@ -112,7 +114,9 @@ export class LandingComponent implements OnInit, OnDestroy {
     let xTotalOffset = virtualWidth - width;
     let percent = (p[0] - x2Offset) / (virtualWidth - xTotalOffset);
     // x coordinate
-    p[0] = width * percent;
+    if (width > 1400){
+      p[0] = width * percent - ((width - 1400) / 2);
+    } else { p[0] = width * percent }
     // y coordinate
     if (off === 123) {
       p[1] = (p[1]); // -144 -64

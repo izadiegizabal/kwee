@@ -1,6 +1,7 @@
 precision highp float;
 
 uniform sampler2D uSampler;
+uniform vec4 uColor;
 
 varying float vLifespan;
 
@@ -11,6 +12,6 @@ void main(void) {
     if(length(coord) > 0.2)                  //outside of circle radius?
         discard;
     //gl_FragColor = vec4(texColor.rgb, texColor.a * vLifespan);
-    gl_FragColor =  vec4(1.0,0.0,1.0, vLifespan);
+    gl_FragColor =  uColor;
 
 }

@@ -248,7 +248,7 @@ class TMotorTAG{
         return NLight;
     }
 
-  createFocus(father, size, type, position, target = undefined, life = 3){
+  createFocus(father, size, type, position, target = undefined, life = 3, color){
     let velocity = null;
     let extra = null;
 
@@ -304,7 +304,7 @@ class TMotorTAG{
       }
       case 'straight':{
         // velocity = [ -0.2, -0.2, -0.2 ];
-        velocity = [ -1, -1, -1 ];
+        velocity = [ -.20, -.20, -.20 ];
         extra = [0,0,0];
         life = 1;
 
@@ -332,7 +332,7 @@ class TMotorTAG{
     }
 
 
-    let focus = new TFocus(size, type, position, target, velocity, extra, life);
+    let focus = new TFocus(size, type, position, target, velocity, extra, life, color);
 
     let NFocus = this.createBranch(father, focus);
 
