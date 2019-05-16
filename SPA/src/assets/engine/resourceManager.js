@@ -227,6 +227,51 @@ class TResourceMeshArray {
 
 }
 
+class TResourceMeshArrayDynamic {
+
+  constructor(meshesArray, material){
+    this.meshes = meshesArray;
+    this.material = null;
+
+    this.setMaterial(material);
+    this.index = 0;
+  }
+
+  beginDraw() {
+    this.draw();
+  }
+
+  endDraw() {
+  }
+
+  draw(){
+    if(this.meshes != null && this.meshes.length != 0){
+      if(this.index > this.meshes.length -1){
+        this.index = this.meshes.length -1;
+      }
+      this.meshes[this.index].draw();
+    }
+  }
+
+  setMaterial(material){
+    this.material = material;
+    if(this.meshes!=null && this.meshes.length>0){
+      for(let i = 0; i<this.meshes.length; i++){
+        this.meshes[i].setMaterial(material);
+      }
+    }
+  }
+  setCount(index){
+    this.index = index;
+  }
+
+  addMesh(mesh){
+    mesh.setMaterial(this.material);
+    this.meshes.push(mesh);
+  }
+
+}
+
 class TResourceMesh extends TResource{
 
   constructor(name){
@@ -684,13 +729,14 @@ class TResourceShader extends TResource {
 
 async function loadJSON(filename){
 
-    //let host = "http://localhost:4200";
-    let host = constants.URL;
+    let host = "http://localhost:4200";
+    //let host = "http://h203.eps.ua.es";
+    //let host = constants.URL;
     let path = '/assets/assets/JSON/';
     let url = `${host + path + filename}`;
     
     // console.log(`Fetching JSON resource from url: ${ url }`);
-    
+    let headers = new Headers();
     let json;
     await fetch( url )
         .then( function(response) { return response.json(); } )
@@ -820,5 +866,6 @@ export {
     TResourceShader,
     TResourceTexture,
     TResourceMeshArray,
-    TResourceMeshArrayAnimation
+    TResourceMeshArrayAnimation,
+    TResourceMeshArrayDynamic
 }

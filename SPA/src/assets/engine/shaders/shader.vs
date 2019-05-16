@@ -19,13 +19,6 @@ uniform float uShininess;
 
 varying vec4 vFinalColor;
 
-// old shader:
-uniform bool uWireframe;
-uniform bool uUseVertexColor;
-uniform bool uUseTextures;
-varying vec3 vNormal;
-varying vec3 vLightRay;
-varying vec2 vTextureCoord;
 
 void main(void){
 

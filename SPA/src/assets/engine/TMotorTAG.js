@@ -1,7 +1,7 @@
 
 import {TNode} from './TNode.js';
 import {TTransform, TCamera, TLight, TAnimation, TMesh, TArc, TFocus, TRotationAnimation, TArcAndMeshAnimation, TMaterial} from './TEntity.js';
-import {TResourceManager, TResourceMesh, TResourceMaterial, TResourceTexture, TResourceShader, TResourceMeshArray} from './resourceManager.js';
+import {TResourceManager, TResourceMesh, TResourceMaterial, TResourceTexture, TResourceShader, TResourceMeshArray, TResourceMeshArrayDynamic} from './resourceManager.js';
 import {convertLatLonToVec3offsetY, convertLatLonToVec3RandomOffset} from './tools/utils';
 import { global } from './commons.js';
 
@@ -442,20 +442,13 @@ class TMotorTAG{
 
 
   // for 2 meshes (lazy load content)
-  async dynamicMeshArrayLazyLoading(father, files, color, tiers){
+  async dynamicMeshArrayLazyLoading(father, files, color){
     let count = 0;
     let meshArray = [];
     let manager = this.resourceManager;
 
-    if(files.length-1 != tiers.length){
-      console.log("Tiers don't match mesh array length");
-      return null;
-    }
+    let meshes = new TResourceMeshArrayDynamic(meshArray, color);
 
-    // tiers: lowpo < medpo < highpo
-
-    let meshes = new TResourceMeshArray(meshArray, tiers);
-    meshes.setColor(color)
 
     for(let i = 0; i<files.length; i++){
       if(i == 0){
@@ -465,7 +458,7 @@ class TMotorTAG{
             meshes.addMesh(completed);
             meshes.setCount(i);
             console.log(files[i]);
-            console.log(" loaded");
+            console.log("lowpo loaded");
           })
       }
       else{
@@ -476,7 +469,7 @@ class TMotorTAG{
             meshes.addMesh(completed);
             meshes.setCount(i);
             console.log(files[i]);
-            console.log(" loaded");
+            console.log("highpo loaded");
             global.status = 1;
           })
 

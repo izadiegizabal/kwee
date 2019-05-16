@@ -157,35 +157,49 @@ async function mainR(texture, particles, line) {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         TREE & RESOURCES
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     // EARTH
     let landMaterial = motor.createMaterial( 
       /* color */    [0.2, 0.9, 0.2, 1.0],
       /* specular */ [1.0, 1.0, 1.0, 1.0] , 
       /* shiny */    3 );
-    //let land = await motor.loadMesh(scene, 'earth_LP.json');
-    let land = await motor.loadMesh(scene, '2_earth.json');
-    land.entity.mesh.setMaterial( landMaterial );
-    Land = land;
-    // motor.scale(land, [5.0, 5.0, 5.0]);
-    // motor.scale(land, [0.25, 0.25, 0.25]);
 
-    // if (texture) {
-    //   let tex = await manager.getResource('continents.jpg');
-    //   land.entity.mesh.tex = tex;
-    //    console.log(land);
-    // } else {
-    //   //land.entity.mesh.tex = undefined;
-    // }
+      //let LOD_earth = motor.dynamicMeshArrayLazyLoading(scene, ['sea.json','earthobj.json'], landMaterial);
+      let LOD_earth = motor.dynamicMeshArrayLazyLoading(scene, ['0_earth.json','2_earth.json'], landMaterial);
+      
+      let seaMaterial = motor.createMaterial( 
+        /* color */    [0.3, 0.3, 0.8, 1.0],
+        /* specular */ [1.0, 1.0, 1.0, 1.0], 
+        /* shiny */    15 );
+      
+      let LOD_sea = motor.dynamicMeshArrayLazyLoading(scene, ['0_sea.json','2_sea.json'], seaMaterial);
+
+
+
+  //   //let land = await motor.loadMesh(scene, 'earth_LP.json');
+  //   let land = await motor.loadMesh(scene, '2_earth.json');
+  //   land.entity.mesh.setMaterial( landMaterial );
+  //   Land = land;
+  //   // motor.scale(land, [5.0, 5.0, 5.0]);
+  //   // motor.scale(land, [0.25, 0.25, 0.25]);
+
+  //   // if (texture) {
+  //   //   let tex = await manager.getResource('continents.jpg');
+  //   //   land.entity.mesh.tex = tex;
+  //   //    console.log(land);
+  //   // } else {
+  //   //   //land.entity.mesh.tex = undefined;
+  //   // }
     
  
-   // SEA
-    let seaMaterial = motor.createMaterial( 
-    /* color */    [0.3, 0.3, 0.8, 1.0],
-    /* specular */ [1.0, 1.0, 1.0, 1.0], 
-    /* shiny */    15 );
-    let sphere = await motor.loadMesh(scene, '2_sea.json');
-    sphere.entity.mesh.setMaterial( seaMaterial );
-    Sphere = sphere;
+  //  // SEA
+  //   let seaMaterial = motor.createMaterial( 
+  //   /* color */    [0.3, 0.3, 0.8, 1.0],
+  //   /* specular */ [1.0, 1.0, 1.0, 1.0], 
+  //   /* shiny */    15 );
+  //   let sphere = await motor.loadMesh(scene, '2_sea.json');
+  //   sphere.entity.mesh.setMaterial( seaMaterial );
+  //   Sphere = sphere;
     
     
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -278,24 +292,27 @@ async function mainR(texture, particles, line) {
 
 
 */
+
+// http://h203.eps.ua.es/assets/assets/JSON/sea.json
+// http://h203.eps.ua.es/assets/assets/JSON/earthobj.json
     ///////////
     // cities
     ///////////
 
-    let madrid = await motor.loadMesh(land, 'marker.json');
-    motor.scale(madrid, [0.01, 0.01, 0.01]);
-    motor.translate(madrid, convertLatLonToVec3(40.415363, -3.707398));
+    // let madrid = await motor.loadMesh(land, 'marker.json');
+    // motor.scale(madrid, [0.01, 0.01, 0.01]);
+    // motor.translate(madrid, convertLatLonToVec3(40.415363, -3.707398));
 
-    let roma = await motor.loadMesh(land, 'marker.json');
-    motor.scale(roma, [0.01, 0.01, 0.01]);
-    motor.translate(roma, convertLatLonToVec3(41.8905, 12.4942));
+    // let roma = await motor.loadMesh(land, 'marker.json');
+    // motor.scale(roma, [0.01, 0.01, 0.01]);
+    // motor.translate(roma, convertLatLonToVec3(41.8905, 12.4942));
 
-    let paris = await motor.loadMesh(land, 'marker.json');
-    motor.scale(paris, [0.01, 0.01, 0.01]);
-    motor.translate(paris, convertLatLonToVec3(48.8667, 2.33333));
+    // let paris = await motor.loadMesh(land, 'marker.json');
+    // motor.scale(paris, [0.01, 0.01, 0.01]);
+    // motor.translate(paris, convertLatLonToVec3(48.8667, 2.33333));
 
 
-    let particlesTexture = await manager.getResource('spark.png');
+    // let particlesTexture = await manager.getResource('spark.png');
 
     
 
