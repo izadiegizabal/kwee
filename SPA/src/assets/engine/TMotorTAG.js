@@ -624,6 +624,9 @@ class TMotorTAG{
     // Projection Matrix
     global.gl.uniformMatrix4fv(global.programUniforms.uPMatrix, false, global.projectionMatrix);
 
+    global.gl.uniform1f(global.programUniforms.uShininess, 1.0);
+    
+
   }
 
   initParticles(){
@@ -662,6 +665,7 @@ class TMotorTAG{
         global.gl.uniform4f(global.programUniforms.uLightAmbient,     ...this.allLights[0].entity.getIntensity());
         global.gl.uniform3f(global.programUniforms.uLightDirection,   ...this.allLights[0].entity.getDirection());
         global.gl.uniform4f(global.programUniforms.uLightDiffuse,     ...this.allLights[0].entity.getDiffuse());	
+        global.gl.uniform4f(global.programUniforms.uLightSpecular,    ...this.allLights[0].entity.getSpecular());	
         
 
         // this.allLights.forEach((e) => {

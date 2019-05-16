@@ -210,7 +210,7 @@ class TResourceMeshArray {
     this.color = color;
     if(this.meshes!=null){
       for(let i = 0; i<this.meshes.length; i++){
-        this.meshes[i].setColor(color);
+        this.meshes[i].setColor(color[0]), color[1];
       }
     }
   }
@@ -219,7 +219,7 @@ class TResourceMeshArray {
   }
 
   addMesh(mesh){
-    mesh.setColor(this.color);
+    mesh.setColor(this.color[0], this.color[1]);
     this.meshes.push(mesh);
   }
 
@@ -255,6 +255,7 @@ class TResourceMesh extends TResource{
     this.vbo;
 
     this.color = null;
+    this.specular = null;
 
     this.boundingBox = null;
     this.enableBBox = false
@@ -325,8 +326,9 @@ class TResourceMesh extends TResource{
 
   }
 
-  setColor( value ){
+  setColor( value, specular ){
     this.color = value;
+    this.specular = specular;
   }
 
   async loadFile(file){
@@ -482,7 +484,12 @@ class TResourceMesh extends TResource{
     // global.gl.enableVertexAttribArray(global.programAttributes.aVertexPosition);
     // global.gl.enableVertexAttribArray(global.programAttributes.aVertexNormal);
 
-    this.color ? global.gl.uniform4fv(global.programUniforms.uMaterialDiffuse, this.color) : global.gl.uniform4fv(global.programUniforms.uMaterialDiffuse, [1,0,0,1]);
+    this.color 
+      ? global.gl.uniform4fv(global.programUniforms.uMaterialDiffuse, this.color) 
+      : global.gl.uniform4fv(global.programUniforms.uMaterialDiffuse, [1,0,0,1]);
+    this.specular 
+      ? global.gl.uniform4fv(global.programUniforms.uMaterialSpecular, this.specular)
+      : global.gl.uniform4fv(global.programUniforms.uMaterialSpecular, [1,1,1,1]);
 
 
 
