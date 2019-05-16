@@ -160,7 +160,7 @@ async function mainR(texture, particles, line) {
 
     // EARTH
     let landMaterial = motor.createMaterial( 
-      /* color */    [0.2, 0.9, 0.2, 1.0],
+      /* color */    [0.258, 0.960, 0.6, 1.0],
       /* specular */ [1.0, 1.0, 1.0, 1.0] , 
       /* shiny */    3 );
 
@@ -168,7 +168,7 @@ async function mainR(texture, particles, line) {
       let LOD_earth = motor.dynamicMeshArrayLazyLoading(scene, ['0_earth.json','2_earth.json'], landMaterial);
       
       let seaMaterial = motor.createMaterial( 
-        /* color */    [0.3, 0.3, 0.8, 1.0],
+        /* color */    [0.313, 0.678, 0.949, 1.0],
         /* specular */ [1.0, 1.0, 1.0, 1.0], 
         /* shiny */    15 );
       
@@ -545,6 +545,11 @@ function animation(now) {
         pvMat4 = glMatrix.mat4.mul(pvMat4, global.projectionMatrix, global.auxViewMatrix);
         allowActions.point = glMatrix.vec4.transformMat4(uselessMat4, [...global.targetPoint, 1], pvMat4);
         allowActions.card = true;
+        Motor.createFocus(Scene, 100, 'straight', global.targetPoint , 'normal', null, [1,0.25,0.51, 1.0]);
+        let fireworks = Motor.createFocus(Scene, 150, 'fireworks', global.targetPoint , 'normal', null, [1,0.5,0.67, 1.0]);
+        setTimeout(() => {
+          Motor.deleteFocus(fireworks);
+        }, 800);
         // console.log(allowActions.point);
         document.body.click();
 

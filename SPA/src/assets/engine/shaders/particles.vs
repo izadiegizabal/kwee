@@ -4,6 +4,8 @@ uniform mat4 uMVMatrix;
 uniform mat4 uPMatrix;
 uniform float uPointSize;
 
+uniform vec4 uColor;
+
 varying float vLifespan;
 
 void main(void) {

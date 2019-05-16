@@ -41,6 +41,7 @@ var global = {
     uMVMatrix: null,
     uPMatrix: null,
     uPointSize: null,
+    uColor: null
   },
   AMORTIZATION: null,
   drag: false,
@@ -144,6 +145,8 @@ function loadAttribAndUniformsLocations(){
   global.particlesUniforms.uMVMatrix              = global.gl.getUniformLocation(global.particlesProgram, "uMVMatrix");
   global.particlesUniforms.uPMatrix               = global.gl.getUniformLocation(global.particlesProgram, "uPMatrix");
   global.particlesUniforms.uPointSize             = global.gl.getUniformLocation(global.particlesProgram, "uPointSize");
+  global.particlesUniforms.uColor             = global.gl.getUniformLocation(global.particlesProgram, "uColor");
+
 
   global.particlesAttributes.aParticle            = global.gl.getUniformLocation(global.particlesProgram, "aParticle");
 }
