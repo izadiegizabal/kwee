@@ -418,14 +418,13 @@ class TRotationAnimation extends TAnimation {
 
 }
 
-
-
-
-
-
-
-
-
+class TMaterial {
+  constructor( diffuse, specular, shininess){
+    this.diffuse = diffuse;
+    this.specular = specular;
+    this.shininess = shininess;
+  }
+}
 
 class TArc extends TEntity {
 
@@ -766,7 +765,8 @@ export {
     TArc,
     TFocus,
     TRotationAnimation,
-    TArcAndMeshAnimation
+    TArcAndMeshAnimation,
+    TMaterial
 }
 
 

@@ -158,9 +158,13 @@ async function mainR(texture, particles, line) {
     /////////////////////                                         TREE & RESOURCES
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // EARTH
+    let landMaterial = motor.createMaterial( 
+      /* color */    [0.2, 0.9, 0.2, 1.0],
+      /* specular */ [1.0, 1.0, 1.0, 1.0] , 
+      /* shiny */    3 );
     //let land = await motor.loadMesh(scene, 'earth_LP.json');
-    let land = await motor.loadMesh(scene, 'earth_LP_high.json');
-    land.entity.mesh.setColor( [ 0.2, 0.9, 0.2, 1.0] );
+    let land = await motor.loadMesh(scene, '2_earth.json');
+    land.entity.mesh.setMaterial( landMaterial );
     Land = land;
     // motor.scale(land, [5.0, 5.0, 5.0]);
     // motor.scale(land, [0.25, 0.25, 0.25]);
@@ -173,9 +177,14 @@ async function mainR(texture, particles, line) {
     //   //land.entity.mesh.tex = undefined;
     // }
     
-    // SEA
+ 
+   // SEA
+    let seaMaterial = motor.createMaterial( 
+    /* color */    [0.3, 0.3, 0.8, 1.0],
+    /* specular */ [1.0, 1.0, 1.0, 1.0], 
+    /* shiny */    15 );
     let sphere = await motor.loadMesh(scene, '2_sea.json');
-    sphere.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 1.0] );
+    sphere.entity.mesh.setMaterial( seaMaterial );
     Sphere = sphere;
     
     
@@ -356,7 +365,7 @@ async function mainR(texture, particles, line) {
     /////////////////////                                         LIGHTNING
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //                           father  type    ambient      specular       diffuse         direction
-    let light = motor.createLight(scene, 1, [0.2,0.2,0.2,1.0], null, [0.5,0.5,0.5,1.0], [10.0, 10.0, 10.0]);
+    let light = motor.createLight(scene, 1, [0.2,0.2,0.2,1.0], [1.0,1.0,1.0,1.0], [0.5,0.5,0.5,1.0], [10.0, 10.0, 10.0]);
 
     motor.calculateLights();
 
@@ -637,43 +646,53 @@ async function demoMain(target, boundingBox = false){
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         TREE & RESOURCES
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+    
     // // EARTH
+    let landMaterial = motor.createMaterial( 
+      /* color */    [0.2, 0.9, 0.2, 1.0],
+      /* specular */ [1.0, 1.0, 1.0, 1.0] , 
+      /* shiny */    3 );
     let earth0 = await motor.loadMesh(scene, '0_earth.json');
-    earth0.entity.mesh.setColor( [ 0.2, 0.9, 0.2, 1.0] );
+    earth0.entity.mesh.setMaterial( landMaterial );
     motor.translate(earth0, [2,0,0])
     boundingBox ? motor.enableBoundingBox(earth0) : 0;
 
     let earth1 = await motor.loadMesh(scene, '1_earth.json');
-    earth1.entity.mesh.setColor( [ 0.2, 0.9, 0.2, 1.0] );
+    earth1.entity.mesh.setMaterial( landMaterial );
     motor.translate(earth1, [4,0,0])
     boundingBox ? motor.enableBoundingBox(earth1) : 0;
 
     let earth2 = await motor.loadMesh(scene, '2_earth.json');
-    earth2.entity.mesh.setColor( [ 0.2, 0.9, 0.2, 1.0] );
+    earth2.entity.mesh.setMaterial( landMaterial );
     motor.translate(earth2, [6,0,0])
     boundingBox ? motor.enableBoundingBox(earth2) : 0;
 
 
     // SEA
+
+    let seaMaterial = motor.createMaterial( 
+      /* color */    [0.3, 0.3, 0.8, 1.0],
+      /* specular */ [1.0, 1.0, 1.0, 1.0], 
+      /* shiny */    15 );
+      
     let sea0 = await motor.loadMesh(scene, '0_sea.json');
     motor.translate(sea0, [2,0,-2]);
-    sea0.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 1.0] );
+    sea0.entity.mesh.setMaterial( seaMaterial );
     boundingBox ? motor.enableBoundingBox(sea0) : 0;
 
     let sea1 = await motor.loadMesh(scene, '1_sea.json');
     motor.translate(sea1, [4,0,-2]);
-    sea1.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 1.0] );
+    sea1.entity.mesh.setMaterial( seaMaterial );
     boundingBox ? motor.enableBoundingBox(sea1) : 0;
 
     let sea2 = await motor.loadMesh(scene, '2_sea.json');
     motor.translate(sea2, [6,0,-2]);
-    sea2.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 1.0] );
+    sea2.entity.mesh.setMaterial( seaMaterial );
     boundingBox ? motor.enableBoundingBox(sea2) : 0;
 
     // LOD earth and sea
-    let LOD_earth = motor.loadMeshArray(scene, ['0_earth.json','1_earth.json','2_earth.json'], [ 0.2, 0.9, 0.2, 1.0], [3,6]);
-    let LOD_sea = motor.loadMeshArray(scene, ['0_sea.json','1_sea.json','2_sea.json'], [ 0.3, 0.3, 0.8, 1.0], [3,6]);
+    let LOD_earth = motor.loadMeshArray(scene, ['0_earth.json','1_earth.json','2_earth.json'], landMaterial, [3,6]);
+    let LOD_sea = motor.loadMeshArray(scene, ['0_sea.json','1_sea.json','2_sea.json'], seaMaterial, [3,6]);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         particles
@@ -733,8 +752,10 @@ async function demoMain(target, boundingBox = false){
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         LIGHTNING
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //                           father  type    ambient      specular       diffuse         direction
-    let light = motor.createLight(scene, 1, [0.2,0.2,0.2,1.0], null, [0.5,0.5,0.5,1.0], [10.0, 10.0, 10.0]);
+    //                           father  type    ambient            specular       diffuse         direction
+//    let light = motor.createLight(scene, 1, [0.2,0.2,0.2,1.0], [1.0,1.0,1.0,1.0], [0.5,0.5,0.5,1.0], [10.0, 10.0, 10.0]);
+    let light = motor.createLight(scene, 1, [0.06,0.06,0.06,1.0], [1.0,1.0,1.0,1.0], [0.5,0.5,0.5,1.0], [10.0, 10.0, 10.0]);
+   //let light = motor.createLight(scene, 1, [0.9 ,0.9 ,0.9 ,1.0], [1.0,1.0,1.0,1.0], [0.7,0.7,0.7,1.0], [10.0, 10.0, 10.0]);
 
     motor.calculateLights();
 

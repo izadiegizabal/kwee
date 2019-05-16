@@ -29,7 +29,10 @@ var global = {
     uLightDirection: null,
     uLightAmbient: null,
     uLightDiffuse: null,
+    uLightSpecular: null,
     uMaterialDiffuse: null,
+    uMaterialSpecular: null,
+    uShininess: null,
   },
   particlesAttributes: {
     aParticle: null,
@@ -105,6 +108,8 @@ function shared() {
       canvas.addEventListener("mouseup", mouseUp, false);
       canvas.addEventListener("mouseout", mouseUp, false);
       canvas.addEventListener("mousemove", mouseMove, false);
+
+      // Prevent mouse scroll
       canvas.addEventListener('wheel', mouseWheel, false);
       canvas.addEventListener('mousewheel', mouseWheel, false);
 
@@ -128,14 +133,17 @@ function loadAttribAndUniformsLocations(){
   global.programUniforms.uLightAmbient            = global.gl.getUniformLocation(global.program, "uLightAmbient");
   global.programUniforms.uLightDirection          = global.gl.getUniformLocation(global.program, "uLightDirection");
   global.programUniforms.uLightDiffuse            = global.gl.getUniformLocation(global.program, "uLightDiffuse");
+  global.programUniforms.uLightSpecular           = global.gl.getUniformLocation(global.program, "uLightSpecular");
   global.programUniforms.uMaterialDiffuse         = global.gl.getUniformLocation(global.program, "uMaterialDiffuse");
+  global.programUniforms.uMaterialSpecular        = global.gl.getUniformLocation(global.program, "uMaterialSpecular");
+  global.programUniforms.uShininess               = global.gl.getUniformLocation(global.program, "uShininess");
+
 
   // @todo
   // Init uniforms and attributes for Particles program
   global.particlesUniforms.uMVMatrix              = global.gl.getUniformLocation(global.particlesProgram, "uMVMatrix");
   global.particlesUniforms.uPMatrix               = global.gl.getUniformLocation(global.particlesProgram, "uPMatrix");
   global.particlesUniforms.uPointSize             = global.gl.getUniformLocation(global.particlesProgram, "uPointSize");
-
 
   global.particlesAttributes.aParticle            = global.gl.getUniformLocation(global.particlesProgram, "aParticle");
 }
