@@ -174,7 +174,7 @@ async function mainR(texture, particles, line) {
     // }
     
     // SEA
-    let sphere = await motor.loadMesh(scene, 'sea.json');
+    let sphere = await motor.loadMesh(scene, '2_sea.json');
     sphere.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 1.0] );
     Sphere = sphere;
     
