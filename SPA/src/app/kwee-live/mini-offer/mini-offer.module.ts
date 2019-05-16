@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {SharedModule} from '../../shared/shared.module';
 import {MiniOfferComponent} from './mini-offer.component';
 import {RouterModule} from '@angular/router';
-import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {CommonModule} from "@angular/common";
 @NgModule({
   declarations: [
     MiniOfferComponent
@@ -10,7 +10,7 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
   imports: [
     SharedModule,
     RouterModule,
-    BrowserAnimationsModule
+    CommonModule
   ],
   exports: [
     MiniOfferComponent
