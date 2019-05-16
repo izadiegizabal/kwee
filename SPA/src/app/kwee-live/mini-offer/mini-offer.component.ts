@@ -8,13 +8,13 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
   styleUrls: ['./mini-offer.component.scss'],
   animations: [
     trigger('EnterLeave', [
-      state('flyIn', style({ transform: 'translateX(0)' })),
       transition(':enter', [
-        style({ transform: 'translateX(-100%)' }),
-        animate('0.5s 300ms ease-in')
+        style({borderRadius: '50%', height: '0px', width: '0px', opacity: 0 }),
+        animate('0.5s ease-out', style({borderRadius: '3%', height: '80px', width: '270px', opacity: 1 }))
       ]),
       transition(':leave', [
-        animate('0.3s ease-out', style({ transform: 'translateX(100%)' }))
+        style({opacity: 1}),
+        animate('500ms', style({opacity: 0}))
       ])
     ])
   ]

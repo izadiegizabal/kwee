@@ -4,54 +4,13 @@ import {shared} from '../../assets/engine/commons';
 import {allowActions, mainInit, mainR, resetCanvas, setSceneWidth} from '../../assets/engine/main';
 import {Router} from '@angular/router';
 import {Title} from '@angular/platform-browser';
-import {animate, style, transition, trigger} from '@angular/animations';
-
-/*
-* .floating-chat {
-
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-  color: black;
-  position: fixed;
-  bottom: 25px;
-  right: 25px;
-  width: 0px;
-  height: 0px;
-  transition: all 250ms ease-out;
-  border-radius: 50%;
-  opacity: 0;
-
-  &.expand {
-    width: 250px;
-    max-height: 400px;
-    height: 400px;
-    border-radius: 5px;
-    opacity: 1;
-    bottom: 25px;
-    right: 25px;
-  }
-}
-*
-* */
 
 @Component({
   selector: 'app-landing',
   templateUrl: './landing.component.html',
-  styleUrls: ['./landing.component.scss'],
-  animations: [
-    trigger('EnterLeave', [
-      transition(':enter', [
-        style({borderRadius: '50%', height: '0px', width: '0px' }),
-        animate('0.5s ease-out', style({borderRadius: '3%', height: '80px', width: '270px' }))
-      ]),
-      transition(':leave', [
-        style({opacity: 1}),
-        animate('500ms', style({opacity: 0}))
-      ])
-    ])
-  ]
+  styleUrls: ['./landing.component.scss']
 })
+
 export class LandingComponent implements OnInit, OnDestroy {
 
   disabled: boolean;

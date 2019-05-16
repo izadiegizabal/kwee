@@ -98,7 +98,7 @@ mat-icon{
 }
 
 .nameIndex div{
-  background: mat-color($mat-teal, A400);
+  background: #00bfa5;
   color: white;
   border-radius: 2px;
   height: 16px;
@@ -112,4 +112,14 @@ mat-icon{
   font-size: 12px;
   margin-top: 3px;
   margin-bottom: 3px;
+}
+
+#Title{
+  width: 160px;
+  font-size: .8em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0 0 3px -1px;
+  padding: 0;
 }
