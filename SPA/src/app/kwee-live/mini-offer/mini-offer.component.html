@@ -1,9 +1,10 @@
 <div  id="offerBubble"
+      [@EnterLeave]
         fxLayout="row"
         [routerLink]="urlfyPosition()">
   <div
     fxLayout="column"
-    fxFlex="35%"
+    fxFlex="31%"
     fxLayoutAlign="center center">
     <img src="../../assets/img/defaultProfileImg.png"
          alt="Company logo" width="60" height="60"
@@ -13,13 +14,7 @@
     fxLayout="column"
     fxFlex="100%"
     fxLayoutAlign="center start">
-    <span style="width: 134px;
-              font-size: .9em;
-              white-space: nowrap;
-              overflow: hidden;
-              text-overflow: ellipsis;
-              margin: 0 0 0 -4px;
-              padding: 0;">{{offer}}</span>
+    <span id="Title"><b>{{offer}}</b></span>
     <!--style="font-size: .9em"-->
     <!--<span style="font-size: .7em">Facebook</span>-->
     <div class="nameIndex" fxLayout="row" fxLayoutAlign="start center">

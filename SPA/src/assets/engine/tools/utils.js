@@ -122,14 +122,16 @@ function convertLatLonToVec3RandomOffset(lat, lon, scene) {
       randomRotate = getRandomInt(0, 1);
       break;
     case  2:
-      randomRotate = getRandomInt(2, 4);
+      // randomRotate = getRandomInt(2, 4);
+      randomRotate = getRandomInt(0, 1);
+      if(randomRotate === 0){
+        randomRotate = 2;
+      } else { randomRotate = 4; }
       break;
     case  3:
       randomRotate = getRandomInt(5, 8);
       break;
   }
-
-  // console.log(randomRotate);
 
   let offsetY = 0;
   let offsetX = 0;
@@ -143,25 +145,26 @@ function convertLatLonToVec3RandomOffset(lat, lon, scene) {
       break;
     case  2:
       offsetX = -30;
-      offsetY = 35;
+      offsetY = 30;
       break;
     case  3:
-      offsetX = -10;
+      // down
+      // offsetX = -10;
       break;
     case  4:
       offsetX = -30;
-      offsetY = -35;
+      offsetY = -30;
       break;
     case  5:
       offsetX = -30;
-      offsetY = 35;
+      offsetY = 30;
       break;
     case  6:
       offsetX = -30;
       break;
     case  7:
       offsetX = -30;
-      offsetY = -35;
+      offsetY = -30;
       break;
     case  8:
       offsetX = -10;
@@ -171,9 +174,11 @@ function convertLatLonToVec3RandomOffset(lat, lon, scene) {
   let vec3Cross = glMatrix.vec3.create();
   vec3Cross = glMatrix.vec3.cross(vec3Cross, point, [0,1,0]);
   let rot = glMatrix.mat4.create();
+  let rot2 = glMatrix.mat4.create();
   glMatrix.mat4.rotate(rot, rot, offsetX * radians, vec3Cross);
-  glMatrix.mat4.rotateY(rot, rot, offsetY * radians);
+  glMatrix.mat4.rotateY(rot2, rot2, offsetY * radians);
   glMatrix.vec3.transformMat4(point, point, rot);
+  glMatrix.vec3.transformMat4(point, point, rot2);
 
   return {coord: point, random: randomRotate, coordWithoutRotation: init};
 }

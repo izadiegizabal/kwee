@@ -345,9 +345,13 @@ class TRotationAnimation extends TAnimation {
       return 1
     }
     // this.increment = this.auxCount / this.timeAnim; //this.BezierBlend((this.auxCount/ this.timeAnim));
-    this.increment = this.ParametricBlend((this.auxCount / this.timeAnim));
-    return glMatrix.vec3.transformQuat(this.lastVec3, this.vec3, glMatrix.quat.slerp(this.auxQuat, glMatrix.quat.create(), this.quat , this.increment));
+    this.increment = this.ease((this.auxCount / this.timeAnim));
+    return glMatrix.vec3.transformQuat(this.lastVec3, this.vec3, glMatrix.quat.slerp(this.auxQuat, glMatrix.quat.create(), this.quat , this.auxCount / this.timeAnim));
     // return this.vec3;
+  }
+
+  ease(t) {
+    return t<.5 ? 16*t*t*t*t*t : 1+16*(--t)*t*t*t*t;
   }
 
   InOutQuadBlend(t) {
