@@ -5,9 +5,13 @@ import {Title} from '@angular/platform-browser';
 import * as KweeLiveActions from './store/kwee-live.actions';
 import * as fromApp from '../store/app.reducers';
 import {HttpClient} from '@angular/common/http';
-import {Store} from '@ngrx/store';
-import { trigger, state, style, animate, transition } from '@angular/animations';
+import {select, Store} from '@ngrx/store';
+import {trigger, state, style, animate, transition, query} from '@angular/animations';
 import {canvas} from '../../assets/engine/commons';
+import {Observable} from "rxjs";
+import * as fromKweeLive from "./store/kwee-live.reducers";
+import * as OffersActions from "../offer/store/offers.actions";
+import * as fromOffers from '../offer/store/offers.reducers';
 
 
 // import {TMotorTAG} from '../../assets/engine/TMotorTAG.js';
@@ -48,6 +52,9 @@ export class KweeLiveComponent implements OnInit, OnDestroy {
   boundingbox: boolean;
   auxCanvas = null;
   context2d = null;
+  kweeState: Observable<fromKweeLive.State>;
+  offersState: Observable<fromOffers.State>;
+  query: any;
 
   @ViewChild('rendererContainer') rendererContainer: ElementRef;
 
@@ -64,6 +71,25 @@ export class KweeLiveComponent implements OnInit, OnDestroy {
     demoMain( [0, 0, 0], this.boundingbox);
 
     this.store$.dispatch(new KweeLiveActions.TryGetApplications({page: 1, limit: 5}));
+
+    this.kweeState = this.store$.pipe(select('kweeLive'));
+
+    this.kweeState.pipe(
+      select(s => s.applications)
+    ).subscribe(
+      (applications) => {
+        console.log(applications);
+      });
+    this.query= {...this.query, status: 0};
+    this.store$.dispatch(new OffersActions.TryGetOffers({page: 1, limit: 25, params: this.query, order: '0'}));
+    this.offersState = this.store$.pipe(select(state => state.offers));
+
+    this.offersState.pipe(
+      select(s => s)
+    ).subscribe(
+      (value) => {
+        console.log(value);
+      });
 
     // this.auxCanvas = document.getElementById('auxkweelive');
     // this.context2d = this.auxCanvas.getContext("2d");
