@@ -324,6 +324,11 @@ class TMotorTAG{
         extra    = [ -0.3, -0.3, -0.3];
         life = 1.8;
       }
+      case 'little':{
+        velocity = [ 0.3, 0.3, 0.3 ];
+        extra    = [ -0.1, -0.1, -0.1];
+        life = 0.8;
+      }
     }
 
 
@@ -354,6 +359,12 @@ class TMotorTAG{
     NFocus.father.father.father.entity.setTranslation(position);
 
     return NFocus;
+  }
+
+  deleteFocus( focusNode){
+    let array = this.allFocuses;
+    focusNode.father.father.father.remChild(focusNode.father.father);
+    array.splice(array.indexOf(focusNode),1);
   }
 
     // updateParticles(time){
@@ -558,11 +569,12 @@ class TMotorTAG{
 
     let meshesArray = [];
 
+    let meshes = new TResourceMeshArray(meshesArray, material, tiers);
+
     await this.asyncForEach(files, async (e) => {
-      meshesArray.push( await this.resourceManager.getResource(e));
+      meshes.addMesh( await this.resourceManager.getResource(e));
     });
 
-    let meshes = new TResourceMeshArray(meshesArray, material, tiers);
 
     meshes.setMaterial(material);
 

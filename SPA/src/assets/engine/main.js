@@ -917,9 +917,17 @@ async function interactiveMain(){
     // let LOD_earth = motor.dynamicMeshArray(scene, ['0_earth.json','earth_LP_high.json'], [ 0.2, 0.9, 0.2, 1.0]);
     // let LOD_sea = motor.dynamicMeshArray(scene, ['0_sea.json','sea.json'], [ 0.3, 0.3, 0.8, 1.0]);
 
+    let landMaterial = motor.createMaterial( 
+      /* color */    [0.2, 0.9, 0.2, 1.0],
+      /* specular */ [1.0, 1.0, 1.0, 1.0] , 
+      /* shiny */    3 );
+   let seaMaterial = motor.createMaterial( 
+      /* color */    [0.3, 0.3, 0.8, 1.0],
+      /* specular */ [1.0, 1.0, 1.0, 1.0], 
+      /* shiny */    15 );
     // to do: load 2 MESHES ONLY
-    let LOD_earth = motor.dynamicMeshArray(scene, ['0_earth.json','1_earth.json','2_earth.json'], [ 0.2, 0.9, 0.2, 1.0], [3,6]);
-    let LOD_sea = motor.dynamicMeshArray(scene, ['0_sea.json','1_sea.json','2_sea.json'], [ 0.3, 0.3, 0.8, 1.0], [3,6]);
+    let LOD_earth = motor.loadMeshArray(scene, ['0_earth.json','1_earth.json','2_earth.json'], landMaterial, [3,6]);
+    let LOD_sea = motor.loadMeshArray(scene, ['0_sea.json','1_sea.json','2_sea.json'], seaMaterial, [3,6]);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         particles
@@ -940,7 +948,7 @@ async function interactiveMain(){
     let TFocusA = motor.createFocus(scene, 100, 'dispersion', newYorkPos);
 
     // // Madrid focus
-    let TFocus5 = motor.createFocus(scene, 100, 'straight', madridPos , 'normal');
+    //let TFocus5 = motor.createFocus(scene, 100, 'straight', madridPos , 'normal');
 
 
     // // Ocean focus
@@ -985,18 +993,18 @@ async function interactiveMain(){
     motor.scale(origin, [0.1, 0.1, 0.1]);
     motor.translate(origin, positionTFocus);
     motor.enableBoundingBox(origin)
-    origin.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 0.5] );
+    // origin.entity.mesh.setColor( [ 0.3, 0.3, 0.8, 0.5] );
 
     let target = await motor.loadMesh(scene, 'marker.json');
     motor.scale(target, [0.1, 0.1, 0.1]);
     motor.translate(target, targetPos);
-    target.entity.mesh.setColor( [ 1, 0.3, 0.8, 1] );
+    // target.entity.mesh.setColor( [ 1, 0.3, 0.8, 1] );
 
 
     let vertical = await motor.loadMesh(scene, 'marker.json');
     motor.scale(vertical, [0.1, 0.1, 0.1]);
     motor.translate(vertical, [positionTFocus[0], positionTFocus[1]+1.7, positionTFocus[2] ] );
-    vertical.entity.mesh.setColor( [ 1, 0.3, 0.8, 1] );
+    // vertical.entity.mesh.setColor( [ 1, 0.3, 0.8, 1] );
 
 
     ///////////
@@ -1040,7 +1048,7 @@ async function interactiveMain(){
     /////////////////////                                         LIGHTNING
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //                           father  type    ambient      specular       diffuse         direction
-    let light = motor.createLight(scene, 1, [0.2,0.2,0.2,1.0], null, [0.5,0.5,0.5,1.0], [10.0, 10.0, 10.0]);
+    let light = motor.createLight(scene, 1, [0.2,0.2,0.2,1.0], [1.0, 1.0, 1.0, 1.0], [0.5,0.5,0.5,1.0], [10.0, 10.0, 10.0]);
 
     motor.calculateLights();
 
@@ -1057,6 +1065,17 @@ async function interactiveMain(){
     global.gl.useProgram(global.program);
     global.gl.bindTexture(global.gl.TEXTURE_2D, whiteTexture);
 
+    //////////////
+    // dynamic focus
+
+    setTimeout(() => {
+      let focusNode = motor.createFocus(scene, 100, 'fireworks', madridPos);
+      motor.createFocus(scene, 100, 'straight', madridPos, 'normal');
+      motor.createFocus(scene, 100, 'little', convertLatLonToVec3(48.864716, 2.349014), 'normal');
+      setTimeout(() => {
+        motor.deleteFocus(focusNode);
+      }, 1800);
+    }, 5000);
 
 
     console.log(scene);
@@ -1073,12 +1092,6 @@ async function interactiveMain(){
 //      if (!global.drag && (auxPHI!=1.2 && auxPHI!=-1.2) ) {
         global.dX *= global.AMORTIZATION, global.dY*=global.AMORTIZATION;
         global.THETA+=global.dX, global.PHI+=global.dY;
-
-        // move to particles
-        global.gl.useProgram(global.particlesProgram);
-        // Update particles size while zooming
-        global.gl.uniform1f(global.particlesUniforms.uPointSize, 60 * Math.pow( Math.min(Math.max(global.zoom,global.minZoom),global.maxZoom), -1 ) );
-        global.gl.useProgram(global.program);
 
       }
 
