@@ -2,7 +2,7 @@ const {logger, sendVerificationEmail, deleteFile, uploadImg, saveLogES, checkImg
 const elastic = require('../database/elasticsearch');
 const bcrypt = require('bcryptjs');
 
-async function createOfferer(req, res, next, db, regUser) {
+async function createOfferer(req, res, next, db, id, regUser) {
     try {
         var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         await logger.saveLog('POST', 'offerer', null, res, req.useragent, ip, null);
@@ -10,18 +10,18 @@ async function createOfferer(req, res, next, db, regUser) {
         const body = req.body;
         delete body.root;
         let user = {};
-        body.password ? user.password = bcrypt.hashSync(body.password, 10) : null;
         body.name ? user.name = body.name : null;
         body.bio ? user.bio = body.bio : null;
-        body.email ? user.email = body.email : null;
         body.lat ? user.lat = body.lat : null;
         body.lon ? user.lon = body.lon : null;
         var uservar;
         saveLogES('POST', 'offerer', body.name);
-
+        
         if (body.img && checkImg(body.img)) {
-
+            
             if( regUser ){
+                body.password ? user.password = bcrypt.hashSync(body.password, 10) : null;
+                body.email ? user.email = body.email : null;
 
                 return db.sequelize.transaction(transaction => {
                     var imgName = uploadImg(req, res, next, 'offerers');
@@ -69,10 +69,10 @@ async function createOfferer(req, res, next, db, regUser) {
                 return db.sequelize.transaction(transaction => {
                     var imgName = uploadImg(req, res, next, 'offerers');
                     user.img = imgName;
-                    return db.users.update(user, {transaction})
+                    return db.users.update(user, { where: { id }}, { transaction })
                         .then(async _user => {
                             uservar = _user;
-                            return newOfferer(body, _user, next, transaction, db);
+                            return newOfferer(body, _user, next, transaction, db, id);
                         })
                         .then(async ending => {
                             await sendVerificationEmail(body, uservar);
@@ -122,10 +122,10 @@ async function createOfferer(req, res, next, db, regUser) {
     }
 }
 
-async function newOfferer(body, user, next, transaction, db) {
+async function newOfferer(body, user, next, transaction, db, id) {
     try {
         let offerer = {
-            userId: user.id,
+            userId: user.id || id,
             address: body.address,
             workField: body.workField,
             cif: body.cif,
