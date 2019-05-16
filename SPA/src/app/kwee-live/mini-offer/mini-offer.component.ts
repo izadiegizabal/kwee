@@ -9,12 +9,12 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
   animations: [
     trigger('EnterLeave', [
       transition(':enter', [
-        style({borderRadius: '50%', height: '0px', width: '0px', opacity: 0 }),
-        animate('0.5s ease-out', style({borderRadius: '3%', height: '80px', width: '270px', opacity: 1 }))
+        style({borderRadius: '50%', height: '0px', width: '0px', opacity: 0, transform: 'scale(0)' }),
+        animate('0.5s ease-in-out', style({borderRadius: '3%', height: '80px', width: '270px', opacity: 1 , transform: 'scale(1)'}))
       ]),
       transition(':leave', [
-        style({opacity: 1}),
-        animate('500ms', style({opacity: 0}))
+        style({borderRadius: '3%', height: '80px', width: '270px', opacity: 1 , transform: 'scale(1)'}),
+        animate('0.5s ease-out', style({borderRadius: '50%', height: '0px', width: '0px', opacity: 0, transform: 'scale(0)' }))
       ])
     ])
   ]

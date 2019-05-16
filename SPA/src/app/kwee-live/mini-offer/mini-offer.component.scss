@@ -54,7 +54,7 @@ mat-icon{
 
 #offerBubble.down:after {
   content: '';
-  top: 80px;
+  top: 78px;
   position: absolute;
   left: calc(50% - 10px);
   border: solid transparent;
@@ -64,7 +64,7 @@ mat-icon{
 
 #offerBubble.up:after {
   content: '';
-  top: -70px;
+  top: -68px;
   position: absolute;
   left: calc(50% - 10px);
   border: solid;
@@ -75,7 +75,7 @@ mat-icon{
 #offerBubble.left:after {
   content: '';
   top: calc(40px - 10px);
-  left: -70px;
+  left: -68px;
   position: absolute;
   border: solid;
   border-width: 10px 70px 10px 0;
@@ -85,7 +85,7 @@ mat-icon{
 #offerBubble.right:after {
   content: '';
   top: calc(40px - 10px);
-  right: -70px;
+  right: -68px;
   position: absolute;
   border: solid;
   border-width: 10px 0 10px 70px;
