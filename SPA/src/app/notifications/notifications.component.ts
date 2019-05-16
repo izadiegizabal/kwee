@@ -15,6 +15,7 @@ import {Title} from '@angular/platform-browser';
 export class NotificationsComponent implements OnInit {
 
   count = 0;
+  notifications: any;
 
   notiState: Observable<fromMessages.State>;
 
@@ -31,6 +32,7 @@ export class NotificationsComponent implements OnInit {
     this.notiState.subscribe(state => {
       if (state && state.notifications) {
         this.count = state.notifications.total;
+        this.notifications = Object.values(state.notifications.data);
       }
     });
     this.store$.dispatch(new MessageAcctions.TryGetNotifications({page: 1, limit: 10}));

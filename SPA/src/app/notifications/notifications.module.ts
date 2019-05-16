@@ -7,11 +7,13 @@ import {StoreModule} from '@ngrx/store';
 import {messageReducer} from '../messages/store/message.reducers';
 import {EffectsModule} from '@ngrx/effects';
 import {MessageEffects} from '../messages/store/message.effects';
+import { NotificationComponent } from './notification/notification.component';
 
 
 @NgModule({
   declarations: [
-    NotificationsComponent
+    NotificationsComponent,
+    NotificationComponent
   ],
   imports: [
     SharedModule,
