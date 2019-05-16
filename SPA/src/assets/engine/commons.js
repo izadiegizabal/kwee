@@ -108,6 +108,8 @@ function shared() {
       canvas.addEventListener("mouseup", mouseUp, false);
       canvas.addEventListener("mouseout", mouseUp, false);
       canvas.addEventListener("mousemove", mouseMove, false);
+
+      // Prevent mouse scroll
       canvas.addEventListener('wheel', mouseWheel, false);
       canvas.addEventListener('mousewheel', mouseWheel, false);
 

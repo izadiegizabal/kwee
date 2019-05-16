@@ -1,6 +1,6 @@
 
 import {TNode} from './TNode.js';
-import {TTransform, TCamera, TLight, TAnimation, TMesh, TArc, TFocus, TRotationAnimation, TArcAndMeshAnimation} from './TEntity.js';
+import {TTransform, TCamera, TLight, TAnimation, TMesh, TArc, TFocus, TRotationAnimation, TArcAndMeshAnimation, TMaterial} from './TEntity.js';
 import {TResourceManager, TResourceMesh, TResourceMaterial, TResourceTexture, TResourceShader, TResourceMeshArray} from './resourceManager.js';
 import {convertLatLonToVec3offsetY, convertLatLonToVec3RandomOffset} from './tools/utils';
 import { global } from './commons.js';
@@ -493,7 +493,7 @@ class TMotorTAG{
   }
 
   // for >3 meshes
-  async dynamicMeshArray(father, files, color, tiers){
+  async dynamicMeshArray(father, files, material, tiers){
     let count = 0;
     let meshArray = [];
     let manager = this.resourceManager;
@@ -504,9 +504,9 @@ class TMotorTAG{
     }
 
     // tiers: lowpo < medpo < highpo
+    let meshes = new TResourceMeshArray(meshArray, material, tiers);
 
-    let meshes = new TResourceMeshArray(meshArray, tiers);
-    meshes.setColor(color)
+    //meshes.setMaterial(color)
 
     for(let i = 0; i<files.length; i++){
       if(i == 0){
@@ -542,6 +542,11 @@ class TMotorTAG{
     return branch
   }
 
+  createMaterial(diffuse, specular, shiny){
+    let material = new TMaterial(diffuse, specular, shiny);
+    return material;
+  }
+
 
   async loadMeshArrayAnimation(father, files){
 
@@ -556,7 +561,7 @@ class TMotorTAG{
       return this.createBranch(father, meshes);
     }
 
-  async loadMeshArray(father, files, colors, tiers){
+  async loadMeshArray(father, files, material, tiers){
 
     let meshesArray = [];
 
@@ -564,9 +569,9 @@ class TMotorTAG{
       meshesArray.push( await this.resourceManager.getResource(e));
     });
 
-    let meshes = new TResourceMeshArray(meshesArray, tiers);
+    let meshes = new TResourceMeshArray(meshesArray, material, tiers);
 
-    meshes.setColor(colors);
+    meshes.setMaterial(material);
 
     meshes.setCount(2);
 
@@ -624,7 +629,6 @@ class TMotorTAG{
     // Projection Matrix
     global.gl.uniformMatrix4fv(global.programUniforms.uPMatrix, false, global.projectionMatrix);
 
-    global.gl.uniform1f(global.programUniforms.uShininess, 1.0);
     
 
   }

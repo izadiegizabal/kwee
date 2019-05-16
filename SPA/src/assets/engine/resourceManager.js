@@ -168,10 +168,12 @@ class TResourceMeshArrayAnimation {
 
 class TResourceMeshArray {
 
-  constructor(meshesArray, tiers){
+  constructor(meshesArray, material, tiers){
     this.meshes = meshesArray;
+    this.material = null;
+
+    this.setMaterial(material);
     this.index = 0;
-    this.color = null;
     this.tiers = tiers;
   }
 
@@ -206,11 +208,11 @@ class TResourceMeshArray {
     }
   }
 
-  setColor(color){
-    this.color = color;
-    if(this.meshes!=null){
+  setMaterial(material){
+    this.material = material;
+    if(this.meshes!=null && this.meshes.length>0){
       for(let i = 0; i<this.meshes.length; i++){
-        this.meshes[i].setColor(color[0]), color[1];
+        this.meshes[i].setMaterial(material);
       }
     }
   }
@@ -219,7 +221,7 @@ class TResourceMeshArray {
   }
 
   addMesh(mesh){
-    mesh.setColor(this.color[0], this.color[1]);
+    mesh.setMaterial(this.material);
     this.meshes.push(mesh);
   }
 
@@ -256,6 +258,7 @@ class TResourceMesh extends TResource{
 
     this.color = null;
     this.specular = null;
+    this.shininess = null;
 
     this.boundingBox = null;
     this.enableBBox = false
@@ -326,9 +329,10 @@ class TResourceMesh extends TResource{
 
   }
 
-  setColor( value, specular ){
-    this.color = value;
-    this.specular = specular;
+  setMaterial( material ){
+    this.color = material.diffuse;
+    this.specular = material.specular;
+    this.shininess = material.shininess;
   }
 
   async loadFile(file){
@@ -484,14 +488,18 @@ class TResourceMesh extends TResource{
     // global.gl.enableVertexAttribArray(global.programAttributes.aVertexPosition);
     // global.gl.enableVertexAttribArray(global.programAttributes.aVertexNormal);
 
+    // Set material before drawing
     this.color 
       ? global.gl.uniform4fv(global.programUniforms.uMaterialDiffuse, this.color) 
       : global.gl.uniform4fv(global.programUniforms.uMaterialDiffuse, [1,0,0,1]);
     this.specular 
       ? global.gl.uniform4fv(global.programUniforms.uMaterialSpecular, this.specular)
       : global.gl.uniform4fv(global.programUniforms.uMaterialSpecular, [1,1,1,1]);
+    this.shininess
+      ? global.gl.uniform1f(global.programUniforms.uShininess, this.shininess)
+      : global.gl.uniform1f(global.programUniforms.uShininess, 100.0);
 
-
+     
 
     global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.vbo);
     global.gl.vertexAttribPointer(global.programAttributes.aVertexPosition, 3, global.gl.FLOAT, global.gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
