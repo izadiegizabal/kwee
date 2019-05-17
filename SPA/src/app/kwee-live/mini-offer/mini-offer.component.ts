@@ -24,6 +24,8 @@ export class MiniOfferComponent implements OnInit {
   points = [0 , 0];
   className = 'down';
 
+  @Input() obj: any;
+
   @Input() index: number;
   @Input() id: number;
   @Input() name: string;
@@ -46,7 +48,8 @@ export class MiniOfferComponent implements OnInit {
   constructor() {
   }
 
-  async ngOnInit() {
+  ngOnInit() {
+    console.log(this.obj.img)
   }
 
   private getBGColour() {
@@ -77,6 +80,6 @@ export class MiniOfferComponent implements OnInit {
   }
 
   urlfyPosition() {
-    return '/offer/' + this.id + '/' + getUrlfiedString(this.offer);
+    return '/offer/' + this.obj.id + '/' + getUrlfiedString(this.obj.title);
   }
 }

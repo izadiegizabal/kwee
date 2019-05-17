@@ -4,6 +4,14 @@ import {shared} from '../../assets/engine/commons';
 import {allowActions, mainInit, mainR, resetCanvas, setSceneWidth} from '../../assets/engine/main';
 import {Router} from '@angular/router';
 import {Title} from '@angular/platform-browser';
+import * as OffersActions from "../offer/store/offers.actions";
+import {select, Store} from "@ngrx/store";
+import * as fromApp from "../store/app.reducers";
+import {Observable} from "rxjs";
+import * as fromOffers from "../offer/store/offers.reducers";
+import {environment} from '../../environments/environment';
+
+import {ContractType} from '../../models/Offer.model';
 
 @Component({
   selector: 'app-landing',
@@ -13,14 +21,37 @@ import {Title} from '@angular/platform-browser';
 
 export class LandingComponent implements OnInit, OnDestroy {
 
+  // booleans for actions
   disabled: boolean;
   particles: boolean;
+
+  // canvas "global" variables
   auxCanvas = null;
   canvas = null;
   context2d = null;
+
+  // new width screen size
   changed = 0;
+
+  // default values
   cardArrowType = 'up';
   cardPosition = [0, 0];
+
+  // Offer stuff
+  offersState: Observable<fromOffers.State>;
+  query: any;
+
+  fetchedOffers = [];
+  offerImages = [];
+
+  previousPosition = [];
+  currentIndex = -1;
+
+  environment = environment;
+
+  obj = {
+    title: 'no title'
+  };
 
   @ViewChild('rendererContainer') rendererContainer: ElementRef;
   @ViewChild('thisIsKwee') thisIsKweeHeader: ElementRef;
@@ -39,7 +70,7 @@ export class LandingComponent implements OnInit, OnDestroy {
     }
   }
 
-  constructor(private router: Router, private titleService: Title) {
+  constructor(private router: Router, private titleService: Title, private store$: Store<fromApp.AppState>) {
     this.disabled = true;
   }
 
@@ -58,6 +89,40 @@ export class LandingComponent implements OnInit, OnDestroy {
       setSceneWidth(2);
     } else {
       setSceneWidth(3);
+    }
+
+
+    this.query= {...this.query, status: '0'};
+    this.store$.dispatch(new OffersActions.TryGetOffers({page: 1, limit: 25, params: this.query, order: '0'}));
+    this.offersState = this.store$.pipe(select(state => state.offers));
+
+    this.offersState.pipe(
+      select(s => s.offers)
+    ).subscribe(
+      (data) => {
+        data.data.forEach( (e, i) => {
+          console.log(e);
+          // this.offerImages.push(new Image());
+          this.offerImages.push(this.environment.apiUrl + e.img);
+          console.log(this.offerImages[i].src);
+          this.fetchedOffers.push({
+            title: e.title,
+            offererIndex: e.offererIndex,
+            offererName: e.offererName,
+            contractType: this.getOfferContractType(e.contractType),
+            location: e.location,
+            id: e.id,
+            index: i
+          });
+        });
+        console.log(this.offerImages);
+        console.log(this.fetchedOffers);
+      });
+  }
+
+  getOfferContractType(contractType) {
+    if (contractType > -1) {
+      return ContractType[contractType];
     }
   }
 
@@ -78,6 +143,11 @@ export class LandingComponent implements OnInit, OnDestroy {
   }
 
   configCard(){
+    if(!this.arraysEqual(this.previousPosition, allowActions.point)) {
+      this.currentIndex++;
+      this.previousPosition = allowActions.point;
+    }
+
     switch (allowActions.random) {
       case  0:
       case  3:
@@ -124,43 +194,20 @@ export class LandingComponent implements OnInit, OnDestroy {
       p[1] = (p[1]); // -144 -64
 
     }
-    // update coordinates to bind
     this.cardPosition = p;
+    // update coordinates to bind
+    this.obj = {...this.fetchedOffers[this.currentIndex], cardPosition: p, img: this.offerImages[this.currentIndex]};
   }
 
-  drawTriangle(array){
-    let cs     = getComputedStyle(this.auxCanvas);
-    let width  = parseInt( cs.getPropertyValue('width'), 10);
-    let height = parseInt( cs.getPropertyValue('height'), 10);
-    this.context2d.clearRect(0, 0, width, height);
-    //console.log(this.auxCanvas);
-    let point = [];
-    let aux = 0;
-    array.forEach( (e) => {
-      aux = Math.round(e);//this.decimalAdjust('round', e,1);
-      if (aux % 2 !== 0){
-        point.push(aux + 1);
-      } else { point.push(aux); }
-    });
-    // console.log(point);
-    // the triangle
+  arraysEqual(arr1, arr2) {
+    if(arr1.length !== arr2.length)
+      return false;
+    for(let i = arr1.length; i--;) {
+      if(arr1[i] !== arr2[i])
+        return false;
+    }
 
-    // this.context2d.translate(0.5,0.5);
-    this.context2d.beginPath();
-    this.context2d.moveTo(365 * 2, 180 * 2);
-    this.context2d.lineTo(335 * 2, 180 * 2);
-    console.log('*********');
-    console.log(point[0]);
-    this.context2d.lineTo(point[0], point[1] - 6);
-    this.context2d.closePath();
-
-    this.context2d.strokeStyle = '#FFF';
-    this.context2d.lineWidth = 2;
-    this.context2d.stroke();
-
-    this.context2d.fillStyle = "#FFF";
-    this.context2d.fill();
-
+    return true;
   }
 
   drawHollow() {
