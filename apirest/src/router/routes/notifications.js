@@ -143,6 +143,7 @@ module.exports = (app, db) => {
                 });
                 let offers = await db.offers.findAll();
                 let ratings = await db.ratings.findAll();
+                let applications = await db.applications.findAll();
                 let numOfUnread = await db.notifications.findAndCountAll({ where: { to: id, read: 0 }});
 
                 notifications.forEach( notification => {
@@ -153,6 +154,7 @@ module.exports = (app, db) => {
                     object.id = notification.id;
                     object.read = notification.read;
                     object.status = notification.status;
+                    object.createdAt = notification.createdAt;
                     object.notification = notification.notification;
                     // object.to = to;
                     object.from = from;
@@ -164,6 +166,11 @@ module.exports = (app, db) => {
                         case 'applicants': 
                                     rating = ratings.find( rating => rating.id === notification.idTable );
                                     object.rating = rating;
+                                break;
+                        case 'applications': 
+                                    let application = applications.find( application => application.id === notification.idTable );
+                                    offer = offers.find( offer => offer.id === application.fk_offer );
+                                    object.offer = offer;
                                 break;
                     }
                     

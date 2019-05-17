@@ -1,5 +1,6 @@
-const {tokenId, logger, sendVerificationEmail, sendEmailResetPassword, pagination} = require('../../../shared/functions');
+const {tokenId, logger, sendVerificationEmail, sendEmailResetPassword, pagination, checkImg, uploadImg, deleteFile} = require('../../../shared/functions');
 const {checkToken, checkAdmin} = require('../../../middlewares/authentication');
+const {createApplicant} = require('../../../functions/applicant');
 const {createOfferer} = require('../../../functions/offerer');
 const elastic = require('../../../database/elasticsearch');
 const bcrypt = require('bcryptjs');
@@ -125,18 +126,18 @@ module.exports = (app, db) => {
     app.put('/user/social', async (req, res, next) => {
         try {
             let id = tokenId.getTokenId(req.get('token'), res);
-            let type = req.params.type;
+            let type = req.query.type;
             
             switch ( type ) {
-                case "candidate": 
-                    createApplicant(req, res, next, false);
+                case "candidate":
+                    createApplicant(req, res, next, db, id, false);
                         break;
-                case "business": 
-                    createOfferer(req, res, next, false);
+                    case "business": 
+                    createOfferer(req, res, next, db, id, false);
                         break;
             }
 
-            updateUser(id, req, res, next);
+            // updateUser(id, req, res, next);
 
         } catch (err) {
             return next({type: 'error', error: (err.errors ? err.errors[0].message : err.message)});
