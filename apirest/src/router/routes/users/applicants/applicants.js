@@ -467,7 +467,7 @@ module.exports = (app, db) => {
 
     // POST single applicant
     app.post('/applicant', async (req, res, next) => {
-        createApplicant(req, res, next, db, true);
+        createApplicant(req, res, next, db, 0, true);
     });
 
     app.post('/applicant/info', async (req, res, next) => {

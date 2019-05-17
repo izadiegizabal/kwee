@@ -1,17 +1,16 @@
 const passport = require('../../../middlewares/passport');
-const querystring = require('querystring');
 const auth = require('../../../middlewares/auth/auth');
 const env = require('../../../tools/constants');
 const moment = require('moment');
 const {logger} = require('../../../shared/functions');
-var type;
+var typeToFront;
 
 module.exports = (app, db) => {
 
     app.get('/auth/github',
         passport.authenticate('github', {scope: ['user:email']})
     ), (req, res) => {
-        type = req.params.type;
+        typeToFront = req.query.type;
     };
 
     app.get('/auth/github/callback',
@@ -40,17 +39,13 @@ module.exports = (app, db) => {
                     });
 
                     let token = auth.auth.encode(user);
-                    const query = `token=${token}&id=${user.id}&name=${user.name}&email=${user.email}`;
+                    const query = `token=${token}&id=${user.id}&name=${user.name}&email=${user.email}&type=${typeToFront}`;
 
                     res.redirect(env.SIGNUP + query);
 
                 } else {
                     // Existent user
                     let logId = await logger.saveLog('POST', 'login', null, res, req.useragent, ip, user.email);
-                    console.log("Este email ya existe en la BBDD");
-                    console.log('Haciendo login en el sistema');
-                    console.log('id: ', user.id);
-                    
 
                     let type;
                     let id = user.id;
@@ -71,6 +66,7 @@ module.exports = (app, db) => {
                     let token = auth.auth.encode(userUpdated);
                     logger.updateLog(logId, true, id);
 
+
                     if ( user.root ) {
                         type = 'admin';
                     } else {
@@ -89,7 +85,8 @@ module.exports = (app, db) => {
                                 avg = getApplicantAVG(applicant);
                                 type = 'applicant';
                             } else {
-                                return next({type: 'error', error: 'This user is not applicant, offerer neither admin'});
+                                avg = null;
+                                type = null;
                             }
                         }
                     }

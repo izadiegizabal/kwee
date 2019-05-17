@@ -32,6 +32,11 @@ const env = {
     EMAIL: pass.EMAIL,
     EMAIL_PASSWORD: pass.EMAIL_PASSWORD,
 
+    //Google API
+    GOOGLE_ID: pass.GOOGLE_ID,
+    GOOGLE_SECRET: pass.GOOGLE_SECRET,
+    GOOGLE_URL: callback_url + 'google/callback',
+
     //Instagram API
     INSTAGRAM_ID: pass.INSTAGRAM_ID,
     INSTAGRAM_SECRET: pass.INSTAGRAM_SECRET,

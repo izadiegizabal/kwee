@@ -16,14 +16,20 @@ module.exports = (app, db) => {
             if ( body.email ) {
                 // logId = await logger.saveLog('POST', 'login', null, res, req.useragent, ip, body.email);
                 user = await db.users.findOne({ where: { email: body.email }});
-            } else if ( body.token ) {
-                var idToken = tokenId.getTokenId(body.token, res);
+            } else if ( req.get('token') ) {
+                console.log("en el else del token");
+                
+                var idToken = tokenId.getTokenId(req.get('token'), res);
 
-                user = await db.users.findOne({where: { id: idToken }});
-                if ( user ){
-                    // logId = await logger.saveLog('POST', 'login', null, res, req.useragent, ip, user.email);
-                } else {
-                    return null;
+                console.log('idtoken: ', idToken);
+                
+                if( idToken ) {
+                    user = await db.users.findOne({where: { id: idToken }});
+                    if ( user ){
+                        // logId = await logger.saveLog('POST', 'login', null, res, req.useragent, ip, user.email);
+                    } else {
+                        return null;
+                    }
                 }
             } else {
                 return next({type: 'error', error: 'Error getting data'});
@@ -90,7 +96,9 @@ module.exports = (app, db) => {
                         premium = applicant.premium;
                         type = 'applicant';
                     } else {
-                        return next({type: 'error', error: 'User not found'});
+                        avg = null;
+                        premium = null;
+                        type = null;
                     }
                 }
             }
