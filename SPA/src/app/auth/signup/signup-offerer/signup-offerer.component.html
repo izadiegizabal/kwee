@@ -15,25 +15,25 @@
           </button>
         </div>
         <div class="signupButton">
-          <button color="primary" mat-raised-button matStepperNext>
+          <button (click)="gitHubSignUp()" color="primary" mat-raised-button matStepperNext>
             <mat-icon fontIcon="fa-github" fontSet="fab"></mat-icon>
             <span>Continue with GitHub</span>
           </button>
         </div>
         <div class="signupButton">
-          <button color="primary" id="linkedinBtn" mat-raised-button matStepperNext>
+          <button (click)="linkedInSignUp()" color="primary" id="linkedinBtn" mat-raised-button matStepperNext>
             <mat-icon fontIcon="fa-linkedin-in" fontSet="fab"></mat-icon>
             <span>Continue with LinkedIn</span>
           </button>
         </div>
         <div class="signupButton">
-          <button color="primary" id="googleBtn" mat-raised-button matStepperNext>
+          <button (click)="googleSignUp()" color="primary" id="googleBtn" mat-raised-button matStepperNext>
             <mat-icon fontIcon="fa-google" fontSet="fab"></mat-icon>
             <span>Continue with Google</span>
           </button>
         </div>
         <div class="signupButton">
-          <button color="primary" id="twitterBtn" mat-raised-button matStepperNext>
+          <button (click)="twitterSignUp()" color="primary" id="twitterBtn" mat-raised-button matStepperNext>
             <mat-icon fontIcon="fa-twitter" fontSet="fab"></mat-icon>
             <span>Continue with Twitter</span>
           </button>
@@ -110,7 +110,7 @@
         </div>
 
         <br>
-        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
+        <div *ngIf="!isSocialNetwork" fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
           <mat-form-field>
             <input formControlName="email" matInput placeholder="Email" required>
             <mat-icon color="primary" matPrefix svgIcon="email"></mat-icon>
@@ -125,8 +125,8 @@
             </mat-error>
           </mat-form-field>
         </div>
-        <br>
-        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
+        <br  *ngIf="!isSocialNetwork">
+        <div *ngIf="!isSocialNetwork" fxLayout="row" fxLayout.xs="column" fxLayoutGap="16px" fxLayoutGap.xs="0">
           <mat-form-field>
             <mat-icon color="primary" matPrefix svgIcon="lock"></mat-icon>
             <input [type]="hide ? 'text' : 'password'" formControlName="password" matInput placeholder="Password"

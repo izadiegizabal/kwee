@@ -1,0 +1,20 @@
+<div *ngIf="notification && notification.from" fxLayout="row" fxLayoutGap="16px">
+  <div fxLayout="column">
+    <img [src]="apiUrl + notification.from.img" mat-list-icon alt="Business logo">
+  </div>
+  <div fxLayout="column">
+    <div [ngSwitch]="notification.notification">
+      <div *ngSwitchCase="'selected'">
+        <h4 class="mat-h2" mat-line>Congratulations!</h4>
+        <p class="mat-body-2" mat-line>You have been selected by
+          <a [routerLink]="'/business/' + notification.from.id + '/' + notification.from.name">
+            {{notification.from.name}}
+          </a>
+          for the offer
+          <a [routerLink]="'/offer/1/changethis'">Change This</a>! Please go to the offer to accept or refuse the
+          position.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

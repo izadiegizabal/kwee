@@ -85,7 +85,7 @@ export class AuthError implements Action {
 export class TrySNCandidate implements Action {
   readonly type = TRY_SN_CANDIDATE;
 
-  constructor(public payload: { email: string, token: any, user: any }) {
+  constructor(public payload: { type: string, token: any, user: any }) {
   }
 }
 

@@ -13,7 +13,7 @@ export interface State {
     data: any
   };
   notifications: {
-    notifications: {
+    data: {
       id: number,
       createdAt: Date,
       read: boolean,

@@ -1,3 +1,8 @@
-<p>
-  Total number of notifications: {{count}}
-</p>
+<div class="mat-h1" style="padding-top: 16px">Notifications</div>
+<p class="mat-typography">You have <strong>{{count}}</strong> new notifications.</p>
+<mat-list *ngIf="notifications">
+  <div *ngFor="let notification of notifications">
+    <app-notification [notification]="notification"></app-notification>
+    <hr>
+  </div>
+</mat-list>
