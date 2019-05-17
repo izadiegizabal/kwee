@@ -114,7 +114,8 @@ export class LandingComponent implements OnInit, OnDestroy {
     this.offersState.pipe(
       select(s => s.offers)
     ).subscribe(
-      (data) => {
+      (data: any) => {
+        console.log(data.data);
         data.data.forEach( (e, i) => {
           // console.log(e);
           // this.offerImages.push(new Image());
@@ -127,7 +128,9 @@ export class LandingComponent implements OnInit, OnDestroy {
             contractType: this.getOfferContractType(e.contractType),
             location: e.location,
             id: e.id,
-            index: i
+            index: i,
+            lat: e.userLat,
+            lon: e.userLon
           });
         });
         // console.log(this.offerImages);
@@ -228,6 +231,9 @@ export class LandingComponent implements OnInit, OnDestroy {
   }
 
   configCard() {
+
+    // let point = this.motor.computeCoordenates(this.fetchedOffers[this.currentIndex].userLat, this.fetchedOffers[this.currentIndex].userLon);
+
     if(!this.arraysEqual(this.previousPosition, allowActions.point)) {
       this.currentIndex++;
       this.previousPosition = allowActions.point;

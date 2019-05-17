@@ -4,6 +4,7 @@ import {TTransform, TCamera, TLight, TAnimation, TMesh, TArc, TFocus, TRotationA
 import {TResourceManager, TResourceMesh, TResourceMaterial, TResourceTexture, TResourceShader, TResourceMeshArray, TResourceMeshArrayDynamic} from './resourceManager.js';
 import {convertLatLonToVec3offsetY, convertLatLonToVec3RandomOffset} from './tools/utils';
 import { global, ease } from './commons.js';
+// import {allowActions} from "./main";
 
 class TMotorTAG{
 
@@ -68,6 +69,14 @@ class TMotorTAG{
         var node = new TNode(father, entity);
         father.addChild(node);
         return node;
+    }
+
+    computeCoordenates(lat, lon) {
+      let point = convertLatLonToVec3(lat, lon);
+      let pvMat4 = glMatrix.mat4.create();
+      let uselessMat4 = glMatrix.vec4.create();
+      pvMat4 = glMatrix.mat4.mul(pvMat4, global.projectionMatrix, global.auxViewMatrix);
+      return glMatrix.vec4.transformMat4(uselessMat4, [...point, 1], pvMat4);
     }
 
 
