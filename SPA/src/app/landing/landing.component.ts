@@ -89,11 +89,11 @@ export class LandingComponent implements OnInit, OnDestroy {
   async ngOnInit() {
     this.titleService.setTitle('Kwee - Home');
     this.disabled = false;
-    await shared(false);  // true = interactive Main on ZOOM
+    await shared(true);  // true = landing (NO ZOOM)
     await mainInit();
 
-    //this.main();
-    this.drawHollow();
+    // this.main();
+     this.drawHollow();
 
     this.canvas = document.getElementById('kweelive');
     // this.context2d.translate(0.5,0.5);
