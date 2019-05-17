@@ -629,6 +629,10 @@ function buildOffersToShow(users, offersToShow, offers) {
         offer.offererName = user.name;
         offer.offererIndex = user.index;
         offer.avg = getOffererAVG(user.offerer);
+
+        offer.userLat = user.lat;
+        offer.userLon = user.lon;
+
         offers[i]._source.img ? offer.img = offers[i]._source.img : offer.img = user.img;
         offer.title = offers[i]._source.title;
         offer.description = offers[i]._source.description;
