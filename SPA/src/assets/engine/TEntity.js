@@ -11,7 +11,8 @@ import {TResourceMesh, TResourceMeshArray} from './resourceManager';
 
 // Structures and entities
 
- class TTransform extends TEntity {
+// TAG.06
+class TTransform extends TEntity {
 
     constructor(matrix) {
         super();
@@ -26,6 +27,7 @@ import {TResourceMesh, TResourceMeshArray} from './resourceManager';
         this.matrix = matrix;
     }
 
+// TAG.07
     transpose() {
         return glMatrix.mat4.transpose(this.matrix, this.matrix);
     }
@@ -105,6 +107,8 @@ import {TResourceMesh, TResourceMeshArray} from './resourceManager';
         this.matrix[10] = t[8];
     }
 
+// TAG.03 -> ha sido mejorar el motor para que haga el recorrido de forma correcta (y la Model y View sean lo que son -estaban mal-)
+// TAG.08
     beginDraw() {
         // push the model matrix
         global.stack.push( global.modelMatrix.slice(0) );
@@ -112,16 +116,6 @@ import {TResourceMesh, TResourceMeshArray} from './resourceManager';
         // multiply the current model matrix with the TTransform matrix with
         glMatrix.mat4.multiply(global.modelMatrix, global.modelMatrix, this.matrix);
 
-       
-        /*console.log('--------');
-        console.log('----------------------');
-        console.log('-------------------------------------- Stack');
-        console.log(TEntity.stack);
-        console.log(MVMatrix);
-        console.log('-----------------------------------');
-        console.log('----------------------');
-        console.log('-------');*/
-        // console.log(this);
     }
 
     endDraw() {
@@ -132,13 +126,15 @@ import {TResourceMesh, TResourceMeshArray} from './resourceManager';
 
 }
 
- class TLight extends TEntity {
+// TAG.13
+class TLight extends TEntity {
 
     // type 0 = putual ; 1 = dirigido
     // intensity vec4: r g b a
     // specular vec4: r g b a ?
     // direction vec4: x y z ?
     // s coeficient
+// TAG.14 y 15 @todo luces dirigida y puntual
     constructor(typ, intensity /* = ambient */, specular, diffuse, direction, coef) {
         super();
         this.typ = typ;
@@ -173,8 +169,6 @@ import {TResourceMesh, TResourceMeshArray} from './resourceManager';
                 ? glMatrix.vec4.fromValues(...coef)
                 : glMatrix.vec4.fromValues(...coef, 1.0);
         }
-
-
     }
 // diffuse, ambient=intensity and specular
     setIntensity(intensity) {
@@ -229,26 +223,29 @@ import {TResourceMesh, TResourceMeshArray} from './resourceManager';
     }
 }
 
-  class TAnimation extends TEntity {
+class TAnimation extends TEntity {
 
-    constructor() {
-        super();
-    }
-
-    beginDraw() { }
-
-    endDraw() { }
-
-    update(){ }
-
+  constructor() {
+      super();
   }
 
+  beginDraw() { }
+
+  endDraw() { }
+
+  update(){ }
+
+}
+
+// TAG.20
 class TArcAndMeshAnimation extends  TAnimation {
   constructor(object, count, timeAnim, endAnim) {
     super();
     this.auxCount = 0;
     this.endCount = 0;
     this.count = count;
+
+// TAG.21
     this.object = object;
     // The end of animation must be greater than timeAnim, else default 2 * timeAnim
     if(endAnim === -1) {
@@ -269,6 +266,8 @@ class TArcAndMeshAnimation extends  TAnimation {
 
   endDraw() { }
 
+// TAG.23
+// TAG.22
   update(dx) {
     return this.updateMethod(dx);
   }
@@ -418,6 +417,8 @@ class TRotationAnimation extends TAnimation {
 
 }
 
+
+// TAG.34
 class TMaterial {
   constructor( diffuse, specular, shininess){
     this.diffuse = diffuse;
@@ -510,7 +511,8 @@ class TMarker extends TEntity {
   endDraw() {}
 }
 
- class TMesh extends TEntity {
+// TAG.17
+class TMesh extends TEntity {
 
     constructor(mesh) {
         super();
@@ -518,19 +520,21 @@ class TMarker extends TEntity {
         return this;
     }
 
+    // TAG.19
 	beginDraw() {
 		if(this.mesh !== null){
 			this.mesh.draw();
-        }
+  }
         // console.log(this);
 
 	}
 
-    endDraw() {
-    }
+  endDraw() {
+  }
 
 }
 
+// TAG.09
 class TCamera extends TEntity {
 
     constructor(isPerspective, near, far, right, left, top, bottom) {
@@ -584,6 +588,7 @@ class TCamera extends TEntity {
     }
 }
 
+// TAG.61
 class TFocus extends TEntity {
   // @todo => position to lat&long coords
 
@@ -652,6 +657,7 @@ class TFocus extends TEntity {
       // global.gl.bindTexture(global.gl.TEXTURE_2D, particlesTexture.tex);
       // let uniformSampler = global.gl.getUniformLocation(global.particlesProgram, "uSampler");
       // global.gl.uniform1i(uniformSampler, 1);
+      
       this.color
         ? global.gl.uniform4fv(global.particlesUniforms.uColor, this.color)
         : global.gl.uniform4fv(global.particlesUniforms.uColor, [1.0, 0.0, 0.0, 1.0]);

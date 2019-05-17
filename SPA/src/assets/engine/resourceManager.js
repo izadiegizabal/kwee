@@ -20,19 +20,13 @@ import { constants } from './tools/constants.js';
 
 var vec3 = glMatrix.vec3;
 
-let meshPosVertexBufferObject = null;
-var meshIndexBufferObject = null;
-var texCoordVertexBufferObject = null;
-var normalBufferObject = null;
 
+// TAG.24
+// TAG.25
 class TResourceManager {
     // map --> store resources
     constructor() {
         this.map = new Map();
-        meshPosVertexBufferObject = global.gl.createBuffer();
-        meshIndexBufferObject = global.gl.createBuffer();
-        texCoordVertexBufferObject = global.gl.createBuffer();
-        normalBufferObject = global.gl.createBuffer();
     }
     
     // getResource --> The resource filename must be the same as "name"
@@ -118,6 +112,8 @@ class TResourceManager {
     }
 }
 
+
+// TAG.26
 class TResource {
     constructor(name){
         this.name = name;
@@ -166,6 +162,7 @@ class TResourceMeshArrayAnimation {
 
 }
 
+// lod (demo Rafa)
 class TResourceMeshArray {
 
   constructor(meshesArray, material, tiers){
@@ -272,10 +269,13 @@ class TResourceMeshArrayDynamic {
 
 }
 
+// TAG.27
 class TResourceMesh extends TResource{
 
   constructor(name){
     super(name);
+// TAG.18
+
 
     // vertices positions
     this.vertices = [];
@@ -309,6 +309,7 @@ class TResourceMesh extends TResource{
     this.enableBBox = false
   }
 
+// TAG.53  
   enableBB(value) {
     this.enableBBox = value;
     this.boundingBox = {
@@ -380,6 +381,9 @@ class TResourceMesh extends TResource{
     this.shininess = material.shininess;
   }
 
+
+// TAG.28
+// TAG.29
   async loadFile(file){
 
     // console.log("== loadFile TResourceMesh(" + file + ") ==");
@@ -491,11 +495,14 @@ class TResourceMesh extends TResource{
     return this;
   }
 
+// TAG.30
   draw(){
+
 
     global.gl.useProgram(global.program);
 
 
+// TAG.33
     // if(global.gl && global.program) {
     ///////////////////////////////////////////////////////////////////////////////////////////// ""MATERIALS"" (NOPE)
     // let uMaterialDiffuse = global.gl.getUniformLocation(global.program, 'uMaterialDiffuse');
@@ -533,6 +540,8 @@ class TResourceMesh extends TResource{
     // global.gl.enableVertexAttribArray(global.programAttributes.aVertexPosition);
     // global.gl.enableVertexAttribArray(global.programAttributes.aVertexNormal);
 
+
+// TAG.36
     // Set material before drawing
     this.color 
       ? global.gl.uniform4fv(global.programUniforms.uMaterialDiffuse, this.color) 
@@ -567,15 +576,6 @@ class TResourceMesh extends TResource{
 
     ///////////////////////////////////////////////////////////////////////////////// POSITION & ROTATION STUFF
 
-    let aux = global.modelMatrix;
-    // console.log(`
-    //     modelMatrix (mesh):
-    //     ${ aux[0] } ${ aux[1] } ${ aux[2] } ${ aux[3] }
-    //     ${ aux[4] } ${ aux[5] } ${ aux[6] } ${ aux[7] }
-    //     ${ aux[8] } ${ aux[9] } ${ aux[10] } ${ aux[11] }
-    //     ${ aux[12] } ${ aux[13] } ${ aux[14] } ${ aux[15] }
-    // `);
-
     // MVMatrix = model * view
     let viewModel = [];
     glMatrix.mat4.multiply(viewModel, global.viewMatrix, global.modelMatrix);
@@ -609,6 +609,9 @@ class TResourceMesh extends TResource{
       global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, this.boundingBox.ibo);
 
       global.gl.drawElements(global.gl.LINES, this.boundingBox.indices.length, global.gl.UNSIGNED_SHORT, 0);
+
+      global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
+      global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, null);
     }
 
 
@@ -616,6 +619,8 @@ class TResourceMesh extends TResource{
 
 }
 
+
+// TAG.34 
 class TResourceMaterial extends TResource{
     constructor(name){
         super(name);
@@ -634,6 +639,7 @@ class TResourceMaterial extends TResource{
         return this;
     }
 
+// TAG.35
     async loadFile(file){
         
         // const mtl = await loadJSON(file);
@@ -675,26 +681,28 @@ class TResourceMaterial extends TResource{
     }
 }
 
+// TAG.31
 class TResourceTexture extends TResource{
-    constructor(name){
-        super(name);
-        this.tex = global.gl.createTexture();
-        this.image = new Image();
-    }
-
-    async bindTexture() {
-      return new Promise(async resolve => {
-        console.log('== loading TResourceTexture(' + this.name + ') ==');
-        // console.info('loading image '+this.image.src);
-        global.gl.bindTexture(global.gl.TEXTURE_2D, this.tex);
-        global.gl.pixelStorei(global.gl.UNPACK_FLIP_Y_WEBGL, 1);
-        global.gl.texImage2D(global.gl.TEXTURE_2D, 0, global.gl.RGBA, global.gl.RGBA, global.gl.UNSIGNED_BYTE, this.image);
-        global.gl.texParameteri(global.gl.TEXTURE_2D, global.gl.TEXTURE_MIN_FILTER, global.gl.LINEAR);
-        global.gl.bindTexture(global.gl.TEXTURE_2D, null);
-        resolve(true);
-      });
-    }
-    
+  constructor(name){
+    super(name);
+    this.tex = global.gl.createTexture();
+    this.image = new Image();
+  }
+  
+  async bindTexture() {
+    return new Promise(async resolve => {
+      console.log('== loading TResourceTexture(' + this.name + ') ==');
+      // console.info('loading image '+this.image.src);
+      global.gl.bindTexture(global.gl.TEXTURE_2D, this.tex);
+      global.gl.pixelStorei(global.gl.UNPACK_FLIP_Y_WEBGL, 1);
+      global.gl.texImage2D(global.gl.TEXTURE_2D, 0, global.gl.RGBA, global.gl.RGBA, global.gl.UNSIGNED_BYTE, this.image);
+      global.gl.texParameteri(global.gl.TEXTURE_2D, global.gl.TEXTURE_MIN_FILTER, global.gl.LINEAR);
+      global.gl.bindTexture(global.gl.TEXTURE_2D, null);
+      resolve(true);
+    });
+  }
+  
+  // TAG.32
     async loadFile(name) {
       return new Promise(async resolve => {
         let url = constants.URL + '/assets/assets/textures/' + name;
@@ -710,12 +718,14 @@ class TResourceTexture extends TResource{
 
 }
 
+// TAG.37
 class TResourceShader extends TResource {
   constructor(name) {
     super(name);
     this.shader = null;
   }
 
+// TAG.38
   async loadFile(name) {
     this.shader = await load(name);
     return this;
@@ -736,7 +746,6 @@ async function loadJSON(filename){
     let url = `${host + path + filename}`;
     
     // console.log(`Fetching JSON resource from url: ${ url }`);
-    let headers = new Headers();
     let json;
     await fetch( url )
         .then( function(response) { return response.json(); } )

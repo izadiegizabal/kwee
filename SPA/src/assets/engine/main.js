@@ -165,14 +165,14 @@ async function mainR(texture, particles, line) {
       /* shiny */    3 );
 
       //let LOD_earth = motor.dynamicMeshArrayLazyLoading(scene, ['sea.json','earthobj.json'], landMaterial);
-      let LOD_earth = motor.dynamicMeshArrayLazyLoading(scene, ['0_earth.json','2_earth.json'], landMaterial);
+      let LOD_earth = motor.dynamicMeshArrayLazyLoading(scene, ['0_earth.json','2_earth_SS.json'], landMaterial);
       
       let seaMaterial = motor.createMaterial( 
         /* color */    [0.313, 0.678, 0.949, 1.0],
         /* specular */ [1.0, 1.0, 1.0, 1.0], 
         /* shiny */    15 );
       
-      let LOD_sea = motor.dynamicMeshArrayLazyLoading(scene, ['0_sea.json','2_sea.json'], seaMaterial);
+      let LOD_sea = motor.dynamicMeshArrayLazyLoading(scene, ['0_sea.json','2_sea_SS.json'], seaMaterial);
 
 
 
@@ -333,15 +333,6 @@ async function mainR(texture, particles, line) {
     let point = convertLatLonToVec3(40.415363, -3.707398);
     global.targetPoint =  convertLatLonToVec3(40.415363, -3.707398);
     allowActions.p = global.targetPoint;
-
-    let vec3Cross = glMatrix.vec3.create();
-    vec3Cross = glMatrix.vec3.cross(vec3Cross, point, [0,1,0]);
-
-    let rot = glMatrix.mat4.create();
-    glMatrix.mat4.rotate(rot, rot, -20 * (Math.PI / 180), vec3Cross);
-    // glMatrix.mat4.rotateY(rot, rot, 30 * (Math.PI / 180));
-
-    glMatrix.vec3.transformMat4(point, point, rot);
     // Array.prototype.push.apply(vegetables, moreVegs);
     camPos.push(point[0] * radius);
     camPos.push(point[1] * radius);
@@ -390,29 +381,8 @@ async function mainR(texture, particles, line) {
     allowActions.value = true;
     // document.getElementById("kweelive").click();
     document.body.click();
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////                                         FAKE TEXTURE
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /*
-      If seems that it doesn't matter if the shader only accesses the texture when uUseTextures is true.
-      What matters is the shader uses a texture at all.
 
-      Instead of using two different pair of shader, we are going to bind a one pixel white texture to avoid the error.
-      It is said to be a good practice.Then, we overwrite it in case we need to use textures.
-
-      link: https://gamedev.stackexchange.com/questions/166886/render-warning-there-is-no-texture-bound-to-the-unit-0-when-not-rendering-tex
-     */
-    const whiteTexture = global.gl.createTexture();
-    global.gl.bindTexture(global.gl.TEXTURE_2D, whiteTexture);
-    global.gl.texImage2D(
-      global.gl.TEXTURE_2D, 0, global.gl.RGBA, 1, 1, 0,
-      global.gl.RGBA, global.gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
-    global.gl.useProgram(global.program);
-    global.gl.bindTexture(global.gl.TEXTURE_2D, whiteTexture);
-
-
-
-    console.log(scene);
+    // console.log(scene);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         LOOP
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -787,13 +757,6 @@ async function demoMain(target, boundingBox = false){
     // document.getElementById("kweelive").click();
     document.body.click();
 
-    const whiteTexture = global.gl.createTexture();
-    global.gl.bindTexture(global.gl.TEXTURE_2D, whiteTexture);
-    global.gl.texImage2D(
-      global.gl.TEXTURE_2D, 0, global.gl.RGBA, 1, 1, 0,
-      global.gl.RGBA, global.gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
-    global.gl.useProgram(global.program);
-    global.gl.bindTexture(global.gl.TEXTURE_2D, whiteTexture);
 
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////

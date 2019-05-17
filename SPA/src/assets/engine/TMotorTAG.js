@@ -3,10 +3,11 @@ import {TNode} from './TNode.js';
 import {TTransform, TCamera, TLight, TAnimation, TMesh, TArc, TFocus, TRotationAnimation, TArcAndMeshAnimation, TMaterial} from './TEntity.js';
 import {TResourceManager, TResourceMesh, TResourceMaterial, TResourceTexture, TResourceShader, TResourceMeshArray, TResourceMeshArrayDynamic} from './resourceManager.js';
 import {convertLatLonToVec3offsetY, convertLatLonToVec3RandomOffset} from './tools/utils';
-import { global } from './commons.js';
+import { global, ease } from './commons.js';
 
 class TMotorTAG{
 
+// TAG.39
     constructor(resourceManager) {
         this.scene = this.createRootNode();
         
@@ -38,17 +39,8 @@ class TMotorTAG{
         return TMotorTAG.scene;
     }
 
-    // scale -> rotation -> translation -> node
-    // createFullBranch(father, entity){
-
-    //   // node scale
-    //   let TransScale = new TTransform();
-    //   let nodeScale = this.createNode(father, TransScale );
-
-    //   return this.createBranch(nodeScale, entity);
-    // }
-
-    // rotation -> translation -> node
+// TAG.42
+    // SCENE -> trasla - rota - escala - hoja
     createBranch(father, entity){
 
       // node translation
@@ -78,6 +70,8 @@ class TMotorTAG{
         return node;
     }
 
+
+// TAG.40
     createCamera( father, isPerspective, near, far, right, left, top, bottom ){
 
         // isPerspective, near, far, right, left, top, bottom
@@ -236,6 +230,8 @@ class TMotorTAG{
 
       }
 
+
+// TAG.41
     createLight(father, typ, intensity, specular, diffuse, direction, coef){
 
         // typ, intensity, specular, direction, s
@@ -248,130 +244,125 @@ class TMotorTAG{
         return NLight;
     }
 
-  createFocus(father, size, type, position, target = undefined, life = 3, color){
-    let velocity = null;
-    let extra = null;
+    createFocus(father, size, type, position, target = undefined, life = 3, color){
+      let velocity = null;
+      let extra = null;
 
-    // Rotation for last matrix operations
-    let rotation = null;
+      // Rotation for last matrix operations
+      let rotation = null;
 
-    // Vectors to calc rotation angles (if dispersed)
-    let vecA = null;
-    let vecB = null;
+      // Vectors to calc rotation angles (if dispersed)
+      let vecA = null;
+      let vecB = null;
 
-    // target calcs
-    switch(target){
-      case 'y':
-      case 'undefined':{
-        target = [position[0], position[1]+0.01, position[2]];
-        break;
+      // target calcs
+      switch(target){
+        case 'y':
+        case 'undefined':{
+          target = [position[0], position[1]+0.01, position[2]];
+          break;
+        }
+        case 'normal':{
+          // Set the normal for the calculated vector (a point on the same vector-director (line))
+          target = [position[0]*2, position[1]*2, position[2]*2];
+          break;
+        }
+        default: {
+          // Particles looking to
+          target = target;
+          break;
+        }
       }
-      case 'normal':{
-        // Set the normal for the calculated vector (a point on the same vector-director (line))
-        target = [position[0]*2, position[1]*2, position[2]*2];
-        break;
+      // type calcs
+      switch(type){
+        case 'dispersion':{
+          // Opcion 1:
+          // velocity = [ 0.75, 0.75, 0.75 ];
+          // extra    = [  1,1,1  ];
+
+          // // Opcion 2:
+          // velocity = [ 0.25, 0.25, 0.25 ];
+          // extra    = [ 0,0,0 ];
+
+          // vec Y:
+          // vecA = glMatrix.vec3.fromValues( 1,1,1 );
+          // // vecA = glMatrix.vec3.fromValues( position[0], 5, position[2] );
+          // //vecA = glMatrix.vec3.fromValues( 0,5,0 );
+          // vecB = glMatrix.vec3.fromValues( target[0] - position[0], target[1] - position[1], target[2] - position[2]);
+
+          // console.log(vecB);
+          // rotation = axisAnglesBetweenVecs(vecA, vecB);
+          velocity = [ 0.6, 0.6, 0.6 ];
+          extra    = [ -0.2, -0.2, -0.2];
+          life = 1;
+
+          break;
+        }
+        case 'straight':{
+          // velocity = [ -0.2, -0.2, -0.2 ];
+          velocity = [ -.20, -.20, -.20 ];
+          extra = [0,0,0];
+          life = 1;
+
+          let out = [];
+          glMatrix.mat4.targetTo(out, position, target, [0,0,0]);
+
+          position = [out[12], out[13], out[14]];
+          rotation = [
+            out[0], out[1], out[2],
+            out[4], out[5], out[6],
+            out[8], out[9], out[10] ];
+
+          break;
+        }
+        case 'fireworks':{
+          velocity = [ 0.9, 0.9, 0.9 ];
+          extra    = [ -0.3, -0.3, -0.3];
+          life = 1.8;
+        }
+        case 'little':{
+          velocity = [ 0.3, 0.3, 0.3 ];
+          extra    = [ -0.1, -0.1, -0.1];
+          life = 0.8;
+        }
       }
-      default: {
-        // Particles looking to
-        target = target;
-        break;
+
+
+      let focus = new TFocus(size, type, position, target, velocity, extra, life, color);
+
+      let NFocus = this.createBranch(father, focus);
+
+      this.allFocuses.push(NFocus);
+
+      if(type == 'straight' && target != undefined){
+        // Rotate Focus entity once created to match targetTo target
+        NFocus.father.father.entity.setRotation(rotation);
+
       }
-    }
-    // type calcs
-    switch(type){
-      case 'dispersion':{
+      else if( type == 'dispersion' && target != undefined){
         // Opcion 1:
-        // velocity = [ 0.75, 0.75, 0.75 ];
-        // extra    = [  1,1,1  ];
+        // this.rotate(NFocus, -45, 'x');
+        // rotation[2] ? this.rotate(NFocus, rotation[2], 'z') : 0;
 
-        // // Opcion 2:
-        // velocity = [ 0.25, 0.25, 0.25 ];
-        // extra    = [ 0,0,0 ];
+        // testing
+        // this.rotate(NFocus, -45, 'x');
+        // // Rotate Focus entity to disperse and match vector direction
+        // //rotation[0] ? this.rotate(NFocus, rotation[0], 'x') : 0;
+        // rotation[1] ? this.rotate(NFocus, rotation[1], 'y') : 0;
+        // rotation[2] ? this.rotate(NFocus, rotation[2], 'z') : 0;
 
-        // vec Y:
-        // vecA = glMatrix.vec3.fromValues( 1,1,1 );
-        // // vecA = glMatrix.vec3.fromValues( position[0], 5, position[2] );
-        // //vecA = glMatrix.vec3.fromValues( 0,5,0 );
-        // vecB = glMatrix.vec3.fromValues( target[0] - position[0], target[1] - position[1], target[2] - position[2]);
-
-        // console.log(vecB);
-        // rotation = axisAnglesBetweenVecs(vecA, vecB);
-        velocity = [ 0.6, 0.6, 0.6 ];
-        extra    = [ -0.2, -0.2, -0.2];
-        life = 1;
-
-        break;
       }
-      case 'straight':{
-        // velocity = [ -0.2, -0.2, -0.2 ];
-        velocity = [ -.20, -.20, -.20 ];
-        extra = [0,0,0];
-        life = 1;
+      NFocus.father.father.father.entity.setTranslation(position);
 
-        let out = [];
-        glMatrix.mat4.targetTo(out, position, target, [0,0,0]);
-
-        position = [out[12], out[13], out[14]];
-        rotation = [
-          out[0], out[1], out[2],
-          out[4], out[5], out[6],
-          out[8], out[9], out[10] ];
-
-        break;
-      }
-      case 'fireworks':{
-        velocity = [ 0.9, 0.9, 0.9 ];
-        extra    = [ -0.3, -0.3, -0.3];
-        life = 1.8;
-      }
-      case 'little':{
-        velocity = [ 0.3, 0.3, 0.3 ];
-        extra    = [ -0.1, -0.1, -0.1];
-        life = 0.8;
-      }
+      return NFocus;
     }
 
-
-    let focus = new TFocus(size, type, position, target, velocity, extra, life, color);
-
-    let NFocus = this.createBranch(father, focus);
-
-    this.allFocuses.push(NFocus);
-
-    if(type == 'straight' && target != undefined){
-      // Rotate Focus entity once created to match targetTo target
-      NFocus.father.father.entity.setRotation(rotation);
-
+    deleteFocus( focusNode){
+      let array = this.allFocuses;
+      focusNode.father.father.father.remChild(focusNode.father.father);
+      array.splice(array.indexOf(focusNode),1);
     }
-    else if( type == 'dispersion' && target != undefined){
-      // Opcion 1:
-      // this.rotate(NFocus, -45, 'x');
-      // rotation[2] ? this.rotate(NFocus, rotation[2], 'z') : 0;
 
-      // testing
-      // this.rotate(NFocus, -45, 'x');
-      // // Rotate Focus entity to disperse and match vector direction
-      // //rotation[0] ? this.rotate(NFocus, rotation[0], 'x') : 0;
-      // rotation[1] ? this.rotate(NFocus, rotation[1], 'y') : 0;
-      // rotation[2] ? this.rotate(NFocus, rotation[2], 'z') : 0;
-
-    }
-    NFocus.father.father.father.entity.setTranslation(position);
-
-    return NFocus;
-  }
-
-  deleteFocus( focusNode){
-    let array = this.allFocuses;
-    focusNode.father.father.father.remChild(focusNode.father.father);
-    array.splice(array.indexOf(focusNode),1);
-  }
-
-    // updateParticles(time){
-    //   for(let i=0;i<this.allFocuses.length;i++){
-    //     this.allFocuses[i].entity.updateParticle(time);
-    //   }
-    // }
 
     deleteFullBranch() {
 
@@ -452,7 +443,7 @@ class TMotorTAG{
     }
 
 
-  // for 2 meshes (lazy load content)
+  // for 2 meshes (lazy load content) = LANDING ----------
   async dynamicMeshArrayLazyLoading(father, files, color){
     let count = 0;
     let meshArray = [];
@@ -468,8 +459,7 @@ class TMotorTAG{
           .then(completed => {
             meshes.addMesh(completed);
             meshes.setCount(i);
-            console.log(files[i]);
-            console.log("lowpo loaded");
+            // console.log(files[i] + " lowpo loaded ");
           })
       }
       else{
@@ -479,8 +469,7 @@ class TMotorTAG{
           .then( completed => {
             meshes.addMesh(completed);
             meshes.setCount(i);
-            console.log(files[i]);
-            console.log("highpo loaded");
+            // console.log(files[i] + " highpo loaded");
             global.status = 1;
           })
 
@@ -496,7 +485,7 @@ class TMotorTAG{
     return branch
   }
 
-  // for >3 meshes
+  // for 3 meshes (NO UTILIZAMOS)
   async dynamicMeshArray(father, files, material, tiers){
     let count = 0;
     let meshArray = [];
@@ -565,6 +554,9 @@ class TMotorTAG{
       return this.createBranch(father, meshes);
     }
 
+
+// TAG.69.1
+    // load all meshes -a saco todas de golpe- = LOD DEMO ---------------
   async loadMeshArray(father, files, material, tiers){
 
     let meshesArray = [];
@@ -588,29 +580,41 @@ class TMotorTAG{
   }
 
 
-
-
-    async asyncForEach(array, callback) {
-      for (let index = 0; index < array.length; index++) {
-        await callback(array[index], index, array);
-      }
+  async asyncForEach(array, callback) {
+    for (let index = 0; index < array.length; index++) {
+      await callback(array[index], index, array);
     }
+  }
 
-    // returns TNodeMesh
-    async loadMesh(father, file){
 
-        //Crear la malla a partir del recurso malla y devolverla
-        let meshResource = await this.resourceManager.getResource(file); 
+// TAG.43 (animaciones? (flaviu)
+  // load ONLY 1 MESH
+  async loadMesh(father, file){
 
-        let mesh = new TMesh(meshResource);
+      //Crear la malla a partir del recurso malla y devolverla
+      let meshResource = await this.resourceManager.getResource(file); 
 
-        let NMesh = this.createBranch(father, mesh);
-        
-        return NMesh;
-    }
+      let mesh = new TMesh(meshResource);
+
+      let NMesh = this.createBranch(father, mesh);
+      
+      return NMesh;
+  }
 
   enableBoundingBox( meshResource ) {
     meshResource.entity.mesh.enableBB(true);
+  }
+
+  easeCamera(){
+    ease({
+      startValue: 7,
+      endValue: 1.7,
+      durationMs: 5000,
+      onStep: x => global.zoom = x,
+      onComplete: () => {
+        global.status = 1;
+      }
+    })
   }
 
   init(){
@@ -620,11 +624,22 @@ class TMotorTAG{
     global.gl.enable(global.gl.DEPTH_TEST);
     global.gl.enable(global.gl.CULL_FACE);
     //global.gl.frontFace(global.gl.CCW);
+// TAG.54
     global.gl.cullFace(global.gl.BACK);
 
     this.initProgram();
 
     this.initParticles();
+
+    // Avoid error unit 0
+    const whiteTexture = global.gl.createTexture();
+    global.gl.bindTexture(global.gl.TEXTURE_2D, whiteTexture);
+    global.gl.texImage2D(
+    global.gl.TEXTURE_2D, 0, global.gl.RGBA, 1, 1, 0,
+    global.gl.RGBA, global.gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
+    global.gl.useProgram(global.program);
+    global.gl.bindTexture(global.gl.TEXTURE_2D, whiteTexture);
+
 
   }
 

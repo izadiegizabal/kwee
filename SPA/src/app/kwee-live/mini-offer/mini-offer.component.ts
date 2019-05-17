@@ -49,7 +49,13 @@ export class MiniOfferComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(this.obj.img)
+    if(!this.obj.img){
+      this.obj.img = '../../assets/img/defaultProfileImg.png'
+    }
+  }
+
+  getImage(){
+      return !this.obj.img ? this.obj.img = '../../assets/img/defaultProfileImg.png' : this.obj.img;
   }
 
   private getBGColour() {
@@ -80,6 +86,6 @@ export class MiniOfferComponent implements OnInit {
   }
 
   urlfyPosition() {
-    return '/offer/' + this.obj.id + '/' + getUrlfiedString(this.obj.title);
+      return this.obj.id ? '/offer/' + this.obj.id + '/' + getUrlfiedString(this.obj.title) : '/404';
   }
 }
