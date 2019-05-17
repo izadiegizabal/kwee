@@ -2,6 +2,7 @@
 import {TCamera, TLight, TTransform} from './TEntity';
 import {TEntity, getEntity, setEntity} from './commons.js';
 
+// TAG.01
 class TNode {
     // WARNING: TE FATHER IS REQUIRED
     constructor(father, entity, children) {
@@ -55,6 +56,7 @@ class TNode {
         return this.father;
     }
 
+// TAG.02
     draw() {
       if (this.entity && this.entity != null) {
           this.entity.beginDraw();

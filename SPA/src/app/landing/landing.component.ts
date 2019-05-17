@@ -5,12 +5,19 @@ import {allowActions, mainInit, mainR, resetCanvas, setSceneWidth} from '../../a
 import {Router} from '@angular/router';
 import {Title} from '@angular/platform-browser';
 
+import { TMotorTAG } from '../../assets/engine/TMotorTAG';
+import { TResourceManager } from '../../assets/engine/resourceManager';
+import { global } from '../../assets/engine/commons';
+
 @Component({
   selector: 'app-landing',
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.scss']
 })
 
+
+// TAG.50
+// TAG.51
 export class LandingComponent implements OnInit, OnDestroy {
 
   disabled: boolean;
@@ -21,6 +28,11 @@ export class LandingComponent implements OnInit, OnDestroy {
   changed = 0;
   cardArrowType = 'up';
   cardPosition = [0, 0];
+
+  manager = new TResourceManager();
+  motor = new TMotorTAG(this.manager);
+  scene = this.motor.createRootNode();
+
 
   @ViewChild('rendererContainer') rendererContainer: ElementRef;
   @ViewChild('thisIsKwee') thisIsKweeHeader: ElementRef;
@@ -46,9 +58,12 @@ export class LandingComponent implements OnInit, OnDestroy {
   async ngOnInit() {
     this.titleService.setTitle('Kwee - Home');
     this.disabled = false;
-    await shared();
+    await shared(false);  // true = interactive Main on ZOOM
     await mainInit();
-    this.drawHollow();
+
+    this.main();
+    //this.drawHollow();
+
     this.canvas = document.getElementById('kweelive');
     // this.context2d.translate(0.5,0.5);
     let width  = window.innerWidth;
@@ -61,23 +76,93 @@ export class LandingComponent implements OnInit, OnDestroy {
     }
   }
 
+  main() {
+    const motor = this.motor;
+
+    // ----- MESHES -----
+    console.log(this.scene);
+
+    // Earth
+    const landMaterial = motor.createMaterial(
+      /* color */    [0.258, 0.960, 0.6, 1.0],
+      /* specular */ [1.0, 1.0, 1.0, 1.0],
+      /* shiny */    3 );
+    const LOD_earth = motor.dynamicMeshArrayLazyLoading(this.scene, ['0_earth.json', '2_earth_SS.json'], landMaterial);
+
+    // Sea
+    const seaMaterial = motor.createMaterial(
+      /* color */    [0.313, 0.678, 0.949, 1.0],
+      /* specular */ [1.0, 1.0, 1.0, 1.0],
+      /* shiny */    15 );
+
+    const LOD_sea = motor.dynamicMeshArrayLazyLoading(this.scene, ['0_sea.json', '2_sea_SS.json'], seaMaterial);
+
+    global.lastFrameTime = Date.now();
+
+    // ----- CAMERA -----
+    const camera = motor.createCamera(this.scene);
+    motor.enableCam(camera);
+
+    // @todo -> Flaviu camera stuff
+
+    const radius = 3;
+    motor.cameraLookAt( camera, [0, 0, 3],
+      [0, 0, 0],
+      [0, 1, 0]);
+    motor.easeCamera();
+    motor.calculateViews();
+
+    // ----- LIGHTS -----
+    const light =  motor.createLight(this.scene, 1, [0.2, 0.2, 0.2, 1.0],  [1.0, 1.0, 1.0, 1.0],  [0.5, 0.5, 0.5, 1.0], [10.0, 10.0, 10.0]);
+    motor.calculateLights();
+
+    // ----- RENDER LOOP -----
+    let number = 0;
+    
+    const loop = function() {
+      global.time = Date.now();
+
+      motor.cameraLookAt( camera, [
+        global.zoom * Math.sin(number * Math.PI / 180),
+        global.zoom,
+        global.zoom * Math.cos(number * Math.PI / 180),
+      ],
+      [0, 0, 0],
+      [0, 1, 0]);
+      motor.calculateViews();
+
+      motor.draw();
+
+      global.lastFrameTime = global.time;
+
+      requestAnimationFrame(loop);
+
+      number = number + 0.3;
+      if (number > 360) { number = 0; }
+    };
+
+    motor.init();
+    loop();
+
+  }
+
   getAllow() {
     return !allowActions.value;
   }
 
-  getCoords(){
+  getCoords() {
     return this.cardPosition;
   }
 
   getShowCard() {
     // return true;
-    if(allowActions.card) {
+    if (allowActions.card) {
       this.configCard();
     }
     return allowActions.card;
   }
 
-  configCard(){
+  configCard() {
     switch (allowActions.random) {
       case  0:
       case  3:
@@ -100,10 +185,10 @@ export class LandingComponent implements OnInit, OnDestroy {
         this.cardArrowType = 'down';
         break;
     }
-    if(!this.canvas){
+    if (!this.canvas){
       this.canvas = document.getElementById('kweelive');
     }
-    let cs     = getComputedStyle(this.canvas);
+    const cs     = getComputedStyle(this.canvas);
     let width  = window.innerWidth;
     this.changed = width;
     let virtualWidth = parseInt( cs.getPropertyValue('width'), 10);
@@ -128,7 +213,7 @@ export class LandingComponent implements OnInit, OnDestroy {
     this.cardPosition = p;
   }
 
-  drawTriangle(array){
+  drawTriangle(array) {
     let cs     = getComputedStyle(this.auxCanvas);
     let width  = parseInt( cs.getPropertyValue('width'), 10);
     let height = parseInt( cs.getPropertyValue('height'), 10);

@@ -1,3 +1,6 @@
+
+
+// TAG.66
 import * as glMatrix from "./dependencies/gl-matrix";
 
 
@@ -59,10 +62,12 @@ var global = {
 }
 let angle = 0;
 
-function shared() {
+function shared(landing) {
   return new Promise(async resolve => {
     canvas = document.getElementById('kweelive');
     if (canvas) {
+
+// TAG.39
       global.gl = canvas.getContext('webgl');
 
       // init programs
@@ -73,6 +78,8 @@ function shared() {
       global.modelMatrix = await glMatrix.mat4.create();
       global.viewMatrix = await glMatrix.mat4.create();
       global.projectionMatrix = await glMatrix.mat4.create();
+      // todo TAG.10 (paralela)
+      // TAG.11
       global.projectionMatrix = await glMatrix.mat4.perspective(global.projectionMatrix, glMatrix.glMatrix.toRadian(45), canvas.clientWidth / canvas.clientHeight, 0.1, 1000.0);
 
       // Stack to save mvMatrix multiplied
@@ -111,8 +118,10 @@ function shared() {
       canvas.addEventListener("mousemove", mouseMove, false);
 
       // Prevent mouse scroll
-      canvas.addEventListener('wheel', mouseWheel, false);
-      canvas.addEventListener('mousewheel', mouseWheel, false);
+      if(!landing){
+        canvas.addEventListener('wheel', mouseWheel, false);
+        canvas.addEventListener('mousewheel', mouseWheel, false);
+      }
 
 
     }
@@ -226,6 +235,7 @@ function changeAngle(degrees) {
 }
 
 // Virtual class
+// TAG.04
 class TEntity {
     beginDraw() {
     }
@@ -258,6 +268,7 @@ function setEntity(ent){
 
 
 // Our stack class
+// TAG.05
 class Stack {
 
   constructor() {
