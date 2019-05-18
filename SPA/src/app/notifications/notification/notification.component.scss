@@ -1,4 +1,16 @@
 img {
+  margin-top: 8px;
+  margin-bottom: 8px;
   width: 64px;
   height: 64px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+h4 + p {
+  margin-top: -16px;
+}
+
+.notification {
+  min-height: 64px;
 }
