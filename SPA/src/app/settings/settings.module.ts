@@ -15,8 +15,10 @@ import {OkDialogComponent} from '../shared/ok-dialog/ok-dialog.component';
 import {OkDialogModule} from '../shared/ok-dialog/ok-dialog.module';
 import {BsAccountSettingsComponent} from './business-settings/bs-account-settings/bs-account-settings.component';
 import {BsProfileSettingsComponent} from './business-settings/bs-profile-settings/bs-profile-settings.component';
+import {BsUploadSettingsComponent} from './business-settings/bs-upload-settings/bs-upload-settings.component';
 import {CaAccountSettingsComponent} from './candidate-settings/ca-account-settings/ca-account-settings.component';
 import {CaProfileSettingsComponent} from './candidate-settings/ca-profile-settings/ca-profile-settings.component';
+import {CaUploadSettingsComponent} from './candidate-settings/ca-upload-settings/ca-upload-settings.component';
 
 @NgModule({
   declarations: [
@@ -25,8 +27,10 @@ import {CaProfileSettingsComponent} from './candidate-settings/ca-profile-settin
     BusinessSettingsComponent,
     BsAccountSettingsComponent,
     BsProfileSettingsComponent,
+    BsUploadSettingsComponent,
     CaAccountSettingsComponent,
-    CaProfileSettingsComponent
+    CaProfileSettingsComponent,
+    CaUploadSettingsComponent
   ],
   imports: [
     SharedModule,

@@ -13,6 +13,11 @@
           <mat-icon color="primary" matListIcon svgIcon="domain"></mat-icon>
           Modify Profile
         </button>
+        <button (click)="closeDrawerIfMobile()"
+                mat-list-item routerLink="/settings/business/upload">
+          <mat-icon color="primary" matListIcon svgIcon="cloud-upload"></mat-icon>
+          Upload File
+        </button>
         <!--        <button (click)="closeDrawerIfMobile()"-->
         <!--                mat-list-item routerLink="/settings/others">-->
         <!--          <mat-icon color="primary" matListIcon svgIcon="work"></mat-icon>-->
