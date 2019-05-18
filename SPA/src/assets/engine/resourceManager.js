@@ -137,9 +137,10 @@ class TResource {
 
 class TResourceMeshArrayAnimation {
 
-  constructor(meshesArray){
+  constructor(meshesArray, material){
     this.meshes = meshesArray;
     this.index = 0;
+    this.material = material;
   }
 
   beginDraw() {
@@ -158,6 +159,11 @@ class TResourceMeshArrayAnimation {
 
   setCount(index){
     this.index = index;
+  }
+
+  addMesh(mesh){
+    mesh.setMaterial(this.material);
+    this.meshes.push(mesh);
   }
 
 }

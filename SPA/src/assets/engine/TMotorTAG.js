@@ -1,7 +1,7 @@
 
 import {TNode} from './TNode.js';
 import {TTransform, TCamera, TLight, TAnimation, TMesh, TArc, TFocus, TRotationAnimation, TArcAndMeshAnimation, TMaterial} from './TEntity.js';
-import {TResourceManager, TResourceMesh, TResourceMaterial, TResourceTexture, TResourceShader, TResourceMeshArray, TResourceMeshArrayDynamic} from './resourceManager.js';
+import {TResourceManager, TResourceMesh, TResourceMaterial, TResourceTexture, TResourceShader, TResourceMeshArray, TResourceMeshArrayDynamic, TResourceMeshArrayAnimation} from './resourceManager.js';
 import {convertLatLonToVec3offsetY, convertLatLonToVec3RandomOffset} from './tools/utils';
 import { global, ease } from './commons.js';
 // import {allowActions} from "./main";
@@ -70,13 +70,13 @@ class TMotorTAG{
   setChildren(node, children) {
     node.addChild(children.father.father.father);
   }
-    computeCoordenates(lat, lon) {
-      let point = convertLatLonToVec3(lat, lon);
-      let pvMat4 = glMatrix.mat4.create();
-      let uselessMat4 = glMatrix.vec4.create();
-      pvMat4 = glMatrix.mat4.mul(pvMat4, global.projectionMatrix, global.auxViewMatrix);
-      return glMatrix.vec4.transformMat4(uselessMat4, [...point, 1], pvMat4);
-    }
+  computeCoordenates(lat, lon) {
+    let point = convertLatLonToVec3(lat, lon);
+    let pvMat4 = glMatrix.mat4.create();
+    let uselessMat4 = glMatrix.vec4.create();
+    pvMat4 = glMatrix.mat4.mul(pvMat4, global.projectionMatrix, global.auxViewMatrix);
+    return glMatrix.vec4.transformMat4(uselessMat4, [...point, 1], pvMat4);
+  }
 
   createNode(father, entity) {
     var node = new TNode(father, entity);
@@ -614,7 +614,7 @@ class TMotorTAG{
     return branch
   }
 
-  // animations
+  // animations // DEPRECATED?
   async loadMeshArrayAnimation(father, files) {
 
     let meshesArray = [];
@@ -648,6 +648,29 @@ class TMotorTAG{
     let branch = this.createBranch(father, meshes);
 
     global.status = 1;
+
+    return branch;
+  }
+
+  // -------------- current animations on DEMO --------------
+  async loadAnimation(father, files, material, timeStep, timeWaiting) {
+    let meshesArray = [];
+
+    let meshes = new TResourceMeshArrayAnimation(meshesArray, material);
+
+    await this.asyncForEach(files, async (e) => {
+      meshes.addMesh(await this.resourceManager.getResource(e));
+    });
+
+    let branch = this.createBranch(father, meshes);
+
+    setTimeout(() => {
+      for(let i=0; i<files.length; i++){
+        setTimeout(() => {
+          meshes.setCount(i);
+        }, timeStep * i);
+      }
+    }, timeWaiting);
 
     return branch;
   }

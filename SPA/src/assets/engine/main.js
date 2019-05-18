@@ -701,35 +701,51 @@ async function demoMain(target, boundingBox = false){
     let upperPos = convertLatLonToVec3(66.326023, -31.565348);
     let argentina = convertLatLonToVec3(-51.755200, -70.611091);
 
-    // New York focus
+    ////// TARGETED FOCUSES (ON EARTH)
+    //// BOTH focus
     let TFocus6 = motor.createFocus(scene, 100, 'straight', newYorkPos, 'normal' );
     let TFocusA = motor.createFocus(scene, 100, 'dispersion', newYorkPos);
 
-    // // Madrid focus
+    //// STRAIGHT focus
     let TFocus5 = motor.createFocus(scene, 100, 'straight', madridPos , 'normal');
 
-    // // Ocean focus
+    //// DISPERSION focus
     let TFocus99 = motor.createFocus(scene, 100, 'dispersion', middleOcean , 'normal');
 
+    //// FIREWORKS focus
     let TFocusAA = motor.createFocus(scene, 100, 'fireworks', hongKongPos , 'normal', 1);
 
 
+    ////// SAMPLE FOCUSES
+    // STRAIGHT
     let focus1 = motor.createFocus(scene, 100, 'straight', [-2,0,0] , 'y');
+    // STRAIGHT TARGETED
     let focus11 = motor.createFocus(scene, 100, 'straight', [-2,0,-2] , [-2,-2,-2]);
     let focus11_mesh = await motor.loadMesh(scene, 'marker.json');
     motor.scale(focus11_mesh, [0.2, 0.2, 0.2]);
     motor.translate(focus11_mesh, [-2,-2,-2]);
     boundingBox ? motor.enableBoundingBox(focus11_mesh) : 0;
-
+    // DISPERSION
     let focus2 = motor.createFocus(scene, 100, 'dispersion', [-4,0,0]);
-
+    // FIREWORKS
     let fireworks = motor.createFocus(scene, 100, 'fireworks', [-6,0,0]);
+
+    let arrayBuilding = [];
+    for(let i = 0; i<20; i++){
+      let name = "cube"+i+".json";
+      arrayBuilding.push(name);
+    }
+    // ANIMATION
+    let animationBuilding = await motor.loadAnimation(scene, arrayBuilding, landMaterial, 100, 5000);
+    motor.translate(animationBuilding, [0,0,-2])
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         CAMERAS
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     let cam = motor.createCamera(scene);
     motor.enableCam(cam);
+
+    global.maxZoom = 15;
 
     // motor.cameraLookAt( cam, [
     //   global.zoom * Math.sin(0*Math.PI/180),
