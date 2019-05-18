@@ -28,7 +28,11 @@ export interface State {
 
 const initialState: State = {
   messages: null,
-  notifications: null,
+  notifications: {
+    data: null,
+    unread: 0,
+    total: 0,
+  },
 };
 
 export function messageReducer(state = initialState, action: MessageActions.MessageActions) {
@@ -52,6 +56,21 @@ export function messageReducer(state = initialState, action: MessageActions.Mess
       return {
         ...state,
         notifications: action.payload
+      };
+    case MessageActions.ADD_NOTIFICATION:
+      const newNotifications = state.notifications;
+      newNotifications.data.push(action.payload);
+      return {
+        ...state,
+        notifications: newNotifications
+      };
+    case MessageActions.SET_NOTI_UNREAD_COUNT:
+      const updatedNotis = state.notifications;
+      console.log(action.payload);
+      updatedNotis.unread = action.payload;
+      return {
+        ...state,
+        notifications: updatedNotis,
       };
     case MessageActions.CLEAR:
       return {

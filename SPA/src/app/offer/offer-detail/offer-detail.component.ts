@@ -225,6 +225,11 @@ export class OfferDetailComponent implements OnInit {
     this.router.navigate([url]);
   }
 
+  goSelection() {
+    const url = '/my-offers/' + this.offerId + '/selection';
+    this.router.navigate([url]);
+  }
+
   backClicked() {
     this.location.back();
   }

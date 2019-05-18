@@ -1,20 +1,73 @@
-<div *ngIf="notification && notification.from" fxLayout="row" fxLayoutGap="16px">
+<div *ngIf="notification && notification.from && notification.offer" fxLayout="row" fxLayoutGap="16px"
+     class="notification">
   <div fxLayout="column">
-    <img [src]="apiUrl + notification.from.img" mat-list-icon alt="Business logo">
+    <img [src]="notification.from.img
+    ? apiUrl + notification.from.img
+    : '../../../assets/img/defaultProfileImg.png'"
+         mat-list-icon alt="Logo">
   </div>
   <div fxLayout="column">
     <div [ngSwitch]="notification.notification">
+
+      <!-- Selected by the business, accept or refuse -->
       <div *ngSwitchCase="'selected'">
         <h4 class="mat-h2" mat-line>Congratulations!</h4>
-        <p class="mat-body-2" mat-line>You have been selected by
+        <p class="mat-body-2" mat-line>
+          You have been selected by
           <a [routerLink]="'/business/' + notification.from.id + '/' + notification.from.name">
             {{notification.from.name}}
           </a>
           for the offer
-          <a [routerLink]="'/offer/1/changethis'">Change This</a>! Please go to the offer to accept or refuse the
-          position.
+          <a [routerLink]="'/offer/' + notification.offer.id + '/' + getUrlfied(notification.offer.title)">
+            {{notification.offer.title}}</a>!
+          Please go to the offer to accept or refuse the position.
+        </p>
+      </div>
+
+      <!-- Candidate has accepted / refused your offer -->
+      <div *ngSwitchCase="'accepted'">
+        <div *ngIf="notification.status === true">
+          <h4 class="mat-h2" mat-line>Great news!</h4>
+          <p class="mat-body-2" mat-line>
+            The candidate
+            <a [routerLink]="'/candidate/' + notification.from.id + '/' + notification.from.name">
+              {{notification.from.name}}</a> has accepted your job offer for
+            <a [routerLink]="'/offer/' + notification.offer.id + '/' + getUrlfied(notification.offer.title)">
+              {{notification.offer.title}}</a>!
+            Feel free to go back to the
+            <a [routerLink]="'/my-offers/' + notification.offer.id + '/selection'">selection</a>
+            process to continue or close it.
+          </p>
+        </div>
+        <div *ngIf="notification.status === false">
+          <h4 class="mat-h2" mat-line>Sorry...</h4>
+          <p class="mat-body-2" mat-line>
+            The candidate
+            <a [routerLink]="'/candidate/' + notification.from.id + '/' + notification.from.name">
+              {{notification.from.name}}</a> has rejected your job offer for
+            <a [routerLink]="'/offer/' + notification.offer.id + '/' + getUrlfied(notification.offer.title)">
+              {{notification.offer.title}}</a>.
+            Feel free to go back to the
+            <a [routerLink]="'/my-offers/' + notification.offer.id + '/selection'">selection</a>
+            process to continue with other candidates or close it.
+          </p>
+        </div>
+      </div>
+
+      <!-- Sorry candidate, offer closed -->
+      <div *ngSwitchCase="'closed'">
+        <h4 class="mat-h2" mat-line>Sorry...</h4>
+        <p class="mat-body-2" mat-line>
+          The offer <a [routerLink]="'/offer/' + notification.offer.id + '/' + getUrlfied(notification.offer.title)">
+          {{notification.offer.title}}</a> by
+          <a [routerLink]="'/business/' + notification.from.id + '/' + notification.from.name">
+            {{notification.from.name}}</a> that you had applied has been closed. Unfortunately, they have decided to
+          continue with other applications, but don't worry, there are plenty other <a routerLink="/candidate-home">possibilities</a>!
         </p>
       </div>
     </div>
+  </div>
+  <div fxLayout="column">
+    <p class="mat-body-2" style="margin-top: 0">{{getNotiTime(notification.createdAt)}}</p>
   </div>
 </div>

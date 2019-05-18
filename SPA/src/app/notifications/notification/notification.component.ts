@@ -1,5 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {environment} from '../../../environments/environment';
+import {Offer} from '../../../models/Offer.model';
+import {getTimePassed, getUrlfiedString} from '../../shared/utils.service';
+import {months} from 'moment';
 
 @Component({
   selector: 'app-notification',
@@ -11,6 +14,7 @@ export class NotificationComponent implements OnInit {
   apiUrl = environment.apiUrl;
 
   @Input() notification: {
+    createdAt: string,
     read: boolean,
     status: boolean, // if the notification is positive o negative --> selected + status false = rejected
     notification: string, // type of notification
@@ -19,22 +23,20 @@ export class NotificationComponent implements OnInit {
       name: string,
       id: number
     }
-  } = {
-    read: true,
-    status: true,
-    notification: 'selected',
-    from: {
-      img: 'uploads/offerers/1556650179019.png',
-      name: 'Facebook',
-      id: 428
-    }
+    offer: Offer
   };
 
   constructor() {
   }
 
   ngOnInit() {
-    console.log(this.notification);
   }
 
+  getUrlfied(title: string) {
+    return getUrlfiedString(title);
+  }
+
+  getNotiTime(createdAt: string) {
+    return getTimePassed(new Date(createdAt), true);
+  }
 }

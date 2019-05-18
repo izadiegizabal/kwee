@@ -80,6 +80,7 @@ export class MaterialAngularModule {
     matIconRegistry.addSvgIcon('person-add', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-person_add.svg'));
     matIconRegistry.addSvgIcon('person', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-person.svg'));
     matIconRegistry.addSvgIcon('people', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-people.svg'));
+    matIconRegistry.addSvgIcon('cloud-upload', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-cloud_upload.svg'));
     matIconRegistry.addSvgIcon('account-circle', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-account_circle.svg'));
     matIconRegistry.addSvgIcon('share', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-share.svg'));
     matIconRegistry.addSvgIcon('arrow-drop-down', domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/twotone-arrow_drop_down.svg'));

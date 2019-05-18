@@ -1,8 +1,30 @@
-<div class="mat-h1" style="padding-top: 16px">Notifications</div>
-<p class="mat-typography">You have <strong>{{count}}</strong> new notifications.</p>
-<mat-list *ngIf="notifications">
-  <div *ngFor="let notification of notifications">
-    <app-notification [notification]="notification"></app-notification>
-    <hr>
+<div *ngIf="notifications && (notiState | async).notifications" fxLayout="row" fxLayoutAlign="center start" style="padding-bottom: 32px;">
+  <div
+    fxFlex="95%"
+    fxFlex.gt-lg="50%"
+    fxFlex.gt-md="=60%"
+    fxFlex.gt-sm="70%">
+    <div class="mat-h1" style="padding-top: 16px">Notifications</div>
+    <mat-card>
+      <div *ngIf="notifications.length > 0; else noNoti">
+        <mat-list>
+          <div *ngFor="let notification of notifications">
+            <app-notification [notification]="notification"></app-notification>
+            <hr>
+          </div>
+        </mat-list>
+        <mat-paginator (page)="pageEvent = $event; changepage();"
+                       [length]="(notiState | async).notifications.total"
+                       [pageSizeOptions]="pageSizeOptions"
+                       [pageSize]="pageSize">
+        </mat-paginator>
+      </div>
+      <ng-template #noNoti>
+        <div fxLayout="column" fxLayoutAlign="center center" style="margin: 16px; min-height: 384px">
+          <img alt="Iwi Mascot" src="../../assets/branding/iwi.svg" width="128px"/>
+          <p>Sorry, there aren't any notifications yet.</p>
+        </div>
+      </ng-template>
+    </mat-card>
   </div>
-</mat-list>
+</div>

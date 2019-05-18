@@ -134,7 +134,6 @@ export class MessageEffects {
 
         return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
           map((res: any) => {
-            console.log(res);
             return {
               type: MessageActions.SET_NOTIFICATIONS,
               payload: res
