@@ -1,5 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {environment} from '../../../environments/environment';
+import {Offer} from '../../../models/Offer.model';
+import {getUrlfiedString} from '../../shared/utils.service';
 
 @Component({
   selector: 'app-notification',
@@ -19,22 +21,16 @@ export class NotificationComponent implements OnInit {
       name: string,
       id: number
     }
-  } = {
-    read: true,
-    status: true,
-    notification: 'selected',
-    from: {
-      img: 'uploads/offerers/1556650179019.png',
-      name: 'Facebook',
-      id: 428
-    }
+    offer: Offer
   };
 
   constructor() {
   }
 
   ngOnInit() {
-    console.log(this.notification);
   }
 
+  getUrlfied(title: string) {
+    return getUrlfiedString(title);
+  }
 }

@@ -359,7 +359,7 @@ export class OfferSelectionProcessComponent implements OnInit {
   getSelection(selection: any) {
     let selectTot = 0;
     if (selection.selected) {
-      selectTot += selection.selected.lenght;
+      selectTot += selection.selected.length;
     }
     if (selection.accepted) {
       selectTot += selection.accepted.length;
