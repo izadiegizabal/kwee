@@ -1,0 +1,47 @@
+<div fxFlex="100%" fxLayout="row">
+    <form [formGroup]="accountFormGroup"
+          fxFlex="75%"
+          fxFlex.lt-lg="90%"
+          fxFlex.lt-md="100%"
+          fxFlexOffset="25%"
+          fxFlexOffset.lt-lg="10%"
+          fxFlexOffset.lt-md="0%"
+          style="padding-right: 32px">
+      <div *ngIf="(profilesState | async).business"
+           fxFlex="100%"
+           fxLayout="column"
+           fxLayoutGap="8px">
+  
+        <div class="mat-h1" style="padding-top: 16px">Upload File</div>
+        <div fxFlex="100%" fxLayout="row">
+            <div fxFlex="100%" fxLayout="row" fxLayout.lt-md="column">
+              <div fxFlex="192px" fxFlex.lt-md="100%" fxLayout="column" style="padding-bottom: 16px">
+                <h2>Files</h2>
+                <div fxLayout="column" fxLayout.lt-md="row">
+                  <div fxFlex="128px" fxLayout="column" style="margin-left: 8px">
+                    <label for="file_profile">
+                      <button (click)="profile.click()" class="file-buttons" color="primary" mat-raised-button
+                              type="button">Upload file
+                      </button>
+                    </label>
+                    <input #profile (change)="previewFile($event)" accept="*"
+                           formControlName="profile" id="file_profile" style="width: 0; height: 0;" type="file">
+                    <button (click)="deleteFile()" class="file-buttons" color="warn" mat-raised-button
+                            type="button">Delete File
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div fxLayout="row" fxLayoutAlign="end">
+              <button (click)="onSave();"
+                      color="accent"
+                      mat-raised-button
+                      type="submit">
+                Update
+              </button>
+            </div>
+      </div>
+    </form>
+</div>  

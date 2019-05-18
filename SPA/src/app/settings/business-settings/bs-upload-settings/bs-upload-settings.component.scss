@@ -1,0 +1,38 @@
+// Form
+
+button mat-icon {
+    margin-right: 8px;
+  }
+  
+  .svg {
+    margin-top: 0 !important;
+  }
+  
+  mat-form-field mat-icon {
+    margin-right: 8px;
+  }
+  
+  mat-datepicker-toggle {
+    font-size: 1.5rem;
+    color: #546e7a;
+    margin-left: -4;
+  }
+  
+  .file-buttons {
+    width: 128px;
+    margin: .5em 0;
+  }
+  
+  img {
+    cursor: pointer;
+    object-fit: cover;
+    float: left;
+    margin: 0 16px 16px 0;
+    border-radius: 4px;
+  }
+  
+  // Prevent address line getting ultra long
+  .line1 {
+    max-width: 440px !important;
+  }
+  
