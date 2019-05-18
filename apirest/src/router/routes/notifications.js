@@ -195,7 +195,10 @@ module.exports = (app, db) => {
     }
 
     async function updateNotification( req, res, next ) {
-        const idNotification = req.params.id;
+        let idNotification = req.params.id;
+
+        console.log('req.params: ', req.params);
+        
 
         try {
             let id = tokenId.getTokenId(req.get('token'), res);
@@ -205,7 +208,7 @@ module.exports = (app, db) => {
                     await db.notifications.update({read: true}, {where: {id: idNotification}});
                     return res.status(200).json({
                         ok: true,
-                        message: `Nofitication ${idNofitication} is now read`
+                        message: `Nofitication ${idNotification} is now read`
                     });
                 } else {
                     next({type: 'error', error: 'You may not read applications of other users'});
@@ -214,7 +217,7 @@ module.exports = (app, db) => {
                 next({type: 'error', error: 'This notification does not exists'});
             }
         } catch (err) {
-            next({type: 'error', error: err.errors[0].message});
+            next({type: 'error', error: err.message});
         }
     }
 };
