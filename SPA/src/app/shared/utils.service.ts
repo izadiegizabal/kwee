@@ -1,4 +1,6 @@
-export function getTimePassed(publishDate: Date): string {
+export function getTimePassed(publishDate: Date, isShort?: boolean): string {
+  let formattedDate = '';
+
   const min = 1000 * 60;
   const hour = 60 * min;
   const day = 24 * hour;
@@ -12,20 +14,35 @@ export function getTimePassed(publishDate: Date): string {
   const difference = current - published;
 
   if (difference > 2 * year) {
-    return Math.round(difference / year) + ' years ago';
+    formattedDate = Math.round(difference / year) + ' years ago';
   } else if (difference > 2 * month) {
-    return Math.round(difference / month) + ' months ago';
+    formattedDate = Math.round(difference / month) + ' months ago';
   } else if (difference > 2 * week) {
-    return Math.round(difference / week) + ' weeks ago';
+    formattedDate = Math.round(difference / week) + ' weeks ago';
   } else if (difference > 2 * day) {
-    return Math.round(difference / day) + ' days ago';
+    formattedDate = Math.round(difference / day) + ' days ago';
   } else if (difference > 2 * hour) {
-    return Math.round(difference / hour) + ' hours ago';
+    formattedDate = Math.round(difference / hour) + ' hours ago';
   } else if (difference > 2 * min) {
-    return Math.round(difference / min) + ' minutes ago';
+    formattedDate = Math.round(difference / min) + ' minutes ago';
   } else {
-    return 'Just now!';
+    formattedDate = isShort ? Math.round(difference / min) + ' m' : 'Just now!';
   }
+
+  if (isShort) {
+    const slices = formattedDate.split(' ');
+    formattedDate = slices[0];
+
+    if (slices[1] === 'months') {
+      formattedDate += 'mo';
+    } else if (slices[1] === 'minutes') {
+      formattedDate += 'min';
+    } else {
+      formattedDate += slices[1][0];
+    }
+  }
+
+  return formattedDate;
 }
 
 export function getUrlfiedString(uglyString: string): string {

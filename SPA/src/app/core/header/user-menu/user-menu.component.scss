@@ -25,6 +25,13 @@
   }
 }
 
+::ng-deep app-user-menu span.mat-badge-content {
+  right: -4px !important;
+  top: -4px !important;
+  width: 14px !important;
+  height: 14px !important;
+}
+
 .gray {
   color: gray;
 }

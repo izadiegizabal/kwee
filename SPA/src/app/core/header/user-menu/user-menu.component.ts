@@ -7,6 +7,7 @@ import * as fromAuth from '../../../auth/store/auth.reducers';
 import {getUrlfiedString} from '../../../shared/utils.service';
 import {MessagesService} from '../../../services/messages.service';
 import * as fromMessages from '../../../messages/store/message.reducers';
+import * as MessageActions from '../../../messages/store/message.actions';
 
 @Component({
   selector: 'app-user-menu',
@@ -43,6 +44,7 @@ export class UserMenuComponent implements OnInit {
           this.userType = user.type;
           if (user.notifications > 0) {
             this.numNotifications = user.notifications;
+            this.store$.dispatch(new MessageActions.SetNotificationUnreadCount(user.notifications));
           }
         }
       });
@@ -70,9 +72,5 @@ export class UserMenuComponent implements OnInit {
 
   urlfyUser() {
     return getUrlfiedString(this.username);
-  }
-
-  getNotificationNum() {
-    return this.numNotifications;
   }
 }
