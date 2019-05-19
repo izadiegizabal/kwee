@@ -78,7 +78,7 @@ export class KweeLiveComponent implements OnInit, OnDestroy {
       select(s => s.applications)
     ).subscribe(
       (applications) => {
-        console.log(applications);
+        // console.log(applications);
       });
     this.query= {...this.query, status: 0};
     this.store$.dispatch(new OffersActions.TryGetOffers({page: 1, limit: 25, params: this.query, order: '0'}));
@@ -88,7 +88,7 @@ export class KweeLiveComponent implements OnInit, OnDestroy {
       select(s => s)
     ).subscribe(
       (value) => {
-        console.log(value);
+        // console.log(value);
       });
 
     // this.auxCanvas = document.getElementById('auxkweelive');
@@ -119,34 +119,6 @@ export class KweeLiveComponent implements OnInit, OnDestroy {
       // this.drawTriangle([(1 + allowActions.point[0]/allowActions.point[3])*this.auxCanvas.width/2, (1 - allowActions.point[1]/allowActions.point[3])*this.auxCanvas.height/2]);
     }
     return allowActions.card;
-  }
-
-  drawTriangle(array) {
-    const point = [];
-    let aux = 0;
-    array.forEach( (e) => {
-      aux = Math.round(e); // this.decimalAdjust('round', e,1);
-      if (aux % 2 !== 0) {
-        point.push(aux + 1);
-      } else { point.push(aux); }
-    });
-    // console.log(point);
-    // the triangle
-
-    // this.context2d.translate(0.5,0.5);
-    this.context2d.beginPath();
-    this.context2d.moveTo(365 * 2, 180 * 2);
-    this.context2d.lineTo(335 * 2, 180 * 2);
-    this.context2d.lineTo(point[0], point[1] - 6);
-    this.context2d.closePath();
-
-    this.context2d.strokeStyle = '#FFF';
-    this.context2d.lineWidth = 2;
-    this.context2d.stroke();
-
-    this.context2d.fillStyle = '#FFF';
-    this.context2d.fill();
-
   }
 
   drawHollow() {

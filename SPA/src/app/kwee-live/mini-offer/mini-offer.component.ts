@@ -25,15 +25,6 @@ export class MiniOfferComponent implements OnInit {
   className = 'down';
 
   @Input() obj: any;
-
-  @Input() index: number;
-  @Input() id: number;
-  @Input() name: string;
-  @Input() offer: string;
-  @Input() location: string;
-  @Input() work: string;
-  @Input() image: string;
-  @Input() url: string;
   @Input()
   set class(c: string) {
     this.className = c;
