@@ -396,14 +396,14 @@ module.exports = (app, db) => {
                 // Create notification in BD
                 createNotification(db, user.id, applicant.userId, 'applications', id, 'accepted', true);
                 // Send real time notification if client connected
-                if (socketId) sendNotification('accepted', socketId, application, true);
+                // if (socketId) sendNotification('accepted', socketId, application, db, true);
                 break;
             case 4:
                 // Refused
                 // Create notification in BD
                 createNotification(db, user.id, applicant.userId, 'applications', id, 'accepted', false);
                 // Send real time notification if client connected
-                if (socketId) sendNotification('accepted', socketId, application, false);
+                // if (socketId) sendNotification('accepted', socketId, application, db, false);
 
         }
     }
@@ -419,7 +419,7 @@ module.exports = (app, db) => {
                 // Create notification in BD
                 createNotification(db, user.id, offerer.userId, 'applications', id, 'fav', true);
                 // Send real time notification if client connected
-                if (socketId) sendNotification('fav', socketId, application, true);
+                // if (socketId) sendNotification('fav', socketId, application, db, true);
                 break;
             case 2:
                 // Selected
@@ -427,14 +427,14 @@ module.exports = (app, db) => {
                 createNotification(db, user.id, offerer.userId, 'applications', id, 'selected', true);
                 sendEmailSelected(user, res, application.fk_offer);
                 // Send real time notification if client connected
-                if (socketId) sendNotification('selected', socketId, application, true);
+                // if (socketId) sendNotification('selected', socketId, application, db, true);
                 break;
             case 5:
                 // Closed
                 // Create notification in BD
                 createNotification(db, user.id, offerer.userId, 'applications', id, 'closed', true);
                 // Send real time notification if client connected
-                if (socketId) sendNotification('closed', socketId, application, true);
+                // if (socketId) sendNotification('closed', socketId, application, db, true);
         }
     }
 

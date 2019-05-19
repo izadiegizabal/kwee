@@ -693,7 +693,7 @@ function getSocketUserId(email) {
     return socketUsers ? socketUsers.id : null;
 }
 
-async function sendNotification(route, id, object, bool) {
+async function sendNotification(route, id, notificationId, db, bool) {
     // object is the table in database
     // let payload = {
     //     selected: bool,
@@ -701,22 +701,26 @@ async function sendNotification(route, id, object, bool) {
     //     offerId: object.fk_offer
     // };
 
-    let noti = await db.notifications.findOne({ where: { id: object.id }});
-    let from = await db.offers.findOne({ where: { id: object.from }})
-    let offer;
-    switch ( object.idTable ) {
-        case 'offers': offer = await db.offers.findOne({ where: { id: object.idTable }}); break;
-        case 'applications': let application = await db.applications.findOne({ where: { id: object.idTable }}); break;
-    }
+    // let noti = await db.notifications.findOne({ where: { id: object.id }});
+    // let from = await db.offers.findOne({ where: { id: object.from }})
+    // let offer;
+    // switch ( object.idTable ) {
+    //     case 'offers': offer = await db.offers.findOne({ where: { id: object.idTable }}); break;
+    //     case 'applications': let application = await db.applications.findOne({ where: { id: object.idTable }}); break;
+    // }
+
+    // let notification = {
+    //     id : noti.id,
+    //     read: noti.read,
+    //     status: noti.status,
+    //     notification: noti.notification,
+    //     from,
+    //     offer
+    // };
 
     let notification = {
-        id : noti.id,
-        read: noti.read,
-        status: noti.status,
-        notification: noti.notification,
-        from,
-        offer
-    };
+        notificationId
+    }
 
     let payload = {
         ok: true,
@@ -732,13 +736,22 @@ async function sendNotification(route, id, object, bool) {
 }
 
 async function createNotification(db, to, from, type, idTable, notification, status) {
-    await db.notifications.create({
+
+    let body = {
         to,
         from,
         type,
         idTable,
         notification,
         status
+    }
+
+    await db.notifications.create(body, { isNewRecord: true }).then( async result => {
+        console.log('en el result, id: ', result.id);
+            
+        let user = await db.users.findOne( { where: { id: to }});
+        let socketId = getSocketUserId(user.email);
+        if (socketId) sendNotification('accepted', socketId, result.id, db, false);
     });
 }
 
