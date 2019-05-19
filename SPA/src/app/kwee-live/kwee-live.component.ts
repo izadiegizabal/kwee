@@ -146,34 +146,6 @@ export class KweeLiveComponent implements OnInit, OnDestroy {
     resetCanvas();
   }
 
-  changeShowCard() {
-    this.showCard = !this.showCard;
-    /*if (this.showCard) {
-      window.document.getElementById('miniOffer').style.visibility = 'visible';
-    } else {
-      window.document.getElementById('miniOffer').style.visibility = 'hidden';
-    }*/
-    /*if (this.showCard) {
-      // window.document.getElementById('miniOffer').style.display = 'initial';
-      const frag = document.createRange().createContextualFragment(`
-        <app-mini-offer
-        [@EnterLeave]="'flyIn'"
-        id="miniOfferContent"
-        [index]="50"
-        [id]="240"
-        [name]="'Facebook'"
-        [offer]="'Direct Accountability Specialist'"
-        [location]="'Alicante'"
-        [work]="'Full-Time'"
-        [image]="'image'"
-        [url]="'akjbdsabksadb'"></app-mini-offer>
-      `);
-      window.document.getElementById('miniOffer').appendChild(frag);
-    } else {
-      window.document.getElementById('miniOffer').removeChild(window.document.getElementById('miniOfferContent'));
-    }*/
-  }
-
   ngOnDestroy() {
     resetCanvas();
   }
