@@ -238,6 +238,13 @@ export class SignupCandidateComponent implements OnInit {
         this.isSocialNetwork = true;
       }
     });
+
+
+    this.authEffects$.authSignin.pipe(
+      filter((action: Action) => action.type === AuthActions.SIGNIN)
+    ).subscribe(() => {
+      console.log('cambia el auth');
+     });
   }
 
   addLanguageGroup(): FormGroup {
@@ -302,6 +309,12 @@ export class SignupCandidateComponent implements OnInit {
 
         this.store$.dispatch(new AuthActions.TrySignupCandidate(this.candidate));
 
+        this.authEffects$.authSignin.pipe(
+          filter((action: Action) => action.type === AuthActions.SIGNIN)
+        ).subscribe(() => {
+          stepper.next();
+        });
+
       } else {
         console.log('viene por red social');
         // Update of user that is coming by social network with his birthday, role and location
@@ -313,23 +326,31 @@ export class SignupCandidateComponent implements OnInit {
           'dateBorn': this.secondFormGroup.controls['birthday'].value,
           'rol': this.secondFormGroup.controls['role'].value.toString(),
           'lng': (this.secondFormGroup.controls['location'].value as City).geo.lng,
-          'lat': (this.secondFormGroup.controls['location'].value as City).geo.lat
+          'lat': (this.secondFormGroup.controls['location'].value as City).geo.lat,
+          'premium': '0',
         };
 
         // console.log(updateuser);
 
-        this.store$.dispatch(new AuthActions.TrySNCandidate({
-          'type': 'candidate',
+        this.store$.dispatch(new AuthActions.TrySignin({
+          'email': null,
           'token': this.snToken,
-          'user': updateuser
+          'password': null
         }));
+
+        this.authEffects$.authSignin.pipe(
+          filter((action: Action) => action.type === AuthActions.SIGNIN)
+        ).subscribe(() => {
+          console.log('holaaaaaaaaaaaaaaaaaaa');
+          this.store$.dispatch(new AuthActions.TrySNCandidate({
+            'type': 'candidate',
+            'user': updateuser
+          }));
+          stepper.next();
+        });
+
       }
 
-      this.authEffects$.authSignin.pipe(
-        filter((action: Action) => action.type === AuthActions.SIGNIN)
-      ).subscribe(() => {
-        stepper.next();
-      });
       this.authEffects$.authSignupCandidate.pipe(
         filter((action: Action) => action.type === AuthActions.AUTH_ERROR)
       ).subscribe((error: { payload: any, type: string }) => {
@@ -350,7 +371,7 @@ export class SignupCandidateComponent implements OnInit {
         this.secondFormGroup.controls[i].markAsTouched();
       }
     }
-    // stepper.next();
+     stepper.next();
   }
 
   onSaveOptional() {
@@ -497,7 +518,7 @@ export class SignupCandidateComponent implements OnInit {
   }
 
   gitHubSignUp() {
-    window.location.href = environment.apiUrl + 'auth/github';
+    window.location.href = environment.apiUrl + 'auth/github?type=candidate';
   }
 
 

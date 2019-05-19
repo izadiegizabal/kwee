@@ -22,7 +22,6 @@ const initialState: State = {
 export function authReducer(state = initialState, action: AuthActions.AuthActions) {
   switch (action.type) {
     case AuthActions.SIGNUP:
-    case AuthActions.TRY_SN_CANDIDATE:
     case AuthActions.SIGNIN:
       return {
         ...state,
@@ -41,6 +40,11 @@ export function authReducer(state = initialState, action: AuthActions.AuthAction
         token: action.payload
       };
     case AuthActions.SET_USER:
+      return {
+        ...state,
+        user: action.payload
+      };
+    case AuthActions.SN_CANDIDATE:
       return {
         ...state,
         user: action.payload

@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
 import * as AuthActions from './auth.actions';
-import {catchError, map, mergeMap, share, switchMap, tap} from 'rxjs/operators';
+import {catchError, map, mergeMap, share, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {Actions, Effect, ofType} from '@ngrx/effects';
 import {Observable, of, throwError} from 'rxjs';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
 import * as OfferManageActions from '../../offer/offer-manage/store/offer-manage.actions';
-import {Store} from '@ngrx/store';
+import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
 
 @Injectable()
@@ -21,16 +21,19 @@ export class AuthEffects {
     switchMap(
       (authData) => {
 
-        const headers = new HttpHeaders().set('Content-Type', 'application/json');
+        let headers = new HttpHeaders().set('Content-Type', 'application/json');
         let body = JSON.stringify({email: authData.email, password: authData.password});
 
         if (authData.token) {
           if (authData.password) {
             body = JSON.stringify({token: authData.token, password: authData.password});
           } else {
-            body = JSON.stringify({token: authData.token});
+            console.log('aaaaaaaaaaaaaaaa' + authData.token);
+            headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', authData.token);
           }
         }
+
+        console.log(headers);
 
 
         return this.httpClient.post(environment.apiUrl + 'login', body, {headers: headers}).pipe(
@@ -141,26 +144,26 @@ export class AuthEffects {
     map((action: AuthActions.TrySNCandidate) => {
       return action.payload;
     }),
-    switchMap(
-      (payload) => {
+    withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    switchMap(([payload, authState]) => {
         const apiEndpointUrl = environment.apiUrl + 'user/social?type=' + payload.type;
         const body = JSON.stringify(payload.user);
-        const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', payload.token);
+        const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', authState.token);
 
-        console.log(apiEndpointUrl);
+      console.log('bbbbbbbbbbbbbbbbbbbbbbb');
+
+      console.log(apiEndpointUrl);
         console.log(body);
         return this.httpClient.put(apiEndpointUrl, body, {headers: headers}).pipe(
-          mergeMap((res) => {
+          map((res) => {
             console.log(res);
-            return [
-              {
-                type: AuthActions.TRY_SIGNIN,
-                payload: {token: payload.token}
-              }
-            ];
+            return {
+              type: AuthActions.SN_CANDIDATE,
+              payload: {user: payload.user}
+            };
           }),
           catchError((err: HttpErrorResponse) => {
-            throwError(this.handleError('signUp', err));
+            throwError(this.handleError('authSNCandidate', err));
             const error = err.error.message ? err.error.message : err;
             return [
               {

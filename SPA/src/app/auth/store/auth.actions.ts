@@ -1,4 +1,5 @@
 import {Action} from '@ngrx/store';
+import {UPDATE_CANDIDATE} from '../../admin/store/admin.actions';
 
 
 export const TRY_SIGNUP_CANDIDATE = 'TRY_SIGNUP_CANDIDATE';
@@ -11,6 +12,7 @@ export const AUTH_ERROR = 'AUTH_ERROR';
 export const SET_TOKEN = 'SET_TOKEN';
 export const SET_USER = 'SET_USER';
 export const TRY_SN_CANDIDATE = 'TRY_SN_CANDIDATE';
+export const SN_CANDIDATE = 'SN_CANDIDATE';
 
 export class TrySignupCandidate implements Action {
   readonly type = TRY_SIGNUP_CANDIDATE;
@@ -85,10 +87,18 @@ export class AuthError implements Action {
 export class TrySNCandidate implements Action {
   readonly type = TRY_SN_CANDIDATE;
 
-  constructor(public payload: { type: string, token: any, user: any }) {
+  constructor(public payload: { type: string, user: any }) {
   }
 }
 
+export class SnCandidate implements Action {
+  readonly type = SN_CANDIDATE;
+
+  constructor(public payload: any) {
+  }
+}
+
+
 export type AuthActions = TrySignupCandidate | TrySignupBusiness
-  | Signup | TrySignin | Signin | Logout | SetToken | SetUser | AuthError | TrySNCandidate;
+  | Signup | TrySignin | Signin | Logout | SetToken | SetUser | AuthError | TrySNCandidate | SnCandidate;
 
