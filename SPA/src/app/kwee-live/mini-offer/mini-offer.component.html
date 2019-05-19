@@ -1,0 +1,38 @@
+<div  id="offerBubble"
+      [@EnterLeave]
+        fxLayout="row"
+        [routerLink]="urlfyPosition()">
+  <div
+    fxLayout="column"
+    fxFlex="31%"
+    fxLayoutAlign="center center">
+    <img [src]="getImage()"
+         alt="Company logo" width="60" height="60"
+         id="companyLogo"></div>
+  <div fxLayout="row" fxFlexOffset="10px">
+  <div
+    fxLayout="column"
+    fxFlex="100%"
+    fxLayoutAlign="center start">
+    <span id="Title"><b>{{obj.title}}</b></span>
+    <!--style="font-size: .9em"-->
+    <!--<span style="font-size: .7em">Facebook</span>-->
+    <div class="nameIndex" fxLayout="row" fxLayoutAlign="start center">
+        <div [style.background-color]="getBGColour()"><span>{{obj.offererIndex}}</span></div>
+        <p>{{obj.offererName}}</p>
+    </div>
+    <div
+      fxLayout="row"
+      fxLayoutAlign="center center"
+      fxLayoutGap="5px">
+      <div fxLayout="row" fxLayoutAlign="start center" class="iconData">
+        <mat-icon svgIcon="work"></mat-icon>
+        <p style="font-size: .7em">{{obj.contractType}}</p>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="start center" class="iconData">
+        <mat-icon svgIcon="place"></mat-icon>
+        <p style="font-size: .7em">{{obj.location}}</p>
+      </div>
+    </div>
+  </div></div>
+</div>

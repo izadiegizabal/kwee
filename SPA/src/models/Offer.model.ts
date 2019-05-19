@@ -25,6 +25,8 @@ export class Offer {
   responsibilities?: string;
   requirements?: string;
   skills?: string[];
+  userLat: number;
+  userLon: number;
 
 }
 

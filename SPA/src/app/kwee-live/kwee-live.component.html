@@ -1,38 +1,71 @@
-<div [ngStyle.lt-sm]="{'margin': '0'}"
-     [ngStyle]="{'margin': '0 16px'}"
-     class="container"
-     fxFlex="100%"
-     fxLayout="column">
-  <div fxLayout="row"
-       fxLayoutAlign="center center">
-    <h2 class="mat-h1">Kwee Live</h2>
-  </div>
-  <div
-    fxFlex="100%"
-    fxLayout="row"
-    fxLayout.lt-sm="column"
-    fxLayoutAlign="center start"
-    fxLayoutAlign.lt-sm="center center"
-    fxLayoutGap.lt-sm="16px">
-    <div
-      fxLayout="column"
-      fxLayoutAlign="center center"
-      style="margin: 30px 0">
-      <canvas
-        [ngStyle]="{'width': '100%'}"
-        height="700px"
-        id="kweelive"
-        width="700px"></canvas>
-      <mat-spinner *ngIf="getAllow()"></mat-spinner>
+<div
+  style="position: relative;">
+
+  <div fxLayout="column"
+       fxFlex="100%"
+       class="container"
+       [ngStyle.lt-sm]="{'margin': '0'}"
+       [ngStyle]="{'margin': '0 16px'}">
+    <div fxLayout="row"
+         fxLayoutAlign="center center">
+      <h2 class="mat-h1">Kwee Live</h2>
     </div>
+    <div fxLayout="column"
+    fxLayoutAlign="center center"
+    fxLayoutGap="16px">
+      <div fxLayout="row"
+        fxLayoutAlign="start start"
+        fxLayoutGap="16px">
+        <button mat-raised-button (click)="interactive([0,0,0])" color="primary" [disabled]="getAllow()">Earth</button>
+        <button mat-raised-button (click)="interactive([-2,0,0])" color="primary" [disabled]="getAllow()">Focus 1</button>
+        <button mat-raised-button (click)="interactive([-4,0,0])" color="primary" [disabled]="getAllow()">Focus 2</button>
+        <button mat-raised-button (click)="interactive([-6,0,0])" color="primary" [disabled]="getAllow()">Fireworks</button>
+      </div>
+      <div fxLayout="row"
+        fxLayoutAlign="start start"
+        fxLayoutGap="16px">
+        <button mat-raised-button (click)="bbox()" color="primary" [disabled]="getAllow()">BBox</button>
+        <button mat-raised-button (click)="interactive([2,0,0])" color="primary" [disabled]="getAllow()">LOD 1</button>
+        <button mat-raised-button (click)="interactive([4,0,0])" color="primary" [disabled]="getAllow()">LOD 2</button>
+        <button mat-raised-button (click)="interactive([6,0,0])" color="primary" [disabled]="getAllow()">LOD 3</button>
+        <button mat-raised-button (click)="reset()" color="danger" [disabled]="getAllow()">clear</button>
+      </div>
+    </div>
+   
     <div
-      fxLayout="column"
-      fxLayout.lt-sm="row"
-      fxLayoutAlign="start start"
-      fxLayoutGap="16px">
-      <button (click)="drawHollow()" [disabled]="getAllow()" color="primary" mat-raised-button>Draw Solid</button>
-      <button (click)="draw()" [disabled]="getAllow()" color="primary" mat-raised-button>Draw Texture</button>
-      <button (click)="reset()" [disabled]="getAllow()" color="warn" mat-raised-button>Reset</button>
+      fxLayout="row"
+      fxLayout.lt-sm="column"
+      fxFlex="100%"
+      fxLayoutAlign="center start"
+      fxLayoutAlign.lt-sm="center center"
+      fxLayoutGap.lt-sm="16px">
+      <div
+        fxLayout="column"
+        fxLayoutAlign="center center"
+        style="margin: 30px 0; position: relative;">
+        <canvas
+          id="kweelive"
+          width="700px"
+          height="700px"></canvas>
+        <!--<canvas
+          id="auxkweelive"
+          width="1400px"
+          height="1400px"
+          style="position: absolute; top: 0; left: 0; margin: auto;  width:700px;height:700px"></canvas>-->
+        <mat-spinner *ngIf="getAllow()"></mat-spinner>
+        <app-mini-offer
+          *ngIf="getShowCard()"
+          [@EnterLeave]
+          id="miniOffer"
+          [index]="50"
+          [id]="240"
+          [name]="'Facebook'"
+          [offer]="'Direct Accountability Specialist'"
+          [location]="'Alicante'"
+          [work]="'Full-Time'"
+          [image]="'image'"
+          [url]="'akjbdsabksadb'"></app-mini-offer>
+      </div>
     </div>
   </div>
 </div>

@@ -5,40 +5,54 @@ attribute vec4 aVertexColor;
 attribute vec2 aVertexTextureCoords;
 
 uniform mat4 uMVMatrix;
-uniform mat4 uVMatrix;
 uniform mat4 uPMatrix;
 uniform mat4 uNMatrix;
-uniform vec3 uLightPosition;
+
+uniform vec4 uLightAmbient;
+uniform vec3 uLightDirection;
+uniform vec4 uLightDiffuse;
+uniform vec4 uLightSpecular;
+
 uniform vec4 uMaterialDiffuse;
-uniform bool uWireframe;
-uniform bool uUseVertexColor;
-uniform bool uUseTextures;
+uniform vec4 uMaterialSpecular;
+uniform float uShininess;
 
-varying vec3 vNormal;
-varying vec3 vLightRay;
-varying vec3 vEyeVec;
 varying vec4 vFinalColor;
-varying vec2 vTextureCoord;
 
-void main(void) {
 
- vFinalColor = uMaterialDiffuse;
- vTextureCoord = vec2(0.0);
+void main(void){
 
- if (uUseVertexColor){
-    vFinalColor = aVertexColor;
- }
+    vec4 vertex = uMVMatrix * vec4(aVertexPosition.xyz, 1.0);
+	vec3 vEyeVec = -vec3(vertex.xyz);
 
- if (uUseTextures){
-    vTextureCoord = aVertexTextureCoords;
- }
+    //Transformed normal position
+    vec3 N = vec3(uNMatrix * vec4(aVertexNormal, 1.0));
+    
+	//Transformed light position
+	vec3 light = vec3(uMVMatrix * vec4(uLightDirection, 0.0));
+    vec3 L = normalize(light);
+	
+	//Lambert's cosine law
+	float lambertTerm = dot(N,L);
+    
+	//Ambient Term
+    vec4 Ia = uMaterialDiffuse * uLightAmbient;
+	
+	//Diffuse Term
+	vec4 Id = uMaterialDiffuse * uLightDiffuse * lambertTerm;
 
- vec4 vertex = uVMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
- vNormal = vec3(uNMatrix * vec4(aVertexNormal, 1.0));
- vec4 light = vec4(uLightPosition,1.0);
- vLightRay = vertex.xyz-light.xyz;
- vEyeVec = -vec3(vertex.xyz);
-
- gl_Position = uPMatrix * uVMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-
+	// Specular term
+	vec3 E = normalize(vEyeVec);
+	vec3 R = reflect(L, N);
+	float specular = pow( max(dot(R, E), 0.0), uShininess);
+	vec4 Is = uMaterialSpecular * uLightSpecular * specular; //add specular term 
+	
+	//Final Color
+	vFinalColor = Ia + Id + Is;
+	vFinalColor.a = 1.0;
+    
+	//transformed vertex position
+    //gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+    gl_Position = uPMatrix * vertex;
+    
 }

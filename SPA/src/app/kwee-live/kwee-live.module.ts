@@ -7,6 +7,7 @@ import {StoreModule} from '@ngrx/store';
 import {EffectsModule} from '@ngrx/effects';
 import {kweeLiveReducer} from './store/kwee-live.reducers';
 import {KweeLiveEffects} from './store/kwee-live.effects';
+import {MiniOfferModule} from './mini-offer/mini-offer.module';
 
 
 @NgModule({
@@ -17,6 +18,7 @@ import {KweeLiveEffects} from './store/kwee-live.effects';
     SharedModule,
     KweeLiveRoutingModule,
     MatProgressSpinnerModule,
+    MiniOfferModule,
     StoreModule.forFeature('kweeLive', kweeLiveReducer),
     EffectsModule.forFeature([KweeLiveEffects])
   ],

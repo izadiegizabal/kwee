@@ -1,0 +1,125 @@
+@import "~src/common-utils";
+@import '../../../../node_modules/@angular/material/theming';
+
+* {
+  font-family: IBM Plex Sans, sans-serif;
+}
+
+mat-icon{
+  height: 14px;
+  width: 14px;
+  margin-right: 4px;
+}
+
+.iconData p {
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+/* mat-icon ::ng-deep svg {
+  width: 75%;
+  height: 75%;
+  align-self: center;
+} */
+
+#offerBubble{
+  position: absolute;
+  z-index: 200;
+  color: black;
+  background: white;
+  text-align: center;
+  width: 270px;
+  height: 80px;
+  // left: 0;
+  // right: 0;
+  // top: -55%;
+  // bottom: 0;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+#offerBubble.downSmall:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border: 20px solid transparent;
+  border-top-color: white;
+  border-bottom: 0;
+  margin-left: -20px;
+  margin-bottom: -20px;
+}
+
+#offerBubble.down:after {
+  content: '';
+  top: 78px;
+  position: absolute;
+  left: calc(50% - 10px);
+  border: solid transparent;
+  border-top-color: #FFF;
+  border-width: 70px 10px 0 10px;
+}
+
+#offerBubble.up:after {
+  content: '';
+  top: -68px;
+  position: absolute;
+  left: calc(50% - 10px);
+  border: solid;
+  border-width: 0 10px 70px 10px;
+  border-color: transparent transparent #FFF transparent;
+}
+
+#offerBubble.left:after {
+  content: '';
+  top: calc(40px - 10px);
+  left: -68px;
+  position: absolute;
+  border: solid;
+  border-width: 10px 70px 10px 0;
+  border-color: transparent #FFF transparent transparent;
+}
+
+#offerBubble.right:after {
+  content: '';
+  top: calc(40px - 10px);
+  right: -68px;
+  position: absolute;
+  border: solid;
+  border-width: 10px 0 10px 70px;
+  border-color: transparent transparent transparent #FFF;
+}
+
+#companyLogo{
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+.nameIndex div{
+  background: #00bfa5;
+  color: white;
+  border-radius: 2px;
+  height: 16px;
+  width: 18px;
+  text-align: center;
+  font-size: 12px;
+}
+
+.nameIndex p{
+  margin-left: 4px;
+  font-size: 12px;
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+
+#Title{
+  width: 160px;
+  font-size: .8em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0 0 3px -1px;
+  padding: 0;
+}
