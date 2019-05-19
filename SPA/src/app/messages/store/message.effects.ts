@@ -155,6 +155,42 @@ export class MessageEffects {
     share()
   );
 
+  @Effect()
+  trySetNotiRead = this.actions$.pipe(
+    ofType(MessageActions.TRY_SET_NOTI_AS_READ),
+    map((action: MessageActions.TryGetNotifications) => {
+      return action.payload;
+    }),
+    withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    switchMap(([payload, authState]) => {
+        const apiEndpointUrl = environment.apiUrl + 'notification/' + payload + '/read';
+        const token = authState.token;
+        const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+
+        return this.httpClient.put(apiEndpointUrl, null, {headers: headers}).pipe(
+          map((res: any) => {
+            console.log(res);
+            return {
+              type: MessageActions.SET_NOTI_AS_READ,
+              payload: payload
+            };
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('getMessage', err));
+            const error = err.error.message ? err.error.message : err;
+            return [
+              {
+                type: MessageActions.OPERATION_ERROR,
+                payload: error
+              }
+            ];
+          })
+        );
+      }
+    ),
+    share()
+  );
+
   constructor(private actions$: Actions, private store$: Store<fromApp.AppState>, private router: Router, private httpClient: HttpClient) {
   }
 

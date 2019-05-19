@@ -59,10 +59,21 @@ export function messageReducer(state = initialState, action: MessageActions.Mess
       };
     case MessageActions.ADD_NOTIFICATION:
       const newNotifications = state.notifications;
-      newNotifications.data.push(action.payload);
+      if (action.payload) {
+        newNotifications.data.push(action.payload);
+      }
+      newNotifications.unread++;
       return {
         ...state,
         notifications: newNotifications
+      };
+    case MessageActions.SET_NOTI_AS_READ:
+      let changedNotis = state.notifications;
+      changedNotis = markAsRead(changedNotis, action.payload);
+      changedNotis.unread--;
+      return {
+        ...state,
+        notifications: changedNotis
       };
     case MessageActions.SET_NOTI_UNREAD_COUNT:
       const updatedNotis = state.notifications;
@@ -79,4 +90,28 @@ export function messageReducer(state = initialState, action: MessageActions.Mess
     default:
       return state;
   }
+}
+
+function markAsRead(notifications: {
+  data: {
+    id: number,
+    createdAt: Date,
+    read: boolean,
+    from: any,
+    type: string,
+    data: any
+  }[],
+  unread: number,
+  total: number,
+}, id: number) {
+
+  if (notifications.data) {
+    for (const noti of notifications.data) {
+      if (noti.id === id) {
+        noti.read = true;
+        return notifications;
+      }
+    }
+  }
+  return notifications;
 }
