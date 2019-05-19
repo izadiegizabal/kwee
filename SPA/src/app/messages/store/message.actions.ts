@@ -7,6 +7,8 @@ export const GET_MESSAGES = 'GET_MESSAGES';
 export const TRY_GET_NOTIFICATIONS = 'TRY_GET_NOTIFICATIONS';
 export const SET_NOTIFICATIONS = 'SET_NOTIFICATIONS';
 export const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
+export const SET_NOTI_AS_READ = 'SET_NOTI_AS_READ';
+export const TRY_SET_NOTI_AS_READ = 'TRY_SET_NOTI_AS_READ';
 export const SET_NOTI_UNREAD_COUNT = 'SET_NOTI_UNREAD_COUNT';
 export const TRY_GET_CONVERSATION = 'TRY_GET_CONVERSATION';
 export const GET_CONVERSATION = 'GET_CONVERSATION';
@@ -69,6 +71,20 @@ export class AddNotification implements Action {
   }
 }
 
+export class TrySetNotiAsRead implements Action {
+  readonly type = TRY_SET_NOTI_AS_READ;
+
+  constructor(public payload: number) {
+  }
+}
+
+export class SetNotiAsRead implements Action {
+  readonly type = SET_NOTI_AS_READ;
+
+  constructor(public payload: number) {
+  }
+}
+
 export class SetNotificationUnreadCount implements Action {
   readonly type = SET_NOTI_UNREAD_COUNT;
 
@@ -98,7 +114,7 @@ export class OperationError implements Action {
 }
 
 export type MessageActions =
-  TryGetNotifications | SetNotifications | AddNotification | SetNotificationUnreadCount |
+  TryGetNotifications | SetNotifications | AddNotification | SetNotificationUnreadCount | SetNotiAsRead | TrySetNotiAsRead |
   TryPostMessage | PostMessage |
   TryGetMessages | GetMessages |
   TryGetConversation | GetConversation |

@@ -6,10 +6,8 @@ import * as fromMessages from '../messages/store/message.reducers';
 import * as MessageActions from '../messages/store/message.actions';
 import {Title} from '@angular/platform-browser';
 import {PageEvent} from '@angular/material';
-import {environment} from '../../environments/environment';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import * as fromAuth from '../auth/store/auth.reducers';
-import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'app-notifications',
@@ -67,22 +65,11 @@ export class NotificationsComponent implements OnInit {
           this.markNotiRead(noti.id);
         }
       }
-      this.store$.dispatch(new MessageActions.SetNotificationUnreadCount(0));
     }
   }
 
   private markNotiRead(id: number) {
-    if (this.token) {
-      const apiEndpointUrl = environment.apiUrl + 'notification/' + id + '/read';
-      const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', this.token);
-
-      this.httpClient.put(apiEndpointUrl, '', {headers: headers}).pipe(
-        map((res) => {
-          console.log('it worked');
-          console.log(res);
-        })
-      );
-    }
+    this.store$.dispatch(new MessageActions.TrySetNotiAsRead(id));
   }
 
   changepage() {
