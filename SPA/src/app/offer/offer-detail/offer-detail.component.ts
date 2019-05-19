@@ -26,6 +26,8 @@ import {MaxApplicationsDialogComponent} from './max-applications-dialog/max-appl
 })
 export class OfferDetailComponent implements OnInit {
 
+  numApplications = 0;
+
   offerSkills: [' '];
   offerState: Observable<fromOffer.State>;
   authState: any;
@@ -86,6 +88,7 @@ export class OfferDetailComponent implements OnInit {
           this.titleService.setTitle('Kwee - ' + s.offer.title);
           this.img = s.offer.img;
           this.offer = s.offer;
+          this.numApplications = s.offer.currentApplications;
         }
       });
 
@@ -97,6 +100,20 @@ export class OfferDetailComponent implements OnInit {
     } else {
       this.router.navigate(['/error/404']);
     }
+
+    // Increase applications count after applying
+    this.offerEffects$.offerSetApplications.pipe(
+      filter((action: Action) => action.type === OfferActions.SET_APPLICATION)
+    ).subscribe((error: { payload: any, type: string }) => {
+      this.store$.dispatch(new OfferActions.TryGetOffer({id: params.id}));
+    });
+
+    // Decrease applications count after deleting
+    this.offerEffects$.offerDeleteApplications.pipe(
+      filter((action: Action) => action.type === OfferActions.DELETE_APPLICATION)
+    ).subscribe((error: { payload: any, type: string }) => {
+      this.store$.dispatch(new OfferActions.TryGetOffer({id: params.id}));
+    });
 
   }
 
@@ -200,6 +217,8 @@ export class OfferDetailComponent implements OnInit {
         });
       }
     });
+
+    this.getApplications();
   }
 
   deleteApplication() {

@@ -20,54 +20,54 @@
   <button *ngIf="userType==='admin'"
           mat-menu-item
           routerLink="/admin/manage-candidates">
-    <mat-icon svgIcon="people"></mat-icon>
+    <mat-icon svgIcon="people" color="primary"></mat-icon>
     <span>Manage Candidates</span>
   </button>
   <button *ngIf="userType==='admin'"
           mat-menu-item
           routerLink="/admin/manage-businesses">
-    <mat-icon svgIcon="domain"></mat-icon>
+    <mat-icon svgIcon="domain" color="primary"></mat-icon>
     <span>Manage Businesses</span>
   </button>
   <button *ngIf="userType==='admin'"
           mat-menu-item
           routerLink="/admin/statistics">
-    <mat-icon svgIcon="timeline"></mat-icon>
+    <mat-icon svgIcon="timeline" color="primary"></mat-icon>
     <span>Stats</span>
   </button>
   <button *ngIf="userType==='business' || userType==='candidate'"
           mat-menu-item
           routerLink="/my-offers">
-    <mat-icon svgIcon="work"></mat-icon>
+    <mat-icon svgIcon="work" color="primary"></mat-icon>
     <span>My Offers</span>
   </button>
   <button *ngIf="userType==='business'"
           mat-menu-item
           routerLink="/search-candidates">
-    <mat-icon svgIcon="people"></mat-icon>
+    <mat-icon svgIcon="people" color="primary"></mat-icon>
     <span>Search Candidates</span>
   </button>
   <button *ngIf="userType==='candidate'"
           mat-menu-item
           routerLink="/search-businesses">
-    <mat-icon svgIcon="domain"></mat-icon>
+    <mat-icon svgIcon="domain" color="primary"></mat-icon>
     <span>Search Businesses</span>
   </button>
   <button *ngIf="userType==='business' || userType==='candidate'"
           mat-menu-item
           routerLink="/invoices">
-    <mat-icon svgIcon="insert-drive-file"></mat-icon>
+    <mat-icon svgIcon="insert-drive-file" color="primary"></mat-icon>
     <span>Invoices</span>
   </button>
   <button *ngIf="userType==='business' || userType==='candidate'"
           mat-menu-item
           routerLink="/kwee-live">
-    <mat-icon svgIcon="public"></mat-icon>
+    <mat-icon svgIcon="public" color="primary"></mat-icon>
     <span>Kwee Live</span>
   </button>
   <button [routerLink]="'/settings/' + userType"
           mat-menu-item>
-    <mat-icon svgIcon="settings"></mat-icon>
+    <mat-icon svgIcon="settings" color="primary"></mat-icon>
     <span>Settings</span>
   </button>
   <mat-divider></mat-divider>

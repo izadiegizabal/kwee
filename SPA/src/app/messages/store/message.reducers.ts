@@ -66,7 +66,6 @@ export function messageReducer(state = initialState, action: MessageActions.Mess
       };
     case MessageActions.SET_NOTI_UNREAD_COUNT:
       const updatedNotis = state.notifications;
-      console.log(action.payload);
       updatedNotis.unread = action.payload;
       return {
         ...state,

@@ -105,8 +105,9 @@
                 <app-icon-with-text
                   [text]="getOfferLocation((offerState | async).offer.location, (offerState | async).offer.workLocation)"
                   icon="place"></app-icon-with-text>
-                <app-icon-with-text [text]="getOfferApplications((offerState | async).offer.currentApplications)"
-                                    icon="people"></app-icon-with-text>
+                <app-icon-with-text [text]="numApplications > 0 ? numApplications + ' applications' : '0 applications'"
+                                    icon="people">
+                </app-icon-with-text>
               </div>
             </div>
             <div fxFlex="33%" fxFlex.lt-sm="100%"
@@ -129,7 +130,7 @@
                     color="accent"
                     mat-raised-button
                     style="color: white" type="button">{{'Edit Offer' | uppercase }}</button>
-                  </ng-template>
+                </ng-template>
                 <ng-template #apply>
                   <button (click)="postApplication()"
                           *ngIf="((offerState | async).applications===null && id) || ((offerState | async).applications && (offerState | async).offer.status !== 0 && (offerState | async).applications.status !== 2)"

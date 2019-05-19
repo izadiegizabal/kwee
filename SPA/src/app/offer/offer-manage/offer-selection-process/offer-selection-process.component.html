@@ -134,13 +134,6 @@
             </div>
             <div fxLayoutAlign="end end" style="margin-top: 16px">
               <button (click)="closeSelectionProcess()"
-                      *ngIf="
-                    !firstStepOkay &&
-                    (manageOfferState | async).selection &&
-                    (manageOfferState | async).selection.all &&
-                    (manageOfferState | async).selection.all.length === 0 &&
-                    (manageOfferState | async).selection.faved &&
-                    (manageOfferState | async).selection.faved.length === 0"
                       color="primary"
                       mat-raised-button>
                 Close Offer
