@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import {MessagesService} from '../services/messages.service';
-import {WebsocketService} from '../services/websocket.service';
+import {MessagesService} from './messages.service';
+import {WebsocketService} from '../sockets.io/websocket.service';
 import {Observable} from 'rxjs';
 import * as MessageActions from './store/message.actions';
 import {select, Store} from '@ngrx/store';
