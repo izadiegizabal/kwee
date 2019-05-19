@@ -150,16 +150,15 @@ export class AuthEffects {
         const body = JSON.stringify(payload.user);
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', authState.token);
 
-      console.log('bbbbbbbbbbbbbbbbbbbbbbb');
-
       console.log(apiEndpointUrl);
         console.log(body);
+        console.log(headers);
         return this.httpClient.put(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res) => {
             console.log(res);
             return {
               type: AuthActions.SN_CANDIDATE,
-              payload: {user: payload.user}
+              payload: payload.user
             };
           }),
           catchError((err: HttpErrorResponse) => {

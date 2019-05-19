@@ -241,10 +241,17 @@ export class SignupCandidateComponent implements OnInit {
 
 
     this.authEffects$.authSignin.pipe(
-      filter((action: Action) => action.type === AuthActions.SIGNIN)
+      filter((action: Action) => action.type === AuthActions.SET_USER)
     ).subscribe(() => {
       console.log('cambia el auth');
      });
+    //
+    this.authEffects$.authSNCandidate.pipe(
+      filter((action: Action) => action.type === AuthActions.SN_CANDIDATE)
+    ).subscribe(() => {
+      console.log('he actualizado al usuario');
+      this.stepper.next();
+    });
   }
 
   addLanguageGroup(): FormGroup {
@@ -339,17 +346,21 @@ export class SignupCandidateComponent implements OnInit {
         }));
 
         this.authEffects$.authSignin.pipe(
-          filter((action: Action) => action.type === AuthActions.SIGNIN)
+          filter((action: Action) => action.type === AuthActions.SET_USER)
         ).subscribe(() => {
-          console.log('holaaaaaaaaaaaaaaaaaaa');
           this.store$.dispatch(new AuthActions.TrySNCandidate({
             'type': 'candidate',
             'user': updateuser
           }));
-          stepper.next();
         });
-
-      }
+      //
+      //   this.authEffects$.authSNCandidate.pipe(
+      //     filter((action: Action) => action.type === AuthActions.SN_CANDIDATE)
+      //   ).subscribe(() => {
+      //     console.log('he actualizado al usuario');
+      //     this.stepper.next();
+      //   });
+       }
 
       this.authEffects$.authSignupCandidate.pipe(
         filter((action: Action) => action.type === AuthActions.AUTH_ERROR)
