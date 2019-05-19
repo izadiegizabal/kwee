@@ -94,7 +94,14 @@ export class TrySNCandidate implements Action {
 export class SnCandidate implements Action {
   readonly type = SN_CANDIDATE;
 
-  constructor(public payload: any) {
+  constructor(public payload: {
+    email: string,
+    id: number,
+    name: string,
+    type: string,
+    notifications: number,
+    premium: number,
+  }) {
   }
 }
 
