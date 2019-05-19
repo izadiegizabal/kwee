@@ -53,7 +53,12 @@ module.exports = (app, db) => {
                     next({type: 'error', error: err});
                 }
             });
-            return path;
+
+            return res.status(200).json({
+                ok: true,
+                message: `Uploaded`,
+                data: path
+            });
         } catch (err) {
             next({type: 'error', error: err});
         }
