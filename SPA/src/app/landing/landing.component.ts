@@ -39,6 +39,7 @@ export class LandingComponent implements OnInit, OnDestroy {
 
   // new width screen size
   changed = 0;
+  screenWidth = 0;
 
   // default values
   cardArrowType = 'up';
@@ -71,11 +72,11 @@ export class LandingComponent implements OnInit, OnDestroy {
   @HostListener('window:resize', ['$event'])
   sizeChange(event) {
     if (event.target.innerWidth <= 599) {
-      setSceneWidth(1);
+      this.screenWidth = 1;
     } else if (event.target.innerWidth > 599 && event.target.innerWidth <= 850) {
-      setSceneWidth(2);
+      this.screenWidth = 2;
     } else {
-      setSceneWidth(3);
+      this.screenWidth = 3;
     }
     if(allowActions.card){
       this.configCard();
@@ -93,17 +94,18 @@ export class LandingComponent implements OnInit, OnDestroy {
     await mainInit();
 
     // this.main();
-     this.drawHollow();
+    // this.drawHollow();
+    this.offerShow();
 
     this.canvas = document.getElementById('kweelive');
     // this.context2d.translate(0.5,0.5);
     let width  = window.innerWidth;
     if (width <= 599) {
-      setSceneWidth(1);
+      this.screenWidth = 1;
     } else if (width > 599 && width <= 850) {
-      setSceneWidth(2);
+      this.screenWidth = 2;
     } else {
-      setSceneWidth(3);
+      this.screenWidth = 3;
     }
 
 
@@ -115,7 +117,7 @@ export class LandingComponent implements OnInit, OnDestroy {
       select(s => s.offers)
     ).subscribe(
       (data: any) => {
-        console.log(data.data);
+        // console.log(data.data);
         data.data.forEach( (e, i) => {
           // console.log(e);
           // this.offerImages.push(new Image());
@@ -171,8 +173,6 @@ export class LandingComponent implements OnInit, OnDestroy {
     const camera = motor.createCamera(this.scene);
     motor.enableCam(camera);
 
-    // @todo -> Flaviu camera stuff
-
     const radius = 3;
     motor.cameraLookAt( camera, [0, 0, 3],
       [0, 0, 0],
@@ -214,6 +214,173 @@ export class LandingComponent implements OnInit, OnDestroy {
 
   }
 
+  offerShow(){
+    // this.currentIndex++;
+    const motor = this.motor;
+
+    // ----- MESHES -----
+    // console.log(this.scene);
+
+    // Earth
+    const landMaterial = motor.createMaterial(
+      /* color */    [0.258, 0.960, 0.6, 1.0],
+      /* specular */ [1.0, 1.0, 1.0, 1.0],
+      /* shiny */    3 );
+    const LOD_earth = motor.dynamicMeshArrayLazyLoading(this.scene, ['0_earth.json', '2_earth_SS.json'], landMaterial);
+
+    // Sea
+    const seaMaterial = motor.createMaterial(
+      /* color */    [0.313, 0.678, 0.949, 1.0],
+      /* specular */ [1.0, 1.0, 1.0, 1.0],
+      /* shiny */    15 );
+
+    const LOD_sea = motor.dynamicMeshArrayLazyLoading(this.scene, ['0_sea.json', '2_sea_SS.json'], seaMaterial);
+
+    global.lastFrameTime = Date.now();
+
+    // ----- CAMERA -----
+    const camera = motor.createCamera(this.scene);
+    motor.enableCam(camera);
+
+    let radius = 3;
+
+    let camPos = [];
+
+    let point = motor.get3DfronLatLon(40.415363, -3.707398);
+    global.targetPoint =  motor.get3DfronLatLon(40.415363, -3.707398);
+    allowActions.p = global.targetPoint;
+
+    camPos.push(point[0] * radius);
+    camPos.push(point[1] * radius);
+    camPos.push(point[2] * radius);
+
+    motor.cameraLookAt( camera, [...camPos],
+      [0,0,0],
+      [0,1,0]);
+
+    motor.easeCamera();
+    motor.calculateViews();
+
+    // ----- LIGHTS -----
+    const light =  motor.createLight(this.scene, 1, [0.2, 0.2, 0.2, 1.0],  [1.0, 1.0, 1.0, 1.0],  [0.5, 0.5, 0.5, 1.0], [10.0, 10.0, 10.0]);
+    motor.calculateLights();
+
+    // ----- RENDER LOOP -----
+    let number = 0;
+
+    let then = 0;
+    let last = 0;
+    /*
+      Fases
+      0 => wait 5s
+      1 => wait 1s hide previous card & rotate to point
+      2 => wait 1.5s show focus and card
+      default => prevent init errors
+     */
+    let fase = -1;
+
+    const thisContext = this;
+    const loop = function(now) {
+      global.time = Date.now();
+
+      ////// Animation stuff @todo MOVE TO NEW MOTOR.RUN LOOP
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+      switch (fase) {
+        /// wait 5s
+        case 0:
+          if(now - last >= 5000) {
+            last = now;
+            fase = 1;
+            if(thisContext.currentIndex === thisContext.fetchedOffers.length){
+              thisContext.currentIndex = 0;
+            }
+          }
+          break;
+        case 1:
+          if(now - last >= 1000) {
+            last = now;
+            fase = 2;
+            allowActions.card = false;
+            document.body.click();
+            thisContext.currentIndex++;
+            allowActions.random = motor.rotateCamToRandomXYOffset(+thisContext.fetchedOffers[thisContext.currentIndex].lat, +thisContext.fetchedOffers[thisContext.currentIndex].lon, 1, thisContext.screenWidth);
+            document.body.click();
+          }
+          break;
+        case 2:
+          if(now - last >= 1500) {
+            allowActions.point = motor.calculateTarget2Dfrom3DPoint();
+            allowActions.card = true;
+            motor.createFocus(thisContext.scene, 100, 'straight', global.targetPoint , 'normal', null, [1,0.25,0.51, 1.0]);
+            let fireworks = motor.createFocus(thisContext.scene, 150, 'fireworks', global.targetPoint , 'normal', null, [1,0.5,0.67, 1.0]);
+            setTimeout(() => {
+              motor.deleteFocus(fireworks);
+            }, 800);
+            document.body.click();
+            last = now;
+            fase = 0;
+          }
+          break;
+        default:
+          //console.log(-1);
+          last = now;
+          fase = 0;
+          break;
+      }
+
+      // Convert the time to second
+      now *= 0.001;
+      // Subtract the previous time from the current time
+      var deltaTime = now - then;
+      // Remember the current time for the next frame.
+      then = now;
+      // count animations
+      motor.allCountAnimations.forEach( (e, i) => {
+        if(!e.update(deltaTime)){
+          motor.allCountAnimations.splice(i, 1);
+          if(motor.isArcAnimation(e)){
+            motor.deleteArc(e.object);
+          }
+        }
+      });
+      /// Camera animations
+      motor.allCamAnimations.forEach( (e, i) => {
+        let val = e.update(deltaTime);
+        if(val !== 1){
+
+          let radius = 2; // debug
+
+          val[0] = val[0] * radius;
+          val[1] = val[1] * radius;
+          val[2] = val[2] * radius;
+
+          motor.cameraLookAt( camera, [...val],
+            [0,0,0],
+            [0,1,0]);
+        } else {
+          motor.calculateViews();
+          global.auxViewMatrix = global.viewMatrix.slice();
+          motor.allCamAnimations.splice(i, 1);
+        }
+      });
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      motor.calculateViews();
+      /// individual positions needed, I dont know why...
+      global.gl.uniform3f(global.programUniforms.uLightDirection,
+        global.viewPos[0], global.viewPos[1], global.viewPos[2]
+      );
+      motor.draw();
+      global.lastFrameTime = global.time;
+
+      requestAnimationFrame(loop);
+    };
+
+    motor.init();
+    requestAnimationFrame(loop);
+  }
+
   getAllow() {
     return !allowActions.value;
   }
@@ -233,9 +400,8 @@ export class LandingComponent implements OnInit, OnDestroy {
   configCard() {
 
     // let point = this.motor.computeCoordenates(this.fetchedOffers[this.currentIndex].userLat, this.fetchedOffers[this.currentIndex].userLon);
-
     if(!this.arraysEqual(this.previousPosition, allowActions.point)) {
-      this.currentIndex++;
+      // this.currentIndex++;
       this.previousPosition = allowActions.point;
     }
 

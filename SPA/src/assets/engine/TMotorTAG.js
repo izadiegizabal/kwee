@@ -2,7 +2,7 @@
 import {TNode} from './TNode.js';
 import {TTransform, TCamera, TLight, TAnimation, TMesh, TArc, TFocus, TRotationAnimation, TArcAndMeshAnimation, TMaterial} from './TEntity.js';
 import {TResourceManager, TResourceMesh, TResourceMaterial, TResourceTexture, TResourceShader, TResourceMeshArray, TResourceMeshArrayDynamic, TResourceMeshArrayAnimation} from './resourceManager.js';
-import {convertLatLonToVec3offsetY, convertLatLonToVec3RandomOffset} from './tools/utils';
+import {convertLatLonToVec3offsetY, convertLatLonToVec3RandomOffset, convertLatLonToVec3} from './tools/utils';
 import { global, ease } from './commons.js';
 // import {allowActions} from "./main";
 class TMotorTAG{
@@ -680,6 +680,21 @@ class TMotorTAG{
     for (let index = 0; index < array.length; index++) {
       await callback(array[index], index, array);
     }
+  }
+
+  get3DfronLatLon(lat, lon){
+    return convertLatLonToVec3(lat, lon);
+  }
+
+  getOffet3DfronLatLon(lat, lon, sceneType){
+    return convertLatLonToVec3RandomOffset(lat, lon, sceneType);
+  }
+
+  calculateTarget2Dfrom3DPoint(){
+    let pvMat4 = glMatrix.mat4.create();
+    let uselessMat4 = glMatrix.vec4.create();
+    pvMat4 = glMatrix.mat4.mul(pvMat4, global.projectionMatrix, global.auxViewMatrix);
+    return glMatrix.vec4.transformMat4(uselessMat4, [...global.targetPoint, 1], pvMat4);
   }
 
 
