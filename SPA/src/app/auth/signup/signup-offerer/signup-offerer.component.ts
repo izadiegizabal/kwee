@@ -342,7 +342,6 @@ export class SignupOffererComponent implements OnInit {
       } else {
         this.store$.dispatch(new AuthActions.TrySNCandidate({
           'type': 'business',
-          'token': this.snToken,
           'user': this.offerer
         }));
       }
