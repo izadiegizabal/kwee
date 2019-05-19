@@ -123,7 +123,7 @@ async function checkRatings() {
                 if ( moment(now).diff(application.aHasRatedDate, "months") >= 1 ) {
                     // enviar notificación
                     createNotification(db, application.fk_applicant, offererAux.userId, 'applications', application.id, 'rating', false);
-                    if (socketId) sendNotification('rating', socketId, application, false);
+                    // if (socketId) sendNotification('rating', socketId, application, db, false);
                 }
             }
             if ( application.oHasRated === 0 ) {
@@ -131,7 +131,7 @@ async function checkRatings() {
                 if ( moment(now).diff(application.oHasRatedDate, "months") >= 1 ) {
                     // enviar notificación
                     createNotification(db, offererAux.userId, application.fk_applicant, 'applications', application.id, 'rating', false);
-                    if (socketId) sendNotification('rating', socketId, application, false);
+                    // if (socketId) sendNotification('rating', socketId, application, db, false);
                 }
             }
         });
