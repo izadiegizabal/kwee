@@ -8,6 +8,8 @@ import {ActivatedRoute, Params, Router} from '@angular/router';
 import {environment} from '../../../environments/environment';
 import {Title} from '@angular/platform-browser';
 import {Location} from '@angular/common';
+import {BreakpointObserver} from '@angular/cdk/layout';
+import {loadTwitterWidget} from '../../shared/utils.service';
 
 @Component({
   selector: 'app-candidate-profile',
@@ -72,11 +74,7 @@ export class CandidateProfileComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    // @ts-ignore
-    if (twttr) {
-      // @ts-ignore
-      twttr.widgets.load();
-    }
+    loadTwitterWidget();
   }
 
   goToCorrectTab() {

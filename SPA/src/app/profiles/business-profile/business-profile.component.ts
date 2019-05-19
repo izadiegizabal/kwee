@@ -8,6 +8,7 @@ import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
 import * as ProfilesActions from '../store/profiles.actions';
 import {environment} from '../../../environments/environment';
+import {loadTwitterWidget} from '../../shared/utils.service';
 
 @Component({
   selector: 'app-business-profile',
@@ -97,8 +98,7 @@ export class BusinessProfileComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    // @ts-ignore
-    twttr.widgets.load();
+    loadTwitterWidget();
   }
 
   changeTab(tabIndex: number) {
