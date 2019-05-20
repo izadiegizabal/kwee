@@ -28,6 +28,11 @@
         <button mat-raised-button (click)="interactive([2,0,0])" color="primary" [disabled]="getAllow()">LOD 1</button>
         <button mat-raised-button (click)="interactive([4,0,0])" color="primary" [disabled]="getAllow()">LOD 2</button>
         <button mat-raised-button (click)="interactive([6,0,0])" color="primary" [disabled]="getAllow()">LOD 3</button>
+      </div>
+      <div fxLayout="row"
+           fxLayoutAlign="start start"
+           fxLayoutGap="16px">
+        <button mat-raised-button (click)="texture()" color="primary" [disabled]="getAllow()">Textures</button>
         <button mat-raised-button (click)="reset()" color="danger" [disabled]="getAllow()">clear</button>
       </div>
     </div>

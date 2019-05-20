@@ -3,7 +3,7 @@ import {TNode} from './TNode.js';
 import {TTransform, TCamera, TLight, TAnimation, TMesh, TArc, TFocus, TRotationAnimation, TArcAndMeshAnimation, TMaterial} from './TEntity.js';
 import {TResourceManager, TResourceMesh, TResourceMaterial, TResourceTexture, TResourceShader, TResourceMeshArray, TResourceMeshArrayDynamic, TResourceMeshArrayAnimation} from './resourceManager.js';
 import {convertLatLonToVec3offsetY, convertLatLonToVec3RandomOffset, convertLatLonToVec3} from './tools/utils';
-import { global, ease } from './commons.js';
+import { mango, ease } from './commons.js';
 // import {allowActions} from "./main";
 class TMotorTAG{
   // TAG.39
@@ -29,6 +29,8 @@ class TMotorTAG{
     this.allCountAnimations = [];
 
     this.allCamAnimations = [];
+
+    this.then = 0;
   }
 
 
@@ -74,7 +76,7 @@ class TMotorTAG{
     let point = convertLatLonToVec3(lat, lon);
     let pvMat4 = glMatrix.mat4.create();
     let uselessMat4 = glMatrix.vec4.create();
-    pvMat4 = glMatrix.mat4.mul(pvMat4, global.projectionMatrix, global.auxViewMatrix);
+    pvMat4 = glMatrix.mat4.mul(pvMat4, mango.projectionMatrix, mango.auxViewMatrix);
     return glMatrix.vec4.transformMat4(uselessMat4, [...point, 1], pvMat4);
   }
 
@@ -173,7 +175,7 @@ class TMotorTAG{
   }
 
   cameraLookAt(node, cameraPosition, target = [0, 0, 0], up = [0, 1, 0]) {
-    global.viewPos = cameraPosition;
+    mango.viewPos = cameraPosition;
     let matOutput = glMatrix.mat4.create();
     glMatrix.mat4.lookAt(
       matOutput,
@@ -188,7 +190,7 @@ class TMotorTAG{
 
   // Deprecated:
   async lookAt(TNodeCam, eye, center, up) {
-    global.viewPos = eye;
+    mango.viewPos = eye;
     let x0, x1, x2, y0, y1, y2, z0, z1, z2, len;
     let eyex = eye[0];
     let eyey = eye[1];
@@ -260,9 +262,9 @@ class TMotorTAG{
       startValue: 7,
       endValue: 1.7,
       durationMs: 5000,
-      onStep: x => global.zoom = x,
+      onStep: x => mango.zoom = x,
       onComplete: () => {
-        global.status = 1;
+        mango.status = 1;
       }
     })
   }
@@ -274,18 +276,18 @@ class TMotorTAG{
   }
 
   rotateCamTo(endLat, endLon, timeAnim = 1) {
-    this.animateCam(this.activeCamera, timeAnim, null, null, endLat, endLon, global.viewPos, null);
+    this.animateCam(this.activeCamera, timeAnim, null, null, endLat, endLon, mango.viewPos, null);
   }
 
   rotateCamToWithYOffset(endLat, endLon, timeAnim = 1, offsetY = -20) {
     let endPos = convertLatLonToVec3offsetY(endLat, endLon, offsetY);
-    this.animateCam(this.activeCamera, timeAnim, null, null, null, null, global.viewPos, endPos);
+    this.animateCam(this.activeCamera, timeAnim, null, null, null, null, mango.viewPos, endPos);
   }
 
   rotateCamToRandomXYOffset(endLat, endLon, timeAnim = 1, widthScene) {
     let endPos = convertLatLonToVec3RandomOffset(endLat, endLon, widthScene);
-    this.animateCam(this.activeCamera, timeAnim, null, null, null, null, global.viewPos, endPos.coord);
-    global.targetPoint = endPos.coordWithoutRotation;
+    this.animateCam(this.activeCamera, timeAnim, null, null, null, null, mango.viewPos, endPos.coord);
+    mango.targetPoint = endPos.coordWithoutRotation;
     // console.log(endPos);
     return endPos.random;
   }
@@ -550,7 +552,7 @@ class TMotorTAG{
             meshes.addMesh(completed);
             meshes.setCount(i);
             // console.log(files[i] + " highpo loaded");
-            global.status = 1;
+            mango.status = 1;
           })
 
         // }, 4000);
@@ -597,7 +599,7 @@ class TMotorTAG{
 
             meshes.addMesh(completed);
             if (i == (files.length - 1)) {
-              //global.status = 1;
+              //mango.status = 1;
               meshes.setCount(1);
             }
           })
@@ -647,7 +649,7 @@ class TMotorTAG{
 
     let branch = this.createBranch(father, meshes);
 
-    global.status = 1;
+    mango.status = 1;
 
     return branch;
   }
@@ -693,8 +695,8 @@ class TMotorTAG{
   calculateTarget2Dfrom3DPoint(){
     let pvMat4 = glMatrix.mat4.create();
     let uselessMat4 = glMatrix.vec4.create();
-    pvMat4 = glMatrix.mat4.mul(pvMat4, global.projectionMatrix, global.auxViewMatrix);
-    return glMatrix.vec4.transformMat4(uselessMat4, [...global.targetPoint, 1], pvMat4);
+    pvMat4 = glMatrix.mat4.mul(pvMat4, mango.projectionMatrix, mango.auxViewMatrix);
+    return glMatrix.vec4.transformMat4(uselessMat4, [...mango.targetPoint, 1], pvMat4);
   }
 
 
@@ -703,37 +705,64 @@ class TMotorTAG{
   //////////////////
   // Init TMotorTAG
   init() {
+    mango.lastThis = this;
     // Clear
-    global.gl.useProgram(global.program);
-    global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
-    global.gl.enable(global.gl.DEPTH_TEST);
-    global.gl.enable(global.gl.CULL_FACE);
-    //global.gl.frontFace(global.gl.CCW);
+    mango.gl.useProgram(mango.program);
+    mango.gl.clear(mango.gl.COLOR_BUFFER_BIT | mango.gl.DEPTH_BUFFER_BIT);
+    mango.gl.enable(mango.gl.DEPTH_TEST);
+    mango.gl.enable(mango.gl.CULL_FACE);
+    //mango.gl.frontFace(mango.gl.CCW);
     // TAG.54
-    global.gl.cullFace(global.gl.BACK);
+    mango.gl.cullFace(mango.gl.BACK);
 
     this.initProgram();
 
     this.initParticles();
 
     // Avoid error unit 0
-    const whiteTexture = global.gl.createTexture();
-    global.gl.bindTexture(global.gl.TEXTURE_2D, whiteTexture);
-    global.gl.texImage2D(
-      global.gl.TEXTURE_2D, 0, global.gl.RGBA, 1, 1, 0,
-      global.gl.RGBA, global.gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
-    global.gl.useProgram(global.program);
-    global.gl.bindTexture(global.gl.TEXTURE_2D, whiteTexture);
+    const whiteTexture = mango.gl.createTexture();
+    mango.gl.bindTexture(mango.gl.TEXTURE_2D, whiteTexture);
+    mango.gl.texImage2D(
+      mango.gl.TEXTURE_2D, 0, mango.gl.RGBA, 1, 1, 0,
+      mango.gl.RGBA, mango.gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
+    mango.gl.useProgram(mango.program);
+    mango.gl.bindTexture(mango.gl.TEXTURE_2D, whiteTexture);
 
+
+  }
+
+  initTextures() {
+    mango.lastThis = this;
+    // Clear
+    mango.gl.useProgram(mango.textureProgram);
+    mango.gl.clear(mango.gl.COLOR_BUFFER_BIT | mango.gl.DEPTH_BUFFER_BIT);
+    mango.gl.enable(mango.gl.DEPTH_TEST);
+    mango.gl.enable(mango.gl.CULL_FACE);
+    //mango.gl.frontFace(mango.gl.CCW);
+    // TAG.54
+    mango.gl.cullFace(mango.gl.BACK);
+
+    let projection = mango.gl.getUniformLocation(mango.textureProgram, 'uPMatrix');
+    mango.gl.uniformMatrix4fv(projection, false, mango.projectionMatrix);
+
+
+    // Avoid error unit 0
+    const whiteTexture = mango.gl.createTexture();
+    mango.gl.bindTexture(mango.gl.TEXTURE_2D, whiteTexture);
+    mango.gl.texImage2D(
+      mango.gl.TEXTURE_2D, 0, mango.gl.RGBA, 1, 1, 0,
+      mango.gl.RGBA, mango.gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
+    mango.gl.useProgram(mango.textureProgram);
+    mango.gl.bindTexture(mango.gl.TEXTURE_2D, whiteTexture);
 
   }
 
   // Init program
   initProgram() {
-    global.gl.useProgram(global.program);
+    mango.gl.useProgram(mango.program);
 
     // Projection Matrix
-    global.gl.uniformMatrix4fv(global.programUniforms.uPMatrix, false, global.projectionMatrix);
+    mango.gl.uniformMatrix4fv(mango.programUniforms.uPMatrix, false, mango.projectionMatrix);
 
 
 
@@ -741,15 +770,15 @@ class TMotorTAG{
 
   // Init particles program
   initParticles() {
-    global.gl.useProgram(global.particlesProgram);
+    mango.gl.useProgram(mango.particlesProgram);
 
     // Projection Matrix
-    global.gl.uniformMatrix4fv(global.particlesUniforms.uPMatrix, false, global.projectionMatrix); //Maps the Perspective matrix to the uniform prg.uPMatrix
+    mango.gl.uniformMatrix4fv(mango.particlesUniforms.uPMatrix, false, mango.projectionMatrix); //Maps the Perspective matrix to the uniform prg.uPMatrix
 
     // uPointSize = size of each particle
-    global.gl.uniform1f(global.particlesUniforms.uPointSize, 23.0);
+    mango.gl.uniform1f(mango.particlesUniforms.uPointSize, 23.0);
 
-    global.gl.useProgram(global.program);
+    mango.gl.useProgram(mango.program);
   }
 
   // calculate all the lights
@@ -757,12 +786,29 @@ class TMotorTAG{
 
     let lights = this.allLights;
     for(let i = 0; i< lights.length; i++){
-      global.gl.uniform4fv(global.programUniforms.uLightAmbient, lights[0].entity.getIntensity());
-      global.gl.uniform3fv(global.programUniforms.uLightDirection, lights[0].entity.getDirection());
-      global.gl.uniform4fv(global.programUniforms.uLightDiffuse, lights[0].entity.getDiffuse());
-      global.gl.uniform4fv(global.programUniforms.uLightSpecular, lights[0].entity.getSpecular());
+      mango.gl.uniform4fv(mango.programUniforms.uLightAmbient, lights[0].entity.getIntensity());
+      mango.gl.uniform3fv(mango.programUniforms.uLightDirection, lights[0].entity.getDirection());
+      mango.gl.uniform4fv(mango.programUniforms.uLightDiffuse, lights[0].entity.getDiffuse());
+      mango.gl.uniform4fv(mango.programUniforms.uLightSpecular, lights[0].entity.getSpecular());
     }
   }
+
+  calculateLightsTextures() {
+
+    let lightPos = mango.gl.getUniformLocation(mango.textureProgram, 'uLightPosition');
+    let lightAmb = mango.gl.getUniformLocation(mango.textureProgram, 'uLightAmbient');
+    let lightDiff = mango.gl.getUniformLocation(mango.textureProgram, 'uLightDiffuse');
+    let alpha = mango.gl.getUniformLocation(mango.textureProgram, 'uAlpha');
+
+    let lights = this.allLights;
+    for(let i = 0; i< lights.length; i++){
+      mango.gl.uniform3fv(lightPos, [5, 5, 5]);
+      mango.gl.uniform4fv(lightAmb, lights[0].entity.getIntensity());
+      mango.gl.uniform4fv(lightDiff, lights[0].entity.getDiffuse());
+      mango.gl.uniform1f(alpha, 1.0);
+    }
+  }
+
 
   // calculate view from active camera
   async calculateViews() {
@@ -777,7 +823,7 @@ class TMotorTAG{
 
     this.aux = [];
 
-    global.viewMatrix = cameras;
+    mango.viewMatrix = cameras;
 
   }
 
@@ -791,29 +837,132 @@ class TMotorTAG{
     }
   }
 
+  //
+  async attachProgram(program, manager, vs, fs) {
+
+    if (program === null || program === undefined) {
+      program = mango.gl.createProgram();
+    }
+
+    let VShader = await manager.getResource(vs);
+    let FShader = await manager.getResource(fs);
+
+
+    let vertexShader = mango.gl.createShader(mango.gl.VERTEX_SHADER);
+    let fragmentShader = mango.gl.createShader(mango.gl.FRAGMENT_SHADER);
+
+    mango.gl.shaderSource(vertexShader, VShader);
+    mango.gl.shaderSource(fragmentShader, FShader);
+
+    mango.gl.compileShader(vertexShader);
+    if (!mango.gl.getShaderParameter(vertexShader, mango.gl.COMPILE_STATUS)) {
+      console.error('ERROR compiling vertex shader', mango.gl.getShaderInfoLog(vertexShader));
+      return;
+    }
+
+    mango.gl.compileShader(fragmentShader);
+    if (!mango.gl.getShaderParameter(fragmentShader, mango.gl.COMPILE_STATUS)) {
+      console.error('ERROR compiling fragment shader', mango.gl.getShaderInfoLog(fragmentShader));
+      return;
+    }
+
+    mango.gl.attachShader(program, vertexShader);
+    mango.gl.attachShader(program, fragmentShader);
+    mango.gl.linkProgram(program);
+    if (!mango.gl.getProgramParameter(program, mango.gl.LINK_STATUS)) {
+      console.error('ERROR linking mango.program', mango.gl.getProgramInfoLog(program));
+      return;
+    }
+    mango.gl.validateProgram(program);
+    if (!mango.gl.getProgramParameter(program, mango.gl.VALIDATE_STATUS)) {
+      console.error('ERROR validating mango.program', mango.gl.getProgramInfoLog(program));
+      return;
+    }
+  }
+
 
   //////////////////
   // DRAW METHODS
   //////////////////
   draw() {
     // Clear
-    global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
+    mango.gl.clear(mango.gl.COLOR_BUFFER_BIT | mango.gl.DEPTH_BUFFER_BIT);
 
     // We can set the PMatrix once here (it will be the same for every Entity)
     // -- MVMatrix and NMatrix will change over the rest of Entities
 
     this.scene.draw();
   }
+
+  render(now) {
+    mango.time = Date.now();
+    ////// Animation stuff @todo MOVE TO NEW MOTOR.RUN LOOP
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Convert the time to second
+    now *= 0.001;
+    // Subtract the previous time from the current time
+    let deltaTime = now - mango.lastThis.then;
+    // Remember the current time for the next frame.
+    mango.lastThis.then = now;
+    // count animations
+    mango.lastThis.allCountAnimations.forEach( (e, i) => {
+      if(!e.update(deltaTime)){
+        mango.lastThis.allCountAnimations.splice(i, 1);
+        if(mango.lastThis.isArcAnimation(e)){
+          mango.lastThis.deleteArc(e.object);
+        }
+      }
+    });
+    /// Camera animations
+    mango.lastThis.allCamAnimations.forEach( (e, i) => {
+      let val = e.update(deltaTime);
+      if(val !== 1){
+
+        let radius = 2; // debug
+
+        val[0] = val[0] * radius;
+        val[1] = val[1] * radius;
+        val[2] = val[2] * radius;
+
+        mango.lastThis.cameraLookAt( mango.lastThis.activeCamera, [...val],
+          [0,0,0],
+          [0,1,0]);
+      } else {
+        mango.lastThis.calculateViews();
+        mango.auxViewMatrix = mango.viewMatrix.slice();
+        mango.lastThis.allCamAnimations.splice(i, 1);
+      }
+    });
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    mango.lastThis.calculateViews();
+    /// individual positions needed, I dont know why...
+    mango.lastThis.updateLightToTarget();
+    mango.lastThis.draw();
+    mango.lastFrameTime = mango.time;
+
+    requestAnimationFrame(mango.lastThis.render);
+  };
+
+  updateLightToTarget(){
+    mango.gl.uniform3f(mango.programUniforms.uLightDirection,
+      mango.viewPos[0], mango.viewPos[1], mango.viewPos[2]
+    );
+  }
+
+  setTexture(node, tex){
+    node.entity.mesh.tex = tex;
+  }
   //////////////////
   // NOT WORKING!!!!!!!!!!!!
   //////////////////
   // startRender(){
-  //   global.time = Date.now();
+  //   mango.time = Date.now();
 
   //   this.cameraLookAt( this.activeCamera, [
-  //     global.zoom,
-  //     global.zoom,
-  //     global.zoom,
+  //     mango.zoom,
+  //     mango.zoom,
+  //     mango.zoom,
   //   ],
   //   [0, 0, 0],
   //   [0, 1, 0]);
@@ -821,7 +970,7 @@ class TMotorTAG{
 
   //   this.draw();
 
-  //   global.lastFrameTime = global.time;
+  //   mango.lastFrameTime = mango.time;
 
   //   requestAnimationFrame(loop);
   // }

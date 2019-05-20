@@ -13,7 +13,7 @@ import {environment} from '../../environments/environment';
 
 import { TMotorTAG } from '../../assets/engine/TMotorTAG';
 import { TResourceManager } from '../../assets/engine/resourceManager';
-import { global } from '../../assets/engine/commons';
+import { mango } from '../../assets/engine/commons';
 
 import {ContractType} from '../../models/Offer.model';
 
@@ -91,7 +91,6 @@ export class LandingComponent implements OnInit, OnDestroy {
     this.titleService.setTitle('Kwee - Home');
     this.disabled = false;
     await shared(true);  // true = landing (NO ZOOM)
-    await mainInit();
 
     // this.main();
     // this.drawHollow();
@@ -146,77 +145,10 @@ export class LandingComponent implements OnInit, OnDestroy {
     }
   }
 
-  main() {
-    const motor = this.motor;
-
-    // ----- MESHES -----
-    console.log(this.scene);
-
-    // Earth
-    const landMaterial = motor.createMaterial(
-      /* color */    [0.258, 0.960, 0.6, 1.0],
-      /* specular */ [1.0, 1.0, 1.0, 1.0],
-      /* shiny */    3 );
-    const LOD_earth = motor.dynamicMeshArrayLazyLoading(this.scene, ['0_earth.json', '2_earth_SS.json'], landMaterial);
-
-    // Sea
-    const seaMaterial = motor.createMaterial(
-      /* color */    [0.313, 0.678, 0.949, 1.0],
-      /* specular */ [1.0, 1.0, 1.0, 1.0],
-      /* shiny */    15 );
-
-    const LOD_sea = motor.dynamicMeshArrayLazyLoading(this.scene, ['0_sea.json', '2_sea_SS.json'], seaMaterial);
-
-    global.lastFrameTime = Date.now();
-
-    // ----- CAMERA -----
-    const camera = motor.createCamera(this.scene);
-    motor.enableCam(camera);
-
-    const radius = 3;
-    motor.cameraLookAt( camera, [0, 0, 3],
-      [0, 0, 0],
-      [0, 1, 0]);
-    motor.easeCamera();
-    motor.calculateViews();
-
-    // ----- LIGHTS -----
-    const light =  motor.createLight(this.scene, 1, [0.2, 0.2, 0.2, 1.0],  [1.0, 1.0, 1.0, 1.0],  [0.5, 0.5, 0.5, 1.0], [10.0, 10.0, 10.0]);
-    motor.calculateLights();
-
-    // ----- RENDER LOOP -----
-    let number = 0;
-    
-    const loop = function() {
-      global.time = Date.now();
-
-      motor.cameraLookAt( camera, [
-        global.zoom * Math.sin(number * Math.PI / 180),
-        global.zoom,
-        global.zoom * Math.cos(number * Math.PI / 180),
-      ],
-      [0, 0, 0],
-      [0, 1, 0]);
-      motor.calculateViews();
-
-      motor.draw();
-
-      global.lastFrameTime = global.time;
-
-      requestAnimationFrame(loop);
-
-      number = number + 0.3;
-      if (number > 360) { number = 0; }
-    };
-
-    motor.init();
-    loop();
-
-  }
-
-  offerShow(){
+  async offerShow(){
     // this.currentIndex++;
     const motor = this.motor;
+    await mainInit(motor);
 
     // ----- MESHES -----
     // console.log(this.scene);
@@ -236,7 +168,7 @@ export class LandingComponent implements OnInit, OnDestroy {
 
     const LOD_sea = motor.dynamicMeshArrayLazyLoading(this.scene, ['0_sea.json', '2_sea_SS.json'], seaMaterial);
 
-    global.lastFrameTime = Date.now();
+    mango.lastFrameTime = Date.now();
 
     // ----- CAMERA -----
     const camera = motor.createCamera(this.scene);
@@ -247,8 +179,8 @@ export class LandingComponent implements OnInit, OnDestroy {
     let camPos = [];
 
     let point = motor.get3DfronLatLon(40.415363, -3.707398);
-    global.targetPoint =  motor.get3DfronLatLon(40.415363, -3.707398);
-    allowActions.p = global.targetPoint;
+    mango.targetPoint =  motor.get3DfronLatLon(40.415363, -3.707398);
+    allowActions.p = mango.targetPoint;
 
     camPos.push(point[0] * radius);
     camPos.push(point[1] * radius);
@@ -270,6 +202,7 @@ export class LandingComponent implements OnInit, OnDestroy {
 
     let then = 0;
     let last = 0;
+    let arcsSec = 0;
     /*
       Fases
       0 => wait 5s
@@ -278,13 +211,16 @@ export class LandingComponent implements OnInit, OnDestroy {
       default => prevent init errors
      */
     let fase = -1;
+    let self = this;
 
     const thisContext = this;
     const loop = function(now) {
-      global.time = Date.now();
-
-      ////// Animation stuff @todo MOVE TO NEW MOTOR.RUN LOOP
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      if(now - arcsSec >= 1000) {
+        arcsSec = now;
+        motor.createAndAnimateArc(motor.scene, self.generateRandomLat(), self.generateRandomLong(), self.generateRandomLat(), self.generateRandomLong(), 24, 1.5, 3);
+        // motor.createAndAnimateArc(motor.scene, self.generateRandomLat(), self.generateRandomLong(), self.generateRandomLat(), self.generateRandomLong(), 24, 1.5, 3);
+      }
 
       switch (fase) {
         /// wait 5s
@@ -312,8 +248,8 @@ export class LandingComponent implements OnInit, OnDestroy {
           if(now - last >= 1500) {
             allowActions.point = motor.calculateTarget2Dfrom3DPoint();
             allowActions.card = true;
-            motor.createFocus(thisContext.scene, 100, 'straight', global.targetPoint , 'normal', null, [1,0.25,0.51, 1.0]);
-            let fireworks = motor.createFocus(thisContext.scene, 150, 'fireworks', global.targetPoint , 'normal', null, [1,0.5,0.67, 1.0]);
+            motor.createFocus(thisContext.scene, 100, 'straight', mango.targetPoint , 'normal', null, [1,0.25,0.51, 1.0]);
+            let fireworks = motor.createFocus(thisContext.scene, 150, 'fireworks', mango.targetPoint , 'normal', null, [1,0.5,0.67, 1.0]);
             setTimeout(() => {
               motor.deleteFocus(fireworks);
             }, 800);
@@ -325,59 +261,14 @@ export class LandingComponent implements OnInit, OnDestroy {
         default:
           //console.log(-1);
           last = now;
-          fase = 0;
+          fase = 1;
           break;
       }
-
-      // Convert the time to second
-      now *= 0.001;
-      // Subtract the previous time from the current time
-      var deltaTime = now - then;
-      // Remember the current time for the next frame.
-      then = now;
-      // count animations
-      motor.allCountAnimations.forEach( (e, i) => {
-        if(!e.update(deltaTime)){
-          motor.allCountAnimations.splice(i, 1);
-          if(motor.isArcAnimation(e)){
-            motor.deleteArc(e.object);
-          }
-        }
-      });
-      /// Camera animations
-      motor.allCamAnimations.forEach( (e, i) => {
-        let val = e.update(deltaTime);
-        if(val !== 1){
-
-          let radius = 2; // debug
-
-          val[0] = val[0] * radius;
-          val[1] = val[1] * radius;
-          val[2] = val[2] * radius;
-
-          motor.cameraLookAt( camera, [...val],
-            [0,0,0],
-            [0,1,0]);
-        } else {
-          motor.calculateViews();
-          global.auxViewMatrix = global.viewMatrix.slice();
-          motor.allCamAnimations.splice(i, 1);
-        }
-      });
-
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      motor.calculateViews();
-      /// individual positions needed, I dont know why...
-      global.gl.uniform3f(global.programUniforms.uLightDirection,
-        global.viewPos[0], global.viewPos[1], global.viewPos[2]
-      );
-      motor.draw();
-      global.lastFrameTime = global.time;
-
       requestAnimationFrame(loop);
     };
 
     motor.init();
+    requestAnimationFrame(motor.render);
     requestAnimationFrame(loop);
   }
 
@@ -490,5 +381,14 @@ export class LandingComponent implements OnInit, OnDestroy {
 
   goToSignUp(userType: string) {
     this.router.navigate(['/signup'], {queryParams: {type: userType}});
+  }
+
+  // LONGITUDE -180 to + 180
+  generateRandomLong() {
+    return +(Math.random() * (180 - (-180)) + (-180)).toFixed(3) * 1;
+  }
+  // LATITUDE -90 to +90
+  generateRandomLat() {
+    return +(Math.random() * (90 - (-90)) + (-90)).toFixed(3) * 1;
   }
 }

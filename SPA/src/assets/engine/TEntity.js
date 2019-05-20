@@ -2,7 +2,7 @@
 ///////
 ////
 
-import {TEntity, global} from './commons';
+import {TEntity, mango} from './commons';
 import {getBezierPoints, convertLatLonToVec3, degrees, convertLatLonToVec3Rotated, quatFromVectors, getEuler} from './tools/utils.js';
 import {TResourceMesh, TResourceMeshArray} from './resourceManager';
 
@@ -111,16 +111,16 @@ class TTransform extends TEntity {
 // TAG.08
     beginDraw() {
         // push the model matrix
-        global.stack.push( global.modelMatrix.slice(0) );
+        mango.stack.push( mango.modelMatrix.slice(0) );
         
         // multiply the current model matrix with the TTransform matrix with
-        glMatrix.mat4.multiply(global.modelMatrix, global.modelMatrix, this.matrix);
+        glMatrix.mat4.multiply(mango.modelMatrix, mango.modelMatrix, this.matrix);
 
     }
 
     endDraw() {
         // pop and set the current model matrix
-        global.modelMatrix = global.stack.pop();
+        mango.modelMatrix = mango.stack.pop();
         
     }
 
@@ -443,17 +443,17 @@ class TArc extends TEntity {
     }
   }
 
-  let vertexBuffer = global.gl.createBuffer();
-  global.gl.bindBuffer(global.gl.ARRAY_BUFFER, vertexBuffer);
-  global.gl.bufferData(global.gl.ARRAY_BUFFER, new Float32Array(vertices), global.gl.STATIC_DRAW);
+  let vertexBuffer = mango.gl.createBuffer();
+  mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, vertexBuffer);
+  mango.gl.bufferData(mango.gl.ARRAY_BUFFER, new Float32Array(vertices), mango.gl.STATIC_DRAW);
   this.buffer = vertexBuffer;
 
-  global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, null);
-  global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
+  mango.gl.bindBuffer(mango.gl.ELEMENT_ARRAY_BUFFER, null);
+  mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, null);
 
-  // this.uMaterialDiffuse = global.gl.getUniformLocation(global.program, 'uMaterialDiffuse');
-  // this.uMaterialAmbient = global.gl.getUniformLocation(global.program, 'uMaterialAmbient');
-  // this.uUseTextures = global.gl.getUniformLocation(global.program, 'uUseTextures');
+  // this.uMaterialDiffuse = mango.gl.getUniformLocation(mango.program, 'uMaterialDiffuse');
+  // this.uMaterialAmbient = mango.gl.getUniformLocation(mango.program, 'uMaterialAmbient');
+  // this.uUseTextures = mango.gl.getUniformLocation(mango.program, 'uUseTextures');
   }
 
   setCount(value){
@@ -483,20 +483,37 @@ class TArc extends TEntity {
 
   draw() {
     if(this.count > 0) {
-      // global.gl.useProgram(global.program);
-      // Bind vertex buffer object
-      global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.buffer);
-      // Get the attribute location
-      // let aVertexPosition = global.gl.getAttribLocation(global.program, "aVertexPosition");
+      if(!mango.useTextures) {
+        // mango.gl.useProgram(mango.program);
+        // Bind vertex buffer object
+        mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, this.buffer);
+        // Get the attribute location
+        // let aVertexPosition = mango.gl.getAttribLocation(mango.program, "aVertexPosition");
 
-      // Point an attribute to the currently bound VBO
-      global.gl.vertexAttribPointer(global.programAttributes.aVertexPosition, 3, global.gl.FLOAT, false, 0, 0);
+        // Point an attribute to the currently bound VBO
+        mango.gl.vertexAttribPointer(mango.programAttributes.aVertexPosition, 3, mango.gl.FLOAT, false, 0, 0);
 
-      // Enable the attribute
-      global.gl.enableVertexAttribArray(global.programAttributes.aVertexPosition);
-      global.gl.uniform4fv(global.programUniforms.uMaterialDiffuse, [1, 1, 1, 1]);
-      // global.gl.uniform4fv(this.uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
-      global.gl.drawArrays(global.gl.LINES, 0, this.count * 2);
+        // Enable the attribute
+        mango.gl.enableVertexAttribArray(mango.programAttributes.aVertexPosition);
+        mango.gl.uniform4fv(mango.programUniforms.uMaterialDiffuse, [1, 0.25, 0.51, 1]);
+        // mango.gl.uniform4fv(this.uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+        mango.gl.drawArrays(mango.gl.LINES, 0, this.count * 2);
+      } else {
+        mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, this.buffer);
+        // Get the attribute location
+        let aVertexPosition = mango.gl.getAttribLocation(mango.textureProgram, "aVertexPosition");
+
+        // Point an attribute to the currently bound VBO
+        mango.gl.vertexAttribPointer(aVertexPosition, 3, mango.gl.FLOAT, false, 0, 0);
+
+        // Enable the attribute
+        mango.gl.enableVertexAttribArray(aVertexPosition);
+        mango.gl.uniform4fv(mango.gl.getUniformLocation(mango.textureProgram, 'uMaterialDiffuse'), [1.0, 0.0, 0.0, 1.0]);
+        mango.gl.uniform4fv(mango.gl.getUniformLocation(mango.textureProgram, 'uMaterialAmbient'), [1.0, 1.0, 1.0, 1.0]);
+        mango.gl.uniform1i(mango.gl.getUniformLocation(mango.textureProgram, 'uUseTextures'), 0);
+        // mango.gl.uniform4fv(this.uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+        mango.gl.drawArrays(mango.gl.LINES, 0, this.count * 2);
+      }
     }
   }
 }
@@ -623,14 +640,14 @@ class TFocus extends TEntity {
       // Store particle object
       this.particles.push(particle);
     }
-    global.gl.useProgram(global.gl.particlesProgram);
+    mango.gl.useProgram(mango.gl.particlesProgram);
 
-    this.buffer = global.gl.createBuffer();
-    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.buffer);
-    global.gl.bufferData(global.gl.ARRAY_BUFFER, this.particleArray, global.gl.DYNAMIC_DRAW);
-    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
+    this.buffer = mango.gl.createBuffer();
+    mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, this.buffer);
+    mango.gl.bufferData(mango.gl.ARRAY_BUFFER, this.particleArray, mango.gl.DYNAMIC_DRAW);
+    mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, null);
 
-    global.gl.useProgram(global.program);
+    mango.gl.useProgram(mango.program);
 
   }
   beginDraw() {
@@ -638,39 +655,39 @@ class TFocus extends TEntity {
     try{
 
       // update particles
-      this.updateParticle( (global.time - global.lastFrameTime)/ 1000.0 );
+      this.updateParticle( (mango.time - mango.lastFrameTime)/ 1000.0 );
 
-      global.gl.useProgram(global.particlesProgram);
+      mango.gl.useProgram(mango.particlesProgram);
 
       //  mapUniforms
       let viewModel = [];
-      let aux = global.modelMatrix;
-      glMatrix.mat4.mul(viewModel, global.viewMatrix, global.modelMatrix);
-      global.gl.uniformMatrix4fv(global.particlesUniforms.uMVMatrix, false, viewModel);  //Maps the Model-View matrix to the uniform prg.uMVMatrix
+      let aux = mango.modelMatrix;
+      glMatrix.mat4.mul(viewModel, mango.viewMatrix, mango.modelMatrix);
+      mango.gl.uniformMatrix4fv(mango.particlesUniforms.uMVMatrix, false, viewModel);  //Maps the Model-View matrix to the uniform prg.uMVMatrix
 
-      global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.getBuffer());
-      global.gl.vertexAttribPointer(global.particlesAttributes.aParticle, 4, global.gl.FLOAT, false, 4*Float32Array.BYTES_PER_ELEMENT, 0);
-      global.gl.enableVertexAttribArray(global.particlesAttributes.aParticle);
+      mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, this.getBuffer());
+      mango.gl.vertexAttribPointer(mango.particlesAttributes.aParticle, 4, mango.gl.FLOAT, false, 4*Float32Array.BYTES_PER_ELEMENT, 0);
+      mango.gl.enableVertexAttribArray(mango.particlesAttributes.aParticle);
 
       // ---- @todo texture variable
-      // global.gl.activeTexture(global.gl.TEXTURE1);
-      // global.gl.bindTexture(global.gl.TEXTURE_2D, particlesTexture.tex);
-      // let uniformSampler = global.gl.getUniformLocation(global.particlesProgram, "uSampler");
-      // global.gl.uniform1i(uniformSampler, 1);
+      // mango.gl.activeTexture(mango.gl.TEXTURE1);
+      // mango.gl.bindTexture(mango.gl.TEXTURE_2D, particlesTexture.tex);
+      // let uniformSampler = mango.gl.getUniformLocation(mango.particlesProgram, "uSampler");
+      // mango.gl.uniform1i(uniformSampler, 1);
       
       this.color
-        ? global.gl.uniform4fv(global.particlesUniforms.uColor, this.color)
-        : global.gl.uniform4fv(global.particlesUniforms.uColor, [1.0, 0.0, 0.0, 1.0]);
+        ? mango.gl.uniform4fv(mango.particlesUniforms.uColor, this.color)
+        : mango.gl.uniform4fv(mango.particlesUniforms.uColor, [1.0, 0.0, 0.0, 1.0]);
 
 
 
       // Update particles size while zooming
-      global.gl.uniform1f(global.particlesUniforms.uPointSize, 60 * Math.pow( Math.min(Math.max(global.zoom,global.minZoom),global.maxZoom), -1 ) );
+      mango.gl.uniform1f(mango.particlesUniforms.uPointSize, 60 * Math.pow( Math.min(Math.max(mango.zoom,mango.minZoom),mango.maxZoom), -1 ) );
 
-      global.gl.drawArrays(global.gl.POINTS, 0, this.getParticles());
-      global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
+      mango.gl.drawArrays(mango.gl.POINTS, 0, this.getParticles());
+      mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, null);
 
-      global.gl.useProgram(global.program);
+      mango.gl.useProgram(mango.program);
 
     }
     catch(err){
@@ -744,9 +761,9 @@ class TFocus extends TEntity {
     }
     // Once we are done looping through all the particles, update the buffer once
 
-    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.buffer);
-    global.gl.bufferData(global.gl.ARRAY_BUFFER, this.particleArray, global.gl.STATIC_DRAW);
-    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
+    mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, this.buffer);
+    mango.gl.bufferData(mango.gl.ARRAY_BUFFER, this.particleArray, mango.gl.STATIC_DRAW);
+    mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, null);
 
   }
 

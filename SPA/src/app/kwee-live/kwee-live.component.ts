@@ -1,6 +1,15 @@
 import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {shared} from '../../assets/engine/commons.js';
-import {allowActions, mainInit, mainR, resetCanvas, interactiveMain, demoMain} from '../../assets/engine/main.js';
+import {
+  allowActions,
+  mainInit,
+  mainInitExplicit,
+  mainR,
+  resetCanvas,
+  interactiveMain,
+  demoMain,
+  mainTextures
+} from '../../assets/engine/main.js';
 import {Title} from '@angular/platform-browser';
 import * as KweeLiveActions from './store/kwee-live.actions';
 import * as fromApp from '../store/app.reducers';
@@ -50,7 +59,7 @@ export class KweeLiveComponent implements OnInit, OnDestroy {
     this.titleService.setTitle('Kwee - Kwee Live');
     this.disabled = false;
     await shared();
-    await mainInit();
+    await mainInitExplicit();
     demoMain( [0, 0, 0], this.boundingbox);
 
     this.store$.dispatch(new KweeLiveActions.TryGetApplications({page: 1, limit: 5}));
@@ -86,6 +95,11 @@ export class KweeLiveComponent implements OnInit, OnDestroy {
   async interactive(target) {
     await resetCanvas();
     demoMain(target, this.boundingbox);
+  }
+
+  async texture() {
+    await resetCanvas();
+    mainTextures();
   }
 
   getAllow() {

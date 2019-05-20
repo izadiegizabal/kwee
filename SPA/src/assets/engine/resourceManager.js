@@ -15,7 +15,7 @@
 */
 
 import { MTLFile } from './dependencies/MTLFile.js';
-import { global, TEntity, angle } from './commons';
+import { mango, TEntity, angle } from './commons';
 import { constants } from './tools/constants.js';
 
 var vec3 = glMatrix.vec3;
@@ -43,7 +43,11 @@ class TResourceManager {
                 case 'json': {
                     // Mesh
                     // console.log("-> Creating TResourceMesh " + name + "...");
-                    resource = new TResourceMesh(name);
+                    if (mango.useTextures) {
+                      resource = new TResourceMeshWithTexture(name);
+                    } else {
+                      resource = new TResourceMesh(name);
+                    }
                     break;
                 }
                 case 'jpg':
@@ -193,13 +197,13 @@ class TResourceMeshArray {
         this.index = this.meshes.length -1;
       }
 
-      if(global.status == 1){
+      if(mango.status == 1){
         // Update LOD while checking zoom
-        if(global.zoom < this.tiers[0]){
+        if(mango.zoom < this.tiers[0]){
           // draw little one
           this.setCount(2);
         }
-        else if(global.zoom < this.tiers[1]){
+        else if(mango.zoom < this.tiers[1]){
 
           this.setCount(1);
         }
@@ -327,8 +331,8 @@ class TResourceMesh extends TResource{
         0,1, 1,2, 2,3, 3,0,   // floor
         4,5, 5,6, 6,7, 7,4,   // cap
         0,4, 1,5, 2,6, 3,7 ], // vertical vertices
-      vbo: global.gl.createBuffer(),
-      ibo: global.gl.createBuffer()
+      vbo: mango.gl.createBuffer(),
+      ibo: mango.gl.createBuffer()
     }
 
     let xMin = this.boundingBox.vertsToCalc[1];;
@@ -365,19 +369,19 @@ class TResourceMesh extends TResource{
       this.boundingBox.vMin[0], this.boundingBox.vMax[1], this.boundingBox.vMax[2]
     ];
 
-    global.gl.useProgram(global.program);
+    mango.gl.useProgram(mango.program);
 
-    this.boundingBox.vbo = global.gl.createBuffer();
-    this.boundingBox.Ibo = global.gl.createBuffer();
+    this.boundingBox.vbo = mango.gl.createBuffer();
+    this.boundingBox.Ibo = mango.gl.createBuffer();
 
-    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.boundingBox.vbo);
-    global.gl.bufferData(global.gl.ARRAY_BUFFER, new Float32Array(this.boundingBox.vertices), global.gl.STATIC_DRAW);
+    mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, this.boundingBox.vbo);
+    mango.gl.bufferData(mango.gl.ARRAY_BUFFER, new Float32Array(this.boundingBox.vertices), mango.gl.STATIC_DRAW);
 
-    global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, this.boundingBox.ibo);
-    global.gl.bufferData(global.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.boundingBox.indices), global.gl.STATIC_DRAW);
+    mango.gl.bindBuffer(mango.gl.ELEMENT_ARRAY_BUFFER, this.boundingBox.ibo);
+    mango.gl.bufferData(mango.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.boundingBox.indices), mango.gl.STATIC_DRAW);
 
-    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
-    global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, null);
+    mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, null);
+    mango.gl.bindBuffer(mango.gl.ELEMENT_ARRAY_BUFFER, null);
 
   }
 
@@ -470,32 +474,32 @@ class TResourceMesh extends TResource{
     this.nVertices = this.vertices.length;
 
     ///////////////////////////////////////////////////////////////////////////////// CREATE BUFFERS
-    if(global.gl && global.program) {
-      let vertexBufferObject = global.gl.createBuffer();
-      global.gl.bindBuffer(global.gl.ARRAY_BUFFER, vertexBufferObject);
-      global.gl.bufferData(global.gl.ARRAY_BUFFER, new Float32Array(this.vertices), global.gl.STATIC_DRAW);
+    if(mango.gl && mango.program) {
+      let vertexBufferObject = mango.gl.createBuffer();
+      mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, vertexBufferObject);
+      mango.gl.bufferData(mango.gl.ARRAY_BUFFER, new Float32Array(this.vertices), mango.gl.STATIC_DRAW);
 
-      let normalBufferObject = global.gl.createBuffer();
-      global.gl.bindBuffer(global.gl.ARRAY_BUFFER, normalBufferObject);
-      global.gl.bufferData(global.gl.ARRAY_BUFFER, new Float32Array(this.normals), global.gl.STATIC_DRAW);
+      let normalBufferObject = mango.gl.createBuffer();
+      mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, normalBufferObject);
+      mango.gl.bufferData(mango.gl.ARRAY_BUFFER, new Float32Array(this.normals), mango.gl.STATIC_DRAW);
 
-      let indexBufferObject = global.gl.createBuffer();
-      global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, indexBufferObject);
-      global.gl.bufferData(global.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triVertices), global.gl.STATIC_DRAW);
+      let indexBufferObject = mango.gl.createBuffer();
+      mango.gl.bindBuffer(mango.gl.ELEMENT_ARRAY_BUFFER, indexBufferObject);
+      mango.gl.bufferData(mango.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triVertices), mango.gl.STATIC_DRAW);
 
       this.vbo = vertexBufferObject;
       this.ibo = indexBufferObject;
       this.nbo = normalBufferObject;
 
       if (this.textures) {
-        let colorBufferObject = global.gl.createBuffer();
-        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, colorBufferObject);
-        global.gl.bufferData(global.gl.ARRAY_BUFFER, new Float32Array(this.textures), global.gl.STATIC_DRAW);
+        let colorBufferObject = mango.gl.createBuffer();
+        mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, colorBufferObject);
+        mango.gl.bufferData(mango.gl.ARRAY_BUFFER, new Float32Array(this.textures), mango.gl.STATIC_DRAW);
         this.cbo = colorBufferObject;
       }
 
-      global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, null);
-      global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
+      mango.gl.bindBuffer(mango.gl.ELEMENT_ARRAY_BUFFER, null);
+      mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, null);
     }
 
     return this;
@@ -505,78 +509,78 @@ class TResourceMesh extends TResource{
   draw(){
 
 
-    global.gl.useProgram(global.program);
+    mango.gl.useProgram(mango.program);
 
 
 // TAG.33
-    // if(global.gl && global.program) {
+    // if(mango.gl && mango.program) {
     ///////////////////////////////////////////////////////////////////////////////////////////// ""MATERIALS"" (NOPE)
-    // let uMaterialDiffuse = global.gl.getUniformLocation(global.program, 'uMaterialDiffuse');
-    // let uMaterialAmbient = global.gl.getUniformLocation(global.program, 'uMaterialAmbient');
-    // let uUseTextures = global.gl.getUniformLocation(global.program, 'uUseTextures');
+    // let uMaterialDiffuse = mango.gl.getUniformLocation(mango.program, 'uMaterialDiffuse');
+    // let uMaterialAmbient = mango.gl.getUniformLocation(mango.program, 'uMaterialAmbient');
+    // let uUseTextures = mango.gl.getUniformLocation(mango.program, 'uUseTextures');
     /// CHAPUZA CHANGE COLORS
     // if (this.name === 'sea.json') {
-    //   global.gl.uniform4fv(uMaterialDiffuse, [0.313, 0.678, 0.949, 1.0]);
-    //   global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
-    //   global.gl.uniform1i(uUseTextures, 0);
+    //   mango.gl.uniform4fv(uMaterialDiffuse, [0.313, 0.678, 0.949, 1.0]);
+    //   mango.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+    //   mango.gl.uniform1i(uUseTextures, 0);
     // } else if (this.name === 'marker.json') {
-    //   global.gl.uniform4fv(uMaterialDiffuse, [1, 0.039, 0.231, 1.0]);
-    //   global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
-    //   global.gl.uniform1i(uUseTextures, 0);
+    //   mango.gl.uniform4fv(uMaterialDiffuse, [1, 0.039, 0.231, 1.0]);
+    //   mango.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+    //   mango.gl.uniform1i(uUseTextures, 0);
     // } else if (this.name === 'card.json') {
-    //   global.gl.uniform4fv(uMaterialDiffuse, [0.313, 0.678, 0.949, 1.0]);
-    //   global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
-    //   global.gl.uniform1i(uUseTextures, 0);
+    //   mango.gl.uniform4fv(uMaterialDiffuse, [0.313, 0.678, 0.949, 1.0]);
+    //   mango.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+    //   mango.gl.uniform1i(uUseTextures, 0);
     // } else {
     //   if (this.tex && this.tex.tex) {
-    //     global.gl.uniform4fv(uMaterialDiffuse, [1.0, 1.0, 1.0, 1.0]);
-    //     global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
-    //     global.gl.activeTexture(global.gl.TEXTURE0);
-    //     global.gl.bindTexture(global.gl.TEXTURE_2D, this.tex.tex);
-    //     global.gl.uniform1i(global.program.sampler, 0);
-    //     global.gl.uniform1i(uUseTextures, 1);
+    //     mango.gl.uniform4fv(uMaterialDiffuse, [1.0, 1.0, 1.0, 1.0]);
+    //     mango.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+    //     mango.gl.activeTexture(mango.gl.TEXTURE0);
+    //     mango.gl.bindTexture(mango.gl.TEXTURE_2D, this.tex.tex);
+    //     mango.gl.uniform1i(mango.program.sampler, 0);
+    //     mango.gl.uniform1i(uUseTextures, 1);
     //   } else {
-    //     global.gl.uniform4fv(uMaterialDiffuse, [0.258, 0.960, 0.6, 1.0]);
-    //     global.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
-    //     global.gl.uniform1i(uUseTextures, 0);
+    //     mango.gl.uniform4fv(uMaterialDiffuse, [0.258, 0.960, 0.6, 1.0]);
+    //     mango.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+    //     mango.gl.uniform1i(uUseTextures, 0);
     //   }
     // }
     ///////////////////////////////////////////////////////////////////////////////////////////// BIND BUFFERS
 
-    // global.gl.enableVertexAttribArray(global.programAttributes.aVertexPosition);
-    // global.gl.enableVertexAttribArray(global.programAttributes.aVertexNormal);
+    // mango.gl.enableVertexAttribArray(mango.programAttributes.aVertexPosition);
+    // mango.gl.enableVertexAttribArray(mango.programAttributes.aVertexNormal);
 
 
 // TAG.36
     // Set material before drawing
     this.color 
-      ? global.gl.uniform4fv(global.programUniforms.uMaterialDiffuse, this.color) 
-      : global.gl.uniform4fv(global.programUniforms.uMaterialDiffuse, [1,0,0,1]);
+      ? mango.gl.uniform4fv(mango.programUniforms.uMaterialDiffuse, this.color)
+      : mango.gl.uniform4fv(mango.programUniforms.uMaterialDiffuse, [1,0,0,1]);
     this.specular 
-      ? global.gl.uniform4fv(global.programUniforms.uMaterialSpecular, this.specular)
-      : global.gl.uniform4fv(global.programUniforms.uMaterialSpecular, [1,1,1,1]);
+      ? mango.gl.uniform4fv(mango.programUniforms.uMaterialSpecular, this.specular)
+      : mango.gl.uniform4fv(mango.programUniforms.uMaterialSpecular, [1,1,1,1]);
     this.shininess
-      ? global.gl.uniform1f(global.programUniforms.uShininess, this.shininess)
-      : global.gl.uniform1f(global.programUniforms.uShininess, 100.0);
+      ? mango.gl.uniform1f(mango.programUniforms.uShininess, this.shininess)
+      : mango.gl.uniform1f(mango.programUniforms.uShininess, 100.0);
 
      
 
-    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.vbo);
-    global.gl.vertexAttribPointer(global.programAttributes.aVertexPosition, 3, global.gl.FLOAT, global.gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
-    global.gl.enableVertexAttribArray(global.programAttributes.aVertexPosition);
+    mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, this.vbo);
+    mango.gl.vertexAttribPointer(mango.programAttributes.aVertexPosition, 3, mango.gl.FLOAT, mango.gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
+    mango.gl.enableVertexAttribArray(mango.programAttributes.aVertexPosition);
 
 
-    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.nbo);
-    global.gl.vertexAttribPointer(global.programAttributes.aVertexNormal, 3, global.gl.FLOAT, global.gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
-    global.gl.enableVertexAttribArray(global.programAttributes.aVertexNormal);
+    mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, this.nbo);
+    mango.gl.vertexAttribPointer(mango.programAttributes.aVertexNormal, 3, mango.gl.FLOAT, mango.gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
+    mango.gl.enableVertexAttribArray(mango.programAttributes.aVertexNormal);
 
 
     // if (this.tex && this.tex.tex) {
-    //   let texCoordAttribLocation = global.gl.getAttribLocation(global.program, 'aVertexTextureCoords');
-    //   global.gl.enableVertexAttribArray(texCoordAttribLocation);
-    //   global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.cbo);
-    //   global.gl.vertexAttribPointer(texCoordAttribLocation, 2, global.gl.FLOAT, global.gl.FALSE, 2 * Float32Array.BYTES_PER_ELEMENT, 0);
-    //   global.gl.enableVertexAttribArray(texCoordAttribLocation);
+    //   let texCoordAttribLocation = mango.gl.getAttribLocation(mango.program, 'aVertexTextureCoords');
+    //   mango.gl.enableVertexAttribArray(texCoordAttribLocation);
+    //   mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, this.cbo);
+    //   mango.gl.vertexAttribPointer(texCoordAttribLocation, 2, mango.gl.FLOAT, mango.gl.FALSE, 2 * Float32Array.BYTES_PER_ELEMENT, 0);
+    //   mango.gl.enableVertexAttribArray(texCoordAttribLocation);
     // }
 
 
@@ -584,8 +588,8 @@ class TResourceMesh extends TResource{
 
     // MVMatrix = model * view
     let viewModel = [];
-    glMatrix.mat4.multiply(viewModel, global.viewMatrix, global.modelMatrix);
-    global.gl.uniformMatrix4fv(global.programUniforms.uMVMatrix, false, viewModel);
+    glMatrix.mat4.multiply(viewModel, mango.viewMatrix, mango.modelMatrix);
+    mango.gl.uniformMatrix4fv(mango.programUniforms.uMVMatrix, false, viewModel);
 
     // uPMatrix * uMVMatrix (on shader)
 
@@ -593,31 +597,31 @@ class TResourceMesh extends TResource{
     let normalMatrix = glMatrix.mat4.create();
     glMatrix.mat4.invert(normalMatrix, viewModel);
     glMatrix.mat4.transpose(normalMatrix, normalMatrix);
-    global.gl.uniformMatrix4fv(global.programUniforms.uNMatrix, false, normalMatrix);
+    mango.gl.uniformMatrix4fv(mango.programUniforms.uNMatrix, false, normalMatrix);
 
     ///////////////////////////////////////////////////////////////////////////////// DRAW
-    global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, this.ibo);
-    global.gl.drawElements(global.gl.TRIANGLES, this.nTris, global.gl.UNSIGNED_SHORT, 0);
+    mango.gl.bindBuffer(mango.gl.ELEMENT_ARRAY_BUFFER, this.ibo);
+    mango.gl.drawElements(mango.gl.TRIANGLES, this.nTris, mango.gl.UNSIGNED_SHORT, 0);
     ///////////////////////////////////////////////////////////////////////////////// CLEAR ALL BUFFERS
-    global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
-    global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, null);
+    mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, null);
+    mango.gl.bindBuffer(mango.gl.ELEMENT_ARRAY_BUFFER, null);
 
     // bounding box if available
     if(this.enableBBox){
 
       // draw
-      global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.boundingBox.vbo);
-      global.gl.vertexAttribPointer(global.programAttributes.aVertexPosition, 3, global.gl.FLOAT, global.gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
-      global.gl.enableVertexAttribArray(global.programAttributes.aVertexPosition);
+      mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, this.boundingBox.vbo);
+      mango.gl.vertexAttribPointer(mango.programAttributes.aVertexPosition, 3, mango.gl.FLOAT, mango.gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
+      mango.gl.enableVertexAttribArray(mango.programAttributes.aVertexPosition);
       // Set lines to black
-      global.gl.uniform4fv(global.programUniforms.uMaterialDiffuse, [0.0, 0.0, 0.0, 1.0])
+      mango.gl.uniform4fv(mango.programUniforms.uMaterialDiffuse, [0.0, 0.0, 0.0, 1.0])
 
-      global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, this.boundingBox.ibo);
+      mango.gl.bindBuffer(mango.gl.ELEMENT_ARRAY_BUFFER, this.boundingBox.ibo);
 
-      global.gl.drawElements(global.gl.LINES, this.boundingBox.indices.length, global.gl.UNSIGNED_SHORT, 0);
+      mango.gl.drawElements(mango.gl.LINES, this.boundingBox.indices.length, mango.gl.UNSIGNED_SHORT, 0);
 
-      global.gl.bindBuffer(global.gl.ARRAY_BUFFER, null);
-      global.gl.bindBuffer(global.gl.ELEMENT_ARRAY_BUFFER, null);
+      mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, null);
+      mango.gl.bindBuffer(mango.gl.ELEMENT_ARRAY_BUFFER, null);
     }
 
 
@@ -691,7 +695,7 @@ class TResourceMaterial extends TResource{
 class TResourceTexture extends TResource{
   constructor(name){
     super(name);
-    this.tex = global.gl.createTexture();
+    this.tex = mango.gl.createTexture();
     this.image = new Image();
   }
   
@@ -699,11 +703,11 @@ class TResourceTexture extends TResource{
     return new Promise(async resolve => {
       console.log('== loading TResourceTexture(' + this.name + ') ==');
       // console.info('loading image '+this.image.src);
-      global.gl.bindTexture(global.gl.TEXTURE_2D, this.tex);
-      global.gl.pixelStorei(global.gl.UNPACK_FLIP_Y_WEBGL, 1);
-      global.gl.texImage2D(global.gl.TEXTURE_2D, 0, global.gl.RGBA, global.gl.RGBA, global.gl.UNSIGNED_BYTE, this.image);
-      global.gl.texParameteri(global.gl.TEXTURE_2D, global.gl.TEXTURE_MIN_FILTER, global.gl.LINEAR);
-      global.gl.bindTexture(global.gl.TEXTURE_2D, null);
+      mango.gl.bindTexture(mango.gl.TEXTURE_2D, this.tex);
+      mango.gl.pixelStorei(mango.gl.UNPACK_FLIP_Y_WEBGL, 1);
+      mango.gl.texImage2D(mango.gl.TEXTURE_2D, 0, mango.gl.RGBA, mango.gl.RGBA, mango.gl.UNSIGNED_BYTE, this.image);
+      mango.gl.texParameteri(mango.gl.TEXTURE_2D, mango.gl.TEXTURE_MIN_FILTER, mango.gl.LINEAR);
+      mango.gl.bindTexture(mango.gl.TEXTURE_2D, null);
       resolve(true);
     });
   }
@@ -740,6 +744,227 @@ class TResourceShader extends TResource {
   getShader() {
     return this.shader;
   }
+}
+
+
+class TResourceMeshWithTexture extends TResource{
+
+  constructor(name){
+    super(name);
+
+    // vertices positions
+    this.vertices = [];
+    // vertices indices
+    this.triVertices = [];
+
+    // normals
+    this.normals = [];
+    // ¿¿??
+    this.triNormals;
+
+    // texture coords
+    this.textures = [];
+    // ¿¿??
+    this.triTextures;
+
+    this.nTris;
+    this.nVertices;
+    this.alias;
+
+    this.cbo;
+    this.nbo;
+    this.ibo;
+    this.vbo;
+  }
+
+  async loadFile(file){
+
+    console.log("== loadFile TResourceMesh(" + file + ") ==");
+
+    // mesh file code
+    const jsonMesh = await loadJSON(file);
+
+    ///////////////////////////////////////////////////////////////////////////////// GET INFO FROM FILE
+
+    this.alias = jsonMesh.alias;
+
+    if( file == "earth_fbx.json" ||
+      file == "earthfbx.json" ||
+      file == "earthobj.json" ||
+      file == "mesh_continentsObj.json"
+    ){
+
+      //jsonMesh.meshes.forEach( (e, i) => {
+        this.vertices = jsonMesh.meshes[0].vertices;
+        this.triVertices = [].concat.apply([], jsonMesh.meshes[0].faces);
+        this.textures = jsonMesh.meshes[0].texturecoords[0];
+        this.normals = jsonMesh.meshes[0].normals;
+
+      this.vertices.concat(jsonMesh.meshes[1].vertices);
+      this.triVertices.concat([].concat.apply([], jsonMesh.meshes[1].faces));
+      this.textures.concat(jsonMesh.meshes[1].texturecoords[0]);
+      this.normals.concat(jsonMesh.meshes[1].normals);
+      //});
+
+
+    } else if (file == "test.json") {
+      this.alias = file;
+
+      this.vertices = jsonMesh.model.vertices[0].position.data;
+      this.triVertices = jsonMesh.model.meshes[0].indices;
+      this.textures = jsonMesh.model.vertices[0].texCoord0.data;
+      this.normals = jsonMesh.model.vertices[0].normal.data;
+
+    }
+    else if (file == "test1.json" ||
+      file == "test2.json" ||
+      file == "ballNormals.json" ||
+      file == "ballNoNormals.json" ||
+      file == "textured_earth.json" ||
+      file == "sea.json" ||
+      file == "marker.json" ||
+      file == "card.json" ||
+      file == "mesh_continents.json" ||
+      file == "textureLand.json" ||
+      file == "earth.json") {
+      this.alias = file;
+
+      this.vertices = jsonMesh.positions;
+      this.triVertices = jsonMesh.indices;
+      this.textures = jsonMesh.texcoords ? jsonMesh.texcoords.UVMap : null;
+      this.normals = jsonMesh.normals;
+
+    } else if(jsonMesh.indices!=undefined && jsonMesh.verts != undefined){
+      this.vertices = jsonMesh.verts;
+      this.triVertices = jsonMesh.indices;
+      //this.normals = jsonMesh.normals;
+      this.normals = calculateNormals(this.vertices, this.triVertices);
+
+      //console.log("== kurilo.su loader ==");
+    }
+    else{
+
+      this.vertices = jsonMesh.vertices;
+      this.triVertices = jsonMesh.indices;
+      this.textures = jsonMesh.uvs;
+      this.normals = jsonMesh.normals;
+
+    }
+
+    this.nTris = this.triVertices.length;
+    this.nVertices = this.vertices.length;
+
+    ///////////////////////////////////////////////////////////////////////////////// CREATE BUFFERS
+    if(mango.gl && mango.textureProgram) {
+      let vertexBufferObject = mango.gl.createBuffer();
+      mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, vertexBufferObject);
+      mango.gl.bufferData(mango.gl.ARRAY_BUFFER, new Float32Array(this.vertices), mango.gl.STATIC_DRAW);
+
+      let normalBufferObject = mango.gl.createBuffer();
+      mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, normalBufferObject);
+      mango.gl.bufferData(mango.gl.ARRAY_BUFFER, new Float32Array(this.normals), mango.gl.STATIC_DRAW);
+
+      let indexBufferObject = mango.gl.createBuffer();
+      mango.gl.bindBuffer(mango.gl.ELEMENT_ARRAY_BUFFER, indexBufferObject);
+      mango.gl.bufferData(mango.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.triVertices), mango.gl.STATIC_DRAW);
+
+      this.vbo = vertexBufferObject;
+      this.ibo = indexBufferObject;
+      this.nbo = normalBufferObject;
+
+      if (this.textures !== []) {
+        let colorBufferObject = mango.gl.createBuffer();
+        mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, colorBufferObject);
+        mango.gl.bufferData(mango.gl.ARRAY_BUFFER, new Float32Array(this.textures), mango.gl.STATIC_DRAW);
+        this.cbo = colorBufferObject;
+      }
+
+      mango.gl.bindBuffer(mango.gl.ELEMENT_ARRAY_BUFFER, null);
+      mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, null);
+    }
+
+    return this;
+  }
+
+  draw(){
+    // if(mango.gl && mango.program) {
+    ///////////////////////////////////////////////////////////////////////////////////////////// ""MATERIALS"" (NOPE)
+    let uMaterialDiffuse = mango.gl.getUniformLocation(mango.textureProgram, 'uMaterialDiffuse');
+    let uMaterialAmbient = mango.gl.getUniformLocation(mango.textureProgram, 'uMaterialAmbient');
+    let uUseTextures = mango.gl.getUniformLocation(mango.textureProgram, 'uUseTextures');
+    /// CHAPUZA CHANGE COLORS
+    if (this.name === '2_sea_SS.json') {
+      mango.gl.uniform4fv(uMaterialDiffuse, [0.313, 0.678, 0.949, 1.0]);
+      mango.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+      mango.gl.uniform1i(uUseTextures, 0);
+    } else {
+      if (this.tex && this.tex.tex) {
+        mango.gl.uniform4fv(uMaterialDiffuse, [1.0, 1.0, 1.0, 1.0]);
+        mango.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+        mango.gl.activeTexture(mango.gl.TEXTURE0);
+        mango.gl.bindTexture(mango.gl.TEXTURE_2D, this.tex.tex);
+        mango.gl.uniform1i(mango.textureProgram.sampler, 0);
+        mango.gl.uniform1i(uUseTextures, 1);
+
+        let texCoordAttribLocation = mango.gl.getAttribLocation(mango.textureProgram, 'aVertexTextureCoords');
+        mango.gl.enableVertexAttribArray(texCoordAttribLocation);
+        mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, this.cbo);
+        mango.gl.vertexAttribPointer(texCoordAttribLocation, 2, mango.gl.FLOAT, mango.gl.FALSE, 2 * Float32Array.BYTES_PER_ELEMENT, 0);
+        mango.gl.enableVertexAttribArray(texCoordAttribLocation);
+      } else {
+        mango.gl.uniform4fv(uMaterialDiffuse, [0.258, 0.960, 0.6, 1.0]);
+        mango.gl.uniform4fv(uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+        mango.gl.uniform1i(uUseTextures, 0);
+      }
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////// BIND BUFFERS
+    let positionAttribLocation = mango.gl.getAttribLocation(mango.textureProgram, 'aVertexPosition');
+    let normalAttribLocation = mango.gl.getAttribLocation(mango.textureProgram, 'aVertexNormal');
+    mango.gl.enableVertexAttribArray(positionAttribLocation);
+    mango.gl.enableVertexAttribArray(normalAttribLocation);
+
+
+    mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, this.vbo);
+    mango.gl.vertexAttribPointer(positionAttribLocation, 3, mango.gl.FLOAT, mango.gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
+    mango.gl.enableVertexAttribArray(positionAttribLocation);
+
+
+    mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, this.nbo);
+    mango.gl.vertexAttribPointer(normalAttribLocation, 3, mango.gl.FLOAT, mango.gl.FALSE, 3 * Float32Array.BYTES_PER_ELEMENT, 0);
+    mango.gl.enableVertexAttribArray(normalAttribLocation);
+
+
+    ///////////////////////////////////////////////////////////////////////////////// POSITION & ROTATION STUFF
+    var worldMatrix = TEntity.Model;
+    var rotation = glMatrix.mat4.create();
+    //glMatrix.mat4.rotate(rotation, worldMatrix, angle, [0, 1, 0]);
+
+
+    let matWorldUniformLocation = mango.gl.getUniformLocation(mango.textureProgram, 'uMVMatrix');
+    let normal = mango.gl.getUniformLocation(mango.textureProgram, 'uNMatrix');
+
+
+    // MVMatrix = model * view
+    let viewModel = [];
+    glMatrix.mat4.multiply(viewModel, mango.viewMatrix, mango.modelMatrix);
+    mango.gl.uniformMatrix4fv(matWorldUniformLocation, false, viewModel);
+
+    // uPMatrix * uMVMatrix (on shader)
+
+    // NMatrix
+    let normalMatrix = glMatrix.mat4.create();
+    glMatrix.mat4.invert(normalMatrix, viewModel);
+    glMatrix.mat4.transpose(normalMatrix, normalMatrix);
+    mango.gl.uniformMatrix4fv(normal, false, normalMatrix);
+
+    ///////////////////////////////////////////////////////////////////////////////// DRAW
+    mango.gl.bindBuffer(mango.gl.ELEMENT_ARRAY_BUFFER, this.ibo);
+    mango.gl.drawElements(mango.gl.TRIANGLES, this.nTris, mango.gl.UNSIGNED_SHORT, 0);
+    ///////////////////////////////////////////////////////////////////////////////// CLEAR ALL BUFFERS
+    mango.gl.bindBuffer(mango.gl.ARRAY_BUFFER, null);
+    mango.gl.bindBuffer(mango.gl.ELEMENT_ARRAY_BUFFER, null);
+  }
+  // }
 }
 
 
