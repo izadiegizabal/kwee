@@ -202,7 +202,6 @@ export class LandingComponent implements OnInit, OnDestroy {
 
     let then = 0;
     let last = 0;
-    let arcsSec = 0;
     /*
       Fases
       0 => wait 5s
@@ -212,23 +211,16 @@ export class LandingComponent implements OnInit, OnDestroy {
      */
     let fase = -1;
     let self = this;
-
     const thisContext = this;
     const loop = function(now) {
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      if(now - arcsSec >= 1000) {
-        arcsSec = now;
-        motor.createAndAnimateArc(motor.scene, self.generateRandomLat(), self.generateRandomLong(), self.generateRandomLat(), self.generateRandomLong(), 24, 1.5, 3);
-        // motor.createAndAnimateArc(motor.scene, self.generateRandomLat(), self.generateRandomLong(), self.generateRandomLat(), self.generateRandomLong(), 24, 1.5, 3);
-      }
-
       switch (fase) {
         /// wait 5s
         case 0:
           if(now - last >= 5000) {
             last = now;
             fase = 1;
-            if(thisContext.currentIndex === thisContext.fetchedOffers.length){
+            if(thisContext.currentIndex === (thisContext.fetchedOffers.length - 1)){
               thisContext.currentIndex = 0;
             }
           }

@@ -59,19 +59,19 @@ export class MiniOfferComponent implements OnInit {
     switch (this.className) {
       case 'down':
         d.style.left = (this.points[0] - parseInt(getComputedStyle(d).width,10)/2)+'px';
-        d.style.top = (this.points[1] - parseInt(getComputedStyle(d).height,10) - 70)+'px';
+        d.style.top = (this.points[1] - parseInt(getComputedStyle(d).height,10) - 70 - 7)+'px';
         break;
       case 'up':
         d.style.left = (this.points[0] - parseInt(getComputedStyle(d).width,10)/2)+'px';
-        d.style.top = (this.points[1] + parseInt(getComputedStyle(d).height,10) - 5)+'px';
+        d.style.top = (this.points[1] + parseInt(getComputedStyle(d).height,10) - 10)+'px';
         break;
       case 'left':
         d.style.left = (this.points[0] - parseInt(getComputedStyle(d).width,10) + 70 + (270))+'px';
-        d.style.top = (this.points[1] - parseInt(getComputedStyle(d).height,10)/2)+'px';
+        d.style.top = (this.points[1] - parseInt(getComputedStyle(d).height,10)/2 - 7)+'px';
         break;
       case 'right':
         d.style.left = (this.points[0] - parseInt(getComputedStyle(d).width,10) - 70)+'px';
-        d.style.top = (this.points[1] - parseInt(getComputedStyle(d).height,10)/2)+'px';
+        d.style.top = (this.points[1] - parseInt(getComputedStyle(d).height,10)/2 - 7)+'px';
         break;
     }
   }
