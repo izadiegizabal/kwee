@@ -11,6 +11,7 @@ var global = {
   particlesProgram: null,
   textureProgram: null,
   useTextures: null,
+  lastThis: null,
   modelMatrix: null,      // model Matrix
   viewMatrix: null,       // view Matrix
   viewPos: null,       // view Vec3 position

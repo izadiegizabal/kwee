@@ -495,7 +495,7 @@ class TArc extends TEntity {
 
         // Enable the attribute
         global.gl.enableVertexAttribArray(global.programAttributes.aVertexPosition);
-        global.gl.uniform4fv(global.programUniforms.uMaterialDiffuse, [1, 1, 1, 1]);
+        global.gl.uniform4fv(global.programUniforms.uMaterialDiffuse, [1, 0.25, 0.51, 1]);
         // global.gl.uniform4fv(this.uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
         global.gl.drawArrays(global.gl.LINES, 0, this.count * 2);
       } else {

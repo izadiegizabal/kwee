@@ -270,6 +270,7 @@ export class LandingComponent implements OnInit, OnDestroy {
 
     let then = 0;
     let last = 0;
+    let arcsSec = 0;
     /*
       Fases
       0 => wait 5s
@@ -278,13 +279,16 @@ export class LandingComponent implements OnInit, OnDestroy {
       default => prevent init errors
      */
     let fase = -1;
+    let self = this;
 
     const thisContext = this;
     const loop = function(now) {
-      global.time = Date.now();
-
-      ////// Animation stuff @todo MOVE TO NEW MOTOR.RUN LOOP
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      if(now - arcsSec >= 1000) {
+        arcsSec = now;
+        motor.createAndAnimateArc(motor.scene, self.generateRandomLat(), self.generateRandomLong(), self.generateRandomLat(), self.generateRandomLong(), 24, 1.5, 3);
+        // motor.createAndAnimateArc(motor.scene, self.generateRandomLat(), self.generateRandomLong(), self.generateRandomLat(), self.generateRandomLong(), 24, 1.5, 3);
+      }
 
       switch (fase) {
         /// wait 5s
@@ -328,56 +332,11 @@ export class LandingComponent implements OnInit, OnDestroy {
           fase = 0;
           break;
       }
-
-      // Convert the time to second
-      now *= 0.001;
-      // Subtract the previous time from the current time
-      var deltaTime = now - then;
-      // Remember the current time for the next frame.
-      then = now;
-      // count animations
-      motor.allCountAnimations.forEach( (e, i) => {
-        if(!e.update(deltaTime)){
-          motor.allCountAnimations.splice(i, 1);
-          if(motor.isArcAnimation(e)){
-            motor.deleteArc(e.object);
-          }
-        }
-      });
-      /// Camera animations
-      motor.allCamAnimations.forEach( (e, i) => {
-        let val = e.update(deltaTime);
-        if(val !== 1){
-
-          let radius = 2; // debug
-
-          val[0] = val[0] * radius;
-          val[1] = val[1] * radius;
-          val[2] = val[2] * radius;
-
-          motor.cameraLookAt( camera, [...val],
-            [0,0,0],
-            [0,1,0]);
-        } else {
-          motor.calculateViews();
-          global.auxViewMatrix = global.viewMatrix.slice();
-          motor.allCamAnimations.splice(i, 1);
-        }
-      });
-
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      motor.calculateViews();
-      /// individual positions needed, I dont know why...
-      global.gl.uniform3f(global.programUniforms.uLightDirection,
-        global.viewPos[0], global.viewPos[1], global.viewPos[2]
-      );
-      motor.draw();
-      global.lastFrameTime = global.time;
-
       requestAnimationFrame(loop);
     };
 
     motor.init();
+    requestAnimationFrame(motor.render);
     requestAnimationFrame(loop);
   }
 
@@ -490,5 +449,14 @@ export class LandingComponent implements OnInit, OnDestroy {
 
   goToSignUp(userType: string) {
     this.router.navigate(['/signup'], {queryParams: {type: userType}});
+  }
+
+  // LONGITUDE -180 to + 180
+  generateRandomLong() {
+    return +(Math.random() * (180 - (-180)) + (-180)).toFixed(3) * 1;
+  }
+  // LATITUDE -90 to +90
+  generateRandomLat() {
+    return +(Math.random() * (90 - (-90)) + (-90)).toFixed(3) * 1;
   }
 }

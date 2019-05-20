@@ -705,6 +705,7 @@ class TMotorTAG{
   //////////////////
   // Init TMotorTAG
   init() {
+    global.lastThis = this;
     // Clear
     global.gl.useProgram(global.program);
     global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
@@ -731,6 +732,7 @@ class TMotorTAG{
   }
 
   initTextures() {
+    global.lastThis = this;
     // Clear
     global.gl.useProgram(global.textureProgram);
     global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
@@ -892,30 +894,27 @@ class TMotorTAG{
     this.scene.draw();
   }
 
-  render(now, self) {
+  render(now) {
     global.time = Date.now();
-
-console.log(self);
-
     ////// Animation stuff @todo MOVE TO NEW MOTOR.RUN LOOP
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Convert the time to second
     now *= 0.001;
     // Subtract the previous time from the current time
-    let deltaTime = now - self.then;
+    let deltaTime = now - global.lastThis.then;
     // Remember the current time for the next frame.
-    self.then = now;
+    global.lastThis.then = now;
     // count animations
-    self.allCountAnimations.forEach( (e, i) => {
+    global.lastThis.allCountAnimations.forEach( (e, i) => {
       if(!e.update(deltaTime)){
-        self.allCountAnimations.splice(i, 1);
-        if(self.isArcAnimation(e)){
-          self.deleteArc(e.object);
+        global.lastThis.allCountAnimations.splice(i, 1);
+        if(global.lastThis.isArcAnimation(e)){
+          global.lastThis.deleteArc(e.object);
         }
       }
     });
     /// Camera animations
-    self.allCamAnimations.forEach( (e, i) => {
+    global.lastThis.allCamAnimations.forEach( (e, i) => {
       let val = e.update(deltaTime);
       if(val !== 1){
 
@@ -925,26 +924,24 @@ console.log(self);
         val[1] = val[1] * radius;
         val[2] = val[2] * radius;
 
-        self.cameraLookAt( self.activeCamera, [...val],
+        global.lastThis.cameraLookAt( global.lastThis.activeCamera, [...val],
           [0,0,0],
           [0,1,0]);
       } else {
-        self.calculateViews();
+        global.lastThis.calculateViews();
         global.auxViewMatrix = global.viewMatrix.slice();
-        self.allCamAnimations.splice(i, 1);
+        global.lastThis.allCamAnimations.splice(i, 1);
       }
     });
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    self.calculateViews();
+    global.lastThis.calculateViews();
     /// individual positions needed, I dont know why...
-    self.updateLightToTarget();
-    self.draw();
+    global.lastThis.updateLightToTarget();
+    global.lastThis.draw();
     global.lastFrameTime = global.time;
 
-    requestAnimationFrame(function(timestamp) {
-      motor.render(timestamp, self);
-    });
+    requestAnimationFrame(global.lastThis.render);
   };
 
   updateLightToTarget(){

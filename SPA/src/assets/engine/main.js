@@ -1249,9 +1249,6 @@ async function mainTextures(texture, particles, line) {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Avoid error unit 0
 
-    let arcsSec = 0;
-    let then = 0;
-
     let number = 0;
 
     var loop = async function (now) {
@@ -1259,62 +1256,17 @@ async function mainTextures(texture, particles, line) {
 
         global.gl.useProgram(global.textureProgram);
 
-
-        if(now - arcsSec >= 1000) {
-          arcsSec = now;
-          motor.createAndAnimateArc(scene, generateRandomLat(), generateRandomLong(), generateRandomLat(), generateRandomLong(), 24, 1.5, 3);
-          motor.createAndAnimateArc(scene, generateRandomLat(), generateRandomLong(), generateRandomLat(), generateRandomLong(), 24, 1.5, 3);
-        }
-
-        // Convert the time to second
-        now *= 0.001;
-        // Subtract the previous time from the current time
-        let deltaTime = now - then;
-        // Remember the current time for the next frame.
-        then = now;
-
-        motor.allCountAnimations.forEach( (e, i) => {
-          if(!e.update(deltaTime)){
-            motor.allCountAnimations.splice(i, 1);
-            if(motor.isArcAnimation(e)){
-              motor.deleteArc(e.object);
-            }
-          }
-        });
-
         global.time = await Date.now();
 
-
-
-
-        ////////////////////////////////////////////////////////////////
-
-        /*motor.cameraLookAt( cam, [
-          radius * Math.sin(number*Math.PI/180),
-          radius,
-          radius * Math.cos(number*Math.PI/180),
-        ],
-        [0,0,0],
-        [0,1,0]);*/
-
-
         motor.calculateViews();
 
-        // global.gl.uniform3f(global.programUniforms.uLightDirection,
-        //   radius * Math.sin(number*Math.PI/180),
-        //   radius,
-        //   radius * Math.cos(number*Math.PI/180)
-        // );
-        motor.calculateViews();
         requestAnimationFrame(loop);
 
         motor.draw();
 
         ////////////////////////////////////////////////////////////////
 
-
         global.lastFrameTime = global.time;
-
 
       }
       number = number + 0.3;
@@ -1323,10 +1275,6 @@ async function mainTextures(texture, particles, line) {
 
     motor.initTextures();
     requestAnimationFrame(loop);
-    /*requestAnimationFrame(function(timestamp) {
-      motor.render(timestamp, motor);
-    });*/
-    // requestAnimationFrame(motor.render.bind(this));
 
   }
 }
