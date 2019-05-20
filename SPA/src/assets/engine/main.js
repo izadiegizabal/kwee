@@ -5,7 +5,7 @@ import {TResourceManager} from './resourceManager.js';
 // TMotor
 import {TMotorTAG} from './TMotorTAG.js';
 // Commons
-import {canvas, changeAngle, global, angle, TEntity, loadAttribAndUniformsLocations, ease} from './commons.js';
+import {canvas, changeAngle, mango, angle, TEntity, loadAttribAndUniformsLocations, ease} from './commons.js';
 
 import {getBezierPoints, convertLatLonToVec3, quatFromVectors, getEuler, degrees, convertLatLonToVec3Rotated} from './tools/utils.js'
 
@@ -39,7 +39,7 @@ function  setSceneWidth(value){
 async function mainInitExplicit() {
   return new Promise(async resolve => {
 
-    //global.gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
+    //mango.gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
 
     // (0.435, 0.909, 0.827, 0.0); // our blue
     // (0.266, 0.294, 0.329, 1.0); // our grey
@@ -52,34 +52,34 @@ async function mainInitExplicit() {
     let FShader = await manager.getResource('shader.fs');
 
 
-    let vertexShader = global.gl.createShader(global.gl.VERTEX_SHADER);
-    let fragmentShader = global.gl.createShader(global.gl.FRAGMENT_SHADER);
+    let vertexShader = mango.gl.createShader(mango.gl.VERTEX_SHADER);
+    let fragmentShader = mango.gl.createShader(mango.gl.FRAGMENT_SHADER);
 
-    global.gl.shaderSource(vertexShader, VShader);
-    global.gl.shaderSource(fragmentShader, FShader);
+    mango.gl.shaderSource(vertexShader, VShader);
+    mango.gl.shaderSource(fragmentShader, FShader);
 
-    global.gl.compileShader(vertexShader);
-    if (!global.gl.getShaderParameter(vertexShader, global.gl.COMPILE_STATUS)) {
-      console.error('ERROR compiling vertex shader', global.gl.getShaderInfoLog(vertexShader));
+    mango.gl.compileShader(vertexShader);
+    if (!mango.gl.getShaderParameter(vertexShader, mango.gl.COMPILE_STATUS)) {
+      console.error('ERROR compiling vertex shader', mango.gl.getShaderInfoLog(vertexShader));
       return;
     }
 
-    global.gl.compileShader(fragmentShader);
-    if (!global.gl.getShaderParameter(fragmentShader, global.gl.COMPILE_STATUS)) {
-      console.error('ERROR compiling fragment shader', global.gl.getShaderInfoLog(fragmentShader));
+    mango.gl.compileShader(fragmentShader);
+    if (!mango.gl.getShaderParameter(fragmentShader, mango.gl.COMPILE_STATUS)) {
+      console.error('ERROR compiling fragment shader', mango.gl.getShaderInfoLog(fragmentShader));
       return;
     }
 
-    global.gl.attachShader(global.program, vertexShader);
-    global.gl.attachShader(global.program, fragmentShader);
-    global.gl.linkProgram(global.program);
-    if (!global.gl.getProgramParameter(global.program, global.gl.LINK_STATUS)) {
-      console.error('ERROR linking global.program', global.gl.getProgramInfoLog(global.program));
+    mango.gl.attachShader(mango.program, vertexShader);
+    mango.gl.attachShader(mango.program, fragmentShader);
+    mango.gl.linkProgram(mango.program);
+    if (!mango.gl.getProgramParameter(mango.program, mango.gl.LINK_STATUS)) {
+      console.error('ERROR linking mango.program', mango.gl.getProgramInfoLog(mango.program));
       return;
     }
-    global.gl.validateProgram(global.program);
-    if (!global.gl.getProgramParameter(global.program, global.gl.VALIDATE_STATUS)) {
-      console.error('ERROR validating global.program', global.gl.getProgramInfoLog(global.program));
+    mango.gl.validateProgram(mango.program);
+    if (!mango.gl.getProgramParameter(mango.program, mango.gl.VALIDATE_STATUS)) {
+      console.error('ERROR validating mango.program', mango.gl.getProgramInfoLog(mango.program));
       return;
     }
 
@@ -87,39 +87,39 @@ async function mainInitExplicit() {
     FShader = await manager.getResource('particles.fs');
 
 
-    vertexShader = global.gl.createShader(global.gl.VERTEX_SHADER);
-    fragmentShader = global.gl.createShader(global.gl.FRAGMENT_SHADER);
+    vertexShader = mango.gl.createShader(mango.gl.VERTEX_SHADER);
+    fragmentShader = mango.gl.createShader(mango.gl.FRAGMENT_SHADER);
 
-    global.gl.shaderSource(vertexShader, VShader);
-    global.gl.shaderSource(fragmentShader, FShader);
+    mango.gl.shaderSource(vertexShader, VShader);
+    mango.gl.shaderSource(fragmentShader, FShader);
 
-    global.gl.compileShader(vertexShader);
-    if (!global.gl.getShaderParameter(vertexShader, global.gl.COMPILE_STATUS)) {
-      console.error('ERROR compiling vertex shader', global.gl.getShaderInfoLog(vertexShader));
+    mango.gl.compileShader(vertexShader);
+    if (!mango.gl.getShaderParameter(vertexShader, mango.gl.COMPILE_STATUS)) {
+      console.error('ERROR compiling vertex shader', mango.gl.getShaderInfoLog(vertexShader));
       return;
     }
 
-    global.gl.compileShader(fragmentShader);
-    if (!global.gl.getShaderParameter(fragmentShader, global.gl.COMPILE_STATUS)) {
-      console.error('ERROR compiling fragment shader', global.gl.getShaderInfoLog(fragmentShader));
+    mango.gl.compileShader(fragmentShader);
+    if (!mango.gl.getShaderParameter(fragmentShader, mango.gl.COMPILE_STATUS)) {
+      console.error('ERROR compiling fragment shader', mango.gl.getShaderInfoLog(fragmentShader));
       return;
     }
 
-    global.gl.attachShader(global.particlesProgram, vertexShader);
-    global.gl.attachShader(global.particlesProgram, fragmentShader);
-    global.gl.linkProgram(global.particlesProgram);
-    if (!global.gl.getProgramParameter(global.particlesProgram, global.gl.LINK_STATUS)) {
-      console.error('ERROR linking global.program', global.gl.getProgramInfoLog(global.particlesProgram));
+    mango.gl.attachShader(mango.particlesProgram, vertexShader);
+    mango.gl.attachShader(mango.particlesProgram, fragmentShader);
+    mango.gl.linkProgram(mango.particlesProgram);
+    if (!mango.gl.getProgramParameter(mango.particlesProgram, mango.gl.LINK_STATUS)) {
+      console.error('ERROR linking mango.program', mango.gl.getProgramInfoLog(mango.particlesProgram));
       return;
     }
-    global.gl.validateProgram(global.particlesProgram);
-    if (!global.gl.getProgramParameter(global.particlesProgram, global.gl.VALIDATE_STATUS)) {
-      console.error('ERROR validating global.program', global.gl.getProgramInfoLog(global.particlesProgram));
+    mango.gl.validateProgram(mango.particlesProgram);
+    if (!mango.gl.getProgramParameter(mango.particlesProgram, mango.gl.VALIDATE_STATUS)) {
+      console.error('ERROR validating mango.program', mango.gl.getProgramInfoLog(mango.particlesProgram));
       return;
     }
 
     // Use default
-    global.gl.useProgram(global.program);
+    mango.gl.useProgram(mango.program);
     draw = true;
     allowActions.value = true;
 
@@ -132,7 +132,7 @@ async function mainInitExplicit() {
 async function mainInit(motor) {
   return new Promise(async resolve => {
 
-    //global.gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
+    //mango.gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
 
     // (0.435, 0.909, 0.827, 0.0); // our blue
     // (0.266, 0.294, 0.329, 1.0); // our grey
@@ -141,11 +141,11 @@ async function mainInit(motor) {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         SHADERS
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    await motor.attachProgram(global.program, manager, 'shader.vs', 'shader.fs');
-    await motor.attachProgram(global.particlesProgram, manager, 'particles.vs', 'particles.fs');
+    await motor.attachProgram(mango.program, manager, 'shader.vs', 'shader.fs');
+    await motor.attachProgram(mango.particlesProgram, manager, 'particles.vs', 'particles.fs');
 
     // Use default
-    global.gl.useProgram(global.program);
+    mango.gl.useProgram(mango.program);
     draw = true;
     allowActions.value = true;
 
@@ -158,12 +158,12 @@ async function mainInit(motor) {
 
 async function resetCanvas() {
   draw = false;
-  global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
+  mango.gl.clear(mango.gl.COLOR_BUFFER_BIT | mango.gl.DEPTH_BUFFER_BIT);
 }
 
 
 async function mainR(texture, particles, line) {
-  if(global.gl && global.program) {
+  if(mango.gl && mango.program) {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         INIT CONFIG
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -175,10 +175,10 @@ async function mainR(texture, particles, line) {
     Scene = scene;
 
 
-    global.lastFrameTime = await Date.now();
+    mango.lastFrameTime = await Date.now();
 
 
-    global.gl.useProgram(global.program);
+    mango.gl.useProgram(mango.program);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         TREE & RESOURCES
@@ -257,12 +257,12 @@ async function mainR(texture, particles, line) {
     // motor.translate(point6, convertLatLonToVec3(35.6895, 139.69171));
     
     ///// 0 === false ; 1 === true
-    // let uWireframe = global.gl.getUniformLocation(global.program, 'uWireframe');
-    // global.gl.uniform1i(uWireframe, 0);
-    // let uUseVertexColor = global.gl.getUniformLocation(global.program, 'uUseVertexColor');
-    // global.gl.uniform1i(uUseVertexColor, 0);
-    // let uUseTextures = global.gl.getUniformLocation(global.program, 'uUseTextures');
-    // global.gl.uniform1i(uUseTextures, 0);
+    // let uWireframe = mango.gl.getUniformLocation(mango.program, 'uWireframe');
+    // mango.gl.uniform1i(uWireframe, 0);
+    // let uUseVertexColor = mango.gl.getUniformLocation(mango.program, 'uUseVertexColor');
+    // mango.gl.uniform1i(uUseVertexColor, 0);
+    // let uUseTextures = mango.gl.getUniformLocation(mango.program, 'uUseTextures');
+    // mango.gl.uniform1i(uUseTextures, 0);
 
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -357,8 +357,8 @@ async function mainR(texture, particles, line) {
     let camPos = [];
 
     let point = convertLatLonToVec3(40.415363, -3.707398);
-    global.targetPoint =  convertLatLonToVec3(40.415363, -3.707398);
-    allowActions.p = global.targetPoint;
+    mango.targetPoint =  convertLatLonToVec3(40.415363, -3.707398);
+    allowActions.p = mango.targetPoint;
     // Array.prototype.push.apply(vegetables, moreVegs);
     camPos.push(point[0] * radius);
     camPos.push(point[1] * radius);
@@ -416,9 +416,9 @@ async function mainR(texture, particles, line) {
     var loop = async function (now) {
       if (draw) {
         
-        global.gl.useProgram(global.program);
+        mango.gl.useProgram(mango.program);
 
-        global.time = await Date.now();
+        mango.time = await Date.now();
       
 
 
@@ -436,7 +436,7 @@ async function mainR(texture, particles, line) {
        
         motor.calculateViews();*/
 
-        // global.gl.uniform3f(global.programUniforms.uLightDirection, 
+        // mango.gl.uniform3f(mango.programUniforms.uLightDirection,
         //   radius * Math.sin(number*Math.PI/180),
         //   radius,
         //   radius * Math.cos(number*Math.PI/180)
@@ -444,15 +444,15 @@ async function mainR(texture, particles, line) {
         motor.calculateViews();
         requestAnimationFrame(loop);
 
-        global.gl.uniform3f(global.programUniforms.uLightDirection,
-            ...global.viewPos
+        mango.gl.uniform3f(mango.programUniforms.uLightDirection,
+            ...mango.viewPos
           );
         motor.draw();
         
         ////////////////////////////////////////////////////////////////
       
 
-        global.lastFrameTime = global.time;
+        mango.lastFrameTime = mango.time;
 
 
       }
@@ -497,7 +497,7 @@ function animation(now) {
     case 0:
       if(now - last >= 5000) {
         // console.log(0);
-        // console.log(global.auxViewMatrix);
+        // console.log(mango.auxViewMatrix);
         // console.log(MeshArray.entity);
         // auxArc = Motor.createAndAnimateArc(Scene, 10.500000, -66.916664,40.415363, -3.707398, 24, 1.5);
         last = now;
@@ -518,10 +518,10 @@ function animation(now) {
 
         /*let pereza = glMatrix.mat4.create();
         let perezaMax = glMatrix.vec4.create();
-        let one = glMatrix.mat4.mul(pereza, global.projectionMatrix, global.viewMatrix);
-        allowActions.point = glMatrix.vec4.transformMat4(perezaMax, [...global.targetPoint, 1], pereza);*/
-        //allowActions.p = global.projectionMatrix;
-        //allowActions.p = global.projectionMatrix;
+        let one = glMatrix.mat4.mul(pereza, mango.projectionMatrix, mango.viewMatrix);
+        allowActions.point = glMatrix.vec4.transformMat4(perezaMax, [...mango.targetPoint, 1], pereza);*/
+        //allowActions.p = mango.projectionMatrix;
+        //allowActions.p = mango.projectionMatrix;
         //allowActions.card = true;
 
         allowActions.card = false;
@@ -535,14 +535,14 @@ function animation(now) {
     case 2:
       if(now - last >= 1500) {
         //console.log(2);
-        //console.log(global.auxViewMatrix);
+        //console.log(mango.auxViewMatrix);
         let pvMat4 = glMatrix.mat4.create();
         let uselessMat4 = glMatrix.vec4.create();
-        pvMat4 = glMatrix.mat4.mul(pvMat4, global.projectionMatrix, global.auxViewMatrix);
-        allowActions.point = glMatrix.vec4.transformMat4(uselessMat4, [...global.targetPoint, 1], pvMat4);
+        pvMat4 = glMatrix.mat4.mul(pvMat4, mango.projectionMatrix, mango.auxViewMatrix);
+        allowActions.point = glMatrix.vec4.transformMat4(uselessMat4, [...mango.targetPoint, 1], pvMat4);
         allowActions.card = true;
-        Motor.createFocus(Scene, 100, 'straight', global.targetPoint , 'normal', null, [1,0.25,0.51, 1.0]);
-        let fireworks = Motor.createFocus(Scene, 150, 'fireworks', global.targetPoint , 'normal', null, [1,0.5,0.67, 1.0]);
+        Motor.createFocus(Scene, 100, 'straight', mango.targetPoint , 'normal', null, [1,0.25,0.51, 1.0]);
+        let fireworks = Motor.createFocus(Scene, 150, 'fireworks', mango.targetPoint , 'normal', null, [1,0.5,0.67, 1.0]);
         setTimeout(() => {
           Motor.deleteFocus(fireworks);
         }, 800);
@@ -592,7 +592,7 @@ function animation(now) {
     if(val !== 1){
       // let mat = glMatrix.mat4.create();
       // let mat4 = glMatrix.mat4.fromQuat(mat, val);
-      // mat4 = glMatrix.mat4.mul(mat4, global.viewMatrix, mat4);
+      // mat4 = glMatrix.mat4.mul(mat4, mango.viewMatrix, mat4);
       // console.log(mat4);
       // Motor.setView(Cam, mat4)
 
@@ -607,7 +607,7 @@ function animation(now) {
         [0,1,0]);
     } else {
       Motor.calculateViews();
-      global.auxViewMatrix = glMatrix.mat4.fromValues(...global.viewMatrix);
+      mango.auxViewMatrix = glMatrix.mat4.fromValues(...mango.viewMatrix);
       Motor.allCamAnimations.splice(i, 1);
     }
   });
@@ -647,20 +647,20 @@ function generateRandomLat() {
 
 async function demoMain(target, boundingBox = false){
   
-  if(global.gl && global.program) {
+  if(mango.gl && mango.program) {
 
     draw = true;
     allowActions.value = false;
     let motor = new TMotorTAG(manager);
     let scene = motor.createRootNode();
 
-    global.lastFrameTime = await Date.now();
+    mango.lastFrameTime = await Date.now();
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         INIT CONFIG
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    global.gl.useProgram(global.program);
+    mango.gl.useProgram(mango.program);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         TREE & RESOURCES
@@ -771,12 +771,12 @@ async function demoMain(target, boundingBox = false){
     let cam = motor.createCamera(scene);
     motor.enableCam(cam);
 
-    global.maxZoom = 15;
+    mango.maxZoom = 15;
 
     // motor.cameraLookAt( cam, [
-    //   global.zoom * Math.sin(0*Math.PI/180),
-    //   global.zoom,
-    //   global.zoom * Math.cos(0*Math.PI/180)
+    //   mango.zoom * Math.sin(0*Math.PI/180),
+    //   mango.zoom,
+    //   mango.zoom * Math.cos(0*Math.PI/180)
     // ],
     // [0,0,0],
     // [0,1,0]);
@@ -811,23 +811,23 @@ async function demoMain(target, boundingBox = false){
     var loop = async function (now, now2) {
       if(draw){
 
-        if (!global.drag && (auxPHI!=global.orbitLimit && auxPHI!=-global.orbitLimit) ) {
-          global.dX *= global.AMORTIZATION, global.dY*=global.AMORTIZATION;
-          global.THETA+=global.dX, global.PHI+=global.dY;
+        if (!mango.drag && (auxPHI!=mango.orbitLimit && auxPHI!=-mango.orbitLimit) ) {
+          mango.dX *= mango.AMORTIZATION, mango.dY*=mango.AMORTIZATION;
+          mango.THETA+=mango.dX, mango.PHI+=mango.dY;
         }
 
-        global.gl.useProgram(global.program);
+        mango.gl.useProgram(mango.program);
 
-        global.time = await Date.now();
+        mango.time = await Date.now();
 
         ////////////////////////////////////////////////////////////////
 
-        auxTHETA = global.orbitSpeed*global.THETA*(Math.PI/180);
-        auxPHI = Math.max(Math.min(((global.orbitSpeed*global.PHI)*(Math.PI/180)),global.orbitLimit), -global.orbitLimit);
+        auxTHETA = mango.orbitSpeed*mango.THETA*(Math.PI/180);
+        auxPHI = Math.max(Math.min(((mango.orbitSpeed*mango.PHI)*(Math.PI/180)),mango.orbitLimit), -mango.orbitLimit);
 
-        let camX = global.zoom * Math.sin(auxTHETA) * Math.cos(auxPHI);
-        let camY = global.zoom * Math.sin(auxPHI);
-        let camZ = global.zoom * -Math.cos(auxTHETA) * Math.cos(auxPHI);
+        let camX = mango.zoom * Math.sin(auxTHETA) * Math.cos(auxPHI);
+        let camY = mango.zoom * Math.sin(auxPHI);
+        let camZ = mango.zoom * -Math.cos(auxTHETA) * Math.cos(auxPHI);
 
         motor.cameraLookAt( cam, [
             camX,
@@ -841,9 +841,9 @@ async function demoMain(target, boundingBox = false){
 
         // Old camera lookAt (rotating Y-axis camera)
         // motor.cameraLookAt( cam, [
-        //   global.zoom * Math.sin(number*Math.PI/180),
-        //   global.zoom,
-        //   global.zoom * Math.cos(number*Math.PI/180),
+        //   mango.zoom * Math.sin(number*Math.PI/180),
+        //   mango.zoom,
+        //   mango.zoom * Math.cos(number*Math.PI/180),
         // ],
         // [0,0,0],
         // [0,1,0]);
@@ -851,13 +851,13 @@ async function demoMain(target, boundingBox = false){
 
         motor.calculateViews();
 
-        // global.gl.uniform3f(global.programUniforms.uLightDirection,
-        //   global.zoom * Math.sin(number*Math.PI/180),
-        //   global.zoom,
-        //   global.zoom * Math.cos(number*Math.PI/180)
+        // mango.gl.uniform3f(mango.programUniforms.uLightDirection,
+        //   mango.zoom * Math.sin(number*Math.PI/180),
+        //   mango.zoom,
+        //   mango.zoom * Math.cos(number*Math.PI/180)
         // );
 
-        global.gl.uniform3f(global.programUniforms.uLightDirection,
+        mango.gl.uniform3f(mango.programUniforms.uLightDirection,
           camX, camY, camZ
         );
 
@@ -866,7 +866,7 @@ async function demoMain(target, boundingBox = false){
 
         ////////////////////////////////////////////////////////////////
 
-        global.lastFrameTime = global.time;
+        mango.lastFrameTime = mango.time;
 
         number = number + 0.3;
 
@@ -880,20 +880,20 @@ async function demoMain(target, boundingBox = false){
 }
 
 async function interactiveMain(){
-  if(global.gl && global.program) {
+  if(mango.gl && mango.program) {
 
     draw = true;
     allowActions.value = false;
     let motor = new TMotorTAG(manager);
     let scene = motor.createRootNode();
 
-    global.lastFrameTime = await Date.now();
+    mango.lastFrameTime = await Date.now();
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         INIT CONFIG
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    global.gl.useProgram(global.program);
+    mango.gl.useProgram(mango.program);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         TREE & RESOURCES
@@ -1031,22 +1031,22 @@ async function interactiveMain(){
     let cam = motor.createCamera(scene);
     motor.enableCam(cam);
 
-    global.zoom = global.maxZoom;
+    mango.zoom = mango.maxZoom;
 
     ease({
-      startValue: global.zoom,
+      startValue: mango.zoom,
       endValue: 1.7,
       durationMs: 5000,
-      onStep: x => global.zoom = x,
+      onStep: x => mango.zoom = x,
       onComplete: () => {
-        global.status = 1;
+        mango.status = 1;
       }
     })
 
     // motor.cameraLookAt( cam, [
-    //   global.zoom * Math.sin(0*Math.PI/180),
-    //   global.zoom,
-    //   global.zoom * Math.cos(0*Math.PI/180)
+    //   mango.zoom * Math.sin(0*Math.PI/180),
+    //   mango.zoom,
+    //   mango.zoom * Math.cos(0*Math.PI/180)
     // ],
     // [0,0,0],
     // [0,1,0]);
@@ -1067,13 +1067,13 @@ async function interactiveMain(){
     // document.getElementById("kweelive").click();
     document.body.click();
 
-    const whiteTexture = global.gl.createTexture();
-    global.gl.bindTexture(global.gl.TEXTURE_2D, whiteTexture);
-    global.gl.texImage2D(
-      global.gl.TEXTURE_2D, 0, global.gl.RGBA, 1, 1, 0,
-      global.gl.RGBA, global.gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
-    global.gl.useProgram(global.program);
-    global.gl.bindTexture(global.gl.TEXTURE_2D, whiteTexture);
+    const whiteTexture = mango.gl.createTexture();
+    mango.gl.bindTexture(mango.gl.TEXTURE_2D, whiteTexture);
+    mango.gl.texImage2D(
+      mango.gl.TEXTURE_2D, 0, mango.gl.RGBA, 1, 1, 0,
+      mango.gl.RGBA, mango.gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
+    mango.gl.useProgram(mango.program);
+    mango.gl.bindTexture(mango.gl.TEXTURE_2D, whiteTexture);
 
     //////////////
     // dynamic focus
@@ -1098,25 +1098,25 @@ async function interactiveMain(){
     let auxPHI = 0;
     var loop = async function (now, now2) {
 
-      if (!global.drag && (auxPHI!=global.orbitLimit && auxPHI!=-global.orbitLimit) ) {
-//      if (!global.drag && (auxPHI!=1.2 && auxPHI!=-1.2) ) {
-        global.dX *= global.AMORTIZATION, global.dY*=global.AMORTIZATION;
-        global.THETA+=global.dX, global.PHI+=global.dY;
+      if (!mango.drag && (auxPHI!=mango.orbitLimit && auxPHI!=-mango.orbitLimit) ) {
+//      if (!mango.drag && (auxPHI!=1.2 && auxPHI!=-1.2) ) {
+        mango.dX *= mango.AMORTIZATION, mango.dY*=mango.AMORTIZATION;
+        mango.THETA+=mango.dX, mango.PHI+=mango.dY;
 
       }
 
-      global.gl.useProgram(global.program);
+      mango.gl.useProgram(mango.program);
 
-      global.time = await Date.now();
+      mango.time = await Date.now();
 
       ////////////////////////////////////////////////////////////////
 
-      auxTHETA = global.orbitSpeed*global.THETA*(Math.PI/180);
-      auxPHI = Math.max(Math.min(((global.orbitSpeed*global.PHI)*(Math.PI/180)),global.orbitLimit), -global.orbitLimit);
+      auxTHETA = mango.orbitSpeed*mango.THETA*(Math.PI/180);
+      auxPHI = Math.max(Math.min(((mango.orbitSpeed*mango.PHI)*(Math.PI/180)),mango.orbitLimit), -mango.orbitLimit);
 
-      let camX = global.zoom * Math.sin(auxTHETA) * Math.cos(auxPHI);
-      let camY = global.zoom * Math.sin(auxPHI);
-      let camZ = global.zoom * -Math.cos(auxTHETA) * Math.cos(auxPHI);
+      let camX = mango.zoom * Math.sin(auxTHETA) * Math.cos(auxPHI);
+      let camY = mango.zoom * Math.sin(auxPHI);
+      let camZ = mango.zoom * -Math.cos(auxTHETA) * Math.cos(auxPHI);
 
       motor.cameraLookAt( cam, [
           camX,
@@ -1129,9 +1129,9 @@ async function interactiveMain(){
 
       // Old camera lookAt (rotating Y-axis camera)
       // motor.cameraLookAt( cam, [
-      //   global.zoom * Math.sin(number*Math.PI/180),
-      //   global.zoom,
-      //   global.zoom * Math.cos(number*Math.PI/180),
+      //   mango.zoom * Math.sin(number*Math.PI/180),
+      //   mango.zoom,
+      //   mango.zoom * Math.cos(number*Math.PI/180),
       // ],
       // [0,0,0],
       // [0,1,0]);
@@ -1139,13 +1139,13 @@ async function interactiveMain(){
 
       motor.calculateViews();
 
-      // global.gl.uniform3f(global.programUniforms.uLightDirection,
-      //   global.zoom * Math.sin(number*Math.PI/180),
-      //   global.zoom,
-      //   global.zoom * Math.cos(number*Math.PI/180)
+      // mango.gl.uniform3f(mango.programUniforms.uLightDirection,
+      //   mango.zoom * Math.sin(number*Math.PI/180),
+      //   mango.zoom,
+      //   mango.zoom * Math.cos(number*Math.PI/180)
       // );
 
-      global.gl.uniform3f(global.programUniforms.uLightDirection,
+      mango.gl.uniform3f(mango.programUniforms.uLightDirection,
         camX, camY, camZ
       );
 
@@ -1154,7 +1154,7 @@ async function interactiveMain(){
 
       ////////////////////////////////////////////////////////////////
 
-      global.lastFrameTime = global.time;
+      mango.lastFrameTime = mango.time;
 
       number = number + 0.3;
 
@@ -1167,7 +1167,7 @@ async function interactiveMain(){
 }
 
 async function mainTextures(texture, particles, line) {
-  if(global.gl && global.textureProgram) {
+  if(mango.gl && mango.textureProgram) {
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         INIT CONFIG
@@ -1179,11 +1179,11 @@ async function mainTextures(texture, particles, line) {
     let scene = motor.createRootNode();
     Scene = scene;
 
-    global.lastFrameTime = await Date.now();
+    mango.lastFrameTime = await Date.now();
 
-    global.useTextures = true;
-    await motor.attachProgram(global.textureProgram, manager, 'textures.vs', 'textures.fs');
-    global.gl.useProgram(global.textureProgram);
+    mango.useTextures = true;
+    await motor.attachProgram(mango.textureProgram, manager, 'textures.vs', 'textures.fs');
+    mango.gl.useProgram(mango.textureProgram);
 
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1202,13 +1202,13 @@ async function mainTextures(texture, particles, line) {
 
 
     ///// 0 === false ; 1 === true
-    global.gl.useProgram(global.textureProgram);
-    let uWireframe = global.gl.getUniformLocation(global.textureProgram, 'uWireframe');
-    global.gl.uniform1i(uWireframe, 0);
-    let uUseVertexColor = global.gl.getUniformLocation(global.textureProgram, 'uUseVertexColor');
-    global.gl.uniform1i(uUseVertexColor, 0);
-    let uUseTextures = global.gl.getUniformLocation(global.textureProgram, 'uUseTextures');
-    global.gl.uniform1i(uUseTextures, 0);
+    mango.gl.useProgram(mango.textureProgram);
+    let uWireframe = mango.gl.getUniformLocation(mango.textureProgram, 'uWireframe');
+    mango.gl.uniform1i(uWireframe, 0);
+    let uUseVertexColor = mango.gl.getUniformLocation(mango.textureProgram, 'uUseVertexColor');
+    mango.gl.uniform1i(uUseVertexColor, 0);
+    let uUseTextures = mango.gl.getUniformLocation(mango.textureProgram, 'uUseTextures');
+    mango.gl.uniform1i(uUseTextures, 0);
 
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1226,8 +1226,8 @@ async function mainTextures(texture, particles, line) {
     let camPos = [];
 
     let point = convertLatLonToVec3(40.415363, -3.707398);
-    global.targetPoint =  convertLatLonToVec3(40.415363, -3.707398);
-    allowActions.p = global.targetPoint;
+    mango.targetPoint =  convertLatLonToVec3(40.415363, -3.707398);
+    allowActions.p = mango.targetPoint;
     // Array.prototype.push.apply(vegetables, moreVegs);
     camPos.push(point[0] * radius);
     camPos.push(point[1] * radius);
@@ -1280,9 +1280,9 @@ async function mainTextures(texture, particles, line) {
     var loop = async function (now) {
       if (draw) {
 
-        global.gl.useProgram(global.textureProgram);
+        mango.gl.useProgram(mango.textureProgram);
 
-        global.time = await Date.now();
+        mango.time = await Date.now();
 
         motor.calculateViews();
 
@@ -1292,7 +1292,7 @@ async function mainTextures(texture, particles, line) {
 
         ////////////////////////////////////////////////////////////////
 
-        global.lastFrameTime = global.time;
+        mango.lastFrameTime = mango.time;
 
       }
       number = number + 0.3;

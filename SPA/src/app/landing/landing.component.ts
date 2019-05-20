@@ -13,7 +13,7 @@ import {environment} from '../../environments/environment';
 
 import { TMotorTAG } from '../../assets/engine/TMotorTAG';
 import { TResourceManager } from '../../assets/engine/resourceManager';
-import { global } from '../../assets/engine/commons';
+import { mango } from '../../assets/engine/commons';
 
 import {ContractType} from '../../models/Offer.model';
 
@@ -166,7 +166,7 @@ export class LandingComponent implements OnInit, OnDestroy {
 
     const LOD_sea = motor.dynamicMeshArrayLazyLoading(this.scene, ['0_sea.json', '2_sea_SS.json'], seaMaterial);
 
-    global.lastFrameTime = Date.now();
+    mango.lastFrameTime = Date.now();
 
     // ----- CAMERA -----
     const camera = motor.createCamera(this.scene);
@@ -187,12 +187,12 @@ export class LandingComponent implements OnInit, OnDestroy {
     let number = 0;
     
     const loop = function() {
-      global.time = Date.now();
+      mango.time = Date.now();
 
       motor.cameraLookAt( camera, [
-        global.zoom * Math.sin(number * Math.PI / 180),
-        global.zoom,
-        global.zoom * Math.cos(number * Math.PI / 180),
+        mango.zoom * Math.sin(number * Math.PI / 180),
+        mango.zoom,
+        mango.zoom * Math.cos(number * Math.PI / 180),
       ],
       [0, 0, 0],
       [0, 1, 0]);
@@ -200,7 +200,7 @@ export class LandingComponent implements OnInit, OnDestroy {
 
       motor.draw();
 
-      global.lastFrameTime = global.time;
+      mango.lastFrameTime = mango.time;
 
       requestAnimationFrame(loop);
 
@@ -236,7 +236,7 @@ export class LandingComponent implements OnInit, OnDestroy {
 
     const LOD_sea = motor.dynamicMeshArrayLazyLoading(this.scene, ['0_sea.json', '2_sea_SS.json'], seaMaterial);
 
-    global.lastFrameTime = Date.now();
+    mango.lastFrameTime = Date.now();
 
     // ----- CAMERA -----
     const camera = motor.createCamera(this.scene);
@@ -247,8 +247,8 @@ export class LandingComponent implements OnInit, OnDestroy {
     let camPos = [];
 
     let point = motor.get3DfronLatLon(40.415363, -3.707398);
-    global.targetPoint =  motor.get3DfronLatLon(40.415363, -3.707398);
-    allowActions.p = global.targetPoint;
+    mango.targetPoint =  motor.get3DfronLatLon(40.415363, -3.707398);
+    allowActions.p = mango.targetPoint;
 
     camPos.push(point[0] * radius);
     camPos.push(point[1] * radius);
@@ -316,8 +316,8 @@ export class LandingComponent implements OnInit, OnDestroy {
           if(now - last >= 1500) {
             allowActions.point = motor.calculateTarget2Dfrom3DPoint();
             allowActions.card = true;
-            motor.createFocus(thisContext.scene, 100, 'straight', global.targetPoint , 'normal', null, [1,0.25,0.51, 1.0]);
-            let fireworks = motor.createFocus(thisContext.scene, 150, 'fireworks', global.targetPoint , 'normal', null, [1,0.5,0.67, 1.0]);
+            motor.createFocus(thisContext.scene, 100, 'straight', mango.targetPoint , 'normal', null, [1,0.25,0.51, 1.0]);
+            let fireworks = motor.createFocus(thisContext.scene, 150, 'fireworks', mango.targetPoint , 'normal', null, [1,0.5,0.67, 1.0]);
             setTimeout(() => {
               motor.deleteFocus(fireworks);
             }, 800);
