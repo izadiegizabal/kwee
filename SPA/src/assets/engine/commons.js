@@ -102,7 +102,7 @@ function shared(landing) {
       mango.orbitSpeed = 20;
       mango.orbitMaxY = 11;
       mango.orbitLimit = 1.4 // default is 1.2
-      mango.zoom = 1.7;  // 5 for debug purposes
+      //mango.zoom = 3;  // 5 for debug purposes
 
       mango.maxZoom = 7;
       mango.minZoom = 0.9;

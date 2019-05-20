@@ -145,7 +145,7 @@ export class LandingComponent implements OnInit, OnDestroy {
     }
   }
 
-  async offerShow(){
+  async offerShow() {
     // this.currentIndex++;
     const motor = this.motor;
     await mainInit(motor);
@@ -174,23 +174,21 @@ export class LandingComponent implements OnInit, OnDestroy {
     const camera = motor.createCamera(this.scene);
     motor.enableCam(camera);
 
-    let radius = 3;
-
     let camPos = [];
 
     let point = motor.get3DfronLatLon(40.415363, -3.707398);
     mango.targetPoint =  motor.get3DfronLatLon(40.415363, -3.707398);
     allowActions.p = mango.targetPoint;
 
-    camPos.push(point[0] * radius);
-    camPos.push(point[1] * radius);
-    camPos.push(point[2] * radius);
-
+    motor.easeCamera();
+    camPos.push(point[0] * mango.zoom);
+    camPos.push(point[1] * mango.zoom);
+    camPos.push(point[2] * mango.zoom);
+    
     motor.cameraLookAt( camera, [...camPos],
       [0,0,0],
       [0,1,0]);
 
-    motor.easeCamera();
     motor.calculateViews();
 
     // ----- LIGHTS -----
@@ -209,17 +207,17 @@ export class LandingComponent implements OnInit, OnDestroy {
       2 => wait 1.5s show focus and card
       default => prevent init errors
      */
-    let fase = -1;
+    mango.fase = null;
     let self = this;
     const thisContext = this;
     const loop = function(now) {
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      switch (fase) {
+      switch (mango.fase) {
         /// wait 5s
         case 0:
           if(now - last >= 5000) {
             last = now;
-            fase = 1;
+            mango.fase = 1;
             if(thisContext.currentIndex === (thisContext.fetchedOffers.length - 1)){
               thisContext.currentIndex = 0;
             }
@@ -228,7 +226,7 @@ export class LandingComponent implements OnInit, OnDestroy {
         case 1:
           if(now - last >= 1000) {
             last = now;
-            fase = 2;
+            mango.fase = 2;
             allowActions.card = false;
             document.body.click();
             thisContext.currentIndex++;
@@ -247,13 +245,15 @@ export class LandingComponent implements OnInit, OnDestroy {
             }, 800);
             document.body.click();
             last = now;
-            fase = 0;
+            mango.fase = 0;
           }
           break;
         default:
           //console.log(-1);
           last = now;
-          fase = 1;
+          if(mango.fase == -1){
+            mango.fase = 1;
+          }
           break;
       }
       requestAnimationFrame(loop);
