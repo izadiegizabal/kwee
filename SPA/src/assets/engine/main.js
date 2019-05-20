@@ -1196,7 +1196,7 @@ async function mainTextures(texture, particles, line) {
       // motor.scale(land, [0.25, 0.25, 0.25]);
 
       let tex = await manager.getResource('continents.jpg');
-      land.entity.mesh.tex = tex;
+      motor.setTexture(land, tex);
 
       let sphere = await motor.loadMesh(scene, '2_sea_SS.json');
 

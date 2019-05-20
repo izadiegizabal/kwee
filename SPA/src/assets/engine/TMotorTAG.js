@@ -949,6 +949,10 @@ class TMotorTAG{
       mango.viewPos[0], mango.viewPos[1], mango.viewPos[2]
     );
   }
+
+  setTexture(node, tex){
+    node.entity.mesh.tex = tex;
+  }
   //////////////////
   // NOT WORKING!!!!!!!!!!!!
   //////////////////
