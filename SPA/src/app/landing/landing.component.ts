@@ -329,7 +329,7 @@ export class LandingComponent implements OnInit, OnDestroy {
         default:
           //console.log(-1);
           last = now;
-          fase = 0;
+          fase = 1;
           break;
       }
       requestAnimationFrame(loop);
