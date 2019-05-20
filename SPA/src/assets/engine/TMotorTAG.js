@@ -29,6 +29,8 @@ class TMotorTAG{
     this.allCountAnimations = [];
 
     this.allCamAnimations = [];
+
+    this.then = 0;
   }
 
 
@@ -728,6 +730,31 @@ class TMotorTAG{
 
   }
 
+  initTextures() {
+    // Clear
+    global.gl.useProgram(global.textureProgram);
+    global.gl.clear(global.gl.COLOR_BUFFER_BIT | global.gl.DEPTH_BUFFER_BIT);
+    global.gl.enable(global.gl.DEPTH_TEST);
+    global.gl.enable(global.gl.CULL_FACE);
+    //global.gl.frontFace(global.gl.CCW);
+    // TAG.54
+    global.gl.cullFace(global.gl.BACK);
+
+    let projection = global.gl.getUniformLocation(global.textureProgram, 'uPMatrix');
+    global.gl.uniformMatrix4fv(projection, false, global.projectionMatrix);
+
+
+    // Avoid error unit 0
+    const whiteTexture = global.gl.createTexture();
+    global.gl.bindTexture(global.gl.TEXTURE_2D, whiteTexture);
+    global.gl.texImage2D(
+      global.gl.TEXTURE_2D, 0, global.gl.RGBA, 1, 1, 0,
+      global.gl.RGBA, global.gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
+    global.gl.useProgram(global.textureProgram);
+    global.gl.bindTexture(global.gl.TEXTURE_2D, whiteTexture);
+
+  }
+
   // Init program
   initProgram() {
     global.gl.useProgram(global.program);
@@ -764,6 +791,23 @@ class TMotorTAG{
     }
   }
 
+  calculateLightsTextures() {
+
+    let lightPos = global.gl.getUniformLocation(global.textureProgram, 'uLightPosition');
+    let lightAmb = global.gl.getUniformLocation(global.textureProgram, 'uLightAmbient');
+    let lightDiff = global.gl.getUniformLocation(global.textureProgram, 'uLightDiffuse');
+    let alpha = global.gl.getUniformLocation(global.textureProgram, 'uAlpha');
+
+    let lights = this.allLights;
+    for(let i = 0; i< lights.length; i++){
+      global.gl.uniform3fv(lightPos, [5, 5, 5]);
+      global.gl.uniform4fv(lightAmb, lights[0].entity.getIntensity());
+      global.gl.uniform4fv(lightDiff, lights[0].entity.getDiffuse());
+      global.gl.uniform1f(alpha, 1.0);
+    }
+  }
+
+
   // calculate view from active camera
   async calculateViews() {
 
@@ -791,6 +835,49 @@ class TMotorTAG{
     }
   }
 
+  //
+  async attachProgram(program, manager, vs, fs) {
+
+    if (program === null || program === undefined) {
+      program = global.gl.createProgram();
+    }
+
+    let VShader = await manager.getResource(vs);
+    let FShader = await manager.getResource(fs);
+
+
+    let vertexShader = global.gl.createShader(global.gl.VERTEX_SHADER);
+    let fragmentShader = global.gl.createShader(global.gl.FRAGMENT_SHADER);
+
+    global.gl.shaderSource(vertexShader, VShader);
+    global.gl.shaderSource(fragmentShader, FShader);
+
+    global.gl.compileShader(vertexShader);
+    if (!global.gl.getShaderParameter(vertexShader, global.gl.COMPILE_STATUS)) {
+      console.error('ERROR compiling vertex shader', global.gl.getShaderInfoLog(vertexShader));
+      return;
+    }
+
+    global.gl.compileShader(fragmentShader);
+    if (!global.gl.getShaderParameter(fragmentShader, global.gl.COMPILE_STATUS)) {
+      console.error('ERROR compiling fragment shader', global.gl.getShaderInfoLog(fragmentShader));
+      return;
+    }
+
+    global.gl.attachShader(program, vertexShader);
+    global.gl.attachShader(program, fragmentShader);
+    global.gl.linkProgram(program);
+    if (!global.gl.getProgramParameter(program, global.gl.LINK_STATUS)) {
+      console.error('ERROR linking global.program', global.gl.getProgramInfoLog(program));
+      return;
+    }
+    global.gl.validateProgram(program);
+    if (!global.gl.getProgramParameter(program, global.gl.VALIDATE_STATUS)) {
+      console.error('ERROR validating global.program', global.gl.getProgramInfoLog(program));
+      return;
+    }
+  }
+
 
   //////////////////
   // DRAW METHODS
@@ -803,6 +890,67 @@ class TMotorTAG{
     // -- MVMatrix and NMatrix will change over the rest of Entities
 
     this.scene.draw();
+  }
+
+  render(now, self) {
+    global.time = Date.now();
+
+console.log(self);
+
+    ////// Animation stuff @todo MOVE TO NEW MOTOR.RUN LOOP
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Convert the time to second
+    now *= 0.001;
+    // Subtract the previous time from the current time
+    let deltaTime = now - self.then;
+    // Remember the current time for the next frame.
+    self.then = now;
+    // count animations
+    self.allCountAnimations.forEach( (e, i) => {
+      if(!e.update(deltaTime)){
+        self.allCountAnimations.splice(i, 1);
+        if(self.isArcAnimation(e)){
+          self.deleteArc(e.object);
+        }
+      }
+    });
+    /// Camera animations
+    self.allCamAnimations.forEach( (e, i) => {
+      let val = e.update(deltaTime);
+      if(val !== 1){
+
+        let radius = 2; // debug
+
+        val[0] = val[0] * radius;
+        val[1] = val[1] * radius;
+        val[2] = val[2] * radius;
+
+        self.cameraLookAt( self.activeCamera, [...val],
+          [0,0,0],
+          [0,1,0]);
+      } else {
+        self.calculateViews();
+        global.auxViewMatrix = global.viewMatrix.slice();
+        self.allCamAnimations.splice(i, 1);
+      }
+    });
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    self.calculateViews();
+    /// individual positions needed, I dont know why...
+    self.updateLightToTarget();
+    self.draw();
+    global.lastFrameTime = global.time;
+
+    requestAnimationFrame(function(timestamp) {
+      motor.render(timestamp, self);
+    });
+  };
+
+  updateLightToTarget(){
+    global.gl.uniform3f(global.programUniforms.uLightDirection,
+      global.viewPos[0], global.viewPos[1], global.viewPos[2]
+    );
   }
   //////////////////
   // NOT WORKING!!!!!!!!!!!!

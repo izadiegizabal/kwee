@@ -9,6 +9,8 @@ var global = {
   gl: null,
   program: null,
   particlesProgram: null,
+  textureProgram: null,
+  useTextures: null,
   modelMatrix: null,      // model Matrix
   viewMatrix: null,       // view Matrix
   viewPos: null,       // view Vec3 position
@@ -73,6 +75,8 @@ function shared(landing) {
       // init programs
       global.program = global.gl.createProgram();
       global.particlesProgram = global.gl.createProgram();
+      global.textureProgram = global.gl.createProgram();
+      global.useTextures = false;
 
       // init matrix
       global.modelMatrix = await glMatrix.mat4.create();

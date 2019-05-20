@@ -118,7 +118,7 @@ async function mainInit() {
       return;
     }
 
-
+    // Use default
     global.gl.useProgram(global.program);
     draw = true;
     allowActions.value = true;
@@ -1140,6 +1140,197 @@ async function interactiveMain(){
   }; //
 }
 
+async function mainTextures(texture, particles, line) {
+  if(global.gl && global.textureProgram) {
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         INIT CONFIG
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    draw = true;
+    allowActions.value = false;
+    let motor = new TMotorTAG(manager);
+    Motor = motor;
+    let scene = motor.createRootNode();
+    Scene = scene;
+
+    global.lastFrameTime = await Date.now();
+
+    global.useTextures = true;
+    await motor.attachProgram(global.textureProgram, manager, 'textures.vs', 'textures.fs');
+    global.gl.useProgram(global.textureProgram);
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         TREE & RESOURCES
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //let land = await motor.loadMesh(scene, 'earth_LP.json');
+      let land = await motor.loadMesh(scene, 'earthobj.json');
+      // land.entity.mesh.setMaterial( landMaterial );
+      // motor.scale(land, [5.0, 5.0, 5.0]);
+      // motor.scale(land, [0.25, 0.25, 0.25]);
+
+      let tex = await manager.getResource('continents.jpg');
+      land.entity.mesh.tex = tex;
+
+      let sphere = await motor.loadMesh(scene, '2_sea_SS.json');
+
+
+    ///// 0 === false ; 1 === true
+    global.gl.useProgram(global.textureProgram);
+    let uWireframe = global.gl.getUniformLocation(global.textureProgram, 'uWireframe');
+    global.gl.uniform1i(uWireframe, 0);
+    let uUseVertexColor = global.gl.getUniformLocation(global.textureProgram, 'uUseVertexColor');
+    global.gl.uniform1i(uUseVertexColor, 0);
+    let uUseTextures = global.gl.getUniformLocation(global.textureProgram, 'uUseTextures');
+    global.gl.uniform1i(uUseTextures, 0);
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         CAMERAS
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    let cam = motor.createCamera(scene);
+    Cam = cam;
+    motor.enableCam(cam);
+
+    //let radius = 1.7; // normal
+    let radius = 3; // debug
+    // motor.translate(cam, [0.0 , 0.0, -radius]);
+
+    //motor.cameraLookAt(cam, [0,5,0], [0,0,0], [1,0,0])
+    let camPos = [];
+
+    let point = convertLatLonToVec3(40.415363, -3.707398);
+    global.targetPoint =  convertLatLonToVec3(40.415363, -3.707398);
+    allowActions.p = global.targetPoint;
+    // Array.prototype.push.apply(vegetables, moreVegs);
+    camPos.push(point[0] * radius);
+    camPos.push(point[1] * radius);
+    camPos.push(point[2] * radius);
+
+    /*
+    motor.cameraLookAt( cam, [
+      radius * Math.sin(0*Math.PI/180),
+      radius,
+      radius * Math.cos(0*Math.PI/180)
+    ],
+    [0,0,0],
+    [0,1,0]);
+    */
+    motor.cameraLookAt( cam, [...camPos],
+      [0,0,0],
+      [0,1,0]);
+
+    // motor.cameraLookAt( cam, [
+    //   0,
+    //   -3,
+    //   0
+    // ]);
+
+    motor.calculateViews();
+
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         LIGHTNING
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //                           father  type    ambient      specular       diffuse         direction
+    let light = motor.createLight(scene, 1, [0.2,0.2,0.2,1.0], [1.0,1.0,1.0,1.0], [0.5,0.5,0.5,1.0], [10.0, 10.0, 10.0]);
+
+    motor.calculateLightsTextures();
+
+    ///////// CHAPUZA MASTER AYY LMAO
+    allowActions.value = true;
+    // document.getElementById("kweelive").click();
+    document.body.click();
+
+    // console.log(scene);
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         LOOP
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Avoid error unit 0
+
+    let arcsSec = 0;
+    let then = 0;
+
+    let number = 0;
+
+    var loop = async function (now) {
+      if (draw) {
+
+        global.gl.useProgram(global.textureProgram);
+
+
+        if(now - arcsSec >= 1000) {
+          arcsSec = now;
+          motor.createAndAnimateArc(scene, generateRandomLat(), generateRandomLong(), generateRandomLat(), generateRandomLong(), 24, 1.5, 3);
+          motor.createAndAnimateArc(scene, generateRandomLat(), generateRandomLong(), generateRandomLat(), generateRandomLong(), 24, 1.5, 3);
+        }
+
+        // Convert the time to second
+        now *= 0.001;
+        // Subtract the previous time from the current time
+        let deltaTime = now - then;
+        // Remember the current time for the next frame.
+        then = now;
+
+        motor.allCountAnimations.forEach( (e, i) => {
+          if(!e.update(deltaTime)){
+            motor.allCountAnimations.splice(i, 1);
+            if(motor.isArcAnimation(e)){
+              motor.deleteArc(e.object);
+            }
+          }
+        });
+
+        global.time = await Date.now();
+
+
+
+
+        ////////////////////////////////////////////////////////////////
+
+        /*motor.cameraLookAt( cam, [
+          radius * Math.sin(number*Math.PI/180),
+          radius,
+          radius * Math.cos(number*Math.PI/180),
+        ],
+        [0,0,0],
+        [0,1,0]);*/
+
+
+        motor.calculateViews();
+
+        // global.gl.uniform3f(global.programUniforms.uLightDirection,
+        //   radius * Math.sin(number*Math.PI/180),
+        //   radius,
+        //   radius * Math.cos(number*Math.PI/180)
+        // );
+        motor.calculateViews();
+        requestAnimationFrame(loop);
+
+        motor.draw();
+
+        ////////////////////////////////////////////////////////////////
+
+
+        global.lastFrameTime = global.time;
+
+
+      }
+      number = number + 0.3;
+      if(number>360) number = 0;
+    };
+
+    motor.initTextures();
+    requestAnimationFrame(loop);
+    /*requestAnimationFrame(function(timestamp) {
+      motor.render(timestamp, motor);
+    });*/
+    // requestAnimationFrame(motor.render.bind(this));
+
+  }
+}
+
 export {
   mainInit,
   mainR,
@@ -1147,6 +1338,7 @@ export {
   allowActions,
   interactiveMain,
   setSceneWidth,
-  demoMain
+  demoMain,
+  mainTextures
 }
 //

@@ -1,6 +1,14 @@
 import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {shared} from '../../assets/engine/commons.js';
-import {allowActions, mainInit, mainR, resetCanvas, interactiveMain, demoMain} from '../../assets/engine/main.js';
+import {
+  allowActions,
+  mainInit,
+  mainR,
+  resetCanvas,
+  interactiveMain,
+  demoMain,
+  mainTextures
+} from '../../assets/engine/main.js';
 import {Title} from '@angular/platform-browser';
 import * as KweeLiveActions from './store/kwee-live.actions';
 import * as fromApp from '../store/app.reducers';
@@ -86,6 +94,11 @@ export class KweeLiveComponent implements OnInit, OnDestroy {
   async interactive(target) {
     await resetCanvas();
     demoMain(target, this.boundingbox);
+  }
+
+  async texture() {
+    await resetCanvas();
+    mainTextures();
   }
 
   getAllow() {

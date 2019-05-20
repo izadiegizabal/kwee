@@ -483,20 +483,37 @@ class TArc extends TEntity {
 
   draw() {
     if(this.count > 0) {
-      // global.gl.useProgram(global.program);
-      // Bind vertex buffer object
-      global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.buffer);
-      // Get the attribute location
-      // let aVertexPosition = global.gl.getAttribLocation(global.program, "aVertexPosition");
+      if(!global.useTextures) {
+        // global.gl.useProgram(global.program);
+        // Bind vertex buffer object
+        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.buffer);
+        // Get the attribute location
+        // let aVertexPosition = global.gl.getAttribLocation(global.program, "aVertexPosition");
 
-      // Point an attribute to the currently bound VBO
-      global.gl.vertexAttribPointer(global.programAttributes.aVertexPosition, 3, global.gl.FLOAT, false, 0, 0);
+        // Point an attribute to the currently bound VBO
+        global.gl.vertexAttribPointer(global.programAttributes.aVertexPosition, 3, global.gl.FLOAT, false, 0, 0);
 
-      // Enable the attribute
-      global.gl.enableVertexAttribArray(global.programAttributes.aVertexPosition);
-      global.gl.uniform4fv(global.programUniforms.uMaterialDiffuse, [1, 1, 1, 1]);
-      // global.gl.uniform4fv(this.uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
-      global.gl.drawArrays(global.gl.LINES, 0, this.count * 2);
+        // Enable the attribute
+        global.gl.enableVertexAttribArray(global.programAttributes.aVertexPosition);
+        global.gl.uniform4fv(global.programUniforms.uMaterialDiffuse, [1, 1, 1, 1]);
+        // global.gl.uniform4fv(this.uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+        global.gl.drawArrays(global.gl.LINES, 0, this.count * 2);
+      } else {
+        global.gl.bindBuffer(global.gl.ARRAY_BUFFER, this.buffer);
+        // Get the attribute location
+        let aVertexPosition = global.gl.getAttribLocation(global.textureProgram, "aVertexPosition");
+
+        // Point an attribute to the currently bound VBO
+        global.gl.vertexAttribPointer(aVertexPosition, 3, global.gl.FLOAT, false, 0, 0);
+
+        // Enable the attribute
+        global.gl.enableVertexAttribArray(aVertexPosition);
+        global.gl.uniform4fv(global.gl.getUniformLocation(global.textureProgram, 'uMaterialDiffuse'), [1.0, 0.0, 0.0, 1.0]);
+        global.gl.uniform4fv(global.gl.getUniformLocation(global.textureProgram, 'uMaterialAmbient'), [1.0, 1.0, 1.0, 1.0]);
+        global.gl.uniform1i(global.gl.getUniformLocation(global.textureProgram, 'uUseTextures'), 0);
+        // global.gl.uniform4fv(this.uMaterialAmbient, [1.0, 1.0, 1.0, 1.0]);
+        global.gl.drawArrays(global.gl.LINES, 0, this.count * 2);
+      }
     }
   }
 }
