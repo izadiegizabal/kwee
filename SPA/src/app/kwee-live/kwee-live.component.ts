@@ -3,6 +3,7 @@ import {shared} from '../../assets/engine/commons.js';
 import {
   allowActions,
   mainInit,
+  mainInitExplicit,
   mainR,
   resetCanvas,
   interactiveMain,
@@ -58,7 +59,7 @@ export class KweeLiveComponent implements OnInit, OnDestroy {
     this.titleService.setTitle('Kwee - Kwee Live');
     this.disabled = false;
     await shared();
-    await mainInit();
+    await mainInitExplicit();
     demoMain( [0, 0, 0], this.boundingbox);
 
     this.store$.dispatch(new KweeLiveActions.TryGetApplications({page: 1, limit: 5}));

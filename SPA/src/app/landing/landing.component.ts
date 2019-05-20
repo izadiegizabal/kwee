@@ -91,7 +91,6 @@ export class LandingComponent implements OnInit, OnDestroy {
     this.titleService.setTitle('Kwee - Home');
     this.disabled = false;
     await shared(true);  // true = landing (NO ZOOM)
-    await mainInit();
 
     // this.main();
     // this.drawHollow();
@@ -214,9 +213,10 @@ export class LandingComponent implements OnInit, OnDestroy {
 
   }
 
-  offerShow(){
+  async offerShow(){
     // this.currentIndex++;
     const motor = this.motor;
+    await mainInit(motor);
 
     // ----- MESHES -----
     // console.log(this.scene);

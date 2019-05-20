@@ -36,7 +36,7 @@ function  setSceneWidth(value){
   SceneWidth = value;
 }
 
-async function mainInit() {
+async function mainInitExplicit() {
   return new Promise(async resolve => {
 
     //global.gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
@@ -83,40 +83,66 @@ async function mainInit() {
       return;
     }
 
-    // PARTICLES
-    let particlesFragmentSource = await manager.getResource('particles.fs');
-    let particlesVertexSource = await manager.getResource('particles.vs');
-    let vertexBuffer = global.gl.createShader(global.gl.VERTEX_SHADER);
-    let fragmentBuffer = global.gl.createShader(global.gl.FRAGMENT_SHADER);
+    VShader = await manager.getResource('particles.vs');
+    FShader = await manager.getResource('particles.fs');
 
-    global.gl.shaderSource(vertexBuffer, particlesVertexSource);
-    global.gl.shaderSource(fragmentBuffer, particlesFragmentSource);
 
-    global.gl.compileShader(vertexBuffer);
-    if (!global.gl.getShaderParameter(vertexBuffer, global.gl.COMPILE_STATUS)) {
-      console.error('ERROR compiling vertex shader', global.gl.getShaderInfoLog(vertexBuffer));
+    vertexShader = global.gl.createShader(global.gl.VERTEX_SHADER);
+    fragmentShader = global.gl.createShader(global.gl.FRAGMENT_SHADER);
+
+    global.gl.shaderSource(vertexShader, VShader);
+    global.gl.shaderSource(fragmentShader, FShader);
+
+    global.gl.compileShader(vertexShader);
+    if (!global.gl.getShaderParameter(vertexShader, global.gl.COMPILE_STATUS)) {
+      console.error('ERROR compiling vertex shader', global.gl.getShaderInfoLog(vertexShader));
       return;
     }
 
-    global.gl.compileShader(fragmentBuffer);
-    if (!global.gl.getShaderParameter(fragmentBuffer, global.gl.COMPILE_STATUS)) {
-      console.error('ERROR compiling fragment shader', global.gl.getShaderInfoLog(fragmentBuffer));
+    global.gl.compileShader(fragmentShader);
+    if (!global.gl.getShaderParameter(fragmentShader, global.gl.COMPILE_STATUS)) {
+      console.error('ERROR compiling fragment shader', global.gl.getShaderInfoLog(fragmentShader));
       return;
     }
 
-    global.gl.attachShader(global.particlesProgram, vertexBuffer);
-    global.gl.attachShader(global.particlesProgram, fragmentBuffer);
-
+    global.gl.attachShader(global.particlesProgram, vertexShader);
+    global.gl.attachShader(global.particlesProgram, fragmentShader);
     global.gl.linkProgram(global.particlesProgram);
     if (!global.gl.getProgramParameter(global.particlesProgram, global.gl.LINK_STATUS)) {
-      console.error('ERROR linking particlesProgram', global.gl.getProgramInfoLog(global.particlesProgram));
+      console.error('ERROR linking global.program', global.gl.getProgramInfoLog(global.particlesProgram));
       return;
     }
     global.gl.validateProgram(global.particlesProgram);
     if (!global.gl.getProgramParameter(global.particlesProgram, global.gl.VALIDATE_STATUS)) {
-      console.error('ERROR validating particlesProgram', global.gl.getProgramInfoLog(global.particlesProgram));
+      console.error('ERROR validating global.program', global.gl.getProgramInfoLog(global.particlesProgram));
       return;
     }
+
+    // Use default
+    global.gl.useProgram(global.program);
+    draw = true;
+    allowActions.value = true;
+
+    loadAttribAndUniformsLocations();
+
+    resolve(allowActions.value);
+  });
+}
+
+async function mainInit(motor) {
+  return new Promise(async resolve => {
+
+    //global.gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
+
+    // (0.435, 0.909, 0.827, 0.0); // our blue
+    // (0.266, 0.294, 0.329, 1.0); // our grey
+
+    manager = new TResourceManager();
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////                                         SHADERS
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    await motor.attachProgram(global.program, manager, 'shader.vs', 'shader.fs');
+    await motor.attachProgram(global.particlesProgram, manager, 'particles.vs', 'particles.fs');
 
     // Use default
     global.gl.useProgram(global.program);
@@ -1234,7 +1260,7 @@ async function mainTextures(texture, particles, line) {
     /////////////////////                                         LIGHTNING
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //                           father  type    ambient      specular       diffuse         direction
-    let light = motor.createLight(scene, 1, [0.2,0.2,0.2,1.0], [1.0,1.0,1.0,1.0], [0.5,0.5,0.5,1.0], [10.0, 10.0, 10.0]);
+    let light = motor.createLight(scene, 1, [0.5,0.5,0.5,1.0], [1.0,1.0,1.0,1.0], [0.5,0.5,0.5,1.0], [10.0, 10.0, 10.0]);
 
     motor.calculateLightsTextures();
 
@@ -1281,6 +1307,7 @@ async function mainTextures(texture, particles, line) {
 
 export {
   mainInit,
+  mainInitExplicit,
   mainR,
   resetCanvas,
   allowActions,
