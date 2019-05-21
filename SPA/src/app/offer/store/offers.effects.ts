@@ -26,7 +26,7 @@ export class OffersEffects {
           apiEndpointUrl += '&sort=' + payload.order;
         }
 
-        console.log(body);
+       // console.log(body);
 
         return this.httpClient.post(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res: {
@@ -108,7 +108,7 @@ export class OffersEffects {
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
         return this.httpClient.delete(apiEndpointUrl, {headers: headers}).pipe(
           map((res) => {
-            console.log(res);
+            // console.log(res);
             return {
               type: OffersActions.DELETE_OFFER,
               payload: payload

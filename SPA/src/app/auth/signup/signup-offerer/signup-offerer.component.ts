@@ -340,10 +340,10 @@ export class SignupOffererComponent implements OnInit {
           }
         });
       } else {
-        this.store$.dispatch(new AuthActions.TrySNCandidate({
-          'type': 'business',
-          'user': this.offerer
-        }));
+        // this.store$.dispatch(new AuthActions.TrySNCandidate({
+        //   'type': 'business',
+        //   'user': this.offerer
+        // }));
       }
     }
   }

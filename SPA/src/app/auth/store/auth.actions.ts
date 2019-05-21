@@ -5,6 +5,7 @@ import {UPDATE_CANDIDATE} from '../../admin/store/admin.actions';
 export const TRY_SIGNUP_CANDIDATE = 'TRY_SIGNUP_CANDIDATE';
 export const TRY_SIGNUP_BUSINESS = 'TRY_SIGNUP_BUSINESS';
 export const TRY_SIGNIN = 'TRY_SIGNIN';
+export const TRY_SIGNIN_SN = 'TRY_SIGNIN_SN';
 export const SIGNUP = 'SIGNUP';
 export const SIGNIN = 'SIGNIN';
 export const LOGOUT = 'LOGOUT';
@@ -42,7 +43,6 @@ export class TrySignin implements Action {
   constructor(public payload: { email: string, password: string, token: any }) {
   }
 }
-
 export class Signup implements Action {
   readonly type = SIGNUP;
 }
@@ -83,11 +83,18 @@ export class AuthError implements Action {
   }
 }
 
+export class TrySigninSN implements Action {
+  readonly type = TRY_SIGNIN_SN;
+
+  constructor(public payload: { token: any, user: any, type: string}) {
+  }
+}
+
 
 export class TrySNCandidate implements Action {
   readonly type = TRY_SN_CANDIDATE;
 
-  constructor(public payload: { type: string, user: any }) {
+  constructor(public payload: { type: string, user: any, token: any }) {
   }
 }
 
@@ -106,6 +113,6 @@ export class SnCandidate implements Action {
 }
 
 
-export type AuthActions = TrySignupCandidate | TrySignupBusiness
-  | Signup | TrySignin | Signin | Logout | SetToken | SetUser | AuthError | TrySNCandidate | SnCandidate;
 
+export type AuthActions = TrySignupCandidate | TrySignupBusiness
+  | Signup | TrySignin | Signin | Logout | SetToken | SetUser | AuthError | TrySNCandidate | SnCandidate | TrySigninSN;

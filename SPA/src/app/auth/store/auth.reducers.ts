@@ -47,7 +47,7 @@ export function authReducer(state = initialState, action: AuthActions.AuthAction
     case AuthActions.SN_CANDIDATE:
       return {
         ...state,
-        // user: action.payload
+        user: action.payload
       };
     default:
       return state;

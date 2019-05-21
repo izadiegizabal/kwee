@@ -240,14 +240,14 @@ export class SignupCandidateComponent implements OnInit {
     });
 
 
-    this.authEffects$.authSignin.pipe(
-      filter((action: Action) => action.type === AuthActions.SET_USER)
-    ).subscribe(() => {
-      console.log('cambia el auth');
-     });
-    //
+    // this.authEffects$.authSignin.pipe(
+    //   filter((action: Action) => action.type === AuthActions.SIGNIN)
+    // ).subscribe(() => {
+    //   console.log('cambia el auth');
+    //  });
+
     this.authEffects$.authSNCandidate.pipe(
-      filter((action: Action) => action.type === AuthActions.SN_CANDIDATE)
+      filter((action: Action) => action.type === AuthActions.TRY_SN_CANDIDATE)
     ).subscribe(() => {
       console.log('he actualizado al usuario');
       this.stepper.next();
@@ -283,9 +283,7 @@ export class SignupCandidateComponent implements OnInit {
     // console.log(this.secondFormGroup);
     // this.isSocialNetwork = true;
     if (this.secondFormGroup.status === 'VALID') {
-      console.log('form valid');
       if (!this.isSocialNetwork) {
-        console.log('no viene por red social');
         if ((this.secondFormGroup.controls['location'].value as City).geo === undefined) {
           if (this.options.length > 0) {
             this.secondFormGroup.controls['location'].setValue(this.options[0]);
@@ -323,7 +321,6 @@ export class SignupCandidateComponent implements OnInit {
         });
 
       } else {
-        console.log('viene por red social');
         // Update of user that is coming by social network with his birthday, role and location
         const updateuser = {
           'name': this.secondFormGroup.controls['name'].value,
@@ -337,22 +334,21 @@ export class SignupCandidateComponent implements OnInit {
           'premium': '0',
         };
 
-        // console.log(updateuser);
 
-        this.store$.dispatch(new AuthActions.TrySignin({
-          'email': null,
+        this.store$.dispatch(new AuthActions.TrySigninSN({
           'token': this.snToken,
-          'password': null
+          'type': 'candidate',
+          'user': updateuser
         }));
 
-        this.authEffects$.authSignin.pipe(
-          filter((action: Action) => action.type === AuthActions.SET_USER)
-        ).subscribe(() => {
-          this.store$.dispatch(new AuthActions.TrySNCandidate({
-            'type': 'candidate',
-            'user': updateuser
-          }));
-        });
+        // this.authEffects$.authSignin.pipe(
+        //   filter((action: Action) => action.type === AuthActions.SET_USER)
+        // ).subscribe(() => {
+        //   this.store$.dispatch(new AuthActions.TrySNCandidate({
+        //     'type': 'candidate',
+        //     'user': updateuser
+        //   }));
+        // });
       //
       //   this.authEffects$.authSNCandidate.pipe(
       //     filter((action: Action) => action.type === AuthActions.SN_CANDIDATE)
@@ -534,16 +530,11 @@ export class SignupCandidateComponent implements OnInit {
 
 
   linkedInSignUp() {
-    console.log('linkedIn Sign Up');
     window.location.href = environment.apiUrl + 'auth/linkedin';
-    // stepper.next();
   }
 
   twitterSignUp() {
-    console.log('twitter Sign Up');
     window.location.href = environment.apiUrl + 'auth/twitter';
-    // stepper.next();
-
   }
 
   deletePhoto() {

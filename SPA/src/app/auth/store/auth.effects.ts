@@ -28,13 +28,9 @@ export class AuthEffects {
           if (authData.password) {
             body = JSON.stringify({token: authData.token, password: authData.password});
           } else {
-            console.log('aaaaaaaaaaaaaaaa' + authData.token);
             headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', authData.token);
           }
         }
-
-        console.log(headers);
-
 
         return this.httpClient.post(environment.apiUrl + 'login', body, {headers: headers}).pipe(
           mergeMap((res: {
@@ -49,6 +45,8 @@ export class AuthEffects {
               premium: number,
             }
           }) => {
+            console.log(res);
+
             switch (res.data.type) {
               case 'offerer':
                 res.data.type = 'business';
@@ -138,6 +136,92 @@ export class AuthEffects {
     share()
   );
 
+
+  // Inicio de sesión con Oauth
+
+  @Effect()
+  signinSN = this.actions$.pipe(
+    ofType(AuthActions.TRY_SIGNIN_SN),
+    map((action: AuthActions.TrySigninSN) => {
+      return action.payload;
+    }),
+    switchMap((payload) => {
+        const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', payload.token);
+        const body = JSON.stringify({});
+
+        console.log(headers);
+        console.log(body);
+
+        return this.httpClient.post(environment.apiUrl + 'login', body, {headers: headers}).pipe(
+          mergeMap((res: {
+            token: string,
+            data: {
+              email: string
+              id: number
+              name: string
+              type: string
+              lastAccess: Date
+              notifications: number,
+              premium: number,
+            }
+          }) => {
+            console.log(res);
+            switch (res.data.type) {
+              case 'offerer':
+                res.data.type = 'business';
+                break;
+              case 'applicant':
+                res.data.type = 'candidate';
+                break;
+            }
+
+            return [
+              {
+                type: AuthActions.SIGNIN
+              },
+              {
+                type: AuthActions.SET_TOKEN,
+                payload: res.token
+              },
+              {
+                type: AuthActions.SET_USER,
+                payload: {
+                  email: res.data.email,
+                  id: res.data.id,
+                  name: res.data.name,
+                  type: res.data.type,
+                  notifications: res.data.notifications,
+                  premium: res.data.premium,
+                }
+              },
+              {
+                type: AuthActions.TRY_SN_CANDIDATE,
+                payload: {
+                  type: payload.type,
+                  user: payload.user,
+                  token: payload.token,
+                }
+              }
+            ];
+          }),
+          catchError((err: HttpErrorResponse) => {
+            console.log(err);
+            throwError(this.handleError('signIn', err));
+            const error = err.error.message ? err.error.message : err;
+            return [
+              {
+                type: AuthActions.AUTH_ERROR,
+                payload: error
+              }
+            ];
+          })
+        );
+      }
+    ),
+    share()
+  );
+
+
   @Effect()
   authSNCandidate = this.actions$.pipe(
     ofType(AuthActions.TRY_SN_CANDIDATE),
@@ -150,9 +234,11 @@ export class AuthEffects {
         const body = JSON.stringify(payload.user);
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', authState.token);
 
-      console.log(apiEndpointUrl);
+        console.log('ACTUALIZAMOS EL PERFIL');
+        console.log(apiEndpointUrl);
         console.log(body);
         console.log(headers);
+
         return this.httpClient.put(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res) => {
             console.log(res);
