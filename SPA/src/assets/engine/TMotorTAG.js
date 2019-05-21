@@ -259,12 +259,12 @@ class TMotorTAG{
   // Adds ease in and out camera smooth zooming
   easeCamera() {
     ease({
-      startValue: 7,
-      endValue: 1.7,
+      startValue: 20,
+      endValue: 2,
       durationMs: 5000,
       onStep: x => mango.zoom = x,
       onComplete: () => {
-        mango.status = 1;
+        mango.fase = -1;
       }
     })
   }
@@ -917,14 +917,12 @@ class TMotorTAG{
     mango.lastThis.allCamAnimations.forEach( (e, i) => {
       let val = e.update(deltaTime);
       if(val !== 1){
+        val[0] = val[0] * mango.zoom;
+        val[1] = val[1] * mango.zoom;
+        val[2] = val[2] * mango.zoom;
 
-        let radius = 2; // debug
-
-        val[0] = val[0] * radius;
-        val[1] = val[1] * radius;
-        val[2] = val[2] * radius;
-
-        mango.lastThis.cameraLookAt( mango.lastThis.activeCamera, [...val],
+        mango.lastThis.cameraLookAt( mango.lastThis.activeCamera,
+          [...val],
           [0,0,0],
           [0,1,0]);
       } else {
@@ -933,6 +931,21 @@ class TMotorTAG{
         mango.lastThis.allCamAnimations.splice(i, 1);
       }
     });
+    
+    if(mango.fase == null){
+      let madrid = mango.lastThis.get3DfronLatLon(40.415363, -3.707398);
+      mango.lastThis.cameraLookAt(
+        mango.lastThis.activeCamera,
+        [
+          madrid[0] * mango.zoom + 0.87172406911,
+          madrid[1] * mango.zoom + 0.13251042366,
+          madrid[2] * mango.zoom - 0.13612270355
+        ],
+        [0,0,0],
+        [0,1,0]
+      )
+    }
+
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     mango.lastThis.calculateViews();
