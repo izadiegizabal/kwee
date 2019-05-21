@@ -47,14 +47,14 @@ export class BsUploadSettingsComponent implements OnInit {
   ngOnInit() {
         // Initialise form
         this.accountFormGroup = this._formBuilder.group({
-
+          'file': new FormControl(),
         });
 
         this.profilesState = this.store$.pipe(select(state => state.profiles));
   }
 
   deleteFile() {
-    this.accountFormGroup.controls['profile'].setValue(null);
+    this.accountFormGroup.controls['file'].setValue(null);
   }
 
   previewFile(event: any) {
@@ -92,7 +92,7 @@ export class BsUploadSettingsComponent implements OnInit {
 
   onSave() {
     this.dialogShown = false;
-    console.log('onsave: ', this.file.img)
+    console.log('onsave: ', this.file);
     if (this.file) {
       console.log('aesrdtfyguhiouytrew');
       console.log(this.file);
