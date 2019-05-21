@@ -21,7 +21,7 @@ export class BusinessOpenOffersComponent implements OnInit {
   orderBy = '0';
   @ViewChild('paginator') paginator: MatPaginator;
 
-  constructor(private store$: Store<fromApp.AppState>) {
+  constructor(public store$: Store<fromApp.AppState>) {
   }
 
   ngOnInit() {
