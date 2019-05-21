@@ -265,7 +265,6 @@ class TMotorTAG{
       onStep: x => mango.zoom = x,
       onComplete: () => {
         mango.fase = -1;
-        console.log("zoom completado");
       }
     })
   }
@@ -918,8 +917,6 @@ class TMotorTAG{
     mango.lastThis.allCamAnimations.forEach( (e, i) => {
       let val = e.update(deltaTime);
       if(val !== 1){
-        console.log("madrid X: ");
-        console.log(val[0] * mango.zoom);
         val[0] = val[0] * mango.zoom;
         val[1] = val[1] * mango.zoom;
         val[2] = val[2] * mango.zoom;
@@ -947,8 +944,6 @@ class TMotorTAG{
         [0,0,0],
         [0,1,0]
       )
-      console.log("pre-Madrid X: ");
-      console.log(madrid[0] * mango.zoom);
     }
 
 
