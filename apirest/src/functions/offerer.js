@@ -2,7 +2,7 @@ const {logger, sendVerificationEmail, deleteFile, uploadImg, saveLogES, checkImg
 const elastic = require('../database/elasticsearch');
 const bcrypt = require('bcryptjs');
 
-async function createOfferer(req, res, next, db, id, regUser) {
+async function createOfferer(req, res, next, db, regUser, id) {
     try {
         var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         await logger.saveLog('POST', 'offerer', null, res, req.useragent, ip, null);
@@ -20,6 +20,7 @@ async function createOfferer(req, res, next, db, id, regUser) {
         if (body.img && checkImg(body.img)) {
             
             if( regUser ){
+                // users comming from normal singup
                 body.password ? user.password = bcrypt.hashSync(body.password, 10) : null;
                 body.email ? user.email = body.email : null;
 
@@ -66,6 +67,7 @@ async function createOfferer(req, res, next, db, id, regUser) {
                     return next({type: 'error', error: err.message});
                 });
             } else {
+                // users comming from social networks
                 return db.sequelize.transaction(transaction => {
                     var imgName = uploadImg(req, res, next, 'offerers');
                     user.img = imgName;

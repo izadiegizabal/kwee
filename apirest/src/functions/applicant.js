@@ -2,7 +2,7 @@ const {logger, sendVerificationEmail, saveLogES} = require('../shared/functions'
 const elastic = require('../database/elasticsearch');
 const bcrypt = require('bcryptjs');
 
-async function createApplicant(req, res, next, db, id, regUser) {
+async function createApplicant(req, res, next, db, regUser, id) {
     var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     try {
         await logger.saveLog('POST', 'applicant', null, res, req.useragent, ip, null);

@@ -130,10 +130,10 @@ module.exports = (app, db) => {
             
             switch ( type ) {
                 case "candidate":
-                    createApplicant(req, res, next, db, id, false);
+                    createApplicant(req, res, next, db, false, id);
                         break;
                     case "business": 
-                    createOfferer(req, res, next, db, id, false);
+                    createOfferer(req, res, next, db, false, id);
                         break;
             }
 
