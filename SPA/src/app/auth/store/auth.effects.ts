@@ -45,7 +45,7 @@ export class AuthEffects {
               premium: number,
             }
           }) => {
-            console.log(res);
+            // console.log(res);
 
             switch (res.data.type) {
               case 'offerer':
@@ -109,7 +109,7 @@ export class AuthEffects {
         const headers = new HttpHeaders().set('Content-Type', 'application/json');
         return this.httpClient.post(environment.apiUrl + 'applicant', body, {headers: headers}).pipe(
           mergeMap((res) => {
-            console.log(res);
+            // console.log(res);
             return [
               {
                 type: AuthActions.SIGNUP,
@@ -162,7 +162,7 @@ export class AuthEffects {
               premium: number,
             }
           }) => {
-            console.log(res);
+           // console.log(res);
             switch (res.data.type) {
               case 'offerer':
                 res.data.type = 'business';
@@ -238,7 +238,7 @@ export class AuthEffects {
 
         return this.httpClient.put(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res) => {
-            console.log(res);
+           // console.log(res);
             return {
               type: AuthActions.SN_USER,
               payload: payload.user
