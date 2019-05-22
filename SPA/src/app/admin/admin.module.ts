@@ -21,6 +21,8 @@ import {AlertDialogModule} from '../shared/alert-dialog/alert-dialog.module';
 import {AdminManageOffersComponent} from './admin-manage-offers/admin-manage-offers.component';
 import {OfferOverviewComponent} from './admin-manage-offers/offer-overview/offer-overview.component';
 import {UserLogComponent} from './user-log/user-log.component';
+import {StatisticsOverviewComponent} from './admin-statistics/statistics-overview/statistics-overview.component';
+
 
 @NgModule({
   declarations: [
@@ -36,6 +38,7 @@ import {UserLogComponent} from './user-log/user-log.component';
     AdminManageOffersComponent,
     OfferOverviewComponent,
     UserLogComponent,
+    StatisticsOverviewComponent,
   ],
   imports: [
     AdminRoutingModule,
