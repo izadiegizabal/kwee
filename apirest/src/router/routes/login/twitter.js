@@ -18,6 +18,7 @@ module.exports = (app, db) => {
         passport.authenticate('twitter', {failureRedirect: '/login'}),
         async (req, res, next) => {
             // Authentication with Instagram successful
+            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
             try {
 
                 let user = await db.users.findOne({where: {email: req.user._json.email}});

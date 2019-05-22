@@ -150,7 +150,7 @@ module.exports = (app, db) => {
                     let object = {};
                     // let to = users.find( to => to.id === notification.to );
                     let from = users.find( from => from.id === notification.from );
-                    let offer, rating;
+                    let offer, rating, application;
                     object.id = notification.id;
                     object.read = notification.read;
                     object.status = notification.status;
@@ -168,9 +168,11 @@ module.exports = (app, db) => {
                                     object.rating = rating;
                                 break;
                         case 'applications': 
-                                    let application = applications.find( application => application.id === notification.idTable );
-                                    offer = offers.find( offer => offer.id === application.fk_offer );
-                                    object.offer = offer;
+                                    application = applications.find( appli => appli.id === notification.idTable );
+                                    if ( application ) {
+                                        offer = offers.find( offer => offer.id === application.fk_offer );
+                                        object.offer = offer;
+                                    }
                                 break;
                     }
                     

@@ -24,11 +24,15 @@ export class MessageEffects {
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
         const body = JSON.stringify(payload);
 
+        console.log(body);
+
         return this.httpClient.post(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res: {
             ok: boolean,
             message: string,
           }) => {
+            console.log('It works?');
+            console.log(res);
             return {
               type: MessageActions.POST_MESSAGE,
               payload: res
