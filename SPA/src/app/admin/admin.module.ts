@@ -21,7 +21,9 @@ import {AlertDialogModule} from '../shared/alert-dialog/alert-dialog.module';
 import {AdminManageOffersComponent} from './admin-manage-offers/admin-manage-offers.component';
 import {OfferOverviewComponent} from './admin-manage-offers/offer-overview/offer-overview.component';
 import {UserLogComponent} from './user-log/user-log.component';
-import { MatTableModule } from '@angular/material';
+import {StatisticsOverviewComponent} from './admin-statistics/statistics-overview/statistics-overview.component';
+import {MatTableModule} from '@angular/material';
+
 
 @NgModule({
   declarations: [
@@ -37,6 +39,7 @@ import { MatTableModule } from '@angular/material';
     AdminManageOffersComponent,
     OfferOverviewComponent,
     UserLogComponent,
+    StatisticsOverviewComponent,
   ],
   imports: [
     AdminRoutingModule,

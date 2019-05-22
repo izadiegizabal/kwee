@@ -12,15 +12,9 @@ mat-icon{
 }
 
 .iconData p {
-  margin-top: 4px;
+  margin-top: 8px;
   margin-bottom: 4px;
 }
-
-/* mat-icon ::ng-deep svg {
-  width: 75%;
-  height: 75%;
-  align-self: center;
-} */
 
 #offerBubble{
   position: absolute;
@@ -30,10 +24,6 @@ mat-icon{
   text-align: center;
   width: 270px;
   height: 80px;
-  // left: 0;
-  // right: 0;
-  // top: -55%;
-  // bottom: 0;
   border-radius: 3px;
   cursor: pointer;
 }
@@ -95,6 +85,7 @@ mat-icon{
 #companyLogo{
   object-fit: cover;
   border-radius: 2px;
+  padding: 0px 16px;
 }
 
 .nameIndex div{
