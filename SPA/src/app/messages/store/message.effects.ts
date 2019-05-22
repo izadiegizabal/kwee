@@ -31,7 +31,6 @@ export class MessageEffects {
             ok: boolean,
             message: string,
           }) => {
-            console.log('It works?');
             console.log(res);
             return {
               type: MessageActions.POST_MESSAGE,

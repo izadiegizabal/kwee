@@ -43,39 +43,42 @@
                  fxLayoutGap="8px">
 
               <div class="mat-h1">My Messages</div>
-              <div *ngIf="isUserSelected;else no_user_selected" fxLayout="row">
-                <div *ngIf="bdMessages.length > 0; else no_messages_yet" class="container messageList" #chat
-                     id="chat-messages">
-                  <div *ngFor="let message of bdMessages" class="container darker" fxLayout="column">
-                    <div fxLayout="row" fxFlex="100%" fxLayoutAlign="stretch">
+              <div>
+                <div *ngIf="isUserSelected && bdMessages.length > 0;else no_user_selected"
+                     class="messageList" id="chat-messages" #chat
+                     fxFlex="100%" fxLayout="column" fxLayoutGap="8px">
+                  <div *ngFor="let message of bdMessages">
+                    <div
+                      fxLayout="column"
+                      [fxLayoutAlign]="message.senderId === authUser.id ? 'start end' : 'start start'">
                       <mat-card
-                        [ngClass]="{ 'from': message.senderId === authUser.id,
-                                   'to':  message.senderId !== authUser.id }"
+                        [ngClass]="{ 'from': message.senderId !== authUser.id,
+                                   'to':  message.senderId === authUser.id }"
                         class="message">
                         <mat-card-content>{{ message.message }}</mat-card-content>
                       </mat-card>
+                      <span class="time mat-caption">{{ message.hour|slice:0:5 }}</span>
                     </div>
-                    <span class="time-right">{{ message.hour }}</span>
                   </div>
                 </div>
-                <ng-template #no_messages_yet>
+                <ng-template #no_user_selected>
                   <div fxLayout="column" fxLayoutAlign="center center" style="margin: 16px; min-height: 384px">
                     <img alt="Iwi Mascot" src="../../../../assets/branding/iwi.svg" width="128px"/>
-                    <p style="padding-top: 16px">No messages yet, start the conversation sending a message below!</p>
+                    <p *ngIf="isUserSelected; else no_messages_yet" style="padding-top: 16px">
+                      Please, select a chat first.
+                    </p>
+                    <ng-template #no_messages_yet>
+                      No messages yet, start the conversation sending a message below!
+                    </ng-template>
                   </div>
                 </ng-template>
               </div>
-              <ng-template #no_user_selected>
-                <div fxLayout="column" fxLayoutAlign="center center" style="margin: 16px; min-height: 384px">
-                  <img alt="Iwi Mascot" src="../../../../assets/branding/iwi.svg" width="128px"/>
-                  <p style="padding-top: 16px">Please, select a chat first.</p>
-                </div>
-              </ng-template>
 
               <!-- Send Message -->
               <div fxLayout="row">
                 <form *ngIf="isUserSelected"
-                      (ngSubmit)="send()" action=""
+                      #sendInput="ngForm"
+                      (ngSubmit)="send(sendInput.value)" action=""
                       fxLayoutGap="16px" fxFlex="100%" fxLayoutAlign="center center"
                       style="padding-bottom: 16px">
                   <mat-form-field fxFlex="75%">

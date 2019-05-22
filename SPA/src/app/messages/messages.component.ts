@@ -9,7 +9,7 @@ import * as moment from 'moment';
 import {Title} from '@angular/platform-browser';
 import {MatSidenav} from '@angular/material';
 import {BreakpointObserver} from '@angular/cdk/layout';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 
 export interface Message {
   senderId: number;
@@ -45,6 +45,7 @@ export class MessagesComponent implements OnInit {
   bdMessages: any[] = [];
   areMessages = false;
   isUserSelected = false;
+  selectedUserId = -1;
   userList: Users[] = [];
   differentUsers: number;
   messageToSend = {
@@ -58,9 +59,9 @@ export class MessagesComponent implements OnInit {
     total: 0
   };
 
-  authState: any;
   authUser: any;
   name: string;
+
 
   text = '';
   element: HTMLElement;
@@ -70,12 +71,14 @@ export class MessagesComponent implements OnInit {
   public data: any = [];
 
   @ViewChild('chat') chat;
+  scrollPosition = 0;
 
   constructor(
     private titleService: Title,
     public messageService: MessagesService,
     public media: BreakpointObserver,
     private activatedRoute: ActivatedRoute,
+    private router: Router,
     private store$: Store<fromApp.AppState>
   ) {
   }
@@ -84,8 +87,7 @@ export class MessagesComponent implements OnInit {
 
     this.titleService.setTitle('Kwee - Messages');
 
-    this.authState = this.store$.pipe(select('auth'));
-    this.authState.pipe(
+    this.store$.pipe(select('auth')).pipe(
       select((s: { user: string }) => s.user)
     ).subscribe(
       (user) => {
@@ -106,11 +108,16 @@ export class MessagesComponent implements OnInit {
           this.differentUsers = message.messages.total;
           this.userList = message.messages.data;
           this.areMessages = true;
+          if (this.selectedUserId === -1 && this.userList && this.userList.length > 0) {
+            this.selectUser(this.userList[0].id);
+          }
         }
       });
 
     this.activatedRoute.params.subscribe((params) => {
-      if (!isNaN(Number(params['id']))) {
+      if (!isNaN(Number(params['id'])) && this.selectedUserId !== Number(params['id'])) {
+        console.log('Selecting user from params');
+        this.selectedUserId = Number(this.activatedRoute.params['id']);
         this.selectUser(Number(params['id']));
 
         // TODO: fetch who this is to update the user list and fix so that everything works
@@ -119,20 +126,22 @@ export class MessagesComponent implements OnInit {
   }
 
   selectUser(id: number) {
+    if (Number(this.activatedRoute.params['id']) !== this.selectedUserId) {
+      this.router.navigate(['/messages', id]);
+    }
 
-    console.log('trying to get conversation from id: ' + id);
-    // TODO: Update param id
-
+    this.selectedUserId = id;
     this.closeDrawerIfMobile();
 
-    this.sub.unsubscribe();
     this.isUserSelected = true;
     this.store$.dispatch(new MessageActions.TryGetConversation({id}));
 
     this.store$.pipe(select(state => state.messages)).subscribe(
       (conver) => {
-
+        console.log(conver);
         if (conver.messages && conver.messages.total > 0) {
+
+          console.log(conver.messages);
 
           this.bdMessages = conver.messages.data;
 
@@ -147,16 +156,19 @@ export class MessagesComponent implements OnInit {
             this.messageToSend.senderName = this.authUser.name;
           }
           this.initMessage();
-          this.scrollChat();
         }
       });
 
   }
 
-  send() {
+  send(form: any) {
+
+    this.text = form.text;
+
     if (this.text.trim().length === 0) {
       return;
     }
+    this.messageToSend.receiverId = this.selectedUserId;
     this.messageToSend.message = this.text;
     this.messageToSend.date = moment().format('YYYY/MM/DD');
     this.messageToSend.hour = moment().format('HH:mm:ss');
@@ -164,20 +176,12 @@ export class MessagesComponent implements OnInit {
 
     this.bdMessages.push(this.messageToSend);
 
-    this.scrollChat();
-
     const obj: any = this.messageToSend;
 
     this.store$.dispatch(new MessageActions.TryPostMessage(obj));
     this.initMessage();
     this.text = '';
 
-  }
-
-  private scrollChat() {
-    if (this.chat) {
-      this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;
-    }
   }
 
   initMessage() {
