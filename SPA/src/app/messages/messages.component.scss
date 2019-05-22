@@ -12,6 +12,31 @@ mat-sidenav {
   padding: 0 16px 16px 16px;
 }
 
+.message {
+  border-radius: 25px;
+  margin: 10px 15px 10px 1px;
+  padding: 15px 20px;
+  position: relative;
+  display: inline-block;
+}
+
+.message.to {
+  background-color: #212121;
+  color: #fff;
+  float: right;
+  text-align: right;
+  border-bottom-right-radius: 2px
+}
+
+.message.from {
+  background-color: whitesmoke;
+  color: #363636;
+  float: left;
+  border-bottom-left-radius: 2px
+}
+
+/////////////////// CARLOS
+
 /* Style images */
 .container img {
   float: left;
@@ -40,18 +65,18 @@ mat-sidenav {
   color: #999;
 }
 
-.right p {
-  position: relative;
-  right: 0;
-}
-
-.right p span {
-  position: absolute;
-  left: 0;
-}
+//.right p {
+//  position: relative;
+//  right: 0;
+//}
+//
+//.right p span {
+//  position: absolute;
+//  left: 0;
+//}
 
 .messageList {
-  flex: 2 2 auto;
+  //flex: 2 2 auto;
   overflow-y: scroll;
   height: 48vh;
 }

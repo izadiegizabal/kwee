@@ -147,9 +147,7 @@ export class MessagesComponent implements OnInit {
             this.messageToSend.senderName = this.authUser.name;
           }
           this.initMessage();
-          if (this.chat) {
-            this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;
-          }
+          this.scrollChat();
         }
       });
 
@@ -166,7 +164,7 @@ export class MessagesComponent implements OnInit {
 
     this.bdMessages.push(this.messageToSend);
 
-    this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;
+    this.scrollChat();
 
     const obj: any = this.messageToSend;
 
@@ -174,6 +172,12 @@ export class MessagesComponent implements OnInit {
     this.initMessage();
     this.text = '';
 
+  }
+
+  private scrollChat() {
+    if (this.chat) {
+      this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;
+    }
   }
 
   initMessage() {

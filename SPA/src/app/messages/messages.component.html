@@ -43,21 +43,19 @@
                  fxLayoutGap="8px">
 
               <div class="mat-h1">My Messages</div>
-              <div *ngIf="isUserSelected;else no_user_selected">
+              <div *ngIf="isUserSelected;else no_user_selected" fxLayout="row">
                 <div *ngIf="bdMessages.length > 0; else no_messages_yet" class="container messageList" #chat
                      id="chat-messages">
-                  <div *ngFor="let message of bdMessages" class="container darker">
-                    <!-- <img src="/w3images/avatar_g2.jpg" alt="Avatar" class="righImg"> -->
-                    <span *ngIf="message.senderId == authUser.id;else receiver">
-                        <p class="right">{{ message.message }}
-                          <span class="time-left">{{ message.hour }}</span>
-                        </p>
-                    </span>
-                    <ng-template #receiver>
-                      <p>{{ message.message }}
-                        <span class="time-right">{{ message.hour }}</span>
-                      </p>
-                    </ng-template>
+                  <div *ngFor="let message of bdMessages" class="container darker" fxLayout="column">
+                    <div fxLayout="row" fxFlex="100%" fxLayoutAlign="stretch">
+                      <mat-card
+                        [ngClass]="{ 'from': message.senderId === authUser.id,
+                                   'to':  message.senderId !== authUser.id }"
+                        class="message">
+                        <mat-card-content>{{ message.message }}</mat-card-content>
+                      </mat-card>
+                    </div>
+                    <span class="time-right">{{ message.hour }}</span>
                   </div>
                 </div>
                 <ng-template #no_messages_yet>
