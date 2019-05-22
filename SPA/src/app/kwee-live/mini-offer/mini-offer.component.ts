@@ -53,7 +53,7 @@ export class MiniOfferComponent implements OnInit {
 
   setType() {
     document.getElementById('offerBubble').className = this.className;
-    let d = document.getElementById('offerBubble');
+    const d = document.getElementById('offerBubble');
     switch (this.className) {
       case 'down':
         d.style.left = (this.points[0] - parseInt(getComputedStyle(d).width, 10) / 2) + 'px';

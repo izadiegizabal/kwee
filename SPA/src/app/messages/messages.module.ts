@@ -8,6 +8,7 @@ import {messageReducer} from './store/message.reducers';
 import {EffectsModule} from '@ngrx/effects';
 import {MessageEffects} from './store/message.effects';
 import {StoreModule} from '@ngrx/store';
+import {MiniOfferModule} from '../kwee-live/mini-offer/mini-offer.module';
 
 
 @NgModule({
@@ -21,7 +22,8 @@ import {StoreModule} from '@ngrx/store';
     FormsModule,
     ReactiveFormsModule,
     StoreModule.forFeature('messages', messageReducer),
-    EffectsModule.forFeature([MessageEffects])
+    EffectsModule.forFeature([MessageEffects]),
+    MiniOfferModule
   ],
   exports: [
     MessagesComponent

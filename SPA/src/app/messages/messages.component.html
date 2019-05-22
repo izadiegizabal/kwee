@@ -1,43 +1,102 @@
-<div class="grid-container grid-container--fit row">
-  <div *ngIf="areMessages;else no_messages_list" class="container grid-element div1">
-    <div *ngFor="let user of userList" class="list">
-      <button (click)="selectUser(user.id)">
-        <!-- <img src="{{user.img}}" alt="Avatar"> -->
-        <p>{{user.name}}</p>
-      </button>
-    </div>
-  </div>
-  <ng-template #no_messages_list>
-    <div class="list">
-      <p>No users</p>
-    </div>
-  </ng-template>
-  <div *ngIf="userSelected;else no_user_selected" class="container grid-element div2" #chat id="chat-messages">
-    <div *ngFor="let message of bdMessages" class="container darker">
-      <!-- <img src="/w3images/avatar_g2.jpg" alt="Avatar" class="righImg"> -->
-      <span *ngIf="message.senderId == authUser.id;else receiver">
-                <p class="right">{{ message.message }}
-                  <span class="time-left">{{ message.hour }}</span>
-                </p>
-            </span>
-      <ng-template #receiver>
-        <p>{{ message.message }}
-          <span class="time-right">{{ message.hour }}</span>
-        </p>
-      </ng-template>
+<div fxLayout="row" fxLayoutAlign="center start">
+  <div fxFlex="100%">
+    <div>
+      <mat-sidenav-container fxFlex="100%">
+        <mat-sidenav #drawer [mode]="!isMobile() ? 'side' : 'over'" [opened]="!isMobile()" class="mat-typography">
+          <h2>Chat List</h2>
+          <div *ngIf="areMessages;else no_messages_list" class="container">
+            <mat-action-list>
+              <div *ngFor="let user of userList">
+                <button (click)="selectUser(user.id)" mat-list-item>
+                  <!-- <img src="{{user.img}}" alt="Avatar"> -->
+                  {{user.name}}
+                </button>
+              </div>
+            </mat-action-list>
+          </div>
+          <ng-template #no_messages_list>
+            <div>
+              <p>No users, start a chat first using the <em>Contact</em> button in the Profiles.</p>
+            </div>
+          </ng-template>
+        </mat-sidenav>
 
+        <mat-sidenav-content class="mat-typography"
+                             fxFlex="100%"
+                             fxFlex.gt-md="60%"
+                             fxLayout="column">
+          <button *ngIf="isMobile()" mat-icon-button>
+            <mat-icon (click)="drawer.toggle()" aria-label="Open menu button">menu</mat-icon>
+          </button>
+
+
+          <!-- Message List -->
+          <div fxFlex="100%" fxLayout="row">
+            <div fxFlex="75%"
+                 fxFlex.lt-lg="90%"
+                 fxFlex.lt-md="100%"
+                 fxFlexOffset="25%"
+                 fxFlexOffset.lt-lg="10%"
+                 fxFlexOffset.lt-md="0%"
+                 style="padding: 0 16px"
+                 fxLayout="column"
+                 fxLayoutGap="8px">
+
+              <div class="mat-h1">My Messages</div>
+              <div *ngIf="isUserSelected;else no_user_selected">
+                <div *ngIf="bdMessages.length > 0; else no_messages_yet" class="container messageList" #chat
+                     id="chat-messages">
+                  <div *ngFor="let message of bdMessages" class="container darker">
+                    <!-- <img src="/w3images/avatar_g2.jpg" alt="Avatar" class="righImg"> -->
+                    <span *ngIf="message.senderId == authUser.id;else receiver">
+                        <p class="right">{{ message.message }}
+                          <span class="time-left">{{ message.hour }}</span>
+                        </p>
+                    </span>
+                    <ng-template #receiver>
+                      <p>{{ message.message }}
+                        <span class="time-right">{{ message.hour }}</span>
+                      </p>
+                    </ng-template>
+                  </div>
+                </div>
+                <ng-template #no_messages_yet>
+                  <div fxLayout="column" fxLayoutAlign="center center" style="margin: 16px; min-height: 384px">
+                    <img alt="Iwi Mascot" src="../../../../assets/branding/iwi.svg" width="128px"/>
+                    <p style="padding-top: 16px">No messages yet, start the conversation sending a message below!</p>
+                  </div>
+                </ng-template>
+              </div>
+              <ng-template #no_user_selected>
+                <div fxLayout="column" fxLayoutAlign="center center" style="margin: 16px; min-height: 384px">
+                  <img alt="Iwi Mascot" src="../../../../assets/branding/iwi.svg" width="128px"/>
+                  <p style="padding-top: 16px">Please, select a chat first.</p>
+                </div>
+              </ng-template>
+
+              <!-- Send Message -->
+              <div fxLayout="row">
+                <form *ngIf="isUserSelected"
+                      (ngSubmit)="send()" action=""
+                      fxLayoutGap="16px" fxFlex="100%" fxLayoutAlign="center center"
+                      style="padding-bottom: 16px">
+                  <mat-form-field fxFlex="75%">
+                    <mat-label></mat-label>
+                    <input matInput [(ngModel)]="text" autocomplete="off" autofocus class="form-control" name="text"
+                           placeholder="Send message..." type="text">
+                  </mat-form-field>
+                  <div>
+                    <button color="accent" mat-raised-button>
+                      <mat-icon color="primary" svgIcon="send"></mat-icon>
+                      {{isMobile() ? '' : '&nbsp; Send'}}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </mat-sidenav-content>
+      </mat-sidenav-container>
     </div>
   </div>
-  <ng-template #no_user_selected>
-    <div class="container">
-      <p>Please, select first some user</p>
-    </div>
-  </ng-template>
-</div>
-<div class="container right">
-  <form (ngSubmit)="send()" action="">
-    <input #sendText [(ngModel)]="text" autocomplete="off" autofocus class="form-control" name="text"
-           placeholder="Send message..." type="text">
-    <button>Enviar</button>
-  </form>
 </div>

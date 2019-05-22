@@ -1,37 +1,37 @@
 <div id="offerBubble"
      [@EnterLeave]
      fxLayout="row"
+     fxLayoutAlign="start"
      [routerLink]="urlfyPosition()">
   <div
     fxLayout="column"
-    fxFlex="31%"
+    fxFlex="84px"
     fxLayoutAlign="center center">
     <img [src]="getImage()"
          alt="Company logo" width="60" height="60"
          id="companyLogo"/>
   </div>
-  <div fxLayout="row" fxFlexOffset="10px">
+  <div
+    fxLayout="column"
+    fxFlex="100%"
+    fxLayoutAlign="center start">
+    <span id="Title"><b>{{obj.title}}</b></span>
+    <div class="nameIndex" fxLayout="row" fxLayoutAlign="start center">
+      <div><span>{{obj.offererIndex}}</span></div>
+      <p>{{obj.offererName}}</p>
+    </div>
     <div
-      fxLayout="column"
-      fxFlex="100%"
-      fxLayoutAlign="center start">
-      <span id="Title"><b>{{obj.title}}</b></span>
-      <div class="nameIndex" fxLayout="row" fxLayoutAlign="start center">
-        <div><span>{{obj.offererIndex}}</span></div>
-        <p>{{obj.offererName}}</p>
+      fxLayout="row"
+      fxLayoutAlign="center center"
+      fxLayoutGap="5px">
+      <div fxLayout="row" fxLayoutAlign="start center" class="iconData">
+        <mat-icon svgIcon="work"></mat-icon>
+        <p style="font-size: .7em">{{obj.contractType}}</p>
       </div>
-      <div
-        fxLayout="row"
-        fxLayoutAlign="center center"
-        fxLayoutGap="5px">
-        <div fxLayout="row" fxLayoutAlign="start center" class="iconData">
-          <mat-icon svgIcon="work"></mat-icon>
-          <p style="font-size: .7em">{{obj.contractType}}</p>
-        </div>
-        <div fxLayout="row" fxLayoutAlign="start center" class="iconData">
-          <mat-icon svgIcon="place"></mat-icon>
-          <p style="font-size: .7em">{{(obj.location.length>12)? (obj.location | slice:0:12)+'...':(obj.location)}}</p>
-        </div>
+      <div fxLayout="row" fxLayoutAlign="start center" class="iconData">
+        <mat-icon svgIcon="place"></mat-icon>
+        <p
+          style="font-size: .7em">{{(obj.location.length > 12) ? (obj.location | slice:0:12) + '...' : (obj.location)}}</p>
       </div>
     </div>
   </div>

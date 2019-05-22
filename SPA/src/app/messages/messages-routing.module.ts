@@ -7,6 +7,9 @@ const messagesRoutes: Routes = [
   {
     path: '', component: MessagesComponent
   },
+  {
+    path: ':id', component: MessagesComponent
+  },
 ];
 
 @NgModule({
