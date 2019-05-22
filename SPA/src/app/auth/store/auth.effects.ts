@@ -149,9 +149,6 @@ export class AuthEffects {
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', payload.token);
         const body = JSON.stringify({});
 
-        console.log(headers);
-        console.log(body);
-
         return this.httpClient.post(environment.apiUrl + 'login', body, {headers: headers}).pipe(
           mergeMap((res: {
             token: string,
@@ -195,7 +192,7 @@ export class AuthEffects {
                 }
               },
               {
-                type: AuthActions.TRY_SN_CANDIDATE,
+                type: AuthActions.TRY_SN_USER,
                 payload: {
                   type: payload.type,
                   user: payload.user,
@@ -223,9 +220,9 @@ export class AuthEffects {
 
 
   @Effect()
-  authSNCandidate = this.actions$.pipe(
-    ofType(AuthActions.TRY_SN_CANDIDATE),
-    map((action: AuthActions.TrySNCandidate) => {
+  authSNUser = this.actions$.pipe(
+    ofType(AuthActions.TRY_SN_USER),
+    map((action: AuthActions.TrySNUser) => {
       return action.payload;
     }),
     withLatestFrom(this.store$.pipe(select(state => state.auth))),
@@ -234,21 +231,21 @@ export class AuthEffects {
         const body = JSON.stringify(payload.user);
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', authState.token);
 
-        console.log('ACTUALIZAMOS EL PERFIL');
-        console.log(apiEndpointUrl);
-        console.log(body);
-        console.log(headers);
+        // console.log('ACTUALIZAMOS EL PERFIL');
+        // console.log(apiEndpointUrl);
+        // console.log(body);
+        // console.log(headers);
 
         return this.httpClient.put(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res) => {
             console.log(res);
             return {
-              type: AuthActions.SN_CANDIDATE,
+              type: AuthActions.SN_USER,
               payload: payload.user
             };
           }),
           catchError((err: HttpErrorResponse) => {
-            throwError(this.handleError('authSNCandidate', err));
+            throwError(this.handleError('authSNCUser', err));
             const error = err.error.message ? err.error.message : err;
             return [
               {

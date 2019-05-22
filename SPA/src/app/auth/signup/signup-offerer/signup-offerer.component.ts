@@ -47,6 +47,7 @@ export class SignupOffererComponent implements OnInit {
 
   isSocialNetwork = false;
   snToken;
+  primera = false;
 
 
   firstFormGroup: FormGroup;
@@ -236,17 +237,28 @@ export class SignupOffererComponent implements OnInit {
     });
 
     this.activatedRoute.queryParams.subscribe(params => {
-      const token = params['token'];
-      this.snToken = token;
-      if (token) {
-        this.stepper.selectedIndex = 1;
+
+      if (params['token']) {
+        const token = params['token'];
+        this.snToken = token;
+
         this.secondFormGroup.controls['businessName'].setValue(params['name']);
         this.secondFormGroup.controls['email'].setValue(params['email']);
         this.secondFormGroup.controls['confEmail'].setValue(params['email']);
         this.secondFormGroup.controls['password'].setValue('123456');
         this.secondFormGroup.controls['password2'].setValue('123456');
         this.isSocialNetwork = true;
+
+        if (!this.primera) {
+          this.stepper.selectedIndex = 1;
+        }
       }
+    });
+
+    this.authEffects$.authSNUser.pipe(
+      filter((action: Action) => action.type === AuthActions.SN_USER)
+    ).subscribe(() => {
+      this.stepper.selectedIndex = 2;
     });
 
   }
@@ -340,10 +352,11 @@ export class SignupOffererComponent implements OnInit {
           }
         });
       } else {
-        // this.store$.dispatch(new AuthActions.TrySNCandidate({
-        //   'type': 'business',
-        //   'user': this.offerer
-        // }));
+        this.store$.dispatch(new AuthActions.TrySigninSN({
+          'token': this.snToken,
+          'type': 'business',
+          'user': this.offerer
+        }));
       }
     }
   }
@@ -590,13 +603,14 @@ export class SignupOffererComponent implements OnInit {
   }
 
   gitHubSignUp() {
-    window.location.href = environment.apiUrl + 'auth/github';
+    // console.log(environment.apiUrl + 'auth/github?type=business');
+     window.location.href = environment.apiUrl + 'auth/github?type=business';
   }
 
 
   linkedInSignUp() {
     console.log('linkedIn Sign Up');
-    window.location.href = environment.apiUrl + 'auth/linkedin';
+    window.location.href = environment.apiUrl + 'auth/linkedin?type=business';
   }
 
   twitterSignUp() {
