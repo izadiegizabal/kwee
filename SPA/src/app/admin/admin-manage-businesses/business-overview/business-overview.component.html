@@ -225,7 +225,7 @@
 </div>
 
 <div *ngIf="(adminState | async).businesses" fxFlex="row">
-  <mat-paginator (page)="pageEvent = $event; changepage();"
+  <mat-paginator #paginator (page)="pageEvent = $event; changepage();"
                  [length]="(adminState | async).businesses.total"
                  [pageSizeOptions]="pageSizeOptions"
                  [pageSize]="pageSize">

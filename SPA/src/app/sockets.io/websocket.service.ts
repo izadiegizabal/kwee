@@ -4,6 +4,7 @@ import {Observable} from 'rxjs';
 import * as fromAuth from '../auth/store/auth.reducers';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../store/app.reducers';
+import {take} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +26,20 @@ export class WebsocketService {
         }
       }
     );
+
+    // Just in case take latest from store if lost in refresh
+    if (!this.userEmail || this.userEmail === '') {
+      this.store$.pipe(take(1)).subscribe(state => {
+          if (state && state.auth && state.auth.user) {
+            this.userEmail = state.auth.user.email;
+            if (this.userEmail) {
+              this.connectUser(this.userEmail);
+            }
+          }
+        }
+      );
+    }
+
     this.checkStatus();
   }
 

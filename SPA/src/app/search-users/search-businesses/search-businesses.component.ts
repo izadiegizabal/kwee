@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild, } from '@angular/core';
 import {MatPaginator, MatSidenav, PageEvent} from '@angular/material';
 import {Observable} from 'rxjs';
 import * as fromAdmin from '../../admin/store/admin.reducers';
@@ -17,9 +17,10 @@ import {Title} from '@angular/platform-browser';
     './search-businesses.component.scss',
   ]
 })
-export class SearchBusinessesComponent implements OnInit {
+export class SearchBusinessesComponent implements OnInit, AfterViewInit {
   // paging
   pageSize = 5;
+  nPage = 1;
   pageSizeOptions: number[] = [5, 10, 25, 100];
   // MatPaginator Output
   pageEvent: PageEvent;
@@ -27,6 +28,7 @@ export class SearchBusinessesComponent implements OnInit {
   @ViewChild('paginator') paginator: MatPaginator;
   query: any;
   orderby = '0';
+  changeP = false;
 
   order: { value: string, viewValue: string }[] =
     [
@@ -60,8 +62,8 @@ export class SearchBusinessesComponent implements OnInit {
   ngOnInit() {
     this.titleService.setTitle('Kwee - Search Businesses');
     this.store$.dispatch(new AdminActions.TryGetBusinesses({
-      page: 1,
-      limit: 5,
+      page: this.nPage,
+      limit: this.pageSize,
       params: this.query,
       order: this.orderby
     }));
@@ -70,11 +72,33 @@ export class SearchBusinessesComponent implements OnInit {
     this.activatedRoute.queryParams
       .subscribe(params => {
         this.query = params;
-        this.searchCallApi();
+        this.query = {...this.query, status: '0'};
+        if (params['page']) {
+          this.nPage = params['page'];
+        }
+        if (params['limit']) {
+          this.pageSize = params['limit'];
+        }
+
+        if (!this.changeP) {
+          this.searchCallApi();
+        } else {
+          this.changeP = false;
+        }
       });
   }
 
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      const index = this.nPage;
+      this.paginator.pageIndex = index - 1;
+    });
+  }
+
+
   changePage() {
+    this.changeP = true;
     this.store$.dispatch(new AdminActions.TryGetBusinesses({
       page: this.pageEvent.pageIndex + 1,
       limit: this.pageEvent.pageSize,
@@ -82,8 +106,13 @@ export class SearchBusinessesComponent implements OnInit {
       order: this.orderby
     }));
     window.scrollTo(0, 0);
+    this.nPage = this.pageEvent.pageIndex + 1;
+    if (this.pageSize !== this.pageEvent.pageSize) {
+      this.pageSize = this.pageEvent.pageSize;
+    }
+    this.router.navigate(['/search-businesses'],
+      {queryParams: {page: this.nPage, limit: this.pageSize}, queryParamsHandling: 'merge'});
   }
-
   isMobile() {
     return !this.media.isMatched('screen and (min-width: 960px)'); // gt-sm
   }
@@ -107,7 +136,7 @@ export class SearchBusinessesComponent implements OnInit {
     this.orderby = order;
 
     this.store$.dispatch(new AdminActions.TryGetBusinesses({
-      page: 1,
+      page: this.nPage,
       limit: this.pageSize,
       params: this.query,
       order: this.orderby
@@ -128,7 +157,7 @@ export class SearchBusinessesComponent implements OnInit {
       this.query = {...this.query, companySize: {'gte': this.query.companySize}};
     }
     this.store$.dispatch(new AdminActions.TryGetBusinesses({
-      page: 1,
+      page: this.nPage,
       limit: this.pageSize,
       params: this.query,
       order: this.orderby

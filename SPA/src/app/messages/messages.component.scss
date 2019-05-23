@@ -9,49 +9,48 @@ mat-sidenav-container {
 mat-sidenav {
   width: 256px;
 
-  padding: 0 16px 16px 16px;
+  h2, p {
+    padding: 0 16px;
+  }
 }
 
-/* Style images */
-.container img {
+.message {
+  border-radius: 24px;
+  margin: 8px 16px 8px 2px;
+  padding: 15px 20px;
+  position: relative;
+}
+
+.message.to {
+  background-color: #212121;
+  color: #fff;
+  float: right;
+  text-align: right;
+  border-bottom-right-radius: 2px
+}
+
+.message.from {
+  background-color: whitesmoke;
+  color: #363636;
   float: left;
-  max-width: 60px;
-  width: 100%;
-  margin-right: 20px;
-  border-radius: 50%;
+  border-bottom-left-radius: 2px
 }
 
-/* Style the right image */
-.container img.rightImg {
-  float: right;
-  margin-left: 20px;
-  margin-right: 0;
-}
-
-/* Style time text */
-.time-right {
-  float: right;
+.time {
+  margin-top: -4px;
+  padding-right: 16px;
   color: #aaa;
 }
 
-/* Style time text */
-.time-left {
-  float: left;
-  color: #999;
-}
-
-.right p {
-  position: relative;
-  right: 0;
-}
-
-.right p span {
-  position: absolute;
-  left: 0;
-}
-
 .messageList {
-  flex: 2 2 auto;
   overflow-y: scroll;
-  height: 48vh;
+  overflow-x: hidden;
+  height: 56vh;
+}
+
+.selectedChat {
+  // font-weight: bold;
+  // background-color: rgba(0, 191, 165, 1);
+  background-color: rgb(33, 33, 33);
+  color: white;
 }

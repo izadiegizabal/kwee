@@ -5,10 +5,10 @@ import {MessagesComponent} from './messages.component';
 
 const messagesRoutes: Routes = [
   {
-    path: '', component: MessagesComponent
+    path: ':id', component: MessagesComponent
   },
   {
-    path: ':id', component: MessagesComponent
+    path: '', component: MessagesComponent
   },
 ];
 

@@ -43,8 +43,11 @@ export class SignupCandidateComponent implements OnInit {
   isSocialNetwork = false;
   snToken;
   token;
+  primera = false;
   authState: any;
   file: any;
+  name: string;
+  email: string;
   roles = Object
     .keys(WorkFields)
     .filter(isStringNotANumber)
@@ -226,31 +229,31 @@ export class SignupCandidateComponent implements OnInit {
     });
 
     this.activatedRoute.queryParams.subscribe(params => {
-      const token = params['token'];
-      this.snToken = token;
-      if (token) {
-        this.stepper.selectedIndex = 1;
-        this.secondFormGroup.controls['name'].setValue(params['name']);
-        this.secondFormGroup.controls['email'].setValue(params['email']);
-        this.secondFormGroup.controls['confEmail'].setValue(params['email']);
+
+      if (params['token']) {
+        const token = params['token'];
+        this.snToken = token;
+        this.name = params['name'];
+        this.email = params['email'];
+
+        this.secondFormGroup.controls['name'].setValue(this.name);
+        this.secondFormGroup.controls['email'].setValue(this.email);
+        this.secondFormGroup.controls['confEmail'].setValue(this.email);
         this.secondFormGroup.controls['password'].setValue('123456');
         this.secondFormGroup.controls['password2'].setValue('123456');
         this.isSocialNetwork = true;
+
+        if (!this.primera) {
+          this.stepper.selectedIndex = 1;
+        }
       }
     });
 
 
-    // this.authEffects$.authSignin.pipe(
-    //   filter((action: Action) => action.type === AuthActions.SIGNIN)
-    // ).subscribe(() => {
-    //   console.log('cambia el auth');
-    //  });
-
-    this.authEffects$.authSNCandidate.pipe(
-      filter((action: Action) => action.type === AuthActions.TRY_SN_CANDIDATE)
+    this.authEffects$.authSNUser.pipe(
+      filter((action: Action) => action.type === AuthActions.SN_USER)
     ).subscribe(() => {
-      console.log('he actualizado al usuario');
-      this.stepper.next();
+      this.stepper.selectedIndex = 2;
     });
   }
 
@@ -280,8 +283,7 @@ export class SignupCandidateComponent implements OnInit {
 
   onSave(stepper: MatStepper) {
     this.dialogShown = false;
-    // console.log(this.secondFormGroup);
-    // this.isSocialNetwork = true;
+
     if (this.secondFormGroup.status === 'VALID') {
       if (!this.isSocialNetwork) {
         if ((this.secondFormGroup.controls['location'].value as City).geo === undefined) {
@@ -321,6 +323,7 @@ export class SignupCandidateComponent implements OnInit {
         });
 
       } else {
+
         // Update of user that is coming by social network with his birthday, role and location
         const updateuser = {
           'name': this.secondFormGroup.controls['name'].value,
@@ -334,35 +337,18 @@ export class SignupCandidateComponent implements OnInit {
           'premium': '0',
         };
 
-
         this.store$.dispatch(new AuthActions.TrySigninSN({
           'token': this.snToken,
           'type': 'candidate',
           'user': updateuser
         }));
-
-        // this.authEffects$.authSignin.pipe(
-        //   filter((action: Action) => action.type === AuthActions.SET_USER)
-        // ).subscribe(() => {
-        //   this.store$.dispatch(new AuthActions.TrySNCandidate({
-        //     'type': 'candidate',
-        //     'user': updateuser
-        //   }));
-        // });
-      //
-      //   this.authEffects$.authSNCandidate.pipe(
-      //     filter((action: Action) => action.type === AuthActions.SN_CANDIDATE)
-      //   ).subscribe(() => {
-      //     console.log('he actualizado al usuario');
-      //     this.stepper.next();
-      //   });
-       }
+      }
 
       this.authEffects$.authSignupCandidate.pipe(
         filter((action: Action) => action.type === AuthActions.AUTH_ERROR)
       ).subscribe((error: { payload: any, type: string }) => {
         if (!this.dialogShown) {
-          console.log(error.payload);
+         // console.log(error.payload);
           this.dialog.open(DialogErrorComponent, {
             data: {
               header: 'The Sing Up has failed. Please go back and try again.',
@@ -373,12 +359,12 @@ export class SignupCandidateComponent implements OnInit {
         }
       });
     } else {
-      console.log('not valid form');
+     // console.log('not valid form');
       for (const i of Object.keys(this.secondFormGroup.controls)) {
         this.secondFormGroup.controls[i].markAsTouched();
       }
     }
-     stepper.next();
+    stepper.next();
   }
 
   onSaveOptional() {
@@ -530,7 +516,7 @@ export class SignupCandidateComponent implements OnInit {
 
 
   linkedInSignUp() {
-    window.location.href = environment.apiUrl + 'auth/linkedin';
+    window.location.href = environment.apiUrl + 'auth/linkedin?type=candidate';
   }
 
   twitterSignUp() {

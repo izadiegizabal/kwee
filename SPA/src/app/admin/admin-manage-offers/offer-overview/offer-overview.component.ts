@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild, AfterViewInit} from '@angular/core';
 import {MatDialog, MatPaginator, PageEvent} from '@angular/material';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {select, Store} from '@ngrx/store';
@@ -16,7 +16,7 @@ import {AlertDialogComponent} from '../../../shared/alert-dialog/alert-dialog.co
   templateUrl: './offer-overview.component.html',
   styleUrls: ['./offer-overview.component.scss']
 })
-export class OfferOverviewComponent implements OnInit {
+export class OfferOverviewComponent implements OnInit, AfterViewInit {
 
   // paging
   pageSize = 10;
@@ -28,6 +28,7 @@ export class OfferOverviewComponent implements OnInit {
   // -----
   orderby = '0';
   query: any;
+  nPage = 1;
 
   offersState: Observable<fromOffers.State>;
 
@@ -53,9 +54,18 @@ export class OfferOverviewComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.activatedRoute.queryParams
+      .subscribe(params => {
+        if (params['page']) {
+          this.nPage = params['page'];
+        }
+        if (params['limit']) {
+          this.pageSize = params['limit'];
+        }
+      });
 
     this.query = {...this.query, salaryAmount: {'gte': '0'}};
-    this.store$.dispatch(new OffersActions.TryGetOffers({page: 1, limit: this.pageSize, params: this.query, order: this.orderby}));
+    this.store$.dispatch(new OffersActions.TryGetOffers({page: this.nPage, limit: this.pageSize, params: this.query, order: this.orderby}));
     this.offersState = this.store$.pipe(select(state => state.offers));
 
     // this.activatedRoute.queryParams
@@ -70,7 +80,13 @@ export class OfferOverviewComponent implements OnInit {
       'workLocation': new FormControl(Validators.required),
       'offerState': new FormControl(Validators.required),
     });
+  }
 
+  ngAfterViewInit() {
+    setTimeout(() => {
+      const index = this.nPage;
+      this.paginator.pageIndex = index - 1;
+    });
   }
 
   edit(offer) {
@@ -89,6 +105,12 @@ export class OfferOverviewComponent implements OnInit {
       order: this.orderby
     }));
     window.scrollTo(0, 0);
+    this.nPage = this.pageEvent.pageIndex + 1;
+    if (this.pageSize !== this.pageEvent.pageSize) {
+      this.pageSize = this.pageEvent.pageSize;
+    }
+    this.router.navigate(['/admin/manage-offers'],
+      {queryParams: {page: this.nPage, limit: this.pageSize}, queryParamsHandling: 'merge'});
   }
 
 
