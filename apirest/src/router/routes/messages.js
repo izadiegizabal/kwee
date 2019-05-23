@@ -73,7 +73,7 @@ module.exports = (app, db) => {
     });
 
     // POST single message
-    app.post("/message", checkToken, async (req, res, next) => {
+    app.post("/message", async (req, res, next) => {
         // postMessage( req, res, next );
         createMessage( req, res, next );
     });
@@ -136,6 +136,64 @@ module.exports = (app, db) => {
 
     });
 
+    async function createMessage( req, res, next ) {
+        const body = req.body;
+        const fk_receiver = body.receiverId;
+
+        try {
+            let id = tokenId.getTokenId(req.get('token'), res);
+            let sender = await db.users.findOne({
+                where: { id }
+            });
+            let receiver = await db.users.findOne({
+                where: { id: fk_receiver }
+            });
+
+            console.log('sender: ', id);
+            console.log('fk_receiver: ', fk_receiver);
+            console.log('receiver: ', JSON.stringify(receiver));
+            
+
+            if ( receiver ) {
+                    let toMessage = {
+                        senderId: sender.id,
+                        senderName: sender.name,
+                        receiverId: receiver.id,
+                        receiverName: receiver.name,
+                        message: body.message, 
+                        date: moment().format('YYYY/MM/DD'),
+                        hour: moment().format('HH:mm:ss')
+                    };
+                    
+                    let message = new Message(toMessage);
+                    
+                    return await new Promise(resolve => {
+                        message.save((err, messageDB) => {
+                            if (err) {
+                                return res.status(400).json({
+                                    ok: false,
+                                    error: "Message not create"
+                                });
+                            }
+                            resolve(messageDB._id);
+                            return res.json({
+                                ok: true,
+                                message: 'Created conversation'
+                            });
+                        });
+                    });
+                // }
+            } else {
+                return res.status(200).json({
+                    ok: true,
+                    message: "This user not exists"
+                });
+            }
+        } catch (err) {
+            next({type: 'error', error: err.message});
+        }
+    }
+
     async function getAllUserMessages( req, res, next ) {
         try {
             let id = tokenId.getTokenId(req.get('token'), res);
@@ -190,59 +248,6 @@ module.exports = (app, db) => {
                     message: 'Message created'
                 });
 
-            } else {
-                return res.status(200).json({
-                    ok: true,
-                    message: "This user not exists"
-                });
-            }
-        } catch (err) {
-            next({type: 'error', error: err.message});
-        }
-    }
-
-    async function createMessage( req, res, next ) {
-        const body = req.body;
-        const fk_receiver = body.receiverId;
-
-        try {
-            let id = tokenId.getTokenId(req.get('token'), res);
-            let sender = await db.users.findOne({
-                where: { id }
-            });
-            let receiver = await db.users.findOne({
-                where: { id: fk_receiver }
-            });
-
-            if ( receiver ) {
-                    let toMessage = {
-                        senderId: sender.id,
-                        senderName: sender.name,
-                        receiverId: receiver.id,
-                        receiverName: receiver.name,
-                        message: body.message, 
-                        date: moment().format('YYYY/MM/DD'),
-                        hour: moment().format('HH:mm:ss')
-                    };
-                    
-                    let message = new Message(toMessage);
-                    
-                    return await new Promise(resolve => {
-                        message.save((err, messageDB) => {
-                            if (err) {
-                                return res.status(400).json({
-                                    ok: false,
-                                    error: "Message not create"
-                                });
-                            }
-                            resolve(messageDB._id);
-                            return res.json({
-                                ok: true,
-                                message: 'Created conversation'
-                            });
-                        });
-                    });
-                // }
             } else {
                 return res.status(200).json({
                     ok: true,
