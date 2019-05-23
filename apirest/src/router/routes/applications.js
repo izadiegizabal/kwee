@@ -411,13 +411,12 @@ module.exports = (app, db) => {
     async function notifyApplicant(offerer, application, id, status, res) {
 
         let user = await db.users.findOne({where: {id: application.fk_applicant}});
-        let socketId = getSocketUserId(user.email);
 
         switch (status) {
             case 1:
                 // Fav
                 // Create notification in BD
-                createNotification(db, user.id, offerer.userId, 'applications', id, 'fav', true);
+                // createNotification(db, user.id, offerer.userId, 'applications', id, 'fav', true);
                 // Send real time notification if client connected
                 // if (socketId) sendNotification('fav', socketId, application, db, true);
                 break;
