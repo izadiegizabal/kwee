@@ -152,9 +152,10 @@ export class BusinessProfileComponent implements OnInit, AfterViewInit {
   }
 
   contactUser() {
-    if (this.busi.email) {
-      const href = 'mailto:' + this.busi.email + '?subject=Enquiry about your Kwee Profile';
-      location.href = href;
-    }
+    this.router.navigate(['/messages', this.busi.id]);
+    // if (this.busi.email) {
+    //   const href = 'mailto:' + this.busi.email + '?subject=Enquiry about your Kwee Profile';
+    //   location.href = href;
+    // }
   }
 }

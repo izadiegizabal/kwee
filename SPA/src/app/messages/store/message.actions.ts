@@ -39,7 +39,7 @@ export class PostMessage implements Action {
 export class TryGetConvers implements Action {
   readonly type = TRY_GET_CHATS;
 
-  constructor(public payload: any) {
+  constructor() {
   }
 }
 

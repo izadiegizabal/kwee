@@ -41,7 +41,7 @@
                 <mat-icon (click)="drawer.toggle()" aria-label="Open menu button">menu</mat-icon>
               </button>
 
-              <div class="mat-h1" style="padding-top: 16px">My Messages</div>
+              <div class="mat-h1" style="padding: 16px 0 8px 0">My Messages</div>
               <div *ngIf="isUserSelected && bdMessages.length > 0;else no_user_selected">
                 <div class="messageList" id="chat-messages" #chat
                      fxFlex="100%" fxLayout="column" fxLayoutGap="8px">

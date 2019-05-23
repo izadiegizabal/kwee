@@ -60,8 +60,6 @@ export class MessagesComponent implements OnInit {
   text = '';
   element: HTMLElement;
 
-  showFiller = false;
-
   public data: any = [];
 
   @ViewChild('chat') chat;
@@ -84,14 +82,19 @@ export class MessagesComponent implements OnInit {
       select((s: { user: string }) => s.user)
     ).subscribe(
       (user) => {
-        this.authUser = user;
+        if (user && this.authUser !== user) {
+          this.authUser = user;
+          this.messageToSend.senderId = this.authUser.id;
+          this.messageToSend.senderName = this.authUser.name;
+        }
       });
 
     this.messageService.getMessage().subscribe(msg => {
       this.bdMessages.push(msg);
+      this.scrollBottom();
     });
 
-    this.store$.dispatch(new MessageActions.TryGetConvers({}));
+    this.store$.dispatch(new MessageActions.TryGetConvers());
 
     this.store$.pipe(select(state => state.messages)).subscribe(
       (state) => {
@@ -103,7 +106,6 @@ export class MessagesComponent implements OnInit {
             this.selectUser(this.userList[0].id);
             // TODO: add loader
             setTimeout(() => {
-              console.log('Now!');
               this.scrollBottom();
             }, 3000);
           }
@@ -112,7 +114,9 @@ export class MessagesComponent implements OnInit {
 
     this.activatedRoute.params.subscribe((params) => {
       if (!isNaN(Number(params['id'])) && this.selectedUserId !== Number(params['id'])) {
+        this.bdMessages = [];
         this.selectedUserId = Number(this.activatedRoute.params['id']);
+
         this.selectUser(Number(params['id']));
         // TODO: fetch who this is to update the user list and fix so that everything works
       }

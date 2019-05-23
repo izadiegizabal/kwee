@@ -2,6 +2,7 @@ const {logger, sendVerificationEmail, saveLogES, getOffererAVG, getApplicantAVG}
 const elastic = require('../database/elasticsearch');
 const auth = require('../middlewares/auth/auth');
 const bcrypt = require('bcryptjs');
+const moment = require('moment');
 
 async function createApplicant(req, res, next, db, regUser, id) {
     var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
