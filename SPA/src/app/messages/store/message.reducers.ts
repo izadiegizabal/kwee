@@ -51,12 +51,6 @@ const initialState: State = {
 
 export function messageReducer(state = initialState, action: MessageActions.MessageActions) {
   switch (action.type) {
-
-    // case MessageActions.POST_MESSAGE:
-    //   return {
-    //     ...state,
-    //     messages: action.payload
-    //   };
     case MessageActions.SET_CHATS:
       return {
         ...state,
@@ -106,7 +100,7 @@ export function messageReducer(state = initialState, action: MessageActions.Mess
     case MessageActions.CLEAR:
       return {
         ...state,
-        messages: {}
+        messages: null,
       };
     default:
       return state;

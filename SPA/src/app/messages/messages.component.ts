@@ -91,7 +91,7 @@ export class MessagesComponent implements OnInit {
       this.bdMessages.push(msg);
     });
 
-    this.store$.dispatch(new MessageActions.TryGetConvers({}));
+    this.store$.dispatch(new MessageActions.TryGetConvers());
 
     this.store$.pipe(select(state => state.messages)).subscribe(
       (state) => {

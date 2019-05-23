@@ -8,7 +8,6 @@ import {ActivatedRoute, Params, Router} from '@angular/router';
 import {environment} from '../../../environments/environment';
 import {Title} from '@angular/platform-browser';
 import {Location} from '@angular/common';
-import {BreakpointObserver} from '@angular/cdk/layout';
 import {loadTwitterWidget} from '../../shared/utils.service';
 
 @Component({
@@ -132,9 +131,6 @@ export class CandidateProfileComponent implements OnInit, AfterViewInit {
   }
 
   contactUser() {
-    if (this.cand.email) {
-      const href = 'mailto:' + this.cand.email + '?subject=Enquiry about your Kwee Profile';
-      location.href = href;
-    }
+    this.router.navigate(['/messages', this.cand.id]);
   }
 }
