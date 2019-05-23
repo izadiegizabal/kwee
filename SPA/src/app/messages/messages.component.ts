@@ -40,7 +40,7 @@ export class MessagesComponent implements OnInit {
   areMessages = false;
   isUserSelected = false;
   selectedUserId = -1;
-  userList: Users[] = [];
+  userList: Users[];
   differentUsers: number;
   messageToSend = {
     date: '',
@@ -101,6 +101,9 @@ export class MessagesComponent implements OnInit {
         if (state.messages.chats && state.messages.chats.total > 0) {
           this.differentUsers = state.messages.chats.total;
           this.userList = state.messages.chats.data;
+
+          this.addCurrentUser();
+
           this.areMessages = true;
           if (this.selectedUserId === -1 && this.userList && this.userList[0] && this.userList.length > 0) {
             this.selectUser(this.userList[0].id);
@@ -114,10 +117,11 @@ export class MessagesComponent implements OnInit {
 
     this.activatedRoute.params.subscribe((params) => {
       if (!isNaN(Number(params['id'])) && this.selectedUserId !== Number(params['id'])) {
+        const newId = Number(params['id']);
         this.bdMessages = [];
-        this.selectedUserId = Number(this.activatedRoute.params['id']);
+        this.selectedUserId = newId;
 
-        this.selectUser(Number(params['id']));
+        this.selectUser(newId);
         // TODO: fetch who this is to update the user list and fix so that everything works
       }
     });
@@ -220,5 +224,12 @@ export class MessagesComponent implements OnInit {
 
   getDate(date: string) {
     return new Date(date);
+  }
+
+  private addCurrentUser() {
+    const checkId = Number(this.activatedRoute.params['id']);
+    for (const user of this.userList) {
+      console.log(user);
+    }
   }
 }
