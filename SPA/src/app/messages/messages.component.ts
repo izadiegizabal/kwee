@@ -71,7 +71,6 @@ export class MessagesComponent implements OnInit {
   public data: any = [];
 
   @ViewChild('chat') chat;
-  scrollPosition = 0;
 
   constructor(
     private titleService: Title,
@@ -95,8 +94,6 @@ export class MessagesComponent implements OnInit {
       });
 
     this.messageService.getMessage().subscribe(msg => {
-      console.log('Mensaje recibido');
-      console.log(msg);
       this.bdMessages.push(msg);
     });
 
@@ -130,27 +127,33 @@ export class MessagesComponent implements OnInit {
     }
 
     this.selectedUserId = id;
+    this.isUserSelected = true;
     this.closeDrawerIfMobile();
 
-    this.isUserSelected = true;
     this.store$.dispatch(new MessageActions.TryGetConversation({id}));
 
     this.store$.pipe(select(state => state.messages)).subscribe(
       (state) => {
         if (state.messages.conver && state.messages.conver.total > 0) {
-          this.bdMessages = state.messages.conver.data;
+          if (this.bdMessages !== state.messages.conver.data) {
 
-          if (this.bdMessages[0]) {
-            this.messageToSend = this.bdMessages[0];
-          }
+            this.bdMessages = state.messages.conver.data;
 
-          if (this.messageToSend.senderId !== this.authUser.id) {
-            this.messageToSend.receiverId = this.messageToSend.senderId;
-            this.messageToSend.receiverName = this.messageToSend.senderName;
-            this.messageToSend.senderId = this.authUser.id;
-            this.messageToSend.senderName = this.authUser.name;
+            if (this.bdMessages[0]) {
+              this.messageToSend = this.bdMessages[0];
+            }
+
+            if (this.messageToSend.senderId !== this.authUser.id) {
+              this.messageToSend.receiverId = this.messageToSend.senderId;
+              this.messageToSend.receiverName = this.messageToSend.senderName;
+              this.messageToSend.senderId = this.authUser.id;
+              this.messageToSend.senderName = this.authUser.name;
+            }
+
+            this.initMessage();
+
+            this.scrollBottom();
           }
-          this.initMessage();
         }
       });
 
@@ -177,6 +180,7 @@ export class MessagesComponent implements OnInit {
     this.initMessage();
     this.text = '';
 
+    this.scrollBottom();
   }
 
   initMessage() {
@@ -190,6 +194,14 @@ export class MessagesComponent implements OnInit {
   closeDrawerIfMobile() {
     if (this.isMobile()) {
       this.drawer.toggle();
+    }
+  }
+
+  private scrollBottom() {
+    if (this.chat) {
+      setTimeout(() => {
+        this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;
+      }, 5);
     }
   }
 }

@@ -40,6 +40,7 @@ mat-sidenav {
 
 /* Style time text */
 .time {
+   margin-top: -4px;
   padding-right: 16px;
   color: #aaa;
 }
@@ -47,5 +48,5 @@ mat-sidenav {
 .messageList {
   overflow-y: scroll;
   overflow-x: hidden;
-  height: 48vh;
+  height: 56vh;
 }

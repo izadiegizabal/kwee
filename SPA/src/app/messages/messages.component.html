@@ -25,11 +25,6 @@
                              fxFlex="100%"
                              fxFlex.gt-md="60%"
                              fxLayout="column">
-          <button *ngIf="isMobile()" mat-icon-button>
-            <mat-icon (click)="drawer.toggle()" aria-label="Open menu button">menu</mat-icon>
-          </button>
-
-
           <!-- Message List -->
           <div fxFlex="100%" fxLayout="row">
             <div fxFlex="75%"
@@ -41,11 +36,15 @@
                  style="padding: 0 16px"
                  fxLayout="column"
                  fxLayoutGap="8px">
+              <button *ngIf="isMobile()" mat-icon-button>
+                <mat-icon (click)="drawer.toggle()" aria-label="Open menu button">menu</mat-icon>
+              </button>
 
               <div class="mat-h1">My Messages</div>
               <div>
                 <div *ngIf="isUserSelected && bdMessages.length > 0;else no_user_selected"
                      class="messageList" id="chat-messages" #chat
+                     (click)="scrollBottom()"
                      fxFlex="100%" fxLayout="column" fxLayoutGap="8px">
                   <div *ngFor="let message of bdMessages">
                     <div
@@ -64,7 +63,7 @@
                 <ng-template #no_user_selected>
                   <div fxLayout="column" fxLayoutAlign="center center" style="margin: 16px; min-height: 384px">
                     <img alt="Iwi Mascot" src="../../../../assets/branding/iwi.svg" width="128px"/>
-                    <p *ngIf="isUserSelected; else no_messages_yet" style="padding-top: 16px">
+                    <p *ngIf="!isUserSelected; else no_messages_yet" style="padding-top: 16px">
                       Please, select a chat first.
                     </p>
                     <ng-template #no_messages_yet>

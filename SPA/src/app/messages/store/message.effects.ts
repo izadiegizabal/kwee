@@ -24,14 +24,11 @@ export class MessageEffects {
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
         const body = JSON.stringify(payload);
 
-        console.log(body);
-
         return this.httpClient.post(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res: {
             ok: boolean,
             message: string,
           }) => {
-            console.log(res);
             return {
               type: MessageActions.POST_MESSAGE,
               payload: res
@@ -169,7 +166,6 @@ export class MessageEffects {
 
         return this.httpClient.put(apiEndpointUrl, null, {headers: headers}).pipe(
           map((res: any) => {
-            console.log(res);
             return {
               type: MessageActions.SET_NOTI_AS_READ,
               payload: payload
