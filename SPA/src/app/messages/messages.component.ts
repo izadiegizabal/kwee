@@ -100,13 +100,13 @@ export class MessagesComponent implements OnInit {
       this.bdMessages.push(msg);
     });
 
-    this.store$.dispatch(new MessageActions.TryGetMessages({}));
+    this.store$.dispatch(new MessageActions.TryGetConvers({}));
 
     this.sub = this.store$.pipe(select(state => state.messages)).subscribe(
-      (message) => {
-        if (message.messages && message.messages.total > 0) {
-          this.differentUsers = message.messages.total;
-          this.userList = message.messages.data;
+      (state) => {
+        if (state.messages.chats && state.messages.chats.total > 0) {
+          this.differentUsers = state.messages.chats.total;
+          this.userList = state.messages.chats.data;
           this.areMessages = true;
           if (this.selectedUserId === -1 && this.userList && this.userList.length > 0) {
             this.selectUser(this.userList[0].id);
@@ -116,7 +116,6 @@ export class MessagesComponent implements OnInit {
 
     this.activatedRoute.params.subscribe((params) => {
       if (!isNaN(Number(params['id'])) && this.selectedUserId !== Number(params['id'])) {
-        console.log('Selecting user from params');
         this.selectedUserId = Number(this.activatedRoute.params['id']);
         this.selectUser(Number(params['id']));
 
@@ -137,13 +136,9 @@ export class MessagesComponent implements OnInit {
     this.store$.dispatch(new MessageActions.TryGetConversation({id}));
 
     this.store$.pipe(select(state => state.messages)).subscribe(
-      (conver) => {
-        console.log(conver);
-        if (conver.messages && conver.messages.total > 0) {
-
-          console.log(conver.messages);
-
-          this.bdMessages = conver.messages.data;
+      (state) => {
+        if (state.messages.conver && state.messages.conver.total > 0) {
+          this.bdMessages = state.messages.conver.data;
 
           if (this.bdMessages[0]) {
             this.messageToSend = this.bdMessages[0];

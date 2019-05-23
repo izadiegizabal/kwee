@@ -54,11 +54,8 @@ export class MessageEffects {
   );
 
   @Effect()
-  getMessage = this.actions$.pipe(
-    ofType(MessageActions.TRY_GET_MESSAGES),
-    map((action: MessageActions.TryGetMessages) => {
-
-    }),
+  getChats = this.actions$.pipe(
+    ofType(MessageActions.TRY_GET_CHATS),
     withLatestFrom(this.store$.pipe(select(state => state.auth))),
     switchMap(([payload, authState]) => {
         const apiEndpointUrl = environment.apiUrl + 'messages';
@@ -68,12 +65,12 @@ export class MessageEffects {
         return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
           map((res: any) => {
             return {
-              type: MessageActions.GET_MESSAGES,
+              type: MessageActions.SET_CHATS,
               payload: res
             };
           }),
           catchError((err: HttpErrorResponse) => {
-            throwError(this.handleError('getMessage', err));
+            throwError(this.handleError('getChats', err));
             const error = err.error.message ? err.error.message : err;
             return [
               {
@@ -143,7 +140,7 @@ export class MessageEffects {
             };
           }),
           catchError((err: HttpErrorResponse) => {
-            throwError(this.handleError('getMessage', err));
+            throwError(this.handleError('getChats', err));
             const error = err.error.message ? err.error.message : err;
             return [
               {
@@ -179,7 +176,7 @@ export class MessageEffects {
             };
           }),
           catchError((err: HttpErrorResponse) => {
-            throwError(this.handleError('getMessage', err));
+            throwError(this.handleError('getChats', err));
             const error = err.error.message ? err.error.message : err;
             return [
               {
