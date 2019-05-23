@@ -89,6 +89,7 @@ export class MessagesComponent implements OnInit {
 
     this.messageService.getMessage().subscribe(msg => {
       this.bdMessages.push(msg);
+      this.scrollBottom();
     });
 
     this.store$.dispatch(new MessageActions.TryGetConvers());
