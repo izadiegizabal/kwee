@@ -36,11 +36,8 @@ mat-sidenav {
   border-bottom-left-radius: 2px
 }
 
-/////////////////// CARLOS
-
-/* Style time text */
 .time {
-   margin-top: -4px;
+  margin-top: -4px;
   padding-right: 16px;
   color: #aaa;
 }
@@ -49,4 +46,11 @@ mat-sidenav {
   overflow-y: scroll;
   overflow-x: hidden;
   height: 56vh;
+}
+
+.selectedChat {
+  // font-weight: bold;
+  // background-color: rgba(0, 191, 165, 1);
+  background-color: rgb(33, 33, 33);
+  color: white;
 }

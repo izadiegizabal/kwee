@@ -1,10 +1,8 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {MessagesService} from './messages.service';
-import {Observable} from 'rxjs';
 import * as MessageActions from './store/message.actions';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../store/app.reducers';
-import * as fromMessages from './store/message.reducers';
 import * as moment from 'moment';
 import {Title} from '@angular/platform-browser';
 import {MatSidenav} from '@angular/material';
@@ -35,14 +33,10 @@ export interface Users {
 
 export class MessagesComponent implements OnInit {
 
-  public messagesState: Observable<fromMessages.State>;
-  public messagesState2: Observable<fromMessages.State>;
-
   @ViewChild('drawer') drawer: MatSidenav;
 
-  sub;
-
   bdMessages: any[] = [];
+  lastDate = new Date();
   areMessages = false;
   isUserSelected = false;
   selectedUserId = -1;
@@ -99,14 +93,19 @@ export class MessagesComponent implements OnInit {
 
     this.store$.dispatch(new MessageActions.TryGetConvers({}));
 
-    this.sub = this.store$.pipe(select(state => state.messages)).subscribe(
+    this.store$.pipe(select(state => state.messages)).subscribe(
       (state) => {
         if (state.messages.chats && state.messages.chats.total > 0) {
           this.differentUsers = state.messages.chats.total;
           this.userList = state.messages.chats.data;
           this.areMessages = true;
-          if (this.selectedUserId === -1 && this.userList && this.userList.length > 0) {
+          if (this.selectedUserId === -1 && this.userList && this.userList[0] && this.userList.length > 0) {
             this.selectUser(this.userList[0].id);
+            // TODO: add loader
+            setTimeout(() => {
+              console.log('Now!');
+              this.scrollBottom();
+            }, 3000);
           }
         }
       });
@@ -115,7 +114,6 @@ export class MessagesComponent implements OnInit {
       if (!isNaN(Number(params['id'])) && this.selectedUserId !== Number(params['id'])) {
         this.selectedUserId = Number(this.activatedRoute.params['id']);
         this.selectUser(Number(params['id']));
-
         // TODO: fetch who this is to update the user list and fix so that everything works
       }
     });
@@ -151,12 +149,11 @@ export class MessagesComponent implements OnInit {
             }
 
             this.initMessage();
-
-            this.scrollBottom();
           }
         }
+        this.scrollBottom();
       });
-
+    this.scrollBottom();
   }
 
   send(form: any) {
@@ -203,5 +200,21 @@ export class MessagesComponent implements OnInit {
         this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;
       }, 5);
     }
+  }
+
+  isNewDay(date: string) {
+    const currentDate = new Date(date);
+
+    const isSameDay = this.lastDate.getFullYear() === currentDate.getFullYear()
+      && this.lastDate.getMonth() === currentDate.getMonth()
+      && this.lastDate.getDate() === currentDate.getDate();
+
+    this.lastDate = currentDate;
+
+    return !isSameDay;
+  }
+
+  getDate(date: string) {
+    return new Date(date);
   }
 }
