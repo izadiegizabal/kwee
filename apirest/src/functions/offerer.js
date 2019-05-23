@@ -32,10 +32,11 @@ async function createOfferer(req, res, next, db, regUser, id) {
                     return db.users.create(user, {transaction})
                     .then(async _user => {
                         uservar = _user;
+                        console.log('if transaction: ', JSON.stringify(transaction));
+                        
                         return newOfferer(body, _user, next, transaction, db);
                     })
                     .then(async ending => {
-                        await sendVerificationEmail(body, uservar);
                         delete body.password;
                         delete body.img;
                         delete body.cif;
@@ -70,16 +71,18 @@ async function createOfferer(req, res, next, db, regUser, id) {
                 });
             } else {
                 // users comming from social networks
+                console.log('en el else');
+                
                 return db.sequelize.transaction(transaction => {
                     var imgName = uploadImg(req, res, next, 'offerers');
                     user.img = imgName;
-                    return db.users.update(user, { where: { id }}, { transaction })
+                    return db.users.update(user, { where: { id }} )
                         .then(async _user => {
+                            
                             uservar = _user;
-                            return newOfferer(body, _user, next, transaction, db, id);
+                            return newOfferer(body, _user, next, null, db, id);
                         })
                         .then(async ending => {
-                            await sendVerificationEmail(body, uservar);
                             delete body.password;
                             delete body.img;
                             delete body.cif;
@@ -187,6 +190,8 @@ async function createOfferer(req, res, next, db, regUser, id) {
 
 async function newOfferer(body, user, next, transaction, db, id) {
     try {
+        console.log('new offerer');
+        
         let offerer = {
             userId: user.id || id,
             address: body.address,
@@ -197,11 +202,20 @@ async function newOfferer(body, user, next, transaction, db, id) {
             year: body.year ? body.year : null,
         };
 
-        return db.offerers.create(offerer, {transaction: transaction})
+        console.log('offerer body: ', offerer);
+        let newUserOfferer;
+        if ( transaction ) {
+
+            newUserOfferer = db.offerers.create(offerer, {transaction: transaction})
             .catch(err => {
                 return next({type: 'error', error: err.message});
             });
+        } else {
+            newUserOfferer = db.offerers.create(offerer);
+        }
+        
 
+        return newUserOfferer;
 
     } catch (err) {
         await transaction.rollback();
