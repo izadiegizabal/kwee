@@ -149,11 +149,6 @@ module.exports = (app, db) => {
                 where: { id: fk_receiver }
             });
 
-            console.log('sender: ', id);
-            console.log('fk_receiver: ', fk_receiver);
-            console.log('receiver: ', JSON.stringify(receiver));
-            
-
             if ( receiver ) {
                     let toMessage = {
                         senderId: sender.id,

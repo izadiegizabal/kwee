@@ -45,7 +45,6 @@ module.exports = (app, db) => {
 
                 } else {
                     // Existent user
-                    let logId = await logger.saveLog('POST', 'login', null, res, req.useragent, ip, user.email);
 
                     let type;
                     let id = user.id;
@@ -64,8 +63,6 @@ module.exports = (app, db) => {
                     notifications ? notifications = notifications.length : notifications = 0;
 
                     let token = auth.auth.encode(userUpdated);
-                    logger.updateLog(logId, true, id);
-
 
                     if ( user.root ) {
                         type = 'admin';

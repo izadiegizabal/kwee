@@ -24,7 +24,6 @@ module.exports = (app, db) => {
             // Authentication with LinkedIn successful
 
             try {
-                console.log('tryingggggg');
                 
                 for (let i = 0; i < req.user.emails.length; i++) {
                     user = await db.users.findOne({where: {email: req.user.emails[i].value}});
