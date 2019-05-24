@@ -162,7 +162,7 @@ export class AuthEffects {
               premium: number,
             }
           }) => {
-           // console.log(res);
+            // console.log(res);
             switch (res.data.type) {
               case 'offerer':
                 res.data.type = 'business';
@@ -235,26 +235,44 @@ export class AuthEffects {
         // console.log(apiEndpointUrl);
         // console.log(body);
         // console.log(headers);
-
-        return this.httpClient.put(apiEndpointUrl, body, {headers: headers}).pipe(
-          map((res) => {
-           // console.log(res);
-            return {
-              type: AuthActions.SN_USER,
-              payload: payload.user
-            };
-          }),
-          catchError((err: HttpErrorResponse) => {
-            throwError(this.handleError('authSNCUser', err));
-            const error = err.error.message ? err.error.message : err;
-            return [
-              {
-                type: AuthActions.AUTH_ERROR,
-                payload: error
+          return this.httpClient.put(apiEndpointUrl, body, {headers: headers}).pipe(
+            map((res: {
+              token: string,
+              data: {
+                email: string
+                id: number
+                name: string
+                type: string
+                lastAccess: Date
+                notifications: number,
+                premium: number,
               }
-            ];
-          }),
-        );
+            }) => {
+              switch (res.data.type) {
+                case 'offerer':
+                  res.data.type = 'business';
+                  break;
+                case 'applicant':
+                  res.data.type = 'candidate';
+                  break;
+              }
+
+              return {
+                type: AuthActions.SN_USER,
+                payload: res.data
+              };
+            }),
+            catchError((err: HttpErrorResponse) => {
+              throwError(this.handleError('authSNCUser', err));
+              const error = err.error.message ? err.error.message : err;
+              return [
+                {
+                  type: AuthActions.AUTH_ERROR,
+                  payload: error
+                }
+              ];
+            }),
+          );
       }
     ),
     share()

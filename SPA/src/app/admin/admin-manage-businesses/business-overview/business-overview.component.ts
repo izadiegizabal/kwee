@@ -1,4 +1,4 @@
-import {Component, OnInit, AfterViewInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Action, select, Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
@@ -11,7 +11,7 @@ import {MatDialog, MatPaginator, PageEvent} from '@angular/material';
 import {BusinessAccountStates, BusinessAccountSubscriptions, BusinessIndustries} from '../../../../models/Business.model';
 import {isStringNotANumber} from '../../../../models/Offer.model';
 import {AlertDialogComponent} from '../../../shared/alert-dialog/alert-dialog.component';
-import { UserLogComponent } from '../../user-log/user-log.component';
+import {UserLogComponent} from '../../user-log/user-log.component';
 import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
@@ -64,7 +64,23 @@ export class BusinessOverviewComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.store$.dispatch(new AdminActions.TryGetBusinesses({page: this.nPage, limit: this.pageSize, params: this.query, order: this.orderby}));
+    this.activatedRoute.queryParams
+      .subscribe(params => {
+        if (params['page']) {
+          this.nPage = params['page'];
+        }
+        if (params['limit']) {
+          this.pageSize = params['limit'];
+        }
+      });
+
+    this.store$.dispatch(new AdminActions.TryGetBusinesses({
+      page: this.nPage,
+      limit: this.pageSize,
+      params: this.query,
+      order: this.orderby
+    }));
+
     this.adminState = this.store$.pipe(select(s => s.admin));
 
     this.userForm = this._formBuilder.group({
@@ -87,16 +103,6 @@ export class BusinessOverviewComponent implements OnInit, AfterViewInit {
         this.userForm.controls['password2'].updateValueAndValidity();
       }
     });
-
-    this.activatedRoute.queryParams
-      .subscribe(params => {
-        if (params['page']) {
-          this.nPage = params['page'];
-        }
-        if (params['limit']) {
-          this.pageSize = params['limit'];
-        }
-      });
   }
 
   ngAfterViewInit() {

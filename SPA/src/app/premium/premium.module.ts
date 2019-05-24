@@ -11,6 +11,8 @@ import {StoreModule} from '@ngrx/store';
 import {EffectsModule} from '@ngrx/effects';
 import {invoiceReducer} from '../invoices/store/invoice.reducers';
 import {InvoiceEffects} from '../invoices/store/invoice.effects';
+import {AlertDialogComponent} from '../shared/alert-dialog/alert-dialog.component';
+import {AlertDialogModule} from '../shared/alert-dialog/alert-dialog.module';
 
 
 @NgModule({
@@ -25,11 +27,13 @@ import {InvoiceEffects} from '../invoices/store/invoice.effects';
     NgxPayPalModule,
     PaypalDialogModule,
     StoreModule.forFeature('invoices', invoiceReducer),
-    EffectsModule.forFeature([InvoiceEffects])
+    EffectsModule.forFeature([InvoiceEffects]),
+    AlertDialogModule,
   ],
   exports: [],
   entryComponents: [
     PaypalDialogComponent,
+    AlertDialogComponent,
   ],
 })
 export class PremiumModule {
