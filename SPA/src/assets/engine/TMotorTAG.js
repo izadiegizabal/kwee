@@ -4,7 +4,6 @@ import {TTransform, TCamera, TLight, TAnimation, TMesh, TArc, TFocus, TRotationA
 import {TResourceManager, TResourceMesh, TResourceMaterial, TResourceTexture, TResourceShader, TResourceMeshArray, TResourceMeshArrayDynamic, TResourceMeshArrayAnimation} from './resourceManager.js';
 import {convertLatLonToVec3offsetY, convertLatLonToVec3RandomOffset, convertLatLonToVec3} from './tools/utils';
 import { mango, ease } from './commons.js';
-// import {allowActions} from "./main";
 class TMotorTAG{
   // TAG.39
   constructor(resourceManager) {
@@ -704,31 +703,32 @@ class TMotorTAG{
   // INIT METHODS
   //////////////////
   // Init TMotorTAG
-  init() {
-    mango.lastThis = this;
-    // Clear
-    mango.gl.useProgram(mango.program);
-    mango.gl.clear(mango.gl.COLOR_BUFFER_BIT | mango.gl.DEPTH_BUFFER_BIT);
-    mango.gl.enable(mango.gl.DEPTH_TEST);
-    mango.gl.enable(mango.gl.CULL_FACE);
-    //mango.gl.frontFace(mango.gl.CCW);
-    // TAG.54
-    mango.gl.cullFace(mango.gl.BACK);
+  async init() {
+    return new Promise(async resolve => {
+      mango.lastThis = this;
+      // Clear
+      mango.gl.useProgram(mango.program);
+      mango.gl.clear(mango.gl.COLOR_BUFFER_BIT | mango.gl.DEPTH_BUFFER_BIT);
+      mango.gl.enable(mango.gl.DEPTH_TEST);
+      mango.gl.enable(mango.gl.CULL_FACE);
+      //mango.gl.frontFace(mango.gl.CCW);
+      // TAG.54
+      mango.gl.cullFace(mango.gl.BACK);
 
-    this.initProgram();
+      this.initProgram();
 
-    this.initParticles();
+      this.initParticles();
 
-    // Avoid error unit 0
-    const whiteTexture = mango.gl.createTexture();
-    mango.gl.bindTexture(mango.gl.TEXTURE_2D, whiteTexture);
-    mango.gl.texImage2D(
-      mango.gl.TEXTURE_2D, 0, mango.gl.RGBA, 1, 1, 0,
-      mango.gl.RGBA, mango.gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
-    mango.gl.useProgram(mango.program);
-    mango.gl.bindTexture(mango.gl.TEXTURE_2D, whiteTexture);
-
-
+      // Avoid error unit 0
+      const whiteTexture = mango.gl.createTexture();
+      mango.gl.bindTexture(mango.gl.TEXTURE_2D, whiteTexture);
+      mango.gl.texImage2D(
+        mango.gl.TEXTURE_2D, 0, mango.gl.RGBA, 1, 1, 0,
+        mango.gl.RGBA, mango.gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
+      mango.gl.useProgram(mango.program);
+      mango.gl.bindTexture(mango.gl.TEXTURE_2D, whiteTexture);
+      resolve(true);
+    });
   }
 
   initTextures() {
@@ -898,63 +898,63 @@ class TMotorTAG{
     mango.time = Date.now();
     ////// Animation stuff @todo MOVE TO NEW MOTOR.RUN LOOP
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Convert the time to second
-    now *= 0.001;
-    // Subtract the previous time from the current time
-    let deltaTime = now - mango.lastThis.then;
-    // Remember the current time for the next frame.
-    mango.lastThis.then = now;
-    // count animations
-    mango.lastThis.allCountAnimations.forEach( (e, i) => {
-      if(!e.update(deltaTime)){
-        mango.lastThis.allCountAnimations.splice(i, 1);
-        if(mango.lastThis.isArcAnimation(e)){
-          mango.lastThis.deleteArc(e.object);
+      // Convert the time to second
+      now *= 0.001;
+      // Subtract the previous time from the current time
+      let deltaTime = now - mango.lastThis.then;
+      // Remember the current time for the next frame.
+      mango.lastThis.then = now;
+      // count animations
+      mango.lastThis.allCountAnimations.forEach((e, i) => {
+        if (!e.update(deltaTime)) {
+          mango.lastThis.allCountAnimations.splice(i, 1);
+          if (mango.lastThis.isArcAnimation(e)) {
+            mango.lastThis.deleteArc(e.object);
+          }
         }
+      });
+      /// Camera animations
+      mango.lastThis.allCamAnimations.forEach((e, i) => {
+        let val = e.update(deltaTime);
+        if (val !== 1) {
+          val[0] = val[0] * mango.zoom;
+          val[1] = val[1] * mango.zoom;
+          val[2] = val[2] * mango.zoom;
+
+          mango.lastThis.cameraLookAt(mango.lastThis.activeCamera,
+            [...val],
+            [0, 0, 0],
+            [0, 1, 0]);
+        } else {
+          mango.lastThis.calculateViews();
+          mango.auxViewMatrix = mango.viewMatrix.slice();
+          mango.lastThis.allCamAnimations.splice(i, 1);
+        }
+      });
+
+      if (mango.fase == null) {
+        let madrid = mango.lastThis.get3DfronLatLon(40.415363, -3.707398);
+        mango.lastThis.cameraLookAt(
+          mango.lastThis.activeCamera,
+          [
+            madrid[0] * mango.zoom + 0.87172406911,
+            madrid[1] * mango.zoom + 0.13251042366,
+            madrid[2] * mango.zoom - 0.13612270355
+          ],
+          [0, 0, 0],
+          [0, 1, 0]
+        )
       }
-    });
-    /// Camera animations
-    mango.lastThis.allCamAnimations.forEach( (e, i) => {
-      let val = e.update(deltaTime);
-      if(val !== 1){
-        val[0] = val[0] * mango.zoom;
-        val[1] = val[1] * mango.zoom;
-        val[2] = val[2] * mango.zoom;
-
-        mango.lastThis.cameraLookAt( mango.lastThis.activeCamera,
-          [...val],
-          [0,0,0],
-          [0,1,0]);
-      } else {
-        mango.lastThis.calculateViews();
-        mango.auxViewMatrix = mango.viewMatrix.slice();
-        mango.lastThis.allCamAnimations.splice(i, 1);
-      }
-    });
-    
-    if(mango.fase == null){
-      let madrid = mango.lastThis.get3DfronLatLon(40.415363, -3.707398);
-      mango.lastThis.cameraLookAt(
-        mango.lastThis.activeCamera,
-        [
-          madrid[0] * mango.zoom + 0.87172406911,
-          madrid[1] * mango.zoom + 0.13251042366,
-          madrid[2] * mango.zoom - 0.13612270355
-        ],
-        [0,0,0],
-        [0,1,0]
-      )
-    }
 
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    mango.lastThis.calculateViews();
-    /// individual positions needed, I dont know why...
-    mango.lastThis.updateLightToTarget();
-    mango.lastThis.draw();
-    mango.lastFrameTime = mango.time;
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      mango.lastThis.calculateViews();
+      /// individual positions needed, I dont know why...
+      mango.lastThis.updateLightToTarget();
+      mango.lastThis.draw();
+      mango.lastFrameTime = mango.time;
 
-    requestAnimationFrame(mango.lastThis.render);
+    mango.eRAF = requestAnimationFrame(mango.lastThis.render);
   };
 
   updateLightToTarget(){

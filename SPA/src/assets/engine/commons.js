@@ -12,6 +12,7 @@ let mango = {
   textureProgram: null,
   useTextures: null,
   lastThis: null,
+  eRAF: null,             //engine render requestAnimationFrame
   modelMatrix: null,      // model Matrix
   viewMatrix: null,       // view Matrix
   viewPos: null,       // view Vec3 position
@@ -22,6 +23,7 @@ let mango = {
   targetPoint: null,
   auxViewMatrix: null,
   lastFrameTime: null,
+  fase: null,
   programAttributes: {
     aVertexPosition: null,
     aVertexNormal: null,
@@ -62,7 +64,8 @@ let mango = {
   maxZoom: null,
   minZoom: null,
   status: null
-}
+};
+
 let angle = 0;
 
 function shared(landing) {
@@ -115,17 +118,14 @@ function shared(landing) {
       */
       mango.status = 0;
 
-
-
-      canvas.addEventListener("mousedown", mouseDown, false);
-      canvas.addEventListener("mouseup", mouseUp, false);
-      canvas.addEventListener("mouseout", mouseUp, false);
-      canvas.addEventListener("mousemove", mouseMove, false);
-
       // Prevent mouse scroll
       if(!landing){
         canvas.addEventListener('wheel', mouseWheel, false);
         canvas.addEventListener('mousewheel', mouseWheel, false);
+        canvas.addEventListener("mousedown", mouseDown, false);
+        canvas.addEventListener("mouseup", mouseUp, false);
+        canvas.addEventListener("mouseout", mouseUp, false);
+        canvas.addEventListener("mousemove", mouseMove, false);
       }
 
 
@@ -303,6 +303,71 @@ class Stack {
 
 }
 
+function cleanEngine() {
+
+  mango = {
+    gl: null,
+    program: null,
+    particlesProgram: null,
+    textureProgram: null,
+    useTextures: null,
+    lastThis: null,
+    eRAF: null,
+    modelMatrix: null,      // model Matrix
+    viewMatrix: null,       // view Matrix
+    viewPos: null,       // view Vec3 position
+    projectionMatrix: null, // projection Matrix
+    stack : null,           // stack of models Matrix
+    auxMatrix: null,
+    time: null,
+    targetPoint: null,
+    auxViewMatrix: null,
+    lastFrameTime: null,
+    fase: null,
+    programAttributes: {
+      aVertexPosition: null,
+      aVertexNormal: null,
+      aVertexColor: null,
+      aVertexTextureCoords: null,
+    },
+    programUniforms: {
+      uMVMatrix: null,
+      uPMatrix: null,
+      uNMatrix: null,
+      uLightDirection: null,
+      uLightAmbient: null,
+      uLightDiffuse: null,
+      uLightSpecular: null,
+      uMaterialDiffuse: null,
+      uMaterialSpecular: null,
+      uShininess: null,
+    },
+    particlesAttributes: {
+      aParticle: null,
+    },
+    particlesUniforms: {
+      uMVMatrix: null,
+      uPMatrix: null,
+      uPointSize: null,
+      uColor: null
+    },
+    AMORTIZATION: null,
+    drag: false,
+    THETA: null,
+    PHI: null,
+    dX: null,
+    dY: null,
+    orbitSpeed: null,
+    orbitMaxY: null,
+    orbitLimit: null,
+    zoom: null,
+    maxZoom: null,
+    minZoom: null,
+    status: null
+  };
+
+}
+
 export {
     shared,
     canvas,
@@ -313,5 +378,6 @@ export {
     changeAngle,
     angle,
     loadAttribAndUniformsLocations,
-    ease
+    ease,
+    cleanEngine
 }

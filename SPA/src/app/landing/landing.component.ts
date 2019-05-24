@@ -1,6 +1,6 @@
 import {Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
 
-import {shared} from '../../assets/engine/commons';
+import {shared, cleanEngine} from '../../assets/engine/commons';
 import {allowActions, mainInit, mainR, resetCanvas, setSceneWidth} from '../../assets/engine/main';
 import {Router} from '@angular/router';
 import {Title} from '@angular/platform-browser';
@@ -60,11 +60,12 @@ export class LandingComponent implements OnInit, OnDestroy {
   obj = {
     title: 'no title'
   };
+  // loop requestAnimationFrame
+  rAF = null;
 
   manager = new TResourceManager();
   motor = new TMotorTAG(this.manager);
   scene = this.motor.createRootNode();
-
 
   @ViewChild('rendererContainer') rendererContainer: ElementRef;
   @ViewChild('thisIsKwee') thisIsKweeHeader: ElementRef;
@@ -75,8 +76,10 @@ export class LandingComponent implements OnInit, OnDestroy {
       this.screenWidth = 1;
     } else if (event.target.innerWidth > 599 && event.target.innerWidth <= 850) {
       this.screenWidth = 2;
-    } else {
+    } else if (event.target.innerWidth > 850 && event.target.innerWidth <= 1600) {
       this.screenWidth = 3;
+    } else {
+      this.screenWidth = 4;
     }
     if(allowActions.card){
       this.configCard();
@@ -88,15 +91,44 @@ export class LandingComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
+    // Title stuff
     this.titleService.setTitle('Kwee - Home');
+    // Data for the engine
+    this.query= {...this.query, status: '0'};
+    this.store$.dispatch(new OffersActions.TryGetOffers({page: 1, limit: 25, params: this.query, order: '0'}));
+    this.offersState = this.store$.pipe(select(state => state.offers));
+    this.offersState.pipe(
+      select(s => s.offers)
+    ).subscribe(
+      (data: any) => {
+        if (data) {
+          this.fetchedOffers = [];
+          // console.log(data.data);
+          data.data.forEach((e, i) => {
+            // console.log(e);
+            // this.offerImages.push(new Image());
+            this.offerImages.push(this.environment.apiUrl + e.img);
+            // console.log(this.offerImages[i].src);
+            this.fetchedOffers.push({
+              title: e.title,
+              offererIndex: e.offererIndex,
+              offererName: e.offererName,
+              contractType: this.getOfferContractType(e.contractType),
+              location: e.location,
+              id: e.id,
+              index: i,
+              lat: e.userLat,
+              lon: e.userLon
+            });
+          });
+        }
+        // console.log(this.offerImages);
+        // console.log(this.fetchedOffers);
+      });
+    // initializations
     this.disabled = false;
-    await shared(true);  // true = landing (NO ZOOM)
+    this.currentIndex = -1;
 
-    // this.main();
-    // this.drawHollow();
-    this.offerShow();
-
-    this.canvas = document.getElementById('kweelive');
     // this.context2d.translate(0.5,0.5);
     let width  = window.innerWidth;
     if (width <= 599) {
@@ -107,36 +139,9 @@ export class LandingComponent implements OnInit, OnDestroy {
       this.screenWidth = 3;
     }
 
+    // engine ts main
+    this.offerShow();
 
-    this.query= {...this.query, status: '0'};
-    this.store$.dispatch(new OffersActions.TryGetOffers({page: 1, limit: 25, params: this.query, order: '0'}));
-    this.offersState = this.store$.pipe(select(state => state.offers));
-
-    this.offersState.pipe(
-      select(s => s.offers)
-    ).subscribe(
-      (data: any) => {
-        // console.log(data.data);
-        data.data.forEach( (e, i) => {
-          // console.log(e);
-          // this.offerImages.push(new Image());
-          this.offerImages.push(this.environment.apiUrl + e.img);
-          // console.log(this.offerImages[i].src);
-          this.fetchedOffers.push({
-            title: e.title,
-            offererIndex: e.offererIndex,
-            offererName: e.offererName,
-            contractType: this.getOfferContractType(e.contractType),
-            location: e.location,
-            id: e.id,
-            index: i,
-            lat: e.userLat,
-            lon: e.userLon
-          });
-        });
-        // console.log(this.offerImages);
-        // console.log(this.fetchedOffers);
-      });
   }
 
   getOfferContractType(contractType) {
@@ -146,54 +151,58 @@ export class LandingComponent implements OnInit, OnDestroy {
   }
 
   async offerShow() {
+
+    this.canvas = document.getElementById('kweelive');
+    await shared(true);  // true = landing (NO ZOOM)
     // this.currentIndex++;
-    const motor = this.motor;
-    await mainInit(motor);
+    // shaders
+    await mainInit(this.motor, this.manager);
 
     // ----- MESHES -----
     // console.log(this.scene);
 
     // Earth
-    const landMaterial = motor.createMaterial(
+    const landMaterial = this.motor.createMaterial(
       /* color */    [0.258, 0.960, 0.6, 1.0],
       /* specular */ [1.0, 1.0, 1.0, 1.0],
       /* shiny */    3 );
-    const LOD_earth = motor.dynamicMeshArrayLazyLoading(this.scene, ['0_earth.json', '2_earth_SS.json'], landMaterial);
+    const LOD_earth = this.motor.dynamicMeshArrayLazyLoading(this.scene, ['0_earth.json', '2_earth_SS.json'], landMaterial);
 
     // Sea
-    const seaMaterial = motor.createMaterial(
+    const seaMaterial = this.motor.createMaterial(
       /* color */    [0.313, 0.678, 0.949, 1.0],
       /* specular */ [1.0, 1.0, 1.0, 1.0],
       /* shiny */    15 );
 
-    const LOD_sea = motor.dynamicMeshArrayLazyLoading(this.scene, ['0_sea.json', '2_sea_SS.json'], seaMaterial);
+    const LOD_sea = this.motor.dynamicMeshArrayLazyLoading(this.scene, ['0_sea.json', '2_sea_SS.json'], seaMaterial);
 
     mango.lastFrameTime = Date.now();
 
     // ----- CAMERA -----
-    const camera = motor.createCamera(this.scene);
-    motor.enableCam(camera);
+    const camera = this.motor.createCamera(this.scene);
+    this.motor.enableCam(camera);
 
     let camPos = [];
 
-    let point = motor.get3DfronLatLon(40.415363, -3.707398);
-    mango.targetPoint =  motor.get3DfronLatLon(40.415363, -3.707398);
+    let point = this.motor.get3DfronLatLon(40.415363, -3.707398);
+    mango.targetPoint =  this.motor.get3DfronLatLon(40.415363, -3.707398);
     allowActions.p = mango.targetPoint;
 
-    motor.easeCamera();
+    this.motor.easeCamera();
     camPos.push(point[0] * mango.zoom);
     camPos.push(point[1] * mango.zoom);
     camPos.push(point[2] * mango.zoom);
-    
-    motor.cameraLookAt( camera, [...camPos],
+
+    this.motor.cameraLookAt( camera, [...camPos],
       [0,0,0],
       [0,1,0]);
 
-    motor.calculateViews();
+    this.motor.calculateViews();
+    mango.auxViewMatrix = mango.viewMatrix;
 
     // ----- LIGHTS -----
-    const light =  motor.createLight(this.scene, 1, [0.2, 0.2, 0.2, 1.0],  [1.0, 1.0, 1.0, 1.0],  [0.5, 0.5, 0.5, 1.0], [10.0, 10.0, 10.0]);
-    motor.calculateLights();
+    const light =  this.motor.createLight(this.scene, 1, [0.2, 0.2, 0.2, 1.0],  [1.0, 1.0, 1.0, 1.0],  [0.5, 0.5, 0.5, 1.0], [10.0, 10.0, 10.0]);
+    this.motor.calculateLights();
 
     // ----- RENDER LOOP -----
     let number = 0;
@@ -208,7 +217,6 @@ export class LandingComponent implements OnInit, OnDestroy {
       default => prevent init errors
      */
     mango.fase = null;
-    let self = this;
     const thisContext = this;
     const loop = function(now) {
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -219,49 +227,54 @@ export class LandingComponent implements OnInit, OnDestroy {
             last = now;
             mango.fase = 1;
             if(thisContext.currentIndex === (thisContext.fetchedOffers.length - 1)){
-              thisContext.currentIndex = 0;
+              thisContext.currentIndex = -1;
             }
           }
           break;
         case 1:
           if(now - last >= 1000) {
             last = now;
-            mango.fase = 2;
             allowActions.card = false;
-            document.body.click();
-            thisContext.currentIndex++;
-            allowActions.random = motor.rotateCamToRandomXYOffset(+thisContext.fetchedOffers[thisContext.currentIndex].lat, +thisContext.fetchedOffers[thisContext.currentIndex].lon, 1, thisContext.screenWidth);
-            document.body.click();
+            if (thisContext.fetchedOffers.length > 0) {
+              mango.fase = 2;
+              thisContext.currentIndex++;
+              allowActions.random = thisContext.motor.rotateCamToRandomXYOffset(+thisContext.fetchedOffers[thisContext.currentIndex].lat, +thisContext.fetchedOffers[thisContext.currentIndex].lon, 1, thisContext.screenWidth);
+            }
           }
           break;
         case 2:
           if(now - last >= 1500) {
-            allowActions.point = motor.calculateTarget2Dfrom3DPoint();
+            allowActions.point = thisContext.motor.calculateTarget2Dfrom3DPoint();
             allowActions.card = true;
-            motor.createFocus(thisContext.scene, 100, 'straight', mango.targetPoint , 'normal', null, [1,0.25,0.51, 1.0]);
-            let fireworks = motor.createFocus(thisContext.scene, 150, 'fireworks', mango.targetPoint , 'normal', null, [1,0.5,0.67, 1.0]);
+            thisContext.motor.createFocus(thisContext.scene, 100, 'straight', mango.targetPoint , 'normal', null, [1,0.25,0.51, 1.0]);
+            let fireworks = thisContext.motor.createFocus(thisContext.scene, 150, 'fireworks', mango.targetPoint , 'normal', null, [1,0.5,0.67, 1.0]);
             setTimeout(() => {
-              motor.deleteFocus(fireworks);
+              thisContext.motor.deleteFocus(fireworks);
             }, 800);
-            document.body.click();
             last = now;
             mango.fase = 0;
+          }
+          break;
+        case 3:
+          if(now - last >= 1000) {
+            last = now;
+            mango.fase = 1;
           }
           break;
         default:
           //console.log(-1);
           last = now;
           if(mango.fase == -1){
-            mango.fase = 1;
+            mango.fase = 3;
           }
           break;
       }
-      requestAnimationFrame(loop);
+      thisContext.rAF = requestAnimationFrame(loop);
     };
 
-    motor.init();
-    requestAnimationFrame(motor.render);
-    requestAnimationFrame(loop);
+    await this.motor.init();
+    mango.eRAF = requestAnimationFrame(this.motor.render);
+    this.rAF = requestAnimationFrame(loop);
   }
 
   getAllow() {
@@ -364,7 +377,13 @@ export class LandingComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    cancelAnimationFrame(this.rAF);
+    cancelAnimationFrame(mango.eRAF);
+    this.motor = null;
+    this.scene = null;
+    this.manager = null;
     resetCanvas();
+    cleanEngine();
   }
 
   scrollTo(element: HTMLElement) {
