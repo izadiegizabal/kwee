@@ -230,15 +230,15 @@ module.exports = (app, db) => {
         let id = tokenId.getTokenId(req.get('token'), res);
         let usersMysql = await db.users.findAll();
 
-        Message.find()
-                .sort({date: 'desc', hour: 'desc'})
-                .exec({ 
+        Message.find({ 
                     $or: [{ 
                         'senderId': id 
                         }, { 
                         'receiverId': id 
                         } 
-                    ]}, function(err, messages) {
+                    ]})
+                .sort({date: 'desc', hour: 'desc'})
+                .exec( function(err, messages) {
                         // Different users with chat inicializated
                         var usersNames = [];
                         var users = [];
@@ -251,10 +251,8 @@ module.exports = (app, db) => {
                                 users.push({
                                     id: message.senderId, 
                                     name: message.senderName, 
-                                    message: message.message,
-                                    date: message.date,
-                                    hour: message.hour,
-                                    img: user.img
+                                    img: user.img,
+                                    lastMessage: message
                                 });
                             }
                             if ( !usersNames.includes( message.receiverName ) && message.receiverId != id ) {
@@ -264,10 +262,8 @@ module.exports = (app, db) => {
                                 users.push({
                                     id: message.receiverId, 
                                     name: message.receiverName, 
-                                    message: message.message,
-                                    date: message.date,
-                                    hour: message.hour,
-                                    img: user.img
+                                    img: user.img,
+                                    lastMessage: message
                                 });
                             }
                         });
@@ -283,9 +279,8 @@ module.exports = (app, db) => {
 
     async function getMessagesUnread( req, res, next ) {
         let id = tokenId.getTokenId(req.get('token'), res);
-        Message.find({ read: false })
+        Message.find({ receiverId: id, read: false })
                 .exec( ( err, messages ) => {
-                    console.log('Number of messages unread: ', messages.length);
                     return res.json({
                         ok: true,
                         message: 'Number of messages unread',

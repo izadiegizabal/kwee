@@ -2,16 +2,10 @@ const passport = require('../../../middlewares/passport');
 const auth = require('../../../middlewares/auth/auth');
 const env = require('../../../tools/constants');
 const moment = require('moment');
-const {logger} = require('../../../shared/functions');
+const {logger, getApplicantAVG, getOffererAVG} = require('../../../shared/functions');
 var typeToFront;
 
 module.exports = (app, db) => {
-
-    app.get('/auth/github',
-        passport.authenticate('github', {scope: ['user:email']})
-    ), (req, res) => {
-        typeToFront = req.query.type;
-    };
 
     app.get('/auth/github/callback',
         passport.authenticate('github', {failureRedirect: '/login'}),
@@ -111,5 +105,11 @@ module.exports = (app, db) => {
                 return next({type: 'error', error: err.message});
             }
         });
+
+    app.get('/auth/github/:type',
+        passport.authenticate('github', {scope: ['user:email']})
+    ), (req, res) => {
+        typeToFront = req.params.type;
+    };
 
 };
