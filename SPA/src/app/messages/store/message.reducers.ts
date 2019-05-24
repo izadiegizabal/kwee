@@ -31,6 +31,7 @@ export interface State {
       data: Message[],
       total: number,
     },
+    unread: number
   };
   notifications: {
     data: {
@@ -50,6 +51,7 @@ const initialState: State = {
   messages: {
     chats: null,
     conver: null,
+    unread: 0
   },
   notifications: {
     data: null,
@@ -81,6 +83,19 @@ function reorderChats(message: Message, chats: Chat[]): Chat[] {
 export function messageReducer(state = initialState, action: MessageActions.MessageActions) {
   switch (action.type) {
     case MessageActions.ADD_MESSAGE:
+      const unreadCount =  state.messages.unread + 1;
+      const newConver = state.messages.conver.data.push(action.payload);
+      return {
+        ...state,
+        messages: {
+          ...state.messages,
+          unread: unreadCount,
+          conver: {
+            ...state.messages.conver,
+            newConver
+          },
+        }
+      };
     case MessageActions.TRY_POST_MESSAGE:
       const newData = state.messages.conver.data.push(action.payload);
       return {
@@ -158,6 +173,13 @@ export function messageReducer(state = initialState, action: MessageActions.Mess
       return {
         ...state,
         notifications: updatedNotis,
+      };
+    case MessageActions.SET_MESSAGE_UNREAD_COUNT:
+      const updatedMessages = state.messages;
+      updatedMessages.unread = action.payload;
+      return {
+        ...state,
+        messages: updatedMessages,
       };
     case MessageActions.CLEAR_CONVER:
       return {

@@ -71,6 +71,7 @@ export class SetUser implements Action {
     name: string,
     type: string,
     notifications: number,
+    messages: number,
     premium: number,
   }) {
   }
@@ -107,6 +108,7 @@ export class SnUser implements Action {
     name: string,
     type: string,
     notifications: number,
+    messages: number,
     premium: number,
   }) {
   }

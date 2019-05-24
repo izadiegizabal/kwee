@@ -42,6 +42,7 @@ export class AuthEffects {
               type: string
               lastAccess: Date
               notifications: number,
+              messages: number,
               premium: number,
             }
           }) => {
@@ -72,6 +73,7 @@ export class AuthEffects {
                   name: res.data.name,
                   type: res.data.type,
                   notifications: res.data.notifications,
+                  messages: res.data.messages,
                   premium: res.data.premium,
                 }
               }
@@ -157,8 +159,9 @@ export class AuthEffects {
               id: number
               name: string
               type: string
-              lastAccess: Date
+              lastAccess: Date,
               notifications: number,
+              messages: number,
               premium: number,
             }
           }) => {
@@ -188,6 +191,7 @@ export class AuthEffects {
                   name: res.data.name,
                   type: res.data.type,
                   notifications: res.data.notifications,
+                  messages: res.data.messages,
                   premium: res.data.premium,
                 }
               },
@@ -245,6 +249,7 @@ export class AuthEffects {
                 type: string
                 lastAccess: Date
                 notifications: number,
+                messages: number,
                 premium: number,
               }
             }) => {

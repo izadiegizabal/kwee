@@ -9,6 +9,7 @@ export interface State {
     name: string,
     type: string,
     notifications: number,
+    messages: number,
     premium: number,
   };
 }

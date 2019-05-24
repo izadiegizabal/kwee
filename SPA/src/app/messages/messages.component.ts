@@ -68,6 +68,9 @@ export class MessagesComponent implements OnInit {
 
     this.titleService.setTitle('Kwee - Messages');
 
+    this.store$.dispatch(new MessageActions.SetMessageUnreadCount(0));
+
+
     this.store$.pipe(select('auth')).pipe(
       select((s: { user: string }) => s.user)
     ).subscribe(
@@ -78,9 +81,7 @@ export class MessagesComponent implements OnInit {
         }
       });
 
-    this.messageService.getMessage().subscribe((msg: Message) => {
-      this.store$.dispatch(new MessageActions.AddMessage(msg));
-
+    this.messageService.getMessage().subscribe(() => {
       this.scrollBottom();
     });
 

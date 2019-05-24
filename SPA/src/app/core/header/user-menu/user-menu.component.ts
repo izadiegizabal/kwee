@@ -46,23 +46,25 @@ export class UserMenuComponent implements OnInit {
             this.numNotifications = user.notifications;
             this.store$.dispatch(new MessageActions.SetNotificationUnreadCount(user.notifications));
           }
+          if (user.messages > 0) {
+            // this.numMessages = user.messages;
+            // this.store$.dispatch(new MessageActions.SetMessageUnreadCount(user.messages));
+          }
         }
       });
 
     // Listen to notification changes
     this.notiState = this.store$.pipe(select('messages'));
     this.notiState.subscribe(state => {
-      if (state && state.notifications) {
+      if (state && state.notifications && state.messages) {
+        // TODO: Show notification/messages overlay
         if (this.numNotifications !== state.notifications.unread) {
           this.numNotifications = state.notifications.unread;
-
-          // TODO: Show notification overlay
+        }
+        if (this.numMessages !== state.messages.unread) {
+          this.numMessages = state.messages.unread;
         }
       }
-    });
-
-    this.messageService.getSelected().subscribe(msg => {
-      this.numMessages++;
     });
   }
 
