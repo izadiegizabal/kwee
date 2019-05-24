@@ -604,13 +604,13 @@ export class SignupOffererComponent implements OnInit {
 
   gitHubSignUp() {
     // console.log(environment.apiUrl + 'auth/github?type=business');
-     window.location.href = environment.apiUrl + 'auth/github?type=business';
+     window.location.href = environment.apiUrl + 'auth/github/business';
   }
 
 
   linkedInSignUp() {
     console.log('linkedIn Sign Up');
-    window.location.href = environment.apiUrl + 'auth/linkedin?type=business';
+    window.location.href = environment.apiUrl + 'auth/linkedin/business';
   }
 
   twitterSignUp() {

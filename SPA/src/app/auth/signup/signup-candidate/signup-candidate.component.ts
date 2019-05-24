@@ -511,12 +511,12 @@ export class SignupCandidateComponent implements OnInit {
   }
 
   gitHubSignUp() {
-    window.location.href = environment.apiUrl + 'auth/github?type=candidate';
+    window.location.href = environment.apiUrl + 'auth/github/candidate';
   }
 
 
   linkedInSignUp() {
-    window.location.href = environment.apiUrl + 'auth/linkedin?type=candidate';
+    window.location.href = environment.apiUrl + 'auth/linkedin/candidate';
   }
 
   twitterSignUp() {
