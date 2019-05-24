@@ -243,9 +243,6 @@ module.exports = (app, db) => {
                         var usersNames = [];
                         var users = [];
 
-                        console.log('total: ', messages.length);
-                        
-
                         messages.forEach( async (message, idx) => {
                             if ( !usersNames.includes( message.senderName ) && message.senderId != id ) {
                                 let user = usersMysql.find(user => user.id === message.senderId);
@@ -282,9 +279,8 @@ module.exports = (app, db) => {
 
     async function getMessagesUnread( req, res, next ) {
         let id = tokenId.getTokenId(req.get('token'), res);
-        Message.find({ read: false })
+        Message.find({ receiverId: id, read: false })
                 .exec( ( err, messages ) => {
-                    console.log('Number of messages unread: ', messages.length);
                     return res.json({
                         ok: true,
                         message: 'Number of messages unread',
