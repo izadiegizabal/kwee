@@ -11,6 +11,12 @@ passport.use(
         state: true
     }, async function (accessToken, refreshToken, profile, done) {
         await process.nextTick(function () {
+            console.log('done');
+            console.log('profile: ', profile);
+            console.log('done: ', done);
+            console.log('accessToken: ', accessToken);
+            console.log('refreshToken: ', refreshToken);
+            
             return done(null, profile);
         });
     }));

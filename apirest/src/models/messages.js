@@ -40,6 +40,7 @@ let messageSchema = new Schema({
     receiverId: { type: Number, required: [true, 'Receiver id is required'] },
     receiverName: { type: String, required: [true, 'Receiver name is required'] },
     message: { type: String, required: [true, 'Message is required'] },
+    read: { type: Boolean, required: [true, 'Read or not is required'] },
     date: { type: String, required: [true, 'Date is required'] },
     hour: { type: String, required: [true, 'Hour is required'] }
 });

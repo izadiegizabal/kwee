@@ -59,10 +59,8 @@ async function createApplicant(req, res, next, db, regUser, id) {
             });
         } else {
             return db.sequelize.transaction(transaction => {
-                return db.users.update(user, { where: { id }}, {transaction: transaction})
+                return db.users.update(user, { where: { id }} )
                 .then(async user => {
-                    console.log('en el async');
-                    
                     uservar = {
                         city: body.city,
                         dateBorn: body.dateBorn,
@@ -70,10 +68,9 @@ async function createApplicant(req, res, next, db, regUser, id) {
                         rol: body.rol
                     };
                     
-                    return newApplicant(uservar, user, next, transaction, db, id);
+                    return newApplicant(uservar, user, next, null, db, id);
                 })
                 .then(async ending => {
-                    sendVerificationEmail(body, uservar);
                     delete body.password;
                     delete lon;
                     delete lat;
@@ -175,13 +172,17 @@ async function newApplicant(body, user, next, transaction, db, id) {
         applicant.premium = body.premium ? body.premium : null;
         applicant.rol = body.rol ? body.rol : null;
 
-        console.log('applicant: ', applicant);
-        
+        let newUserApplicant;
 
-        return db.applicants.create(applicant, {transaction: transaction})
+        if ( transaction ) {
+            newUserApplicant = db.applicants.create(applicant, {transaction: transaction})
             .catch(err => {
                 return next({type: 'error', error: err.message});
             });
+        } else {
+            newUserApplicant = db.applicants.create(applicant);
+        }
+        return newUserApplicant;
 
     } catch (err) {
         await transaction.rollback();
