@@ -257,35 +257,48 @@ module.exports = (app, db) => {
     async function getMessageFromMongo( req, res, next ) {
         let id = tokenId.getTokenId(req.get('token'), res);
 
-        Message.find({ 
-            $or: [{ 
-                'senderId': id 
-                }, { 
-                'receiverId': id 
-                } 
-            ]}, function(err, messages) {
-                var usersNames = [];
-                var users = [];
-            
-                messages.forEach(function(message) {
-                    if ( !usersNames.includes( message.senderName ) && message.senderId != id ) {
-                        usersNames.push( message.senderName );
-                        users.push( { id: message.senderId, name: message.senderName } );
-                    }
-                    if ( !usersNames.includes( message.receiverName ) && message.receiverId != id ) {
-                        usersNames.push( message.receiverName );
-                        users.push( { id: message.receiverId, name: message.receiverName } );
-                    }
-                });
-
-
-                return res.json({
-                    ok: true,
-                    message: 'Listing messages',
-                    data: users,
-                    total: users.length
-                });
-          });
+        Message.find()
+                .sort({date: 'desc', hour: 'desc'})
+                .exec({ 
+                    $or: [{ 
+                        'senderId': id 
+                        }, { 
+                        'receiverId': id 
+                        } 
+                    ]}, function(err, messages) {
+                        // Different users with chat inicializated
+                        var usersNames = [];
+                        var users = [];
+        
+                        console.log('messages.length', messages.length);
+                        
+                    
+                        messages.forEach( (message, idx) => {
+                            if ( !usersNames.includes( message.senderName ) && message.senderId != id ) {
+                                usersNames.push( message.senderName );
+                                users.push( { id: message.senderId, name: message.senderName, message: message.message } );
+                            }
+                            if ( !usersNames.includes( message.receiverName ) && message.receiverId != id ) {
+                                usersNames.push( message.receiverName );
+                                users.push( { id: message.receiverId, name: message.receiverName, message: message.message } );
+                            }
+                            if ( idx === message.length - 1 ) {
+                                console.log('i: ', i);
+                                
+                            }
+                        });
+        
+                        console.log('usersNames: ', usersNames);
+                        console.log('users: ', users);
+                        
+        
+                        return res.json({
+                            ok: true,
+                            message: 'Listing messages',
+                            data: users,
+                            total: users.length // This is the total of different users with chat
+                        });
+                  });
     }
 
     async function getMessagesBeetweenUsers( req, res, next ) {
