@@ -129,6 +129,7 @@ function convertLatLonToVec3RandomOffset(lat, lon, scene) {
       } else { randomRotate = 4; }
       break;
     case  3:
+    case  4:
       randomRotate = getRandomInt(5, 8);
       break;
   }
@@ -161,6 +162,9 @@ function convertLatLonToVec3RandomOffset(lat, lon, scene) {
       break;
     case  6:
       offsetX = -30;
+      if (scene === 4) {
+        offsetX = -40;
+      }
       break;
     case  7:
       offsetX = -30;
@@ -168,6 +172,9 @@ function convertLatLonToVec3RandomOffset(lat, lon, scene) {
       break;
     case  8:
       offsetX = -10;
+      if (scene === 4) {
+        offsetX = -25;
+      }
       break;
   }
 

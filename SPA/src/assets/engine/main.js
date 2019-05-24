@@ -129,15 +129,8 @@ async function mainInitExplicit() {
   });
 }
 
-async function mainInit(motor) {
+async function mainInit(motor, manager) {
   return new Promise(async resolve => {
-
-    //mango.gl.clearColor(0.435, 0.909, 0.827, 1.0) // our blue
-
-    // (0.435, 0.909, 0.827, 0.0); // our blue
-    // (0.266, 0.294, 0.329, 1.0); // our grey
-
-    manager = new TResourceManager();
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////                                         SHADERS
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -157,6 +150,14 @@ async function mainInit(motor) {
 
 
 async function resetCanvas() {
+  allowActions = {
+    value: false,
+    card: false,
+    p: null,
+    v: null,
+    point: 0,
+    random: 0
+  };
   draw = false;
   mango.gl.clear(mango.gl.COLOR_BUFFER_BIT | mango.gl.DEPTH_BUFFER_BIT);
 }
@@ -1192,7 +1193,7 @@ async function mainTextures(texture, particles, line) {
       //let land = await motor.loadMesh(scene, 'earth_LP.json');
       let land = await motor.loadMesh(scene, 'earthobj.json');
       // land.entity.mesh.setMaterial( landMaterial );
-      // motor.scale(land, [5.0, 5.0, 5.0]);
+      // motor.scale(land, [5.0, 5.0, 5. 0]);
       // motor.scale(land, [0.25, 0.25, 0.25]);
 
       let tex = await manager.getResource('continents.jpg');
