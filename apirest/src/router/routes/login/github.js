@@ -2,7 +2,7 @@ const passport = require('../../../middlewares/passport');
 const auth = require('../../../middlewares/auth/auth');
 const env = require('../../../tools/constants');
 const moment = require('moment');
-const {logger} = require('../../../shared/functions');
+const {logger, getApplicantAVG, getOffererAVG} = require('../../../shared/functions');
 var typeToFront;
 
 module.exports = (app, db) => {
