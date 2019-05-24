@@ -52,7 +52,7 @@ export class MessagesComponent implements OnInit {
   public data: any = [];
 
   @ViewChild('chat') chat;
-  private messagesState: Observable<fromMessages.State>;
+  public messagesState: Observable<fromMessages.State>;
 
   constructor(
     private titleService: Title,
