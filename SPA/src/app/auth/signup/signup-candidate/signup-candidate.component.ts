@@ -14,6 +14,10 @@ import {environment} from '../../../../environments/environment';
 import {isStringNotANumber} from '../../../../models/Offer.model';
 import {LanguageLevels, WorkFields} from '../../../../models/Candidate.model';
 
+import * as _moment from 'moment';
+import {OkDialogComponent} from "../../../shared/ok-dialog/ok-dialog.component";
+const moment = _moment;
+
 interface City {
   name: string;
   geo: {
@@ -368,47 +372,116 @@ export class SignupCandidateComponent implements OnInit {
   }
 
   onSaveOptional() {
-    console.log(this.thirdFormGroup);
 
-    const auxSkills = (this.thirdFormGroup.controls['skills'].value as Array<string>).filter(e => {
-      return (e !== null);
-    }).join(',');
-
+    // Prepare the update object
     const update = {
-      'img': this.file,
       'bio': this.thirdFormGroup.controls['bio'].value,
-      'twitter': this.thirdFormGroup.controls['twitter'].value,
-      'linkedIn': this.thirdFormGroup.controls['linkedIn'].value,
-      'github': this.thirdFormGroup.controls['github'].value,
-      'telegram': this.thirdFormGroup.controls['telegram'].value,
-      'skills': auxSkills
-      // 'languages': this._formBuilder.array([]),
-      // 'experience': this._formBuilder.array([]),
-      // 'education': this._formBuilder.array([])
+      'social_networks': {
+        'twitter': this.thirdFormGroup.controls['twitter'].value,
+        'linkedin': this.thirdFormGroup.controls['linkedIn'].value,
+        'github': this.thirdFormGroup.controls['github'].value,
+        'telegram': this.thirdFormGroup.controls['telegram'].value,
+      },
+      'languages': this.thirdFormGroup.controls['languages'].value,
+      'experiences': this.getFormattedExperiences(),
+      'educations': this.getFormattedEducations(),
+      'skills': this.getFormattedSkills()
     };
+    if (this.file) {
+      update['img'] = this.file;
+    }
 
     console.log(update);
+    // Try to update
     const options = {
       headers: new HttpHeaders().append('token', this.token)
         .append('Content-Type', 'application/json')
     };
-    this.httpClient.put(environment.apiUrl + 'applicant',
-      update
-      , options)
+    this.httpClient.post(environment.apiUrl + 'applicant/info', update, options)
       .subscribe((data: any) => {
-        console.log(data);
-        this.router.navigate(['/']);
-      }, (error: any) => {
-        console.log(error);
-        /*if (!this.dialogShown) {
-          this.dialog.open(DialogErrorComponent, {
+        if (!this.dialogShown) {
+          this.dialog.open(OkDialogComponent, {
             data: {
-              error: 'We had some issue creating your offer. Please try again later',
+              message: 'Account info updated correctly!',
             }
           });
           this.dialogShown = true;
-        }*/
+        }
+      }, (error: any) => {
+        console.log(error);
+        if (!this.dialogShown) {
+          this.dialog.open(DialogErrorComponent, {
+            data: {
+              header: 'We had some issues updating your settings',
+              error: 'Please try again later',
+            }
+          });
+          this.dialogShown = true;
+        }
       });
+  }
+
+  // Format data for the API
+  getFormattedSkills(): any[] {
+    const skills = [];
+    for (const skill of this.thirdFormGroup.controls['skills'].value) {
+
+      if (skill) {
+        const newSkill = {
+          name: skill as string,
+          description: '',
+          level: '',
+        };
+
+        skills.push(newSkill);
+      }
+    }
+    return skills;
+  }
+
+  getFormattedExperiences(): any[] {
+    const experiences = [];
+    for (const experience of this.thirdFormGroup.controls['experience'].value) {
+
+      // Go from Moment object to the desired data format
+      if (experience.end) {
+        experience.end = moment(experience.end).format('YYYY-MM-DD');
+      } else {
+        experience.end = moment().format('YYYY-MM-DD');
+      }
+      experience.start = moment(experience.start).format('YYYY-MM-DD');
+
+      // Rename the keys
+      Object.defineProperty(experience, 'dateEnd', Object.getOwnPropertyDescriptor(experience, 'end'));
+      delete experience['end'];
+      Object.defineProperty(experience, 'dateStart', Object.getOwnPropertyDescriptor(experience, 'start'));
+      delete experience['start'];
+
+      experiences.push(experience);
+    }
+    return experiences;
+  }
+
+  getFormattedEducations(): any[] {
+    const educations = [];
+    for (const education of this.thirdFormGroup.controls['education'].value) {
+      // Go from Moment object to the desired data format
+      if (education.end) {
+        education.end = moment(education.end).format('YYYY-MM-DD');
+      } else {
+        education.end = moment().format('YYYY-MM-DD');
+      }
+      education.start = moment(education.start).format('YYYY-MM-DD');
+
+      // Rename the keys
+      Object.defineProperty(education, 'dateEnd', Object.getOwnPropertyDescriptor(education, 'end'));
+      delete education['end'];
+      Object.defineProperty(education, 'dateStart', Object.getOwnPropertyDescriptor(education, 'start'));
+      delete education['start'];
+
+      educations.push(education);
+    }
+    return educations;
   }
 
   add_skill() {
@@ -534,7 +607,7 @@ export class SignupCandidateComponent implements OnInit {
     this.fileEvent = event;
     /// 3MB IMAGES MAX
     if (event.target.files[0]) {
-      if (event.target.files[0].size < 300000) {
+      if (event.target.files[0].size < 3000000) {
         // @ts-ignore
         const preview = (document.getElementById('photo_profile') as HTMLInputElement);
         const file = (document.getElementById('file_profile') as HTMLInputElement).files[0];
