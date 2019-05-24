@@ -8,6 +8,7 @@ import {Title} from '@angular/platform-browser';
 import {MatSidenav} from '@angular/material';
 import {BreakpointObserver} from '@angular/cdk/layout';
 import {ActivatedRoute, Router} from '@angular/router';
+import {environment} from '../../environments/environment';
 
 export interface Message {
   senderId: number;
@@ -20,9 +21,13 @@ export interface Message {
   total: number;
 }
 
-export interface Users {
+export interface User {
   id: number;
   name: string;
+  message: string;
+  date: string;
+  hour: string;
+  img: string;
 }
 
 @Component({
@@ -35,12 +40,15 @@ export class MessagesComponent implements OnInit {
 
   @ViewChild('drawer') drawer: MatSidenav;
 
+  apiUrl = environment.apiUrl;
+
   bdMessages: any[] = [];
   lastDate = new Date();
   areMessages = false;
   isUserSelected = false;
   selectedUserId = -1;
-  userList: Users[];
+  selectedUser: User;
+  userList: User[];
   differentUsers: number;
   messageToSend = {
     date: '',
@@ -133,6 +141,7 @@ export class MessagesComponent implements OnInit {
     }
 
     this.selectedUserId = id;
+    this.selectedUser = this.findUser(id);
     this.isUserSelected = true;
     this.closeDrawerIfMobile();
 
@@ -162,6 +171,12 @@ export class MessagesComponent implements OnInit {
         this.scrollBottom();
       });
     this.scrollBottom();
+  }
+
+  private findUser(id: number): User {
+
+
+    return undefined;
   }
 
   send(form: any) {
@@ -227,9 +242,20 @@ export class MessagesComponent implements OnInit {
   }
 
   private addCurrentUser() {
+    // TODO: check if exists, otherwise create
     const checkId = Number(this.activatedRoute.params['id']);
-    for (const user of this.userList) {
-      console.log(user);
+    if (this.findUser(checkId)) {
+
+    }
+  }
+
+  getFormattedListDate(date: string, hour: string) {
+    const dateDate = new Date(date);
+
+    if (this.isNewDay(date)) {
+      return dateDate.getDate() + '/' + (dateDate.getMonth() + 1) + '/' + (dateDate.getFullYear() + '').substr(2, 2);
+    } else {
+      return hour.substr(0, 5);
     }
   }
 }

@@ -1,16 +1,46 @@
-mat-sidenav {
-  min-width: 250px;
-}
-
 mat-sidenav-container {
   background-color: white;
 }
 
 mat-sidenav {
-  width: 256px;
+  width: 272px;
 
   h2, p {
     padding: 0 16px;
+  }
+}
+
+::ng-deep app-messages mat-sidenav button {
+
+  height: 64px !important;
+  padding: 8px 0;
+
+  h3 {
+    font-weight: bold !important;
+    font-size: 0.9rem !important;
+
+    display: flex !important;
+    justify-content: space-between !important;
+  }
+
+  p {
+    font-size: 0.85rem !important;
+    opacity: 0.87;
+
+    display: flex !important;
+    justify-content: start !important;
+
+    .you {
+      font-weight: bold;
+      font-size: 0.8rem;
+    }
+  }
+
+  img {
+    width: 48px !important;
+    height: 48px !important;
+    object-fit: cover;
+    //border-radius: 2px !important;
   }
 }
 

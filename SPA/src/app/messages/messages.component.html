@@ -1,5 +1,6 @@
 <div fxLayout="row" fxLayoutAlign="center start">
   <div fxFlex="100%">
+<!--    <div class="mat-h1" style="padding: 16px 0 8px 0">My Messages</div>-->
     <div>
       <mat-sidenav-container fxFlex="100%">
         <mat-sidenav #drawer [mode]="!isMobile() ? 'side' : 'over'" [opened]="!isMobile()" class="mat-typography">
@@ -9,8 +10,13 @@
               <div *ngFor="let user of userList">
                 <button (click)="selectUser(user.id)" mat-list-item
                         [ngClass]="{ 'selectedChat': selectedUserId === user.id}">
-                  <!-- <img src="{{user.img}}" alt="Avatar"> -->
-                  {{user.name}}
+                  <img mat-list-avatar [src]="user.img ? apiUrl + user.img : '../../assets/img/defaultProfileImg.png'"
+                       alt="Avatar">
+                  <h3 matLine>
+                    {{user.name.length > 16 ? (user.name|slice:0:16) + '...' : user.name}}
+                    <span class="chatLastDate mat-caption">{{getFormattedListDate(user.date, user.hour)}}</span>
+                  </h3>
+                  <p matLine><span class="you">{{user.id === authUser.id ? 'You: ' : ''}}</span>{{user.message}}</p>
                 </button>
               </div>
             </mat-action-list>
@@ -41,7 +47,8 @@
                 <mat-icon (click)="drawer.toggle()" aria-label="Open menu button">menu</mat-icon>
               </button>
 
-              <div class="mat-h1" style="padding: 16px 0 8px 0">My Messages</div>
+              <div class="mat-h1"
+                   style="padding: 16px 0 8px 0">{{selectedUser && selectedUser.name ? selectedUser.name : 'My Messages'}}</div>
               <div *ngIf="isUserSelected && bdMessages.length > 0;else no_user_selected">
                 <div class="messageList" id="chat-messages" #chat
                      fxFlex="100%" fxLayout="column" fxLayoutGap="8px">

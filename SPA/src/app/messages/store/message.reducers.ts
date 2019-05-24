@@ -1,12 +1,10 @@
 import * as MessageActions from './message.actions';
+import {User} from '../messages.component';
 
 export interface State {
   messages: {
     chats: {
-      data: {
-        id: number,
-        name: string
-      }[],
+      data: User[],
       total: number
     },
     conver: {
