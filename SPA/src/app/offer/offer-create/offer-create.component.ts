@@ -24,7 +24,8 @@ import {
 import {Title} from '@angular/platform-browser';
 import {OkDialogComponent} from '../../shared/ok-dialog/ok-dialog.component';
 import {DialogErrorComponent} from '../../auth/signup/dialog-error/dialog-error.component';
-
+import {Location} from '@angular/common';
+import {AlertDialogComponent} from '../../shared/alert-dialog/alert-dialog.component';
 
 interface City {
   name: string;
@@ -66,6 +67,8 @@ export class OfferCreateComponent implements OnInit {
   iskill = 0;
   options: City[] = [];
   durationReq: boolean;
+  route = '/offer/create';
+  alert = false;
 
   offerState: Observable<fromOffer.State>;
 
@@ -97,7 +100,8 @@ export class OfferCreateComponent implements OnInit {
     private store$: Store<fromApp.AppState>,
     private router: Router,
     private offerEffects$: OfferEffects,
-    private activatedRoute: ActivatedRoute) {
+    private activatedRoute: ActivatedRoute,
+    location: Location) {
 
     this.iskill = 0;
     this.durationReq = true;
@@ -166,6 +170,7 @@ export class OfferCreateComponent implements OnInit {
       this.initForm();
       // this.router.navigate(['/']);
     }
+
 
   }
 

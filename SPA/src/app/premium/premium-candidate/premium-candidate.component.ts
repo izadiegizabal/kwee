@@ -5,6 +5,7 @@ import {select, Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
 import * as fromAuth from '../../auth/store/auth.reducers';
 import * as fromApp from '../../store/app.reducers';
+import {AlertDialogComponent} from '../../shared/alert-dialog/alert-dialog.component';
 
 @Component({
   selector: 'app-premium-candidate',
@@ -16,7 +17,7 @@ export class PremiumCandidateComponent implements OnInit {
   premium = 0;
 
 
-  constructor(public dialog: MatDialog,  private store$: Store<fromApp.AppState>) {
+  constructor(public dialog: MatDialog, private store$: Store<fromApp.AppState>) {
   }
 
   ngOnInit() {
@@ -39,6 +40,15 @@ export class PremiumCandidateComponent implements OnInit {
         product: product,
         idproduct: id,
         price: price,
+      }
+    });
+  }
+
+  alert() {
+     this.dialog.open(AlertDialogComponent, {
+      data: {
+        header: 'If you are sure to delete your premium subscription, ' +
+          'your account will lose premium privileges at the end of the month.',
       }
     });
   }

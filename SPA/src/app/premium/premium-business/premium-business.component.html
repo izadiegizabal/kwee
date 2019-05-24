@@ -30,7 +30,8 @@
       <button *ngIf="premium !== 0"
               color="warn"
               mat-raised-button
-              style="color: white; margin-bottom: 16px">
+              style="color: white; margin-bottom: 16px"
+              (click)="alert()">
         Downgrade
       </button>
 
