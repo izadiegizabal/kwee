@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Action, select, Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';
@@ -7,18 +7,19 @@ import {Observable} from 'rxjs';
 import * as fromAdmin from '../../store/admin.reducers';
 import {filter} from 'rxjs/operators';
 import {AdminEffects} from '../../store/admin.effects';
-import {MatDialog, PageEvent} from '@angular/material';
+import {MatDialog, MatPaginator, PageEvent} from '@angular/material';
 import {BusinessAccountStates, BusinessAccountSubscriptions, BusinessIndustries} from '../../../../models/Business.model';
 import {isStringNotANumber} from '../../../../models/Offer.model';
 import {AlertDialogComponent} from '../../../shared/alert-dialog/alert-dialog.component';
-import { UserLogComponent } from '../../user-log/user-log.component';
+import {UserLogComponent} from '../../user-log/user-log.component';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-business-overview',
   templateUrl: './business-overview.component.html',
   styleUrls: ['./business-overview.component.scss']
 })
-export class BusinessOverviewComponent implements OnInit {
+export class BusinessOverviewComponent implements OnInit, AfterViewInit {
 
   // paging
   pageSize = 10;
@@ -33,6 +34,9 @@ export class BusinessOverviewComponent implements OnInit {
   updateuser: any;
   query: any;
   orderby = '0';
+  nPage = 1;
+  @ViewChild('paginator') paginator: MatPaginator;
+
 
   workFields = Object
     .keys(BusinessIndustries)
@@ -54,11 +58,29 @@ export class BusinessOverviewComponent implements OnInit {
   constructor(
     private _formBuilder: FormBuilder,
     private store$: Store<fromApp.AppState>, private adminEffects$: AdminEffects,
-    public dialog: MatDialog) {
+    public dialog: MatDialog,
+    private activatedRoute: ActivatedRoute,
+    private router: Router) {
   }
 
   ngOnInit() {
-    this.store$.dispatch(new AdminActions.TryGetBusinesses({page: 1, limit: this.pageSize, params: this.query, order: this.orderby}));
+    this.activatedRoute.queryParams
+      .subscribe(params => {
+        if (params['page']) {
+          this.nPage = params['page'];
+        }
+        if (params['limit']) {
+          this.pageSize = params['limit'];
+        }
+      });
+
+    this.store$.dispatch(new AdminActions.TryGetBusinesses({
+      page: this.nPage,
+      limit: this.pageSize,
+      params: this.query,
+      order: this.orderby
+    }));
+
     this.adminState = this.store$.pipe(select(s => s.admin));
 
     this.userForm = this._formBuilder.group({
@@ -82,6 +104,14 @@ export class BusinessOverviewComponent implements OnInit {
       }
     });
   }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      const index = this.nPage;
+      this.paginator.pageIndex = index - 1;
+    });
+  }
+
 
   samePassword(control: FormControl) {
     const userForm: any = this;
@@ -170,6 +200,13 @@ export class BusinessOverviewComponent implements OnInit {
   changepage() {
     this.store$.dispatch(new AdminActions.TryGetBusinesses(
       {page: this.pageEvent.pageIndex + 1, limit: this.pageEvent.pageSize, params: this.query, order: this.orderby}));
+    window.scrollTo(0, 0);
+    this.nPage = this.pageEvent.pageIndex + 1;
+    if (this.pageSize !== this.pageEvent.pageSize) {
+      this.pageSize = this.pageEvent.pageSize;
+    }
+    this.router.navigate(['/admin/manage-businesses'],
+      {queryParams: {page: this.nPage, limit: this.pageSize}, queryParamsHandling: 'merge'});
   }
 
   openLogModal(id) {

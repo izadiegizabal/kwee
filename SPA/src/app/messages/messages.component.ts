@@ -1,13 +1,13 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {MessagesService} from './messages.service';
-import {WebsocketService} from '../sockets.io/websocket.service';
-import {Observable} from 'rxjs';
 import * as MessageActions from './store/message.actions';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../store/app.reducers';
-import * as fromMessages from './store/message.reducers';
 import * as moment from 'moment';
 import {Title} from '@angular/platform-browser';
+import {MatSidenav} from '@angular/material';
+import {BreakpointObserver} from '@angular/cdk/layout';
+import {ActivatedRoute, Router} from '@angular/router';
 
 export interface Message {
   senderId: number;
@@ -33,26 +33,32 @@ export interface Users {
 
 export class MessagesComponent implements OnInit {
 
-  public messagesState: Observable<fromMessages.State>;
-  public messagesState2: Observable<fromMessages.State>;
-
-  sub;
+  @ViewChild('drawer') drawer: MatSidenav;
 
   bdMessages: any[] = [];
+  lastDate = new Date();
   areMessages = false;
-  userSelected = false;
-  userList: Users[] = [];
+  isUserSelected = false;
+  selectedUserId = -1;
+  userList: Users[];
   differentUsers: number;
-  messageToSend: Message;
+  messageToSend = {
+    date: '',
+    hour: '',
+    message: '',
+    receiverId: 0,
+    receiverName: '',
+    senderId: 0,
+    senderName: '',
+    total: 0
+  };
 
-  authState: any;
   authUser: any;
   name: string;
 
+
   text = '';
   element: HTMLElement;
-
-  showFiller = false;
 
   public data: any = [];
 
@@ -61,83 +67,111 @@ export class MessagesComponent implements OnInit {
   constructor(
     private titleService: Title,
     public messageService: MessagesService,
-    public wsService: WebsocketService,
+    public media: BreakpointObserver,
+    private activatedRoute: ActivatedRoute,
+    private router: Router,
     private store$: Store<fromApp.AppState>
   ) {
   }
 
   ngOnInit() {
+
     this.titleService.setTitle('Kwee - Messages');
 
-    this.authState = this.store$.pipe(select('auth'));
-    this.authState.pipe(
+    this.store$.pipe(select('auth')).pipe(
       select((s: { user: string }) => s.user)
     ).subscribe(
       (user) => {
-        this.authUser = user;
+        if (user && this.authUser !== user) {
+          this.authUser = user;
+          this.messageToSend.senderId = this.authUser.id;
+          this.messageToSend.senderName = this.authUser.name;
+        }
       });
 
     this.messageService.getMessage().subscribe(msg => {
-      console.log('Mensaje recibido');
-      console.log(msg);
       this.bdMessages.push(msg);
-
-
+      this.scrollBottom();
     });
 
-    this.store$.dispatch(new MessageActions.TryGetMessages({}));
+    this.store$.dispatch(new MessageActions.TryGetConvers());
 
-    this.sub = this.store$.pipe(select(state => state.messages)).subscribe(
-      (message) => {
-        if (message.messages && message.messages.total > 0) {
+    this.store$.pipe(select(state => state.messages)).subscribe(
+      (state) => {
+        if (state.messages.chats && state.messages.chats.total > 0) {
+          this.differentUsers = state.messages.chats.total;
+          this.userList = state.messages.chats.data;
 
-          this.differentUsers = message.messages.total;
-          this.userList = message.messages.data;
+          this.addCurrentUser();
+
           this.areMessages = true;
-
+          if (this.selectedUserId === -1 && this.userList && this.userList[0] && this.userList.length > 0) {
+            this.selectUser(this.userList[0].id);
+            // TODO: add loader
+            setTimeout(() => {
+              this.scrollBottom();
+            }, 3000);
+          }
         }
-
       });
 
+    this.activatedRoute.params.subscribe((params) => {
+      if (!isNaN(Number(params['id'])) && this.selectedUserId !== Number(params['id'])) {
+        const newId = Number(params['id']);
+        this.bdMessages = [];
+        this.selectedUserId = newId;
 
+        this.selectUser(newId);
+        // TODO: fetch who this is to update the user list and fix so that everything works
+      }
+    });
   }
 
-  // lazyLoad angular 7
-  // cdk-virtual-scroll
+  selectUser(id: number) {
+    if (Number(this.activatedRoute.params['id']) !== this.selectedUserId) {
+      this.router.navigate(['/messages', id]);
+    }
 
-  // tslint:disable-next-line:use-life-cycle-interface
-  selectUser(id) {
-    this.sub.unsubscribe();
-    this.userSelected = true;
+    this.selectedUserId = id;
+    this.isUserSelected = true;
+    this.closeDrawerIfMobile();
+
     this.store$.dispatch(new MessageActions.TryGetConversation({id}));
 
     this.store$.pipe(select(state => state.messages)).subscribe(
-      (conver) => {
+      (state) => {
+        if (state.messages.conver && state.messages.conver.total > 0) {
+          if (this.bdMessages !== state.messages.conver.data) {
 
-        if (conver.messages && conver.messages.total > 0) {
+            this.bdMessages = state.messages.conver.data;
 
-          this.bdMessages = conver.messages.data;
-          this.messageToSend = this.bdMessages[0];
+            if (this.bdMessages[0]) {
+              this.messageToSend = this.bdMessages[0];
+            }
 
-          if (this.messageToSend.senderId !== this.authUser.id) {
-            this.messageToSend.receiverId = this.messageToSend.senderId;
-            this.messageToSend.receiverName = this.messageToSend.senderName;
-            this.messageToSend.senderId = this.authUser.id;
-            this.messageToSend.senderName = this.authUser.name;
-          }
-          this.initMessage();
-          if (this.chat) {
-            this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;
+            if (this.messageToSend.senderId !== this.authUser.id) {
+              this.messageToSend.receiverId = this.messageToSend.senderId;
+              this.messageToSend.receiverName = this.messageToSend.senderName;
+              this.messageToSend.senderId = this.authUser.id;
+              this.messageToSend.senderName = this.authUser.name;
+            }
+
+            this.initMessage();
           }
         }
+        this.scrollBottom();
       });
-
+    this.scrollBottom();
   }
 
-  send() {
+  send(form: any) {
+
+    this.text = form.text;
+
     if (this.text.trim().length === 0) {
       return;
     }
+    this.messageToSend.receiverId = this.selectedUserId;
     this.messageToSend.message = this.text;
     this.messageToSend.date = moment().format('YYYY/MM/DD');
     this.messageToSend.hour = moment().format('HH:mm:ss');
@@ -145,17 +179,57 @@ export class MessagesComponent implements OnInit {
 
     this.bdMessages.push(this.messageToSend);
 
-    this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;
-
     const obj: any = this.messageToSend;
 
     this.store$.dispatch(new MessageActions.TryPostMessage(obj));
     this.initMessage();
     this.text = '';
 
+    this.scrollBottom();
   }
 
   initMessage() {
     this.messageToSend = JSON.parse(JSON.stringify(this.messageToSend));
+  }
+
+  isMobile() {
+    return !this.media.isMatched('screen and (min-width: 599px)'); // gt-sm
+  }
+
+  closeDrawerIfMobile() {
+    if (this.isMobile()) {
+      this.drawer.toggle();
+    }
+  }
+
+  private scrollBottom() {
+    if (this.chat) {
+      setTimeout(() => {
+        this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;
+      }, 5);
+    }
+  }
+
+  isNewDay(date: string) {
+    const currentDate = new Date(date);
+
+    const isSameDay = this.lastDate.getFullYear() === currentDate.getFullYear()
+      && this.lastDate.getMonth() === currentDate.getMonth()
+      && this.lastDate.getDate() === currentDate.getDate();
+
+    this.lastDate = currentDate;
+
+    return !isSameDay;
+  }
+
+  getDate(date: string) {
+    return new Date(date);
+  }
+
+  private addCurrentUser() {
+    const checkId = Number(this.activatedRoute.params['id']);
+    for (const user of this.userList) {
+      console.log(user);
+    }
   }
 }

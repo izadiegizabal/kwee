@@ -58,7 +58,7 @@
       </div>
 
 
-      <mat-paginator (page)="pageEvent = $event;  changePage();" *ngIf="(adminState | async).businesses"
+      <mat-paginator  #paginator (page)="pageEvent = $event;  changePage();" *ngIf="(adminState | async).businesses"
                      [length]="(adminState | async).businesses.total"
                      [pageSizeOptions]="pageSizeOptions"
                      [pageSize]="pageSize">

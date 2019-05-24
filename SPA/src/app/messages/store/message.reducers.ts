@@ -2,15 +2,26 @@ import * as MessageActions from './message.actions';
 
 export interface State {
   messages: {
-    senderId: number,
-    senderName: string,
-    receiverId: number,
-    receiverName: string,
-    message: string,
-    date: string,
-    hour: string,
-    total: number,
-    data: any
+    chats: {
+      data: {
+        id: number,
+        name: string
+      }[],
+      total: number
+    },
+    conver: {
+      data: {
+        _id: string,
+        senderId: number,
+        receiverId: number,
+        receiverName: string,
+        message: string,
+        date: string,
+        hour: string,
+        __v: number
+      }[],
+      total: number,
+    },
   };
   notifications: {
     data: {
@@ -27,7 +38,10 @@ export interface State {
 }
 
 const initialState: State = {
-  messages: null,
+  messages: {
+    chats: null,
+    conver: null,
+  },
   notifications: {
     data: null,
     unread: 0,
@@ -37,20 +51,21 @@ const initialState: State = {
 
 export function messageReducer(state = initialState, action: MessageActions.MessageActions) {
   switch (action.type) {
-    case MessageActions.POST_MESSAGE:
+    case MessageActions.SET_CHATS:
       return {
         ...state,
-        messages: action.payload
-      };
-    case MessageActions.GET_MESSAGES:
-      return {
-        ...state,
-        messages: action.payload
+        messages: {
+          ...state.messages,
+          chats: action.payload
+        }
       };
     case MessageActions.GET_CONVERSATION:
       return {
         ...state,
-        messages: action.payload
+        messages: {
+          ...state.messages,
+          conver: action.payload
+        }
       };
     case MessageActions.SET_NOTIFICATIONS:
       return {
@@ -85,7 +100,7 @@ export function messageReducer(state = initialState, action: MessageActions.Mess
     case MessageActions.CLEAR:
       return {
         ...state,
-        messages: {}
+        messages: null,
       };
     default:
       return state;

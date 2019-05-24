@@ -6,7 +6,6 @@ import {AdminManageCandidatesComponent} from './admin-manage-candidates/admin-ma
 import {AdminManageBusinessesComponent} from './admin-manage-businesses/admin-manage-businesses.component';
 import {AdminVerifyComponent} from './admin-verify/admin-verify.component';
 import {AdminReportsComponent} from './admin-reports/admin-reports.component';
-import {AdminMessagesComponent} from './admin-messages/admin-messages.component';
 import {AdminManageOffersComponent} from './admin-manage-offers/admin-manage-offers.component';
 import {UserLogComponent} from './user-log/user-log.component';
 
@@ -19,7 +18,7 @@ const adminRoutes: Routes = [
       {path: 'manage-offers', component: AdminManageOffersComponent},
       {path: 'verify', component: AdminVerifyComponent},
       {path: 'reports', component: AdminReportsComponent},
-      {path: 'messages', component: AdminMessagesComponent},
+      {path: 'messages', redirectTo: '/messages'},
       {path: 'statistics', component: AdminStatisticsComponent},
       {path: 'user-log', component: UserLogComponent},
       {path: '**', redirectTo: 'manage-candidates'}

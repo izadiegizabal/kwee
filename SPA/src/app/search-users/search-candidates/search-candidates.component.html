@@ -59,7 +59,7 @@
       </div>
 
 
-      <mat-paginator (page)="pageEvent = $event;  changePage();" *ngIf="(adminState | async).candidates"
+      <mat-paginator #paginator (page)="pageEvent = $event;  changePage();" *ngIf="(adminState | async).candidates"
                      [length]="(adminState | async).candidates.total"
                      [pageSizeOptions]="pageSizeOptions"
                      [pageSize]="pageSize">

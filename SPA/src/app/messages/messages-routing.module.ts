@@ -5,6 +5,9 @@ import {MessagesComponent} from './messages.component';
 
 const messagesRoutes: Routes = [
   {
+    path: ':id', component: MessagesComponent
+  },
+  {
     path: '', component: MessagesComponent
   },
 ];

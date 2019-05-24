@@ -2,8 +2,8 @@ import {Action} from '@ngrx/store';
 
 export const TRY_POST_MESSAGE = 'TRY_POST_MESSAGE';
 export const POST_MESSAGE = 'POST_MESSAGE';
-export const TRY_GET_MESSAGES = 'TRY_GET_MESSAGES';
-export const GET_MESSAGES = 'GET_MESSAGES';
+export const TRY_GET_CHATS = 'TRY_GET_CHATS';
+export const SET_CHATS = 'SET_CHATS';
 export const TRY_GET_NOTIFICATIONS = 'TRY_GET_NOTIFICATIONS';
 export const SET_NOTIFICATIONS = 'SET_NOTIFICATIONS';
 export const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
@@ -36,15 +36,15 @@ export class PostMessage implements Action {
   }
 }
 
-export class TryGetMessages implements Action {
-  readonly type = TRY_GET_MESSAGES;
+export class TryGetConvers implements Action {
+  readonly type = TRY_GET_CHATS;
 
-  constructor(public payload: any) {
+  constructor() {
   }
 }
 
 export class GetMessages implements Action {
-  readonly type = GET_MESSAGES;
+  readonly type = SET_CHATS;
 
   constructor(public payload: any) {
   }
@@ -116,6 +116,6 @@ export class OperationError implements Action {
 export type MessageActions =
   TryGetNotifications | SetNotifications | AddNotification | SetNotificationUnreadCount | SetNotiAsRead | TrySetNotiAsRead |
   TryPostMessage | PostMessage |
-  TryGetMessages | GetMessages |
+  TryGetConvers | GetMessages |
   TryGetConversation | GetConversation |
   OperationError | Clear;

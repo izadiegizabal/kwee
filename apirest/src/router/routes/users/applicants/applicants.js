@@ -467,11 +467,11 @@ module.exports = (app, db) => {
 
     // POST single applicant
     app.post('/applicant', async (req, res, next) => {
-        createApplicant(req, res, next, db, 0, true);
+        createApplicant(req, res, next, db, true);
     });
 
     app.post('/applicant/info', async (req, res, next) => {
-
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         const body = req.body;
 
         try {

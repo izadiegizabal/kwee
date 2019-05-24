@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {Observable} from 'rxjs';
 import * as fromAdmin from '../../admin/store/admin.reducers';
 import {MatPaginator, MatSidenav, PageEvent} from '@angular/material';
@@ -17,7 +17,7 @@ import {Title} from '@angular/platform-browser';
     './search-candidates.component.scss',
   ]
 })
-export class SearchCandidatesComponent implements OnInit {
+export class SearchCandidatesComponent implements OnInit, AfterViewInit {
 
   @ViewChild('paginator') paginator: MatPaginator;
   query: any;
@@ -36,6 +36,9 @@ export class SearchCandidatesComponent implements OnInit {
       {value: 'dateBorn', viewValue: 'Date Born'},
     ];
   // Filter sidebar
+  changeP = false;
+  nPage = 1;
+
   @ViewChild('drawer') private drawer: MatSidenav;
 
   constructor(
@@ -50,8 +53,8 @@ export class SearchCandidatesComponent implements OnInit {
     this.titleService.setTitle('Kwee - Search Candidates');
 
     this.store$.dispatch(new AdminActions.TryGetCandidates({
-      page: 1,
-      limit: 5,
+      page: this.nPage,
+      limit: this.pageSize,
       params: this.query,
       order: this.orderby
     }));
@@ -60,11 +63,33 @@ export class SearchCandidatesComponent implements OnInit {
     this.activatedRoute.queryParams
       .subscribe(params => {
         this.query = params;
-        this.searchCallApi();
+        // this.searchCallApi();
+        this.query = {...this.query, status: '0'};
+        if (params['page']) {
+          this.nPage = params['page'];
+        }
+        if (params['limit']) {
+          this.pageSize = params['limit'];
+        }
+
+        if (!this.changeP) {
+          this.searchCallApi();
+        } else {
+          this.changeP = false;
+        }
       });
   }
 
+  ngAfterViewInit() {
+    setTimeout(() => {
+      const index = this.nPage;
+      this.paginator.pageIndex = index - 1;
+    });
+  }
+
   changePage() {
+    this.changeP = true;
+
     this.store$.dispatch(new AdminActions.TryGetCandidates({
       page: this.pageEvent.pageIndex + 1,
       limit: this.pageEvent.pageSize,
@@ -72,6 +97,13 @@ export class SearchCandidatesComponent implements OnInit {
       order: this.orderby
     }));
     window.scrollTo(0, 0);
+
+    this.nPage = this.pageEvent.pageIndex + 1;
+    if (this.pageSize !== this.pageEvent.pageSize) {
+      this.pageSize = this.pageEvent.pageSize;
+    }
+    this.router.navigate(['/search-candidates'],
+      {queryParams: {page: this.nPage, limit: this.pageSize}, queryParamsHandling: 'merge'});
   }
 
   isMobile() {
@@ -98,7 +130,7 @@ export class SearchCandidatesComponent implements OnInit {
     this.orderby = order;
 
     this.store$.dispatch(new AdminActions.TryGetCandidates({
-      page: 1,
+      page: this.nPage,
       limit: this.pageSize,
       params: this.query,
       order: this.orderby
@@ -167,7 +199,7 @@ export class SearchCandidatesComponent implements OnInit {
 
 
     this.store$.dispatch(new AdminActions.TryGetCandidates({
-      page: 1,
+      page: this.nPage,
       limit: this.pageSize,
       params: this.query,
       order: this.orderby
