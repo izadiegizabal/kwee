@@ -1,4 +1,5 @@
 import {Action} from '@ngrx/store';
+import {Message} from './message.reducers';
 
 export const TRY_POST_MESSAGE = 'TRY_POST_MESSAGE';
 export const POST_MESSAGE = 'POST_MESSAGE';
@@ -25,7 +26,7 @@ export class Clear implements Action {
 export class TryPostMessage implements Action {
   readonly type = TRY_POST_MESSAGE;
 
-  constructor(public payload: { obj: any }) {
+  constructor(public payload: Message) {
   }
 }
 
@@ -95,7 +96,7 @@ export class SetNotificationUnreadCount implements Action {
 export class TryGetConversation implements Action {
   readonly type = TRY_GET_CONVERSATION;
 
-  constructor(public payload: { id: number }) {
+  constructor(public payload: number) {
   }
 }
 

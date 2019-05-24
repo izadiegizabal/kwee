@@ -1,23 +1,34 @@
 import * as MessageActions from './message.actions';
-import {User} from '../messages.component';
+
+export interface Chat {
+  id: number;
+  name: string;
+  lastMessage: Message;
+  message: string;
+  date: string;
+  hour: string;
+  img: string;
+}
+
+export interface Message {
+  _id: string;
+  senderId: number;
+  receiverId: number;
+  receiverName: string;
+  message: string;
+  date: string;
+  hour: string;
+  __v: number;
+}
 
 export interface State {
   messages: {
     chats: {
-      data: User[],
+      data: Chat[],
       total: number
     },
     conver: {
-      data: {
-        _id: string,
-        senderId: number,
-        receiverId: number,
-        receiverName: string,
-        message: string,
-        date: string,
-        hour: string,
-        __v: number
-      }[],
+      data: Message[],
       total: number,
     },
   };
@@ -47,8 +58,60 @@ const initialState: State = {
   },
 };
 
+function getActiveChat(message: Message, chats: Chat[]): Chat {
+  for (const chat of chats) {
+    if (message.senderId === chat.id || message.receiverId === chat.id) {
+      return chat;
+    }
+  }
+  return undefined;
+}
+
+function reorderChats(message: Message, chats: Chat[]): Chat[] {
+  const activeChat = getActiveChat(message, chats);
+  if (activeChat) {
+    return chats.sort(function (x, y) {
+      return x === activeChat ? -1 : y === activeChat ? 1 : 0;
+    });
+  } else {
+    return undefined;
+  }
+}
+
 export function messageReducer(state = initialState, action: MessageActions.MessageActions) {
   switch (action.type) {
+    case MessageActions.TRY_POST_MESSAGE:
+      const newData = state.messages.conver.data.push(action.payload);
+      return {
+        ...state,
+        messages: {
+          ...state.messages,
+          conver: {
+            ...state.messages.conver,
+            newData
+          },
+        }
+      };
+    case MessageActions.POST_MESSAGE:
+      const reorderedChats = reorderChats(action.payload, state.messages.chats.data);
+      let chatsData = state.messages.chats.data;
+
+      if (reorderedChats) {
+        const activeChat = getActiveChat(action.payload, state.messages.chats.data);
+        activeChat.lastMessage = action.payload;
+        chatsData = reorderedChats;
+      }
+
+      return {
+        ...state,
+        messages: {
+          ...state.messages,
+          chats: {
+            ...state.messages.chats,
+            data: chatsData
+          }
+        }
+      };
     case MessageActions.SET_CHATS:
       return {
         ...state,

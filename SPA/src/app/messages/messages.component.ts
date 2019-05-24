@@ -3,32 +3,15 @@ import {MessagesService} from './messages.service';
 import * as MessageActions from './store/message.actions';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../store/app.reducers';
+import * as fromMessages from './store/message.reducers';
+import {Chat, Message} from './store/message.reducers';
 import * as moment from 'moment';
 import {Title} from '@angular/platform-browser';
 import {MatSidenav} from '@angular/material';
 import {BreakpointObserver} from '@angular/cdk/layout';
 import {ActivatedRoute, Router} from '@angular/router';
 import {environment} from '../../environments/environment';
-
-export interface Message {
-  senderId: number;
-  senderName: string;
-  receiverId: number;
-  receiverName: string;
-  message: string;
-  date: string;
-  hour: string;
-  total: number;
-}
-
-export interface User {
-  id: number;
-  name: string;
-  message: string;
-  date: string;
-  hour: string;
-  img: string;
-}
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-messages',
@@ -42,23 +25,21 @@ export class MessagesComponent implements OnInit {
 
   apiUrl = environment.apiUrl;
 
-  bdMessages: any[] = [];
   lastDate = new Date();
   areMessages = false;
   isUserSelected = false;
   selectedUserId = -1;
-  selectedUser: User;
-  userList: User[];
+  selectedUser: Chat;
   differentUsers: number;
-  messageToSend = {
+  messageToSend: Message = {
+    __v: 0,
+    _id: '',
     date: '',
     hour: '',
     message: '',
     receiverId: 0,
     receiverName: '',
-    senderId: 0,
-    senderName: '',
-    total: 0
+    senderId: 0
   };
 
   authUser: any;
@@ -71,6 +52,7 @@ export class MessagesComponent implements OnInit {
   public data: any = [];
 
   @ViewChild('chat') chat;
+  private messagesState: Observable<fromMessages.State>;
 
   constructor(
     private titleService: Title,
@@ -93,12 +75,11 @@ export class MessagesComponent implements OnInit {
         if (user && this.authUser !== user) {
           this.authUser = user;
           this.messageToSend.senderId = this.authUser.id;
-          this.messageToSend.senderName = this.authUser.name;
         }
       });
 
     this.messageService.getMessage().subscribe(msg => {
-      this.bdMessages.push(msg);
+      // TODO: dispatch to store
       this.scrollBottom();
     });
 
@@ -108,13 +89,15 @@ export class MessagesComponent implements OnInit {
       (state) => {
         if (state.messages.chats && state.messages.chats.total > 0) {
           this.differentUsers = state.messages.chats.total;
-          this.userList = state.messages.chats.data;
 
           this.addCurrentUser();
 
           this.areMessages = true;
-          if (this.selectedUserId === -1 && this.userList && this.userList[0] && this.userList.length > 0) {
-            this.selectUser(this.userList[0].id);
+          if (this.selectedUserId === -1
+            && state.messages.chats.data
+            && state.messages.chats.data[0]
+            && state.messages.chats.data.length > 0) {
+            this.selectUser(state.messages.chats.data[0].id);
             // TODO: add loader
             setTimeout(() => {
               this.scrollBottom();
@@ -126,7 +109,7 @@ export class MessagesComponent implements OnInit {
     this.activatedRoute.params.subscribe((params) => {
       if (!isNaN(Number(params['id'])) && this.selectedUserId !== Number(params['id'])) {
         const newId = Number(params['id']);
-        this.bdMessages = [];
+        // TODO: empty current chat?
         this.selectedUserId = newId;
 
         this.selectUser(newId);
@@ -145,35 +128,30 @@ export class MessagesComponent implements OnInit {
     this.isUserSelected = true;
     this.closeDrawerIfMobile();
 
-    this.store$.dispatch(new MessageActions.TryGetConversation({id}));
+    this.store$.dispatch(new MessageActions.TryGetConversation(id));
 
-    this.store$.pipe(select(state => state.messages)).subscribe(
+    this.messagesState = this.store$.pipe(select('messages'));
+    this.messagesState.subscribe(
       (state) => {
         if (state.messages.conver && state.messages.conver.total > 0) {
-          if (this.bdMessages !== state.messages.conver.data) {
 
-            this.bdMessages = state.messages.conver.data;
-
-            if (this.bdMessages[0]) {
-              this.messageToSend = this.bdMessages[0];
-            }
-
-            if (this.messageToSend.senderId !== this.authUser.id) {
-              this.messageToSend.receiverId = this.messageToSend.senderId;
-              this.messageToSend.receiverName = this.messageToSend.senderName;
-              this.messageToSend.senderId = this.authUser.id;
-              this.messageToSend.senderName = this.authUser.name;
-            }
-
-            this.initMessage();
+          if (state.messages.conver.data[0]) {
+            this.messageToSend = state.messages.conver.data[0];
           }
+
+          if (this.messageToSend.senderId !== this.authUser.id) {
+            this.messageToSend.receiverId = this.messageToSend.senderId;
+            this.messageToSend.senderId = this.authUser.id;
+          }
+
+          this.initMessage();
         }
         this.scrollBottom();
       });
     this.scrollBottom();
   }
 
-  private findUser(id: number): User {
+  private findUser(id: number): Chat {
 
 
     return undefined;
@@ -191,8 +169,6 @@ export class MessagesComponent implements OnInit {
     this.messageToSend.date = moment().format('YYYY/MM/DD');
     this.messageToSend.hour = moment().format('HH:mm:ss');
     this.messageService.sendMessage(this.messageToSend);
-
-    this.bdMessages.push(this.messageToSend);
 
     const obj: any = this.messageToSend;
 
@@ -220,7 +196,9 @@ export class MessagesComponent implements OnInit {
   private scrollBottom() {
     if (this.chat) {
       setTimeout(() => {
-        this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;
+        if (this.chat) {
+          this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;
+        }
       }, 5);
     }
   }
@@ -228,13 +206,15 @@ export class MessagesComponent implements OnInit {
   isNewDay(date: string) {
     const currentDate = new Date(date);
 
-    const isSameDay = this.lastDate.getFullYear() === currentDate.getFullYear()
-      && this.lastDate.getMonth() === currentDate.getMonth()
-      && this.lastDate.getDate() === currentDate.getDate();
-
-    this.lastDate = currentDate;
-
-    return !isSameDay;
+    if (this.lastDate === currentDate) {
+      const isSameDay = this.lastDate.getFullYear() === currentDate.getFullYear()
+        && this.lastDate.getMonth() === currentDate.getMonth()
+        && this.lastDate.getDate() === currentDate.getDate();
+      this.lastDate = currentDate;
+      return !isSameDay;
+    } else {
+      return false;
+    }
   }
 
   getDate(date: string) {

@@ -31,7 +31,7 @@ export class MessageEffects {
           }) => {
             return {
               type: MessageActions.POST_MESSAGE,
-              payload: res
+              payload: payload
             };
           }),
           catchError((err: HttpErrorResponse) => {
@@ -90,7 +90,7 @@ export class MessageEffects {
     }),
     withLatestFrom(this.store$.pipe(select(state => state.auth))),
     switchMap(([payload, authState]) => {
-        const apiEndpointUrl = environment.apiUrl + 'messages/' + payload.id;
+        const apiEndpointUrl = environment.apiUrl + 'messages/' + payload;
         const token = authState.token;
         const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
 
