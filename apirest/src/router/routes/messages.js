@@ -228,6 +228,7 @@ module.exports = (app, db) => {
 
     async function getMessageFromMongo( req, res, next ) {
         let id = tokenId.getTokenId(req.get('token'), res);
+        let usersMysql = await db.users.findAll();
 
         Message.find()
                 .sort({date: 'desc', hour: 'desc'})
@@ -242,21 +243,35 @@ module.exports = (app, db) => {
                         var usersNames = [];
                         var users = [];
 
-                        messages.forEach( (message, idx) => {
+                        messages.forEach( async (message, idx) => {
                             if ( !usersNames.includes( message.senderName ) && message.senderId != id ) {
+                                let user = usersMysql.find(user => user.id === message.senderId);
+                                
                                 usersNames.push( message.senderName );
-                                users.push( { id: message.senderId, name: message.senderName, message: message.message } );
+                                users.push({
+                                    id: message.senderId, 
+                                    name: message.senderName, 
+                                    message: message.message,
+                                    date: message.date,
+                                    hour: message.hour,
+                                    img: user.img
+                                });
                             }
                             if ( !usersNames.includes( message.receiverName ) && message.receiverId != id ) {
-                                usersNames.push( message.receiverName );
-                                users.push( { id: message.receiverId, name: message.receiverName, message: message.message } );
-                            }
-                            if ( idx === message.length - 1 ) {
-                                console.log('i: ', i);
+                                let user = usersMysql.find(user => user.id === message.receiverId);
                                 
+                                usersNames.push( message.receiverName );
+                                users.push({
+                                    id: message.receiverId, 
+                                    name: message.receiverName, 
+                                    message: message.message,
+                                    date: message.date,
+                                    hour: message.hour,
+                                    img: user.img
+                                });
                             }
                         });
-        
+
                         return res.json({
                             ok: true,
                             message: 'Listing messages',
