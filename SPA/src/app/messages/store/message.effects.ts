@@ -51,6 +51,18 @@ export class MessageEffects {
   );
 
   @Effect()
+  addMessage = this.actions$.pipe(
+    ofType(MessageActions.ADD_MESSAGE),
+    map((action: MessageActions.TryPostMessage) => {
+      return {
+        type: MessageActions.POST_MESSAGE,
+        payload: action.payload
+      };
+    }),
+    share()
+  );
+
+  @Effect()
   getChats = this.actions$.pipe(
     ofType(MessageActions.TRY_GET_CHATS),
     withLatestFrom(this.store$.pipe(select(state => state.auth))),

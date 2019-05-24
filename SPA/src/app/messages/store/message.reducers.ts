@@ -80,6 +80,7 @@ function reorderChats(message: Message, chats: Chat[]): Chat[] {
 
 export function messageReducer(state = initialState, action: MessageActions.MessageActions) {
   switch (action.type) {
+    case MessageActions.ADD_MESSAGE:
     case MessageActions.TRY_POST_MESSAGE:
       const newData = state.messages.conver.data.push(action.payload);
       return {
@@ -158,10 +159,13 @@ export function messageReducer(state = initialState, action: MessageActions.Mess
         ...state,
         notifications: updatedNotis,
       };
-    case MessageActions.CLEAR:
+    case MessageActions.CLEAR_CONVER:
       return {
         ...state,
-        messages: null,
+        messages: {
+          ...state.messages,
+          conver: null
+        }
       };
     default:
       return state;

@@ -2,6 +2,7 @@ import {Action} from '@ngrx/store';
 import {Message} from './message.reducers';
 
 export const TRY_POST_MESSAGE = 'TRY_POST_MESSAGE';
+export const ADD_MESSAGE = 'ADD_MESSAGE';
 export const POST_MESSAGE = 'POST_MESSAGE';
 export const TRY_GET_CHATS = 'TRY_GET_CHATS';
 export const SET_CHATS = 'SET_CHATS';
@@ -14,10 +15,10 @@ export const SET_NOTI_UNREAD_COUNT = 'SET_NOTI_UNREAD_COUNT';
 export const TRY_GET_CONVERSATION = 'TRY_GET_CONVERSATION';
 export const GET_CONVERSATION = 'GET_CONVERSATION';
 export const OPERATION_ERROR = 'OPERATION_ERROR';
-export const CLEAR = 'CLEAR';
+export const CLEAR_CONVER = 'CLEAR_CONVER';
 
-export class Clear implements Action {
-  readonly type = CLEAR;
+export class ClearConver implements Action {
+  readonly type = CLEAR_CONVER;
 
   constructor() {
   }
@@ -25,6 +26,13 @@ export class Clear implements Action {
 
 export class TryPostMessage implements Action {
   readonly type = TRY_POST_MESSAGE;
+
+  constructor(public payload: Message) {
+  }
+}
+
+export class AddMessage implements Action {
+  readonly type = ADD_MESSAGE;
 
   constructor(public payload: Message) {
   }
@@ -116,7 +124,7 @@ export class OperationError implements Action {
 
 export type MessageActions =
   TryGetNotifications | SetNotifications | AddNotification | SetNotificationUnreadCount | SetNotiAsRead | TrySetNotiAsRead |
-  TryPostMessage | PostMessage |
+  TryPostMessage | PostMessage | AddMessage |
   TryGetConvers | GetMessages |
   TryGetConversation | GetConversation |
-  OperationError | Clear;
+  OperationError | ClearConver;

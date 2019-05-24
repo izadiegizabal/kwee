@@ -78,8 +78,9 @@ export class MessagesComponent implements OnInit {
         }
       });
 
-    this.messageService.getMessage().subscribe(msg => {
-      // TODO: dispatch to store
+    this.messageService.getMessage().subscribe((msg: Message) => {
+      this.store$.dispatch(new MessageActions.AddMessage(msg));
+
       this.scrollBottom();
     });
 
@@ -109,7 +110,7 @@ export class MessagesComponent implements OnInit {
     this.activatedRoute.params.subscribe((params) => {
       if (!isNaN(Number(params['id'])) && this.selectedUserId !== Number(params['id'])) {
         const newId = Number(params['id']);
-        // TODO: empty current chat?
+        this.store$.dispatch(new MessageActions.ClearConver());
         this.selectedUserId = newId;
 
         this.selectUser(newId);
@@ -152,7 +153,6 @@ export class MessagesComponent implements OnInit {
   }
 
   private findUser(id: number): Chat {
-
 
     return undefined;
   }
