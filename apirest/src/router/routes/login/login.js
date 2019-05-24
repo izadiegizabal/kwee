@@ -1,5 +1,6 @@
 const { logger, tokenId, getOffererAVG, getApplicantAVG } = require('../../../shared/functions');
 const auth = require('../../../middlewares/auth/auth');
+const Message = require('../../../models/messages');
 const bcrypt = require('bcryptjs');
 const moment = require('moment');
 
@@ -103,25 +104,34 @@ module.exports = (app, db) => {
                 }
             }
 
-            return res.json({
-                ok: true,
-                message: 'Login successful',
-                data: {
-                    id: userUpdated.id,
-                    name: userUpdated.name,
-                    email: userUpdated.email,
-                    img: userUpdated.img,
-                    bio: userUpdated.bio,
-                    lastAccess: userUpdated.lastAccess,
-                    index: userUpdated.index,
-                    avg,
-                    premium,
-                    status: userUpdated.status,
-                    notifications,
-                    type
-                },
-                token
-            });
+            Message.find({ read: false })
+                    .exec( ( err, msg ) => {
+                        console.log('length: ', msg.length);
+                        let messages
+                        msg ? messages = msg.length : messages = 0;
+
+                        return res.json({
+                            ok: true,
+                            message: 'Login successful',
+                            data: {
+                                id: userUpdated.id,
+                                name: userUpdated.name,
+                                email: userUpdated.email,
+                                img: userUpdated.img,
+                                bio: userUpdated.bio,
+                                lastAccess: userUpdated.lastAccess,
+                                index: userUpdated.index,
+                                avg,
+                                premium,
+                                status: userUpdated.status,
+                                notifications,
+                                messages,
+                                type
+                            },
+                            token
+                        });
+                    });
+            
 
         } catch (err) {
             if (err.message == 'Invalid token') {
