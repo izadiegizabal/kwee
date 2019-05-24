@@ -1,3 +1,4 @@
+const {getApplicantAVG, getOffererAVG} = require('../../../shared/functions');
 const passport = require('../../../middlewares/passport');
 const auth = require('../../../middlewares/auth/auth');
 const env = require('../../../tools/constants');
