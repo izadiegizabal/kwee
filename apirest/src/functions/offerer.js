@@ -29,10 +29,10 @@ async function createOfferer(req, res, next, db, regUser, id) {
                 return db.sequelize.transaction(transaction => {
                     var imgName = uploadImg(req, res, next, 'offerers');
                     user.img = imgName;
+                    
                     return db.users.create(user, {transaction})
                     .then(async _user => {
                         uservar = _user;
-                        console.log('if transaction: ', JSON.stringify(transaction));
                         
                         return newOfferer(body, _user, next, transaction, db);
                     })
