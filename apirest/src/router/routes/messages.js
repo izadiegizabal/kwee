@@ -50,32 +50,23 @@ module.exports = (app, db) => {
     });
 
     // PUT single message
-    app.put("/message", checkToken, async (req, res, next) => {
-        const body = req.body;
-
+    app.put("/messages/read/:id([0-9]+)", async (req, res, next) => {
+        let senderId = req.params.id;
         try {
-            let sender = await db.users.findOne({
-                where: {userId: body.fk_sender}
+            let receiverId = tokenId.getTokenId(req.get('token'), res);
+
+            Message.updateMany(
+                { "senderId": senderId, "receiverId": receiverId },
+                { $set: { "read" : true } }
+            ).exec( (err, respuesta) => {
+                return res.json({
+                    ok: true,
+                    message: 'Conversation read'
+                });
             });
-
-            if (sender) {
-                await db.sequelize.query({
-                    query: `UPDATE messages SET message = ? WHERE fk_sender = ? AND fk_receiver = ?`,
-                    values: [body.message, body.fk_sender, fk_receiver]
-                });
-                res.status(200).json({
-                    ok: true,
-                    message: 'Updated'
-                });
-            } else {
-                return res.status(200).json({
-                    ok: true,
-                    error: "Message doesn't exist"
-                });
-            }
-
+            
         } catch (err) {
-            next({type: 'error', error: err.errors[0].message});
+            next({type: 'error', error: err.message});
         }
     });
 
@@ -230,18 +221,19 @@ module.exports = (app, db) => {
         let id = tokenId.getTokenId(req.get('token'), res);
         let usersMysql = await db.users.findAll();
 
-        Message.find()
-                .sort({date: 'desc', hour: 'desc'})
-                .exec({ 
+        Message.find({ 
                     $or: [{ 
                         'senderId': id 
                         }, { 
                         'receiverId': id 
                         } 
-                    ]}, function(err, messages) {
-                        // Different users with chat inicializated
+                    ]})
+                .sort({date: 'desc', hour: 'desc'})
+                .exec(( err, messages ) => {
+                        // Different users with chat inicializated with this user
                         var usersNames = [];
                         var users = [];
+                        var totalUnread = 0;
 
                         messages.forEach( async (message, idx) => {
                             if ( !usersNames.includes( message.senderName ) && message.senderId != id ) {
@@ -251,10 +243,9 @@ module.exports = (app, db) => {
                                 users.push({
                                     id: message.senderId, 
                                     name: message.senderName, 
-                                    message: message.message,
-                                    date: message.date,
-                                    hour: message.hour,
-                                    img: user.img
+                                    img: user.img,
+                                    lastMessage: message,
+                                    totalUnread
                                 });
                             }
                             if ( !usersNames.includes( message.receiverName ) && message.receiverId != id ) {
@@ -264,13 +255,25 @@ module.exports = (app, db) => {
                                 users.push({
                                     id: message.receiverId, 
                                     name: message.receiverName, 
-                                    message: message.message,
-                                    date: message.date,
-                                    hour: message.hour,
-                                    img: user.img
+                                    img: user.img,
+                                    lastMessage: message,
+                                    totalUnread
                                 });
                             }
                         });
+
+                        // sender always has read all conversation
+                        // receiver is who could have unread messages
+
+                        users.forEach( user => {
+                            messages.forEach( message => {
+                                if ( user.id === message.senderId && !message.read ) {
+                                    user.totalUnread++;
+                                }
+                            });
+                        });
+
+
 
                         return res.json({
                             ok: true,
@@ -283,9 +286,8 @@ module.exports = (app, db) => {
 
     async function getMessagesUnread( req, res, next ) {
         let id = tokenId.getTokenId(req.get('token'), res);
-        Message.find({ read: false })
+        Message.find({ receiverId: id, read: false })
                 .exec( ( err, messages ) => {
-                    console.log('Number of messages unread: ', messages.length);
                     return res.json({
                         ok: true,
                         message: 'Number of messages unread',
