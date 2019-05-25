@@ -6,10 +6,11 @@
       <mat-icon class="svg" color="primary" svgIcon="back"></mat-icon>
     </button>
   </div>
-  <div fxLayout="row"
-       fxLayoutAlign="center center">
-    <mat-card *ngIf="(offerState | async).offer"
-              fxFlex="95%"
+  <div
+    *ngIf="(offerState | async).offer"
+    fxLayout="row"
+    fxLayoutAlign="center center">
+    <mat-card fxFlex="95%"
               fxFlex.gt-lg="50%"
               fxFlex.gt-md="60%" fxFlex.gt-sm="75%" fxLayout="column" id="id">
       <mat-card-header fxLayoutAlign="space-between">
@@ -110,9 +111,10 @@
                 </app-icon-with-text>
               </div>
             </div>
-            <div fxFlex="33%" fxFlex.lt-sm="100%"
-                 fxLayoutAlign="center center"
-                 style="width: 100%">
+            <div
+              fxFlex="33%" fxFlex.lt-sm="100%"
+              fxLayoutAlign="center center"
+              style="width: 100%">
               <div fxLayout="column"
                    fxLayoutGap="8px">
 
@@ -134,11 +136,11 @@
                 <ng-template #apply>
                   <button (click)="postApplication()"
                           *ngIf="((offerState | async).applications===null && id) || ((offerState | async).applications && (offerState | async).offer.status !== 0 && (offerState | async).applications.status !== 2)"
-                          [disabled]="(authState | async).user.type === 'business' || (offerState | async).offer.status !== 0"
+                          [disabled]="((authState | async).user && (authState | async).user.type === 'business') || (offerState | async).offer.status !== 0"
                           color="accent"
                           mat-raised-button style="color: white">{{'Apply Now!' | uppercase }}</button>
 
-                  <button *ngIf="!id" color="accent"
+                  <button *ngIf="!id && (offerState | async).offer.status === 0" color="accent"
                           mat-raised-button
                           routerLink="/signin" style="color: white">{{'Apply Now!' | uppercase }}</button>
 

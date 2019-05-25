@@ -26,11 +26,9 @@ export class MessagesComponent implements OnInit {
   apiUrl = environment.apiUrl;
 
   lastDate = new Date();
-  areMessages = false;
   isUserSelected = false;
   selectedUserId = -1;
   selectedUser: Chat;
-  differentUsers: number;
   messageToSend: Message = {
     __v: 0,
     _id: '',
@@ -39,7 +37,9 @@ export class MessagesComponent implements OnInit {
     message: '',
     receiverId: 0,
     receiverName: '',
-    senderId: 0
+    senderId: 0,
+    senderName: '',
+    read: false
   };
 
   authUser: any;
@@ -68,9 +68,6 @@ export class MessagesComponent implements OnInit {
 
     this.titleService.setTitle('Kwee - Messages');
 
-    this.store$.dispatch(new MessageActions.SetMessageUnreadCount(0));
-
-
     this.store$.pipe(select('auth')).pipe(
       select((s: { user: string }) => s.user)
     ).subscribe(
@@ -90,22 +87,38 @@ export class MessagesComponent implements OnInit {
     this.store$.pipe(select(state => state.messages)).subscribe(
       (state) => {
         if (state.messages.chats && state.messages.chats.total > 0) {
-          this.differentUsers = state.messages.chats.total;
-
           this.addCurrentUser();
 
-          this.areMessages = true;
-          if (this.selectedUserId === -1
-            && state.messages.chats.data
-            && state.messages.chats.data[0]
-            && state.messages.chats.data.length > 0) {
-            this.selectUser(state.messages.chats.data[0].id);
-            // TODO: add loader
-            setTimeout(() => {
-              this.scrollBottom();
-            }, 3000);
-          }
+          // if (this.selectedUserId === -1
+          //   && state.messages.chats.data
+          //   && state.messages.chats.data[0]
+          //   && state.messages.chats.data.length > 0) {
+          //   this.selectUser(state.messages.chats.data[0].id);
+          //   // TODO: add loader
+          //   setTimeout(() => {
+          //     this.scrollBottom();
+          //   }, 3000);
+          // }
         }
+      });
+
+    this.messagesState = this.store$.pipe(select('messages'));
+    this.messagesState.subscribe(
+      (state) => {
+        if (state.messages.conver && state.messages.conver.total > 0) {
+
+          if (state.messages.conver.data[0]) {
+            this.messageToSend = state.messages.conver.data[0];
+          }
+
+          if (this.messageToSend.senderId !== this.authUser.id) {
+            this.messageToSend.receiverId = this.messageToSend.senderId;
+            this.messageToSend.senderId = this.authUser.id;
+          }
+
+          this.initMessage();
+        }
+        this.scrollBottom();
       });
 
     this.activatedRoute.params.subscribe((params) => {
@@ -132,24 +145,6 @@ export class MessagesComponent implements OnInit {
 
     this.store$.dispatch(new MessageActions.TryGetConversation(id));
 
-    this.messagesState = this.store$.pipe(select('messages'));
-    this.messagesState.subscribe(
-      (state) => {
-        if (state.messages.conver && state.messages.conver.total > 0) {
-
-          if (state.messages.conver.data[0]) {
-            this.messageToSend = state.messages.conver.data[0];
-          }
-
-          if (this.messageToSend.senderId !== this.authUser.id) {
-            this.messageToSend.receiverId = this.messageToSend.senderId;
-            this.messageToSend.senderId = this.authUser.id;
-          }
-
-          this.initMessage();
-        }
-        this.scrollBottom();
-      });
     this.scrollBottom();
   }
 

@@ -149,7 +149,7 @@ export class MessageEffects {
             };
           }),
           catchError((err: HttpErrorResponse) => {
-            throwError(this.handleError('getChats', err));
+            throwError(this.handleError('getNotis', err));
             const error = err.error.message ? err.error.message : err;
             return [
               {
@@ -184,7 +184,7 @@ export class MessageEffects {
             };
           }),
           catchError((err: HttpErrorResponse) => {
-            throwError(this.handleError('getChats', err));
+            throwError(this.handleError('setNotiAsRead', err));
             const error = err.error.message ? err.error.message : err;
             return [
               {

@@ -4,18 +4,18 @@ export interface Chat {
   id: number;
   name: string;
   lastMessage: Message;
-  message: string;
-  date: string;
-  hour: string;
   img: string;
+  totalUnread: number;
 }
 
 export interface Message {
   _id: string;
   senderId: number;
+  senderName: string;
   receiverId: number;
   receiverName: string;
   message: string;
+  read: boolean;
   date: string;
   hour: string;
   __v: number;
