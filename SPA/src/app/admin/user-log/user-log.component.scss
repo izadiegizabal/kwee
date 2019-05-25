@@ -1,8 +1,20 @@
-#list {
-    flex: 2 2 auto;
-    overflow-y: scroll;
-    height: 400px;
-    border: 1px solid gray;
-    border-radius: 5px;
-    padding: 5px;
+// #list {
+//     flex: 2 2 auto;
+//     overflow-y: scroll;
+//     height: 400px;
+//     border: 1px solid gray;
+//     border-radius: 5px;
+//     padding: 5px;
+// }
+
+
+#div_logs {
+  width: 600px;
+  height: 600px;
+}
+
+table {
+  width: 600px;
+  overflow-y: scroll;
+  height: 600px;
 }
