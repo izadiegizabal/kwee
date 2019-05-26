@@ -48,7 +48,7 @@ export class UserMenuComponent implements OnInit {
           }
           if (user.messages > 0 && this.numMessages !== user.messages) {
             this.numMessages = user.messages;
-            this.store$.dispatch(new MessageActions.ChangeMessageUnreadCount(user.messages));
+            this.store$.dispatch(new MessageActions.SetMessageUnreadCount(user.messages));
           }
         }
       });

@@ -161,9 +161,9 @@ export function messageReducer(state = initialState, action: MessageActions.Mess
           unread: totUnreadNum
         }
       };
-    case MessageActions.CHANGE_MESSAGE_UNREAD_COUNT:
+    case MessageActions.SET_MESSAGE_UNREAD_COUNT:
       const updatedMessages = state.messages;
-      updatedMessages.unread += action.payload;
+      updatedMessages.unread = action.payload;
       return {
         ...state,
         messages: updatedMessages,
