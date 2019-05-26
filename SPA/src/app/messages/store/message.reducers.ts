@@ -60,15 +60,6 @@ const initialState: State = {
   },
 };
 
-function getTotalNumOfUnread(chats: Chat[]) {
-  let count = 0;
-  for (const chat of chats) {
-    count += chat.totalUnread;
-  }
-
-  return count;
-}
-
 export function messageReducer(state = initialState, action: MessageActions.MessageActions) {
   switch (action.type) {
 
@@ -146,10 +137,12 @@ export function messageReducer(state = initialState, action: MessageActions.Mess
         }
       };
     case MessageActions.TRY_MARK_CONVER_AS_READ:
-      const openedChat = getActiveChatById(action.payload, state.messages.chats.data);
+      const openedChat = getActiveChatById(action.payload, state.messages.chats ? state.messages.chats.data : undefined);
       let totUnreadNum = getTotalNumOfUnread(state.messages.chats ? state.messages.chats.data : undefined);
-      totUnreadNum -= openedChat.totalUnread;
-      openedChat.totalUnread = 0;
+      if (openedChat) {
+        totUnreadNum -= openedChat.totalUnread;
+        openedChat.totalUnread = 0;
+      }
       return {
         ...state,
         messages: {
@@ -226,7 +219,7 @@ function markAsRead(notifications: {
   total: number,
 }, id: number) {
 
-  if (notifications.data) {
+  if (notifications && notifications.data) {
     for (const noti of notifications.data) {
       if (noti.id === id) {
         noti.read = true;
@@ -268,4 +261,14 @@ function reorderChats(message: Message, chats: Chat[]): Chat[] {
   } else {
     return undefined;
   }
+}
+
+function getTotalNumOfUnread(chats: Chat[]) {
+  let count = 0;
+  if (chats) {
+    for (const chat of chats) {
+      count += chat.totalUnread;
+    }
+  }
+  return count;
 }

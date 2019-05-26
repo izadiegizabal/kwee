@@ -131,6 +131,9 @@ export class CandidateProfileComponent implements OnInit, AfterViewInit {
   }
 
   contactUser() {
-    this.router.navigate(['/messages', this.cand.id]);
+    this.router.navigate(['/messages', this.cand.id], {
+      queryParams: {name: this.cand.name, img: this.imgPath},
+      queryParamsHandling: 'merge'
+    });
   }
 }

@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {MessagesService} from './messages.service';
 import * as MessageActions from './store/message.actions';
-import {select, Store} from '@ngrx/store';
+import {Action, select, Store} from '@ngrx/store';
 import * as fromApp from '../store/app.reducers';
 import * as fromMessages from './store/message.reducers';
 import {Chat, getActiveChatById, Message} from './store/message.reducers';
@@ -13,6 +13,8 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {environment} from '../../environments/environment';
 import {Observable} from 'rxjs';
 import {playNotificationSound} from '../shared/utils';
+import {filter} from 'rxjs/operators';
+import {MessageEffects} from './store/message.effects';
 
 @Component({
   selector: 'app-messages',
@@ -56,6 +58,12 @@ export class MessagesComponent implements OnInit {
   public messagesState: Observable<fromMessages.State>;
   private chats: Chat[];
 
+  // New Chat!
+  public newChat = false;
+  public newChatId: number;
+  public newChatName = '';
+  public newChatImgUrl: string;
+
   constructor(
     private titleService: Title,
     public messageService: MessagesService,
@@ -63,7 +71,8 @@ export class MessagesComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private _wsMessages: MessagesService,
     private router: Router,
-    private store$: Store<fromApp.AppState>
+    private store$: Store<fromApp.AppState>,
+    private messageEffects$: MessageEffects,
   ) {
   }
 
@@ -125,12 +134,13 @@ export class MessagesComponent implements OnInit {
         this.store$.dispatch(new MessageActions.ClearConver());
 
         this.selectUser(newId);
-        // TODO: fetch who this is to update the user list and fix so that everything works
       }
     });
   }
 
   selectUser(id: number) {
+    this.scrollBottom();
+
     if (Number(this.activatedRoute.params['id']) !== this.selectedUserId) {
       this.router.navigate(['/messages', id]);
     }
@@ -138,14 +148,18 @@ export class MessagesComponent implements OnInit {
     // Empty previous chat
     if (this.selectedUserId !== -1) {
       this.store$.dispatch(new MessageActions.TryMarkConverRead(this.selectedUserId));
+      this.scrollBottom();
     }
 
     // Try to get new conver
     this.selectedUserId = id;
     this.selectedUser = this.findActiveChat(id);
+    // If not found show new chat
     if (!this.selectedUser) {
-      // TODO: create a new chat
+      this.getNewChatInfo(id);
     }
+
+
     this.isUserSelected = true;
     this.closeDrawerIfMobile();
 
@@ -161,6 +175,7 @@ export class MessagesComponent implements OnInit {
     if (this.text.trim().length === 0) {
       return;
     }
+
     this.messageToSend.receiverId = this.selectedUserId;
     this.messageToSend.message = this.text;
     this.messageToSend.date = moment().format('YYYY/MM/DD');
@@ -174,6 +189,17 @@ export class MessagesComponent implements OnInit {
     this.text = '';
 
     this.scrollBottom();
+
+    this.messageEffects$.messagePost.pipe(
+      filter((action: Action) => action.type === MessageActions.POST_MESSAGE)
+    ).subscribe((next: { payload: any, type: string }) => {
+      // If message for new chat
+      if (this.selectedUserId === this.newChatId) {
+        // Empty new chat options and fetch new chats
+        this.emptyNewChatValues();
+        this.store$.dispatch(new MessageActions.TryGetConvers());
+      }
+    });
   }
 
   // Helper methods
@@ -197,6 +223,24 @@ export class MessagesComponent implements OnInit {
         }
       }, 5);
     }
+  }
+
+  getNewChatInfo(newChatId: number) {
+    this.newChat = true;
+    this.newChatId = newChatId;
+    if (this.activatedRoute.snapshot.queryParams.img) {
+      this.newChatImgUrl = this.activatedRoute.snapshot.queryParams.img;
+    }
+    if (this.activatedRoute.snapshot.queryParams.name) {
+      this.newChatName = this.activatedRoute.snapshot.queryParams.name;
+    }
+  }
+
+  private emptyNewChatValues() {
+    this.newChat = false;
+    this.newChatName = '';
+    this.newChatId = undefined;
+    this.newChatImgUrl = undefined;
   }
 
 

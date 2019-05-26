@@ -19,6 +19,21 @@
                class="container">
             <mat-action-list
               *ngIf="(messagesState | async).messages.chats">
+              <div *ngIf="newChat">
+                <button (click)="selectUser(newChatId)" mat-list-item
+                        [ngClass]="{ 'selectedChat': selectedUserId === newChatId}">
+                  <img mat-list-avatar [src]="newChatImgUrl ? apiUrl + newChatImgUrl : '../../assets/img/defaultProfileImg.png'"
+                       alt="Avatar">
+                  <h3 matLine>
+                    {{newChatName.length > 16 ? (newChatName|slice:0:16) + '...' : newChatName}}
+                    <span class="mat-caption"></span>
+                  </h3>
+                  <div class="lasMessage" matLine>
+                    <p>Start a new conversation!</p>
+                    <span class="mat-caption"></span>
+                  </div>
+                </button>
+              </div>
               <div *ngFor="let user of (messagesState | async).messages.chats.data">
                 <button (click)="selectUser(user.id)" mat-list-item
                         [ngClass]="{ 'selectedChat': selectedUserId === user.id}">
@@ -66,7 +81,9 @@
               </button>
 
               <div class="mat-h1"
-                   style="padding: 16px 0 8px 0">{{selectedUser && selectedUser.name ? selectedUser.name : 'My Chats'}}</div>
+                   style="padding: 16px 0 8px 0">{{
+                (selectedUser && selectedUser.name) ? selectedUser.name
+                  : newChatName ? newChatName : 'My Chats'}}</div>
               <div
                 *ngIf="isUserSelected
                 && (messagesState|async).messages.conver

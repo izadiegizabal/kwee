@@ -16,6 +16,7 @@ export const SET_NOTI_UNREAD_COUNT = 'SET_NOTI_UNREAD_COUNT';
 export const SET_MESSAGE_UNREAD_COUNT = 'SET_MESSAGE_UNREAD_COUNT';
 export const TRY_GET_CONVERSATION = 'TRY_GET_CONVERSATION';
 export const SET_CONVER = 'SET_CONVER';
+export const NEW_CONVER = 'NEW_CONVER';
 export const MARK_CONVER_AS_READ = 'MARK_CONVER_AS_READ';
 export const TRY_MARK_CONVER_AS_READ = 'TRY_MARK_CONVER_AS_READ';
 export const OPERATION_ERROR = 'OPERATION_ERROR';
@@ -140,6 +141,13 @@ export class GetConversation implements Action {
   }
 }
 
+export class NewConversation implements Action {
+  readonly type = NEW_CONVER;
+
+  constructor(public payload: number) {
+  }
+}
+
 export class OperationError implements Action {
   readonly type = OPERATION_ERROR;
 
@@ -150,6 +158,6 @@ export class OperationError implements Action {
 export type MessageActions =
   TryGetNotifications | SetNotifications | AddNotification | SetNotificationUnreadCount | SetNotiAsRead | TrySetNotiAsRead |
   TryPostMessage | PostMessage | AddMessage | SetMessageUnreadCount |
-  TryGetConvers | GetMessages |
+  TryGetConvers | GetMessages | NewConversation |
   TryGetConversation | GetConversation | MarkConverRead | TryMarkConverRead |
   OperationError | ClearConver;
