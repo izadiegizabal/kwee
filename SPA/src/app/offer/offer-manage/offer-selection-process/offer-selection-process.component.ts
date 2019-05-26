@@ -136,7 +136,7 @@ export class OfferSelectionProcessComponent implements OnInit {
           (id) => {
             this.id = id ? id : null;
 
-            if (!this.id || this.id !== this.offer.fk_offerer) {
+            if (!this.id || (this.offer && this.id !== this.offer.fk_offerer)) {
               this.router.navigate([this.urlfyPosition()]);
             }
           });

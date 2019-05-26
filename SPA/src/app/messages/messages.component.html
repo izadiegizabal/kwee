@@ -13,12 +13,12 @@
             <!--            [routerLink]="(authUser && authUser.type === 'candidate') ? '/search-businesses' : '/search-candidates'"-->
             <!--            type="button">{{'New Chat' | uppercase}}</button>-->
           </h2>
-          <div *ngIf="(messagesState | async).messages.chats
-                      && (messagesState | async).messages.chats.total > 0;
+          <div *ngIf="((messagesState | async).messages.chats
+                      && (messagesState | async).messages.chats.total > 0) || newChat;
                       else no_messages_list"
                class="container">
             <mat-action-list
-              *ngIf="(messagesState | async).messages.chats">
+              *ngIf="(messagesState | async).messages.chats || newChat">
               <div *ngIf="newChat">
                 <button (click)="selectUser(newChatId)" mat-list-item
                         [ngClass]="{ 'selectedChat': selectedUserId === newChatId}">

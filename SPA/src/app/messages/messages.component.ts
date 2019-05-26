@@ -98,12 +98,19 @@ export class MessagesComponent implements OnInit {
 
     this.store$.pipe(select(state => state.messages)).subscribe(
       (state) => {
-        if (state.messages.chats && state.messages.chats.total > 0) {
+        if (state.messages.chats) {
           this.chats = state.messages.chats.data;
 
           const paramId = Number(this.activatedRoute.snapshot.params['id']);
           if (!isNaN(paramId) && this.selectedUserId !== paramId) {
             this.store$.dispatch(new MessageActions.ClearConver());
+
+            this.selectedUser = this.findActiveChat(paramId);
+            // If not found show new chat
+            if (!this.selectedUser) {
+              this.getNewChatInfo(paramId);
+            }
+
             this.selectUser(paramId);
           }
         }
@@ -156,12 +163,6 @@ export class MessagesComponent implements OnInit {
 
     // Try to get new conver
     this.selectedUserId = id;
-    this.selectedUser = this.findActiveChat(id);
-    // If not found show new chat
-    if (this.chats && !this.selectedUser) {
-      this.getNewChatInfo(id);
-    }
-
 
     this.isUserSelected = true;
     this.closeDrawerIfMobile();

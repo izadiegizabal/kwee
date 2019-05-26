@@ -6,6 +6,7 @@ import {CandidatePreview} from '../../../../models/candidate-preview.model';
 import {WorkFields} from '../../../../models/Candidate.model';
 import {environment} from '../../../../environments/environment';
 import {AlertDialogComponent} from '../../../shared/alert-dialog/alert-dialog.component';
+import {Router} from '@angular/router';
 
 
 @Component({
@@ -30,7 +31,7 @@ export class CandidatePreviewCardComponent implements OnInit {
   userUrl: string;
 
 
-  constructor(public dialog: MatDialog) {
+  constructor(public dialog: MatDialog, public router: Router) {
   }
 
   ngOnInit() {
@@ -148,9 +149,13 @@ export class CandidatePreviewCardComponent implements OnInit {
   }
 
   contactUser() {
-    if (this.user.email) {
-      const href = 'mailto:' + this.user.email + '?subject=Enquiry about your Kwee Profile';
-      location.href = href;
+    if (this.user.id) {
+      this.router.navigate(['/messages', this.user.id], {
+        queryParams: {name: this.user.name, img: this.user.img},
+        queryParamsHandling: 'merge'
+      });
+      // const href = 'mailto:' + this.user.email + '?subject=Enquiry about your Kwee Profile';
+      // location.href = href;
     }
   }
 }
