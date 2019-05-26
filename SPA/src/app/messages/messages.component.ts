@@ -151,10 +151,6 @@ export class MessagesComponent implements OnInit {
   selectUser(id: number) {
     this.scrollBottom();
 
-    if (Number(this.activatedRoute.params['id']) !== this.selectedUserId) {
-      this.router.navigate(['/messages', id]);
-    }
-
     // Empty previous chat
     if (this.selectedUserId !== -1) {
       this.store$.dispatch(new MessageActions.TryMarkConverRead(this.selectedUserId));
@@ -163,6 +159,10 @@ export class MessagesComponent implements OnInit {
 
     // Try to get new conver
     this.selectedUserId = id;
+
+    if (Number(this.activatedRoute.snapshot.params['id']) !== this.selectedUserId) {
+      this.router.navigate(['/messages', id]);
+    }
 
     this.isUserSelected = true;
     this.closeDrawerIfMobile();

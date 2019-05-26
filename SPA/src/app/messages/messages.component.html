@@ -83,9 +83,10 @@
               </button>
 
               <div class="mat-h1"
-                   style="padding: 16px 0 8px 0">{{
-                (selectedUser && selectedUser.name) ? selectedUser.name
-                  : newChatName ? newChatName : 'My Chats'}}</div>
+                   style="padding: 16px 0 8px 0">
+                {{(selectedUser && selectedUser.name) ? selectedUser.name
+                  : newChatName ? newChatName : 'My Chats'}}
+              </div>
               <div
                 *ngIf="isUserSelected
                 && (messagesState|async).messages.conver
