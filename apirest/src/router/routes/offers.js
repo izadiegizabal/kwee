@@ -728,6 +728,12 @@ module.exports = (app, db) => {
                             message: `No created`
                         });
                     }
+                })
+                .catch((err) => {
+                        return res.status(400).json({
+                        ok: false,
+                        message: err.message
+                    })
                 });
     }
 
