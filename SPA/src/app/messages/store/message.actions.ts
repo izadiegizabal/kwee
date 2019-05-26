@@ -1,6 +1,7 @@
 import {Action} from '@ngrx/store';
 import {Message} from './message.reducers';
 
+
 export const TRY_POST_MESSAGE = 'TRY_POST_MESSAGE';
 export const ADD_MESSAGE = 'ADD_MESSAGE';
 export const POST_MESSAGE = 'POST_MESSAGE';
@@ -12,9 +13,11 @@ export const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
 export const SET_NOTI_AS_READ = 'SET_NOTI_AS_READ';
 export const TRY_SET_NOTI_AS_READ = 'TRY_SET_NOTI_AS_READ';
 export const SET_NOTI_UNREAD_COUNT = 'SET_NOTI_UNREAD_COUNT';
-export const SET_MESSAGE_UNREAD_COUNT = 'SET_MESSAGE_UNREAD_COUNT';
+export const CHANGE_MESSAGE_UNREAD_COUNT = 'CHANGE_MESSAGE_UNREAD_COUNT';
 export const TRY_GET_CONVERSATION = 'TRY_GET_CONVERSATION';
-export const GET_CONVERSATION = 'GET_CONVERSATION';
+export const SET_CONVER = 'SET_CONVER';
+export const MARK_CONVER_AS_READ = 'MARK_CONVER_AS_READ';
+export const TRY_MARK_CONVER_AS_READ = 'TRY_MARK_CONVER_AS_READ';
 export const OPERATION_ERROR = 'OPERATION_ERROR';
 export const CLEAR_CONVER = 'CLEAR_CONVER';
 
@@ -50,6 +53,20 @@ export class TryGetConvers implements Action {
   readonly type = TRY_GET_CHATS;
 
   constructor() {
+  }
+}
+
+export class TryMarkConverRead implements Action {
+  readonly type = TRY_MARK_CONVER_AS_READ;
+
+  constructor(public payload: number) {
+  }
+}
+
+export class MarkConverRead implements Action {
+  readonly type = MARK_CONVER_AS_READ;
+
+  constructor(public payload: number) {
   }
 }
 
@@ -102,8 +119,8 @@ export class SetNotificationUnreadCount implements Action {
   }
 }
 
-export class SetMessageUnreadCount implements Action {
-  readonly type = SET_MESSAGE_UNREAD_COUNT;
+export class ChangeMessageUnreadCount implements Action {
+  readonly type = CHANGE_MESSAGE_UNREAD_COUNT;
 
   constructor(public payload: number) {
   }
@@ -117,7 +134,7 @@ export class TryGetConversation implements Action {
 }
 
 export class GetConversation implements Action {
-  readonly type = GET_CONVERSATION;
+  readonly type = SET_CONVER;
 
   constructor(public payload: any) {
   }
@@ -132,7 +149,7 @@ export class OperationError implements Action {
 
 export type MessageActions =
   TryGetNotifications | SetNotifications | AddNotification | SetNotificationUnreadCount | SetNotiAsRead | TrySetNotiAsRead |
-  TryPostMessage | PostMessage | AddMessage | SetMessageUnreadCount |
+  TryPostMessage | PostMessage | AddMessage | ChangeMessageUnreadCount |
   TryGetConvers | GetMessages |
-  TryGetConversation | GetConversation |
+  TryGetConversation | GetConversation | MarkConverRead | TryMarkConverRead |
   OperationError | ClearConver;

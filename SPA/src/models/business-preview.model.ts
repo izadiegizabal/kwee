@@ -1,5 +1,5 @@
 import {BusinessAccountStates, BusinessAccountSubscriptions, BusinessIndustries, BusinessSize} from './Business.model';
-import {getUrlfiedString} from '../app/shared/utils.service';
+import {getUrlfiedString} from '../app/shared/utils';
 
 export class BusinessPreview {
   public url;

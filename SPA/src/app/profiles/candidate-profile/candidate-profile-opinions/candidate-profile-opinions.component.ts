@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {getTimePassed} from '../../../shared/utils.service';
+import {getTimePassed} from '../../../shared/utils';
 import * as ProfilesActions from '../../store/profiles.actions';
 import {Action, select, Store} from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducers';

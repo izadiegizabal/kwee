@@ -12,10 +12,10 @@
     <span>Notifications</span>
   </button>
   <button mat-menu-item
-          routerLink="/messages">
+          routerLink="/chat">
     <mat-icon [matBadgeColor]="'accent'" color="primary"
               matBadge="{{numMessages === 0 ? '' : numMessages}}" svgIcon="chat"></mat-icon>
-    <span>Messages</span>
+    <span>Chat</span>
   </button>
   <button *ngIf="userType==='admin'"
           mat-menu-item

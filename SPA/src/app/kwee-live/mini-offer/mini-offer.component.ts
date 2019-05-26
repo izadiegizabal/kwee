@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {getUrlfiedString} from '../../shared/utils.service';
+import {getUrlfiedString} from '../../shared/utils';
 import {animate, style, transition, trigger} from '@angular/animations';
 
 @Component({

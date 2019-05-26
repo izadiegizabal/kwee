@@ -7,7 +7,7 @@ import * as OffersActions from '../../../offer/store/offers.actions';
 import {Observable} from 'rxjs';
 import * as fromOffers from '../../../offer/store/offers.reducers';
 import {ActivatedRoute, Router} from '@angular/router';
-import {getUrlfiedString} from '../../../shared/utils.service';
+import {getUrlfiedString} from '../../../shared/utils';
 import {isStringNotANumber, OfferStatus, WorkLocationType} from '../../../../models/Offer.model';
 import {AlertDialogComponent} from '../../../shared/alert-dialog/alert-dialog.component';
 

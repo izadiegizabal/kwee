@@ -15,7 +15,7 @@ export interface Message {
   receiverId: number;
   receiverName: string;
   message: string;
-  read: boolean;
+  read?: boolean;
   date: string;
   hour: string;
   __v: number;
@@ -60,35 +60,34 @@ const initialState: State = {
   },
 };
 
-function getActiveChat(message: Message, chats: Chat[]): Chat {
+function getTotalNumOfUnread(chats: Chat[]) {
+  let count = 0;
   for (const chat of chats) {
-    if (message.senderId === chat.id || message.receiverId === chat.id) {
-      return chat;
-    }
+    count += chat.totalUnread;
   }
-  return undefined;
-}
 
-function reorderChats(message: Message, chats: Chat[]): Chat[] {
-  const activeChat = getActiveChat(message, chats);
-  if (activeChat) {
-    return chats.sort(function (x, y) {
-      return x === activeChat ? -1 : y === activeChat ? 1 : 0;
-    });
-  } else {
-    return undefined;
-  }
+  return count;
 }
 
 export function messageReducer(state = initialState, action: MessageActions.MessageActions) {
   switch (action.type) {
+
+    // MESSAGES ACTIONS
     case MessageActions.ADD_MESSAGE:
-      const unreadCount =  state.messages.unread + 1;
-      const newConver = state.messages.conver.data.push(action.payload);
+      const receiverChat = state.messages.chats ? getActiveChatByMessage(action.payload, state.messages.chats.data) : undefined;
+      if (receiverChat) {
+        receiverChat.totalUnread++;
+      }
+      const unreadCount = state.messages.unread + 1;
+      const newConver = state.messages.conver && state.messages.conver.data ? state.messages.conver.data.push(action.payload) : undefined;
       return {
         ...state,
         messages: {
           ...state.messages,
+          chats: {
+            ...state.messages.chats,
+            receiverChat
+          },
           unread: unreadCount,
           conver: {
             ...state.messages.conver,
@@ -97,7 +96,7 @@ export function messageReducer(state = initialState, action: MessageActions.Mess
         }
       };
     case MessageActions.TRY_POST_MESSAGE:
-      const newData = state.messages.conver.data.push(action.payload);
+      const newData = state.messages.conver && state.messages.conver.data ? state.messages.conver.data.push(action.payload) : undefined;
       return {
         ...state,
         messages: {
@@ -113,7 +112,7 @@ export function messageReducer(state = initialState, action: MessageActions.Mess
       let chatsData = state.messages.chats.data;
 
       if (reorderedChats) {
-        const activeChat = getActiveChat(action.payload, state.messages.chats.data);
+        const activeChat = getActiveChatByMessage(action.payload, state.messages.chats.data);
         activeChat.lastMessage = action.payload;
         chatsData = reorderedChats;
       }
@@ -129,14 +128,16 @@ export function messageReducer(state = initialState, action: MessageActions.Mess
         }
       };
     case MessageActions.SET_CHATS:
+      const unreadNum = getTotalNumOfUnread(action.payload.data);
       return {
         ...state,
         messages: {
           ...state.messages,
-          chats: action.payload
+          chats: action.payload,
+          unread: unreadNum,
         }
       };
-    case MessageActions.GET_CONVERSATION:
+    case MessageActions.SET_CONVER:
       return {
         ...state,
         messages: {
@@ -144,6 +145,39 @@ export function messageReducer(state = initialState, action: MessageActions.Mess
           conver: action.payload
         }
       };
+    case MessageActions.TRY_MARK_CONVER_AS_READ:
+      const openedChat = getActiveChatById(action.payload, state.messages.chats.data);
+      let totUnreadNum = getTotalNumOfUnread(state.messages.chats ? state.messages.chats.data : undefined);
+      totUnreadNum -= openedChat.totalUnread;
+      openedChat.totalUnread = 0;
+      return {
+        ...state,
+        messages: {
+          ...state.messages,
+          chats: {
+            ...state.messages.chats,
+            openedChat
+          },
+          unread: totUnreadNum
+        }
+      };
+    case MessageActions.CHANGE_MESSAGE_UNREAD_COUNT:
+      const updatedMessages = state.messages;
+      updatedMessages.unread += action.payload;
+      return {
+        ...state,
+        messages: updatedMessages,
+      };
+    case MessageActions.CLEAR_CONVER:
+      return {
+        ...state,
+        messages: {
+          ...state.messages,
+          conver: null
+        }
+      };
+
+    // NOTIFICATION ACTIONS
     case MessageActions.SET_NOTIFICATIONS:
       return {
         ...state,
@@ -174,21 +208,6 @@ export function messageReducer(state = initialState, action: MessageActions.Mess
         ...state,
         notifications: updatedNotis,
       };
-    case MessageActions.SET_MESSAGE_UNREAD_COUNT:
-      const updatedMessages = state.messages;
-      updatedMessages.unread = action.payload;
-      return {
-        ...state,
-        messages: updatedMessages,
-      };
-    case MessageActions.CLEAR_CONVER:
-      return {
-        ...state,
-        messages: {
-          ...state.messages,
-          conver: null
-        }
-      };
     default:
       return state;
   }
@@ -216,4 +235,37 @@ function markAsRead(notifications: {
     }
   }
   return notifications;
+}
+
+function getActiveChatByMessage(message: Message, chats: Chat[]): Chat {
+  if (message && chats) {
+    for (const chat of chats) {
+      if (chat && (message.senderId === chat.id || message.receiverId === chat.id)) {
+        return chat;
+      }
+    }
+  }
+  return undefined;
+}
+
+export function getActiveChatById(receiverId: Number, chats: Chat[]): Chat {
+  if (chats) {
+    for (const chat of chats) {
+      if (chat && receiverId === chat.id) {
+        return chat;
+      }
+    }
+  }
+  return undefined;
+}
+
+function reorderChats(message: Message, chats: Chat[]): Chat[] {
+  const activeChat = getActiveChatByMessage(message, chats);
+  if (activeChat) {
+    return chats.sort(function (x, y) {
+      return x === activeChat ? -1 : y === activeChat ? 1 : 0;
+    });
+  } else {
+    return undefined;
+  }
 }

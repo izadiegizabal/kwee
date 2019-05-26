@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {getTimePassed, getUrlfiedString} from '../../shared/utils.service';
+import {getTimePassed, getUrlfiedString} from '../../shared/utils';
 import {MatDialog} from '@angular/material';
 import {SnsShareDialogComponent} from '../../shared/sns-share/sns-share-dialog/sns-share-dialog.component';
 import {ContractType, JobDurationUnit, SalaryFrequency, WorkLocationType} from '../../../models/Offer.model';

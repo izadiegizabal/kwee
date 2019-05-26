@@ -94,3 +94,10 @@ export function loadTwitterWidget() {
     twttr.widgets.load();
   }
 }
+
+export function playNotificationSound() {
+  const notificationAudio = new Audio();
+  notificationAudio.src = '../../../../assets/sounds/Notification_Tone.wav';
+  notificationAudio.load();
+  notificationAudio.play();
+}

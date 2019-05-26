@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {SnsShareDialogComponent} from '../../../shared/sns-share/sns-share-dialog/sns-share-dialog.component';
-import {getUrlfiedString} from '../../../shared/utils.service';
+import {getUrlfiedString} from '../../../shared/utils';
 import {CandidatePreview} from '../../../../models/candidate-preview.model';
 import {WorkFields} from '../../../../models/Candidate.model';
 import {environment} from '../../../../environments/environment';

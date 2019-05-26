@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {environment} from '../../../environments/environment';
 import {Offer} from '../../../models/Offer.model';
-import {getTimePassed, getUrlfiedString} from '../../shared/utils.service';
+import {getTimePassed, getUrlfiedString} from '../../shared/utils';
 import {months} from 'moment';
 
 @Component({

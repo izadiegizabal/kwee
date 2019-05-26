@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {SnsShareDialogComponent} from '../../../shared/sns-share/sns-share-dialog/sns-share-dialog.component';
-import {getUrlfiedString} from '../../../shared/utils.service';
+import {getUrlfiedString} from '../../../shared/utils';
 import {BusinessPreview} from '../../../../models/business-preview.model';
 import {BusinessIndustries} from '../../../../models/Business.model';
 import {environment} from '../../../../environments/environment';

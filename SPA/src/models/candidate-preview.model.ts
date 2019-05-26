@@ -1,5 +1,5 @@
 import {CandidateAccountStatus, WorkFields} from './Candidate.model';
-import {getUrlfiedString} from '../app/shared/utils.service';
+import {getUrlfiedString} from '../app/shared/utils';
 
 export class CandidatePreview {
   public url;

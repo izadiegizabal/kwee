@@ -9,7 +9,7 @@ import {filter, first} from 'rxjs/operators';
 import {Location} from '@angular/common';
 
 import {ContractType, JobDurationUnit, OfferStatus, SalaryFrequency, SeniorityLevel, WorkLocationType} from '../../../models/Offer.model';
-import {getTimePassed, getUrlfiedString} from '../../shared/utils.service';
+import {getTimePassed, getUrlfiedString} from '../../shared/utils';
 import {ActivatedRoute, Router} from '@angular/router';
 import {environment} from '../../../environments/environment';
 import {Title} from '@angular/platform-browser';

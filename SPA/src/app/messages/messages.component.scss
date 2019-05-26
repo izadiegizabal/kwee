@@ -23,16 +23,30 @@ mat-sidenav {
     justify-content: space-between !important;
   }
 
-  p {
+  div.lasMessage {
     font-size: 0.85rem !important;
     opacity: 0.87;
 
     display: flex !important;
-    justify-content: flex-start !important;
+    justify-content: space-between !important;
+
+    p {
+      padding: 0 !important;
+    }
 
     .you {
       font-weight: bold;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
+    }
+
+    .unreadCount {
+      background-color: #00BFA5;
+      font-size: 11px;
+      height: 20px;
+      min-width: 20px;
+      padding: 2px;
+      border-radius: 16px;
+      font-weight: bold;
     }
   }
 

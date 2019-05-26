@@ -4,7 +4,7 @@ import * as MessageActions from './store/message.actions';
 import {select, Store} from '@ngrx/store';
 import * as fromApp from '../store/app.reducers';
 import * as fromMessages from './store/message.reducers';
-import {Chat, Message} from './store/message.reducers';
+import {Chat, getActiveChatById, Message} from './store/message.reducers';
 import * as moment from 'moment';
 import {Title} from '@angular/platform-browser';
 import {MatSidenav} from '@angular/material';
@@ -12,6 +12,7 @@ import {BreakpointObserver} from '@angular/cdk/layout';
 import {ActivatedRoute, Router} from '@angular/router';
 import {environment} from '../../environments/environment';
 import {Observable} from 'rxjs';
+import {playNotificationSound} from '../shared/utils';
 
 @Component({
   selector: 'app-messages',
@@ -53,12 +54,14 @@ export class MessagesComponent implements OnInit {
 
   @ViewChild('chat') chat;
   public messagesState: Observable<fromMessages.State>;
+  private chats: Chat[];
 
   constructor(
     private titleService: Title,
     public messageService: MessagesService,
     public media: BreakpointObserver,
     private activatedRoute: ActivatedRoute,
+    private _wsMessages: MessagesService,
     private router: Router,
     private store$: Store<fromApp.AppState>
   ) {
@@ -87,18 +90,7 @@ export class MessagesComponent implements OnInit {
     this.store$.pipe(select(state => state.messages)).subscribe(
       (state) => {
         if (state.messages.chats && state.messages.chats.total > 0) {
-          this.addCurrentUser();
-
-          // if (this.selectedUserId === -1
-          //   && state.messages.chats.data
-          //   && state.messages.chats.data[0]
-          //   && state.messages.chats.data.length > 0) {
-          //   this.selectUser(state.messages.chats.data[0].id);
-          //   // TODO: add loader
-          //   setTimeout(() => {
-          //     this.scrollBottom();
-          //   }, 3000);
-          // }
+          this.chats = state.messages.chats.data;
         }
       });
 
@@ -121,11 +113,16 @@ export class MessagesComponent implements OnInit {
         this.scrollBottom();
       });
 
+    this._wsMessages.getMessage().subscribe((msg: Message) => {
+      if (msg.senderId !== this.selectedUserId) {
+        playNotificationSound();
+      }
+    });
+
     this.activatedRoute.params.subscribe((params) => {
       if (!isNaN(Number(params['id'])) && this.selectedUserId !== Number(params['id'])) {
         const newId = Number(params['id']);
         this.store$.dispatch(new MessageActions.ClearConver());
-        this.selectedUserId = newId;
 
         this.selectUser(newId);
         // TODO: fetch who this is to update the user list and fix so that everything works
@@ -138,19 +135,23 @@ export class MessagesComponent implements OnInit {
       this.router.navigate(['/messages', id]);
     }
 
+    // Empty previous chat
+    if (this.selectedUserId !== -1) {
+      this.store$.dispatch(new MessageActions.TryMarkConverRead(this.selectedUserId));
+    }
+
+    // Try to get new conver
     this.selectedUserId = id;
-    this.selectedUser = this.findUser(id);
+    this.selectedUser = this.findActiveChat(id);
+    if (!this.selectedUser) {
+      // TODO: create a new chat
+    }
     this.isUserSelected = true;
     this.closeDrawerIfMobile();
 
     this.store$.dispatch(new MessageActions.TryGetConversation(id));
 
     this.scrollBottom();
-  }
-
-  private findUser(id: number): Chat {
-
-    return undefined;
   }
 
   send(form: any) {
@@ -175,18 +176,17 @@ export class MessagesComponent implements OnInit {
     this.scrollBottom();
   }
 
+  // Helper methods
+
+  private findActiveChat(id: number): Chat {
+    if (this.chats) {
+      return getActiveChatById(id, this.chats);
+    }
+    return undefined;
+  }
+
   initMessage() {
     this.messageToSend = JSON.parse(JSON.stringify(this.messageToSend));
-  }
-
-  isMobile() {
-    return !this.media.isMatched('screen and (min-width: 599px)'); // gt-sm
-  }
-
-  closeDrawerIfMobile() {
-    if (this.isMobile()) {
-      this.drawer.toggle();
-    }
   }
 
   private scrollBottom() {
@@ -196,6 +196,19 @@ export class MessagesComponent implements OnInit {
           this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;
         }
       }, 5);
+    }
+  }
+
+
+  // Helper methods for html
+
+  isMobile() {
+    return !this.media.isMatched('screen and (min-width: 599px)'); // gt-sm
+  }
+
+  closeDrawerIfMobile() {
+    if (this.isMobile()) {
+      this.drawer.toggle();
     }
   }
 
@@ -215,14 +228,6 @@ export class MessagesComponent implements OnInit {
 
   getDate(date: string) {
     return new Date(date);
-  }
-
-  private addCurrentUser() {
-    // TODO: check if exists, otherwise create
-    const checkId = Number(this.activatedRoute.params['id']);
-    if (this.findUser(checkId)) {
-
-    }
   }
 
   getFormattedListDate(date: string, hour: string) {

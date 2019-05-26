@@ -8,7 +8,7 @@ import {select, Store} from '@ngrx/store';
 import * as fromApp from '../../store/app.reducers';
 import * as ProfilesActions from '../store/profiles.actions';
 import {environment} from '../../../environments/environment';
-import {loadTwitterWidget} from '../../shared/utils.service';
+import {loadTwitterWidget} from '../../shared/utils';
 
 @Component({
   selector: 'app-business-profile',

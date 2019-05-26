@@ -1,5 +1,5 @@
 import {ContractType, JobDurationUnit, SalaryFrequency, WorkLocationType} from './Offer.model';
-import {getUrlfiedString} from '../app/shared/utils.service';
+import {getUrlfiedString} from '../app/shared/utils';
 
 export class OfferPreview {
   public url: string;

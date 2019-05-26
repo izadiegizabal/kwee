@@ -18,7 +18,7 @@ import * as fromOffer from '../../offer-detail/store/offer.reducers';
 import * as fromAuth from '../../../auth/store/auth.reducers';
 import {OfferEffects} from '../../offer-detail/store/offer.effects';
 import {Title} from '@angular/platform-browser';
-import {getUrlfiedString} from '../../../shared/utils.service';
+import {getUrlfiedString} from '../../../shared/utils';
 
 @Component({
   selector: 'app-offer-selection-process',

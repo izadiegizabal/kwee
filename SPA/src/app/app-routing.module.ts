@@ -82,6 +82,10 @@ const routes: Routes = [
   // MESSAGES
   {
     path: 'messages',
+    redirectTo: 'chat'
+  },
+  {
+    path: 'chat',
     loadChildren: './messages/messages.module#MessagesModule',
     canActivate: [AuthTokenGuard]
   },

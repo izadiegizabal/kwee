@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {getTimePassed} from '../../../shared/utils.service';
+import {getTimePassed} from '../../../shared/utils';
 import {Observable} from 'rxjs';
 import * as fromProfiles from '../../store/profiles.reducers';
 import {MatPaginator, PageEvent} from '@angular/material';

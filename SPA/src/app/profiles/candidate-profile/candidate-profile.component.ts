@@ -8,7 +8,7 @@ import {ActivatedRoute, Params, Router} from '@angular/router';
 import {environment} from '../../../environments/environment';
 import {Title} from '@angular/platform-browser';
 import {Location} from '@angular/common';
-import {loadTwitterWidget} from '../../shared/utils.service';
+import {loadTwitterWidget} from '../../shared/utils';
 
 @Component({
   selector: 'app-candidate-profile',

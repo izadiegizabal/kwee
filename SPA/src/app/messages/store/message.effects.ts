@@ -108,13 +108,49 @@ export class MessageEffects {
 
         return this.httpClient.get(apiEndpointUrl, {headers: headers}).pipe(
           map((res: any) => {
+            this.store$.dispatch(new MessageActions.TryMarkConverRead(payload));
             return {
-              type: MessageActions.GET_CONVERSATION,
+              type: MessageActions.SET_CONVER,
               payload: res
             };
           }),
           catchError((err: HttpErrorResponse) => {
             throwError(this.handleError('getConversation', err));
+            const error = err.error.message ? err.error.message : err;
+            return [
+              {
+                type: MessageActions.OPERATION_ERROR,
+                payload: error
+              }
+            ];
+          })
+        );
+      }
+    ),
+    share()
+  );
+
+  @Effect()
+  markConverAsRead = this.actions$.pipe(
+    ofType(MessageActions.TRY_MARK_CONVER_AS_READ),
+    map((action: MessageActions.TryMarkConverRead) => {
+      return action.payload;
+    }),
+    withLatestFrom(this.store$.pipe(select(state => state.auth))),
+    switchMap(([payload, authState]) => {
+        const apiEndpointUrl = environment.apiUrl + 'messages/read/' + payload;
+        const token = authState.token;
+        const headers = new HttpHeaders().set('Content-Type', 'application/json').set('token', token);
+
+        return this.httpClient.put(apiEndpointUrl, undefined, {headers: headers}).pipe(
+          map((res: any) => {
+            return {
+              type: MessageActions.MARK_CONVER_AS_READ,
+              payload: payload
+            };
+          }),
+          catchError((err: HttpErrorResponse) => {
+            throwError(this.handleError('setAsRead', err));
             const error = err.error.message ? err.error.message : err;
             return [
               {

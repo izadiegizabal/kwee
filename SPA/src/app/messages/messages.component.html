@@ -4,7 +4,15 @@
     <div *ngIf="(messagesState|async) && (messagesState | async).messages">
       <mat-sidenav-container fxFlex="100%">
         <mat-sidenav #drawer [mode]="!isMobile() ? 'side' : 'over'" [opened]="!isMobile()" class="mat-typography">
-          <h2 style="padding-top: 16px">Chat List</h2>
+          <h2 style="padding-top: 16px">Chat List
+<!--            <button-->
+<!--            style="height: 36px !important; margin-left: 56px"-->
+<!--            class="newoffer"-->
+<!--            color="accent"-->
+<!--            mat-raised-button-->
+<!--            [routerLink]="(authUser && authUser.type === 'candidate') ? '/search-businesses' : '/search-candidates'"-->
+<!--            type="button">{{'New Chat' | uppercase}}</button>-->
+          </h2>
           <div *ngIf="(messagesState | async).messages.chats
                       && (messagesState | async).messages.chats.total > 0;
                       else no_messages_list"
@@ -19,12 +27,14 @@
                   <h3 matLine>
                     {{user.name.length > 16 ? (user.name|slice:0:16) + '...' : user.name}}
                     <span
-                      class="chatLastDate mat-caption">{{getFormattedListDate(user.lastMessage.date, user.lastMessage.hour)}}</span>
+                      class="mat-caption">{{getFormattedListDate(user.lastMessage.date, user.lastMessage.hour)}}</span>
                   </h3>
-                  <p matLine>
-                    <span class="you">{{user.id === authUser.id ? 'You: ' : ''}}</span>
-                    {{user.lastMessage.message}}
-                  </p>
+                  <div class="lasMessage" matLine>
+                    <p><span class="you">{{user.lastMessage.senderId === authUser.id ? 'You:&nbsp;' : ''}}</span>
+                      {{user.lastMessage.message}}
+                    </p>
+                    <span *ngIf="user.totalUnread > 0 && (selectedUserId !== user.id)" class="mat-caption unreadCount">{{user.totalUnread}}</span>
+                  </div>
                 </button>
               </div>
             </mat-action-list>
@@ -56,7 +66,7 @@
               </button>
 
               <div class="mat-h1"
-                   style="padding: 16px 0 8px 0">{{selectedUser && selectedUser.name ? selectedUser.name : 'My Messages'}}</div>
+                   style="padding: 16px 0 8px 0">{{selectedUser && selectedUser.name ? selectedUser.name : 'My Chats'}}</div>
               <div
                 *ngIf="isUserSelected
                 && (messagesState|async).messages.conver
