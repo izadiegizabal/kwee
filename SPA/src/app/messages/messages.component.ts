@@ -100,6 +100,12 @@ export class MessagesComponent implements OnInit {
       (state) => {
         if (state.messages.chats && state.messages.chats.total > 0) {
           this.chats = state.messages.chats.data;
+
+          const paramId = Number(this.activatedRoute.snapshot.params['id']);
+          if (!isNaN(paramId) && this.selectedUserId !== paramId) {
+            this.store$.dispatch(new MessageActions.ClearConver());
+            this.selectUser(paramId);
+          }
         }
       });
 
@@ -126,14 +132,11 @@ export class MessagesComponent implements OnInit {
       if (msg.senderId !== this.selectedUserId) {
         playNotificationSound();
       }
-    });
-
-    this.activatedRoute.params.subscribe((params) => {
-      if (!isNaN(Number(params['id'])) && this.selectedUserId !== Number(params['id'])) {
-        const newId = Number(params['id']);
-        this.store$.dispatch(new MessageActions.ClearConver());
-
-        this.selectUser(newId);
+      this.selectedUser = this.findActiveChat(msg.senderId);
+      // If not found refresh chats to get the new one
+      if (!this.selectedUser) {
+        this.store$.dispatch(new MessageActions.TryGetConvers());
+        this.emptyNewChatValues();
       }
     });
   }
@@ -155,7 +158,7 @@ export class MessagesComponent implements OnInit {
     this.selectedUserId = id;
     this.selectedUser = this.findActiveChat(id);
     // If not found show new chat
-    if (!this.selectedUser) {
+    if (this.chats && !this.selectedUser) {
       this.getNewChatInfo(id);
     }
 
@@ -191,7 +194,7 @@ export class MessagesComponent implements OnInit {
     this.scrollBottom();
 
     this.messageEffects$.messagePost.pipe(
-      filter((action: Action) => action.type === MessageActions.POST_MESSAGE)
+      filter((action: Action) => action.type === MessageActions.REORDER_CHATS)
     ).subscribe((next: { payload: any, type: string }) => {
       // If message for new chat
       if (this.selectedUserId === this.newChatId) {

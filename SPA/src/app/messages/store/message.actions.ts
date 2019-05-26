@@ -4,7 +4,7 @@ import {Message} from './message.reducers';
 
 export const TRY_POST_MESSAGE = 'TRY_POST_MESSAGE';
 export const ADD_MESSAGE = 'ADD_MESSAGE';
-export const POST_MESSAGE = 'POST_MESSAGE';
+export const REORDER_CHATS = 'REORDER_CHATS';
 export const TRY_GET_CHATS = 'TRY_GET_CHATS';
 export const SET_CHATS = 'SET_CHATS';
 export const TRY_GET_NOTIFICATIONS = 'TRY_GET_NOTIFICATIONS';
@@ -43,8 +43,8 @@ export class AddMessage implements Action {
   }
 }
 
-export class PostMessage implements Action {
-  readonly type = POST_MESSAGE;
+export class ReorderChats implements Action {
+  readonly type = REORDER_CHATS;
 
   constructor(public payload: any) {
   }
@@ -157,7 +157,7 @@ export class OperationError implements Action {
 
 export type MessageActions =
   TryGetNotifications | SetNotifications | AddNotification | SetNotificationUnreadCount | SetNotiAsRead | TrySetNotiAsRead |
-  TryPostMessage | PostMessage | AddMessage | SetMessageUnreadCount |
+  TryPostMessage | ReorderChats | AddMessage | SetMessageUnreadCount |
   TryGetConvers | GetMessages | NewConversation |
   TryGetConversation | GetConversation | MarkConverRead | TryMarkConverRead |
   OperationError | ClearConver;

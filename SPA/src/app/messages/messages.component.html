@@ -5,13 +5,13 @@
       <mat-sidenav-container fxFlex="100%">
         <mat-sidenav #drawer [mode]="!isMobile() ? 'side' : 'over'" [opened]="!isMobile()" class="mat-typography">
           <h2 style="padding-top: 16px">Chat List
-<!--            <button-->
-<!--            style="height: 36px !important; margin-left: 56px"-->
-<!--            class="newoffer"-->
-<!--            color="accent"-->
-<!--            mat-raised-button-->
-<!--            [routerLink]="(authUser && authUser.type === 'candidate') ? '/search-businesses' : '/search-candidates'"-->
-<!--            type="button">{{'New Chat' | uppercase}}</button>-->
+            <!--            <button-->
+            <!--            style="height: 36px !important; margin-left: 56px"-->
+            <!--            class="newoffer"-->
+            <!--            color="accent"-->
+            <!--            mat-raised-button-->
+            <!--            [routerLink]="(authUser && authUser.type === 'candidate') ? '/search-businesses' : '/search-candidates'"-->
+            <!--            type="button">{{'New Chat' | uppercase}}</button>-->
           </h2>
           <div *ngIf="(messagesState | async).messages.chats
                       && (messagesState | async).messages.chats.total > 0;
@@ -22,10 +22,11 @@
               <div *ngIf="newChat">
                 <button (click)="selectUser(newChatId)" mat-list-item
                         [ngClass]="{ 'selectedChat': selectedUserId === newChatId}">
-                  <img mat-list-avatar [src]="newChatImgUrl ? apiUrl + newChatImgUrl : '../../assets/img/defaultProfileImg.png'"
+                  <img mat-list-avatar
+                       [src]="newChatImgUrl ? apiUrl + newChatImgUrl : '../../assets/img/defaultProfileImg.png'"
                        alt="Avatar">
                   <h3 matLine>
-                    {{newChatName.length > 16 ? (newChatName|slice:0:16) + '...' : newChatName}}
+                    {{newChatName.length > 19 ? (newChatName|slice:0:16) + '...' : newChatName}}
                     <span class="mat-caption"></span>
                   </h3>
                   <div class="lasMessage" matLine>
@@ -40,15 +41,16 @@
                   <img mat-list-avatar [src]="user.img ? apiUrl + user.img : '../../assets/img/defaultProfileImg.png'"
                        alt="Avatar">
                   <h3 matLine>
-                    {{user.name.length > 16 ? (user.name|slice:0:16) + '...' : user.name}}
+                    {{user.name.length > 19 ? (user.name|slice:0:16) + '...' : user.name}}
                     <span
                       class="mat-caption">{{getFormattedListDate(user.lastMessage.date, user.lastMessage.hour)}}</span>
                   </h3>
                   <div class="lasMessage" matLine>
                     <p><span class="you">{{user.lastMessage.senderId === authUser.id ? 'You:&nbsp;' : ''}}</span>
-                      {{user.lastMessage.message}}
+                      {{user.lastMessage.message.length > 22 ? (user.lastMessage.message|slice:0:19) + '...' : user.lastMessage.message}}
                     </p>
-                    <span *ngIf="user.totalUnread > 0 && (selectedUserId !== user.id)" class="mat-caption unreadCount">{{user.totalUnread}}</span>
+                    <span *ngIf="user.totalUnread > 0 && (selectedUserId !== user.id)"
+                          class="mat-caption unreadCount">{{user.totalUnread}}</span>
                   </div>
                 </button>
               </div>

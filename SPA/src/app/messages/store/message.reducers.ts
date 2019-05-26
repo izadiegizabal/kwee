@@ -70,7 +70,14 @@ export function messageReducer(state = initialState, action: MessageActions.Mess
         receiverChat.totalUnread++;
       }
       const unreadCount = state.messages.unread + 1;
-      const newConver = state.messages.conver && state.messages.conver.data ? state.messages.conver.data.push(action.payload) : undefined;
+
+      let newConver;
+      if (action.payload && state.messages.conver && state.messages.conver.data && state.messages.conver.data[0]
+        && (action.payload.senderId === state.messages.conver.data[0].senderId
+          || action.payload.senderId === state.messages.conver.data[0].receiverId)
+      ) {
+        newConver = state.messages.conver.data.push(action.payload);
+      }
       return {
         ...state,
         messages: {
@@ -98,7 +105,7 @@ export function messageReducer(state = initialState, action: MessageActions.Mess
           },
         }
       };
-    case MessageActions.POST_MESSAGE:
+    case MessageActions.REORDER_CHATS:
       const reorderedChats = reorderChats(action.payload, state.messages.chats.data);
       let chatsData = state.messages.chats.data;
 

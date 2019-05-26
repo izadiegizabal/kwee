@@ -30,7 +30,7 @@ export class MessageEffects {
             message: string,
           }) => {
             return {
-              type: MessageActions.POST_MESSAGE,
+              type: MessageActions.REORDER_CHATS,
               payload: payload
             };
           }),
@@ -53,9 +53,9 @@ export class MessageEffects {
   @Effect()
   addMessage = this.actions$.pipe(
     ofType(MessageActions.ADD_MESSAGE),
-    map((action: MessageActions.TryPostMessage) => {
+    map((action: MessageActions.AddMessage) => {
       return {
-        type: MessageActions.POST_MESSAGE,
+        type: MessageActions.REORDER_CHATS,
         payload: action.payload
       };
     }),
