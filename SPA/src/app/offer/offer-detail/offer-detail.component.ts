@@ -322,7 +322,7 @@ export class OfferDetailComponent implements OnInit {
 
     doc.setFontSize(20);
     doc.setFont('Plex', 'bold');
-    doc.text('Offer: ' + 'Android Junior Developer', 15, 46);
+    doc.text('Offer: ' + offer.title, 15, 46);
 
     doc.setFont('Plex', 'normal');
     doc.setFontSize(12);
