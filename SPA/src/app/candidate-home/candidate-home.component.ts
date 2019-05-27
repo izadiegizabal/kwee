@@ -86,7 +86,9 @@ export class CandidateHomeComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     setTimeout(() => {
       const index = this.nPage;
-      this.paginator.pageIndex = index - 1;
+      if (this.paginator) {
+        this.paginator.pageIndex = index - 1;
+      }
     });
   }
 
