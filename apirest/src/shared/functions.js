@@ -623,7 +623,9 @@ function buildOffersToShow(users, offersToShow, offers) {
     for (let i = 0; i < offers.length; i++) {
         let user = users.find(element => offers[i]._source.fk_offerer == element.id);
         let offer = {};
-
+        if( !user ){
+            return;
+        }
         offer.id = offers[i]._id;
         offer.fk_offerer = offers[i]._source.fk_offerer;
         offer.offererName = user.name;
