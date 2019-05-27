@@ -1,8 +1,10 @@
 <div (clickOutside)="onClickedOutside($event)" id="container">
   <mat-card class="floating-chat" id="chat">
-    <div #content [scrollTop]="content.scrollHeight" id="content">
-      <div *ngFor="let message of messages | async">
-        <mat-card *ngIf="message.type==0" [ngClass]="{ 'from': message.sentBy === 'bot',
+    <div #content [scrollTop]="content.scrollHeight" id="content" fxLayout="column">
+      <div *ngFor="let message of messages | async" fxLayout="row" fxflex="100%"
+           [fxLayoutAlign]="message.sentBy === 'user' ? 'end start' : 'start start'">
+        <mat-card
+          *ngIf="message.type==0" [ngClass]="{ 'from': message.sentBy === 'bot',
                                             'to':   message.sentBy === 'user' }" class="message">
           <mat-card-content>{{ message.content }}</mat-card-content>
         </mat-card>
