@@ -72,7 +72,7 @@ export class SearchBusinessesComponent implements OnInit, AfterViewInit {
     this.activatedRoute.queryParams
       .subscribe(params => {
         this.query = params;
-        this.query = {...this.query, status: '0'};
+        // this.query = {...this.query, status: '0'};
         if (params['page']) {
           this.nPage = params['page'];
         }

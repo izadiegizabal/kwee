@@ -52,25 +52,29 @@ export class MiniOfferComponent implements OnInit {
   }
 
   setType() {
-    document.getElementById('offerBubble').className = this.className;
+    if (document.getElementById('offerBubble')) {
+      document.getElementById('offerBubble').className = this.className;
+    }
     const d = document.getElementById('offerBubble');
-    switch (this.className) {
-      case 'down':
-        d.style.left = (this.points[0] - parseInt(getComputedStyle(d).width, 10) / 2) + 'px';
-        d.style.top = (this.points[1] - parseInt(getComputedStyle(d).height, 10) - 70 - 7) + 'px';
-        break;
-      case 'up':
-        d.style.left = (this.points[0] - parseInt(getComputedStyle(d).width, 10) / 2) + 'px';
-        d.style.top = (this.points[1] + parseInt(getComputedStyle(d).height, 10) - 10) + 'px';
-        break;
-      case 'left':
-        d.style.left = (this.points[0] - parseInt(getComputedStyle(d).width, 10) + 70 + (270)) + 'px';
-        d.style.top = (this.points[1] - parseInt(getComputedStyle(d).height, 10) / 2 - 7) + 'px';
-        break;
-      case 'right':
-        d.style.left = (this.points[0] - parseInt(getComputedStyle(d).width, 10) - 70) + 'px';
-        d.style.top = (this.points[1] - parseInt(getComputedStyle(d).height, 10) / 2 - 7) + 'px';
-        break;
+    if (d) {
+      switch (this.className) {
+        case 'down':
+          d.style.left = (this.points[0] - parseInt(getComputedStyle(d).width, 10) / 2) + 'px';
+          d.style.top = (this.points[1] - parseInt(getComputedStyle(d).height, 10) - 70 - 7) + 'px';
+          break;
+        case 'up':
+          d.style.left = (this.points[0] - parseInt(getComputedStyle(d).width, 10) / 2) + 'px';
+          d.style.top = (this.points[1] + parseInt(getComputedStyle(d).height, 10) - 10) + 'px';
+          break;
+        case 'left':
+          d.style.left = (this.points[0] - parseInt(getComputedStyle(d).width, 10) + 70 + (270)) + 'px';
+          d.style.top = (this.points[1] - parseInt(getComputedStyle(d).height, 10) / 2 - 7) + 'px';
+          break;
+        case 'right':
+          d.style.left = (this.points[0] - parseInt(getComputedStyle(d).width, 10) - 70) + 'px';
+          d.style.top = (this.points[1] - parseInt(getComputedStyle(d).height, 10) / 2 - 7) + 'px';
+          break;
+      }
     }
   }
 
