@@ -22,7 +22,7 @@ import {AdminManageOffersComponent} from './admin-manage-offers/admin-manage-off
 import {OfferOverviewComponent} from './admin-manage-offers/offer-overview/offer-overview.component';
 import {UserLogComponent} from './user-log/user-log.component';
 import {StatisticsOverviewComponent} from './admin-statistics/statistics-overview/statistics-overview.component';
-import {MatTableModule} from '@angular/material';
+import {MatTableModule, MatSortModule} from '@angular/material';
 
 
 @NgModule({
@@ -46,6 +46,7 @@ import {MatTableModule} from '@angular/material';
     ReactiveFormsModule,
     SharedModule,
     AlertDialogModule,
+    MatSortModule,
     MatTableModule,
     OffererNameOverviewModule,
     StoreModule.forFeature('admin', adminReducer),
