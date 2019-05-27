@@ -8,8 +8,11 @@ export interface DialogData {
 }
 
 export interface LogElement {
-  order?: number;
+  order: number;
+  date: Date;
+  hour: Date;
   action: string;
+  actionToRoute: string;
   ip: string;
   os: string;
   browser: string;
@@ -21,7 +24,7 @@ export interface LogElement {
     styleUrls: ['./user-log.component.scss']
   })
 export class UserLogComponent implements OnInit {
-  displayedColumns: string[] = ['order', 'action', 'ip', 'os', 'browser'];
+  displayedColumns: string[] = ['order', 'date', 'hour', 'action', 'actionToRoute', 'ip', 'os', 'browser'];
   element_data: LogElement[] = [];
   dataSource: MatTableDataSource<LogElement>;
 
@@ -47,11 +50,13 @@ export class UserLogComponent implements OnInit {
 
       this.httpClient.get(environment.apiUrl + 'logs/' + this.data.id, {headers: headers}).subscribe(
         (res: any) => {
-          console.log(res.logs);
           this.dataSource.data = res.logs.map((element, i) => {
               return {
-                order: i,
+                order: i + 1,
+                date: element.date,
+                hour: element.hour,
                 action: element.action,
+                actionToRoute: element.actionToRoute,
                 ip: element.ip,
                 os: element.useragent.os,
                 browser: element.useragent.browser
