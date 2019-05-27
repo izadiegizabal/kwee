@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit, ViewChild, } from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild,} from '@angular/core';
 import {MatPaginator, MatSidenav, PageEvent} from '@angular/material';
 import {Observable} from 'rxjs';
 import * as fromAdmin from '../../admin/store/admin.reducers';
@@ -72,7 +72,7 @@ export class SearchBusinessesComponent implements OnInit, AfterViewInit {
     this.activatedRoute.queryParams
       .subscribe(params => {
         this.query = params;
-        this.query = {...this.query, status: '0'};
+        // this.query = {...this.query, status: '0'};
         if (params['page']) {
           this.nPage = params['page'];
         }
@@ -115,6 +115,7 @@ export class SearchBusinessesComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/search-businesses'],
       {queryParams: {page: this.nPage, limit: this.pageSize}, queryParamsHandling: 'merge'});
   }
+
   isMobile() {
     return !this.media.isMatched('screen and (min-width: 960px)'); // gt-sm
   }
@@ -156,7 +157,11 @@ export class SearchBusinessesComponent implements OnInit, AfterViewInit {
     }
 
     if (this.query.companySize) {
-      this.query = {...this.query, companySize: {'gte': this.query.companySize}};
+      if (this.query.companySize < 1000) {
+        this.query = {...this.query, companySize: {'lte': this.query.companySize}};
+      } else {
+        this.query = {...this.query, companySize: {'gte': 100}};
+      }
     }
     this.store$.dispatch(new AdminActions.TryGetBusinesses({
       page: this.nPage,

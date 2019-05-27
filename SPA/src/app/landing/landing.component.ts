@@ -100,27 +100,23 @@ export class LandingComponent implements OnInit, OnDestroy {
       (data: any) => {
         if (data) {
           this.fetchedOffers = [];
-          // console.log(data.data);
-          data.data.forEach((e, i) => {
-            // console.log(e);
-            // this.offerImages.push(new Image());
-            this.offerImages.push(this.environment.apiUrl + e.img);
-            // console.log(this.offerImages[i].src);
-            this.fetchedOffers.push({
-              title: e.title,
-              offererIndex: e.offererIndex,
-              offererName: e.offererName,
-              contractType: this.getOfferContractType(e.contractType),
-              location: e.location,
-              id: e.id,
-              index: i,
-              lat: e.userLat,
-              lon: e.userLon
+          if (data.data) {
+            data.data.forEach((e, i) => {
+              this.offerImages.push(this.environment.apiUrl + e.img);
+              this.fetchedOffers.push({
+                title: e.title,
+                offererIndex: e.offererIndex,
+                offererName: e.offererName,
+                contractType: this.getOfferContractType(e.contractType),
+                location: e.location,
+                id: e.id,
+                index: i,
+                lat: e.userLat,
+                lon: e.userLon
+              });
             });
-          });
+          }
         }
-        // console.log(this.offerImages);
-        // console.log(this.fetchedOffers);
       });
     // initializations
     this.disabled = false;

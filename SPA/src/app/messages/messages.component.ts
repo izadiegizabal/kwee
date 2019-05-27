@@ -139,10 +139,14 @@ export class MessagesComponent implements OnInit {
       if (msg.senderId !== this.selectedUserId) {
         playNotificationSound();
       }
-      this.selectedUser = this.findActiveChat(msg.senderId);
+
       // If not found refresh chats to get the new one
-      if (!this.selectedUser) {
+      if (this.newChat && this.newChatId === msg.senderId) {
         this.store$.dispatch(new MessageActions.TryGetConvers());
+        this.selectedUser = this.findActiveChat(this.newChatId);
+        if (this.selectedUser) {
+          this.selectedUser.name = this.newChatName;
+        }
         this.emptyNewChatValues();
       }
     });
@@ -159,6 +163,7 @@ export class MessagesComponent implements OnInit {
 
     // Try to get new conver
     this.selectedUserId = id;
+    this.selectedUser = this.findActiveChat(id);
 
     if (Number(this.activatedRoute.snapshot.params['id']) !== this.selectedUserId) {
       this.router.navigate(['/messages', id]);

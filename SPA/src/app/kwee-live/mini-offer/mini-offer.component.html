@@ -30,7 +30,7 @@
       </div>
       <div fxLayout="row" fxLayoutAlign="start center" class="iconData">
         <mat-icon svgIcon="place"></mat-icon>
-        <p
+        <p *ngIf="obj.location"
           style="font-size: .7em">{{(obj.location.length > 12) ? (obj.location | slice:0:12) + '...' : (obj.location)}}</p>
       </div>
     </div>
