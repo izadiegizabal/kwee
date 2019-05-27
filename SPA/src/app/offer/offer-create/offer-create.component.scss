@@ -37,7 +37,7 @@ mat-form-field mat-icon {
 
 mat-datepicker-toggle {
   font-size: 1.5rem;
-  color: #546e7a;
+  color: #212121;
   margin-left: -4;
 }
 
@@ -89,7 +89,7 @@ img {
 }
 
 :host ::ng-deep .ck.ck-editor__top .ck-sticky-panel .ck-toolbar {
-  background-color: #546e7a;
+  background-color: #212121;
 }
 
 :host ::ng-deep .ck.ck-icon, :host ::ng-deep .ck.ck-dropdown.ck-heading-dropdown .ck-dropdown__button .ck-button__label {
