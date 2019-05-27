@@ -46,7 +46,7 @@ export class BusinessPreviewCardComponent implements OnInit {
 
   getSize() {
     // TODO: delete this dirty fix when api returns correctly
-    const size = (this.user.companySize) ? (this.user.companySize) : '100';
+    const size = (this.user.companySize) ? (this.user.companySize) : '1';
     return size + ' people';
   }
 

@@ -109,7 +109,7 @@ export class OfferManageTabComponent implements OnInit {
         break;
 
       case 0:
-        return count[2].Open;
+        return count[1].Draft;
         break;
 
       case 1:
@@ -117,7 +117,7 @@ export class OfferManageTabComponent implements OnInit {
         break;
 
       case 2:
-        return count[1].Draft;
+        return count[2].Open;
         break;
 
       case 3:
