@@ -103,6 +103,10 @@ class Algorithm {
                 break;
         }
 
+        index = index * 1.62345678;
+        if(index > 100) {
+            index = 99;
+        }
         index = await Math.round(index);
         console.log("updating user " + id + " with index " + index);
         let res = await db.users.update({index: index}, {where: {id}})
@@ -740,6 +744,9 @@ class Algorithm {
                 break;
             }
             case 'offerer': {
+                // free starting points
+                points = points + 2;
+
                 // bio + website + rrss (min 1) 
                 await db.users.findOne({where: {id}, attributes: ['bio', 'img', 'lat', 'lon']})
                     .then(result => {
@@ -775,14 +782,6 @@ class Algorithm {
                         }
                     });
 
-                // at least 1 offer
-                await db.offers.findOne({where: {fk_offerer: id}, attributes: ['id']})
-                    .then(result => {
-                        if (result && result.length >= 1) {
-                            console.log("2- User has at least 1 offer");
-                            points = points + 2;
-                        }
-                    });
                 console.log("--------------");
                 console.log("points: " + points);
                 await db.offerers.update({profileComplete: points}, {where: {userId: id}})
