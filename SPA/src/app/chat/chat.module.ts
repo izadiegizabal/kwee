@@ -12,10 +12,12 @@ import {MatDialogModule} from '@angular/material/dialog';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatIconModule} from '@angular/material/icon';
 import {ClickOutsideModule} from 'ng-click-outside';
+import {SharedModule} from "../shared/shared.module";
 
 
 @NgModule({
   imports: [
+    SharedModule,
     CommonModule,
     FormsModule,
     ClickOutsideModule,
