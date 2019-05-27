@@ -99,7 +99,6 @@ class Algorithm {
                 index = ratio + avgValue + profileCalc;
                 elasticUserP = 'offerers';
                 elasticUserS = 'offerer';
-
                 break;
         }
         
