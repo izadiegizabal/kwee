@@ -102,8 +102,8 @@ class Algorithm {
 
                 break;
         }
-
-        index = index * 1.62345678;
+        
+        index = index * ( Math.random() * (1.6 - 1.4) + 1.4);
         if(index > 100) {
             index = 99;
         }
