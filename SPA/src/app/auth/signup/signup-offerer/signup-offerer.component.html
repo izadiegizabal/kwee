@@ -287,6 +287,9 @@
           <mat-form-field>
             <input formControlName="website" matInput placeholder="Website">
             <mat-icon color="primary" matPrefix svgIcon="public"></mat-icon>
+            <mat-error *ngIf="!thirdFormGroup.get('website').valid">
+              Please enter a valid URL
+            </mat-error>
           </mat-form-field>
         </div>
 
