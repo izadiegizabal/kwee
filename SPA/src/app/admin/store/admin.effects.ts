@@ -70,9 +70,6 @@ export class AdminEffects {
           apiEndpointUrl += '&sort=' + payload.order;
         }
 
-        // console.log(apiEndpointUrl);
-        // console.log(body);
-
         return this.httpClient.post(apiEndpointUrl, body, {headers: headers}).pipe(
           map((res: {
             ok: boolean,
@@ -80,7 +77,6 @@ export class AdminEffects {
             total: number,
             message: string,
           }) => {
-            // console.log(res);
             return {
               type: AdminActions.SET_BUSINESSES,
               payload: res,

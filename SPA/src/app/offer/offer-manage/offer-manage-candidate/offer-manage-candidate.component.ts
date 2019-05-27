@@ -7,7 +7,7 @@ import {ActivatedRoute, Router} from '@angular/router';
   styleUrls: ['./offer-manage-candidate.component.scss']
 })
 export class OfferManageCandidateComponent implements OnInit {
-  selectedIndex = 1;
+  selectedIndex = 2;
 
   constructor(private router: Router,
               private route: ActivatedRoute) {

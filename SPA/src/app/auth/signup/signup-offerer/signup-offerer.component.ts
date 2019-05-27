@@ -13,6 +13,7 @@ import {environment} from '../../../../environments/environment';
 import {ActivatedRoute, Router} from '@angular/router';
 import {BusinessIndustries, BusinessSize} from '../../../../models/Business.model';
 import {isStringNotANumber} from '../../../../models/Offer.model';
+import {OkDialogComponent} from "../../../shared/ok-dialog/ok-dialog.component";
 
 export interface City {
   name: string;
@@ -149,11 +150,10 @@ export class SignupOffererComponent implements OnInit {
       'github': new FormControl(null),
       'telegram': new FormControl(null),
       'profile': new FormControl(),
-      'website': new FormControl(),
+      'website': new FormControl(null, Validators.pattern("[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)")),
       'companySize': new FormControl(),
-      'year': new FormControl(),
+      'year': new FormControl(null, Validators.pattern("^[0-9]{4}$")),
     });
-
 
     this.secondFormGroup.controls['password2'].setValidators([
       Validators.required,
@@ -179,24 +179,10 @@ export class SignupOffererComponent implements OnInit {
       }
     });
 
-    /*this.secondFormGroup.controls['address1'].valueChanges.subscribe(value => {
-      if (this.secondFormGroup.controls['address1'].value) {
-        const aux = this.secondFormGroup.controls['address1'].value;
-        if (aux.second) {
-          this.secondFormGroup.controls['address2'].setValue(aux.second);
-        }
-      }
-    });*/
-
     this.thirdFormGroup.controls['year'].setValidators([
       SignupOffererComponent.maxDate.bind(this.thirdFormGroup),
     ]);
-
-    this.thirdFormGroup.controls['year'].valueChanges.subscribe(value => {
-      this.thirdFormGroup.controls['year'].updateValueAndValidity();
-    });
-
-
+    
     this.thirdFormGroup.controls['twitter'].valueChanges.subscribe(() => {
       const value = <String>this.thirdFormGroup.controls['twitter'].value;
       if (value.includes('twitter.com/')) {
@@ -364,11 +350,13 @@ export class SignupOffererComponent implements OnInit {
   onUpdate() {
 
     const update = {
-      'about': this.thirdFormGroup.controls['about'].value,
-      'twitter': this.thirdFormGroup.controls['twitter'].value,
-      'linkedIn': this.thirdFormGroup.controls['linkedIn'].value,
-      'github': this.thirdFormGroup.controls['github'].value,
-      'telegram': this.thirdFormGroup.controls['telegram'].value,
+      'bio': this.thirdFormGroup.controls['about'].value,
+      'social_networks': {
+        'twitter': this.thirdFormGroup.controls['twitter'].value,
+        'linkedin': this.thirdFormGroup.controls['linkedIn'].value,
+        'github': this.thirdFormGroup.controls['github'].value,
+        'telegram': this.thirdFormGroup.controls['telegram'].value,
+      },
       'website': this.thirdFormGroup.controls['website'].value,
       'companySize': this.thirdFormGroup.controls['companySize'].value,
       'year': this.thirdFormGroup.controls['year'].value
@@ -378,24 +366,28 @@ export class SignupOffererComponent implements OnInit {
       headers: new HttpHeaders().append('token', this.token)
         .append('Content-Type', 'application/json')
     };
-    this.httpClient.put(environment.apiUrl + 'offerer',
-      update
-      , options)
+    this.httpClient.put(environment.apiUrl + 'offerer', update, options)
       .subscribe((data: any) => {
         // console.log(data);
-        this.router.navigate(['/']);
+        this.dialog.open(OkDialogComponent, {
+          data: {
+            message: 'Profile updated successfully!'
+          },
+        });
+        this.dialogShown = true;
       }, (error: any) => {
         // console.log(error);
         if (!this.dialogShown) {
           this.dialog.open(DialogErrorComponent, {
             data: {
-              header: 'We had some issue signing up',
+              header: 'We had some issue updating the info',
               error: 'Please try again later',
             }
           });
           this.dialogShown = true;
         }
       });
+
   }
 
   displayFn(city?: any): string | undefined {
