@@ -27,17 +27,13 @@ module.exports = (sequelize, DataTypes) => {
             },
 
             cif: {
-                type: DataTypes.STRING(11),
+                type: DataTypes.STRING(),
                 field: "cif",
                 allowNull: false,
                 validate: {
                     notEmpty: {
                         args: true,
                         msg: "CIF should not be empty."
-                    },
-                    len: {
-                        args: [11, 13],
-                        msg: "Invalid CIF length."
                     }
                 }
             },
