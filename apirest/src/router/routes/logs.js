@@ -69,7 +69,7 @@ module.exports = (app, db) => {
 
     async function showUserLog( req, res, next ) {
         let from = req.query.from || 0;
-        let to = req.query.to || 10;
+        let to = req.query.to;
         
         from = Number(from);
         to = Number(to);

@@ -4,14 +4,12 @@ const auth = require('../../../middlewares/auth/auth');
 const env = require('../../../tools/constants');
 const moment = require('moment');
 
-var typeToFront;
-
 module.exports = (app, db) => {
 
     app.get('/auth/linkedin/callback',
         passport.authenticate('linkedin', {failureRedirect: '/login'}),
         async (req, res, next) => {
-            console.log('auth/linkedin/callback Type: ', typeToFront);
+            
             let email = req.user.emails[0].value;
             let user;
             // Authentication with LinkedIn successful
@@ -125,14 +123,7 @@ module.exports = (app, db) => {
         });
 
         app.get('/auth/linkedin/:type',
-                passport.authenticate('linkedin'), 
-        
-            (req, res) => {
-                console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-                
-                typeToFront = req.params.type;
-                console.log('auth/linkedin Type: ', typeToFront);
-            }
+                passport.authenticate('linkedin')
         );
 
 };

@@ -66,12 +66,10 @@ export class BsUploadSettingsComponent implements OnInit {
         // @ts-ignore
         const file = (document.getElementById('file_profile') as HTMLInputElement).files[0];
         const reader = new FileReader();
-        reader.onloadend = function () {
-          // @ts-ignore
-          // console.log(reader.result);
-          this.send = {
-            file: reader.result
-          };
+        reader.onloadend = () => {
+
+          this.file = reader.result;
+
         };
         reader.readAsDataURL(file);
 
@@ -96,25 +94,27 @@ export class BsUploadSettingsComponent implements OnInit {
     if (this.file) {
       console.log('aesrdtfyguhiouytrew');
       console.log(this.file);
-      this.send['file'] = this.file;
+      // this.send['file'] = this.file;
       console.log('después de la igualación');
     }
 
     // PUT modified business
     const options = {
-      headers: new HttpHeaders().append('token', this.token)
-        .append('Content-Type', 'application/json')
+      headers: {token: this.token}
+        // .append('Content-Type', 'application/json')
     };
-    this.httpClient.put(environment.apiUrl + 'uploads/file', [this.file], options)
-      .subscribe((data: any) => {
-          if (!this.dialogShown) {
-            this.dialog.open(OkDialogComponent, {
-              data: {
-                message: 'Account info updated correctly!',
-              }
-            });
-            this.dialogShown = true;
-          }
+    this.httpClient.post(environment.apiUrl + 'uploads/files', {file: this.file}, options)
+      .subscribe( (data: any) => {
+        console.log('done');
+
+          // if (!this.dialogShown) {
+          //   this.dialog.open(OkDialogComponent, {
+          //     data: {
+          //       message: 'Account info updated correctly!',
+          //     }
+          //   });
+          //   this.dialogShown = true;
+          // }
         }, (error: any) => {
           // console.log(error);
           if (!this.dialogShown) {
