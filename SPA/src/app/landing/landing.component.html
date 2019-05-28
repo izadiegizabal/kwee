@@ -22,29 +22,19 @@
       fxLayout="column"
       fxLayoutAlign="center center"
       style="overflow-x: hidden; position: relative">
-      <mat-spinner *ngIf="getAllow()" color="accent" style="margin-top: 600px"></mat-spinner>
+      <!--<mat-spinner *ngIf="getAllow()" color="accent" style="margin-top: 600px"></mat-spinner>-->
       <!--<div *ngIf="getShowCard()" [@EnterLeave] id="block" style="z-index: 300; width: 500px; height: 20px; position: absolute; background-color: red; left: 0px; top: 0px"></div>-->
       <canvas
         [ngStyle.lt-sm]="{'width': '200%'}"
         [ngStyle]="{'width': '123%'}"
         height="1400px"
         id="kweelive"
-        width="1400px"></canvas>
-      <!--style="width: 270px; height: 80px;position: absolute; top: 0px; left: 0px;"-->
-      <!--<div id="miniOffer"
-           *ngIf="getShowCard()"
-           style="width: 270px; height: 80px;position: absolute; top: 0px; left: 0px;">
-        <app-mini-offer
-          [@EnterLeave]
-        [index]="50"
-        [class]="cardArrowType"
-        [id]="240"
-        [name]="'Facebook'"
-        [offer]="'Direct Accountability Specialist'"
-        [location]="'Alicante'"
-        [work]="'Full-Time'"
-        [image]="'image'"
-        [url]="'akjbdsabksadb'"></app-mini-offer></div>-->
+        width="1400px"
+        style="z-index: 2"></canvas>
+      <img src="../../assets/img/staticWorld.png" alt="static world image"
+           style="position: absolute"
+           [ngStyle.lt-sm]="{'width': '200%'}"
+           [ngStyle]="{'width': '123%'}">
       <app-mini-offer
         *ngIf="getShowCard()"
         [obj]="obj"
@@ -60,6 +50,7 @@
            style="margin-top: -64px">
         <h2 #thisIsKwee class="mat-display-3" style="margin-top: -128px"><a (click)="scrollTo(thisIsKwee)">This is
           Kwee</a></h2>
+        <!--<a id="dl" download="Canvas.png" href="#">Download Canvas</a>-->
         <div fxLayout="row" fxLayout.lt-sm="column"
              fxLayoutAlign="space-between center"
              fxLayoutGap="64px" fxLayoutGap.lt-sm="16px">
