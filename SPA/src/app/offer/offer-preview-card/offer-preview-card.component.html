@@ -119,10 +119,14 @@
     fxLayoutAlign="end center"
     fxLayoutGap="24px" fxLayoutGap.lt-sm="16px">
     <div fxLayout="row"
+         fxLayout.xs="column"
+         fxLayoutGap="16px"
          fxLayoutAlign="end center">
       <p *ngIf="candidate">You have been selected! What do you want to do?</p>
-      <button (click)="reject()" color="warn" mat-raised-button>{{'Reject' | uppercase }}</button>
-      <button (click)="accept()" color="accent" mat-raised-button>{{'Accept' | uppercase }}</button>
+      <div fxLayout="row">
+        <button (click)="reject()" color="warn" mat-raised-button>{{'Reject' | uppercase }}</button>
+        <button (click)="accept()" color="accent" mat-raised-button>{{'Accept' | uppercase }}</button>
+      </div>
     </div>
   </mat-card-actions>
 
