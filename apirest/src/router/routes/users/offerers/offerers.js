@@ -665,7 +665,7 @@ module.exports = (app, db) => {
                 elasticsearch.status = body.status;
             }
 
-            if (body.password || body.email || body.name || body.snSignIn || body.img || body.bio || body.status) {
+            if (body.password || body.email || body.name || body.snSignIn || body.img || body.bio || body.status || body.lat || body.lon) {
                 delete body.cif;
                 delete body.address;
                 delete body.workField;

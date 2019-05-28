@@ -1533,7 +1533,7 @@ module.exports = (app, db) => {
             applicant.city = applicants[i]._source.city;
             applicant.dateBorn = applicants[i]._source.dateBorn;
             applicant.rol = Number(applicants[i]._source.rol);
-            applicant.premium = Number(userApplicant.premium);
+            userApplicant.premium ? applicant.premium = Number(userApplicant.premium) : applicant.premium = 0;
             applicant.skills = applicants[i]._source.skills;
             applicant.educations = applicants[i]._source.educations;
             applicant.languages = applicants[i]._source.languages;
