@@ -134,6 +134,9 @@ export class BusinessOverviewComponent implements OnInit, AfterViewInit {
   }
 
   getWorkField(workField: number) {
+    if (!workField) {
+      workField = 0;
+    }
     return this.workFields.find(o => o.value === workField).viewValue;
   }
 
