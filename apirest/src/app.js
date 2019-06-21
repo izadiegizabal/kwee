@@ -9,7 +9,7 @@ const env = require('./tools/constants');
 
 router(app, db);
 
-require('./middlewares/cron');
+// require('./middlewares/cron');
 //drop and resync with { force: true }
 db.sequelize.sync( /*{ force: true }*/ ).then(() => {
     server.listen(env.API_PORT, () => {
