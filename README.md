@@ -32,3 +32,5 @@ The project can be explored at https://kwee.ovh (if it's still up). Otherwise, y
 ![Screenshots](https://i.imgur.com/J5lDWsH.png)
 ![Screenshots](https://i.imgur.com/8G50Rmr.png)
 ![Screenshots](https://i.imgur.com/ZOl9HIg.png)
+
+![Milestone 3 presentation photo](https://i.imgur.com/O461Ewq.png)
