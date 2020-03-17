@@ -11,7 +11,7 @@ Under a scrum-like Agile development method, we've gone through all the **develo
 
 An interesting feature is what we've called the **Kwee Index**. This rating is available for every user (business and candidate) and it's calculated based on different factors. These include the *reviews* they've received, by companies they've worked on or by employees they've had, and other aspecs like *how complete* their profile is. The score could be useful to asses in a glance how strong or enjoyable a candidate or company might be, to have a fast and somewhat reliable first impression.
 
-The project can be explored at https://kwee.ovh (if it's still up). Otherwise, you can find below the demo video (in Spanish):
+The project can be explored at https://kwee.ovh (if it's still up 😅). Otherwise, you can find below the demo video (in Spanish):
 
 [![Demo Video](https://i.imgur.com/mSzf9Sw.png)](https://www.youtube.com/watch?v=984p5dA-CgM)
 *Demo Video of the whole project (in Spanish)*
