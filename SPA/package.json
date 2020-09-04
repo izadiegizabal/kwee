@@ -50,7 +50,7 @@
     "ngx-paypal": "^4.0.2",
     "ngx-print": "^1.1.4",
     "ngx-socket-io": "^2.1.1",
-    "node-sass": "^4.12.0",
+    "node-sass": "^4.13.1",
     "rxjs": "~6.4.0",
     "three": "^0.101.1",
     "three-mtl-loader": "^1.0.2",
