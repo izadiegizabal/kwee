@@ -24,7 +24,7 @@
         "express-useragent": "^1.0.12",
         "google-auth-library": "^2.0.1",
         "jsonwebtoken": "^8.4.0",
-        "moment": "^2.23.0",
+        "moment": "^2.29.2",
         "mongoose": "^5.4.2",
         "mysql2": "^1.6.2",
         "nodemailer": "^4.7.0",
