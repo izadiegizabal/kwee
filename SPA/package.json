@@ -40,7 +40,7 @@
     "html2canvas": "^1.0.0-alpha.12",
     "jspdf": "^1.5.3",
     "mapbox-gl": "^0.52.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "ng-click-outside": "^4.0.0",
     "ngrx-store-localstorage": "^7.0.0",
     "ngx-cookie-service": "^2.1.0",
